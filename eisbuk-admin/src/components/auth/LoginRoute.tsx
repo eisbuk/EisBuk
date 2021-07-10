@@ -3,10 +3,13 @@ import { Route, Redirect } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isLoaded, isEmpty } from "react-redux-firebase";
 
-const authSelector = (state) => state.firebase.auth;
+import { LocalStore } from "@/types/store";
 
-const LoginRoute = (props) => {
+const authSelector = (state: LocalStore) => state.firebase.auth;
+
+const LoginRoute: React.FC = (props) => {
   const auth = useSelector(authSelector);
+
   return (
     <>
       {isLoaded(auth) && isEmpty(auth) && <Route {...props} />}

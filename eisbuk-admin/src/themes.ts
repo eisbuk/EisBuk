@@ -1,7 +1,8 @@
 import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import * as colors from "@material-ui/core/colors";
-import { ORGANIZATION } from "./config/envInfo";
 import _ from "lodash";
+
+import { ORGANIZATION } from "@/config/envInfo";
 
 const base = {
   palette: {

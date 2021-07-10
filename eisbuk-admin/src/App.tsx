@@ -11,7 +11,7 @@ import { CssBaseline } from "@material-ui/core";
 
 import { rrfProps, store } from "@/store";
 
-import AppContent from "@/components/AppContent";
+import AppContent from "@/AppContent";
 
 import Notifier from "@/utils/Notifier";
 

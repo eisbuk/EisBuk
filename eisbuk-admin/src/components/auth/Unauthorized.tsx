@@ -2,12 +2,14 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Paper, Typography } from "@material-ui/core";
 import _ from "lodash";
-import { signOut } from "../../store/actions/actions";
-import figureSkatingSilhouetteCouple from "../../assets/images/login/figure-skating-silhouette-couple.svg";
-import figureSkatingSilhouetteSkirt from "../../assets/images/login/figure-skating-silhouette-skirt.svg";
-import figureSkatingSilhouette from "../../assets/images/login/figure-skating-silhouette.svg";
-import girlIceSkating from "../../assets/images/login/girl-ice-skating-silhouette.svg";
-import iceSkatingSilhouette from "../../assets/images/login/ice-skating-silhouette.svg";
+
+import { signOut } from "@/store/actions/actions";
+
+import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
+import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
+import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhouette.svg";
+import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
+import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
 const backgrounds = [
   figureSkatingSilhouetteCouple,
@@ -17,7 +19,11 @@ const backgrounds = [
   iceSkatingSilhouette,
 ];
 
-const Unauthorized = ({ backgroundIndex }) => {
+interface Props {
+  backgroundIndex: boolean;
+}
+
+const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.firebase.auth);
   var background;
