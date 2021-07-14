@@ -21,6 +21,7 @@ import {
   deleteSlotFromClipboard,
   addSlotToClipboard,
 } from "../../../store/actions/actions";
+import { calendarDaySelector } from "../../../store/selectors";
 import { shiftSlotsDay } from "../../../data/slotutils";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
@@ -47,17 +48,19 @@ const SlotsDay = ({
   const [deletedSlots, setDeletedSlots] = useState({});
   const dispatch = useDispatch();
   const auth = useSelector((state) => state.firebase.auth);
-
+  const currentWeek = useSelector(calendarDaySelector).startOf("week");
   const luxonDay = luxon.parse(day, "yyyy-LL-dd");
   const dateStr = luxonDay.toFormat("EEEE d MMMM", { locale: "it-IT" });
-
   const copiedWeek = useSelector((state) => state.copyPaste.week) || {};
   const copiedWeekSlots = copiedWeek.slots
     ? copiedWeek.slots.map((slot) => slot.id)
     : [];
 
   const checkSelected = (id) => copiedWeekSlots.includes(id);
-  const canClickSlots = enableEdit && copiedWeekSlots.length > 0;
+  const canClickSlots =
+    enableEdit &&
+    copiedWeekSlots.length > 0 &&
+    copiedWeek.weekStart.equals(currentWeek);
   const extendedOnDelete =
     onDelete && enableEdit
       ? (slot) => {
