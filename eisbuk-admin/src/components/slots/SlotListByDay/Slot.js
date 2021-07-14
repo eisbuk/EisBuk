@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import clsx from "clsx";
 import {
   Button,
   ButtonGroup,
@@ -26,6 +27,7 @@ export default ({
   data,
   onDelete,
   deleted,
+  selected,
   onSubscribe,
   onUnsubscribe,
   subscribedSlots,
@@ -57,7 +59,11 @@ export default ({
   return (
     <>
       {!deleted && (
-        <Card className={classes.root} raised={isSubscribed} variant="outlined">
+        <Card
+          className={clsx(classes.root, { [classes.selected]: selected })}
+          raised={isSubscribed}
+          variant="outlined"
+        >
           <CardContent className={classes.wrapper}>
             <Box p={1} flexShrink={0} className={classes.slotTime}>
               <Typography
@@ -296,5 +302,8 @@ const useStyles = makeStyles((theme) => ({
   },
   "&.MuiPaper-elevation8": {
     border: "2px solid red",
+  },
+  selected: {
+    backgroundColor: theme.palette.warning.light,
   },
 }));

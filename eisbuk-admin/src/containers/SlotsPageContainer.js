@@ -131,8 +131,7 @@ export default ({
             tooltip="Incolla settimana"
             disabled={
               !weekToPaste.weekStart || // there's nothing to paste
-              +weekToPaste.weekStart === +currentDate || // don't paste over the same week we copied
-              slotsArray.length !== 0 // Only let users paste onto an empty week
+              +weekToPaste.weekStart === +currentDate // don't paste over the same week we copied
             }
           >
             <AssignmentIcon />

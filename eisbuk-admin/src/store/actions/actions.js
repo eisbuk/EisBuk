@@ -11,6 +11,8 @@ import {
   COPY_SLOT_DAY,
   COPY_SLOT_WEEK,
   SET_SLOT_TIME,
+  DELETE_SLOT_FROM_CLIPBOARD,
+  ADD_SLOT_TO_CLIPBOARD,
 } from "./action-types";
 import { ORGANIZATION } from "../../config/envInfo";
 
@@ -392,4 +394,14 @@ export const copySlotDay = (slotDay) => ({
 export const copySlotWeek = (slotWeek) => ({
   type: COPY_SLOT_WEEK,
   payload: slotWeek,
+});
+
+export const deleteSlotFromClipboard = (id) => ({
+  type: DELETE_SLOT_FROM_CLIPBOARD,
+  payload: id,
+});
+
+export const addSlotToClipboard = (id) => ({
+  type: ADD_SLOT_TO_CLIPBOARD,
+  payload: id,
 });

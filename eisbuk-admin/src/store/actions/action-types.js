@@ -6,6 +6,8 @@ export const CHANGE_DAY = "@@Eisbuk/CHANGE_DAY";
 
 export const COPY_SLOT_DAY = "@@Eisbuk/COPY_SLOT_DAY";
 export const COPY_SLOT_WEEK = "@@Eisbuk/COPY_SLOT_WEEK";
+export const DELETE_SLOT_FROM_CLIPBOARD = "@@Eisbuk/DELETE_SLOT_FROM_CLIPBOARD";
+export const ADD_SLOT_TO_CLIPBOARD = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD";
 
 export const SET_SLOT_TIME = "@@Eisbuk/SET_SLOT_TIME";
 
