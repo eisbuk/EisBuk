@@ -57,7 +57,7 @@ const getColor = ({ name, surname }: { name: string; surname: string }) => {
 interface Props {
   name: string;
   surname: string;
-  category: Category;
+  category?: Category;
   certificateExpiration?: string;
   className?: string;
 }

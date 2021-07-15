@@ -26,7 +26,6 @@ import { slotsLabels } from "@/config/appConfig";
 type UserBooking = Pick<Customer, "id"> &
   Pick<Customer, "name"> &
   Pick<Customer, "surname"> &
-  Pick<Customer, "category"> &
   Pick<Customer, "certificateExpiration"> &
   Pick<BookingInfo, "duration">;
 

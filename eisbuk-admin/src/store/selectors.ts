@@ -7,7 +7,7 @@ import { Slot, Customer } from "@/types/firestore";
 import { fs2luxon } from "@/utils/helpers";
 
 export const calendarDaySelector = (state: Partial<LocalStore>) =>
-  state.app?.calendarDay;
+  state.app!.calendarDay;
 export const extractSlotDate = (slot: Slot) => slot.date.seconds;
 export const extractSlotId = (slot: Slot) => slot.id;
 
