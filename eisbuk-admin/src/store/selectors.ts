@@ -2,7 +2,7 @@ import _ from "lodash";
 import { createSelector } from "reselect";
 
 import { LocalStore } from "@/types/store";
-import { Slot } from "@/types/firestore";
+import { Slot, Customer } from "@/types/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 
@@ -87,14 +87,18 @@ export const bookingDayInfoSelector = (dayStr: string) =>
           const user =
             allUsers && allUsers[key]
               ? allUsers[key]
-              : {
+              : ({
                   name: "Cancellato",
                   surname: "Cancellato",
                   secret_key: "Cancellato",
                   id: key,
-                };
+                } as Customer);
           return {
-            ...user,
+            name: user.name,
+            surname: user.surname,
+            certificateExpiration: user.certificateExpiration,
+            secret_key: user.secret_key,
+            id: user.id,
             duration: bookingsInfo[slot.id][key],
           };
         });
