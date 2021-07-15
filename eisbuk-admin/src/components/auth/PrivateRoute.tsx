@@ -1,25 +1,46 @@
 import React from "react";
-import { Route, Redirect } from "react-router-dom";
+import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isLoaded, isEmpty } from "react-redux-firebase";
+
+import { LocalStore } from "@/types/store";
+
+import { Routes } from "@/enums/routes";
 
 import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";
 
-const PrivateRoute: React.FC = (props) => {
-  const auth = useSelector((state) => state.firebase.auth);
-  const authInfoEisbuk = useSelector((state) => state.authInfoEisbuk);
+/**
+ * Wrapper around route component to isolate (add auth check to) private routes
+ * @param props `react-router-dom` RouteProps
+ * @returns JSX.Element
+ */
+const PrivateRoute: React.FC<RouteProps> = (props) => {
+  /** @TODO refactor these to import selector */
+  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const authInfoEisbuk = useSelector(
+    (state: LocalStore) => state.authInfoEisbuk
+  );
+
   const amIAdmin =
     authInfoEisbuk.amIAdmin && authInfoEisbuk.myUserId === auth.uid;
 
-  if (isLoaded(auth) && isEmpty(auth)) {
-    return <Redirect to="/login" />;
-  } else if (!isLoaded(auth) || authInfoEisbuk.myUserId === null) {
-    return <Loading />;
-  } else if (amIAdmin && !isEmpty(auth)) {
-    return <Route {...props} />;
-  } else if (!amIAdmin && !isEmpty(auth)) {
-    return <Unauthorized />;
+  switch (true) {
+    // display loading state until auth is processed
+    case !isLoaded(auth):
+      return <Loading />;
+
+    // render admin route
+    case amIAdmin && !isEmpty(auth):
+      return <Route {...props} />;
+
+    // render "unauthorized"
+    case !amIAdmin && !isEmpty(auth):
+      return <Unauthorized />;
+
+    default:
+      // if all else fails, redirect to `/login`
+      return <Redirect to={Routes.Login} />;
   }
 };
 

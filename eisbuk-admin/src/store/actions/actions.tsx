@@ -14,7 +14,7 @@ import {
   SlotDay,
   SlotWeek,
 } from "@/types/store";
-import { Slot, Customer } from "@/types/mFirestore";
+import { Slot, Customer } from "@/types/firestore";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
@@ -34,13 +34,13 @@ const enqueueSnackbar = (notification: Notification) => {
   };
 };
 
-const closeSnackbar = (key: number) => ({
+const closeSnackbar = (key: Notification["key"]) => ({
   type: Action.CloseSnackbar,
   dismissAll: !key, // dismiss all if no key has been defined
   key,
 });
 
-export const removeSnackbar = (key: number) => ({
+export const removeSnackbar = (key: Notification["key"]) => ({
   type: Action.RemoveSnackbar,
   key,
 });
@@ -156,7 +156,7 @@ export const createSlots = (slots: Slot[]) => (
     .catch(showErrSnackbar(dispatch));
 };
 
-export const editSlot = (slot: Slot) => {
+export const editSlot = (slot: Omit<Slot, "date">) => {
   return (
     dispatch: Dispatch,
     getState: GetState,
@@ -330,8 +330,8 @@ export const deleteSlots = (slots: Slot[]) => {
 };
 
 interface MarkAbsenteePayload {
-  slot: Slot;
-  user: Customer;
+  slot: Pick<Slot, "id">;
+  user: Pick<Customer, "id">;
   isAbsent: boolean;
 }
 

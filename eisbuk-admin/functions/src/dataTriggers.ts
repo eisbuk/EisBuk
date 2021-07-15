@@ -31,7 +31,7 @@ export const addMissingSecretKey = functions
       // Create a record in /bookings with this secret key as id
       // and the customer name
       const bookingsRoot = {
-        // eslint-disable-next-line @typescript-eslint/camelcase
+        // // eslint-disable-next-line @typescript-eslint/camelcase
         customer_id: customerId,
         ...(after.name && { name: after.name }),
         ...(after.surname && { surname: after.surname }),
@@ -47,7 +47,7 @@ export const addMissingSecretKey = functions
 
       return after.secret_key
         ? null
-        : // eslint-disable-next-line @typescript-eslint/camelcase
+        : // // eslint-disable-next-line @typescript-eslint/camelcase
           change.after.ref.update({ secret_key: secretKey });
     }
     return change.after;

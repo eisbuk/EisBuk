@@ -8,6 +8,9 @@ import {
 } from "react-redux-firebase";
 import { Route, Switch } from "react-router-dom";
 
+import { Routes, PrivateRoutes } from "@/enums/routes";
+import { Collection, OrgSubCollection } from "@/enums/firestore";
+
 import { LocalStore } from "@/types/store";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
@@ -29,36 +32,6 @@ import { ORGANIZATION } from "@/config/envInfo";
 import { calendarDaySelector } from "@/store/selectors";
 import { queryUserAdminStatus } from "@/store/actions/actions";
 
-/***** Region Safe Private Route *****/
-enum PrivateRoutes {
-  Root = "/",
-  Atleti = "/atleti",
-  Prenotazaioni = "/prenotazioni",
-}
-
-const PrivateRouteComponents = {
-  [PrivateRoutes.Root]: DashboardPage,
-  [PrivateRoutes.Atleti]: CustomersPage,
-  [PrivateRoutes.Prenotazaioni]: SlotsPage,
-};
-
-/**
- * A type safe PrivateRoute wrapper, fixes return type from `JSX.Element | undefined` to `JSX.Element | null`
- * PrivateRoute component might work in practice, but TypeSrcipt complains because `undefined` is not a valid JSX.Elmenet
- * @param param0 path (one of the private route paths)
- * @returns PrivateRoute with provided componet for corresponding route if defined, if not defined, returns `null`
- */
-const SafePrivateRoute = (path: PrivateRoutes) => {
-  return (
-    PrivateRoute({
-      path,
-      component: PrivateRouteComponents[path],
-      exact: true,
-    }) || null
-  );
-};
-/***** End Region Safe Private Route *****/
-
 /***** Region App Components *****/
 /**
  * General components to be returned from the AppContent, regardless of auth status
@@ -67,13 +40,13 @@ const SafePrivateRoute = (path: PrivateRoutes) => {
 function AppComponents() {
   return (
     <Switch>
-      <LoginRoute path="/login" component={LoginPage} />
-      {SafePrivateRoute(PrivateRoutes.Root)}
-      {SafePrivateRoute(PrivateRoutes.Atleti)}
-      {SafePrivateRoute(PrivateRoutes.Prenotazaioni)}
-      <Route path="/unauthorized" component={Unauthorized} exact />
-      <Route path="/clienti/:secret_key" children={<CustomerAreaPage />} />
-      <Route path="/debug" children={<DebugPage />} />
+      <LoginRoute path={Routes.Login} component={LoginPage} />
+      <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
+      <PrivateRoute path={PrivateRoutes.Atleti} component={CustomersPage} />
+      <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+      <Route path={Routes.Unauthorized} component={Unauthorized} exact />
+      <Route path={Routes.Clienti} children={<CustomerAreaPage />} />
+      <Route path={Routes.Debug} children={<DebugPage />} />
     </Switch>
   );
 }
@@ -97,21 +70,21 @@ function AppContentAuthenticated() {
 
   useFirestoreConnect([
     wrapOrganization({
-      collection: "customers",
+      collection: OrgSubCollection.Customers,
       orderBy: ["certificateExpiration", "asc"],
     }),
     wrapOrganization({
-      collection: "slotsByDay",
+      collection: OrgSubCollection.SlotsByDay,
       /** @TEMP below, investigate this later */
       where: [(firestore.FieldPath as any).documentId(), "in", monthsToQuery],
     }),
     wrapOrganization({
-      collection: "bookingsByDay",
+      collection: OrgSubCollection.BookingsByDay,
       /** @TEMP below, investigate this later */
       where: [(firestore.FieldPath as any).documentId(), "in", monthsToQuery],
     }),
     {
-      collection: "organizations",
+      collection: Collection.Organizations,
       doc: ORGANIZATION,
     },
   ]);

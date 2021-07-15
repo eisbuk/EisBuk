@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
-
 import { MuiPickersUtilsProvider } from "@material-ui/pickers";
 import { ThemeProvider } from "@material-ui/core/styles";
 import { CssBaseline } from "@material-ui/core";

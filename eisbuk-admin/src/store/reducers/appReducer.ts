@@ -1,11 +1,7 @@
-import {
-  CLOSE_SNACKBAR,
-  REMOVE_SNACKBAR,
-  CHANGE_DAY,
-  SET_SLOT_TIME,
-} from "../actions/action-types";
 import { DateTime } from "luxon";
+
 import { Action } from "@/enums/Redux";
+import { AppState, Notification } from "@/types/store";
 
 const defaultState = {
   notifications: [],
@@ -13,24 +9,18 @@ const defaultState = {
   newSlotTime: null,
 };
 
-type Notification = any;
-
-export interface AppState {
-  calendarDay: DateTime;
-  newSlotTime: null;
-  notifications: Notification[];
-}
+/** @TODO rewrite reducers to adhere to standard (type, payload) action  */
 
 export interface AppActionInterface {
   type: Action;
   notification: Notification;
-  key: string;
+  key: number;
   /** @TEMP below */
   dismissAll: any;
   payload: any;
 }
 
-export const appReducer = (
+const appReducer = (
   state: AppState = defaultState,
   action: AppActionInterface
 ) => {
@@ -47,7 +37,7 @@ export const appReducer = (
         ],
       };
 
-    case CLOSE_SNACKBAR:
+    case Action.CloseSnackbar:
       return {
         ...state,
         notifications: state.notifications.map((notification) =>
@@ -57,7 +47,7 @@ export const appReducer = (
         ),
       };
 
-    case REMOVE_SNACKBAR:
+    case Action.RemoveSnackbar:
       return {
         ...state,
         notifications: state.notifications.filter(
@@ -65,13 +55,13 @@ export const appReducer = (
         ),
       };
 
-    case CHANGE_DAY:
+    case Action.ChangeDay:
       return {
         ...state,
         calendarDay: action.payload,
       };
 
-    case SET_SLOT_TIME:
+    case Action.SetSlotTime:
       return {
         ...state,
         newSlotTime: action.payload,

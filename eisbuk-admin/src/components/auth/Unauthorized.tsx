@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from "react-redux";
 import { Button, Paper, Typography } from "@material-ui/core";
 import _ from "lodash";
 
+import { LocalStore } from "@/types/store";
+
 import { signOut } from "@/store/actions/actions";
 
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
@@ -11,6 +13,7 @@ import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhou
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
+/***** Region Background Images *****/
 const backgrounds = [
   figureSkatingSilhouetteCouple,
   figureSkatingSilhouetteSkirt,
@@ -18,29 +21,45 @@ const backgrounds = [
   girlIceSkating,
   iceSkatingSilhouette,
 ];
+/***** End Region Background Images *****/
+
+/***** Region Styles *****/
+/** @TODO refactor to use className instead of inline stlye */
+const baseStyle = {
+  backgroundRepeat: "no-repeat",
+  backgroundOpacity: "20%",
+  backgroundSize: "contain",
+  backgroundPosition: "center",
+  height: "100vh",
+};
+/***** End Region Styles *****/
 
 interface Props {
-  backgroundIndex: boolean;
+  backgroundIndex?: number;
 }
 
+/**
+ * Displays "unauthorized" message and logout button
+ * @param param0 {backgroundIndex: index of the background to show, if not provided, picks at random}
+ * @returns
+ */
 const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const dispatch = useDispatch();
-  const auth = useSelector((state) => state.firebase.auth);
-  var background;
-  if (!_.isNil(backgroundIndex)) {
-    background = backgrounds[backgroundIndex % backgrounds.length];
-  } else {
-    background = _.sample(backgrounds);
-  }
+
+  /** @TODO refactor to use imported selector */
+  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+
+  const background = _.isNil(backgroundIndex)
+    ? _.sample(backgrounds)
+    : backgrounds[backgroundIndex % backgrounds.length];
+
   const style = {
+    ...baseStyle,
     backgroundImage: `url(${background})`,
-    backgroundRepeat: "no-repeat",
-    backgroundOpacity: "20%",
-    backgroundSize: "contain",
-    backgroundPosition: "center",
-    height: "100vh",
   };
+
   const logOut = () => dispatch(signOut());
+
   return (
     <Paper style={style}>
       <Typography component="h1" variant="h2">

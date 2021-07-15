@@ -1,6 +1,7 @@
 import { FirebaseReducer } from "react-redux-firebase";
-// import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
+import { SnackbarKey, TransitionCloseHandler } from "notistack";
+import { Timestamp } from "@google-cloud/firestore";
 
 import { store } from "@/store";
 
@@ -12,7 +13,7 @@ import {
   FirestoreOrdered,
   Customer,
   Slot,
-} from "@/types/mFirestore";
+} from "@/types/firestore";
 
 /**** Region Store Types *****/
 export type Dispatch = typeof store.dispatch;
@@ -20,10 +21,10 @@ export type GetState = typeof store.getState;
 /**** End Region Store Types *****/
 
 /**** Region App *****/
-interface App {
+export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
-  newSlotTime: DateTime;
+  newSlotTime: Timestamp | null;
 }
 /**** End Region App *****/
 
@@ -37,20 +38,22 @@ export interface SlotWeek {
   slots: Slot<"id">[];
 }
 
-interface CopyPaste {
-  day: SlotDay;
-  week: SlotWeek;
+export interface CopyPasteState {
+  day: SlotDay | null;
+  week: SlotWeek | null;
 }
 /**** End Region Copy Paste *****/
 
 /**** Region Notification *****/
 export interface Notification {
-  key?: number;
+  key?: SnackbarKey;
   message: string;
   options: {
     variant?: NotifVariant;
     action?: (key: number) => JSX.Element;
+    onClose?: TransitionCloseHandler;
   };
+  dismissed?: boolean;
 }
 /**** End Region Notifiaction *****/
 
@@ -81,9 +84,10 @@ interface FirestoreRedux {
 /***** Region Firestore *****/
 
 /***** Region Auth Info *****/
-interface AuthInfoEisbuk {
+export interface AuthInfoEisbuk {
   amIAdmin: boolean;
-  myUserId: string;
+  myUserId: string | null;
+  uid: string | null;
 }
 /***** End Region Auth Info *****/
 
@@ -91,8 +95,8 @@ interface AuthInfoEisbuk {
 export interface LocalStore {
   firebase: FirebaseReducer.Reducer<ProfileType, Schema>;
   firestore: FirestoreRedux;
-  app: App;
-  copyPaste: CopyPaste;
+  app: AppState;
+  copyPaste: CopyPasteState;
   authInfoEisbuk: AuthInfoEisbuk;
 }
 /***** End Region Full Store *****/

@@ -1,12 +1,15 @@
 import React from "react";
 import { DateTime, DurationObjectUnits } from "luxon";
-import { Toolbar, AppBar, IconButton, Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
+import { Toolbar, AppBar, IconButton, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
 } from "@material-ui/icons";
+
+import { ETheme } from "@/themes";
+
 import { changeCalendarDate } from "@/store/actions/actions";
 import { calendarDaySelector } from "@/store/selectors";
 
@@ -41,12 +44,14 @@ const multiply = (factor: number, delta: Record<string, number>) =>
     return acc;
   }, {});
 
-const DateNavigationAppBar = ({
+interface Props {
+  extraButtons?: JSX.Element;
+  jump?: keyof DurationObjectUnits;
+}
+
+const DateNavigationAppBar: React.FC<Props> = ({
   extraButtons,
   jump = "week",
-}: {
-  extraButtons: JSX.Element;
-  jump: keyof DurationObjectUnits;
 }) => {
   const classes = useStyles();
   const currentDate = useSelector(calendarDaySelector).startOf(jump);
@@ -90,7 +95,7 @@ const DateNavigationAppBar = ({
   );
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: ETheme) => ({
   appbar: {
     flexGrow: 0,
   },
@@ -105,8 +110,7 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
   },
   "& .MuiAppBar-positionSticky": {
-    top: (theme.mixins
-      .toolbar as unknown) as string /** <- @TEMP : check this */,
+    top: theme.mixins.toolbar.top,
   },
 }));
 
