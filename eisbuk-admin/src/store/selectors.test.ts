@@ -1,14 +1,25 @@
 import { bookingDayInfoSelector, calendarDaySelector } from "./selectors";
 import { DateTime, Settings } from "luxon";
 
+import { LocalStore } from "@/types/store";
+import { FirestoreData } from "@/types/firestore";
+
 Settings.defaultZoneName = "Europe/Rome";
 
 it("Selects the app date", () => {
-  expect(calendarDaySelector({ app: { calendarDay: "foo" } })).toEqual("foo");
+  expect(
+    calendarDaySelector({
+      app: { calendarDay: ("foo" as unknown) as DateTime } as LocalStore["app"],
+    })
+  ).toEqual("foo");
 });
 
 it("Selects the bookings", () => {
-  expect(bookingDayInfoSelector("2021-01-19")(COMPLEX_STATE)).toEqual([
+  expect(
+    bookingDayInfoSelector("2021-01-19")(
+      (COMPLEX_STATE as unknown) as LocalStore
+    )
+  ).toEqual([
     {
       categories: ["preagonismo", "agonismo"],
       time: "10:00",
@@ -81,15 +92,15 @@ it("Selects the bookings", () => {
 });
 
 it("does not explode when some values are undefined", () => {
-  bookingDayInfoSelector("2021-01-19")({
-    firestore: {
-      data: {
+  bookingDayInfoSelector("2021-01-19")(({
+    firestore: ({
+      data: ({
         slotsByDay: {
           "2021-01": {},
         },
-      },
-    },
-  });
+      } as unknown) as FirestoreData,
+    } as unknown) as LocalStore["firestore"],
+  } as unknown) as LocalStore);
 });
 
 const COMPLEX_STATE = {

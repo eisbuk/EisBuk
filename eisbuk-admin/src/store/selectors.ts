@@ -6,7 +6,8 @@ import { Slot } from "@/types/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 
-export const calendarDaySelector = (state: LocalStore) => state.app.calendarDay;
+export const calendarDaySelector = (state: Partial<LocalStore>) =>
+  state.app?.calendarDay;
 export const extractSlotDate = (slot: Slot) => slot.date.seconds;
 export const extractSlotId = (slot: Slot) => slot.id;
 
@@ -62,7 +63,8 @@ export const makeBookingsInfoSelector = (dayStr: string) => (
  * @param state local store state
  * @returns all customers from store
  */
-const allUsersSelector = (state: LocalStore) => state.firestore.data.customers;
+const allUsersSelector = (state: Partial<LocalStore>) =>
+  state.firestore?.data.customers;
 
 /**
  * Get slots for day, mapped with time info, and customers who booked that slot
@@ -82,12 +84,15 @@ export const bookingDayInfoSelector = (dayStr: string) =>
 
       return slots.map((slot) => {
         const users = Object.keys(bookingsInfo[slot.id] ?? {}).map((key) => {
-          const user = allUsers[key] ?? {
-            name: "Cancellato",
-            surname: "Cancellato",
-            secret_key: "Cancellato",
-            id: key,
-          };
+          const user =
+            allUsers && allUsers[key]
+              ? allUsers[key]
+              : {
+                  name: "Cancellato",
+                  surname: "Cancellato",
+                  secret_key: "Cancellato",
+                  id: key,
+                };
           return {
             ...user,
             duration: bookingsInfo[slot.id][key],
