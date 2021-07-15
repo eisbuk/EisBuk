@@ -1,8 +1,11 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { shiftSlotsDay, shiftSlotsWeek } from "./slotutils.js";
-import { FBToLuxon } from "./dtutils";
 import { DateTime } from "luxon";
+
+import { Slot } from "@/types/firestore";
+
+import { shiftSlotsDay, shiftSlotsWeek } from "./slotutils";
+import { FBToLuxon } from "./dtutils";
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -40,4 +43,4 @@ it("Shifts a list of slots to a new week, maintaining the time and the day of we
 const day = new Date("10 Jan 2021 11:30:00 GMT+1");
 const jan_10_slot = {
   date: Timestamp.fromDate(day),
-};
+} as Slot<"id">;

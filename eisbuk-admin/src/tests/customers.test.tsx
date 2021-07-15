@@ -1,5 +1,9 @@
+import firebase from "firebase";
+
 import { adminDb } from "./settings";
 import { retry, deleteAll } from "./utils";
+
+type DocumentData = firebase.firestore.DocumentData;
 
 beforeEach(async () => {
   await deleteAll(["customers", "bookings"]);
@@ -10,7 +14,7 @@ it("Applies secret_key when a customer record is added and keeps customer data u
     .collection("organizations")
     .doc("default")
     .collection("customers");
-  const test_customers = [
+  const testCustomers = [
     {
       name: "John",
       id: "foo",
@@ -21,7 +25,7 @@ it("Applies secret_key when a customer record is added and keeps customer data u
     },
   ];
   await Promise.all(
-    test_customers.map((customer) => coll.doc(customer.id).set(customer))
+    testCustomers.map((customer) => coll.doc(customer.id).set(customer))
   );
 
   const fromDbFoo = await waitForCondition({
@@ -29,16 +33,16 @@ it("Applies secret_key when a customer record is added and keeps customer data u
     id: "foo",
     condition: hasSecretKey,
   });
-  expect(fromDbFoo.name).toBe("John");
-  expect(Boolean(fromDbFoo.secret_key)).toBe(true);
+  expect(fromDbFoo?.name).toBe("John");
+  expect(Boolean(fromDbFoo?.secret_key)).toBe(true);
 
   const fromDbBar = await waitForCondition({
     collection: "customers",
     id: "bar",
     condition: hasSecretKey,
   });
-  expect(fromDbBar.name).toBe("Jane");
-  expect(Boolean(fromDbBar.secret_key)).toBe(true);
+  expect(fromDbBar?.name).toBe("Jane");
+  expect(Boolean(fromDbBar?.secret_key)).toBe(true);
   done();
 });
 
@@ -59,11 +63,11 @@ it("Populates bookings when a customer record is added or changed", async (done)
     condition: hasSecretKey,
   });
   const bookingsInfo = (
-    await orgsColl.collection("bookings").doc(fromDbBaz.secret_key).get()
+    await orgsColl.collection("bookings").doc(fromDbBaz?.secret_key).get()
   ).data();
-  expect(bookingsInfo.name).toEqual("Jane");
-  expect(bookingsInfo.surname).toEqual("Doe");
-  expect(bookingsInfo.category).toEqual("corso");
+  expect(bookingsInfo?.name).toEqual("Jane");
+  expect(bookingsInfo?.surname).toEqual("Doe");
+  expect(bookingsInfo?.category).toEqual("corso");
 
   await customersColl
     .doc("baz")
@@ -71,24 +75,34 @@ it("Populates bookings when a customer record is added or changed", async (done)
   await waitForCondition({
     collection: "customers",
     id: "baz",
-    condition: (data) => data.category === "agonismo",
+    condition: (data) => data?.category === "agonismo",
   });
   done();
 });
 
-function hasSecretKey(data) {
+function hasSecretKey(data: DocumentData | undefined) {
   return data && data.secret_key;
 }
 
-async function waitForCondition({
+interface WaitForCondition {
+  (params: {
+    collection: string;
+    id: string;
+    condition: (data: DocumentData | undefined) => boolean;
+    attempts?: number;
+    sleep?: number;
+  }): Promise<DocumentData | undefined>;
+}
+
+const waitForCondition: WaitForCondition = async ({
   collection,
   id,
   condition,
   attempts = 10,
   sleep = 400,
-}) {
+}) => {
   // Retries to fetch item until condition is true.
-  var doc;
+  let doc: DocumentData | undefined;
   const coll = adminDb
     .collection("organizations")
     .doc("default")
@@ -103,7 +117,7 @@ async function waitForCondition({
         : Promise.reject(new Error(`${id} was not updated successfully`));
     },
     attempts,
-    () => sleep
+    sleep
   );
   return doc;
-}
+};

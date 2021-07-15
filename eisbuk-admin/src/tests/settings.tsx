@@ -7,8 +7,8 @@ import { credentials } from "@grpc/grpc-js";
 
 const projectId = "eisbuk";
 
-exports.adminDb = new Firestore({
-  projectId: projectId,
+export const adminDb = new Firestore({
+  projectId,
   servicePath: "localhost",
   port: 8081,
   sslCreds: credentials.createInsecure(),
@@ -24,9 +24,9 @@ firebase.initializeApp({
 firebase.auth().useEmulator("http://localhost:9098/");
 firebase.functions().useEmulator("localhost", 5002);
 
-exports.db = firebase.firestore();
+export const db = firebase.firestore();
 
-exports.db.settings({
+db.settings({
   host: "localhost:8081",
   ssl: false,
 });

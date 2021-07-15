@@ -3,10 +3,25 @@ import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
 
-export const retry = function (func, maxTries, delay) {
+interface RetryHelper {
+  <T>(
+    func: (...args: any[]) => Promise<T>,
+    maxTries: number,
+    delay: number
+  ): Promise<T>;
+}
+
+/**
+ * Test util: runs procided function until success or maxTries reached, with specified delay
+ * @param func function to run
+ * @param maxTries
+ * @param delay between runs
+ * @returns
+ */
+export const retry: RetryHelper = async (func, maxTries, delay) => {
   // Retry running the (asyncrhronous) function func
   // until it resolves
-  var reTry = 0;
+  let reTry = 0;
   return new Promise((resolve, reject) => {
     function callFunc() {
       try {
@@ -16,7 +31,7 @@ export const retry = function (func, maxTries, delay) {
           } else {
             setTimeout(
               callFunc,
-              typeof delay == "function" ? delay(retry) : delay
+              typeof delay == "function" ? (delay as any)(retry) : delay
             );
           }
         });
@@ -33,7 +48,11 @@ export const retry = function (func, maxTries, delay) {
 // https://github.com/jsdom/jsdom/pull/2867
 // For now you need to patch your local copy manually
 // A script `fix_jsdom.sh" is provided for this purpose
-export const loginWithUser = async function (email) {
+/**
+ *
+ * @param email
+ */
+export const loginWithUser = async (email: string) => {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, "secret");
   } catch (e) {
@@ -41,34 +60,65 @@ export const loginWithUser = async function (email) {
   }
 };
 
-export const createDefaultOrg = function () {
+/**
+ * Test util: deletes default organization ("default") from emulated firestore db
+ * @returns
+ */
+export const createDefaultOrg = () => {
   const orgDefinition = {
     admins: ["test@example.com"],
   };
   return adminDb.collection("organizations").doc("default").set(orgDefinition);
 };
 
+/**
+ * Test util: loggs in with default user's email ("test@example.com")
+ * @returns
+ */
 export const loginDefaultUser = function () {
   return exports.loginWithUser("test@example.com");
 };
 
-export const deleteAll = async (collections) => {
+/**
+ * Test util: deletes provided collections from "default" organization in emulated firestore db
+ * @param collections to delete
+ * @returns
+ */
+export const deleteAll = async (collections: string[]) => {
   const org = adminDb.collection("organizations").doc("default");
   return deleteAllCollections(org, collections);
 };
 
-export const deleteAllCollections = async (db, collections) => {
-  const toDelete = [];
+/**
+ * Test util: deletes provided collections from provided provided db
+ * @param db to delete from
+ * @param collections to delete
+ * @returns
+ */
+export const deleteAllCollections = async (
+  db:
+    | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+    | FirebaseFirestore.Firestore,
+  collections: string[]
+) => {
+  const toDelete: Promise<FirebaseFirestore.WriteResult>[] = [];
+
   for (const coll of collections) {
     const existing = await db.collection(coll).get();
-    existing.forEach(async (el) => {
+    existing.forEach((el) => {
       toDelete.push(el.ref.delete());
     });
   }
+
   return Promise.all(toDelete);
 };
 
-export const loginWithPhone = async (phoneNumber) => {
+/**
+ * Test util: loggs in with phone number
+ * @param phoneNumber
+ * @returns
+ */
+export const loginWithPhone = async (phoneNumber: string) => {
   // Turn off phone auth app verification.
   firebase.auth().settings.appVerificationDisabledForTesting = true;
 

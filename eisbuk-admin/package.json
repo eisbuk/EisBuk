@@ -43,8 +43,8 @@
   },
   "scripts": {
     "start": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ; react-app-rewired start",
-    "start:eisbuk": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ; EISBUK_SITE=eisbuk.web.app react-app-rewired start --reset-cache",
-    "start:igorice": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ;EISBUK_SITE=igorice.web.app react-app-rewired start --reset-cache",
+    "start:eisbuk": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js; EISBUK_SITE=eisbuk.web.app react-app-rewired start --reset-cache",
+    "start:igorice": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js; EISBUK_SITE=igorice.web.app react-app-rewired start --reset-cache",
     "emulators:inspect": "npm --prefix \"./functions\" run build && exec firebase emulators:start --project eisbuk --inspect-functions 9229",
     "emulators:start": "npm --prefix \"./functions\" run build && exec firebase emulators:start --project eisbuk",
     "build": "react-app-rewired build",

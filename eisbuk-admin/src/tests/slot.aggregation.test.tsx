@@ -1,3 +1,5 @@
+import firebase from "firebase";
+
 import { db } from "./settings";
 import { adminDb } from "./settings";
 import {
@@ -7,6 +9,9 @@ import {
   createDefaultOrg,
   retry,
 } from "./utils";
+
+type DocumentReference = firebase.firestore.DocumentReference;
+type DocumentData = firebase.firestore.DocumentData;
 
 beforeEach(async () => {
   await deleteAll(["slots", "slotsByDay"]);
@@ -31,7 +36,7 @@ it("updates the slots summary on slot creation", async () => {
   const aggregateSlotsQuery = org.collection("slotsByDay").doc("2021-01");
   var aggregateSlot = await waitForRecord({
     record: aggregateSlotsQuery,
-    num_keys: 1,
+    numKeys: 1,
   });
   expect(aggregateSlot["2021-01-30"].testSlot.type).toStrictEqual("ice");
 
@@ -45,7 +50,7 @@ it("updates the slots summary on slot creation", async () => {
   });
   aggregateSlot = await waitForRecord({
     record: aggregateSlotsQuery,
-    num_keys: 2,
+    numKeys: 2,
   });
   expect(aggregateSlot["2021-01-29"].anotherSlot.type).toStrictEqual("ice");
   expect(aggregateSlot["2021-01-29"].anotherSlot.id).toStrictEqual(
@@ -67,25 +72,32 @@ it("updates the slots summary on slot creation", async () => {
 
   aggregateSlot = await waitForRecord({
     record: aggregateSlotsQuery,
-    num_keys: 3,
+    numKeys: 3,
   });
 });
 
-async function waitForRecord({ record, num_keys }) {
+interface WaitForRecord {
+  (params: {
+    record: DocumentReference;
+    numKeys: number;
+  }): Promise<DocumentData>;
+}
+
+const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
   // retry to get the given record until it contains the expected number of keys
   return await retry(
     // Try to fetch the aggregate slots for the day until
     // we find the newly added one
     async () => {
       var aggregateSlot = (await record.get()).data();
-      if (!aggregateSlot || Object.keys(aggregateSlot).length !== num_keys) {
+      if (!aggregateSlot || Object.keys(aggregateSlot).length !== numKeys) {
         return Promise.reject(
-          new Error(`The aggregated slot with ${num_keys} keys was not found`)
+          new Error(`The aggregated slot with ${numKeys} keys was not found`)
         );
       }
       return aggregateSlot;
     },
     10, // Try the above up to 10 times
-    () => 400 // pause 400 ms between tries
+    400 // pause 400 ms between tries
   );
-}
+};

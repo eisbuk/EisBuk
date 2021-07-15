@@ -1,5 +1,6 @@
 import { adminDb } from "./settings";
 import { retry, deleteAll } from "./utils";
+import { DocumentData } from "@google-cloud/firestore";
 
 beforeEach(async () => {
   await deleteAll(["bookings", "bookingsByDay"]);
@@ -55,17 +56,30 @@ it("Copies over booking when created", async (done) => {
     .delete();
   await waitForBookingWithCondition(
     "2021-01",
-    (data) => !data["booked-slot-id"]["booker-id"]
+    (data) => !data!["booked-slot-id"]["booker-id"]
   );
   done();
 });
 
-async function waitForBookingWithCondition(monthStr, condition) {
-  var doc;
+/***** Region Wait For Booking With Condition *****/
+interface WaitForBookingWithCondition {
+  (
+    monthString: string,
+    condition: (data: DocumentData | undefined) => boolean
+  ): Promise<DocumentData>;
+}
+
+const waitForBookingWithCondition: WaitForBookingWithCondition = async (
+  monthStr,
+  condition
+) => {
+  let doc: DocumentData | undefined;
+
   const coll = adminDb
     .collection("organizations")
     .doc("default")
     .collection("bookingsByDay");
+
   await retry(
     // Try to fetch the bookingsByDay aggregation until
     // it includes the booking we were asked to
@@ -82,5 +96,6 @@ async function waitForBookingWithCondition(monthStr, condition) {
     10, // Try the above up to 10 times
     () => 400 // pause 400 ms between tries
   );
-  return doc.data();
-}
+
+  return doc?.data();
+};

@@ -74,7 +74,7 @@ it("Denies access to users not belonging to the organization", async (done) => {
   done();
 });
 
-const loginWithUser = async function (email) {
+const loginWithUser = async function (email: string) {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, "secret");
   } catch (e) {
