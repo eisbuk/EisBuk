@@ -1,4 +1,4 @@
-import { createMuiTheme, responsiveFontSizes } from "@material-ui/core/styles";
+import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
 import * as colors from "@material-ui/core/colors";
 
 import { ORGANIZATION } from "@/config/envInfo";
@@ -83,7 +83,7 @@ function getCurrentOrganizationSettings() {
 export const organizationInfo = getCurrentOrganizationSettings();
 
 export const currentTheme = responsiveFontSizes(
-  createMuiTheme(organizationInfo.theme)
+  createTheme(organizationInfo.theme)
 );
 
 /**
