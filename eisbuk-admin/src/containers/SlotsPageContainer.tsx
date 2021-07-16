@@ -43,10 +43,13 @@ type Props = Omit<Omit<SlotListProps, "enableEdit">, "className">;
 
 const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const classes = useStyles();
+
   const [enableEdit, setEnableEdit] = useState(false);
   const [showWeekDeleteConfirm, setShowWeekDeleteConfirm] = useState(false);
+
   const currentDate = useSelector(calendarDaySelector).startOf("week");
   const weekToPaste = useSelector(weekCopyPasteSelector);
+
   const dispatch = useDispatch();
 
   const datesToDisplay = Array(7)
@@ -125,9 +128,9 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             size="small"
             onClick={doPaste}
             disabled={
-              !weekToPaste?.weekStart || // there's nothing to paste
-              +weekToPaste.weekStart === +currentDate || // don't paste over the same week we copied
-              slotsArray.length !== 0 // Only let users paste onto an empty week
+              !weekToPaste ||
+              !weekToPaste.weekStart || // there's nothing to paste
+              +weekToPaste.weekStart === +currentDate // don't paste over the same week we copied
             }
           >
             <AssignmentIcon />

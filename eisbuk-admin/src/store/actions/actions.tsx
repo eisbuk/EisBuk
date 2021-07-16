@@ -445,3 +445,13 @@ export const copySlotWeek = (slotWeek: SlotWeek) => ({
   type: Action.CopySlotWeek,
   payload: slotWeek,
 });
+
+export const deleteSlotFromClipboard = (id: Slot<"id">["id"]) => ({
+  type: Action.DeleteSlotFromClipboard,
+  payload: id,
+});
+
+export const addSlotToClipboard = (id: Slot<"id">) => ({
+  type: Action.AddSlotToClipboard,
+  payload: id,
+});

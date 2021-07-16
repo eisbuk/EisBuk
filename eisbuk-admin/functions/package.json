@@ -12,7 +12,7 @@
     "build": "npm run lint && tsc"
   },
   "engines": {
-    "node": "14.x"
+    "node": "14"
   },
   "main": "dist/index.js",
   "dependencies": {

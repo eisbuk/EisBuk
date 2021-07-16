@@ -23,6 +23,8 @@ jobs:
           key: ${{ runner.os }}-modules-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn --cwd eisbuk-admin
+      - name: Install functions dependencies
+        run: npm --prefix eisbuk-admin/functions install
       - name: Build app
         run: yarn --cwd eisbuk-admin build
       - name: Deploy to firebase

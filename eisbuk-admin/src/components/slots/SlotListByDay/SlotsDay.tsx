@@ -9,22 +9,28 @@ import {
   Typography,
   Box,
 } from "@material-ui/core";
-import {
-  FileCopy as FileCopyIcon,
-  AddCircleOutline as AddCircleOutlineIcon,
-  Assignment as AssignmentIcon,
-} from "@material-ui/icons";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
 import _ from "lodash";
 
+import FileCopyIcon from "@material-ui/icons/FileCopy";
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+
 import { LocalStore } from "@/types/store";
 import { Slot as SlotInterface } from "@/types/firestore";
+import { ETheme } from "@/themes";
+
+import {
+  copySlotDay,
+  createSlots,
+  deleteSlotFromClipboard,
+  addSlotToClipboard,
+} from "@/store/actions/actions";
+import { calendarDaySelector } from "@/store/selectors";
 
 import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
 import Slot, { SlotProps } from "./Slot";
-
-import { copySlotDay, createSlots } from "@/store/actions/actions";
 
 import { shiftSlotsDay } from "@/data/slotutils";
 
@@ -59,6 +65,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   const [deletedSlots, setDeletedSlots] = useState({});
 
   const dispatch = useDispatch();
+
   const auth = useSelector((state: LocalStore) => state.firebase.auth);
 
   const luxonDay = luxon.parse(day, "yyyy-LL-dd");
@@ -70,6 +77,16 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   const copiedWeekSlots = copiedWeek
     ? copiedWeek.slots.map((slot) => slot.id)
     : [];
+
+  const checkSelected = (id: SlotInterface<"id">["id"]) =>
+    copiedWeekSlots.includes(id);
+
+  const currentWeek = useSelector(calendarDaySelector).startOf("week");
+
+  const canClickSlots =
+    enableEdit &&
+    copiedWeekSlots.length > 0 &&
+    copiedWeek?.weekStart.equals(currentWeek);
 
   const extendedOnDelete =
     onDelete && enableEdit
@@ -140,9 +157,13 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
               <Grid
                 key={slot.id}
                 className={
-                  copiedWeekSlots.includes(slot.id) && enableEdit
-                    ? classes.selected
-                    : classes.unselected
+                  canClickSlots ? classes.clickable : classes.unclickable
+                }
+                onClick={() =>
+                  canClickSlots &&
+                  (checkSelected(slot.id)
+                    ? dispatch(deleteSlotFromClipboard(slot.id))
+                    : dispatch(addSlotToClipboard(slot)))
                 }
                 item
                 xs={12}
@@ -151,6 +172,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
                 xl={!isCustomer ? 2 : 3}
               >
                 <Slot
+                  selected={checkSelected(slot.id)}
                   data={slot}
                   key={slot.id}
                   deleted={!!deletedSlots[slot.id]}
@@ -187,7 +209,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
 export default SlotsDay;
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme: ETheme) => ({
   listSubheader: {
     fontVariant: "small-caps",
     backgroundColor: theme.palette.background.default,
@@ -212,10 +234,10 @@ const useStyles = makeStyles((theme) => ({
   dateButtons: {
     "flex-grow": 0,
   },
-  selected: {
-    backgroundColor: theme.palette.warning.main,
+  clickable: {
+    cursor: "pointer",
   },
-  unselected: {
-    backgroundColor: theme.palette.grey[100],
+  unclickable: {
+    cursor: "auto",
   },
 }));

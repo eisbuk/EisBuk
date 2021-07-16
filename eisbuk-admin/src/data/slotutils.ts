@@ -59,9 +59,9 @@ export const shiftSlotsWeek: ShiftSlotsWeek = (
     return slots;
   }
 
-  return slots.map((el) => {
-    const dt = FBToLuxon(el.date);
-    return { ...el, date: luxonToFB(dt.plus({ days: difference })) };
+  return slots.map((slot) => {
+    const dt = FBToLuxon(slot.date);
+    return { ...slot, date: luxonToFB(dt.plus({ days: difference })) };
   });
 };
 /***** End Region Shift Slots Week *****/
