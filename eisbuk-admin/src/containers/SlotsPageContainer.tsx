@@ -56,7 +56,12 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
     .fill(null)
     .map((_, i) => currentDate.plus({ days: i }).toISODate());
 
-  const slotsToDisplay = _.pick(slots, datesToDisplay);
+  const slotsToDisplay = {
+    // create empty days
+    ..._.zipObject(datesToDisplay, [{}, {}, {}, {}, {}, {}, {}]),
+    // if slots available, overwrite empty days
+    ..._.pick(slots, datesToDisplay),
+  };
 
   const slotsArray = _.values(
     _.values(slotsToDisplay).reduce((acc, el) => ({ ...acc, ...el }), {})
