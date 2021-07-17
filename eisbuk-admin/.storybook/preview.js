@@ -1,5 +1,5 @@
 import React from "react";
-import { store } from "../src/store/store";
+import { store } from "../src/store";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 import { changeCalendarDate } from "../src/store/actions/actions";

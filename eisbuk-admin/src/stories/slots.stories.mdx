@@ -1,0 +1,83 @@
+import { Meta, Story, Canvas } from "@storybook/addon-docs/blocks";
+
+<Meta title="Slots" />
+
+# Slots for bookings
+
+Slots are the basic unit that can be booked.
+
+They have a point in time and some metadata.
+
+This is their primary representation. Clients send this kind of serialisation to the `slots` collection.
+
+```javascript
+slots = {
+  foo: {
+    categories: ["agonismo", "preagonismo", "corso"],
+    type: "ice",
+    date: { seconds: 1609513200 },
+    durations: [60],
+  },
+  bar: {
+    date: { seconds: 1609495200 },
+    categories: ["preagonismo"],
+    type: "off-ice-danza",
+    durations: [90, 120],
+  },
+  baz: {
+    date: { seconds: 1609516800 },
+    categories: ["agonismo"],
+    type: "off-ice-gym",
+    durations: [60, 90, 120],
+  },
+};
+```
+
+Their ids in the database MUST be uuid4 to avoid collisions. In these examples they are readable strings for clarity.
+
+When a slot is saved a server function is triggered that mirrors the slot contents in a `slotsByDay` collection.
+
+`slotsByDay` is organized like this:
+
+```javascript
+slotsByDay = {
+  "2021-01": {
+    "2021-01-15": {
+      ...slots,
+    },
+    "2021-01-16": {}, // There can be empty days
+  },
+};
+```
+
+# Booking records
+
+When user want to book a slot they create an entry in `bookings/secret_key`.
+
+The secret key is automatically generated and stored alongside the user data.
+
+Users access the booking page using a URL that includes the secret key.
+
+When a booking is added a triggger updates an aggregation of bookings collection.
+
+The `bookingsByDay` collection is organized like this:
+
+```javascript
+bookingsByDay = {
+  "2021-01": {
+    slot0Id: {
+      customer1Id: 60,
+    },
+    slot1Id: {
+      customer1Id: 60,
+      customer2Id: 90,
+      customer3Id: 60,
+    },
+    slot2Id: {
+      customer1Id: 120,
+      customer3Id: 90,
+      customer6Id: 120,
+    },
+  },
+};
+```
