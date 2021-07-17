@@ -1,5 +1,5 @@
 import React from "react";
-import AppbarAdmin from "./AppbarAdmin";
+import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 export default {
   title: "AppbarAdmin",

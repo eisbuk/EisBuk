@@ -11,9 +11,10 @@ import { Slot as SlotInterface } from "@/types/firestore";
 import { Category, Duration, Notes, SlotType } from "@/enums/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
+import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Weekly slots view",
+  title: "Slots Page Container",
   component: SlotsPageContainer,
 };
 
@@ -26,12 +27,7 @@ const lodash = _.runInContext();
 
 const Timestamp = firebase.firestore.Timestamp;
 
-type Props = Omit<
-  Omit<Parameters<typeof SlotsPageContainer>[0], "onCreateSlot">,
-  "onEditSlot"
->;
-
-const Template: React.FC<Props> = ({
+const Template: ComponentStory<typeof SlotsPageContainer> = ({
   onSubscribe,
   onUnsubscribe,
   ...props
@@ -66,22 +62,21 @@ const Template: React.FC<Props> = ({
   );
 };
 
-const noSlotProps = {
+export const NoSlots = Template.bind({});
+NoSlots.args = {
   slots: {
     "2021-01-20": {},
     "2021-01-01": {},
   },
-  currentDate: DateTime.fromISO("2021-01-18"),
 };
 
-export const NoSlots = (): JSX.Element => <Template {...noSlotProps} />;
-
-const oneSlotProps = {
-  ...noSlotProps,
+export const OneSlot = Template.bind({});
+OneSlot.args = {
+  ...NoSlots.args,
   slots: {
     "2021-01-21": {},
     "2021-01-18": {},
-    "2021-01-20": {
+    [DateTime.now().toISODate()]: {
       foo: {
         id: "foo",
         categories: [Category.Agonismo],
@@ -94,11 +89,15 @@ const oneSlotProps = {
   },
 };
 
-export const OneSlot = (): JSX.Element => <Template {...oneSlotProps} />;
-
 const NOTES = Object.values(Notes);
 
-function createSlots(date: DateTime, seed: string) {
+/**
+ * Create dummy slots for storybook view
+ * @param date
+ * @param seed
+ * @returns
+ */
+const createSlots = (date: DateTime, seed: string) => {
   const random = seedrandom(seed);
 
   const slots: Record<string, Record<string, SlotInterface<"id">>> = {};
@@ -128,26 +127,27 @@ function createSlots(date: DateTime, seed: string) {
     });
 
   return slots;
-}
-const manySlotsDate = DateTime.fromISO("2021-01-18");
+};
+const manySlotsDate = DateTime.now();
 
-const manySlotsWithEditProps = {
-  ...noSlotProps,
+console.log("Time now > ", manySlotsDate);
+
+export const ManySlotsWithEdit = Template.bind({});
+ManySlotsWithEdit.args = {
+  ...NoSlots.args,
   slots: createSlots(manySlotsDate, "seed123"),
-  currentDate: manySlotsDate,
-  onDelete: () => alert("deleted"),
-  onCreateSlot: () => alert("created"),
+};
+ManySlotsWithEdit.argTypes = {
+  onDelete: { action: "deleted" },
+  onCreateSlot: { action: "created" },
 };
 
-export const ManySlotsWithEdit = <Template {...manySlotsWithEditProps} />;
-
-const manySlotsWithSubscribeProps = {
-  ...noSlotProps,
+export const ManySlotsWithSubscribe = Template.bind({});
+ManySlotsWithSubscribe.args = {
+  ...NoSlots.args,
   slots: createSlots(manySlotsDate, "seed123"),
-  currentDate: manySlotsDate,
-  onSubscribe: () => alert("subscribed"),
-  onUnsubscribe: () => alert("unsubscribed"),
 };
-export const ManySlotsWithSubscribe = (
-  <Template {...manySlotsWithSubscribeProps} />
-);
+ManySlotsWithSubscribe.argTypes = {
+  onSubscribe: { action: "subscribed" },
+  onUnsubscribe: { action: "unsubscribed" },
+};
