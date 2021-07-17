@@ -1,36 +1,21 @@
 import React from "react";
-import BookingsByDay from "./BookingsByDay";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+
+import BookingsByDay from "@/components/BookingsByDay";
 
 import { Duration, Category, SlotType } from "@/enums/firestore";
 
 export default {
   title: "Bookings by day",
   component: BookingsByDay,
-};
+  argTypes: {
+    markAbsentee: { action: "Absentee marked" },
+  },
+} as ComponentMeta<typeof BookingsByDay>;
 
-export const Empty = (): JSX.Element => (
-  <BookingsByDay bookingDayInfo={[]} markAbsentee={() => {}} />
-);
-
-const oneSlotProps = {
-  bookingDayInfo: [
-    {
-      time: "11:00",
-      categories: [Category.Agonismo],
-      type: SlotType.Ice,
-      id: "foo",
-      durations: [Duration["1.5h"], Duration["2h"]],
-      users: [],
-    },
-  ],
-};
-
-export const OneSlot = (): JSX.Element => (
-  <BookingsByDay {...oneSlotProps} markAbsentee={() => {}} />
-);
-
-export const ManySlots = (): JSX.Element => (
-  <BookingsByDay {...manySlotsProps} markAbsentee={() => {}} />
+/***** Region Setup *****/
+const Template: ComponentStory<typeof BookingsByDay> = (args) => (
+  <BookingsByDay {...args} />
 );
 
 const gus = {
@@ -61,8 +46,35 @@ const jesse = {
   id: "jesse",
   category: Category.Preagonismo,
 };
+/***** End Region Setup *****/
 
-const manySlotsProps = {
+/***** Region Empty *****/
+export const Empty = Template.bind({});
+Empty.args = {
+  bookingDayInfo: [],
+};
+Empty.argTypes = {};
+/***** End Region Empty *****/
+
+/***** Region One Slot *****/
+export const OneSlot = Template.bind({});
+OneSlot.args = {
+  bookingDayInfo: [
+    {
+      time: "11:00",
+      categories: [Category.Agonismo],
+      type: SlotType.Ice,
+      id: "foo",
+      durations: [Duration["1.5h"], Duration["2h"]],
+      users: [],
+    },
+  ],
+};
+/***** End Region One Slot *****/
+
+/***** Region Many Slots *****/
+export const ManySlots = Template.bind({});
+ManySlots.args = {
   bookingDayInfo: [
     {
       time: "11:00",
@@ -125,11 +137,4 @@ const manySlotsProps = {
     },
   ],
 };
-
-const markAbsentee = () => {
-  alert("Absentee marked");
-};
-
-export const ManySlotsWithAbsentee = (): JSX.Element => (
-  <BookingsByDay {...manySlotsProps} markAbsentee={markAbsentee} />
-);
+/***** End Region Many Slots *****/
