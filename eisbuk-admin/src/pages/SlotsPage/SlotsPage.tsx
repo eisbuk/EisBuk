@@ -10,14 +10,13 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import { deleteSlots, createSlots, editSlot } from "@/store/actions/actions";
 
-import { flatten } from "@/utils/helpers";
-import { useTitle } from "@/utils/helpers";
+import { flatten, useTitle } from "@/utils/helpers";
 
 /** @TODO use imported selector */
 const selectSlots = (state: LocalStore) =>
   flatten(state.firestore.ordered.slotsByDay);
 
-const SlotsPage = () => {
+const SlotsPage: React.FC = () => {
   const slots = _.omit(useSelector(selectSlots), "id");
   useTitle("Slots");
 

@@ -6,7 +6,7 @@ export default {
   component: AppbarAdmin,
 };
 
-export const BareAppbar = () => (
+export const BareAppbar = (): JSX.Element => (
   <div>
     <AppbarAdmin />
     <p>The appbar includes a div to pad the next element.</p>

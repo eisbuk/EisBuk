@@ -1,7 +1,6 @@
 import firebase from "firebase";
 
-import { db } from "./settings";
-import { adminDb } from "./settings";
+import { db, adminDb } from "./settings";
 import {
   deleteAll,
   deleteAllCollections,
@@ -34,7 +33,7 @@ it("updates the slots summary on slot creation", async () => {
   });
   // Now check that the aggregate collection has been updated
   const aggregateSlotsQuery = org.collection("slotsByDay").doc("2021-01");
-  var aggregateSlot = await waitForRecord({
+  let aggregateSlot = await waitForRecord({
     record: aggregateSlotsQuery,
     numKeys: 1,
   });
@@ -89,7 +88,7 @@ const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
     // Try to fetch the aggregate slots for the day until
     // we find the newly added one
     async () => {
-      var aggregateSlot = (await record.get()).data();
+      const aggregateSlot = (await record.get()).data();
       if (!aggregateSlot || Object.keys(aggregateSlot).length !== numKeys) {
         return Promise.reject(
           new Error(`The aggregated slot with ${numKeys} keys was not found`)

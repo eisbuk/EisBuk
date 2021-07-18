@@ -22,7 +22,7 @@ import EisbukAvatar from "@/components/users/EisbukAvatar";
 
 import { slotsLabels } from "@/config/appConfig";
 
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //
 type UserBooking = Pick<Customer, "id"> &
   Pick<Customer, "name"> &
   Pick<Customer, "surname"> &
@@ -143,9 +143,9 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
     </Container>
   );
 };
-/***** End Region Main Component *****/
+// ***** End Region Main Component ***** //
 
-/***** Region Local Utils *****/
+// ***** Region Local Utils ***** //
 
 const getPeriods = (bookingDayInfo: BookingDayInfo) =>
   bookingDayInfo.reduce((acc, currEntry) => {
@@ -166,9 +166,9 @@ const splitPeriod = (bookingEntry: BookingEntry): ProcessedSlot[] => {
       .toFormat("HH:mm"),
   }));
 };
-/***** End Region Local Utils *****/
+// ***** End Region Local Utils ***** //
 
-/***** Region Styles *****/
+// ***** Region Styles ***** //
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},
   listHeader: {
@@ -184,6 +184,6 @@ const useStyles = makeStyles((theme: ETheme) => ({
     backgroundColor: (theme.palette as any).absent || grey[500],
   },
 }));
-/***** End Region Styles *****/
+// ***** End Region Styles ***** //
 
 export default BookingsByDay;

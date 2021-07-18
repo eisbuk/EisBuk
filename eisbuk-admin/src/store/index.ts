@@ -1,3 +1,4 @@
+/* eslint-disable import/no-duplicates */
 import "firebase/auth";
 import "firebase/firestore";
 import "firebase/functions";
@@ -39,7 +40,7 @@ if (isDev) {
 
 // react-redux-firebase Configuration
 const rrfConfig = {
-  //userProfile: 'users'
+  // userProfile: 'users'
   useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
   // enableClaims: true // Get custom claims along with the profile
 };

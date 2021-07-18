@@ -59,29 +59,6 @@
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --project-token dcmb4kmorxe"
   },
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "no-unused-vars": [
-        "error"
-      ]
-    },
-    "settings": {
-      "react": {
-        "version": "16.13.1"
-      }
-    },
-    "overrides": [
-      {
-        "files": [
-          "**/*.stories.*"
-        ],
-        "rules": {
-          "import/no-anonymous-default-export": "off"
-        }
-      }
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -114,12 +91,19 @@
     "@types/seedrandom": "^3.0.1",
     "@types/uuid": "^8.3.1",
     "@types/yup": "^0.29.13",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
     "babel-plugin-import": "^1.13.3",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "chromatic": "^5.6.0",
     "customize-cra": "^1.0.0",
     "debugging-aid": "^0.5.3",
+    "eslint": "^7.31.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-unused-imports": "^1.0.1",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.11.0",

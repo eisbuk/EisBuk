@@ -20,7 +20,7 @@ import { useTitle } from "@/utils/helpers";
 const selectCustomers = (state: LocalStore) =>
   state.firestore.ordered.customers;
 
-const CustomersPage = () => {
+const CustomersPage: React.FC = () => {
   const classes = useStyles();
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
   const dispatch = useDispatch();

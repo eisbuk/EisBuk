@@ -41,6 +41,7 @@ const weekCopyPasteSelector = (state: LocalStore) => state.copyPaste.week;
 
 type Props = Omit<Omit<SlotListProps, "enableEdit">, "className">;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const classes = useStyles();
 
@@ -124,7 +125,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             <Badge
               color="secondary"
               variant="dot"
-              invisible={!Boolean(weekToPaste && weekToPaste.slots)}
+              invisible={!(weekToPaste && weekToPaste.slots)}
             >
               <FileCopyIcon />
             </Badge>
@@ -135,7 +136,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             disabled={
               !weekToPaste ||
               !weekToPaste.weekStart || // there's nothing to paste
-              +weekToPaste.weekStart === +currentDate // don't paste over the same week we copied
+              Number(weekToPaste.weekStart) === Number(currentDate) // don't paste over the same week we copied
             }
           >
             <AssignmentIcon />

@@ -13,7 +13,7 @@ export default {
   },
 } as ComponentMeta<typeof BookingsByDay>;
 
-/***** Region Setup *****/
+// ***** Region Setup ***** //
 const Template: ComponentStory<typeof BookingsByDay> = (args) => (
   <BookingsByDay {...args} />
 );
@@ -46,17 +46,17 @@ const jesse = {
   id: "jesse",
   category: Category.Preagonismo,
 };
-/***** End Region Setup *****/
+// ***** End Region Setup ***** //
 
-/***** Region Empty *****/
+// ***** Region Empty ***** //
 export const Empty = Template.bind({});
 Empty.args = {
   bookingDayInfo: [],
 };
 Empty.argTypes = {};
-/***** End Region Empty *****/
+// ***** End Region Empty ***** //
 
-/***** Region One Slot *****/
+// ***** Region One Slot ***** //
 export const OneSlot = Template.bind({});
 OneSlot.args = {
   bookingDayInfo: [
@@ -70,9 +70,9 @@ OneSlot.args = {
     },
   ],
 };
-/***** End Region One Slot *****/
+// ***** End Region One Slot ***** //
 
-/***** Region Many Slots *****/
+// ***** Region Many Slots ***** //
 export const ManySlots = Template.bind({});
 ManySlots.args = {
   bookingDayInfo: [
@@ -137,4 +137,4 @@ ManySlots.args = {
     },
   ],
 };
-/***** End Region Many Slots *****/
+// ***** End Region Many Slots ***** //

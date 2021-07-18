@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const SignInSide = () => {
+const SignInSide: React.FC = () => {
   const classes = useStyles();
 
   const loginImageStyle = {
@@ -75,7 +75,7 @@ const SignInSide = () => {
         recaptchaParameters: {
           type: "image", // 'audio'
           size: "invisible", // 'invisible' or 'compact'
-          badge: "bottomleft", //' bottomright' or 'inline' applies to invisible.
+          badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
         },
       },
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,

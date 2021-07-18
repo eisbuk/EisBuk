@@ -32,7 +32,7 @@ import { ORGANIZATION } from "@/config/envInfo";
 import { calendarDaySelector } from "@/store/selectors";
 import { queryUserAdminStatus } from "@/store/actions/actions";
 
-/***** Region App Components *****/
+// ***** Region App Components ***** //
 /**
  * General components to be returned from the AppContent, regardless of auth status
  * @returns
@@ -50,9 +50,9 @@ function AppComponents() {
     </Switch>
   );
 }
-/***** End Region App Components *****/
+// ***** End Region App Components ***** //
 
-/***** Region Authenticated Only *****/
+// ***** Region Authenticated Only ***** //
 /**
  * Components wrapper for authenticated user
  * Does additional Redux - Firestore connect for data available only to authenticated users
@@ -88,11 +88,11 @@ function AppContentAuthenticated() {
       doc: ORGANIZATION,
     },
   ]);
-  return AppComponents();
+  return <AppComponents />;
 }
-/***** End Region Authenticated Only *****/
+// ***** End Region Authenticated Only ***** //
 
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //
 /**
  * All of the App content (including routes) wrapper.
  * On change of auth credentials (and initial render)
@@ -101,7 +101,7 @@ function AppContentAuthenticated() {
  * if not admin, returns `AppComponents` directly
  * @returns wrapper or components directly, both resulting if further rendering `AppComponents`
  */
-function AppContent() {
+const AppContent: React.FC = () => {
   const auth = useSelector((state: LocalStore) => state.firebase.auth);
   const amIAdmin = useSelector(
     (state: LocalStore) => state.authInfoEisbuk.amIAdmin
@@ -125,7 +125,7 @@ function AppContent() {
     // unauthorized. Only render subcomponents
     return <AppComponents />;
   }
-}
+};
 
 export default AppContent;
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //

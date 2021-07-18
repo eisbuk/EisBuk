@@ -22,7 +22,7 @@ export default {
   },
 };
 
-/***** Region Setup *****/
+// ***** Region Setup ***** //
 const PRNG = seedrandom("foobar");
 
 /** @Ivan : I know the principle of seed from Go, but it seems unnecessary here */
@@ -62,9 +62,9 @@ const Template: ComponentStory<typeof CustomerList> = (
 const dummyCustomers = Array(100)
   .fill(null)
   .map(() => createDemoCustomer()) as Customer[];
-/***** End Region Setup *****/
+// ***** End Region Setup ***** //
 
-/***** Region Stories *****/
+// ***** Region Stories ***** //
 export const Empty = Template.bind({});
 Empty.args = { customers: [] };
 
@@ -76,4 +76,4 @@ Ten.args = { customers: dummyCustomers.slice(0, 10) };
 
 export const AHundred = Template.bind({});
 AHundred.args = { customers: dummyCustomers };
-/***** End Region Stories *****/
+// ***** End Region Stories ***** //

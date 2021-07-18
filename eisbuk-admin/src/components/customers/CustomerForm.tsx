@@ -12,7 +12,7 @@ import {
   FormControlLabel,
   SvgIconTypeMap,
 } from "@material-ui/core";
-import { RadioGroup } from "formik-material-ui";
+import { RadioGroup, TextField } from "formik-material-ui";
 import {
   AccountCircle,
   Email,
@@ -22,7 +22,6 @@ import {
   Payment,
 } from "@material-ui/icons";
 import { Formik, Form, FastField, FieldConfig } from "formik";
-import { TextField } from "formik-material-ui";
 import * as Yup from "yup";
 
 import { Customer } from "@/types/firestore";
@@ -32,7 +31,7 @@ import { currentTheme } from "@/themes";
 import { slotsLabelsLists } from "@/config/appConfig";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 
-/***** Region Yup Validation *****/
+// ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
   name: Yup.string().required("Richiesto"),
   surname: Yup.string().required("Richiesto"),
@@ -43,9 +42,9 @@ const CustomerValidation = Yup.object().shape({
   category: Yup.string().required("Scegli la categoria"),
   subscriptionNumber: Yup.number(),
 });
-/***** End Region Yup Validation *****/
+// ***** End Region Yup Validation ***** //
 
-/***** Reigion Main Component *****/
+// ***** Reigion Main Component ***** //
 interface Props {
   open: boolean;
   handleClose?: () => void;
@@ -77,13 +76,13 @@ const CustomerForm: React.FC<Props> = ({
           ...customer,
         }}
         validationSchema={CustomerValidation}
-        onSubmit={(values, { setSubmitting, resetForm }) => {
+        onSubmit={(values, { setSubmitting }) => {
           updateCustomer(values as Customer);
           setSubmitting(false);
           handleClose();
         }}
       >
-        {({ submitForm, isSubmitting, errors }) => (
+        {({ isSubmitting, errors }) => (
           <Form autoComplete="off">
             <DialogContent>
               <input
@@ -175,11 +174,11 @@ const CustomerForm: React.FC<Props> = ({
     </Dialog>
   );
 };
-/***** End Reigion Main Component *****/
+// ***** End Reigion Main Component ***** //
 
-/***** Region Custom Field *****/
+// ***** Region Custom Field ***** //
 interface MyFieldProps extends FieldConfig<string> {
-  Icon?: OverridableComponent<SvgIconTypeMap<{}, "svg">>;
+  Icon?: OverridableComponent<SvgIconTypeMap<unknown, "svg">>;
   row?: unknown /** @TODO clear this up */;
   label?: string;
   className?: string;
@@ -222,9 +221,9 @@ const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
     />
   );
 };
-/***** End Region Custom Field *****/
+// ***** End Region Custom Field ***** //
 
-/***** Region Styles *****/
+// ***** Region Styles ***** //
 type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -238,6 +237,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(1.5),
   },
 }));
-/***** End Region Styles *****/
+// ***** End Region Styles ***** //
 
 export default CustomerForm;

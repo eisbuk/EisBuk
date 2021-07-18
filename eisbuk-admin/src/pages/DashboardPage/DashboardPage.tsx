@@ -13,7 +13,7 @@ import { bookingDayInfoSelector, calendarDaySelector } from "@/store/selectors";
 
 import { useTitle } from "@/utils/helpers";
 
-const DashboardPage = () => {
+const DashboardPage: React.FC = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
   useTitle("Prenotazioni");

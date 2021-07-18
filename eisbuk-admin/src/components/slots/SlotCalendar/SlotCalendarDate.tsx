@@ -3,9 +3,7 @@ import { makeStyles } from "@material-ui/styles";
 import { Box, Typography } from "@material-ui/core";
 import { DateTime } from "luxon";
 
-import { ETheme } from "@/themes";
-
-const useStyles = makeStyles((theme: ETheme) => ({
+const useStyles = makeStyles(() => ({
   weekDay: {
     textTransform: "capitalize",
     fontWeight: 300,

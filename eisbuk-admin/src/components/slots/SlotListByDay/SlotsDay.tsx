@@ -175,7 +175,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
                   selected={checkSelected(slot.id)}
                   data={slot}
                   key={slot.id}
-                  deleted={!!deletedSlots[slot.id]}
+                  deleted={Boolean(deletedSlots[slot.id])}
                   onDelete={extendedOnDelete}
                   {...{
                     ...(enableEdit && { setCreateEditDialog }),

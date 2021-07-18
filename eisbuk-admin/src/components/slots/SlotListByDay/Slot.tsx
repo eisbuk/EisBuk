@@ -28,7 +28,7 @@ import { SlotOperation } from "@/types/slotOperations";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 import ProjectIcon from "@/components/global/ProjectIcons";
 
-import { FBToLuxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/data/dtutils";
 
 import { slotsLabels } from "@/config/appConfig";
 
@@ -65,7 +65,7 @@ const Slot: React.FC<SlotProps> = ({
 }) => {
   const classes = useStyles();
 
-  const date = FBToLuxon(data.date);
+  const date = fb2Luxon(data.date);
 
   const showSubscribe = Boolean(onUnsubscribe && onSubscribe);
   const isSubscribed = Boolean(subscribedSlots[data.id]);

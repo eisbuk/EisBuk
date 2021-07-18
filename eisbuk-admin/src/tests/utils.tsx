@@ -23,22 +23,24 @@ export const retry: RetryHelper = async (func, maxTries, delay) => {
   // until it resolves
   let reTry = 0;
   return new Promise((resolve, reject) => {
-    function callFunc() {
+    const callFunc = async (): Promise<void> => {
       try {
+        /** @TEMP below, rewrite this to be more readable */
+        // eslint-disable-next-line promise/catch-or-return
         func().then(resolve, (reason) => {
           if (++reTry >= maxTries) {
             reject(reason);
           } else {
             setTimeout(
               callFunc,
-              typeof delay == "function" ? (delay as any)(retry) : delay
+              typeof delay === "function" ? (delay as any)(retry) : delay
             );
           }
         });
       } catch (e) {
         reject(e);
       }
-    }
+    };
     callFunc();
   });
 };
@@ -52,7 +54,7 @@ export const retry: RetryHelper = async (func, maxTries, delay) => {
  *
  * @param email
  */
-export const loginWithUser = async (email: string) => {
+export const loginWithUser = async (email: string): Promise<void> => {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, "secret");
   } catch (e) {
@@ -64,10 +66,11 @@ export const loginWithUser = async (email: string) => {
  * Test util: deletes default organization ("default") from emulated firestore db
  * @returns
  */
-export const createDefaultOrg = () => {
+export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
   const orgDefinition = {
     admins: ["test@example.com"],
   };
+
   return adminDb.collection("organizations").doc("default").set(orgDefinition);
 };
 
@@ -75,8 +78,8 @@ export const createDefaultOrg = () => {
  * Test util: loggs in with default user's email ("test@example.com")
  * @returns
  */
-export const loginDefaultUser = function () {
-  return exports.loginWithUser("test@example.com");
+export const loginDefaultUser = (): Promise<void> => {
+  return loginWithUser("test@example.com");
 };
 
 /**
@@ -84,8 +87,11 @@ export const loginDefaultUser = function () {
  * @param collections to delete
  * @returns
  */
-export const deleteAll = async (collections: string[]) => {
+export const deleteAll = async (
+  collections: string[]
+): Promise<FirebaseFirestore.WriteResult[]> => {
   const org = adminDb.collection("organizations").doc("default");
+
   return deleteAllCollections(org, collections);
 };
 
@@ -100,10 +106,11 @@ export const deleteAllCollections = async (
     | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
     | FirebaseFirestore.Firestore,
   collections: string[]
-) => {
+): Promise<FirebaseFirestore.WriteResult[]> => {
   const toDelete: Promise<FirebaseFirestore.WriteResult>[] = [];
 
   for (const coll of collections) {
+    // eslint-disable-next-line no-await-in-loop
     const existing = await db.collection(coll).get();
     existing.forEach((el) => {
       toDelete.push(el.ref.delete());
@@ -118,7 +125,9 @@ export const deleteAllCollections = async (
  * @param phoneNumber
  * @returns
  */
-export const loginWithPhone = async (phoneNumber: string) => {
+export const loginWithPhone = async (
+  phoneNumber: string
+): Promise<firebase.auth.UserCredential> => {
   // Turn off phone auth app verification.
   firebase.auth().settings.appVerificationDisabledForTesting = true;
 
@@ -134,7 +143,7 @@ export const loginWithPhone = async (phoneNumber: string) => {
   const response = await axios.get(
     "http://localhost:9098/emulator/v1/projects/eisbuk/verificationCodes"
   );
-  var verificationCode = "foo";
+  let verificationCode = "foo";
   for (let i = 0; i < response.data.verificationCodes.length; i++) {
     const element = response.data.verificationCodes[i];
     if (element.phoneNumber === phoneNumber) {

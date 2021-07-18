@@ -1,4 +1,4 @@
-//region collections names
+// region collections names
 export enum Collection {
   Organizations = "organizations",
 }
@@ -14,9 +14,9 @@ export enum OrgSubCollection {
 export enum BookingSubCollection {
   SubscribedSlots = "subscribedSlots",
 }
-//endregion
+// endregion
 
-//region slots
+// region slots
 export enum Notes {
   Null = "",
   Pista1 = "pista1",
@@ -42,4 +42,4 @@ export enum Duration {
   "1.5h" = "90",
   "2h" = "120",
 }
-//endregion
+// endregion

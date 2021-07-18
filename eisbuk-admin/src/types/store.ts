@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { FirebaseReducer } from "react-redux-firebase";
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
@@ -15,20 +16,20 @@ import {
   Slot,
 } from "@/types/firestore";
 
-/**** Region Store Types *****/
+// ***** Region Store Types ***** //
 export type Dispatch = typeof store.dispatch;
 export type GetState = typeof store.getState;
-/**** End Region Store Types *****/
+// ***** End Region Store Types ***** //
 
-/**** Region App *****/
+// ***** Region App ***** //
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
   newSlotTime: Timestamp | null;
 }
-/**** End Region App *****/
+// ***** End Region App ***** //
 
-/**** Region Copy Paste *****/
+// ***** Region Copy Paste ***** //
 export interface SlotDay {
   [slotId: string]: Slot<"id">;
 }
@@ -42,9 +43,9 @@ export interface CopyPasteState {
   day: SlotDay | null;
   week: SlotWeek | null;
 }
-/**** End Region Copy Paste *****/
+// ***** End Region Copy Paste ***** //
 
-/**** Region Notification *****/
+// ***** Region Notification ***** //
 export interface Notification {
   key?: SnackbarKey;
   message: string;
@@ -55,14 +56,16 @@ export interface Notification {
   };
   dismissed?: boolean;
 }
-/**** End Region Notifiaction *****/
+// ***** End Region Notifiaction ***** //
 
-/**** Region Firebase Reducer *****/
+// ***** Region Firebase Reducer ***** //
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ProfileType {}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Schema {}
-/**** End Region Firebase Reducer *****/
+// ***** End Region Firebase Reducer ***** //
 
-/***** Region Firestore *****/
+// ****** Region Firestore ***** //
 interface FirestoreRedux {
   status: {
     requesting: FirestoreStatusEntry<boolean>;
@@ -81,17 +84,17 @@ interface FirestoreRedux {
   };
   queries: {};
 }
-/***** Region Firestore *****/
+// ****** Region Firestore ***** //
 
-/***** Region Auth Info *****/
+// ****** Region Auth Info ***** //
 export interface AuthInfoEisbuk {
   amIAdmin: boolean;
   myUserId: string | null;
   uid: string | null;
 }
-/***** End Region Auth Info *****/
+// ****** End Region Auth Info ***** //
 
-/***** Region Full Store *****/
+// ****** Region Full Store ***** //
 export interface LocalStore {
   firebase: FirebaseReducer.Reducer<ProfileType, Schema>;
   firestore: FirestoreRedux;
@@ -99,10 +102,10 @@ export interface LocalStore {
   copyPaste: CopyPasteState;
   authInfoEisbuk: AuthInfoEisbuk;
 }
-/***** End Region Full Store *****/
+// ****** End Region Full Store ***** //
 
-/***** Region Other *****/
+// ****** Region Other ***** //
 export type CustomerInStore = Pick<Customer, "id"> &
   Pick<Customer, "name"> &
   Pick<Customer, "surname">;
-/***** End Region Other *****/
+// ****** End Region Other ***** //
