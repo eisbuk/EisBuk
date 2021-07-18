@@ -31,5 +31,6 @@ repos:
           - eslint-plugin-react
           - eslint-plugin-unused-imports
           - eslint
+          - typescript
           - "@typescript-eslint/eslint-plugin"
           - "@typescript-eslint/parser"
