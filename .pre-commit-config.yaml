@@ -19,6 +19,7 @@ repos:
       - id: eslint
         additional_dependencies:
           - babel-eslint
+          - eslint-config-google
           - eslint-config-react-app
           - eslint-loader
           - eslint-plugin-flowtype

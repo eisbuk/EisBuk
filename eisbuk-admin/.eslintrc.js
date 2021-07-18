@@ -1,3 +1,4 @@
+// this is a quick hack for weird eslint errors related to tsconfig.json
 const getTsProject = () => {
   let root = __dirname;
   if (!root.includes("eisbuk-admin")) root += "/eisbuk-admin";
