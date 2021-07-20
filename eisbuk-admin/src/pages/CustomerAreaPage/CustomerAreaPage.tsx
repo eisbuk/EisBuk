@@ -8,6 +8,7 @@ import {
   PersonPin as PersonPinIcon,
   EventNote as EventNoteIcon,
 } from "@material-ui/icons";
+import { useTranslation } from "react-i18next";
 
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
@@ -88,6 +89,8 @@ export const CustomerAreaPage = () => {
       ? `${customerData[0].name} ${customerData[0].surname}`
       : "";
 
+  const { t } = useTranslation();
+
   return (
     <>
       {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
@@ -104,8 +107,14 @@ export const CustomerAreaPage = () => {
                   indicatorColor="primary"
                   centered
                 >
-                  <LinkTab label="Prenota" icon={<EventNoteIcon />} />
-                  <LinkTab label="Calendario" icon={<PersonPinIcon />} />
+                  <LinkTab
+                    label={t("CustomerArea.Book")}
+                    icon={<EventNoteIcon />}
+                  />
+                  <LinkTab
+                    label={t("CustomerArea.Calendar")}
+                    icon={<PersonPinIcon />}
+                  />
                 </Tabs>
               </Container>
             </AppBar>

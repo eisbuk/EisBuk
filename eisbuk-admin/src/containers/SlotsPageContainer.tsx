@@ -6,6 +6,7 @@ import {
 } from "@material-ui/icons";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
@@ -82,22 +83,27 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const doDelete = () => {
     dispatch(deleteSlots(slotsArray));
   };
+  const { t } = useTranslation();
+
   const extraButtons = (
     <>
       {enableEdit && (
         <>
           {showWeekDeleteConfirm ? (
             <ConfirmDialog
-              title={`Sei sicuro di voler rimuovere tutti gli slot (${
+              title={`${t("SlotsPageContainer.RemoveAllConfirmation")} (${
                 slotsArray.length
-              }) della settimana del ${currentDate.toFormat("d MMMM", {
-                locale: "it-IT",
-              })}?`}
+              }) ${t("SlotsPageContainer.OfTheWeek")} ${currentDate.toFormat(
+                "d MMMM",
+                {
+                  locale: "it-IT",
+                }
+              )}?`}
               open={showWeekDeleteConfirm}
               setOpen={setShowWeekDeleteConfirm}
               onConfirm={doDelete}
             >
-              Questa azione non è reversibile
+              {t("SlotsPageContainer.NonReversible")}
             </ConfirmDialog>
           ) : null}
 

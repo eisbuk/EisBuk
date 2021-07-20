@@ -2,6 +2,8 @@ import React from "react";
 import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
+
 import {
   Box,
   Button,
@@ -50,16 +52,19 @@ const defaultValues = {
   notes: "",
 };
 
-const SlotValidation = Yup.object().shape({
-  time: Yup.string().required("Manca l'ora"),
-  categories: Yup.array()
-    .of(Yup.string().min(1))
-    .required("Scegli almeno una categoria"),
-  type: Yup.string().required("Scegli il tipo di allenamento"),
-  durations: Yup.array()
-    .of(Yup.number().min(1))
-    .required("Devi scegliere almeno una durata"),
-});
+const SlotValidation = () => {
+  const { t } = useTranslation();
+  return Yup.object().shape({
+    time: Yup.string().required(t("SlotValidations.Time")),
+    categories: Yup.array()
+      .of(Yup.string().min(1))
+      .required(t("SlotValidations.Category")),
+    type: Yup.string().required(t("SlotValidations.Training")),
+    durations: Yup.array()
+      .of(Yup.number().min(1))
+      .required(t("SlotValidations.Duration")),
+  });
+};
 /***** End Region Form Setup *****/
 
 /***** Region Time Picker Field *****/
@@ -152,12 +157,13 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   if (lastTime != null) {
     defaultValues["time"] = fs2luxon(lastTime).toFormat("HH:mm");
   }
+  const { t } = useTranslation();
 
   return (
     <Dialog open={open} onClose={onClose}>
       <Formik
         initialValues={{ ...defaultValues, ...slotToEdit }}
-        validationSchema={SlotValidation}
+        validationSchema={() => SlotValidation()}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           const parsedTime = DateTime.fromISO(isoDate + "T" + values.time);
 
@@ -208,7 +214,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                       <Field
                         name="time"
                         as={TimePickerField}
-                        label="Ora di inizio"
+                        label={t("SlotForm.StartTime")}
                         className={classes.field}
                       />
                       <ErrorMessage name="time" />
@@ -223,7 +229,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                   <Field
                     component={RadioGroup}
                     name="type"
-                    label="Tipo"
+                    label={t("SlotForm.Type")}
                     row
                     className={classes.field}
                   >
@@ -257,7 +263,9 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                   }
                   color="primary"
                 >
-                  {slotToEdit ? "Modifica Slot" : "Crea Slot"}
+                  {slotToEdit
+                    ? t("SlotForm.EditSlot")
+                    : t("SlotForm.CreateSlot")}
                 </Button>
               </DialogActions>
             </Form>

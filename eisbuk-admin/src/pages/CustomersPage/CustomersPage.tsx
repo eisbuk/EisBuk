@@ -4,6 +4,7 @@ import { isLoaded, isEmpty } from "react-redux-firebase";
 import { Add as AddIcon } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 import { Container, Fab, Grid, LinearProgress } from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 
 import { LocalStore } from "@/types/store";
 import { ETheme } from "@/themes";
@@ -21,10 +22,12 @@ const selectCustomers = (state: LocalStore) =>
   state.firestore.ordered.customers;
 
 const CustomersPage = () => {
+  const { t } = useTranslation();
+
   const classes = useStyles();
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
   const dispatch = useDispatch();
-  useTitle("Atleti");
+  useTitle(t("CustomersPage.Athlete"));
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
@@ -55,7 +58,7 @@ const CustomersPage = () => {
           }
           <Fab
             color="primary"
-            aria-label="Aggiungi atleta"
+            aria-label={t("CustomersPage.AddAthlete")}
             className={classes.fab}
             onClick={toggleAddAthleteDialog}
           >

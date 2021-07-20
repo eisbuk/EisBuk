@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Button, Paper, Typography } from "@material-ui/core";
 import _ from "lodash";
+import { useTranslation } from "react-i18next";
 
 import { LocalStore } from "@/types/store";
 
@@ -59,21 +60,23 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   };
 
   const logOut = () => dispatch(signOut());
+  const { t } = useTranslation();
 
   return (
     <Paper style={style}>
       <Typography component="h1" variant="h2">
-        Non sei autorizzato ad accedere.
+        {t("Authorization.NotAuthorized")}
       </Typography>
       <Typography component="h2" variant="h4">
-        Questo spazio è riservato agli amministratori
+        {t("Authorization.AdminsOnly")}
       </Typography>
       <Typography component="h2" variant="h5">
-        Hai effettuato l'accesso con: <b>{auth.email || auth.phoneNumber}</b>
+        {t("Authorization.LoggedInWith")}{" "}
+        <b>{auth.email || auth.phoneNumber}</b>
       </Typography>
 
       <Button variant="contained" onClick={logOut}>
-        Esci e riprova con un altro utente
+        {t("Authorization.TryAgain")}
       </Button>
     </Paper>
   );
