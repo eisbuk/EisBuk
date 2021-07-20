@@ -1,0 +1,76 @@
+{
+    "AppbarAdmin": {
+      "Attendance": "Presenze",
+      "Athlete": "Atleti",
+      "Reservations": "Prenotazioni"
+    },
+    "Slots": {
+      "Amateur": "Preagonismo",
+
+        "DeleteConfirmation": "Sei sicuro di voler rimuovere lo slot del",
+        "All": "alle",
+        "Irrevirsible": "Questa azione non è reversibile",
+        "Slot": ""
+    },
+    "SlotValidations":{
+        "Time": "Manca l'ora",
+        "Category":"Scegli almeno una categoria",
+        "Training": "Scegli il tipo di allenamento",
+        "Duration": "Devi scegliere almeno una durata",
+        "Required": "Richiesto"
+    },
+    "SlotForm":{
+        "StartTime": "Ora di inizio",
+        "Type": "Tipo",
+        "EditSlot": "Modifica Slot",
+        "CreateSlot": "Crea Slot"
+
+    },
+    "CustomerForm": {
+        "Name": "Nome",
+        "Surname": "Cognome",
+        "Phone": "Telefono",
+        "DateOfBirth":"Data di nascita",
+        "Category": "Categoria",
+        "MedicalCertificate": "Scadenza Cert. Medico",
+        "CardNumber": "Numero Tessera",
+        "Canel": "Annulla",
+        "Save": "Salva"
+    },
+    "CustomerValidations":{
+        "Email": "Inserisci una email valida",
+        "Category": "Scegli la categoria",
+        "Required": "Richiesto"
+    },
+    "Authorization":{
+        "NotAuthorized": "Non sei autorizzato ad accedere.",
+        "AdminsOnly": "Questo spazio è riservato agli amministratori",
+        "LoggedInWith": "Hai effettuato l'accesso con: ",
+        "TryAgain": "Esci e riprova con un altro utente"
+    },
+    "CustomerArea":{
+        "Book":"Prenota",
+        "Calendar":"Calendario"
+    },
+
+    "CustomersPage":{
+        "Athlete": "Athlete",
+        "AddAthlete": "AddAthlete"
+    },
+    "DashboardPage":{
+        "Reservations":"Reservations"
+
+    },
+    "SlotsPageContainer":{
+        "RemoveAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
+        "OfTheWeek": "della settimana del ",
+        "NonReversible": "Questa azione non è reversibile"
+
+    },
+    "AppConfig":{
+        "Course": "Course",
+        "Dance": "Dance",
+        "Amateur": "Amateur",
+        "Professional": "Professional"
+    }
+  }
