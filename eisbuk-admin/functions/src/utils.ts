@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import admin from "firebase-admin";
+import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
 
 type Auth = CallableContext["auth"];
@@ -82,7 +83,7 @@ const throwUnauth = (): never => {
  * more than enough for our use case
  * @param fsdate date object in firebase form
  */
-export const fs2luxon = (fsdate: any): DateTime => {
+export const fs2luxon = (fsdate: Timestamp): DateTime => {
   /** @TODO check fs date interface */
   return DateTime.fromMillis(fsdate.seconds * 1000);
 };

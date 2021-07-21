@@ -34,6 +34,6 @@ const plugins = [
   ],
 ];
 
-const presets = ["@babel/preset-env", "@babel/preset-react"];
+const presets = ["@babel/env", "@babel/react", "@babel/typescript"];
 
 module.exports = { plugins, presets };

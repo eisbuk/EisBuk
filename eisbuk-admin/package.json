@@ -1,4 +1,8 @@
 {
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
+  },
   "name": "eisbuk-admin",
   "version": "0.1.0",
   "private": true,
@@ -12,19 +16,16 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
-    "@types/jest": "^24.0.0",
-    "@types/node": "^12.0.0",
-    "@types/react": "^16.9.0",
-    "@types/react-dom": "^16.9.0",
     "clsx": "^1.1.1",
-    "firebase": "^8.2.3",
-    "firebase-tools": "^9.1.1",
+    "firebase": "8.3.1",
+    "firebase-tools": "9.8.0",
     "formik": "^2.1.5",
     "formik-material-ui": "^3.0.1",
     "luxon": "^1.25.0",
     "moment": "^2.27.0",
     "notistack": "^1.0.0",
     "react": "^16.13.1",
+    "react-app-rewire-alias": "^1.0.3",
     "react-dom": "^16.13.1",
     "react-firebaseui": "^4.1.0",
     "react-redux": "^7.2.1",
@@ -36,15 +37,15 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-firestore": "^0.13.0",
     "redux-thunk": "^2.3.0",
-    "typescript": "~3.7.2",
+    "typescript": "^4.3.5",
     "unix-timestamp": "^0.2.0",
     "uuid": "^8.3.0",
     "yup": "^0.29.3"
   },
   "scripts": {
-    "start": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ; react-app-rewired start",
-    "start:eisbuk": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ; EISBUK_SITE=eisbuk.web.app react-app-rewired start --reset-cache",
-    "start:igorice": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.js ;EISBUK_SITE=igorice.web.app react-app-rewired start --reset-cache",
+    "start": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.ts ; react-app-rewired start",
+    "start:eisbuk": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.ts; EISBUK_SITE=eisbuk.web.app react-app-rewired start --reset-cache",
+    "start:igorice": "sed -e \"s/Date this was last changed:.*/Date this was last changed: $(date)/\" -i src/config/envInfoEnv.ts; EISBUK_SITE=igorice.web.app react-app-rewired start --reset-cache",
     "emulators:inspect": "npm --prefix \"./functions\" run build && exec firebase emulators:start --project eisbuk --inspect-functions 9229",
     "emulators:start": "npm --prefix \"./functions\" run build && exec firebase emulators:start --project eisbuk",
     "build": "react-app-rewired build",
@@ -57,19 +58,6 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --project-token dcmb4kmorxe"
-  },
-  "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "no-unused-vars": [
-        "error"
-      ]
-    },
-    "settings": {
-      "react": {
-        "version": "16.13.1"
-      }
-    }
   },
   "browserslist": {
     "production": [
@@ -85,18 +73,37 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.12.10",
-    "@storybook/addon-actions": "^6.1.14",
-    "@storybook/addon-essentials": "^6.1.14",
-    "@storybook/addon-links": "^6.1.14",
-    "@storybook/node-logger": "^6.1.14",
-    "@storybook/preset-create-react-app": "^3.1.5",
-    "@storybook/react": "^6.1.14",
+    "@babel/preset-typescript": "^7.14.5",
+    "@storybook/addon-actions": "^6.3.4",
+    "@storybook/addon-essentials": "^6.3.4",
+    "@storybook/addon-links": "^6.3.4",
+    "@storybook/cli": "^6.3.4",
+    "@storybook/node-logger": "^6.3.4",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.4",
+    "@types/jest": "^26.0.23",
+    "@types/lodash": "^4.14.170",
+    "@types/luxon": "^1.27.0",
+    "@types/node": "^12.0.0",
+    "@types/react": "^17.0.13",
+    "@types/react-dom": "^17.0.8",
+    "@types/react-router-dom": "^5.1.7",
+    "@types/seedrandom": "^3.0.1",
+    "@types/uuid": "^8.3.1",
+    "@types/yup": "^0.29.13",
+    "@typescript-eslint/eslint-plugin": "^4.28.3",
     "babel-plugin-import": "^1.13.3",
     "babel-plugin-transform-inline-environment-variables": "^0.4.3",
     "chromatic": "^5.6.0",
     "customize-cra": "^1.0.0",
     "debugging-aid": "^0.5.3",
+    "eslint": "^7.31.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-import-resolver-typescript": "^2.4.0",
+    "eslint-plugin-import": "^2.23.4",
     "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-unused-imports": "^1.0.1",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.11.0",
@@ -107,5 +114,10 @@
     "seedrandom": "^3.0.5",
     "storybook-addon-material-ui": "^0.9.0-alpha.22",
     "storybook-react-router": "^1.0.8"
+  },
+  "jest": {
+    "moduleNameMapper": {
+      "@/(.*)": "<rootDir>/src/$1"
+    }
   }
 }
