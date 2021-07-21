@@ -95,6 +95,7 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
   }));
 
   const classes = useStyles();
+
   return (
     <Box className={classes.root}>
       <IconButton color="primary" onClick={decrease}>
@@ -179,10 +180,10 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
             });
           } else {
             await createSlot({
-              type: values.type,
-              categories: values.categories,
-              durations: values.durations,
-              notes: values.notes,
+              type,
+              categories,
+              durations,
+              notes,
               date: Timestamp.fromDate(parsedTime.toJSDate()),
             });
           }

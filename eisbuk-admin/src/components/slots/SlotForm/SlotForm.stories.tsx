@@ -21,14 +21,18 @@ const baseProps = {
   isoDate: "2021-01-15",
 };
 
-const Template: ComponentStory<typeof SlotForm> = (
-  args: Omit<Omit<Parameters<typeof SlotForm>[0], "open">, "isoDate">
-) => <SlotForm {...baseProps} {...args} />;
+const Template: ComponentStory<typeof SlotForm> = (args) => (
+  <SlotForm {...args} />
+);
 
 export const EmptyForm = Template.bind({});
+EmptyForm.args = {
+  ...baseProps,
+};
 
 export const FormWithValues = Template.bind({});
 FormWithValues.args = {
+  ...baseProps,
   slotToEdit: {
     id: "random_id",
     date: firebase.firestore.Timestamp.now(),

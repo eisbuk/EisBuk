@@ -69,7 +69,7 @@ const CustomerForm: React.FC<Props> = ({
           surname: "",
           email: "",
           phone: "",
-          birth: "",
+          birthday: "",
           category: slotsLabelsLists[0],
           certificateExpiration: "",
           subscriptionNumber: "",
@@ -115,7 +115,7 @@ const CustomerForm: React.FC<Props> = ({
                 Icon={Phone}
               />
               <MyField
-                name="birth"
+                name="birthday"
                 type="date"
                 label="Data di nascita"
                 views={["year", "month", "date"]}

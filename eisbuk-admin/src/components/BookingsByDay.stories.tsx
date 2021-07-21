@@ -8,9 +8,6 @@ import { Duration, Category, SlotType } from "@/enums/firestore";
 export default {
   title: "Bookings by day",
   component: BookingsByDay,
-  argTypes: {
-    markAbsentee: { action: "Absentee marked" },
-  },
 } as ComponentMeta<typeof BookingsByDay>;
 
 // ***** Region Setup ***** //
@@ -53,7 +50,6 @@ export const Empty = Template.bind({});
 Empty.args = {
   bookingDayInfo: [],
 };
-Empty.argTypes = {};
 // ***** End Region Empty ***** //
 
 // ***** Region One Slot ***** //
@@ -138,3 +134,11 @@ ManySlots.args = {
   ],
 };
 // ***** End Region Many Slots ***** //
+
+// ***** Region Many Slots With Absentee ***** //
+export const ManySlotsWithAbsentee = Template.bind({});
+ManySlotsWithAbsentee.args = ManySlots.args;
+ManySlotsWithAbsentee.argTypes = {
+  markAbsentee: { action: "Absentee marked" },
+};
+// ***** End Region Many Slots With Absentee ***** //

@@ -26,8 +26,8 @@ import ConfirmDialog from "@/components/global/ConfirmDialog";
 // ***** Region Main Component ***** //
 interface Props {
   customers: Customer[];
-  onDeleteCustomer?: (customer: Customer) => void;
-  updateCustomer?: (customer: Customer) => void;
+  onDeleteCustomer: (customer: Customer) => void;
+  updateCustomer: (customer: Customer) => void;
 }
 
 const CustomerList: React.FC<Props> = ({
@@ -52,7 +52,7 @@ const CustomerList: React.FC<Props> = ({
       searchRegex.test(customer.name) || searchRegex.test(customer.surname)
   );
   const history = useHistory();
-
+  console.log("On delete", onDeleteCustomer);
   return (
     <>
       <SearchField setSearchString={setSearchString}></SearchField>
@@ -69,7 +69,7 @@ const CustomerList: React.FC<Props> = ({
           </TableHead>
           <TableBody>
             {customersToShow.map((customer) => {
-              const deleteButton = onDeleteCustomer ? (
+              const deleteButton = (
                 <IconButton
                   aria-label="delete"
                   color="primary"
@@ -80,8 +80,8 @@ const CustomerList: React.FC<Props> = ({
                 >
                   <DeleteIcon />
                 </IconButton>
-              ) : null;
-              const editButton = updateCustomer ? (
+              );
+              const editButton = (
                 <IconButton
                   aria-label="update"
                   color="primary"
@@ -89,7 +89,7 @@ const CustomerList: React.FC<Props> = ({
                 >
                   <EditIcon />
                 </IconButton>
-              ) : null;
+              );
               const bookingsButton = customer.secret_key && (
                 <IconButton
                   color="primary"

@@ -18,11 +18,13 @@ export default {
   component: SlotsPageContainer,
 };
 
+// create seed for pseudo-random values in order to get random values,
+// but keep them between builds (mainly for chromatic diff)
 const PRNG = seedrandom("foobar");
 
-/* Alter Math.random to refer to seedrandom's PRNG. */
+// Alter Math.random to refer to seedrandom's PRNG.
 Math.random = PRNG;
-/* Assign a new Lodash context to a separate variable AFTER altering Math.random. */
+// Assign a new Lodash context to a separate variable AFTER altering Math.random.
 const lodash = _.runInContext();
 
 const Timestamp = firebase.firestore.Timestamp;
@@ -51,6 +53,7 @@ const Template: ComponentStory<typeof SlotsPageContainer> = ({
         onUnsubscribe(slot);
       }
     : () => {};
+
   return (
     <div>
       <SlotsPageContainer
@@ -128,9 +131,8 @@ const createSlots = (date: DateTime, seed: string) => {
 
   return slots;
 };
-const manySlotsDate = DateTime.now();
 
-console.log("Time now > ", manySlotsDate);
+const manySlotsDate = DateTime.now();
 
 export const ManySlotsWithEdit = Template.bind({});
 ManySlotsWithEdit.args = {
