@@ -4,7 +4,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import CustomerForm from "@/components/customers/CustomerForm";
 
 export default {
-  title: "Customer form",
+  title: "Customer forms",
   component: CustomerForm,
   argTypes: {
     updateCustomer: { action: "Customer update" },
