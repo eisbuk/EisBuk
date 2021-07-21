@@ -23,13 +23,14 @@ export default {
 };
 
 // ***** Region Setup ***** //
+// We're using this seed to get pseudo-random results
+// but to keep them consistent across builds (commits) for chromatic diff
 const PRNG = seedrandom("foobar");
 
-/** @Ivan : I know the principle of seed from Go, but it seems unnecessary here */
-/* Alter Math.random to refer to seedrandom's PRNG. */
+// Alter Math.random to refer to seedrandom's PRNG. */
 Math.random = PRNG;
 
-/* Assign a new Lodash context to a separate variable AFTER altering Math.random. */
+// Assign a new Lodash context to a separate variable AFTER altering Math.random. */
 const lodash = _.runInContext();
 
 const CATEGORIES = lodash.omit(
