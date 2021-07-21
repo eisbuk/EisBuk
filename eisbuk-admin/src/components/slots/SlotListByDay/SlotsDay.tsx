@@ -33,6 +33,7 @@ import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBooki
 import Slot, { SlotProps } from "./Slot";
 
 import { shiftSlotsDay } from "@/data/slotutils";
+import { __isStorybook__ } from "@/lib/constants";
 
 const luxon = new LuxonUtils({ locale: "C" });
 
@@ -124,6 +125,8 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   );
 
   const canChange =
+    // override checks in case of storybook
+    __isStorybook__ ||
     (isLoaded(auth) && !isEmpty(auth)) ||
     luxonDay.millisecond > DateTime.local().endOf("month").millisecond;
 

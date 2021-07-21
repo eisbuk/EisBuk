@@ -18,6 +18,12 @@ import SlotsPageContainer from "@/containers/SlotsPageContainer";
 export default {
   title: "Slots Page Container",
   component: SlotsPageContainer,
+  argTypes: {
+    onDelete: { action: "deleted" },
+    onCreateSlot: { action: "created" },
+    onSubscribe: { action: "subscribed" },
+    onUnsubscribe: { action: "unsubscribed" },
+  },
 } as ComponentMeta<typeof SlotsPageContainer>;
 
 // create seed for pseudo-random values in order to get random values,
@@ -136,22 +142,8 @@ const createSlots = (date: DateTime, seed: string) => {
 
 const manySlotsDate = DateTime.fromISO(__storybookDate__!);
 
-export const ManySlotsWithEdit = Template.bind({});
-ManySlotsWithEdit.args = {
+export const ManySlots = Template.bind({});
+ManySlots.args = {
   ...NoSlots.args,
   slots: createSlots(manySlotsDate, "seed123"),
-};
-ManySlotsWithEdit.argTypes = {
-  onDelete: { action: "deleted" },
-  onCreateSlot: { action: "created" },
-};
-
-export const ManySlotsWithSubscribe = Template.bind({});
-ManySlotsWithSubscribe.args = {
-  ...NoSlots.args,
-  slots: createSlots(manySlotsDate, "seed123"),
-};
-ManySlotsWithSubscribe.argTypes = {
-  onSubscribe: { action: "subscribed" },
-  onUnsubscribe: { action: "unsubscribed" },
 };
