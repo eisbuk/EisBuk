@@ -3,7 +3,7 @@ import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "@/enums/firestore";
 
-/***** Region Wrap Organization *****/
+// ***** Region Wrap Organization ***** //
 type EnumSafeQuerySetting = Omit<ReduxFirestoreQuerySetting, "collection"> & {
   collection: OrgSubCollection;
 };
@@ -26,4 +26,4 @@ export const wrapOrganization: WrapOrganization = (toWrap) => {
     subcollections: [{ ...toWrap }],
   };
 };
-/***** End Region Wrap Organization *****/
+// ***** End Region Wrap Organization ***** //

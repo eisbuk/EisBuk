@@ -19,6 +19,8 @@ repos:
       - id: eslint
         additional_dependencies:
           - babel-eslint
+          - eslint-import-resolver-typescript
+          - eslint-config-google
           - eslint-config-react-app
           - eslint-loader
           - eslint-plugin-flowtype
@@ -29,3 +31,6 @@ repos:
           - eslint-plugin-react
           - eslint-plugin-unused-imports
           - eslint
+          - typescript
+          - "@typescript-eslint/eslint-plugin"
+          - "@typescript-eslint/parser"

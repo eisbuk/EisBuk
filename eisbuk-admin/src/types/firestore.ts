@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 import { DocumentData, Timestamp } from "@google-cloud/firestore";
 
 import {
@@ -10,16 +11,16 @@ import {
   Collection,
 } from "@/enums/firestore";
 
-/***** Region Orgainzation *****/
+// ***** Region Orgainzation ***** //
 /**
  * Metadata record included in each organization (other than nested collections)
  */
 interface OrganizationMeta {
   admins: string[];
 }
-/***** End Region Organization *****/
+// ***** End Region Organization ***** //
 
-/***** Region Slots *****/
+// ***** Region Slots ***** //
 /**
  * Base slot structure
  */
@@ -61,9 +62,9 @@ export interface SlotsByDay {
     };
   };
 }
-/***** End Region Slots *****/
+// ***** End Region Slots ***** //
 
-/***** Region Customers *****/
+// ***** Region Customers ***** //
 /**
  * User entry in the Firestore DB
  */
@@ -76,11 +77,12 @@ export interface Customer {
   phone: string;
   category: Category;
   certificateExpiration?: string;
+  // eslint-disable-next-line camelcase
   secret_key: string;
 }
-/***** End Region Customers *****/
+// ***** End Region Customers ***** //
 
-/***** Region Bookings *****/
+// ***** Region Bookings ***** //
 /**
  * A subset of Customer data used for organization of bookings for customer
  * Appears as meta data under organization -> bookings -> customerId
@@ -88,6 +90,7 @@ export interface Customer {
 export type BookingsMeta = Pick<Customer, "name"> &
   Pick<Customer, "surname"> &
   Pick<Customer, "category"> & {
+    // eslint-disable-next-line camelcase
     customer_id: string;
   };
 
@@ -108,7 +111,7 @@ interface BookingsByDay {
     };
   };
 }
-/***** End Region Bookings *****/
+// ***** End Region Bookings ***** //
 
 /**
  * Full firestore database schema as inferred from test data
@@ -134,7 +137,7 @@ export interface EFirestoreSchema {
   };
 }
 
-/**** Region  *****/
+// ***** Region  ***** //
 type FirestoreStatusKey =
   | Exclude<OrgSubCollection, "slots">
   | BookingSubCollection

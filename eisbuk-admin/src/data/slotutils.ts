@@ -1,9 +1,9 @@
-import { FBToLuxon, fromISO, luxonToFB } from "./dtutils";
+import { fb2Luxon, fromISO, luxonToFB } from "./dtutils";
 import { DateTime } from "luxon";
 
 import { Slot } from "@/types/firestore";
 
-/***** Region Shift Slots Day *****/
+// ***** Region Shift Slots Day ***** //
 interface ShiftSlotsDay {
   <S extends Slot | Slot<"id">>(slots: S[], newDay: string): S[];
 }
@@ -16,7 +16,7 @@ interface ShiftSlotsDay {
  */
 export const shiftSlotsDay: ShiftSlotsDay = (slots, newDay) =>
   slots.map((slot) => {
-    const { hour, minute } = FBToLuxon(slot.date).toObject();
+    const { hour, minute } = fb2Luxon(slot.date).toObject();
     const baseDay = fromISO(newDay).toObject();
 
     const newDate = DateTime.fromObject({
@@ -27,9 +27,9 @@ export const shiftSlotsDay: ShiftSlotsDay = (slots, newDay) =>
 
     return { ...slot, date: luxonToFB(newDate) };
   });
-/***** End Region Shift Slots Day *****/
+// ***** End Region Shift Slots Day ***** //
 
-/***** Region Shift Slots Week *****/
+// ***** Region Shift Slots Week ***** //
 interface ShiftSlotsWeek {
   <S extends Slot | Slot<"id">>(
     slots: S[],
@@ -60,8 +60,8 @@ export const shiftSlotsWeek: ShiftSlotsWeek = (
   }
 
   return slots.map((slot) => {
-    const dt = FBToLuxon(slot.date);
+    const dt = fb2Luxon(slot.date);
     return { ...slot, date: luxonToFB(dt.plus({ days: difference })) };
   });
 };
-/***** End Region Shift Slots Week *****/
+// ***** End Region Shift Slots Week ***** //

@@ -23,17 +23,17 @@ import CustomerForm from "@/components/customers/CustomerForm";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //
 interface Props {
   customers: Customer[];
-  onDeleteCustomer?: (customer: Customer) => void;
-  updateCustomer?: (customer: Customer) => void;
+  onDeleteCustomer: (customer: Customer) => void;
+  updateCustomer: (customer: Customer) => void;
 }
 
 const CustomerList: React.FC<Props> = ({
   customers,
-  onDeleteCustomer = () => {},
-  updateCustomer = () => {},
+  onDeleteCustomer,
+  updateCustomer,
 }) => {
   const [searchString, setSearchString] = useState("");
   const [
@@ -52,7 +52,7 @@ const CustomerList: React.FC<Props> = ({
       searchRegex.test(customer.name) || searchRegex.test(customer.surname)
   );
   const history = useHistory();
-
+  console.log("On delete", onDeleteCustomer);
   return (
     <>
       <SearchField setSearchString={setSearchString}></SearchField>
@@ -69,7 +69,7 @@ const CustomerList: React.FC<Props> = ({
           </TableHead>
           <TableBody>
             {customersToShow.map((customer) => {
-              const deleteButton = Boolean(onDeleteCustomer) ? (
+              const deleteButton = (
                 <IconButton
                   aria-label="delete"
                   color="primary"
@@ -80,8 +80,8 @@ const CustomerList: React.FC<Props> = ({
                 >
                   <DeleteIcon />
                 </IconButton>
-              ) : null;
-              const editButton = Boolean(updateCustomer) ? (
+              );
+              const editButton = (
                 <IconButton
                   aria-label="update"
                   color="primary"
@@ -89,7 +89,7 @@ const CustomerList: React.FC<Props> = ({
                 >
                   <EditIcon />
                 </IconButton>
-              ) : null;
+              );
               const bookingsButton = customer.secret_key && (
                 <IconButton
                   color="primary"
@@ -138,7 +138,7 @@ const CustomerList: React.FC<Props> = ({
           }
           open={confirmDeleteDialog}
           setOpen={setConfirmDeleteDialog}
-          onConfirm={() => onDeleteCustomer(customerCurrentlyDeleted)}
+          onConfirm={() => onDeleteCustomer!(customerCurrentlyDeleted)}
         >
           Questa azione non è reversibile, l'utente verrà cancellato
           definitivamente.
@@ -147,9 +147,9 @@ const CustomerList: React.FC<Props> = ({
     </>
   );
 };
-/***** End Region Main Component *****/
+// ***** End Region Main Component ***** //
 
-/***** Region Search Field *****/
+// ***** Region Search Field ***** //
 const SearchField: React.FC<{ setSearchString: React.Dispatch<string> }> = ({
   setSearchString,
 }) => {
@@ -159,6 +159,6 @@ const SearchField: React.FC<{ setSearchString: React.Dispatch<string> }> = ({
 
   return <TextField label="Search" type="search" onChange={handleChange} />;
 };
-/***** EndRegion Search Field *****/
+// ***** EndRegion Search Field ***** //
 
 export default CustomerList;

@@ -1,8 +1,9 @@
+/* eslint-disable import/no-duplicates */
 import { deleteAllCollections, loginWithPhone } from "./utils";
+import "./settings";
 import { adminDb } from "./settings";
 import firebase from "firebase/app";
 import "firebase/functions";
-import "./settings";
 
 beforeAll(async () => {
   await deleteAllCollections(adminDb, ["organizations"]);
@@ -58,7 +59,7 @@ it("Denies access to users not belonging to the organization", async (done) => {
     })
   ).rejects.toThrow();
 
-  //...and with the right one
+  // ...and with the right one
   await firebase.auth().signOut();
   await loginWithUser("test@example.com");
   await firebase.app().functions().httpsCallable("createTestData")({
@@ -74,7 +75,7 @@ it("Denies access to users not belonging to the organization", async (done) => {
   done();
 });
 
-const loginWithUser = async function (email: string) {
+const loginWithUser = async (email: string): Promise<void> => {
   try {
     await firebase.auth().createUserWithEmailAndPassword(email, "secret");
   } catch (e) {

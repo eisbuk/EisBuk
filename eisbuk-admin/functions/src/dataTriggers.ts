@@ -143,7 +143,7 @@ export const aggregateBookings = functions
       ? bookingData.duration
       : admin.firestore.FieldValue.delete();
 
-    if (!change.after.exists) console.log("deleting");
+    if (!change.after.exists) functions.logger.log("deleting");
 
     return db
       .collection("organizations")

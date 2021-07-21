@@ -14,7 +14,7 @@ import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhou
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
-/***** Region Background Images *****/
+// ***** Region Background Images ***** //
 const backgrounds = [
   figureSkatingSilhouetteCouple,
   figureSkatingSilhouetteSkirt,
@@ -22,9 +22,9 @@ const backgrounds = [
   girlIceSkating,
   iceSkatingSilhouette,
 ];
-/***** End Region Background Images *****/
+// ***** End Region Background Images ***** //
 
-/***** Region Styles *****/
+// ***** Region Styles ***** //
 /** @TODO refactor to use className instead of inline stlye */
 const baseStyle = {
   backgroundRepeat: "no-repeat",
@@ -33,7 +33,7 @@ const baseStyle = {
   backgroundPosition: "center",
   height: "100vh",
 };
-/***** End Region Styles *****/
+// ***** End Region Styles ***** //
 
 interface Props {
   backgroundIndex?: number;

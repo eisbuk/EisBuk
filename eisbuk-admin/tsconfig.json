@@ -2,7 +2,7 @@
   "extends": "./tsconfig.paths.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "src",
+    "rootDir": "",
     "outDir": "dist",
     "module": "esnext",
     "target": "es5",
@@ -40,6 +40,7 @@
     "src/setupTests.ts"
   ],
   "include": [
-    "src"
+    "src",
+    "./.eslintrc.js"
   ]
 }

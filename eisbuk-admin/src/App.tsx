@@ -16,7 +16,7 @@ import Notifier from "@/utils/Notifier";
 
 import { currentTheme } from "@/themes";
 
-function App() {
+const App: React.FC = () => {
   return (
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>
@@ -34,6 +34,6 @@ function App() {
       </ReactReduxFirebaseProvider>
     </Provider>
   );
-}
+};
 
 export default App;

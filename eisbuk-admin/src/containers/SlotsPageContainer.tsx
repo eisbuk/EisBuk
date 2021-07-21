@@ -42,6 +42,7 @@ const weekCopyPasteSelector = (state: LocalStore) => state.copyPaste.week;
 
 type Props = Omit<Omit<SlotListProps, "enableEdit">, "className">;
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const classes = useStyles();
 
@@ -57,7 +58,12 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
     .fill(null)
     .map((_, i) => currentDate.plus({ days: i }).toISODate());
 
-  const slotsToDisplay = _.pick(slots, datesToDisplay);
+  const slotsToDisplay = {
+    // create empty days
+    ..._.zipObject(datesToDisplay, [{}, {}, {}, {}, {}, {}, {}]),
+    // if slots available, overwrite empty days
+    ..._.pick(slots, datesToDisplay),
+  };
 
   const slotsArray = _.values(
     _.values(slotsToDisplay).reduce((acc, el) => ({ ...acc, ...el }), {})
@@ -125,7 +131,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             <Badge
               color="secondary"
               variant="dot"
-              invisible={!Boolean(weekToPaste && weekToPaste.slots)}
+              invisible={!(weekToPaste && weekToPaste.slots)}
             >
               <FileCopyIcon />
             </Badge>
@@ -136,7 +142,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             disabled={
               !weekToPaste ||
               !weekToPaste.weekStart || // there's nothing to paste
-              +weekToPaste.weekStart === +currentDate // don't paste over the same week we copied
+              Number(weekToPaste.weekStart) === Number(currentDate) // don't paste over the same week we copied
             }
           >
             <AssignmentIcon />

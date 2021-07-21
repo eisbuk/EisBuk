@@ -2,14 +2,14 @@ import { useEffect } from "react";
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
 
-/**** Region Simple Helpers *****/
+// ***** Region Simple Helpers ***** //
 /**
  * Returns initials from provided name and last name
  * @param name
  * @param surname
  * @returns
  */
-export const getInitials = (name: string, surname: string) =>
+export const getInitials = (name: string, surname: string): string =>
   `${name[0]}${surname[0]}`;
 
 interface CheckIndex {
@@ -25,7 +25,7 @@ interface CheckIndex {
  */
 export const onlyUnique: CheckIndex = (value, index, origArray) =>
   origArray.indexOf(value) === index;
-/**** End Region Simple Helpers *****/
+// ***** End Region Simple Helpers ***** //
 
 /**
  * Convert a firestore date to a luxon date
@@ -34,10 +34,10 @@ export const onlyUnique: CheckIndex = (value, index, origArray) =>
  * @param fsdate
  * @returns
  */
-export const fs2luxon = (fsdate: Timestamp) =>
+export const fs2luxon = (fsdate: Timestamp): DateTime =>
   DateTime.fromMillis(fsdate.seconds * 1000);
 
-/***** Region To Flatten *****/
+// ***** Region To Flatten ***** //
 interface ToFlatten {
   (toFlatten: Record<string, any>[]): Record<string, any>;
 }
@@ -54,9 +54,9 @@ export const flatten: ToFlatten = (toFlatten) =>
   !toFlatten
     ? {}
     : toFlatten.reduce((partial, el) => ({ ...partial, ...el }), {});
-/***** End Region To Flatten *****/
+// ***** End Region To Flatten ***** //
 
-/***** Region Get Month String *****/
+// ***** Region Get Month String ***** //
 interface GetMonthString {
   (startDate: DateTime, offset: number): unknown;
 }
@@ -75,15 +75,15 @@ export const getMonthStr: GetMonthString = (startDate, offset) =>
     .plus({ months: offset })
     .toISODate()
     .substring(0, 7);
-/***** End Region Get Month String *****/
+// ***** End Region Get Month String ***** //
 
 /** @TODO this should be in a separate file at least, since it is a simple hook, rather then a function */
-/**** Region Use Title *****/
+// ***** Region Use Title ***** //
 /**
  * A hook used to set the (html) title of the document
  * @param title
  */
-export function useTitle(title: string) {
+export const useTitle = (title: string): void => {
   useEffect(() => {
     const prevTitle = document.title;
     document.title = title;
@@ -91,5 +91,5 @@ export function useTitle(title: string) {
       document.title = prevTitle;
     };
   }, [title]);
-}
-/**** End Region Use Title *****/
+};
+// ***** End Region Use Title ***** //

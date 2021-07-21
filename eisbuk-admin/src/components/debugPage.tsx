@@ -8,18 +8,16 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import { useTitle } from "@/utils/helpers";
 
-import { functionsZone } from "@/config/envInfo";
-import { ORGANIZATION } from "@/config/envInfo";
+import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
 function invokeFunction(functionName: CloudFunction) {
-  return function () {
-    firebase
+  return async () => {
+    const res = await firebase
       .app()
       .functions(functionsZone)
-      .httpsCallable(functionName)({ organization: ORGANIZATION })
-      .then(function (response) {
-        console.log(response.data);
-      });
+      .httpsCallable(functionName)({ organization: ORGANIZATION });
+
+    console.log(res.data);
   };
 }
 
@@ -29,7 +27,7 @@ function createAdminTestUsers() {
   firebase.auth().createUserWithEmailAndPassword("test@eisbuk.it", "test00");
 }
 
-const DebugPage = () => {
+const DebugPage: React.FC = () => {
   useTitle("Debug");
   return (
     <Container maxWidth="sm">

@@ -49,13 +49,13 @@ it("Applies secret_key when a customer record is added and keeps customer data u
 it("Populates bookings when a customer record is added or changed", async (done) => {
   const orgsColl = adminDb.collection("organizations").doc("default");
   const customersColl = orgsColl.collection("customers");
-  const test_customer = {
+  const testCustomer = {
     name: "Jane",
     surname: "Doe",
     id: "baz",
     category: "corso",
   };
-  await customersColl.doc(test_customer.id).set(test_customer);
+  await customersColl.doc(testCustomer.id).set(testCustomer);
 
   const fromDbBaz = await waitForCondition({
     collection: "customers",
@@ -69,9 +69,7 @@ it("Populates bookings when a customer record is added or changed", async (done)
   expect(bookingsInfo?.surname).toEqual("Doe");
   expect(bookingsInfo?.category).toEqual("corso");
 
-  await customersColl
-    .doc("baz")
-    .set({ ...test_customer, category: "agonismo" });
+  await customersColl.doc("baz").set({ ...testCustomer, category: "agonismo" });
   await waitForCondition({
     collection: "customers",
     id: "baz",

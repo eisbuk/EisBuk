@@ -18,7 +18,7 @@ import { wrapOrganization } from "@/utils/firestore";
 import { LocalStore } from "@/types/store";
 import { OrgSubCollection } from "@/enums/firestore";
 
-/***** Region Link Tab *****/
+// ***** Region Link Tab ***** //
 type TabProps = Parameters<typeof Tab>[0];
 type LinkTabProps = Omit<Omit<TabProps, "component">, "onClick">;
 
@@ -32,9 +32,9 @@ const LinkTab: React.FC<LinkTabProps> = (props) => {
     />
   );
 };
-/***** End Region Link Tab *****/
+// ***** End Region Link Tab ***** //
 
-/***** Region Tab Panel *****/
+// ***** Region Tab Panel ***** //
 interface TabPanelProps extends React.HTMLAttributes<HTMLDivElement> {
   value: number;
   index: number;
@@ -57,13 +57,13 @@ const TabPanel: React.FC<TabPanelProps> = ({
     </div>
   );
 };
-/***** End Region Tab Panel *****/
+// ***** End Region Tab Panel ***** //
 
 /** @TODO make these imported selectors */
 const selectAuth = (state: LocalStore) => state.firebase.auth;
 const selectBookings = (state: LocalStore) => state.firestore.ordered.bookings;
 
-export const CustomerAreaPage = () => {
+export const CustomerAreaPage: React.FC = () => {
   const classes = useStyles();
 
   const { secretKey } = useParams() as { secretKey: string };
@@ -80,7 +80,7 @@ export const CustomerAreaPage = () => {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleTabChange = (e: React.ChangeEvent<{}>, newValue: any) => {
+  const handleTabChange = (e: React.ChangeEvent<unknown>, newValue: any) => {
     setActiveTab(newValue);
   };
 

@@ -1,3 +1,4 @@
+/* eslint-disable import/namespace */
 import React from "react";
 import { Avatar, Badge } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -43,8 +44,8 @@ const avatarColors = Object.keys(colorsDef);
 
 const getColor = ({ name, surname }: { name: string; surname: string }) => {
   const str = name + surname;
-  var h = 0;
-  for (var i = 0; i < str.length; i++) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
     h = str.charCodeAt(i) + ((h << 5) - h);
   }
   h = h & h;
@@ -53,7 +54,7 @@ const getColor = ({ name, surname }: { name: string; surname: string }) => {
   return avatarColors[h];
 };
 
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //
 interface Props {
   name: string;
   surname: string;
@@ -78,16 +79,18 @@ export const EisbukAvatar: React.FC<Props> = ({
     ).days;
     if (daysToExpiration < 0) {
       // Certificate is expired
-      wrapAvatar = (el) => (
+      wrapAvatar = (children) => (
         <Badge color="error" badgeContent="!">
-          {el}
+          {children}
         </Badge>
       );
     } else if (daysToExpiration < 20) {
       // Certificate is about to expire
-      wrapAvatar = (el) => <Badge color="primary">{el}</Badge>;
+      wrapAvatar = (children) => <Badge color="primary">{children}</Badge>;
     }
-  } catch (e) {}
+  } catch (err) {
+    console.error(err);
+  }
 
   let variant: Parameters<typeof Avatar>[0]["variant"];
   let additionalClass = classes[getColor({ name, surname })];

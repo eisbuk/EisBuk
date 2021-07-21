@@ -18,13 +18,13 @@ interface AuthAction {
 export const authReducer = (
   state: AuthInfoEisbuk = initState,
   { type, payload }: AuthAction
-) => {
+): AuthInfoEisbuk => {
   switch (type) {
     case Action.IsAdminReceived:
       return {
         ...state,
         ...payload,
-        myUserId: payload?.uid,
+        myUserId: payload?.uid || null,
       };
     case constants.actionTypes.LOGOUT: // Reset state on logout
       return initState;

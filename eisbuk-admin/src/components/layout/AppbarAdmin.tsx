@@ -35,7 +35,7 @@ import { signOut } from "@/store/actions/actions";
 import { currentTheme, organizationInfo } from "@/themes";
 import { PrivateRoutes } from "@/enums/routes";
 
-const AppbarAdmin = () => {
+const AppbarAdmin: React.FC = () => {
   const classes = useStyles();
   const location = useLocation();
 

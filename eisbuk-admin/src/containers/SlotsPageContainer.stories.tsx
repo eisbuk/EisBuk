@@ -10,28 +10,26 @@ import { Slot as SlotInterface } from "@/types/firestore";
 
 import { Category, Duration, Notes, SlotType } from "@/enums/firestore";
 
-import SlotsPageContainer from "./SlotsPageContainer";
+import SlotsPageContainer from "@/containers/SlotsPageContainer";
+import { ComponentStory } from "@storybook/react";
 
 export default {
-  title: "Weekly slots view",
+  title: "Slots Page Container",
   component: SlotsPageContainer,
 };
 
+// create seed for pseudo-random values in order to get random values,
+// but keep them between builds (mainly for chromatic diff)
 const PRNG = seedrandom("foobar");
 
-/* Alter Math.random to refer to seedrandom's PRNG. */
+// Alter Math.random to refer to seedrandom's PRNG.
 Math.random = PRNG;
-/* Assign a new Lodash context to a separate variable AFTER altering Math.random. */
+// Assign a new Lodash context to a separate variable AFTER altering Math.random.
 const lodash = _.runInContext();
 
 const Timestamp = firebase.firestore.Timestamp;
 
-type Props = Omit<
-  Omit<Parameters<typeof SlotsPageContainer>[0], "onCreateSlot">,
-  "onEditSlot"
->;
-
-const Template: React.FC<Props> = ({
+const Template: ComponentStory<typeof SlotsPageContainer> = ({
   onSubscribe,
   onUnsubscribe,
   ...props
@@ -55,6 +53,7 @@ const Template: React.FC<Props> = ({
         onUnsubscribe(slot);
       }
     : () => {};
+
   return (
     <div>
       <SlotsPageContainer
@@ -66,22 +65,21 @@ const Template: React.FC<Props> = ({
   );
 };
 
-const noSlotProps = {
+export const NoSlots = Template.bind({});
+NoSlots.args = {
   slots: {
     "2021-01-20": {},
     "2021-01-01": {},
   },
-  currentDate: DateTime.fromISO("2021-01-18"),
 };
 
-export const NoSlots = (): JSX.Element => <Template {...noSlotProps} />;
-
-const oneSlotProps = {
-  ...noSlotProps,
+export const OneSlot = Template.bind({});
+OneSlot.args = {
+  ...NoSlots.args,
   slots: {
     "2021-01-21": {},
     "2021-01-18": {},
-    "2021-01-20": {
+    [DateTime.now().toISODate()]: {
       foo: {
         id: "foo",
         categories: [Category.Agonismo],
@@ -94,11 +92,15 @@ const oneSlotProps = {
   },
 };
 
-export const OneSlot = (): JSX.Element => <Template {...oneSlotProps} />;
-
 const NOTES = Object.values(Notes);
 
-function createSlots(date: DateTime, seed: string) {
+/**
+ * Create dummy slots for storybook view
+ * @param date
+ * @param seed
+ * @returns
+ */
+const createSlots = (date: DateTime, seed: string) => {
   const random = seedrandom(seed);
 
   const slots: Record<string, Record<string, SlotInterface<"id">>> = {};
@@ -128,26 +130,26 @@ function createSlots(date: DateTime, seed: string) {
     });
 
   return slots;
-}
-const manySlotsDate = DateTime.fromISO("2021-01-18");
-
-const manySlotsWithEditProps = {
-  ...noSlotProps,
-  slots: createSlots(manySlotsDate, "seed123"),
-  currentDate: manySlotsDate,
-  onDelete: () => alert("deleted"),
-  onCreateSlot: () => alert("created"),
 };
 
-export const ManySlotsWithEdit = <Template {...manySlotsWithEditProps} />;
+const manySlotsDate = DateTime.now();
 
-const manySlotsWithSubscribeProps = {
-  ...noSlotProps,
+export const ManySlotsWithEdit = Template.bind({});
+ManySlotsWithEdit.args = {
+  ...NoSlots.args,
   slots: createSlots(manySlotsDate, "seed123"),
-  currentDate: manySlotsDate,
-  onSubscribe: () => alert("subscribed"),
-  onUnsubscribe: () => alert("unsubscribed"),
 };
-export const ManySlotsWithSubscribe = (
-  <Template {...manySlotsWithSubscribeProps} />
-);
+ManySlotsWithEdit.argTypes = {
+  onDelete: { action: "deleted" },
+  onCreateSlot: { action: "created" },
+};
+
+export const ManySlotsWithSubscribe = Template.bind({});
+ManySlotsWithSubscribe.args = {
+  ...NoSlots.args,
+  slots: createSlots(manySlotsDate, "seed123"),
+};
+ManySlotsWithSubscribe.argTypes = {
+  onSubscribe: { action: "subscribed" },
+  onUnsubscribe: { action: "unsubscribed" },
+};

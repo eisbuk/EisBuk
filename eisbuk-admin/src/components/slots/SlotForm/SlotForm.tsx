@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 
 import {
   Box,
@@ -43,7 +44,7 @@ import { fs2luxon } from "@/utils/helpers";
 
 const Timestamp = firebase.firestore.Timestamp;
 
-/***** Region Form Setup *****/
+// ***** Region Form Setup ***** //
 const defaultValues = {
   time: "08:00",
   durations: [Duration["1h"]],
@@ -52,22 +53,20 @@ const defaultValues = {
   notes: "",
 };
 
-const SlotValidation = () => {
-  const { t } = useTranslation();
-  return Yup.object().shape({
-    time: Yup.string().required(t("SlotValidations.Time")),
-    categories: Yup.array()
-      .of(Yup.string().min(1))
-      .required(t("SlotValidations.Category")),
-    type: Yup.string().required(t("SlotValidations.Training")),
-    durations: Yup.array()
-      .of(Yup.number().min(1))
-      .required(t("SlotValidations.Duration")),
-  });
-};
+const SlotValidation = Yup.object().shape({
+  time: Yup.string().required(i18n.t("SlotValidations.Time")),
+  categories: Yup.array()
+    .of(Yup.string().min(1))
+    .required(i18n.t("SlotValidations.Category")),
+  type: Yup.string().required(i18n.t("SlotValidations.Training")),
+  durations: Yup.array()
+    .of(Yup.number().min(1))
+    .required(i18n.t("SlotValidations.Duration")),
+});
+
 /***** End Region Form Setup *****/
 
-/***** Region Time Picker Field *****/
+// ***** Region Time Picker Field ***** //
 type TimePickerProps = Omit<Omit<TextFieldProps, "name">, "value"> & {
   name: string;
   value: string;
@@ -100,6 +99,7 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
   }));
 
   const classes = useStyles();
+
   return (
     <Box className={classes.root}>
       <IconButton color="primary" onClick={decrease}>
@@ -112,9 +112,9 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
     </Box>
   );
 };
-/***** End Region Time Picker Field *****/
+// ***** End Region Time Picker Field ***** //
 
-/***** Region Main Component *****/
+// ***** Region Main Component ***** //
 type FormikProps = Parameters<typeof Formik>[0];
 
 /**
@@ -141,6 +141,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   isoDate,
   open,
   onClose = () => {},
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onOpen = () => {},
   slotToEdit,
   ...props
@@ -154,7 +155,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
 
   const parsedSlotEditDate = slotToEdit ? fs2luxon(slotToEdit.date) : undefined;
 
-  if (lastTime != null) {
+  if (lastTime !== null) {
     defaultValues["time"] = fs2luxon(lastTime).toFormat("HH:mm");
   }
   const { t } = useTranslation();
@@ -163,7 +164,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
     <Dialog open={open} onClose={onClose}>
       <Formik
         initialValues={{ ...defaultValues, ...slotToEdit }}
-        validationSchema={() => SlotValidation()}
+        validationSchema={SlotValidation}
         onSubmit={async (values, { setSubmitting, resetForm }) => {
           const parsedTime = DateTime.fromISO(isoDate + "T" + values.time);
 
@@ -184,10 +185,10 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
             });
           } else {
             await createSlot({
-              type: values.type,
-              categories: values.categories,
-              durations: values.durations,
-              notes: values.notes,
+              type,
+              categories,
+              durations,
+              notes,
               date: Timestamp.fromDate(parsedTime.toJSDate()),
             });
           }
@@ -275,9 +276,9 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
     </Dialog>
   );
 };
-/***** End Region Main Component *****/
+// ***** End Region Main Component ***** //
 
-/***** Region Create Radio Buttons *****/
+// ***** Region Create Radio Buttons ***** //
 /**
  * Create redio buttons for form (used for SlotTypea in this case)
  * @param values
@@ -287,9 +288,9 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
   values.map(({ id, label }) => (
     <FormControlLabel key={id} value={id} label={label} control={<Radio />} />
   ));
-/***** End Region Create Radio Buttons *****/
+// ***** End Region Create Radio Buttons ***** //
 
-/***** Region Get Checkboxes *****/
+// ***** Region Get Checkboxes ***** //
 interface GetCheckBoxes {
   <N extends keyof Omit<SlotsLabelList, "types">>(
     name: N,
@@ -312,9 +313,9 @@ const getCheckBoxes: GetCheckBoxes = (name, values) =>
       label={label}
     />
   ));
-/***** End Region Get Checkboxes *****/
+// ***** End Region Get Checkboxes ***** //
 
-/***** Region My Checkbox *****/
+// ***** Region My Checkbox ***** //
 interface CheckboxProps {
   name: string;
   value: string;
@@ -337,9 +338,9 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
     />
   );
 };
-/***** End Region My Checkbox *****/
+// ***** End Region My Checkbox ***** //
 
-/***** Region Styles *****/
+// ***** Region Styles ***** //
 const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: theme.spacing(1),
@@ -350,6 +351,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
 }));
-/***** End Region Styles *****/
+// ***** End Region Styles ***** //
 
 export default SlotForm;

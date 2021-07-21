@@ -23,6 +23,7 @@ const SlotListByDay: React.FC<SlotListProps> = ({
   onCreateSlot,
   onEditSlot,
   className,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   children,
   ...props
 }) => {

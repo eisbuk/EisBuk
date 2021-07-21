@@ -11,7 +11,7 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { FBToLuxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/data/dtutils";
 
 interface Props {
   data: {
@@ -26,7 +26,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
   const classes = useStyles();
 
   const slotLabel = slotsLabels.types[data.type];
-  const date = FBToLuxon(data.date);
+  const date = fb2Luxon(data.date);
 
   return (
     <Card variant="outlined" className={classes.root}>
@@ -129,7 +129,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
   );
 };
 
-/***** Region Styles *****/
+// ***** Region Styles ***** //
 type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -143,7 +143,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     flexDirection: "row",
     padding: 0,
     "&:last-child": {
-      //Fix for Material-UI defaulting this to 24
+      // Fix for Material-UI defaulting this to 24
       paddingBottom: 0,
     },
   },
@@ -197,6 +197,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   deleteButton: {},
 }));
-/***** End Region Styles *****/
+// ***** End Region Styles ***** //
 
 export default CustomerAreaBookingCard;

@@ -23,7 +23,7 @@ export interface AppActionInterface {
 const appReducer = (
   state: AppState = defaultState,
   action: AppActionInterface
-) => {
+): AppState => {
   switch (action.type) {
     case Action.EnqueueSnackbar:
       return {

@@ -61,7 +61,7 @@ it("Copies over booking when created", async (done) => {
   done();
 });
 
-/***** Region Wait For Booking With Condition *****/
+// ***** Region Wait For Booking With Condition ***** //
 interface WaitForBookingWithCondition {
   (
     monthString: string,
@@ -94,7 +94,7 @@ const waitForBookingWithCondition: WaitForBookingWithCondition = async (
           );
     },
     10, // Try the above up to 10 times
-    () => 400 // pause 400 ms between tries
+    400 // pause 400 ms between tries
   );
 
   return doc?.data();

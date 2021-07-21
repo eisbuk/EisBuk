@@ -29,7 +29,7 @@ interface CopyPasteAction<A extends CopyPasteActionTypes> {
 export const copyPasteReducer = (
   state: CopyPasteState = defaultState,
   action: CopyPasteAction<any>
-) => {
+): CopyPasteState => {
   switch (action.type) {
     case Action.CopySlotDay:
       return {
@@ -45,7 +45,7 @@ export const copyPasteReducer = (
       return {
         ...state,
         week: {
-          ...state.week,
+          ...state.week!,
           slots: state.week!.slots.filter(
             (slot) =>
               slot.id !==
@@ -57,7 +57,7 @@ export const copyPasteReducer = (
       return {
         ...state,
         week: {
-          ...(state.week || {}),
+          ...state.week!,
           slots: [
             ...(state.week?.slots || []),
             action.payload as CopyPastePayload[Action.AddSlotToClipboard],

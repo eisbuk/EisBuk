@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { createSelector } from "reselect";
+import { DateTime } from "luxon";
 
 import { LocalStore } from "@/types/store";
 import { Slot, Customer } from "@/types/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 
-export const calendarDaySelector = (state: Partial<LocalStore>) =>
+export const calendarDaySelector = (state: Partial<LocalStore>): DateTime =>
   state.app!.calendarDay;
-export const extractSlotDate = (slot: Slot) => slot.date.seconds;
-export const extractSlotId = (slot: Slot) => slot.id;
+export const extractSlotDate = (slot: Slot): number => slot.date.seconds;
+export const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
 
 /**
  *
@@ -22,7 +24,7 @@ export const extractSlotId = (slot: Slot) => slot.id;
 const getSafe = <F extends () => any>(
   fn: F,
   defaultVal?: ReturnType<F>
-): ReturnType<F> | {} => {
+): ReturnType<F> | Record<string, any> => {
   // if no default val provided, fall back to empty object
   const def = defaultVal || {};
 
@@ -106,6 +108,7 @@ export const bookingDayInfoSelector = (dayStr: string) =>
         // process slot data for return type
         // this seems a little weird and should be reviewed within code rewrite
         /** @TODO */
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { notes, date, ...slotBase } = slot;
 
         return {

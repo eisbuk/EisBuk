@@ -3,8 +3,7 @@ import firebase from "firebase/app";
 import { Button, Menu, MenuItem } from "@material-ui/core";
 import { BugReport as BugReportIcon } from "@material-ui/icons";
 
-import { functionsZone } from "@/config/envInfo";
-import { ORGANIZATION } from "@/config/envInfo";
+import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
 const DebugMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -13,17 +12,23 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(e.currentTarget);
   };
 
-  /** @TEMP below */
-  const handleClose = (functionName?: string, params?: any) => () => {
+  /** @TEMP below, needs to be typed with cloud functions */
+  const handleClose = (functionName?: string, params?: any) => async () => {
     setAnchorEl(null);
     if (functionName) {
-      firebase
-        .app()
-        .functions(functionsZone)
-        .httpsCallable(functionName)({ ...params, organization: ORGANIZATION })
-        .then(function (response) {
-          console.log(response.data);
+      try {
+        const res = await firebase
+          .app()
+          .functions(functionsZone)
+          .httpsCallable(functionName)({
+          ...params,
+          organization: ORGANIZATION,
         });
+
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
+      }
     }
   };
 
