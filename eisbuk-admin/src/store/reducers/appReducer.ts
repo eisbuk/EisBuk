@@ -1,11 +1,18 @@
 import { DateTime } from "luxon";
 
+import { __storybookDate__ } from "@/lib/constants";
+
 import { Action } from "@/enums/Redux";
+
 import { AppState, Notification } from "@/types/store";
 
 const defaultState = {
   notifications: [],
-  calendarDay: DateTime.local(),
+  calendarDay: __storybookDate__
+    ? // If the env is storybook, set the standard date to keep chromatic consistent
+      DateTime.fromISO(__storybookDate__)
+    : // In dev/production, the date is current date
+      DateTime.local(),
   newSlotTime: null,
 };
 

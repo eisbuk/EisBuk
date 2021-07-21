@@ -119,7 +119,7 @@ ManySlots.args = {
       categories: [Category.Agonismo, Category.Preagonismo],
       type: SlotType.OffIceDanza,
       id: "bat",
-      durations: [Duration["1h"], Duration["2h"]],
+      durations: [Duration["1h"], Duration["1.5h"]],
       users: [
         {
           ...heisenberg,

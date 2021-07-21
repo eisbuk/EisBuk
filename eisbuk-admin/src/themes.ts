@@ -20,11 +20,11 @@ export const igorice = {
     primary: {
       main: colors.blue[500],
       constrastText: "#fff",
-      secondary: {
-        main: colors.lightBlue[900],
-      },
-      grey: colors.blueGrey,
     },
+    secondary: {
+      main: colors.lightBlue[900],
+    },
+    grey: colors.blueGrey,
   },
 };
 

@@ -5,18 +5,20 @@ import "firebase/firestore";
 import { DateTime } from "luxon";
 import seedrandom from "seedrandom";
 import _ from "lodash";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+
+import { __storybookDate__ } from "@/lib/constants";
 
 import { Slot as SlotInterface } from "@/types/firestore";
 
 import { Category, Duration, Notes, SlotType } from "@/enums/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
-import { ComponentStory } from "@storybook/react";
 
 export default {
   title: "Slots Page Container",
   component: SlotsPageContainer,
-};
+} as ComponentMeta<typeof SlotsPageContainer>;
 
 // create seed for pseudo-random values in order to get random values,
 // but keep them between builds (mainly for chromatic diff)
@@ -79,7 +81,7 @@ OneSlot.args = {
   slots: {
     "2021-01-21": {},
     "2021-01-18": {},
-    [DateTime.now().toISODate()]: {
+    "2021-01-20": {
       foo: {
         id: "foo",
         categories: [Category.Agonismo],
@@ -132,7 +134,7 @@ const createSlots = (date: DateTime, seed: string) => {
   return slots;
 };
 
-const manySlotsDate = DateTime.now();
+const manySlotsDate = DateTime.fromISO(__storybookDate__!);
 
 export const ManySlotsWithEdit = Template.bind({});
 ManySlotsWithEdit.args = {
