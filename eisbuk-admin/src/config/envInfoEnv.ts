@@ -6,4 +6,4 @@ export const EISBUK_SITE = process.env.EISBUK_SITE;
 // So we came up with this ugly hack: a string in this file that has no impact on the code,
 // and can be changed by the startup script.
 // This file is included in .gitignore for convenience
-// Date this was last changed: Wed 21 Jul 13:54:24 EET 2021
+// Date this was last changed: sri, 21.07.2021.  22:59:16 CEST

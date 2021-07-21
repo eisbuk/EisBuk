@@ -17,11 +17,6 @@ import Notifier from "@/utils/Notifier";
 import { currentTheme } from "@/themes";
 
 const App: React.FC = () => {
-  console.log(
-    "STORYBOOK_DATE (%v, %t, %b) > ",
-    `(${process.env.STORYBOOK_DATE}, ${typeof process.env
-      .STORYBOOK_DATE}, ${Boolean(process.env.STORYBOOK_DATE)})`
-  );
   return (
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>
