@@ -16,10 +16,7 @@ import Notifier from "@/utils/Notifier";
 
 import { currentTheme } from "@/themes";
 
-import { __eisbukSite__ } from "./lib/constants";
-
 const App: React.FC = () => {
-  console.log("Current site", __eisbukSite__);
   return (
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>
