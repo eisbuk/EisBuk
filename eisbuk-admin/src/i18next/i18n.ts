@@ -16,6 +16,11 @@ i18n
   .init({
     debug: true,
     fallbackLng: "en",
+    react: {
+      // this is temp as to not cause problems due to fallback not specified
+      // in the fututre, we might want to integrate with some suspense/fallback logic
+      useSuspense: false,
+    },
   });
 
 // export default i18n;
