@@ -26,12 +26,6 @@ const plugins = [
       regenerator: true,
     },
   ],
-  [
-    "transform-inline-environment-variables",
-    {
-      include: ["EISBUK_SITE"],
-    },
-  ],
 ];
 
 const presets = ["@babel/env", "@babel/react", "@babel/typescript"];
