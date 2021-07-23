@@ -26,7 +26,7 @@ jobs:
           directory: eisbuk-admin
           file_name: .env.production.local
       - name: TEMP > check .env file
-        run: cat eisbuk-admin/.env.production.local
+        run: ls -la && cd eisbuk-admin && ls -la
       - name: Install requirements
         run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
