@@ -40,6 +40,10 @@ const fbConfig = {
   }),
 };
 
+if (__isDev__) {
+  console.warn("Using local emulated Database : " + fbConfig.databaseURL);
+}
+
 // react-redux-firebase Configuration
 const rrfConfig = {
   // userProfile: 'users'
@@ -56,7 +60,7 @@ const functions = firebase.functions();
 
 if (__isDev__) {
   db.settings({
-    host: "localhost:8080",
+    host: __databaseURL__,
     ssl: false,
   });
   firebase.auth().useEmulator("http://localhost:9099/");
