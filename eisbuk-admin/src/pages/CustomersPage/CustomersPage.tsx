@@ -26,7 +26,7 @@ const CustomersPage: React.FC = () => {
   const classes = useStyles();
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
   const dispatch = useDispatch();
-  useTitle(t("CustomersPage.Athlete"));
+  useTitle(t("CustomersPage.Athletes"));
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
