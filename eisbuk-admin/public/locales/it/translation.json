@@ -36,7 +36,8 @@
         "MedicalCertificate": "Scadenza Cert. Medico",
         "CardNumber": "Numero Tessera",
         "Canel": "Annulla",
-        "Save": "Salva"
+        "Save": "Salva",
+        "NewAthlete": "Nuovo atleta"
     },
     "CustomerValidations":{
         "Email": "Inserisci una email valida",

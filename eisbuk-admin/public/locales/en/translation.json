@@ -36,7 +36,8 @@
         "MedicalCertificate": "Medical Certificate Expiration",
         "CardNumber": "Card Number",
         "Cancel": "Cancel",
-        "Save": "Save"
+        "Save": "Save",
+        "NewAthlete": "New Athlete"
     },
     "CustomerValidations":{
         "Email": "Please insert a valid email",
