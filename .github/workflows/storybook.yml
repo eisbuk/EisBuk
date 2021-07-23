@@ -22,6 +22,7 @@ jobs:
           envkey_REACT_APP_FIREBASE_APP_ID: "1:26525409101:web:53f88cf5f4b7d6883e6104"
           envkey_REACT_APP_DATABASE_URL: "http://localhost:8080"
           envkey_REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "26525409101"
+          directory: "eisbuk-admin"
           file_name: .env.development.local
       - name: build storybook and upload
         run: cd eisbuk-admin && npx chromatic --exit-zero-on-changes --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }}
