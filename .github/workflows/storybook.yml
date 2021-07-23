@@ -25,7 +25,7 @@ jobs:
           envkey_REACT_APP_FIREBASE_MEASUREMENT_ID: "asd"
           file_name: .env.production.local
       - name: TEMP > check .env file
-        run: ls -la && cd eisbuk-admin && ls -la
+        run: cat .env.production.local
       - name: Install requirements
         run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
