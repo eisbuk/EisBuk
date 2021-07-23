@@ -13,8 +13,6 @@ jobs:
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Install requirements
-        run: yarn --cwd eisbuk-admin
       - name: Create .env file with credentials
         uses: SpicyPizza/create-envfile@v1
         with:
@@ -25,9 +23,11 @@ jobs:
           envkey_REACT_APP_FIREBASE_AUTH_DOMAIN: "eisbuk.firebaseapp.com"
           envkey_REACT_APP_FIREBASE_STORAGE_BUCKET: "eisbuk.appspot.com"
           envkey_REACT_APP_FIREBASE_MEASUREMENT_ID: "G-39ZGH12ZRF"
-          directory: "eisbuk-admin"
+          directory: eisbuk-admin
           file_name: .env.production.local
       - name: TEMP > check .env file
         run: cat eisbuk-admin/.env.production.local
+      - name: Install requirements
+        run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
         run: cd eisbuk-admin && npx chromatic --exit-zero-on-changes --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }}
