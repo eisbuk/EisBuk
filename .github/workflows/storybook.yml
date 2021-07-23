@@ -16,13 +16,12 @@ jobs:
       - name: Install requirements
         run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
-        run: \
-          cd eisbuk-admin && \
-          npx chromatic \
-          --exit-zero-on-changes \
-          --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }} \
-          REACT_APP_FIREBASE_API_KEY=AIzaSyDfUuakkXb_xV-VFRyH7yIW4Dr7YmypHRo \
-          REACT_APP_FIREBASE_APP_ID=1:26525409101:web:53f88cf5f4b7d6883e6104 \
-          REACT_APP_DATABASE_URL=http://localhost:8080 \
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID=26525409101 \
-          /
+        run: >
+          cd eisbuk-admin &&
+          npx chromatic
+          --exit-zero-on-changes
+          --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }}
+          REACT_APP_FIREBASE_API_KEY=AIzaSyDfUuakkXb_xV-VFRyH7yIW4Dr7YmypHRo
+          REACT_APP_FIREBASE_APP_ID=1:26525409101:web:53f88cf5f4b7d6883e6104
+          REACT_APP_DATABASE_URL=http://localhost:8080
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID=26525409101
