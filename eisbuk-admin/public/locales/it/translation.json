@@ -1,0 +1,86 @@
+{
+    "AppbarAdmin": {
+      "Attendance": "Presenze",
+      "Athletes": "Atleti",
+      "Reservations": "Prenotazioni"
+    },
+    "Slots": {
+        "Amateur": "Preagonismo",
+        "DeleteConfirmation": "Sei sicuro di voler rimuovere lo slot del",
+        "All": "alle",
+        "NonReversible": "Questa azione non è reversibile",
+        "Slot": "",
+        "Book": "Prenota",
+        "Reserved" :"Prenotato"
+    },
+    "SlotValidations":{
+        "Time": "Manca l'ora",
+        "Category":"Scegli almeno una categoria",
+        "Training": "Scegli il tipo di allenamento",
+        "Duration": "Devi scegliere almeno una durata",
+        "Required": "Richiesto"
+    },
+    "SlotForm":{
+        "StartTime": "Ora di inizio",
+        "Type": "Tipo",
+        "EditSlot": "Modifica Slot",
+        "CreateSlot": "Crea Slot"
+
+    },
+    "CustomerForm": {
+        "Name": "Nome",
+        "Surname": "Cognome",
+        "Phone": "Telefono",
+        "DateOfBirth":"Data di nascita",
+        "Category": "Categoria",
+        "MedicalCertificate": "Scadenza Cert. Medico",
+        "CardNumber": "Numero Tessera",
+        "Canel": "Annulla",
+        "Save": "Salva",
+        "NewAthlete": "Nuovo atleta"
+    },
+    "CustomerValidations":{
+        "Email": "Inserisci una email valida",
+        "Category": "Scegli la categoria",
+        "Required": "Richiesto"
+    },
+    "Authorization":{
+        "NotAuthorized": "Non sei autorizzato ad accedere.",
+        "AdminsOnly": "Questo spazio è riservato agli amministratori",
+        "LoggedInWith": "Hai effettuato l'accesso con: ",
+        "TryAgain": "Esci e riprova con un altro utente"
+    },
+    "CustomerArea":{
+        "Book":"Prenota",
+        "Calendar":"Calendario"
+    },
+
+    "CustomersPage":{
+        "Athletes": "Atleti",
+        "AddAthlete": "Aggiungi atleta"
+    },
+    "DashboardPage":{
+        "Reservations":"Prenotazioni"
+
+    },
+    "SlotsPageContainer":{
+        "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
+        "OfTheWeek": "della settimana del ",
+        "NonReversible": "Questa azione non è reversibile"
+
+    },
+    "AppConfig":{
+        "Course": "Corso",
+        "Dance": "Danza",
+        "Amateur": "Preagonismo",
+        "Professional": "Agonismo"
+    },
+    "CustomerList":{
+        "Name": "Nome",
+        "Surname":"Cognome",
+        "Category":"Categoria",
+        "Email":"Email",
+        "DeleteConfirmation": "Sei sicuro di voler rimuovere " ,
+        "NonReversible":"Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
+    }
+  }

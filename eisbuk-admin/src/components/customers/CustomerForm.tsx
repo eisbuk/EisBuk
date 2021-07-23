@@ -30,18 +30,21 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 
 // ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
-  name: Yup.string().required("Richiesto"),
-  surname: Yup.string().required("Richiesto"),
-  email: Yup.string().email("Inserisci una email valida"),
+  name: Yup.string().required(i18n.t("CustomerValidations.Required")),
+  surname: Yup.string().required(i18n.t("CustomerValidations.Required")),
+  email: Yup.string().email(i18n.t("CustomerValidations.Email")),
   phone: Yup.string(),
   birth: Yup.mixed(),
   certificateExpiration: Yup.mixed(),
-  category: Yup.string().required("Scegli la categoria"),
+  category: Yup.string().required(i18n.t("CustomerValidations.Category")),
   subscriptionNumber: Yup.number(),
 });
+
 // ***** End Region Yup Validation ***** //
 
 // ***** Reigion Main Component ***** //
@@ -60,9 +63,12 @@ const CustomerForm: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
 
+  const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="form-dialog-title">Nuovo atleta</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {t("CustomerForm.NewAthlete")}
+      </DialogTitle>
       <Formik
         initialValues={{
           name: "",
@@ -93,13 +99,13 @@ const CustomerForm: React.FC<Props> = ({
               <MyField
                 className={classes.field}
                 name="name"
-                label="Nome"
+                label={t("CustomerForm.Name")}
                 Icon={AccountCircle}
               />
               <MyField
                 className={classes.field}
                 name="surname"
-                label="Cognome"
+                label={t("CustomerForm.Surname")}
                 Icon={AccountCircle}
               />
               <MyField
@@ -110,14 +116,14 @@ const CustomerForm: React.FC<Props> = ({
               />
               <MyField
                 name="phone"
-                label="Telefono"
+                label={t("CustomerForm.Phone")}
                 className={classes.field}
                 Icon={Phone}
               />
               <MyField
                 name="birthday"
                 type="date"
-                label="Data di nascita"
+                label={t("CustomerForm.DateOfBirth")}
                 views={["year", "month", "date"]}
                 className={classes.field}
                 Icon={Cake}
@@ -126,7 +132,7 @@ const CustomerForm: React.FC<Props> = ({
               <MyField
                 component={RadioGroup}
                 name="category"
-                label="Categoria"
+                label={t("CustomerForm.Category")}
                 row
                 className={classes.radioGroup}
               >
@@ -144,20 +150,20 @@ const CustomerForm: React.FC<Props> = ({
               <MyField
                 type="date"
                 name="certificateExpiration"
-                label="Scadenza Cert. Medico"
+                label={t("CustomerForm.MedicalCertificate")}
                 className={classes.field}
                 Icon={LocalHospital}
               />
               <MyField
                 name="subscriptionNumber"
-                label="Numero Tessera"
+                label={t("CustomerForm.CardNumber")}
                 className={classes.field}
                 Icon={Payment}
               />
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose} color="primary">
-                Annulla
+                {t("CustomerForm.Cancel")}
               </Button>
               <Button
                 type="submit"
@@ -165,7 +171,7 @@ const CustomerForm: React.FC<Props> = ({
                 variant="contained"
                 color="primary"
               >
-                Salva
+                {t("CustomerForm.Save")}
               </Button>
             </DialogActions>
           </Form>

@@ -1,6 +1,7 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
 
 import { ETheme } from "@/themes";
 
@@ -14,9 +15,10 @@ import { bookingDayInfoSelector, calendarDaySelector } from "@/store/selectors";
 import { useTitle } from "@/utils/helpers";
 
 const DashboardPage: React.FC = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
-  useTitle("Prenotazioni");
+  useTitle(t("DashboardPage.Reservations"));
 
   const currentDate = useSelector(calendarDaySelector);
   const monthStr = currentDate.toISO().substring(0, 10);

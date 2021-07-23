@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
+
 import {
   AppBar,
   Button,
@@ -60,6 +62,7 @@ const AppbarAdmin: React.FC = () => {
   };
 
   const currentUser = auth.email || auth.phoneNumber;
+  const { t } = useTranslation();
 
   return (
     <>
@@ -91,7 +94,7 @@ const AppbarAdmin: React.FC = () => {
                 disabled={location.pathname === PrivateRoutes.Root}
                 startIcon={<DateRangeIcon />}
               >
-                Presenze
+                {t("AppbarAdmin.Attendance")}
               </Button>
               <Button
                 component={Link}
@@ -109,7 +112,7 @@ const AppbarAdmin: React.FC = () => {
                 variant="contained"
                 startIcon={<PeopleIcon />}
               >
-                Atleti
+                {t("AppbarAdmin.Athletes")}
               </Button>
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
@@ -138,7 +141,7 @@ const AppbarAdmin: React.FC = () => {
               <ListItemIcon>
                 <DateRangeIcon />
               </ListItemIcon>
-              <ListItemText primary="Presenze" />
+              <ListItemText primary={t("AppbarAdmin.Attendance")} />
             </ListItem>
             <ListItem
               button
@@ -149,7 +152,7 @@ const AppbarAdmin: React.FC = () => {
               <ListItemIcon>
                 <LibraryBooksIcon />
               </ListItemIcon>
-              <ListItemText primary="Prenotazioni" />
+              <ListItemText primary={t("AppbarAdmin.Reservations")} />
             </ListItem>
             <ListItem
               button
@@ -160,7 +163,7 @@ const AppbarAdmin: React.FC = () => {
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
-              <ListItemText primary="Atleti" />
+              <ListItemText primary={t("AppbarAdmin.Athletes")} />
             </ListItem>
           </List>
         </SwipeableDrawer>

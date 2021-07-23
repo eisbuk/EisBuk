@@ -12,6 +12,7 @@ import {
   Box,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useTranslation } from "react-i18next";
 import {
   Delete as DeleteIcon,
   Create as CreateIcon,
@@ -64,6 +65,7 @@ const Slot: React.FC<SlotProps> = ({
   setCreateEditDialog = () => {},
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const date = fb2Luxon(data.date);
 
@@ -207,7 +209,7 @@ const Slot: React.FC<SlotProps> = ({
                   <>
                     <ArrowBackIcon fontSize="small" />
                     <Typography className={classes.helpText}>
-                      Prenota
+                      {t("Slots.Book")}
                     </Typography>
                   </>
                 )}
@@ -265,15 +267,14 @@ const Slot: React.FC<SlotProps> = ({
       )}
       {confirmDeleteDialog && Boolean(onDelete) && (
         <ConfirmDialog
-          title={`Sei sicuro di voler rimuovere lo slot del ${date.toFormat(
-            "d MMMM",
-            { locale: "it-IT" }
-          )} alle ${date.toFormat("HH:mm")}?`}
+          title={`${t("Slots.DeleteConfirmation")} ${date.toFormat("d MMMM", {
+            locale: "it-IT",
+          })} ${t("Slots.All")} ${date.toFormat("HH:mm")} ${t("Slots.Slot")}?`}
           open={confirmDeleteDialog}
           setOpen={setConfirmDeleteDialog}
           onConfirm={() => onDelete!(data)}
         >
-          Questa azione non è reversibile
+          {t("Slots.NonReversible")}
         </ConfirmDialog>
       )}
     </>
