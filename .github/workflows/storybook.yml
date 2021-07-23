@@ -22,8 +22,7 @@ jobs:
           envkey_REACT_APP_FIREBASE_MESSAGING_SENDER_ID: "1017581173375"
           envkey_REACT_APP_FIREBASE_AUTH_DOMAIN: "eisbuk.firebaseapp.com"
           envkey_REACT_APP_FIREBASE_STORAGE_BUCKET: "eisbuk.appspot.com"
-          envkey_REACT_APP_FIREBASE_MEASUREMENT_ID: "G-39ZGH12ZRF"
-          directory: ./eisbuk-admin
+          envkey_REACT_APP_FIREBASE_MEASUREMENT_ID: "asd"
           file_name: .env.production.local
       - name: TEMP > check .env file
         run: ls -la && cd eisbuk-admin && ls -la
