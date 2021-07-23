@@ -24,9 +24,10 @@ jobs:
           envkey_REACT_APP_FIREBASE_STORAGE_BUCKET: "eisbuk.appspot.com"
           envkey_REACT_APP_FIREBASE_MEASUREMENT_ID: "asd"
           file_name: .env.production.local
+      - name: Move .env file to eisbuk-admin
         run: mv .env.production.local eisbuk-admin
       - name: TEMP > check .env file
-        run: ls -la eisbuk-admin
+        run: cat eisbuk-admin/.env.production.local
       - name: Install requirements
         run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
