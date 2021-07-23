@@ -64,7 +64,7 @@ const SlotValidation = Yup.object().shape({
     .required(i18n.t("SlotValidations.Duration")),
 });
 
-/***** End Region Form Setup *****/
+// ***** End Region Form Setup ***** //
 
 // ***** Region Time Picker Field ***** //
 type TimePickerProps = Omit<Omit<TextFieldProps, "name">, "value"> & {

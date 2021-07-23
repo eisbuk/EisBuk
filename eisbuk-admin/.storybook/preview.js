@@ -3,6 +3,8 @@ import { muiTheme } from "storybook-addon-material-ui";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 
+import "@/i18next/i18n";
+
 import { available as availableThemes } from "@/themes";
 
 import { store } from "@/store";

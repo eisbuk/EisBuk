@@ -33,7 +33,7 @@ import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 
-/***** Region Yup Validation *****/
+// ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
   name: Yup.string().required(i18n.t("CustomerValidations.Required")),
   surname: Yup.string().required(i18n.t("CustomerValidations.Required")),
@@ -45,7 +45,7 @@ const CustomerValidation = Yup.object().shape({
   subscriptionNumber: Yup.number(),
 });
 
-/***** End Region Yup Validation *****/
+// ***** End Region Yup Validation ***** //
 
 // ***** Reigion Main Component ***** //
 interface Props {
