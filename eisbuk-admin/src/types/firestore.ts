@@ -5,7 +5,6 @@ import {
   Duration,
   Category,
   SlotType,
-  Notes,
   OrgSubCollection,
   BookingSubCollection,
   Collection,
@@ -29,7 +28,7 @@ interface SlotBase extends DocumentData {
   durations: Duration[];
   categories: Category[];
   type: SlotType;
-  notes: Notes;
+  notes: string;
 }
 
 /**

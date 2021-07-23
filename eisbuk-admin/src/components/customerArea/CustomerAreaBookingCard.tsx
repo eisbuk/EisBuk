@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Button, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Timestamp } from "@google-cloud/firestore";
 
-import { Duration, Notes, SlotType } from "@/enums/firestore";
+import { Duration, SlotType } from "@/enums/firestore";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
@@ -18,7 +18,7 @@ interface Props {
     type: SlotType;
     date: Timestamp;
     duration: Duration;
-    notes: Notes;
+    notes: string;
   };
 }
 

@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 
 import SlotsDay from "@/components/slots/SlotListByDay/SlotsDay";
 
-import { Category, Duration, Notes, SlotType } from "@/enums/firestore";
+import { Category, Duration, SlotType } from "@/enums/firestore";
 import { ComponentStory } from "@storybook/react";
 
 export default {
@@ -28,7 +28,7 @@ const slots = {
     type: SlotType.Ice,
     date: new Timestamp(1609513200, 0),
     durations: [Duration["1h"]],
-    notes: Notes.Pista1,
+    notes: "Pista 1",
   },
   bar: {
     id: uuid(),
@@ -36,7 +36,7 @@ const slots = {
     categories: [Category.Preagonismo, Category.Agonismo, Category.Corso],
     type: SlotType.OffIceDanza,
     durations: [Duration["1.5h"], Duration["2h"]],
-    notes: Notes.Pista2,
+    notes: "Pista 2",
   },
   baz: {
     id: uuid(),
@@ -44,7 +44,7 @@ const slots = {
     categories: [Category.Corso],
     type: SlotType.OffIceGym,
     durations: Object.values(Duration),
-    notes: Notes.Pista2, // this was deleted `\nPotrebbe non svolgersi`
+    notes: "Pista 2\nPotrebbe non svolgersi",
   },
 };
 

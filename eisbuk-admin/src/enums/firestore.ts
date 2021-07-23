@@ -17,13 +17,6 @@ export enum BookingSubCollection {
 // endregion
 
 // region slots
-export enum Notes {
-  Null = "",
-  Pista1 = "pista1",
-  Pista2 = "pista2",
-  PrimaSeconda = "Prima riga\nSeconda riga",
-}
-
 export enum SlotType {
   OffIceDanza = "off-ice-danza",
   Ice = "ice",
@@ -31,7 +24,7 @@ export enum SlotType {
 }
 
 export enum Category {
-  Corso = "corso",
+  Corso = "course",
   Agonismo = "agonismo",
   Preagonismo = "preagonismo",
   Adulti = "adulti",

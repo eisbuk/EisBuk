@@ -1,9 +1,3 @@
-export enum Notes {
-  Null = "",
-  Pista1 = "pista1",
-  Pista2 = "pista2",
-}
-
 export enum Types {
   OffIceDanza = "off-ice-danza",
   Ice = "ice",
