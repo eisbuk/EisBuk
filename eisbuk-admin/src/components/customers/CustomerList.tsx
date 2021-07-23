@@ -18,6 +18,7 @@ import {
 } from "@material-ui/core";
 
 import { Customer } from "@/types/firestore";
+import { useTranslation } from "react-i18next";
 
 import CustomerForm from "@/components/customers/CustomerForm";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
@@ -52,6 +53,8 @@ const CustomerList: React.FC<Props> = ({
       searchRegex.test(customer.name) || searchRegex.test(customer.surname)
   );
   const history = useHistory();
+  const { t } = useTranslation();
+
   console.log("On delete", onDeleteCustomer);
   return (
     <>
@@ -61,10 +64,10 @@ const CustomerList: React.FC<Props> = ({
           <TableHead>
             <TableRow>
               <TableCell></TableCell>
-              <TableCell>Nome</TableCell>
-              <TableCell>Cognome</TableCell>
-              <TableCell>Categoria</TableCell>
-              <TableCell>Email</TableCell>
+              <TableCell>{t("CustomerList.Name")}</TableCell>
+              <TableCell>{t("CustomerList.Surname")}</TableCell>
+              <TableCell>{t("CustomerList.Category")}</TableCell>
+              <TableCell>{t("CustomerList.Email")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -131,7 +134,7 @@ const CustomerList: React.FC<Props> = ({
       {customerCurrentlyDeleted && (
         <ConfirmDialog
           title={
-            "Sei sicuro di voler rimuovere " +
+            t("CustomerList.DeleteConfirmation") +
             customerCurrentlyDeleted.name +
             " " +
             customerCurrentlyDeleted.surname
@@ -140,8 +143,7 @@ const CustomerList: React.FC<Props> = ({
           setOpen={setConfirmDeleteDialog}
           onConfirm={() => onDeleteCustomer!(customerCurrentlyDeleted)}
         >
-          Questa azione non è reversibile, l'utente verrà cancellato
-          definitivamente.
+          {t("CustomerList.NonReversible")}
         </ConfirmDialog>
       )}
     </>

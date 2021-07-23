@@ -112,7 +112,7 @@ const AppbarAdmin: React.FC = () => {
                 variant="contained"
                 startIcon={<PeopleIcon />}
               >
-                {t("AppbarAdmin.Athlete")}
+                {t("AppbarAdmin.Athletes")}
               </Button>
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
@@ -163,7 +163,7 @@ const AppbarAdmin: React.FC = () => {
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
-              <ListItemText primary={t("AppbarAdmin.Athlete")} />
+              <ListItemText primary={t("AppbarAdmin.Athletes")} />
             </ListItem>
           </List>
         </SwipeableDrawer>
