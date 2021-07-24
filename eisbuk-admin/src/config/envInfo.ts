@@ -1,11 +1,11 @@
-import { EISBUK_SITE } from "./envInfoEnv";
+import { __eisbukSite__ } from "@/lib/constants";
 // Provide information about the environment we're running in
 
 let isDev: boolean;
 let functionsZone: string | undefined;
 let ORGANIZATION: string;
 
-if (!EISBUK_SITE) {
+if (!__eisbukSite__) {
   isDev =
     window.location.port !== "" &&
     window.location.port !== "80" &&
@@ -17,7 +17,7 @@ if (!EISBUK_SITE) {
 } else {
   isDev = false;
   functionsZone = "europe-west6";
-  ORGANIZATION = EISBUK_SITE;
+  ORGANIZATION = __eisbukSite__;
   console.log(
     `Using ${ORGANIZATION} as organization as specified in EISBUK_SITE environment variable`
   );
