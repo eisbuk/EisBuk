@@ -209,7 +209,7 @@ const Slot: React.FC<SlotProps> = ({
                   <>
                     <ArrowBackIcon fontSize="small" />
                     <Typography className={classes.helpText}>
-                      Prenota
+                      {t("Slots.Book")}
                     </Typography>
                   </>
                 )}
@@ -274,7 +274,7 @@ const Slot: React.FC<SlotProps> = ({
           setOpen={setConfirmDeleteDialog}
           onConfirm={() => onDelete!(data)}
         >
-          {t("Slots.Irrevirsible")}
+          {t("Slots.NonReversible")}
         </ConfirmDialog>
       )}
     </>

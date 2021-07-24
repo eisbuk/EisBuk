@@ -66,7 +66,9 @@ const CustomerForm: React.FC<Props> = ({
   const { t } = useTranslation();
   return (
     <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="form-dialog-title">Nuovo atleta</DialogTitle>
+      <DialogTitle id="form-dialog-title">
+        {t("CustomerForm.NewAthlete")}
+      </DialogTitle>
       <Formik
         initialValues={{
           name: "",

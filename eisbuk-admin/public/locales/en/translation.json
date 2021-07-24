@@ -1,16 +1,17 @@
 {
     "AppbarAdmin": {
       "Attendance": "Attendance",
-      "Athlete": "Athlete",
+      "Athletes": "Athletes",
       "Reservations": "Reservations"
     },
     "Slots": {
-      "Amateur": "Amateur",
-
+        "Amateur": "Amateur",
         "DeleteConfirmation": "Are you sure you want to delete the ",
         "All":"",
-        "Irrevirsible": "This action is non-reversible",
-        "Slot": "slot"
+        "NonReversible": "This action is non-reversible",
+        "Slot": "slot",
+        "Book":"Book",
+        "Reserved": "Reserved"
     },
     "SlotValidations":{
         "Time": "Select the time",
@@ -35,7 +36,8 @@
         "MedicalCertificate": "Medical Certificate Expiration",
         "CardNumber": "Card Number",
         "Cancel": "Cancel",
-        "Save": "Save"
+        "Save": "Save",
+        "NewAthlete": "New Athlete"
     },
     "CustomerValidations":{
         "Email": "Please insert a valid email",
@@ -53,7 +55,7 @@
         "Calendar":"Calendar"
     },
     "CustomersPage":{
-        "Athlete": "Athlete",
+        "Athletes": "Athletes",
         "AddAthlete": "AddAthlete"
     },
     "DashboardPage":{
@@ -61,7 +63,7 @@
 
     },
     "SlotsPageContainer":{
-        "RemoveAllConfirmation": "Are you sure you want to remove all slots",
+        "DeleteAllConfirmation": "Are you sure you want to remove all slots",
         "OfTheWeek": "of the week",
         "NonReversible": "This action is non-reversible"
 
@@ -71,5 +73,13 @@
         "Dance": "Dance",
         "Amateur": "Amateur",
         "Professional": "Professional"
+    },
+    "CustomerList":{
+        "Name": "Name",
+        "Surname":"Surname",
+        "Category":"Category",
+        "Email":"Email",
+        "DeleteConfirmation": "Are you sure you want to remove ",
+        "NonReversible":"This action is not reversible, the user will definitely be deleted."
     }
 }

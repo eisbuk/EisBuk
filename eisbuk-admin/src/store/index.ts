@@ -10,32 +10,38 @@ import { createFirestoreInstance } from "redux-firestore";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 
+import {
+  __isDev__,
+  __firebaseApiKey__,
+  __firebaseAppId__,
+  __databaseURL__,
+  __projectId__,
+  __messagingSenderId__,
+  __authDomain__,
+  __storageBucket__,
+  __measurementId__,
+} from "@/lib/constants";
+
 import rootReducer from "./reducers/rootReducer";
 
-import { isDev } from "@/config/envInfo";
+const fbConfig = {
+  // common config data
+  // loaded from .env variables according to environment
+  databaseURL: __databaseURL__,
+  projectId: __projectId__,
+  apiKey: __firebaseApiKey__,
+  messagingSenderId: __messagingSenderId__,
+  appId: __firebaseAppId__,
+  // additional production-only config data
+  ...(!__isDev__ && {
+    authDomain: __authDomain__,
+    storageBucket: __storageBucket__,
+    measurementId: __measurementId__,
+  }),
+};
 
-let fbConfig;
-
-if (isDev) {
-  fbConfig = {
-    databaseURL: "http://localhost:8080",
-    projectId: "eisbuk",
-    apiKey: "AIzaSyDfUuakkXb_xV-VFRyH7yIW4Dr7YmypHRo",
-    messagingSenderId: "26525409101",
-    appId: "1:26525409101:web:53f88cf5f4b7d6883e6104",
-  };
+if (__isDev__) {
   console.warn("Using local emulated Database : " + fbConfig.databaseURL);
-} else {
-  fbConfig = {
-    apiKey: "AIzaSyA2dS3UiWq8ABNH9ROaQQlTsOkTq5QvCZw",
-    authDomain: "eisbuk.firebaseapp.com",
-    databaseURL: "https://eisbuk.firebaseio.com",
-    projectId: "eisbuk",
-    storageBucket: "eisbuk.appspot.com",
-    messagingSenderId: "1017581173375",
-    appId: "1:1017581173375:web:3c7959139f7d9e9aed1d4a",
-    measurementId: "G-39ZGH12ZRF",
-  };
 }
 
 // react-redux-firebase Configuration
@@ -52,9 +58,9 @@ const db = firebase.firestore();
 
 const functions = firebase.functions();
 
-if (isDev) {
+if (__isDev__) {
   db.settings({
-    host: "localhost:8080",
+    host: __databaseURL__,
     ssl: false,
   });
   firebase.auth().useEmulator("http://localhost:9099/");
