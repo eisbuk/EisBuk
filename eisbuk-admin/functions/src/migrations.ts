@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
 
-import { Category } from "./types/enums";
+import { Category } from "@/enums/firestore";
 
 import { checkUser } from "./utils";
 
