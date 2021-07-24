@@ -7,7 +7,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleOutline from "@material-ui/icons/AddCircleOutline";
 
 import { ETheme } from "@/themes";
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 import DurationsList from "./DurationsList";
 import UserAvatar from "./UserAvatar";

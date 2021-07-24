@@ -13,10 +13,10 @@ import _ from "lodash";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { Slot, Customer, BookingInfo } from "@/types/firestore";
+import { Slot, Customer, BookingInfo } from "@functions/types/firestore";
 import { ETheme } from "@/themes";
 
-import { Duration } from "@/enums/firestore";
+import { Duration } from "@functions/enums/firestore";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 

@@ -4,7 +4,7 @@ import { v4 } from "uuid";
 
 import SlotsDay from "@/components/slots/SlotListByDay/SlotsDay";
 
-import { Category, Duration, SlotType } from "@/enums/firestore";
+import { Category, Duration, SlotType } from "@functions/enums/firestore";
 import { ComponentStory } from "@storybook/react";
 
 export default {

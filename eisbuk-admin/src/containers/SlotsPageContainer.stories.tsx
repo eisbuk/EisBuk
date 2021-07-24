@@ -9,9 +9,9 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { Slot as SlotInterface } from "@/types/firestore";
+import { Slot as SlotInterface } from "@functions/types/firestore";
 
-import { Category, Duration, SlotType } from "@/enums/firestore";
+import { Category, Duration, SlotType } from "@functions/enums/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 

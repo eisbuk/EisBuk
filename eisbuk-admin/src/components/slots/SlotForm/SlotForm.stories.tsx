@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 import firebase from "firebase";
 
 import SlotForm from "@/components/slots/SlotForm";
-import { Category, Duration, SlotType } from "@/enums/firestore";
+import { Category, Duration, SlotType } from "@functions/enums/firestore";
 
 export default {
   title: "SlotForm",

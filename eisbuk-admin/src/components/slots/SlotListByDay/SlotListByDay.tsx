@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { List } from "@material-ui/core";
 
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 import SlotsDay, { SlotsDayProps } from "./SlotsDay";
 import SlotForm, { SlotFormProps } from "@/components/slots/SlotForm";

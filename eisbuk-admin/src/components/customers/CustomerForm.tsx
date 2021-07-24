@@ -24,7 +24,7 @@ import {
 import { Formik, Form, FastField, FieldConfig } from "formik";
 import * as Yup from "yup";
 
-import { Customer } from "@/types/firestore";
+import { Customer } from "@functions/types/firestore";
 
 import { currentTheme } from "@/themes";
 

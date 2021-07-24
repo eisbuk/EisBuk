@@ -2,7 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Box } from "@material-ui/core";
 
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 import SlotCard from "@/components/slots/SlotCard";
 

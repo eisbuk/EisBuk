@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Button, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Timestamp } from "@google-cloud/firestore";
 
-import { Duration, SlotType } from "@/enums/firestore";
+import { Duration, SlotType } from "@functions/enums/firestore";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 

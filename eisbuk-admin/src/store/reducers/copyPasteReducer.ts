@@ -1,6 +1,6 @@
 import { Action } from "@/enums/Redux";
 
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 import { CopyPasteState } from "@/types/store";
 
 const defaultState = {

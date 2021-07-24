@@ -35,10 +35,10 @@ import * as Yup from "yup";
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
 import { LocalStore } from "@/types/store";
-import { Slot } from "@/types/firestore";
 import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
+import { Slot } from "@functions/types/firestore";
 
-import { Duration } from "@/enums/firestore";
+import { Duration } from "@functions/enums/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 

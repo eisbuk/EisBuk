@@ -12,9 +12,8 @@ import {
   FirestoreStatusEntry,
   FirestoreData,
   FirestoreOrdered,
-  Customer,
-  Slot,
 } from "@/types/firestore";
+import { Customer, Slot } from "@functions/types/firestore";
 
 // ***** Region Store Types ***** //
 export type Dispatch = typeof store.dispatch;

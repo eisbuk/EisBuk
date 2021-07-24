@@ -10,9 +10,10 @@ import {
 import LuxonUtils from "@date-io/luxon";
 import _ from "lodash";
 
-import { Category, OrgSubCollection } from "@/enums/firestore";
+import { Category, OrgSubCollection } from "@functions/enums/firestore";
 
 import { LocalStore } from "@/types/store";
+import { Slot } from "@functions/types/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
@@ -20,7 +21,6 @@ import { subscribeToSlot, unsubscribeFromSlot } from "@/store/actions/actions";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { flatten, getMonthStr } from "@/utils/helpers";
-import { Slot } from "@/types/firestore";
 
 const luxon = new LuxonUtils({ locale: "it" });
 

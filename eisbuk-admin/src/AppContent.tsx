@@ -9,7 +9,7 @@ import {
 import { Route, Switch } from "react-router-dom";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
-import { Collection, OrgSubCollection } from "@/enums/firestore";
+import { Collection, OrgSubCollection } from "@functions/enums/firestore";
 
 import { LocalStore } from "@/types/store";
 

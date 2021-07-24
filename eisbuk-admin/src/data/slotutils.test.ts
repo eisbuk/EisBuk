@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import { DateTime } from "luxon";
 
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 import { shiftSlotsDay, shiftSlotsWeek } from "./slotutils";
 import { fb2Luxon } from "./dtutils";
