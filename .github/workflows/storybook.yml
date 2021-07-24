@@ -26,8 +26,6 @@ jobs:
           file_name: .env.production.local
       - name: Move .env file to eisbuk-admin
         run: mv .env.production.local eisbuk-admin
-      - name: TEMP > check .env file
-        run: cat eisbuk-admin/.env.production.local
       - name: Install requirements
         run: yarn --cwd eisbuk-admin
       - name: build storybook and upload
