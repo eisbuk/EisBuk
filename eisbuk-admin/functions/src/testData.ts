@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import { Categories } from "./types/enums";
+import { Category } from "./types/enums";
 
 import { checkUser } from "./utils";
 
@@ -81,7 +81,7 @@ const createUsers = async (
       surname,
       email: toEmail(`${name}.${surname}@example.com`.toLowerCase()),
       phone: "12345",
-      category: _.sample(Object.values(Categories)),
+      category: _.sample(Object.values(Category)),
       certificateExpiration: DateTime.local()
         .plus({ days: _.random(-40, 200) })
         .toISODate(),

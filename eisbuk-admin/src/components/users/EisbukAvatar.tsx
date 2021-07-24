@@ -96,10 +96,10 @@ export const EisbukAvatar: React.FC<Props> = ({
   let additionalClass = classes[getColor({ name, surname })];
 
   switch (category) {
-    case Category.Agonismo:
+    case Category.Competitive:
       variant = "square";
       break;
-    case Category.Preagonismo:
+    case Category.PreCompetitive:
       variant = "rounded";
       additionalClass += " " + classes.rounded;
       break;

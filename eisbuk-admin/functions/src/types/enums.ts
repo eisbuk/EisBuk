@@ -1,11 +1,11 @@
-export enum Types {
-  OffIceDanza = "off-ice-danza",
+export enum SlotType {
+  OffIceDancing = "off-ice-dancing",
   Ice = "ice",
   OffIceGym = "off-ice-gym",
 }
 
-export enum Categories {
-  Corso = "corso",
-  Agonisimo = "agonismo",
-  Preagonismo = "preagonismo",
+export enum Category {
+  Course = "course",
+  Competitive = "competitive",
+  PreCompetitive = "pre-competitive",
 }

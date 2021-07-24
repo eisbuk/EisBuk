@@ -90,7 +90,7 @@ OneSlot.args = {
     "2021-01-20": {
       foo: {
         id: "foo",
-        categories: [Category.Agonismo],
+        categories: [Category.Competitive],
         type: SlotType.Ice,
         date: new Timestamp(1609513200, 0),
         durations: [Duration["1h"]],
@@ -129,7 +129,7 @@ const createSlots = (date: DateTime, seed: string) => {
         slots[slotDate.toISODate()][slotId] = {
           id: uuidv4(),
           date: new Timestamp(slotDate.second, 0),
-          categories: [Category.Agonismo],
+          categories: [Category.Competitive],
           type: SlotType.Ice,
           durations: [Duration["1h"]],
           notes: lodash.sample(NOTES) || "",

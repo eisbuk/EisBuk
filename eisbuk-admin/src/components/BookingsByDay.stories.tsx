@@ -19,14 +19,14 @@ const gus = {
   name: "Gus",
   surname: "Fring",
   id: "gus",
-  category: Category.Corso,
+  category: Category.Course,
 };
 
 const saul = {
   name: "Saul",
   surname: "Goodman",
   id: "saul",
-  category: Category.Agonismo,
+  category: Category.Competitive,
   certificateExpiration: "2001-01-01",
 };
 
@@ -34,14 +34,14 @@ const heisenberg = {
   name: "Walter",
   surname: "White",
   id: "heisenberg",
-  category: Category.Preagonismo,
+  category: Category.PreCompetitive,
 };
 
 const jesse = {
   name: "Jesse",
   surname: "Pinkman",
   id: "jesse",
-  category: Category.Preagonismo,
+  category: Category.PreCompetitive,
 };
 // ***** End Region Setup ***** //
 
@@ -58,7 +58,7 @@ OneSlot.args = {
   bookingDayInfo: [
     {
       time: "11:00",
-      categories: [Category.Agonismo],
+      categories: [Category.Competitive],
       type: SlotType.Ice,
       id: "foo",
       durations: [Duration["1.5h"], Duration["2h"]],
@@ -74,7 +74,7 @@ ManySlots.args = {
   bookingDayInfo: [
     {
       time: "11:00",
-      categories: [Category.Agonismo],
+      categories: [Category.Competitive],
       type: SlotType.Ice,
       id: "foo",
       durations: [Duration["1.5h"], Duration["2h"]],
@@ -87,7 +87,7 @@ ManySlots.args = {
     },
     {
       time: "12:00",
-      categories: [Category.Agonismo],
+      categories: [Category.Competitive],
       type: SlotType.Ice,
       durations: [Duration["1h"], Duration["2h"]],
       id: "bar",
@@ -108,7 +108,11 @@ ManySlots.args = {
     },
     {
       time: "15:00",
-      categories: [Category.Agonismo, Category.Preagonismo, Category.Corso],
+      categories: [
+        Category.Competitive,
+        Category.PreCompetitive,
+        Category.Course,
+      ],
       type: SlotType.Ice,
       id: "baz",
       durations: [Duration["1h"]],
@@ -116,8 +120,8 @@ ManySlots.args = {
     },
     {
       time: "16:30",
-      categories: [Category.Agonismo, Category.Preagonismo],
-      type: SlotType.OffIceDanza,
+      categories: [Category.Competitive, Category.PreCompetitive],
+      type: SlotType.OffIceDancing,
       id: "bat",
       durations: [Duration["1h"], Duration["1.5h"]],
       users: [

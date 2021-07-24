@@ -35,7 +35,7 @@ const lodash = _.runInContext();
 
 const CATEGORIES = lodash.omit(
   Object.values(Category),
-  Category.Adulti
+  Category.Adults
 ) as Category[];
 
 /**

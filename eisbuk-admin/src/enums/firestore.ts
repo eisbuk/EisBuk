@@ -18,16 +18,16 @@ export enum BookingSubCollection {
 
 // region slots
 export enum SlotType {
-  OffIceDanza = "off-ice-danza",
+  OffIceDancing = "off-ice-dancing",
   Ice = "ice",
   OffIceGym = "off-ice-gym",
 }
 
 export enum Category {
-  Corso = "course",
-  Agonismo = "agonismo",
-  Preagonismo = "preagonismo",
-  Adulti = "adulti",
+  Course = "course",
+  Competitive = "competitive",
+  PreCompetitive = "pre-competitive",
+  Adults = "adults",
 }
 
 export enum Duration {

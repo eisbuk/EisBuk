@@ -24,7 +24,7 @@ const baseProps = {
 const slots = {
   foo: {
     id: uuid(),
-    categories: [Category.Agonismo, Category.Preagonismo],
+    categories: [Category.Competitive, Category.PreCompetitive],
     type: SlotType.Ice,
     date: new Timestamp(1609513200, 0),
     durations: [Duration["1h"]],
@@ -33,15 +33,19 @@ const slots = {
   bar: {
     id: uuid(),
     date: new Timestamp(1609495200, 0),
-    categories: [Category.Preagonismo, Category.Agonismo, Category.Corso],
-    type: SlotType.OffIceDanza,
+    categories: [
+      Category.PreCompetitive,
+      Category.Competitive,
+      Category.Course,
+    ],
+    type: SlotType.OffIceDancing,
     durations: [Duration["1.5h"], Duration["2h"]],
     notes: "Pista 2",
   },
   baz: {
     id: uuid(),
     date: new Timestamp(1609516800, 0),
-    categories: [Category.Corso],
+    categories: [Category.Course],
     type: SlotType.OffIceGym,
     durations: Object.values(Duration),
     notes: "Pista 2\nPotrebbe non svolgersi",
