@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
 
-import { Category, SlotType } from "./types/enums";
+import { Category, SlotType } from "@functions/enums/firestore";
 
 import { checkUser, roundTo } from "./utils";
 

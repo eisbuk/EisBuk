@@ -13,7 +13,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "build": "npm run lint && tsc"
+    "build": "npm run lint && tsc && tscpaths -p tsconfig.json -s ./src -o ./dist"
   },
   "engines": {
     "node": "14"
@@ -39,6 +39,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
+    "tsconfig-paths": "^3.10.1",
+    "tscpaths": "^0.0.9",
     "typescript": "^4.3.5"
   },
   "private": true

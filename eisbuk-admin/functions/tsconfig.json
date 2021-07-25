@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "paths": {
-      "@/*": ["src/*"]
+      "@functions/*": ["src/*"]
     },
     "target": "es6",
     "module": "commonjs",
