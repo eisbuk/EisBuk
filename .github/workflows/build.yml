@@ -5,10 +5,6 @@ on:
   - pull_request
 
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    steps:
-
   build_v14:
     runs-on: ubuntu-latest
     steps:
