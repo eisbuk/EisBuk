@@ -8,6 +8,10 @@ jobs:
   setup:
     runs-on: ubuntu-latest
     steps:
+
+  build_v14:
+    runs-on: ubuntu-latest
+    steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
@@ -21,18 +25,25 @@ jobs:
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: bash eisbuk-install.sh
-
-  build_v14:
-    needs: setup
-    runs-on: ubuntu-latest
-    steps:
       - name: Build app
         run: yarn --cwd eisbuk-admin build
 
   test_v14:
-    needs: setup
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Cache node modules and firebase emulators
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+            $HOME/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+      - name: Install and link packages
+        run: bash eisbuk-install.sh
       - name: Run tests
         run: yarn --cwd eisbuk-admin test:ci
 
