@@ -20,16 +20,16 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: bash eisbuk-install
+        run: bash eisbuk-install.sh
 
-  build_v12:
+  build_v14:
     needs: setup
     runs-on: ubuntu-latest
     steps:
       - name: Build app
         run: yarn --cwd eisbuk-admin build
 
-  test_v12:
+  test_v14:
     needs: setup
     runs-on: ubuntu-latest
     steps:
