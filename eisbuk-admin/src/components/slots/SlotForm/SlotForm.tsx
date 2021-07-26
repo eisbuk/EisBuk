@@ -222,7 +222,11 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     </>
                   )}
                   <Box display="flex" flexWrap="wrap">
-                    {getCheckBoxes("categories", slotsLabelsLists.categories)}
+                    {getCheckBoxes(
+                      "categories",
+                      slotsLabelsLists.categories,
+                      true
+                    )}
                   </Box>
                   <div className={classes.error}>
                     <ErrorMessage name="categories" />
@@ -240,7 +244,11 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     <ErrorMessage name="type" />
                   </div>
                   <Box display="flex">
-                    {getCheckBoxes("durations", slotsLabelsLists.durations)}
+                    {getCheckBoxes(
+                      "durations",
+                      slotsLabelsLists.durations,
+                      false
+                    )}
                   </Box>
                   <Field
                     name="notes"
@@ -253,7 +261,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
               </DialogContent>
               <DialogActions>
                 <Button color="primary" onClick={onClose}>
-                  Annulla
+                  {t(`SlotForm.Cancel`)}
                 </Button>
                 <Button
                   variant="contained"
@@ -286,7 +294,12 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
  */
 const createRadioButtons = (values: SlotsLabelList["types"]) =>
   values.map(({ id, label }) => (
-    <FormControlLabel key={id} value={id} label={label} control={<Radio />} />
+    <FormControlLabel
+      key={id}
+      value={id}
+      label={i18n.t(`Types.${label}`)}
+      control={<Radio />}
+    />
   ));
 // ***** End Region Create Radio Buttons ***** //
 
@@ -294,7 +307,8 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
 interface GetCheckBoxes {
   <N extends keyof Omit<SlotsLabelList, "types">>(
     name: N,
-    values: SlotsLabelList[N]
+    values: SlotsLabelList[N],
+    translate: boolean
   ): JSX.Element[];
 }
 
@@ -304,13 +318,13 @@ interface GetCheckBoxes {
  * @param values
  * @returns
  */
-const getCheckBoxes: GetCheckBoxes = (name, values) =>
+const getCheckBoxes: GetCheckBoxes = (name, values, translate) =>
   values.map(({ id, label }) => (
     <MyCheckbox
       key={id.toString()}
       name={name}
       value={id.toString()}
-      label={label}
+      label={translate ? i18n.t(`${name}.${label}`) : label}
     />
   ));
 // ***** End Region Get Checkboxes ***** //

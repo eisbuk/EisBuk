@@ -140,7 +140,7 @@ const CustomerForm: React.FC<Props> = ({
                   <FormControlLabel
                     key={level.id}
                     value={level.id}
-                    label={level.label}
+                    label={i18n.t(`categories.${level.label}`)}
                     control={<Radio />}
                   />
                 ))}
