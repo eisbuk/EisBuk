@@ -12,6 +12,7 @@ import { currentTheme } from "@/themes";
 import { slotsLabels } from "@/config/appConfig";
 
 import { fb2Luxon } from "@/data/dtutils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   data: {
@@ -25,6 +26,7 @@ interface Props {
 const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
   const classes = useStyles();
 
+  const { t } = useTranslation();
   const slotLabel = slotsLabels.types[data.type];
   const date = fb2Luxon(data.date);
 
@@ -119,7 +121,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
                 key="type"
                 color={slotLabel.color}
               >
-                {slotLabel.label}
+                {t(`Types.${slotLabel.label}`)}
               </Typography>
             </Box>
           </Box>

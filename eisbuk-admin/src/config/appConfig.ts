@@ -38,10 +38,10 @@ export const slotsLabelsLists: SlotsLabelList = {
     { id: Duration["2h"], label: "2H", minutes: 110 },
   ],
   categories: [
-    { id: Category.Course, label: "Corso" },
-    { id: Category.PreCompetitive, label: "Preagonismo" },
-    { id: Category.Competitive, label: "Agonismo" },
-    { id: Category.Adults, label: "Adulti" },
+    { id: Category.Course, label: "Course" },
+    { id: Category.PreCompetitive, label: "PreCompetitive" },
+    { id: Category.Competitive, label: "Competitive" },
+    { id: Category.Adults, label: "Adults" },
   ],
   types: [
     {
@@ -52,13 +52,13 @@ export const slotsLabelsLists: SlotsLabelList = {
     },
     {
       id: SlotType.OffIceDancing,
-      label: "OFF Ice Danza",
+      label: "OffIceDancing",
       color: "secondary",
       icon: ProjectIcons.AccessibilityNew,
     },
     {
       id: SlotType.OffIceGym,
-      label: "OFF Ice Gym",
+      label: "OffIceGym",
       color: "secondary",
       icon: ProjectIcons.FitnessCenter,
     },

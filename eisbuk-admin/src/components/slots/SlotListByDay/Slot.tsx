@@ -232,7 +232,7 @@ const Slot: React.FC<SlotProps> = ({
                   key="type"
                   color={slotLabel.color}
                 >
-                  {slotLabel.label}
+                  {t(`Types.${slotLabel.label}`)}
                 </Typography>
               </Box>
               {Boolean(onDelete) && !deleted ? (
