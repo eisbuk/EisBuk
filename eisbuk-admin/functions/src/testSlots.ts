@@ -2,13 +2,13 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
 
-import { Categories, Notes, Types } from "./types/enums";
+import { Category, SlotType } from "./types/enums";
 
 import { checkUser, roundTo } from "./utils";
 
-const CATEGORIES = Object.values(Categories);
-const NOTES = Object.values(Notes);
-const TYPES = Object.values(Types);
+const CATEGORIES = Object.values(Category);
+const NOTES = ["", "Pista 1", "Pista 2"];
+const TYPES = Object.values(SlotType);
 
 /**
  * Fills day with four dummy slots

@@ -14,7 +14,7 @@ import {
   SlotDay,
   SlotWeek,
 } from "@/types/store";
-import { Slot, Customer } from "@/types/firestore";
+import { Slot, Customer } from "@functions/types/firestore";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 

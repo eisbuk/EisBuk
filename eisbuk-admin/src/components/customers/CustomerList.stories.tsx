@@ -6,9 +6,9 @@ import { v4 as uuidv4 } from "uuid";
 
 import CustomerList from "@/components/customers/CustomerList";
 
-import { Category } from "@/enums/firestore";
+import { Category } from "@functions/enums/firestore";
 
-import { Customer } from "@/types/firestore";
+import { Customer } from "@functions/types/firestore";
 
 import firstNames from "@/data/italian-names.json";
 import lastNames from "@/data/italian-surnames.json";
@@ -35,7 +35,7 @@ const lodash = _.runInContext();
 
 const CATEGORIES = lodash.omit(
   Object.values(Category),
-  Category.Adulti
+  Category.Adults
 ) as Category[];
 
 /**

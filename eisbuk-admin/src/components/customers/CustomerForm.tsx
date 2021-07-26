@@ -24,7 +24,7 @@ import {
 import { Formik, Form, FastField, FieldConfig } from "formik";
 import * as Yup from "yup";
 
-import { Customer } from "@/types/firestore";
+import { Customer } from "@functions/types/firestore";
 
 import { currentTheme } from "@/themes";
 
@@ -140,7 +140,7 @@ const CustomerForm: React.FC<Props> = ({
                   <FormControlLabel
                     key={level.id}
                     value={level.id}
-                    label={level.label}
+                    label={i18n.t(`categories.${level.label}`)}
                     control={<Radio />}
                   />
                 ))}

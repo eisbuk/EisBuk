@@ -3,7 +3,7 @@ import { Card, CardContent, Typography, Button, Box } from "@material-ui/core";
 import { makeStyles } from "@material-ui/styles";
 import { Timestamp } from "@google-cloud/firestore";
 
-import { Duration, Notes, SlotType } from "@/enums/firestore";
+import { Duration, SlotType } from "@functions/enums/firestore";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
@@ -12,19 +12,21 @@ import { currentTheme } from "@/themes";
 import { slotsLabels } from "@/config/appConfig";
 
 import { fb2Luxon } from "@/data/dtutils";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   data: {
     type: SlotType;
     date: Timestamp;
     duration: Duration;
-    notes: Notes;
+    notes: string;
   };
 }
 
 const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
   const classes = useStyles();
 
+  const { t } = useTranslation();
   const slotLabel = slotsLabels.types[data.type];
   const date = fb2Luxon(data.date);
 
@@ -119,7 +121,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
                 key="type"
                 color={slotLabel.color}
               >
-                {slotLabel.label}
+                {t(`Types.${slotLabel.label}`)}
               </Typography>
             </Box>
           </Box>

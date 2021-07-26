@@ -2,12 +2,12 @@ import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { Avatar, Box, Typography, IconButton } from "@material-ui/core";
 import { DateTime } from "luxon";
-
+import { useTranslation } from "react-i18next";
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleOutline from "@material-ui/icons/AddCircleOutline";
 
 import { ETheme } from "@/themes";
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 import DurationsList from "./DurationsList";
 import UserAvatar from "./UserAvatar";
@@ -53,7 +53,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
 
   const classes = useStyles();
   const slotDateTime = DateTime.fromSeconds(date.seconds);
-
+  const { t } = useTranslation();
   const handleDelete = (e: React.SyntheticEvent) => {
     e.preventDefault();
     deleteSlot(slot);
@@ -94,7 +94,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
               color="textSecondary"
               className={classes.category}
             >
-              {slotsLabels.categories[category].label}
+              {t(`categories.${slotsLabels.categories[category].label}`)}
             </Typography>
           ))}
           {type && (
@@ -103,7 +103,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
               color="textSecondary"
               className={classes.type}
             >
-              {slotsLabels.types[type].label}
+              {t(`Types.${slotsLabels.types[type].label}`)}
             </Typography>
           )}
         </Box>

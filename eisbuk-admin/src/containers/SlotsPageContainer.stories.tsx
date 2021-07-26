@@ -9,9 +9,9 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { Slot as SlotInterface } from "@/types/firestore";
+import { Slot as SlotInterface } from "@functions/types/firestore";
 
-import { Category, Duration, Notes, SlotType } from "@/enums/firestore";
+import { Category, Duration, SlotType } from "@functions/enums/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
@@ -90,17 +90,17 @@ OneSlot.args = {
     "2021-01-20": {
       foo: {
         id: "foo",
-        categories: [Category.Agonismo],
+        categories: [Category.Competitive],
         type: SlotType.Ice,
         date: new Timestamp(1609513200, 0),
         durations: [Duration["1h"]],
-        notes: Notes.Pista1,
+        notes: "Pista 1",
       },
     },
   },
 };
 
-const NOTES = Object.values(Notes);
+const NOTES = ["", "Pista 1", "Pista 2"];
 
 /**
  * Create dummy slots for storybook view
@@ -129,10 +129,10 @@ const createSlots = (date: DateTime, seed: string) => {
         slots[slotDate.toISODate()][slotId] = {
           id: uuidv4(),
           date: new Timestamp(slotDate.second, 0),
-          categories: [Category.Agonismo],
+          categories: [Category.Competitive],
           type: SlotType.Ice,
           durations: [Duration["1h"]],
-          notes: lodash.sample(NOTES) || Notes.Null,
+          notes: lodash.sample(NOTES) || "",
         };
       }
     });

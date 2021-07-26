@@ -24,7 +24,8 @@
         "StartTime": "Ora di inizio",
         "Type": "Tipo",
         "EditSlot": "Modifica Slot",
-        "CreateSlot": "Crea Slot"
+        "CreateSlot": "Crea Slot",
+        "Cancel": "Annulla"
 
     },
     "CustomerForm": {
@@ -35,7 +36,7 @@
         "Category": "Categoria",
         "MedicalCertificate": "Scadenza Cert. Medico",
         "CardNumber": "Numero Tessera",
-        "Canel": "Annulla",
+        "Cancel": "Annulla",
         "Save": "Salva",
         "NewAthlete": "Nuovo atleta"
     },
@@ -69,12 +70,6 @@
         "NonReversible": "Questa azione non è reversibile"
 
     },
-    "AppConfig":{
-        "Course": "Corso",
-        "Dance": "Danza",
-        "Amateur": "Preagonismo",
-        "Professional": "Agonismo"
-    },
     "CustomerList":{
         "Name": "Nome",
         "Surname":"Cognome",
@@ -82,5 +77,16 @@
         "Email":"Email",
         "DeleteConfirmation": "Sei sicuro di voler rimuovere " ,
         "NonReversible":"Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
-    }
+    },
+    "categories":{
+        "Course": "Corso",
+        "Amateur": "Preagonismo",
+        "Professional": "Agonismo",
+        "Adults": "Adulti"
+    },
+      "Types": {
+        "OffIceDancing" : "off-ice-danza",
+        "Ice" : "ice",
+        "OffIceGym" : "off-ice-gym"
+      }
   }

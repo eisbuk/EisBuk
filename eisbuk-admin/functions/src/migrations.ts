@@ -2,6 +2,8 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
 
+import { Category } from "./types/enums";
+
 import { checkUser } from "./utils";
 
 /**
@@ -19,7 +21,7 @@ export const migrateSlotsToPluralCategories = functions
 
     existing.forEach((el) => {
       const slotData = el.data();
-      const { category } = slotData as { category: string };
+      const { category } = slotData as { category: Category };
 
       if (category) {
         const newData = {

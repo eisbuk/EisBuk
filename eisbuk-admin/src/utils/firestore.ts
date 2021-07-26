@@ -1,7 +1,7 @@
 import { ORGANIZATION } from "@/config/envInfo";
 import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
-import { Collection, OrgSubCollection } from "@/enums/firestore";
+import { Collection, OrgSubCollection } from "@functions/enums/firestore";
 
 // ***** Region Wrap Organization ***** //
 type EnumSafeQuerySetting = Omit<ReduxFirestoreQuerySetting, "collection"> & {
