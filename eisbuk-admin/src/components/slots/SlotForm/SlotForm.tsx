@@ -32,13 +32,12 @@ import {
 import { DateTime } from "luxon";
 import * as Yup from "yup";
 
+import { Slot, Duration } from "eisbuk-shared";
+
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
 import { LocalStore } from "@/types/store";
 import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
-import { Slot } from "@functions/types/firestore";
-
-import { Duration } from "@functions/enums/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 

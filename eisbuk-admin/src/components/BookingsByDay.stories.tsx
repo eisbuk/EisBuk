@@ -3,7 +3,7 @@ import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 import BookingsByDay from "@/components/BookingsByDay";
 
-import { Duration, Category, SlotType } from "@functions/enums/firestore";
+import { Duration, Category, SlotType } from "eisbuk-shared";
 
 export default {
   title: "Bookings by day",

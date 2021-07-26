@@ -3,15 +3,13 @@ import {
   Collection,
   OrgSubCollection,
   BookingSubCollection,
-} from "@functions/enums/firestore";
-import {
   OrganizationMeta,
   SlotsByDay,
   Customer,
   BookingsMeta,
   BookingInfo,
   BookingsByDay,
-} from "@functions/types/firestore";
+} from "eisbuk-shared";
 
 // ***** Region In-Store Firebase Date Scheme ***** //
 type FirestoreStatusKey =

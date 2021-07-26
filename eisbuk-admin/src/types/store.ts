@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
 
+import { Customer, Slot } from "eisbuk-shared";
+
 import { store } from "@/store";
 
 import { NotifVariant } from "@/enums/Redux";
@@ -13,7 +15,6 @@ import {
   FirestoreData,
   FirestoreOrdered,
 } from "@/types/firestore";
-import { Customer, Slot } from "@functions/types/firestore";
 
 // ***** Region Store Types ***** //
 export type Dispatch = typeof store.dispatch;

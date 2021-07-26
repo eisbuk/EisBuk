@@ -1,7 +1,7 @@
 import { fb2Luxon, fromISO, luxonToFB } from "./dtutils";
 import { DateTime } from "luxon";
 
-import { Slot } from "@functions/types/firestore";
+import { Slot } from "eisbuk-shared";
 
 // ***** Region Shift Slots Day ***** //
 interface ShiftSlotsDay {

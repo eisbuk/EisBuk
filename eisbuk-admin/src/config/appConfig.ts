@@ -1,6 +1,7 @@
 import _ from "lodash";
 
-import { SlotType, Duration, Category } from "@functions/enums/firestore";
+import { SlotType, Duration, Category } from "eisbuk-shared";
+
 import { ProjectIcons } from "@/enums/components";
 
 interface DurationEntry {

@@ -1,0 +1,5 @@
+# ignore installation
+node_modules
+
+# ignore build
+dist

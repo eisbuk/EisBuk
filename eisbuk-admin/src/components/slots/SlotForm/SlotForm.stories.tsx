@@ -2,8 +2,9 @@ import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 import firebase from "firebase";
 
+import { Category, Duration, SlotType } from "eisbuk-shared";
+
 import SlotForm from "@/components/slots/SlotForm";
-import { Category, Duration, SlotType } from "@functions/enums/firestore";
 
 export default {
   title: "SlotForm",

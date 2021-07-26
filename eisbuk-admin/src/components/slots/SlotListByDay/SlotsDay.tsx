@@ -17,10 +17,11 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import AssignmentIcon from "@material-ui/icons/Assignment";
 
+import { Slot as SlotInterface } from "eisbuk-shared";
+
 import { __isStorybook__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
-import { Slot as SlotInterface } from "@functions/types/firestore";
 
 import { ETheme } from "@/themes";
 

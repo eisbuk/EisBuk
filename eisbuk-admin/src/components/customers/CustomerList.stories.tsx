@@ -4,11 +4,9 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { v4 as uuidv4 } from "uuid";
 
+import { Category, Customer } from "eisbuk-shared";
+
 import CustomerList from "@/components/customers/CustomerList";
-
-import { Category } from "@functions/enums/firestore";
-
-import { Customer } from "@functions/types/firestore";
 
 import firstNames from "@/data/italian-names.json";
 import lastNames from "@/data/italian-surnames.json";

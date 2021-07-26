@@ -10,9 +10,9 @@ import {
 } from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
 
-import { LocalStore } from "@/types/store";
+import { OrgSubCollection } from "eisbuk-shared";
 
-import { OrgSubCollection } from "@functions/enums/firestore";
+import { LocalStore } from "@/types/store";
 
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";

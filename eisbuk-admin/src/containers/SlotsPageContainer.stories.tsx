@@ -7,11 +7,14 @@ import seedrandom from "seedrandom";
 import _ from "lodash";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
+import {
+  Slot as SlotInterface,
+  Category,
+  Duration,
+  SlotType,
+} from "eisbuk-shared";
+
 import { __storybookDate__ } from "@/lib/constants";
-
-import { Slot as SlotInterface } from "@functions/types/firestore";
-
-import { Category, Duration, SlotType } from "@functions/enums/firestore";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 

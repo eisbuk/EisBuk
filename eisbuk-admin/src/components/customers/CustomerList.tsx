@@ -17,7 +17,8 @@ import {
   TextField,
 } from "@material-ui/core";
 
-import { Customer } from "@functions/types/firestore";
+import { Customer } from "eisbuk-shared";
+
 import { useTranslation } from "react-i18next";
 
 import CustomerForm from "@/components/customers/CustomerForm";

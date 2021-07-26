@@ -8,8 +8,9 @@ import {
 } from "react-redux-firebase";
 import { Route, Switch } from "react-router-dom";
 
+import { Collection, OrgSubCollection } from "eisbuk-shared";
+
 import { Routes, PrivateRoutes } from "@/enums/routes";
-import { Collection, OrgSubCollection } from "@functions/enums/firestore";
 
 import { LocalStore } from "@/types/store";
 

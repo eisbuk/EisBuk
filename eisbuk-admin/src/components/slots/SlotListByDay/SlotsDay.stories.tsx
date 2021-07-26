@@ -2,9 +2,10 @@ import React from "react";
 import firebase from "firebase";
 import { v4 } from "uuid";
 
+import { Category, Duration, SlotType } from "eisbuk-shared";
+
 import SlotsDay from "@/components/slots/SlotListByDay/SlotsDay";
 
-import { Category, Duration, SlotType } from "@functions/enums/firestore";
 import { ComponentStory } from "@storybook/react";
 
 export default {
