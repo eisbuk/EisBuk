@@ -22,7 +22,7 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: bash eisbuk-install.sh
+        run: ./eisbuk-install.sh
       - name: Create .env file with credentials
         uses: SpicyPizza/create-envfile@v1
         with:

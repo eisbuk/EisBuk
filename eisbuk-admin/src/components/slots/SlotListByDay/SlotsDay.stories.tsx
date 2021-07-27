@@ -49,7 +49,7 @@ const slots = {
     categories: [Category.Course],
     type: SlotType.OffIceGym,
     durations: Object.values(Duration),
-    notes: "Pista 2\nPotrebbe non svolgersi",
+    notes: "Pista 2\n Potrebbe non svolgersi",
   },
 };
 
