@@ -13,7 +13,7 @@ jobs:
         with:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
-      - name: Install requirements
-        run: yarn --cwd eisbuk-admin
+      - name: Install and link packages
+        run: ./eisbuk-install.sh
       - name: build storybook and upload
         run: cd eisbuk-admin && npx chromatic --exit-zero-on-changes --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }}

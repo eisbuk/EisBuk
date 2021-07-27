@@ -4,6 +4,8 @@ import firebase from "firebase";
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
 
+import { Slot, Customer } from "eisbuk-shared";
+
 import { Action, NotifVariant } from "@/enums/Redux";
 
 import {
@@ -14,7 +16,6 @@ import {
   SlotDay,
   SlotWeek,
 } from "@/types/store";
-import { Slot, Customer } from "@functions/types/firestore";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 

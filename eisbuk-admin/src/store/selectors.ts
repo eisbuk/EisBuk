@@ -3,8 +3,9 @@ import _ from "lodash";
 import { createSelector } from "reselect";
 import { DateTime } from "luxon";
 
+import { Slot, Customer } from "eisbuk-shared";
+
 import { LocalStore } from "@/types/store";
-import { Slot, Customer } from "@functions/types/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 

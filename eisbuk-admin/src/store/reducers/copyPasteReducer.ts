@@ -1,6 +1,7 @@
+import { Slot } from "eisbuk-shared";
+
 import { Action } from "@/enums/Redux";
 
-import { Slot } from "@functions/types/firestore";
 import { CopyPasteState } from "@/types/store";
 
 const defaultState = {

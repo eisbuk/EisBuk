@@ -5,7 +5,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import * as colors from "@material-ui/core/colors";
 import { DateTime } from "luxon";
 
-import { Category } from "@functions/enums/firestore";
+import { Category } from "eisbuk-shared";
 
 import { getInitials } from "@/utils/helpers";
 

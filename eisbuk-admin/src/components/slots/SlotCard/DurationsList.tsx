@@ -3,9 +3,9 @@ import { makeStyles } from "@material-ui/styles";
 import { Box, Chip } from "@material-ui/core";
 import { ChevronRight } from "@material-ui/icons";
 
-import { MappedSlotLabels } from "@/config/appConfig";
+import { Duration } from "eisbuk-shared";
 
-import { Duration } from "@functions/enums/firestore";
+import { MappedSlotLabels } from "@/config/appConfig";
 
 import { ETheme } from "@/themes";
 

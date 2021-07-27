@@ -5,33 +5,13 @@ on:
   - pull_request
 
 jobs:
-  build_v12:
+  build_v14:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
-      - name: Cache node modules
-        uses: actions/cache@v2
-        with:
-          path: |
-            **/node_modules
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-v12-${{ hashFiles('**/yarn.lock') }}
-      - name: Install modules
-        run: yarn --cwd eisbuk-admin
-      - name: Build app
-        run: yarn --cwd eisbuk-admin build
-
-  test_v12:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "12"
+          node-version: "14"
       - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
         with:
@@ -39,8 +19,27 @@ jobs:
             **/node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
-      - name: Install modules
-        run: yarn --cwd eisbuk-admin && npm --prefix eisbuk-admin/functions install
+      - name: Install and link packages
+        run: ./eisbuk-install.sh
+      - name: Build app
+        run: yarn --cwd eisbuk-admin build
+
+  test_v14:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Cache node modules and firebase emulators
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+            $HOME/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+      - name: Install and link packages
+        run: ./eisbuk-install.sh
       - name: Run tests
         run: yarn --cwd eisbuk-admin test:ci
 

@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import { Category } from "./types/enums";
+import { Category } from "eisbuk-shared";
 
 import { checkUser } from "./utils";
 

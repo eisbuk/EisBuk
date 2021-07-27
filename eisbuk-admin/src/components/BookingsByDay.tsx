@@ -13,10 +13,9 @@ import _ from "lodash";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { Slot, Customer, BookingInfo } from "@functions/types/firestore";
-import { ETheme } from "@/themes";
+import { Slot, Customer, BookingInfo, Duration } from "eisbuk-shared";
 
-import { Duration } from "@functions/enums/firestore";
+import { ETheme } from "@/themes";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 

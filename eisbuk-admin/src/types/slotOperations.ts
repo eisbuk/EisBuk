@@ -1,8 +1,6 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotType, Category, Duration } from "@functions/enums/firestore";
-
-import { Slot } from "@functions/types/firestore";
+import { SlotType, Category, Duration, Slot } from "eisbuk-shared";
 
 /**
  * Params shared between different types of operation on slot ("create" | "edit")

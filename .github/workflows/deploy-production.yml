@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: "14"
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -21,10 +21,8 @@ jobs:
             **/node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-v12-${{ hashFiles('**/yarn.lock') }}
-      - name: Install dependencies
-        run: yarn --cwd eisbuk-admin
-      - name: Install functions dependencies
-        run: npm --prefix eisbuk-admin/functions install
+      - name: Install and link packages
+        run: ./eisbuk-install.sh
       - name: Create .env file with credentials
         uses: SpicyPizza/create-envfile@v1
         with:

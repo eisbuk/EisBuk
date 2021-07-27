@@ -1,4 +1,8 @@
 {
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
+  },
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
@@ -9,7 +13,7 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "build": "npm run lint && tsc"
+    "build": "npm run lint && tsc && tscpaths -p tsconfig.json -s ./src -o ./dist"
   },
   "engines": {
     "node": "14"
@@ -28,11 +32,15 @@
     "@firebase/testing": "^0.20.11",
     "@types/luxon": "^1.27.0",
     "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.18.0",
     "eslint-config-google": "^0.14.0",
     "eslint-plugin-promise": "^4.2.1",
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
+    "tsconfig-paths": "^3.10.1",
+    "tscpaths": "^0.0.9",
     "typescript": "^4.3.5"
   },
   "private": true
