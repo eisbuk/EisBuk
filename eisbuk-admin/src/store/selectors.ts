@@ -4,7 +4,7 @@ import { createSelector } from "reselect";
 import { DateTime } from "luxon";
 
 import { LocalStore } from "@/types/store";
-import { Slot, Customer } from "@/types/firestore";
+import { Slot, Customer } from "@functions/types/firestore";
 
 import { fs2luxon } from "@/utils/helpers";
 

@@ -20,9 +20,9 @@ import {
   CheckCircle as CheckCircleIcon,
 } from "@material-ui/icons";
 
-import { Duration } from "@/enums/firestore";
+import { Duration } from "@functions/enums/firestore";
 
-import { Slot as SlotInterface, BookingInfo } from "@/types/firestore";
+import { Slot as SlotInterface, BookingInfo } from "@functions/types/firestore";
 import { LocalStore } from "@/types/store";
 import { SlotOperation } from "@/types/slotOperations";
 
@@ -233,7 +233,7 @@ const Slot: React.FC<SlotProps> = ({
                   key="type"
                   color={slotLabel.color}
                 >
-                  {slotLabel.label}
+                  {t(`Types.${slotLabel.label}`)}
                 </Typography>
               </Box>
               {Boolean(onDelete) && !deleted ? (

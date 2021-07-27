@@ -1,8 +1,8 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotType, Category, Notes, Duration } from "@/enums/firestore";
+import { SlotType, Category, Duration } from "@functions/enums/firestore";
 
-import { Slot } from "@/types/firestore";
+import { Slot } from "@functions/types/firestore";
 
 /**
  * Params shared between different types of operation on slot ("create" | "edit")
@@ -11,7 +11,7 @@ export interface SlotOperationBaseParams {
   type: SlotType;
   categories: Category[];
   durations: Duration[];
-  notes: Notes;
+  notes: string;
 }
 
 /**

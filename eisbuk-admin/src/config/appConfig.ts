@@ -1,6 +1,6 @@
 import _ from "lodash";
 
-import { SlotType, Duration, Category } from "@/enums/firestore";
+import { SlotType, Duration, Category } from "@functions/enums/firestore";
 import { ProjectIcons } from "@/enums/components";
 
 interface DurationEntry {
@@ -37,10 +37,10 @@ export const slotsLabelsLists: SlotsLabelList = {
     { id: Duration["2h"], label: "2H", minutes: 110 },
   ],
   categories: [
-    { id: Category.Corso, label: "Corso" },
-    { id: Category.Preagonismo, label: "Preagonismo" },
-    { id: Category.Agonismo, label: "Agonismo" },
-    { id: Category.Adulti, label: "Adulti" },
+    { id: Category.Course, label: "Course" },
+    { id: Category.PreCompetitive, label: "PreCompetitive" },
+    { id: Category.Competitive, label: "Competitive" },
+    { id: Category.Adults, label: "Adults" },
   ],
   types: [
     {
@@ -50,14 +50,14 @@ export const slotsLabelsLists: SlotsLabelList = {
       icon: ProjectIcons.AcUnit,
     },
     {
-      id: SlotType.OffIceDanza,
-      label: "OFF Ice Danza",
+      id: SlotType.OffIceDancing,
+      label: "OffIceDancing",
       color: "secondary",
       icon: ProjectIcons.AccessibilityNew,
     },
     {
       id: SlotType.OffIceGym,
-      label: "OFF Ice Gym",
+      label: "OffIceGym",
       color: "secondary",
       icon: ProjectIcons.FitnessCenter,
     },

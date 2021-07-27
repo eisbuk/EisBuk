@@ -5,7 +5,7 @@ import { ChevronRight } from "@material-ui/icons";
 
 import { MappedSlotLabels } from "@/config/appConfig";
 
-import { Duration } from "@/enums/firestore";
+import { Duration } from "@functions/enums/firestore";
 
 import { ETheme } from "@/themes";
 

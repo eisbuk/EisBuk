@@ -25,7 +25,8 @@
         "StartTime": "Start Time",
         "Type": "Type",
         "EditSlot": "Edit Slot",
-        "CreateSlot": "Create Slot"
+        "CreateSlot": "Create Slot",
+        "Cancel": "Cancel"
     },
     "CustomerForm": {
         "Name": "Name",
@@ -68,12 +69,7 @@
         "NonReversible": "This action is non-reversible"
 
     },
-    "AppConfig":{
-        "Course": "Course",
-        "Dance": "Dance",
-        "Amateur": "Amateur",
-        "Professional": "Professional"
-    },
+
     "CustomerList":{
         "Name": "Name",
         "Surname":"Surname",
@@ -82,4 +78,16 @@
         "DeleteConfirmation": "Are you sure you want to remove ",
         "NonReversible":"This action is not reversible, the user will definitely be deleted."
     }
+    ,
+    "Categories":{
+        "Course": "Course",
+        "Competitive" : "Competitive",
+        "PreCompetitive" : "Pre-competitive",
+        "Adults" : "Adults"
+    },
+      "Types": {
+        "OffIceDancing" : "off-ice-dancing",
+        "Ice" : "ice",
+        "OffIceGym" : "off-ice-gym"
+      }
 }
