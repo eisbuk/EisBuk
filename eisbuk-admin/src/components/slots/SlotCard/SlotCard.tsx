@@ -94,7 +94,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
               color="textSecondary"
               className={classes.category}
             >
-              {t(`categories.${slotsLabels.categories[category].label}`)}
+              {t(`Categories.${slotsLabels.categories[category].label}`)}
             </Typography>
           ))}
           {type && (

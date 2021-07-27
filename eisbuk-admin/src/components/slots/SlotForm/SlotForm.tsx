@@ -318,15 +318,17 @@ interface GetCheckBoxes {
  * @param values
  * @returns
  */
-const getCheckBoxes: GetCheckBoxes = (name, values, translate) =>
-  values.map(({ id, label }) => (
+const getCheckBoxes: GetCheckBoxes = (name, values, translate) => {
+  const capitalizedName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
+  return values.map(({ id, label }) => (
     <MyCheckbox
       key={id.toString()}
       name={name}
       value={id.toString()}
-      label={translate ? i18n.t(`${name}.${label}`) : label}
+      label={translate ? i18n.t(`${capitalizedName}.${label}`) : label}
     />
   ));
+};
 // ***** End Region Get Checkboxes ***** //
 
 // ***** Region My Checkbox ***** //
