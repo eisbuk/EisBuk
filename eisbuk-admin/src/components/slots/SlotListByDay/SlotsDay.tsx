@@ -12,7 +12,7 @@ import {
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
 import _ from "lodash";
-
+import { useTranslation } from "react-i18next";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import AssignmentIcon from "@material-ui/icons/Assignment";
@@ -72,8 +72,8 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   const auth = useSelector((state: LocalStore) => state.firebase.auth);
 
+  const { t } = useTranslation();
   const luxonDay = luxon.parse(day, "yyyy-LL-dd");
-  const dateStr = luxonDay.toFormat("EEEE d MMMM", { locale: "it-IT" });
 
   /** @TODO rewrite to use imported selector */
   const copiedWeek = useSelector((state: LocalStore) => state.copyPaste.week);
@@ -139,7 +139,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
         <>
           <ListSubheader key={day + "-title"} className={classes.listSubheader}>
             <Typography display="inline" variant="h4" className={classes.date}>
-              {dateStr}
+              {t("SlotsDay.Date", { date: luxonDay })}
             </Typography>
             <Box display="flex" className={classes.dateButtons}>
               {newSlotButton}
