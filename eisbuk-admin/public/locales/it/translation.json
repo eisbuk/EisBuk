@@ -83,7 +83,7 @@
         "DeleteConfirmation": "Sei sicuro di voler rimuovere " ,
         "NonReversible":"Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
     },
-    "categories":{
+    "Categories":{
         "Course": "Corso",
         "Amateur": "Preagonismo",
         "Professional": "Agonismo",

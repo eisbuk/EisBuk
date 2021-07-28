@@ -85,7 +85,7 @@
         "NonReversible":"This action is not reversible, the user will definitely be deleted."
     }
     ,
-    "categories":{
+    "Categories":{
         "Course": "Course",
         "Competitive" : "Competitive",
         "PreCompetitive" : "Pre-competitive",
