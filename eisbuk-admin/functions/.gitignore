@@ -1,3 +1,6 @@
+# installations
 node_modules
 
-dist
+# err logs
+yarn-error.logs
+ui-debug.log

@@ -10,15 +10,15 @@
     "lint": "eslint .",
     "serve": "tsc & firebase emulators:start --only functions & tsc --watch",
     "shell": "firebase functions:shell",
-    "start": "npm run shell",
+    "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "build": "npm run lint && tsc && tscpaths -p tsconfig.json -s ./src -o ./dist"
+    "build": "webpack --mode production --config ./webpack/webpack.config.js"
   },
   "engines": {
     "node": "14"
   },
-  "main": "dist/index.js",
+  "main": "bundle.js",
   "dependencies": {
     "firebase": "^8.2.4",
     "firebase-admin": "^9.4.2",
@@ -39,9 +39,13 @@
     "eslint-plugin-promise": "^4.2.1",
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
+    "ts-loader": "^9.2.4",
     "tsconfig-paths": "^3.10.1",
     "tscpaths": "^0.0.9",
-    "typescript": "^4.3.5"
+    "typescript": "^4.3.5",
+    "webpack": "^5.47.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-node-externals": "^3.0.0"
   },
   "private": true
 }

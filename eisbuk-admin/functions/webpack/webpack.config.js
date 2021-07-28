@@ -1,0 +1,36 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const nodeExternals = require("webpack-node-externals");
+
+module.exports = {
+  entry: "./src/index.ts",
+  resolve: {
+    extensions: [".js", ".ts"],
+  },
+  output: {
+    path: process.cwd(),
+    filename: "bundle.js",
+    libraryTarget: "commonjs",
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: "ts-loader",
+        options: {
+          transpileOnly: true,
+        },
+      },
+    ],
+  },
+  externalsPresets: { node: true },
+  externals: [
+    // ignore node_modules as they're installed (with respect to package.json)
+    // on our cloud functions container image
+    nodeExternals({
+      // we're adding exception to ignored modules to include symlinked 'eisbuk-shared' in the bundle
+      allowlist: ["eisbuk-shared"],
+    }),
+  ],
+  // create source map for bundle to allow for inspection of bundled deps
+  devtool: "source-map",
+};
