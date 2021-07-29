@@ -3,21 +3,6 @@
 const path = require("path");
 const nodeExternals = require("webpack-node-externals");
 
-// const entry = fs.readdirSync("src").reduce(
-//   (acc, curr) => {
-//     const currKey = curr.replace(".ts", "");
-
-//     return {
-//       ...acc,
-//       [currKey]: {
-//         import: `./src/${curr}`,
-//         dependOn: "shared",
-//       },
-//     };
-//   },
-//   { shared: "eisbuk-shared" }
-// );
-
 module.exports = {
   entry: "./src/index.ts",
   resolve: {
