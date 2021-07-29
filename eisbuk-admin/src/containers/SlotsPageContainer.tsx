@@ -99,10 +99,10 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             <ConfirmDialog
               title={`${t("SlotsPageContainer.DeleteAllConfirmation")} (${
                 slotsArray.length
-              }) ${t("SlotsPageContainer.OfTheWeek")} ${currentDate.toFormat(
-                "d MMMM",
+              }) ${t("SlotsPageContainer.OfTheWeek")} ${t(
+                "SlotsPageContainer.CurrentDate",
                 {
-                  locale: "it-IT",
+                  date: currentDate,
                 }
               )}?`}
               open={showWeekDeleteConfirm}

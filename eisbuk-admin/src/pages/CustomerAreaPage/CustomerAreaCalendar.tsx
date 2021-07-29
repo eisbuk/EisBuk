@@ -21,7 +21,7 @@ import { subscribeToSlot, unsubscribeFromSlot } from "@/store/actions/actions";
 import { wrapOrganization } from "@/utils/firestore";
 import { flatten, getMonthStr } from "@/utils/helpers";
 
-const luxon = new LuxonUtils({ locale: "it" });
+const luxon = new LuxonUtils();
 
 /** @TODO refactor to use imported selectors */
 const slotsSelector = (state: LocalStore) =>

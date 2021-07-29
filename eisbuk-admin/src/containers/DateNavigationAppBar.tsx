@@ -7,6 +7,7 @@ import {
   ChevronLeft as ChevronLeftIcon,
   ChevronRight as ChevronRightIcon,
 } from "@material-ui/icons";
+import i18n from "i18next";
 
 import { ETheme } from "@/themes";
 
@@ -16,16 +17,16 @@ import { calendarDaySelector } from "@/store/selectors";
 const JUMPS = {
   week: {
     display: (currentDate: DateTime) =>
-      currentDate.toFormat("d MMMM", { locale: "it-IT" }) +
+      i18n.t("DateNavigationBar.Week", { date: currentDate }) +
       " — " +
-      currentDate.plus({ days: 6 }).toFormat("d MMMM", { locale: "it-IT" }),
+      i18n.t("DateNavigationBar.Week", { date: currentDate.plus({ days: 6 }) }),
     delta: {
       days: 7,
     },
   },
   day: {
     display: (currentDate: DateTime) =>
-      currentDate.toFormat("EEEE d MMMM", { locale: "it-IT" }),
+      i18n.t("DateNavigationBar.Day", { date: currentDate }),
     delta: {
       days: 1,
     },

@@ -35,13 +35,13 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
       <CardContent className={classes.content}>
         <Box className={classes.date} textAlign="center">
           <Typography variant="h5" className={classes.weekday}>
-            {date.toFormat("EEE", { locale: "it-IT" })}
+            {t("CustomerAreaBookingCard.Weekday", { date })}
           </Typography>
           <Typography className={classes.day}>
-            {date.toFormat("d", { locale: "it-IT" })}
+            {t("CustomerAreaBookingCard.Day", { date })}
           </Typography>
           <Typography className={classes.month}>
-            {date.toFormat("MMMM", { locale: "it-IT" })}
+            {t("CustomerAreaBookingCard.Month", { date })}
           </Typography>
         </Box>
         <Box

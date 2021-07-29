@@ -2,6 +2,7 @@ import React from "react";
 import { makeStyles } from "@material-ui/styles";
 import { Box, Typography } from "@material-ui/core";
 import { DateTime } from "luxon";
+import { useTranslation } from "react-i18next";
 
 const useStyles = makeStyles(() => ({
   weekDay: {
@@ -23,25 +24,26 @@ interface Props {
 
 const SlotCalendarDate: React.FC<Props> = ({ date }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
   return (
     <>
       <Box display="flex">
         <Box>
           <Typography variant="h5" className={classes.weekDay}>
-            {date.setLocale("it").toFormat("EEEE")}
+            {t("SlotCalendarDate.Weekday", { date })}
           </Typography>
         </Box>
         <Box p={3}>
           <Typography variant="h4" className={classes.day}>
-            {date.setLocale("it").toFormat("dd")}
+            {t("SlotCalendarDate.Day", { date })}
           </Typography>
         </Box>
         <Box>
           <Typography variant="h5" className={classes.month}>
-            {date.setLocale("it").toFormat("MMMM")}
+            {t("SlotCalendarDate.Month", { date })}
           </Typography>
           <Typography className={(classes as any).year}>
-            {date.setLocale("it").toFormat("yyyy")}
+            {t("SlotCalendarDate.Year", { date })}
           </Typography>
         </Box>
       </Box>

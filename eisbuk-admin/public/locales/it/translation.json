@@ -11,7 +11,9 @@
         "NonReversible": "Questa azione non è reversibile",
         "Slot": "",
         "Book": "Prenota",
-        "Reserved" :"Prenotato"
+        "Reserved" :"Prenotato",
+        "ConfirmDialogDate":"{{date, d MMMM}}",
+        "ConfirmDialogTime":"{{date, HH:mm}}"
     },
     "SlotValidations":{
         "Time": "Manca l'ora",
@@ -25,7 +27,9 @@
         "Type": "Tipo",
         "EditSlot": "Modifica Slot",
         "CreateSlot": "Crea Slot",
-        "Cancel": "Annulla"
+        "Cancel": "Annulla",
+        "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
+        "parsedDate": "{{date, EEEE d MMMM}}"
 
     },
     "CustomerForm": {
@@ -67,7 +71,8 @@
     "SlotsPageContainer":{
         "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
         "OfTheWeek": "della settimana del ",
-        "NonReversible": "Questa azione non è reversibile"
+        "NonReversible": "Questa azione non è reversibile",
+        "CurrentDate": "{{date, d MMMM}}"
 
     },
     "CustomerList":{
@@ -88,5 +93,23 @@
         "OffIceDancing" : "off-ice-danza",
         "Ice" : "ice",
         "OffIceGym" : "off-ice-gym"
+      },
+      "DateNavigationBar":{
+          "Week": "{{date, d MMMM}}",
+          "Day": "{{date, EEEE d MMMM}}"
+      },
+      "CustomerAreaBookingCard":{
+          "Weekday": "{{date, EEE}}",
+          "Day": "{{date, d}}",
+          "Month": "{{date, MMMM}}"
+      },
+      "SlotsDay":{
+          "Date": "{{date,EEEE d MMMM}}"
+      },
+      "SlotCalendarDate":{
+          "Weekday":"{{date, EEEE}}",
+          "Day": "{{date, dd}}",
+          "Month": "{{date,MMMM}}",
+          "Year": "{{date,yyyy}}"
       }
   }
