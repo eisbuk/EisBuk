@@ -19,7 +19,7 @@ const nodeExternals = require("webpack-node-externals");
 // );
 
 module.exports = {
-  entry: "src/index.ts",
+  entry: "./src/index.ts",
   resolve: {
     extensions: [".js", ".ts"],
   },
