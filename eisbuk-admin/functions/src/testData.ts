@@ -4,11 +4,7 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import {
-  Category,
-  italianNames as FIRST_NAMES,
-  italianSurnames as LAST_NAMES,
-} from "eisbuk-shared";
+import { Category, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
 
 import { checkUser } from "./utils";
 

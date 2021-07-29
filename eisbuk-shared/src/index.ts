@@ -1,5 +1,8 @@
 export * from "./enums/firestore";
 export * from "./types/firestore";
 
-export const italianNames = import("./assets/italian-names.json");
-export const italianSurnames = import("./assets/italian-surnames.json");
+import italianNames from "./assets/italian-names.json";
+import italianSurnames from "./assets/italian-surnames.json";
+
+export const FIRST_NAMES = italianNames;
+export const LAST_NAMES = italianSurnames;
