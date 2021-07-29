@@ -3,6 +3,7 @@ import { FirebaseReducer } from "react-redux-firebase";
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
+import firebase from "firebase";
 
 import { Customer, Slot } from "eisbuk-shared";
 
@@ -66,6 +67,10 @@ interface Schema {}
 // ***** End Region Firebase Reducer ***** //
 
 // ****** Region Firestore ***** //
+export interface GetFirebase {
+  getFirebase: () => typeof firebase;
+}
+
 interface FirestoreRedux {
   status: {
     requesting: FirestoreStatusEntry<boolean>;

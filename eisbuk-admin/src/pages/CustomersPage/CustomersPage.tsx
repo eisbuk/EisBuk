@@ -13,7 +13,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerList from "@/components/customers/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
 
-import { deleteCustomer, updateCustomer } from "@/store/actions/actions";
+import { deleteCustomer, updateCustomer } from "@/store/actions/firestore";
 
 import { useTitle } from "@/utils/helpers";
 
