@@ -6,7 +6,6 @@
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
-    "tsc-watch": "tsc --watch",
     "lint": "eslint .",
     "serve": "tsc & firebase emulators:start --only functions & tsc --watch",
     "shell": "firebase functions:shell",
@@ -18,7 +17,7 @@
   "engines": {
     "node": "14"
   },
-  "main": "bundle.js",
+  "main": "dist/index.js",
   "dependencies": {
     "firebase": "^8.2.4",
     "firebase-admin": "^9.4.2",

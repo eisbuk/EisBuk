@@ -4,12 +4,13 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import { Category } from "eisbuk-shared";
+import {
+  Category,
+  italianNames as FIRST_NAMES,
+  italianSurnames as LAST_NAMES,
+} from "eisbuk-shared";
 
 import { checkUser } from "./utils";
-
-import * as FIRST_NAMES from "./assets/italian-names.json";
-import * as LAST_NAMES from "./assets/italian-surnames.json";
 
 const uuidv4 = v4;
 

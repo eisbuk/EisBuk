@@ -1,14 +1,31 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
+// const fs = require("fs");
+const path = require("path");
 const nodeExternals = require("webpack-node-externals");
 
+// const entry = fs.readdirSync("src").reduce(
+//   (acc, curr) => {
+//     const currKey = curr.replace(".ts", "");
+
+//     return {
+//       ...acc,
+//       [currKey]: {
+//         import: `./src/${curr}`,
+//         dependOn: "shared",
+//       },
+//     };
+//   },
+//   { shared: "eisbuk-shared" }
+// );
+
 module.exports = {
-  entry: "./src/index.ts",
+  entry: "src/index.ts",
   resolve: {
     extensions: [".js", ".ts"],
   },
   output: {
-    path: process.cwd(),
-    filename: "bundle.js",
+    path: path.resolve(process.cwd(), "./dist"),
+    filename: "index.js",
     libraryTarget: "commonjs",
   },
   module: {

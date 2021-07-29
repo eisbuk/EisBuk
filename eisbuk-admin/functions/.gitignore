@@ -4,3 +4,6 @@ node_modules
 # err logs
 yarn-error.logs
 ui-debug.log
+
+# build
+dist
