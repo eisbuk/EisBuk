@@ -266,9 +266,10 @@ const Slot: React.FC<SlotProps> = ({
       )}
       {confirmDeleteDialog && Boolean(onDelete) && (
         <ConfirmDialog
-          title={`${t("Slots.DeleteConfirmation")} ${date.toFormat("d MMMM", {
-            locale: "it-IT",
-          })} ${t("Slots.All")} ${date.toFormat("HH:mm")} ${t("Slots.Slot")}?`}
+          title={`${t(
+            "Slots.DeleteConfirmation"
+          )} ${t("Slots.ConfirmDialogDate", { date })}
+          ${t("Slots.ConfirmDialogTime", { date })} ${t("Slots.Slot")}?`}
           open={confirmDeleteDialog}
           setOpen={setConfirmDeleteDialog}
           onConfirm={() => onDelete!(data)}

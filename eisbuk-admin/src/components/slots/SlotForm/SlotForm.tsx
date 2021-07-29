@@ -202,10 +202,10 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
             <Form>
               <DialogTitle>
                 {parsedSlotEditDate
-                  ? parsedSlotEditDate.toFormat("EEEE d MMMM - HH:mm", {
-                      locale: "it-IT",
+                  ? t("SlotForm.parsedSlotEditDate", {
+                      date: parsedSlotEditDate,
                     })
-                  : parsedDate.toFormat("EEEE d MMMM", { locale: "it-IT" })}
+                  : t("SlotForm.parsedSlotEditDate", { date: parsedDate })}
               </DialogTitle>
               <DialogContent>
                 <FormControl component="fieldset">
