@@ -1,11 +1,9 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
-import { v4 } from "uuid";
+import { v4 as uuidv4 } from "uuid";
 import { DateTime } from "luxon";
 
 import { fs2luxon } from "./utils";
-
-const uuidv4 = v4;
 
 /**
  * Adds the secret_key to a user if it's missing.
