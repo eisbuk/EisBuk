@@ -23,6 +23,7 @@ import {
 
 import { wrapOrganization } from "@/utils/firestore";
 import { flatten, getMonthStr } from "@/utils/helpers";
+import { SlotOperation } from "@/types/slotOperations";
 
 const luxon = new LuxonUtils();
 
@@ -96,8 +97,8 @@ const CustomerAreaCalendar: React.FC<Props> = ({
       }
     : undefined;
 
-  const onUnsubscribe = (bookingInfo: BookingInfo) => {
-    dispatch(unsubscribeFromSlot(secretKey, bookingInfo));
+  const onUnsubscribe = (slot: Parameters<SlotOperation>[0]) => {
+    dispatch(unsubscribeFromSlot(secretKey, slot));
   };
 
   return (

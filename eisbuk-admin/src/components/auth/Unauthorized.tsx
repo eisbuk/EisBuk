@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 
 import { LocalStore } from "@/types/store";
 
-import { signOut } from "@/store/actions/actions";
+import { signOut } from "@/store/actions/authOperations";
 
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
 import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";

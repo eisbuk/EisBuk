@@ -30,7 +30,7 @@ import { LocalStore } from "@/types/store";
 
 import DebugMenu from "@/components/layout/DebugMenu";
 
-import { signOut } from "@/store/actions/actions";
+import { signOut } from "@/store/actions/authOperations";
 
 import { currentTheme, organizationInfo } from "@/themes";
 import { PrivateRoutes } from "@/enums/routes";

@@ -11,7 +11,8 @@ import i18n from "i18next";
 
 import { ETheme } from "@/themes";
 
-import { changeCalendarDate } from "@/store/actions/actions";
+import { changeCalendarDate } from "@/store/actions/appActions";
+
 import { calendarDaySelector } from "@/store/selectors";
 
 const JUMPS = {
