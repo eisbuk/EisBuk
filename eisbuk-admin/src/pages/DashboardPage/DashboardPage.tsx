@@ -10,7 +10,10 @@ import BookingsByDay from "@/components/BookingsByDay";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import { markAbsentee } from "@/store/actions/bookingOperations";
-import { bookingDayInfoSelector, calendarDaySelector } from "@/store/selectors";
+import {
+  bookingDayInfoSelector,
+  calendarDaySelector,
+} from "@/store/selectors/selectors";
 
 import { useTitle } from "@/utils/helpers";
 

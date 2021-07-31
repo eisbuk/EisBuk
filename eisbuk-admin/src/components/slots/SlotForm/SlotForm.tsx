@@ -36,10 +36,11 @@ import { Slot, Duration } from "eisbuk-shared";
 
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
-import { LocalStore } from "@/types/store";
 import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 
 import { fs2luxon } from "@/utils/helpers";
+
+import { getNewSlotTime } from "@/store/selectors/app";
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -147,8 +148,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
 }) => {
   const classes = useStyles();
 
-  /** @TODO make this an imported selector */
-  const lastTime = useSelector((state: LocalStore) => state.app.newSlotTime);
+  const lastTime = useSelector(getNewSlotTime);
 
   const parsedDate = DateTime.fromISO(isoDate);
 

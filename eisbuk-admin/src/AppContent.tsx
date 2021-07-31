@@ -30,7 +30,7 @@ import { getMonthStr } from "@/utils/helpers";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { calendarDaySelector } from "@/store/selectors";
+import { calendarDaySelector } from "@/store/selectors/selectors";
 import { queryUserAdminStatus } from "@/store/actions/authOperations";
 
 // ***** Region App Components ***** //

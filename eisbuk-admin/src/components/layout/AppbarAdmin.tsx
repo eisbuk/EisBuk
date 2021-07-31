@@ -26,14 +26,15 @@ import {
   Menu as MenuIcon,
 } from "@material-ui/icons";
 
-import { LocalStore } from "@/types/store";
+import { currentTheme, organizationInfo } from "@/themes";
+
+import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
-import { currentTheme, organizationInfo } from "@/themes";
-import { PrivateRoutes } from "@/enums/routes";
+import { getFirebaseAuth } from "@/store/selectors/auth";
 
 const AppbarAdmin: React.FC = () => {
   const classes = useStyles();
@@ -44,8 +45,7 @@ const AppbarAdmin: React.FC = () => {
 
   const dispatch = useDispatch();
 
-  /** @TODO rewrite this to use imported selector */
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const auth = useSelector(getFirebaseAuth);
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);

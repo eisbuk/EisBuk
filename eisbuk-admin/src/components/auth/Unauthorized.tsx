@@ -4,8 +4,6 @@ import { Button, Paper, Typography } from "@material-ui/core";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 
-import { LocalStore } from "@/types/store";
-
 import { signOut } from "@/store/actions/authOperations";
 
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
@@ -13,6 +11,8 @@ import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-s
 import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhouette.svg";
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
+
+import { getFirebaseAuth } from "@/store/selectors/auth";
 
 // ***** Region Background Images ***** //
 const backgrounds = [
@@ -47,8 +47,7 @@ interface Props {
 const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const dispatch = useDispatch();
 
-  /** @TODO refactor to use imported selector */
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const auth = useSelector(getFirebaseAuth);
 
   const background = _.isNil(backgroundIndex)
     ? _.sample(backgrounds)

@@ -13,7 +13,7 @@ import { ETheme } from "@/themes";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { calendarDaySelector } from "@/store/selectors";
+import { calendarDaySelector } from "@/store/selectors/selectors";
 
 const JUMPS = {
   week: {

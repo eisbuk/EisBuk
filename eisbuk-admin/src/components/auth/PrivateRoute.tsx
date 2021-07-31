@@ -3,12 +3,12 @@ import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { isLoaded, isEmpty } from "react-redux-firebase";
 
-import { LocalStore } from "@/types/store";
-
 import { Routes } from "@/enums/routes";
 
 import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";
+
+import { getFirebaseAuth, getLocalAuth } from "@/store/selectors/auth";
 
 /**
  * Wrapper around route component to isolate (add auth check to) private routes
@@ -16,11 +16,8 @@ import Loading from "./Loading";
  * @returns JSX.Element
  */
 const PrivateRoute: React.FC<RouteProps> = (props) => {
-  /** @TODO refactor these to import selector */
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
-  const authInfoEisbuk = useSelector(
-    (state: LocalStore) => state.authInfoEisbuk
-  );
+  const auth = useSelector(getFirebaseAuth);
+  const authInfoEisbuk = useSelector(getLocalAuth);
 
   const amIAdmin =
     authInfoEisbuk.amIAdmin && authInfoEisbuk.myUserId === auth.uid;

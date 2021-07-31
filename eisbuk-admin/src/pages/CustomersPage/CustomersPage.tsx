@@ -6,7 +6,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Container, Fab, Grid, LinearProgress } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
-import { LocalStore } from "@/types/store";
 import { ETheme } from "@/themes";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
@@ -18,11 +17,9 @@ import {
   updateCustomer,
 } from "@/store/actions/customerOperations";
 
-import { useTitle } from "@/utils/helpers";
+import { getCustomersFromFirebase } from "@/store/selectors/firestore";
 
-/** @TODO use imported selector */
-const selectCustomers = (state: LocalStore) =>
-  state.firestore.ordered.customers;
+import { useTitle } from "@/utils/helpers";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -33,7 +30,7 @@ const CustomersPage: React.FC = () => {
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
-  const customers = useSelector(selectCustomers);
+  const customers = useSelector(getCustomersFromFirebase);
 
   return (
     <>
