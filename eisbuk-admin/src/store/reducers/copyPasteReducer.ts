@@ -1,6 +1,6 @@
 import { Slot } from "eisbuk-shared";
 
-import { Action } from "@/enums/Redux";
+import { Action } from "@/enums/store";
 
 import { CopyPasteState } from "@/types/store";
 

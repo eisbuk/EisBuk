@@ -22,15 +22,16 @@ import { Slot as SlotInterface } from "eisbuk-shared";
 import { __isStorybook__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
+import { SlotOperation } from "@/types/slotOperations";
 
 import { ETheme } from "@/themes";
 
 import {
   copySlotDay,
-  createSlots,
   deleteSlotFromClipboard,
   addSlotToClipboard,
-} from "@/store/actions/actions";
+} from "@/store/actions/copyPaste";
+import { createSlots } from "@/store/actions/slotOperations";
 import { calendarDaySelector } from "@/store/selectors";
 
 import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
@@ -94,7 +95,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   const extendedOnDelete =
     onDelete && enableEdit
-      ? (slot: SlotInterface<"id">) => {
+      ? (slot: Parameters<SlotOperation>[0]) => {
           // In order to get a more responsive UI we remember here the IDs of slots
           // that should be deleted. Firestore already short-circuits updates sent
           // to the server before receiving a reply, but here we'll be relying on

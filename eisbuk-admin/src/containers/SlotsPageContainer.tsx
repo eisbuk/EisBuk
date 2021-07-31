@@ -21,11 +21,9 @@ import { shiftSlotsWeek } from "@/data/slotutils";
 
 import { ETheme } from "@/themes";
 
-import {
-  copySlotWeek,
-  createSlots,
-  deleteSlots,
-} from "@/store/actions/actions";
+import { createSlots, deleteSlots } from "@/store/actions/slotOperations";
+import { copySlotWeek } from "@/store/actions/copyPaste";
+
 import { calendarDaySelector } from "@/store/selectors";
 
 const useStyles = makeStyles((theme: ETheme) => ({

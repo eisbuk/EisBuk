@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { Action } from "@/enums/Redux";
+import { Action } from "@/enums/store";
 
 import { AppState, Notification } from "@/types/store";
 
@@ -23,7 +23,6 @@ export interface AppActionInterface {
   notification: Notification;
   key: number;
   /** @TEMP below */
-  dismissAll: any;
   payload: any;
 }
 

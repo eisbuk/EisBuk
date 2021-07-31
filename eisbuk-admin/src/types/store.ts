@@ -9,7 +9,7 @@ import { Customer, Slot } from "eisbuk-shared";
 
 import { store } from "@/store";
 
-import { NotifVariant } from "@/enums/Redux";
+import { NotifVariant } from "@/enums/store";
 
 import {
   FirestoreStatusEntry,
@@ -18,8 +18,6 @@ import {
 } from "@/types/firestore";
 
 // ***** Region Store Types ***** //
-export type Dispatch = typeof store.dispatch;
-export type GetState = typeof store.getState;
 // ***** End Region Store Types ***** //
 
 // ***** Region App ***** //
@@ -67,8 +65,23 @@ interface Schema {}
 // ***** End Region Firebase Reducer ***** //
 
 // ****** Region Firestore ***** //
-export interface GetFirebase {
+type Dispatch = typeof store.dispatch;
+type GetState = typeof store.getState;
+
+interface FirestoreGetters {
   getFirebase: () => typeof firebase;
+}
+
+/**
+ * Async Thunk in charge of updating the firestore and dispatching action
+ * to local store with respect to firestore update outcome
+ */
+export interface FirestoreThunk {
+  (
+    dispatch: Dispatch,
+    getState: GetState,
+    firebaseParams: FirestoreGetters
+  ): Promise<void>;
 }
 
 interface FirestoreRedux {

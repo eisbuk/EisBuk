@@ -1,9 +1,13 @@
-import { Action, NotifVariant } from "@/enums/Redux";
+import { DateTime } from "luxon";
+import { Timestamp } from "@google-cloud/firestore";
+
+import { Action, NotifVariant } from "@/enums/store";
 
 import { Notification } from "@/types/store";
 
 import { store } from "@/store/index";
 
+// ***** Region Notifications ***** //
 /**
  * Enqueue snackbar action creator return type (Redux action)
  */
@@ -78,3 +82,36 @@ export const showErrSnackbar = (): void => {
     })
   );
 };
+// ***** End Region Notifications ***** //
+
+// ***** Region Date and Time ***** //
+/**
+ * Creates Redux action for appReducer to update calendar date
+ * @param date calendar date to set
+ * @returns Redux action object
+ */
+export const changeCalendarDate = (
+  date: DateTime
+): {
+  type: Action;
+  payload: DateTime;
+} => ({
+  type: Action.ChangeDay,
+  payload: date,
+});
+
+/**
+ * Creates Redux action for appReducer to update new slot time
+ * @param time to set as new slot time
+ * @returns Redux action object
+ */
+export const setNewSlotTime = (
+  time: Timestamp
+): {
+  type: Action;
+  payload: Timestamp;
+} => ({
+  type: Action.SetSlotTime,
+  payload: time,
+});
+// ***** End Region Date and Time ***** //

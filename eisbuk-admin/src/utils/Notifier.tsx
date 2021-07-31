@@ -4,7 +4,7 @@ import { useSnackbar } from "notistack";
 
 import { LocalStore, Notification } from "@/types/store";
 
-import { removeSnackbar } from "@/store/actions/notifications";
+import { removeSnackbar } from "@/store/actions/appActions";
 
 /** @TODO refactor to use imported selector */
 const selectNotifications = (store: LocalStore) =>

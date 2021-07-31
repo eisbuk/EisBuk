@@ -47,7 +47,7 @@ export interface SlotProps {
   onDelete?: SlotOperation;
   deleted: boolean;
   selected?: boolean;
-  onSubscribe?: SlotOperation;
+  onSubscribe?: SlotOperation<"subscribe">;
   onUnsubscribe?: SlotOperation;
   subscribedSlots?: Record<string, BookingInfo>;
   setCreateEditDialog?: SetCreateEditDialog;

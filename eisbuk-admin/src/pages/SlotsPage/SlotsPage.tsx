@@ -8,7 +8,11 @@ import { SlotOperation } from "@/types/slotOperations";
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import { deleteSlots, createSlots, editSlot } from "@/store/actions/actions";
+import {
+  deleteSlots,
+  createSlots,
+  editSlot,
+} from "@/store/actions/slotOperations";
 
 import { flatten, useTitle } from "@/utils/helpers";
 
@@ -30,7 +34,7 @@ const SlotsPage: React.FC = () => {
     dispatch(createSlots([slot]));
   };
 
-  const onEditSlot: SlotOperation<"edit"> = (slot) => {
+  const onEditSlot: SlotOperation = (slot) => {
     dispatch(editSlot(slot));
   };
 

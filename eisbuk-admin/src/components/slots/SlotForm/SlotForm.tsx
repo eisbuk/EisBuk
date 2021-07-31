@@ -126,7 +126,7 @@ type SimplifiedFormikProps = Omit<
 
 export interface SlotFormProps {
   createSlot?: SlotOperation<"create">;
-  editSlot?: SlotOperation<"edit">;
+  editSlot?: SlotOperation;
   isoDate: string;
   open: boolean;
   onClose?: () => void;

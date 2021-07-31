@@ -1,11 +1,6 @@
-import { NotifVariant } from "@/enums/Redux";
+import { NotifVariant } from "@/enums/store";
 
-import {
-  CustomerInStore,
-  Dispatch,
-  GetState,
-  GetFirebase,
-} from "@/types/store";
+import { CustomerInStore, FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -13,7 +8,7 @@ import {
   enqueueSnackbar,
   showErrSnackbar,
   closeSnackbar,
-} from "./notifications";
+} from "@/store/actions/appActions";
 
 /** @TEMP */
 import React from "react";
@@ -27,11 +22,9 @@ import { Button } from "@material-ui/core";
  * @param customer to update in firestore
  * @returns async thunk
  */
-export const updateCustomer = (customer: CustomerInStore) => async (
-  dispatch: Dispatch,
-  getState: GetState,
-  { getFirebase }: GetFirebase
-): Promise<void> => {
+export const updateCustomer = (
+  customer: CustomerInStore
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...updatedData } = { ...customer };
 
@@ -73,10 +66,9 @@ export const updateCustomer = (customer: CustomerInStore) => async (
  * @param customer to delete from firestore
  * @returns async thunk
  */
-export const deleteCustomer = (customer: CustomerInStore) => async (
-  dispatch: Dispatch,
-  { getFirebase }: GetFirebase
-): Promise<void> => {
+export const deleteCustomer = (
+  customer: CustomerInStore
+): FirestoreThunk => async (dispatch, _, { getFirebase }) => {
   const firebase = getFirebase();
 
   try {

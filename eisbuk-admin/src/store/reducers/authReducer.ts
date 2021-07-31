@@ -1,6 +1,6 @@
 import { constants } from "react-redux-firebase";
 
-import { Action } from "@/enums/Redux";
+import { Action } from "@/enums/store";
 
 import { AuthInfoEisbuk } from "@/types/store";
 

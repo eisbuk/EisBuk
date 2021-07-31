@@ -10,13 +10,16 @@ import {
 import LuxonUtils from "@date-io/luxon";
 import _ from "lodash";
 
-import { Category, OrgSubCollection, Slot } from "eisbuk-shared";
+import { BookingInfo, Category, OrgSubCollection } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
-import { subscribeToSlot, unsubscribeFromSlot } from "@/store/actions/actions";
+import {
+  subscribeToSlot,
+  unsubscribeFromSlot,
+} from "@/store/actions/bookingOperations";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { flatten, getMonthStr } from "@/utils/helpers";
@@ -88,13 +91,13 @@ const CustomerAreaCalendar: React.FC<Props> = ({
 
   const dispatch = useDispatch();
   const onSubscribe = isLoaded(subscribedSlots)
-    ? (slot: Slot<"id">) => {
-        dispatch(subscribeToSlot(secretKey, slot));
+    ? (bookingInfo: BookingInfo) => {
+        dispatch(subscribeToSlot(secretKey, bookingInfo));
       }
     : undefined;
 
-  const onUnsubscribe = (slot: Slot<"id">) => {
-    dispatch(unsubscribeFromSlot(secretKey, slot));
+  const onUnsubscribe = (bookingInfo: BookingInfo) => {
+    dispatch(unsubscribeFromSlot(secretKey, bookingInfo));
   };
 
   return (
