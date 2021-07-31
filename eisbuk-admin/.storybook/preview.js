@@ -1,10 +1,14 @@
 import React from "react";
-import { store } from "../src/store/store";
+import { muiTheme } from "storybook-addon-material-ui";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
-import { changeCalendarDate } from "../src/store/actions/actions";
-import { available as availableThemes } from "../src/themes";
-import { muiTheme } from "storybook-addon-material-ui";
+
+import "@/i18next/i18n";
+
+import { available as availableThemes } from "@/themes";
+
+import { store } from "@/store";
+import { changeCalendarDate } from "@/store/actions/actions";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },

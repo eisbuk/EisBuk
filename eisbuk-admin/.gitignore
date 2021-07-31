@@ -31,4 +31,5 @@ firebase*.log
 firestore*.log
 ui-debug.log
 
-envInfoEnv.js
+# IDE specific
+.vscode

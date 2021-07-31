@@ -11,6 +11,7 @@ repos:
     rev: v2.2.1
     hooks:
       - id: prettier
+        types_or: [javascript, ts, tsx]
 
   - repo: https://github.com/pre-commit/mirrors-eslint
     rev: v7.23.0
@@ -18,6 +19,8 @@ repos:
       - id: eslint
         additional_dependencies:
           - babel-eslint
+          - eslint-import-resolver-typescript
+          - eslint-config-google
           - eslint-config-react-app
           - eslint-loader
           - eslint-plugin-flowtype
@@ -28,3 +31,6 @@ repos:
           - eslint-plugin-react
           - eslint-plugin-unused-imports
           - eslint
+          - typescript
+          - "@typescript-eslint/eslint-plugin"
+          - "@typescript-eslint/parser"

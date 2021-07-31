@@ -1,13 +1,28 @@
 {
+  "settings": {
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     // Required for certain syntax usages
     "ecmaVersion": 2017
   },
   "plugins": ["promise"],
-  "extends": "eslint:recommended",
+  "extends": [
+    "google",
+    "eslint:recommended",
+    "plugin:import/errors",
+    "plugin:import/warnings",
+    "plugin:import/typescript",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "ignorePatterns": ["dist/*"],
+  "root": true,
   "rules": {
     // Removed rule "disallow the use of console" from recommended eslint rules
-    "no-console": "off",
+    "no-console": "warn",
 
     // Removed rule "disallow multiple spaces in regular expressions" from recommended eslint rules
     "no-regex-spaces": "off",
@@ -116,6 +131,33 @@
     "promise/catch-or-return": 2,
 
     // Warn against nested then() or catch() statements
-    "promise/no-nesting": 1
+    "promise/no-nesting": 1,
+
+    // Swotch strings to single quote (offset recommended)
+    "quotes": "off",
+
+    // Allow spacing in curly braces
+    "object-curly-spacing": "off",
+
+    // Max len is handled by prettier, if it turns out to be longer it's probbably a comment
+    "max-len": "off",
+
+    // Indentation on each line
+    "indent": "off",
+
+    // Allow "?" and ":" to be at the beginning of the line in ternary expressions
+    "operator-linebreak": "off",
+
+    // Produces false positives in long function arguments, handled by prettier anyhow
+    "comma-dangle": "off",
+
+    // We use TypeScript for type annotation, JS Doc is here as documentation
+    "valid-jsdoc": "off",
+
+    // Allow for non-null asssertion as they're not inferred by TS with cloud functions
+    "@typescript-eslint/no-non-null-assertion": "off",
+
+    // Allow explicit any, but still avoid where possible
+    "@typescript-eslint/no-explicit-any": "off"
   }
 }

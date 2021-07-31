@@ -1,0 +1,148 @@
+import React from "react";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
+
+import BookingsByDay from "@/components/BookingsByDay";
+
+import { Duration, Category, SlotType } from "eisbuk-shared";
+
+export default {
+  title: "Bookings by day",
+  component: BookingsByDay,
+} as ComponentMeta<typeof BookingsByDay>;
+
+// ***** Region Setup ***** //
+const Template: ComponentStory<typeof BookingsByDay> = (args) => (
+  <BookingsByDay {...args} />
+);
+
+const gus = {
+  name: "Gus",
+  surname: "Fring",
+  id: "gus",
+  category: Category.Course,
+};
+
+const saul = {
+  name: "Saul",
+  surname: "Goodman",
+  id: "saul",
+  category: Category.Competitive,
+  certificateExpiration: "2001-01-01",
+};
+
+const heisenberg = {
+  name: "Walter",
+  surname: "White",
+  id: "heisenberg",
+  category: Category.PreCompetitive,
+};
+
+const jesse = {
+  name: "Jesse",
+  surname: "Pinkman",
+  id: "jesse",
+  category: Category.PreCompetitive,
+};
+// ***** End Region Setup ***** //
+
+// ***** Region Empty ***** //
+export const Empty = Template.bind({});
+Empty.args = {
+  bookingDayInfo: [],
+};
+// ***** End Region Empty ***** //
+
+// ***** Region One Slot ***** //
+export const OneSlot = Template.bind({});
+OneSlot.args = {
+  bookingDayInfo: [
+    {
+      time: "11:00",
+      categories: [Category.Competitive],
+      type: SlotType.Ice,
+      id: "foo",
+      durations: [Duration["1.5h"], Duration["2h"]],
+      users: [],
+    },
+  ],
+};
+// ***** End Region One Slot ***** //
+
+// ***** Region Many Slots ***** //
+export const ManySlots = Template.bind({});
+ManySlots.args = {
+  bookingDayInfo: [
+    {
+      time: "11:00",
+      categories: [Category.Competitive],
+      type: SlotType.Ice,
+      id: "foo",
+      durations: [Duration["1.5h"], Duration["2h"]],
+      users: [
+        {
+          ...saul,
+          duration: Duration["1.5h"],
+        },
+      ],
+    },
+    {
+      time: "12:00",
+      categories: [Category.Competitive],
+      type: SlotType.Ice,
+      durations: [Duration["1h"], Duration["2h"]],
+      id: "bar",
+      users: [
+        {
+          ...heisenberg,
+          duration: Duration["1h"],
+        },
+        { ...gus, duration: Duration["1h"] },
+        {
+          ...saul,
+          duration: Duration["2h"],
+        },
+      ],
+      absentees: {
+        gus: true,
+      },
+    },
+    {
+      time: "15:00",
+      categories: [
+        Category.Competitive,
+        Category.PreCompetitive,
+        Category.Course,
+      ],
+      type: SlotType.Ice,
+      id: "baz",
+      durations: [Duration["1h"]],
+      users: [],
+    },
+    {
+      time: "16:30",
+      categories: [Category.Competitive, Category.PreCompetitive],
+      type: SlotType.OffIceDancing,
+      id: "bat",
+      durations: [Duration["1h"], Duration["1.5h"]],
+      users: [
+        {
+          ...heisenberg,
+          duration: Duration["1h"],
+        },
+        {
+          ...jesse,
+          duration: Duration["1.5h"],
+        },
+      ],
+    },
+  ],
+};
+// ***** End Region Many Slots ***** //
+
+// ***** Region Many Slots With Absentee ***** //
+export const ManySlotsWithAbsentee = Template.bind({});
+ManySlotsWithAbsentee.args = ManySlots.args;
+ManySlotsWithAbsentee.argTypes = {
+  markAbsentee: { action: "Absentee marked" },
+};
+// ***** End Region Many Slots With Absentee ***** //

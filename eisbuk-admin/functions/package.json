@@ -1,18 +1,23 @@
 {
+  "resolutions": {
+    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
+    "**/@typescript-eslint/parser": "^4.1.1"
+  },
   "name": "functions",
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "lint": "eslint .",
-    "serve": "firebase emulators:start --only functions",
+    "serve": "tsc & firebase emulators:start --only functions & tsc --watch",
     "shell": "firebase functions:shell",
-    "start": "npm run shell",
+    "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
-    "logs": "firebase functions:log"
+    "logs": "firebase functions:log",
+    "build": "webpack --mode production --config ./webpack/webpack.config.js"
   },
   "engines": {
-    "node": "12"
+    "node": "14"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "dependencies": {
     "firebase": "^8.2.4",
     "firebase-admin": "^9.4.2",
@@ -24,10 +29,22 @@
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",
+    "@types/luxon": "^1.27.0",
+    "@types/uuid": "^8.3.0",
+    "@typescript-eslint/eslint-plugin": "^4.28.4",
+    "@typescript-eslint/parser": "^4.28.4",
     "eslint": "^7.18.0",
+    "eslint-config-google": "^0.14.0",
     "eslint-plugin-promise": "^4.2.1",
     "firebase-functions-test": "^0.2.3",
-    "mocha": "^8.2.1"
+    "mocha": "^8.2.1",
+    "ts-loader": "^9.2.4",
+    "tsconfig-paths": "^3.10.1",
+    "tscpaths": "^0.0.9",
+    "typescript": "^4.3.5",
+    "webpack": "^5.47.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-node-externals": "^3.0.0"
   },
   "private": true
 }

@@ -4,14 +4,21 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run lint"],
+    "predeploy": [
+      "npm --prefix \"$RESOURCE_DIR\" run lint",
+      "npm --prefix \"$RESOURCE_DIR\" run build"
+    ],
     "source": "functions"
   },
   "hosting": [
     {
       "site": "igorice",
       "public": "build",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "rewrites": [
         {
           "source": "**",
@@ -22,7 +29,11 @@
     {
       "site": "eisbuk",
       "public": "build",
-      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
       "rewrites": [
         {
           "source": "**",
