@@ -3,20 +3,11 @@ import { Customer, Slot, BookingInfo } from "eisbuk-shared";
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
+import { SlotOperation } from "@/types/slotOperations";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import {
-  enqueueSnackbar,
-  closeSnackbar,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
-
-/** @TEMP */
-import React from "react";
-import { Button } from "@material-ui/core";
-import { SlotOperation } from "@/types/slotOperations";
-/** @TEMP */
+import { enqueueSnackbar, showErrSnackbar } from "@/store/actions/appActions";
 
 /**
  * Creates firestore async thunk:
@@ -47,16 +38,9 @@ export const subscribeToSlot = (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: "Prenotazione effettuata",
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );
@@ -92,16 +76,9 @@ export const unsubscribeFromSlot = (
     dispatch(
       enqueueSnackbar({
         message: "Prenotazione rimossa",
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );
@@ -110,16 +87,9 @@ export const unsubscribeFromSlot = (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: "Errore nel rimuovere la prenotazione",
+        closeButton: true,
         options: {
           variant: NotifVariant.Error,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );

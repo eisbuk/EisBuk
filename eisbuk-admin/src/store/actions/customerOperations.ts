@@ -4,16 +4,7 @@ import { CustomerInStore, FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import {
-  enqueueSnackbar,
-  showErrSnackbar,
-  closeSnackbar,
-} from "@/store/actions/appActions";
-
-/** @TEMP */
-import React from "react";
-import { Button } from "@material-ui/core";
-/** @TEMP */
+import { enqueueSnackbar, showErrSnackbar } from "@/store/actions/appActions";
 
 /**
  * Creates firestore async thunk:
@@ -42,16 +33,7 @@ export const updateCustomer = (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} aggiornato`,
-        options: {
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
-        },
+        closeButton: true,
       })
     );
   } catch {
@@ -84,16 +66,9 @@ export const deleteCustomer = (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} rimosso`,
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );

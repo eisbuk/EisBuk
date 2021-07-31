@@ -48,9 +48,9 @@ export interface CopyPasteState {
 export interface Notification {
   key?: SnackbarKey;
   message: string;
-  options: {
+  closeButton?: boolean;
+  options?: {
     variant?: NotifVariant;
-    action?: (key: number) => JSX.Element;
     onClose?: TransitionCloseHandler;
   };
   dismissed?: boolean;

@@ -4,13 +4,14 @@ import { useSnackbar } from "notistack";
 
 import { LocalStore, Notification } from "@/types/store";
 
+import NotificationButton from "@/components/atoms/NotificationButton";
+
 import { removeSnackbar } from "@/store/actions/appActions";
 
 /** @TODO refactor to use imported selector */
 const selectNotifications = (store: LocalStore) =>
   store.app.notifications || [];
 
-/** @TODO this should be a hook */
 const Notifier: React.FC = () => {
   const dispatch = useDispatch();
 
@@ -20,6 +21,7 @@ const Notifier: React.FC = () => {
 
   // stores the ids of dispalayed notifications
   const displayed = useRef<Notification["key"][]>([]);
+
   /**
    * Add notification key to displayed notifications
    * @param key of the notification
@@ -40,7 +42,7 @@ const Notifier: React.FC = () => {
 
   useEffect(() => {
     notifications.forEach(
-      ({ key, message, options = {}, dismissed = false }) => {
+      ({ key, message, options = {}, dismissed = false, closeButton }) => {
         if (dismissed) {
           // dismiss snackbar using notistack
           closeSnackbar(key);
@@ -64,6 +66,7 @@ const Notifier: React.FC = () => {
             dispatch(removeSnackbar(myKey));
             removeDisplayed(myKey);
           },
+          ...(closeButton && { action: NotificationButton }),
         });
 
         // keep track of snackbars that we've displayed

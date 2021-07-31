@@ -9,15 +9,9 @@ import { ORGANIZATION } from "@/config/envInfo";
 
 import {
   enqueueSnackbar,
-  closeSnackbar,
   showErrSnackbar,
   setNewSlotTime,
 } from "@/store/actions/appActions";
-
-/** @TEMP */
-import React from "react";
-import { Button } from "@material-ui/core";
-/** @TEMP */
 
 /**
  * Creates firestore async thunk:
@@ -54,16 +48,9 @@ export const createSlots = (slots: Slot[]): FirestoreThunk => async (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: "Slot Aggiunto",
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );
@@ -103,16 +90,9 @@ export const deleteSlots = (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: "Slot Eliminato",
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );
@@ -151,16 +131,9 @@ export const editSlot = (slot: Omit<Slot, "date">): FirestoreThunk => async (
       enqueueSnackbar({
         key: new Date().getTime() + Math.random(),
         message: "Slot Aggiornato",
+        closeButton: true,
         options: {
           variant: NotifVariant.Success,
-          action: (key) => (
-            <Button
-              variant="outlined"
-              onClick={() => dispatch(closeSnackbar(key))}
-            >
-              OK
-            </Button>
-          ),
         },
       })
     );
