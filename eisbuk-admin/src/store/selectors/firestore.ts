@@ -8,5 +8,6 @@ import { LocalStore } from "@/types/store";
  * @param state Local Redux Store
  * @returns list of customers
  */
-export const getCustomersFromFirebase = (state: LocalStore): Customer[] =>
-  state.firestore.ordered.customers;
+export const getCustomersFromFirebase = (
+  state: LocalStore
+): Record<string, Customer> => state.firestore.data?.customers || {};
