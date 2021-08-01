@@ -35,8 +35,8 @@ import {
 } from "@/store/actions/copyPaste";
 import { createSlots } from "@/store/actions/slotOperations";
 
-import { calendarDaySelector } from "@/store/selectors/selectors";
 import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getCurrentWeekStart } from "@/store/selectors/app";
 
 import { shiftSlotsDay } from "@/data/slotutils";
 import {
@@ -87,7 +87,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   const checkSelected = (id: SlotInterface<"id">["id"]) =>
     copiedWeekSlots.includes(id);
 
-  const currentWeek = useSelector(calendarDaySelector).startOf("week");
+  const currentWeek = useSelector(getCurrentWeekStart);
 
   const canClickSlots =
     enableEdit &&

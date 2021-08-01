@@ -10,10 +10,9 @@ import BookingsByDay from "@/components/BookingsByDay";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import { markAbsentee } from "@/store/actions/bookingOperations";
-import {
-  bookingDayInfoSelector,
-  calendarDaySelector,
-} from "@/store/selectors/selectors";
+
+import { bookingDayInfoSelector } from "@/store/selectors/slots";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import { useTitle } from "@/utils/helpers";
 
@@ -21,9 +20,10 @@ const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
+
   useTitle(t("DashboardPage.Reservations"));
 
-  const currentDate = useSelector(calendarDaySelector);
+  const currentDate = useSelector(getCalendarDay);
   const monthStr = currentDate.toISO().substring(0, 10);
   const bookingDayInfo = useSelector(bookingDayInfoSelector(monthStr));
 

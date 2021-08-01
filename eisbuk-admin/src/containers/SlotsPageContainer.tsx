@@ -22,7 +22,7 @@ import { ETheme } from "@/themes";
 import { createSlots, deleteSlots } from "@/store/actions/slotOperations";
 import { copySlotWeek } from "@/store/actions/copyPaste";
 
-import { calendarDaySelector } from "@/store/selectors/selectors";
+import { getCurrentWeekStart } from "@/store/selectors/app";
 import { getWeekFromClipboard } from "@/store/selectors/copyPaste";
 
 const useStyles = makeStyles((theme: ETheme) => ({
@@ -43,7 +43,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const [enableEdit, setEnableEdit] = useState(false);
   const [showWeekDeleteConfirm, setShowWeekDeleteConfirm] = useState(false);
 
-  const currentDate = useSelector(calendarDaySelector).startOf("week");
+  const currentDate = useSelector(getCurrentWeekStart);
   const weekToPaste = useSelector(getWeekFromClipboard);
 
   const dispatch = useDispatch();
