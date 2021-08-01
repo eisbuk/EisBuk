@@ -10,6 +10,11 @@ import { useTitle } from "@/utils/helpers";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
+/**
+ * Invokes cloud function
+ * @param functionName function to run
+ * @returns function that calls firebase with provided functionName param
+ */
 function invokeFunction(functionName: CloudFunction) {
   return async () => {
     const res = await firebase
@@ -21,6 +26,10 @@ function invokeFunction(functionName: CloudFunction) {
   };
 }
 
+/**
+ * creates admin test users
+ * @returns
+ */
 function createAdminTestUsers() {
   invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions

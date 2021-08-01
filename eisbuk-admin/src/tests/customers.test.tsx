@@ -78,6 +78,10 @@ it("Populates bookings when a customer record is added or changed", async (done)
   done();
 });
 
+/**
+ * @param data document data
+ * @returns whether secret key exists
+ */
 function hasSecretKey(data: DocumentData | undefined) {
   return data && data.secret_key;
 }
