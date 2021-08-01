@@ -195,9 +195,6 @@ module.exports = {
     // we're using empty functions as fallback for unedfined props
     "@typescript-eslint/no-empty-function": "off",
 
-    // This is temp, made to pass checks, we should utilize this rule as much as possible
-    "require-jsdoc": "off",
-
     // This just gets in the way
     "import/no-named-as-default-member": "off",
     "import/no-named-as-default": "off",
