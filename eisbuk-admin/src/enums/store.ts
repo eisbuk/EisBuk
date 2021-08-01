@@ -2,9 +2,9 @@
  * All redux actions are contained here
  */
 export enum Action {
-  EnqueueSnackbar = "@@Eisbuk/ENQUEUE_SNACKBAR",
+  EnqueueNotification = "@@Eisbuk/ENQUEUE_NOTIFICATION",
+  RemoveNotification = "@@Eisbuk/REMOVE_NOTIFICATION",
   CloseSnackbar = "@@Eisbuk/CLOSE_SNACKBAR",
-  RemoveSnackbar = "@@Eisbuk/REMOVE_SNACKBAR",
 
   ChangeDay = "@@Eisbuk/CHANGE_DAY",
 
@@ -18,7 +18,9 @@ export enum Action {
   IsAdminReceived = "@@Eisbuk/IS_ADMIN_RECEIVED",
 }
 
-// notification options
+/**
+ * Notification variants (success/error)
+ */
 export enum NotifVariant {
   Success = "success",
   Error = "error",

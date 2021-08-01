@@ -1,47 +1,38 @@
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
+import { SnackbarKey } from "notistack";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { Notification } from "@/types/store";
+import { AppReducerAction, Notification } from "@/types/store";
 
 import { store } from "@/store/index";
 
 // ***** Region Notifications ***** //
 /**
- * Enqueue snackbar action creator return type (Redux action)
+ * Notification interface with optional key (as new key will be created in absence of provided one)
  */
-interface EnqueueSnackbarAction {
-  type: Action.EnqueueSnackbar;
-  notification: Notification & Pick<Required<Notification>, "key">;
-}
+type NotificationParam = Omit<Notification, "key"> & { key?: SnackbarKey };
 
 /**
  * Creates Redux action to enqueue a new notification snackbar for appReducer
- * @param notification the full notification record
+ * @param notification the full notification record (with key optional)
  * @returns Redux action object
  */
-export const enqueueSnackbar = (
-  notification: Notification
-): EnqueueSnackbarAction => {
+export const enqueueNotification = (
+  notification: NotificationParam
+): AppReducerAction<Action.EnqueueNotification> => {
+  // if no key is provided, assign new key
   const key = notification.key || new Date().getTime() + Math.random();
 
   return {
-    type: Action.EnqueueSnackbar,
-    notification: {
+    type: Action.EnqueueNotification,
+    payload: {
       ...notification,
       key,
     },
   };
 };
-
-/**
- * Close snackbar action creator return type (Redux action)
- */
-interface DismissSnackbarAction {
-  type: Action.CloseSnackbar | Action.RemoveSnackbar;
-  key: Notification["key"];
-}
 
 /**
  * Creates Redux action for appReducer to either:
@@ -52,9 +43,9 @@ interface DismissSnackbarAction {
  */
 export const closeSnackbar = (
   key?: Notification["key"]
-): DismissSnackbarAction => ({
+): AppReducerAction<Action.CloseSnackbar> => ({
   type: Action.CloseSnackbar,
-  key,
+  payload: key,
 });
 
 /**
@@ -64,9 +55,9 @@ export const closeSnackbar = (
  */
 export const removeSnackbar = (
   key: Notification["key"]
-): DismissSnackbarAction => ({
-  type: Action.RemoveSnackbar,
-  key,
+): AppReducerAction<Action.RemoveNotification> => ({
+  type: Action.RemoveNotification,
+  payload: key,
 });
 
 /**
@@ -74,7 +65,7 @@ export const removeSnackbar = (
  */
 export const showErrSnackbar = (): void => {
   store.dispatch(
-    enqueueSnackbar({
+    enqueueNotification({
       message: "Errore",
       options: {
         variant: NotifVariant.Error,
@@ -92,10 +83,7 @@ export const showErrSnackbar = (): void => {
  */
 export const changeCalendarDate = (
   date: DateTime
-): {
-  type: Action;
-  payload: DateTime;
-} => ({
+): AppReducerAction<Action.ChangeDay> => ({
   type: Action.ChangeDay,
   payload: date,
 });
@@ -107,10 +95,7 @@ export const changeCalendarDate = (
  */
 export const setNewSlotTime = (
   time: Timestamp
-): {
-  type: Action;
-  payload: Timestamp;
-} => ({
+): AppReducerAction<Action.SetSlotTime> => ({
   type: Action.SetSlotTime,
   payload: time,
 });

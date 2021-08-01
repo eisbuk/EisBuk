@@ -8,7 +8,7 @@ import { SlotOperation } from "@/types/slotOperations";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import {
-  enqueueSnackbar,
+  enqueueNotification,
   showErrSnackbar,
   setNewSlotTime,
 } from "@/store/actions/appActions";
@@ -45,7 +45,7 @@ export const createSlots = (slots: Slot[]): FirestoreThunk => async (
     await batch.commit();
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Slot Aggiunto",
         closeButton: true,
@@ -87,7 +87,7 @@ export const deleteSlots = (
     await writeBatch.commit();
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Slot Eliminato",
         closeButton: true,
@@ -128,7 +128,7 @@ export const editSlot = (slot: Omit<Slot, "date">): FirestoreThunk => async (
       });
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Slot Aggiornato",
         closeButton: true,

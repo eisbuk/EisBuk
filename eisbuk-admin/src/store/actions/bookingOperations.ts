@@ -7,7 +7,10 @@ import { SlotOperation } from "@/types/slotOperations";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { enqueueSnackbar, showErrSnackbar } from "@/store/actions/appActions";
+import {
+  enqueueNotification,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
 
 /**
  * Creates firestore async thunk:
@@ -35,7 +38,7 @@ export const subscribeToSlot = (
       .set(slot);
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Prenotazione effettuata",
         closeButton: true,
@@ -74,7 +77,7 @@ export const unsubscribeFromSlot = (
       .delete();
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         message: "Prenotazione rimossa",
         closeButton: true,
         options: {
@@ -84,7 +87,7 @@ export const unsubscribeFromSlot = (
     );
   } catch (err) {
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Errore nel rimuovere la prenotazione",
         closeButton: true,

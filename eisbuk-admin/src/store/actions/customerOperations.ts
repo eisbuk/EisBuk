@@ -4,7 +4,10 @@ import { CustomerInStore, FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { enqueueSnackbar, showErrSnackbar } from "@/store/actions/appActions";
+import {
+  enqueueNotification,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
 
 /**
  * Creates firestore async thunk:
@@ -30,7 +33,7 @@ export const updateCustomer = (
       .doc(customer.id || undefined)
       .set(updatedData);
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} aggiornato`,
         closeButton: true,
@@ -63,7 +66,7 @@ export const deleteCustomer = (
       .delete();
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} rimosso`,
         closeButton: true,

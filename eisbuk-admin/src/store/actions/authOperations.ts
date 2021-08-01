@@ -4,7 +4,10 @@ import { NotifVariant, Action } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { enqueueSnackbar, showErrSnackbar } from "@/store/actions/appActions";
+import {
+  enqueueNotification,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
 
 /**
  * Creates firestore async thunk:
@@ -22,7 +25,7 @@ export const signOut = (): FirestoreThunk => async (
     await firebase.auth().signOut();
 
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Hai effettuato il logout",
         options: {
@@ -32,7 +35,7 @@ export const signOut = (): FirestoreThunk => async (
     );
   } catch (err) {
     dispatch(
-      enqueueSnackbar({
+      enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: "Si è verificato un errore",
         options: {

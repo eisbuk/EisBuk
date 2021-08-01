@@ -7,9 +7,9 @@ import firebase from "firebase";
 
 import { Customer, Slot } from "eisbuk-shared";
 
-import { store } from "@/store";
+import { Action, NotifVariant } from "@/enums/store";
 
-import { NotifVariant } from "@/enums/store";
+import { store } from "@/store";
 
 import {
   FirestoreStatusEntry,
@@ -17,10 +17,51 @@ import {
   FirestoreOrdered,
 } from "@/types/firestore";
 
-// ***** Region Store Types ***** //
-// ***** End Region Store Types ***** //
+// ***** Region App Reducer ***** //
+/**
+ * Notification interface used to enqueue notification snackbar
+ */
+export interface Notification {
+  key: SnackbarKey;
+  message: string;
+  closeButton?: boolean;
+  options?: {
+    variant?: NotifVariant;
+    onClose?: TransitionCloseHandler;
+  };
+  dismissed?: boolean;
+}
 
-// ***** Region App ***** //
+/**
+ * Whitelisted actions for app reducer
+ */
+export type AppAction =
+  | Action.EnqueueNotification
+  | Action.RemoveNotification
+  | Action.CloseSnackbar
+  | Action.ChangeDay
+  | Action.SetSlotTime;
+
+/**
+ * Record of payloads for each of the app reducer actions
+ */
+interface AppActionPayload {
+  [Action.EnqueueNotification]: Notification;
+  [Action.RemoveNotification]: SnackbarKey;
+  [Action.CloseSnackbar]?: SnackbarKey;
+  [Action.ChangeDay]: DateTime;
+  [Action.SetSlotTime]: Timestamp;
+}
+
+/**
+ * App reducer action generic
+ * gets passed one of whitelisted app reducer actions as type parameter
+ */
+export interface AppReducerAction<A extends AppAction> {
+  type: A;
+  payload: AppActionPayload[A];
+}
+
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
@@ -43,19 +84,6 @@ export interface CopyPasteState {
   week: SlotWeek | null;
 }
 // ***** End Region Copy Paste ***** //
-
-// ***** Region Notification ***** //
-export interface Notification {
-  key?: SnackbarKey;
-  message: string;
-  closeButton?: boolean;
-  options?: {
-    variant?: NotifVariant;
-    onClose?: TransitionCloseHandler;
-  };
-  dismissed?: boolean;
-}
-// ***** End Region Notifiaction ***** //
 
 // ***** Region Firebase Reducer ***** //
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
