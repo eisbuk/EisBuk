@@ -17,7 +17,7 @@ import {
   updateCustomer,
 } from "@/store/actions/customerOperations";
 
-import { getCustomersFromFirebase } from "@/store/selectors/firestore";
+import { getCustomersList } from "@/store/selectors/firestore";
 
 import { useTitle } from "@/utils/helpers";
 
@@ -30,7 +30,7 @@ const CustomersPage: React.FC = () => {
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
-  const customers = useSelector(getCustomersFromFirebase);
+  const customers = useSelector(getCustomersList);
 
   return (
     <>

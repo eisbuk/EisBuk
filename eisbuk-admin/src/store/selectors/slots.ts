@@ -8,7 +8,7 @@ import { LocalStore } from "@/types/store";
 
 import { fs2luxon } from "@/utils/helpers";
 
-import { getCustomersFromFirebase } from "./firestore";
+import { getCustomersRecord } from "./firestore";
 
 const extractSlotDate = (slot: Slot): number => slot.date.seconds;
 const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
@@ -67,7 +67,7 @@ export const bookingDayInfoSelector = (dayStr: string) =>
   createSelector(
     getSlotsForADay(dayStr),
     makeBookingsInfoSelector(dayStr),
-    getCustomersFromFirebase,
+    getCustomersRecord,
     (slotsInfo, bookingsInfo, allUsers) => {
       const slots = _.sortBy(Object.values(slotsInfo), [
         extractSlotDate,
