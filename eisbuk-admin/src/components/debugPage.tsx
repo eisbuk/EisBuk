@@ -15,7 +15,7 @@ import { functionsZone, ORGANIZATION } from "@/config/envInfo";
  * @param functionName function to run
  * @returns function that calls firebase with provided functionName param
  */
-function invokeFunction(functionName: CloudFunction) {
+const invokeFunction = (functionName: CloudFunction) => {
   return async () => {
     const res = await firebase
       .app()
@@ -24,17 +24,17 @@ function invokeFunction(functionName: CloudFunction) {
 
     console.log(res.data);
   };
-}
+};
 
 /**
  * creates admin test users
  * @returns
  */
-function createAdminTestUsers() {
+const createAdminTestUsers = () => {
   invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
   firebase.auth().createUserWithEmailAndPassword("test@eisbuk.it", "test00");
-}
+};
 
 const DebugPage: React.FC = () => {
   useTitle("Debug");

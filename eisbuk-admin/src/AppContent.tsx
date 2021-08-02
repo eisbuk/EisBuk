@@ -38,7 +38,7 @@ import { queryUserAdminStatus } from "@/store/actions/actions";
  * General components to be returned from the AppContent, regardless of auth status
  * @returns
  */
-function AppComponents() {
+const AppComponents = () => {
   return (
     <Switch>
       <LoginRoute path={Routes.Login} component={LoginPage} />
@@ -50,7 +50,7 @@ function AppComponents() {
       <Route path={Routes.Debug} children={<DebugPage />} />
     </Switch>
   );
-}
+};
 // ***** End Region App Components ***** //
 
 // ***** Region Authenticated Only ***** //
@@ -59,7 +59,7 @@ function AppComponents() {
  * Does additional Redux - Firestore connect for data available only to authenticated users
  * @returns
  */
-function AppContentAuthenticated() {
+const AppContentAuthenticated = () => {
   const currentDate = useSelector(calendarDaySelector);
   const firestore = useFirestore();
 
@@ -90,7 +90,7 @@ function AppContentAuthenticated() {
     },
   ]);
   return <AppComponents />;
-}
+};
 // ***** End Region Authenticated Only ***** //
 
 // ***** Region Main Component ***** //
