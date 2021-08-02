@@ -69,7 +69,7 @@ export interface AppState {
 }
 // ***** End Region App ***** //
 
-// ****** Region Auth Reducer ***** //
+// ****** Region Auth ***** //
 /**
  * In store auth info object
  */
@@ -80,13 +80,13 @@ export interface AuthInfoEisbuk {
 }
 
 /**
- * Whitelisted actions for app reducer
+ * Whitelisted actions for auth reducer
  */
 export type AuthAction = Action.IsAdminReceived | string;
 
 /**
- * App reducer action generic
- * gets passed one of whitelisted app reducer actions as type parameter
+ * Auth reducer action generic
+ * gets passed one of whitelisted auth reducer actions as type parameter
  */
 export type AuthReducerAction<
   A extends AuthAction
@@ -96,7 +96,7 @@ export type AuthReducerAction<
       payload?: Omit<AuthInfoEisbuk, "myUserId">;
     }
   : { type: string };
-// ****** End Region Auth Info ***** //
+// ****** End Region Auth ***** //
 
 // ***** Region Copy Paste ***** //
 export interface SlotDay {
@@ -111,6 +111,34 @@ export interface SlotWeek {
 export interface CopyPasteState {
   day: SlotDay | null;
   week: SlotWeek | null;
+}
+
+/**
+ * Whitelisted actions for copy paste reducer
+ */
+export type CopyPasteAction =
+  | Action.CopySlotDay
+  | Action.CopySlotWeek
+  | Action.DeleteSlotFromClipboard
+  | Action.AddSlotToClipboard;
+
+/**
+ * Record of payloads for each of the copy paste reducer actions
+ */
+interface CopyPastePayload {
+  [Action.CopySlotDay]: CopyPasteState["day"];
+  [Action.CopySlotWeek]: CopyPasteState["week"];
+  [Action.DeleteSlotFromClipboard]: Slot<"id">["id"];
+  [Action.AddSlotToClipboard]: Slot<"id">;
+}
+
+/**
+ * Copy Paste reducer action generic
+ * gets passed one of whitelisted copy paste reducer actions as type parameter
+ */
+export interface CopyPasteReducerAction<A extends CopyPasteAction> {
+  type: A;
+  payload: CopyPastePayload[A];
 }
 // ***** End Region Copy Paste ***** //
 

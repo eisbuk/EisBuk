@@ -1,70 +1,67 @@
-import { Slot } from "eisbuk-shared";
-
 import { Action } from "@/enums/store";
 
-import { CopyPasteState } from "@/types/store";
+import {
+  CopyPasteState,
+  CopyPasteReducerAction,
+  CopyPasteAction,
+} from "@/types/store";
 
 const defaultState = {
   day: null,
   week: null,
 };
 
-interface CopyPastePayload {
-  [Action.CopySlotDay]: CopyPasteState["day"];
-  [Action.CopySlotWeek]: CopyPasteState["week"];
-  [Action.DeleteSlotFromClipboard]: Slot<"id">["id"];
-  [Action.AddSlotToClipboard]: Slot<"id">;
-}
-
-type CopyPasteActionTypes =
-  | Action.CopySlotDay
-  | Action.CopySlotWeek
-  | Action.DeleteSlotFromClipboard
-  | Action.AddSlotToClipboard;
-
-interface CopyPasteAction<A extends CopyPasteActionTypes> {
-  type: A;
-  payload: CopyPastePayload[A];
-}
-
 export const copyPasteReducer = (
   state: CopyPasteState = defaultState,
-  action: CopyPasteAction<any>
+  action: CopyPasteReducerAction<CopyPasteAction>
 ): CopyPasteState => {
   switch (action.type) {
     case Action.CopySlotDay:
+      // copy a day's worth of slots
+      const dayToAdd = (action as CopyPasteReducerAction<Action.CopySlotDay>)
+        .payload;
+
       return {
         ...state,
-        day: action.payload as CopyPastePayload[Action.CopySlotDay],
+        day: dayToAdd,
       };
+
     case Action.CopySlotWeek:
+      // copy a week's worth of slots
+      const weekToAdd = (action as CopyPasteReducerAction<Action.CopySlotWeek>)
+        .payload;
+
       return {
         ...state,
-        week: action.payload as CopyPastePayload[Action.CopySlotWeek],
+        week: weekToAdd,
       };
+
     case Action.DeleteSlotFromClipboard:
+      // delete single slot from slots in clipboard
+      const slotIdToDelete = (action as CopyPasteReducerAction<Action.DeleteSlotFromClipboard>)
+        .payload;
+
       return {
         ...state,
         week: {
           ...state.week!,
-          slots: state.week!.slots.filter(
-            (slot) =>
-              slot.id !==
-              (action.payload as CopyPastePayload[Action.DeleteSlotFromClipboard])
-          ),
+          slots: state.week!.slots.filter((slot) => slot.id !== slotIdToDelete),
         },
       };
+
     case Action.AddSlotToClipboard:
+      // add single slot to existing slots in clipboard
+      const slotToAdd = (action as CopyPasteReducerAction<Action.AddSlotToClipboard>)
+        .payload;
+
       return {
         ...state,
         week: {
           ...state.week!,
-          slots: [
-            ...(state.week?.slots || []),
-            action.payload as CopyPastePayload[Action.AddSlotToClipboard],
-          ],
+          slots: [...(state.week?.slots || []), slotToAdd],
         },
       };
+
     default:
       return state;
   }
