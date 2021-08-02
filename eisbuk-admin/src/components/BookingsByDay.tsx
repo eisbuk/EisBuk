@@ -59,6 +59,38 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
   const [localAbsentees, setLocalAbsentees] = useState({});
 
   const periods = getPeriods(bookingDayInfo);
+  const toggleAbsent = (
+    slot: ProcessedSlot,
+    userBooking: UserBooking,
+    isAbsent: boolean
+  ) => {
+    setLocalAbsentees((state) => ({
+      ...state,
+      [slot.id]: {
+        ...state[slot.id],
+        [userBooking.id]: !isAbsent,
+      },
+    }));
+    markAbsentee &&
+      markAbsentee({
+        slot,
+        user: userBooking,
+        isAbsent: !isAbsent,
+      });
+  };
+
+  const checkLocalChange = (
+    slot: ProcessedSlot,
+    userBooking: UserBooking,
+    isAbsent: boolean
+  ): boolean => {
+    const hasLocalChange =
+      typeof (
+        localAbsentees[slot.id] && localAbsentees[slot.id][userBooking.id]
+      ) !== "undefined" && localAbsentees[slot.id][userBooking.id] !== isAbsent;
+
+    return hasLocalChange;
+  };
 
   return (
     <Container maxWidth="sm">
@@ -81,36 +113,20 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
               </ListItem>
               {slot.users.map((userBooking) => {
                 let isAbsent = Boolean((slot.absentees || {})[userBooking.id]);
-                const hasLocalChange =
-                  typeof (
-                    localAbsentees[slot.id] &&
-                    localAbsentees[slot.id][userBooking.id]
-                  ) !== "undefined" &&
-                  localAbsentees[slot.id][userBooking.id] !== isAbsent;
-                if (hasLocalChange) {
-                  isAbsent = !isAbsent;
-                }
-                const toggleAbsent = () => {
-                  setLocalAbsentees((state) => ({
-                    ...state,
-                    [slot.id]: {
-                      ...state[slot.id],
-                      [userBooking.id]: !isAbsent,
-                    },
-                  }));
-                  markAbsentee &&
-                    markAbsentee({
-                      slot,
-                      user: userBooking,
-                      isAbsent: !isAbsent,
-                    });
-                };
+
+                const hasLocalChange = checkLocalChange(
+                  slot,
+                  userBooking,
+                  isAbsent
+                );
+                isAbsent = hasLocalChange ? !isAbsent : isAbsent;
+
                 const absenteeButtons = markAbsentee ? (
                   <Button
                     variant="contained"
                     size="small"
                     color={isAbsent ? "primary" : "secondary"}
-                    onClick={toggleAbsent}
+                    onClick={() => toggleAbsent(slot, userBooking, isAbsent)}
                     disabled={hasLocalChange}
                   >
                     {isAbsent ? "👎" : "👍"}

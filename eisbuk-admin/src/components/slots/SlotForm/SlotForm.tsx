@@ -159,42 +159,47 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   }
   const { t } = useTranslation();
 
+  //  type onSubmit = FormikConfig<Slot<"id"> & typeof defaultValues>["onSubmit"];
+  const handleSubmit = async (
+    values: any,
+    { setSubmitting, resetForm }: any
+  ) => {
+    const parsedTime = DateTime.fromISO(isoDate + "T" + values.time);
+
+    const {
+      categories,
+      durations,
+      notes,
+      type,
+    } = values as SlotOperationBaseParams;
+
+    if (slotToEdit) {
+      await editSlot({
+        id: slotToEdit.id,
+        type,
+        categories,
+        durations,
+        notes,
+      });
+    } else {
+      await createSlot({
+        type,
+        categories,
+        durations,
+        notes,
+        date: Timestamp.fromDate(parsedTime.toJSDate()),
+      });
+    }
+    setSubmitting(false);
+    resetForm();
+    onClose();
+  };
   return (
     <Dialog open={open} onClose={onClose}>
       <Formik
         initialValues={{ ...defaultValues, ...slotToEdit }}
         validationSchema={SlotValidation}
-        onSubmit={async (values, { setSubmitting, resetForm }) => {
-          const parsedTime = DateTime.fromISO(isoDate + "T" + values.time);
-
-          const {
-            categories,
-            durations,
-            notes,
-            type,
-          } = values as SlotOperationBaseParams;
-
-          if (slotToEdit) {
-            await editSlot({
-              id: slotToEdit.id,
-              type,
-              categories,
-              durations,
-              notes,
-            });
-          } else {
-            await createSlot({
-              type,
-              categories,
-              durations,
-              notes,
-              date: Timestamp.fromDate(parsedTime.toJSDate()),
-            });
-          }
-          setSubmitting(false);
-          resetForm();
-          onClose();
-        }}
+        onSubmit={handleSubmit}
         {...props}
       >
         {({ errors, isSubmitting, isValidating }) => (
