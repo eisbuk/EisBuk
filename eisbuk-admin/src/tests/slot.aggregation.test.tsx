@@ -6,9 +6,9 @@ import {
   deleteAllCollections,
   loginDefaultUser,
   createDefaultOrg,
-  retry,
 } from "./utils";
 
+import pRetry from "p-retry";
 type DocumentReference = firebase.firestore.DocumentReference;
 type DocumentData = firebase.firestore.DocumentData;
 
@@ -84,7 +84,7 @@ interface WaitForRecord {
 
 const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
   // retry to get the given record until it contains the expected number of keys
-  return await retry(
+  return await pRetry(
     // Try to fetch the aggregate slots for the day until
     // we find the newly added one
     async () => {
@@ -96,7 +96,8 @@ const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
       }
       return aggregateSlot;
     },
-    10, // Try the above up to 10 times
-    400 // pause 400 ms between tries
+    // Try the above up to 10 times
+    // pause 400 ms between tries
+    { retries: 10, minTimeout: 400, maxTimeout: 400 }
   );
 };

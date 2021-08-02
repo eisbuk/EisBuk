@@ -3,48 +3,6 @@ import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
 
-interface RetryHelper {
-  <T>(
-    func: (...args: any[]) => Promise<T>,
-    maxTries: number,
-    delay: number
-  ): Promise<T>;
-}
-
-/**
- * Test util: runs procided function until success or maxTries reached, with specified delay
- * @param func function to run
- * @param maxTries
- * @param delay between runs
- * @returns
- */
-export const retry: RetryHelper = async (func, maxTries, delay) => {
-  // Retry running the (asyncrhronous) function func
-  // until it resolves
-  let reTry = 0;
-  return new Promise((resolve, reject) => {
-    const callFunc = async (): Promise<void> => {
-      try {
-        /** @TEMP below, rewrite this to be more readable */
-        // eslint-disable-next-line promise/catch-or-return
-        func().then(resolve, (reason) => {
-          if (++reTry >= maxTries) {
-            reject(reason);
-          } else {
-            setTimeout(
-              callFunc,
-              typeof delay === "function" ? (delay as any)(retry) : delay
-            );
-          }
-        });
-      } catch (e) {
-        reject(e);
-      }
-    };
-    callFunc();
-  });
-};
-
 // The following function currently fails because of this issue
 // with the jsdom implementation of pre-flight CORS check:
 // https://github.com/jsdom/jsdom/pull/2867

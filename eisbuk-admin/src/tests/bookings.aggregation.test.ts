@@ -1,7 +1,7 @@
 import { adminDb } from "./settings";
-import { retry, deleteAll } from "./utils";
+import { deleteAll } from "./utils";
 import { DocumentData } from "@google-cloud/firestore";
-
+import pRetry from "p-retry";
 beforeEach(async () => {
   await deleteAll(["bookings", "bookingsByDay"]);
   await adminDb
@@ -80,7 +80,7 @@ const waitForBookingWithCondition: WaitForBookingWithCondition = async (
     .doc("default")
     .collection("bookingsByDay");
 
-  await retry(
+  await pRetry(
     // Try to fetch the bookingsByDay aggregation until
     // it includes the booking we were asked to
     async () => {
@@ -93,8 +93,9 @@ const waitForBookingWithCondition: WaitForBookingWithCondition = async (
             )
           );
     },
-    10, // Try the above up to 10 times
-    400 // pause 400 ms between tries
+    // Try the above up to 10 times
+    // pause 400 ms between tries
+    { retries: 10, minTimeout: 400, maxTimeout: 400 }
   );
 
   return doc?.data();

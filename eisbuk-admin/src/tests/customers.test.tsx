@@ -1,8 +1,8 @@
 import firebase from "firebase";
 
 import { adminDb } from "./settings";
-import { retry, deleteAll } from "./utils";
-
+import { deleteAll } from "./utils";
+import pRetry from "p-retry";
 type DocumentData = firebase.firestore.DocumentData;
 
 beforeEach(async () => {
@@ -109,7 +109,7 @@ const waitForCondition: WaitForCondition = async ({
     .collection("organizations")
     .doc("default")
     .collection(collection);
-  await retry(
+  await pRetry(
     // Try to fetch the customer `foo` until
     // it includes a `secret_key` key
     async () => {
@@ -118,8 +118,7 @@ const waitForCondition: WaitForCondition = async ({
         ? Promise.resolve()
         : Promise.reject(new Error(`${id} was not updated successfully`));
     },
-    attempts,
-    sleep
+    { retries: attempts, minTimeout: sleep, maxTimeout: sleep }
   );
   return doc;
 };
