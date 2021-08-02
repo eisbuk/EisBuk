@@ -2,20 +2,18 @@ import React, { useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useSnackbar } from "notistack";
 
-import { LocalStore, Notification } from "@/types/store";
+import { Notification } from "@/types/store";
 
 import NotificationButton from "@/components/atoms/NotificationButton";
 
 import { removeSnackbar } from "@/store/actions/appActions";
 
-/** @TODO refactor to use imported selector */
-const selectNotifications = (store: LocalStore) =>
-  store.app.notifications || [];
+import { getNotifications } from "@/store/selectors/app";
 
 const Notifier: React.FC = () => {
   const dispatch = useDispatch();
 
-  const notifications = useSelector(selectNotifications);
+  const notifications = useSelector(getNotifications);
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 

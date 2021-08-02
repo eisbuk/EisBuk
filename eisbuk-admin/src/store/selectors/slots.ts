@@ -2,11 +2,11 @@
 import _ from "lodash";
 import { createSelector } from "reselect";
 
-import { Slot, Customer } from "eisbuk-shared";
+import { Slot, Customer, BookingInfo } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
-import { fs2luxon } from "@/utils/helpers";
+import { flatten, fs2luxon } from "@/utils/helpers";
 
 import { getCustomersRecord } from "./firestore";
 
@@ -23,7 +23,7 @@ const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
 const getSafe = <F extends () => any>(
   fn: F,
   defaultVal?: ReturnType<F>
-): ReturnType<F> | Record<string, any> => {
+): NonNullable<ReturnType<F>> | Record<string, any> => {
   // if no default val provided, fall back to empty object
   const def = defaultVal || {};
 
@@ -39,6 +39,26 @@ const getSafe = <F extends () => any>(
 };
 
 /**
+ * Get all slots in a single record, keyed by (day) date
+ * @param state Local Redux Store
+ * @returns record of all slots, keyed by day, grouped together (regardless of month)
+ */
+export const getAllSlotsByDay = (
+  state: LocalStore
+): Record<string, Slot<"id">> =>
+  flatten(Object.values(getSafe(() => state.firestore.data.slotsByDay)));
+
+/**
+ * Get subscribed slots from state
+ * @param state Local Redux Store
+ * @returns record of subscribed slots
+ */
+export const getSubscribedSlots = (
+  state: LocalStore
+): Record<string, BookingInfo> =>
+  getSafe(() => state.firestore.data.subscribedSlots);
+
+/**
  * Selector creator higher order function
  * creates a selector for the day of slots (day provided as param)
  * @param dayStr date string for particular day ("yyyy-mm-dd")
@@ -46,7 +66,7 @@ const getSafe = <F extends () => any>(
  */
 const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
   const monthStr = dayStr.substr(0, 7);
-  return getSafe(() => state.firestore.data.slotsByDay[monthStr][dayStr]);
+  return getSafe(() => state.firestore.data.slotsByDay![monthStr][dayStr]);
 };
 
 /**
@@ -56,7 +76,7 @@ const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
  * @returns selector for record of bookings (keyed by slot id), curried with the given day
  */
 const makeBookingsInfoSelector = (dayStr: string) => (state: LocalStore) =>
-  getSafe(() => state.firestore.data.bookingsByDay[dayStr.substr(0, 7)]);
+  getSafe(() => state.firestore.data.bookingsByDay![dayStr.substr(0, 7)]);
 
 /**
  * Get slots for day, mapped with time info, and customers who booked that slot

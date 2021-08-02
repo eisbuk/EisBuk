@@ -175,8 +175,8 @@ interface FirestoreRedux {
     requested: FirestoreStatusEntry<boolean>;
     timestamps: FirestoreStatusEntry<number>;
   };
-  data: FirestoreData;
-  ordered: FirestoreOrdered;
+  data: Partial<FirestoreData>;
+  ordered: Partial<FirestoreOrdered>;
   listeners: {
     byId: {};
     allIds: [];

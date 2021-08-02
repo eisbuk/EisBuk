@@ -12,8 +12,6 @@ import _ from "lodash";
 
 import { BookingInfo, Category, OrgSubCollection } from "eisbuk-shared";
 
-import { LocalStore } from "@/types/store";
-
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
 import {
@@ -22,16 +20,11 @@ import {
 } from "@/store/actions/bookingOperations";
 
 import { wrapOrganization } from "@/utils/firestore";
-import { flatten, getMonthStr } from "@/utils/helpers";
+import { getMonthStr } from "@/utils/helpers";
 import { SlotOperation } from "@/types/slotOperations";
+import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
 
 const luxon = new LuxonUtils();
-
-/** @TODO refactor to use imported selectors */
-const slotsSelector = (state: LocalStore) =>
-  flatten(state.firestore.ordered.slotsByDay);
-const subscribedSlotsSelector = (state: LocalStore) =>
-  state.firestore.data.subscribedSlots;
 
 interface Props {
   category: Category;
@@ -79,16 +72,14 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     }),
   ]);
 
-  const allSlotsByDay = _.omitBy(
-    useSelector(slotsSelector),
-    (el) => typeof el === "string"
-  );
+  const allSlotsByDay = useSelector(getAllSlotsByDay);
+
   const slots = _.mapValues(allSlotsByDay, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return slot.categories.includes(category);
     })
   );
-  const subscribedSlots = useSelector(subscribedSlotsSelector);
+  const subscribedSlots = useSelector(getSubscribedSlots);
 
   const dispatch = useDispatch();
   const onSubscribe = isLoaded(subscribedSlots)
