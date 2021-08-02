@@ -69,6 +69,35 @@ export interface AppState {
 }
 // ***** End Region App ***** //
 
+// ****** Region Auth Reducer ***** //
+/**
+ * In store auth info object
+ */
+export interface AuthInfoEisbuk {
+  amIAdmin: boolean;
+  myUserId: string | null;
+  uid: string | null;
+}
+
+/**
+ * Whitelisted actions for app reducer
+ */
+export type AuthAction = Action.IsAdminReceived | string;
+
+/**
+ * App reducer action generic
+ * gets passed one of whitelisted app reducer actions as type parameter
+ */
+export type AuthReducerAction<
+  A extends AuthAction
+> = A extends Action.IsAdminReceived
+  ? {
+      type: Action.IsAdminReceived;
+      payload?: Omit<AuthInfoEisbuk, "myUserId">;
+    }
+  : { type: string };
+// ****** End Region Auth Info ***** //
+
 // ***** Region Copy Paste ***** //
 export interface SlotDay {
   [slotId: string]: Slot<"id">;
@@ -131,14 +160,6 @@ interface FirestoreRedux {
   queries: {};
 }
 // ****** Region Firestore ***** //
-
-// ****** Region Auth Info ***** //
-export interface AuthInfoEisbuk {
-  amIAdmin: boolean;
-  myUserId: string | null;
-  uid: string | null;
-}
-// ****** End Region Auth Info ***** //
 
 // ****** Region Full Store ***** //
 export interface LocalStore {

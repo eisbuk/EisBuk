@@ -2,12 +2,20 @@ import { ORGANIZATION, functionsZone } from "@/config/envInfo";
 
 import { NotifVariant, Action } from "@/enums/store";
 
-import { FirestoreThunk } from "@/types/store";
+import { AuthReducerAction, FirestoreThunk } from "@/types/store";
 
 import {
   enqueueNotification,
   showErrSnackbar,
 } from "@/store/actions/appActions";
+
+const updateAdminStatus = (
+  uid: string,
+  amIAdmin: boolean
+): AuthReducerAction<Action.IsAdminReceived> => ({
+  type: Action.IsAdminReceived,
+  payload: { uid, amIAdmin },
+});
 
 /**
  * Creates firestore async thunk:
@@ -60,20 +68,19 @@ export const queryUserAdminStatus = (): FirestoreThunk => async (
 ) => {
   try {
     const firebase = getFirebase();
-    const resp = await firebase
+
+    const res = (await firebase
       .app()
       .functions(functionsZone)
       .httpsCallable("amIAdmin")({
       organization: ORGANIZATION,
-    });
+    })) as { data: { amIAdmin: boolean } };
 
-    const auth = getState().firebase.auth;
+    const { amIAdmin } = res.data;
+    const { uid } = getState().firebase.auth;
 
-    if (auth.uid) {
-      dispatch({
-        type: Action.IsAdminReceived,
-        payload: { uid: auth.uid, amIAdmin: resp.data.amIAdmin },
-      });
+    if (uid) {
+      dispatch(updateAdminStatus(uid, amIAdmin));
     }
   } catch (err) {
     showErrSnackbar();
