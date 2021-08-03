@@ -10,7 +10,12 @@ import { useTitle } from "@/utils/helpers";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
-function invokeFunction(functionName: CloudFunction) {
+/**
+ * Invokes cloud function
+ * @param functionName function to run
+ * @returns function that calls firebase with provided functionName param
+ */
+const invokeFunction = (functionName: CloudFunction) => {
   return async () => {
     const res = await firebase
       .app()
@@ -19,13 +24,18 @@ function invokeFunction(functionName: CloudFunction) {
 
     console.log(res.data);
   };
-}
+};
 
-function createAdminTestUsers() {
+/**
+ * Creates a new (dummy) organization in firestore
+ * and populates it with two dummy (admin) users
+ * @returns
+ */
+const createAdminTestUsers = () => {
   invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
   firebase.auth().createUserWithEmailAndPassword("test@eisbuk.it", "test00");
-}
+};
 
 const DebugPage: React.FC = () => {
   useTitle("Debug");

@@ -57,10 +57,10 @@ export const development = {
 export const available = [igorice, eisbuk, development];
 
 /**
- * Gets theme settings for current organization (current build in this case)
+ * Gets theme settings for current organization
  * @returns
  */
-function getCurrentOrganizationSettings() {
+const getCurrentOrganizationSettings = () => {
   switch (ORGANIZATION) {
     case "igorice.web.app":
       return {
@@ -78,7 +78,7 @@ function getCurrentOrganizationSettings() {
         name: "DEV",
       };
   }
-}
+};
 
 export const organizationInfo = getCurrentOrganizationSettings();
 

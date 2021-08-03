@@ -3,55 +3,7 @@ import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
 
-interface RetryHelper {
-  <T>(
-    func: (...args: any[]) => Promise<T>,
-    maxTries: number,
-    delay: number
-  ): Promise<T>;
-}
-
 /**
- * Test util: runs procided function until success or maxTries reached, with specified delay
- * @param func function to run
- * @param maxTries
- * @param delay between runs
- * @returns
- */
-export const retry: RetryHelper = async (func, maxTries, delay) => {
-  // Retry running the (asyncrhronous) function func
-  // until it resolves
-  let reTry = 0;
-  return new Promise((resolve, reject) => {
-    const callFunc = async (): Promise<void> => {
-      try {
-        /** @TEMP below, rewrite this to be more readable */
-        // eslint-disable-next-line promise/catch-or-return
-        func().then(resolve, (reason) => {
-          if (++reTry >= maxTries) {
-            reject(reason);
-          } else {
-            setTimeout(
-              callFunc,
-              typeof delay === "function" ? (delay as any)(retry) : delay
-            );
-          }
-        });
-      } catch (e) {
-        reject(e);
-      }
-    };
-    callFunc();
-  });
-};
-
-// The following function currently fails because of this issue
-// with the jsdom implementation of pre-flight CORS check:
-// https://github.com/jsdom/jsdom/pull/2867
-// For now you need to patch your local copy manually
-// A script `fix_jsdom.sh" is provided for this purpose
-/**
- *
  * @param email
  */
 export const loginWithUser = async (email: string): Promise<void> => {
@@ -63,7 +15,8 @@ export const loginWithUser = async (email: string): Promise<void> => {
 };
 
 /**
- * Test util: deletes default organization ("default") from emulated firestore db
+ * Test util: creates default organization ("default") in emulated firestore db
+ * and adds admin ("test@example.com")
  * @returns
  */
 export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
@@ -96,7 +49,7 @@ export const deleteAll = async (
 };
 
 /**
- * Test util: deletes provided collections from provided provided db
+ * Test util: deletes provided collections from provided db
  * @param db to delete from
  * @param collections to delete
  * @returns
