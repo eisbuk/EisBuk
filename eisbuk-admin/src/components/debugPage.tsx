@@ -27,7 +27,8 @@ const invokeFunction = (functionName: CloudFunction) => {
 };
 
 /**
- * creates admin test users
+ * Creates a new (dummy) organization in firestore
+ * and populates it with two dummy (admin) users
  * @returns
  */
 const createAdminTestUsers = () => {

@@ -59,11 +59,20 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
   const [localAbsentees, setLocalAbsentees] = useState({});
 
   const periods = getPeriods(bookingDayInfo);
+
+  /**
+   * Handler used to toggle athlete being absent,
+   * both locally and dispatch update to firestore
+   * @param slot slot for which we're marking attendance
+   * @param userBooking info of booking for which we're toggling attendance (user info, duration)
+   * @param isAbsent boolean, previous state of attendance
+   */
   const toggleAbsent = (
     slot: ProcessedSlot,
     userBooking: UserBooking,
     isAbsent: boolean
   ) => {
+    // update local state with absentees
     setLocalAbsentees((state) => ({
       ...state,
       [slot.id]: {
@@ -71,6 +80,7 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
         [userBooking.id]: !isAbsent,
       },
     }));
+    // presist attendance data to firestore
     markAbsentee &&
       markAbsentee({
         slot,
@@ -79,18 +89,22 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
       });
   };
 
+  /**
+   * Checks difference between firestore state and local state for given user,
+   * used to disable the toggle button until the attendance statuses are in sync
+   * @param slot for which we're checking attendance
+   * @param userBooking id of booking for which we're checking for difference
+   * @param isAbsentInFirestore boolean, attendance status in firestore
+   * @returns true if states (locally and in firestore) don't match
+   */
   const checkLocalChange = (
     slot: ProcessedSlot,
-    userBooking: UserBooking,
-    isAbsent: boolean
-  ): boolean => {
-    const hasLocalChange =
-      typeof (
-        localAbsentees[slot.id] && localAbsentees[slot.id][userBooking.id]
-      ) !== "undefined" && localAbsentees[slot.id][userBooking.id] !== isAbsent;
-
-    return hasLocalChange;
-  };
+    bookingId: UserBooking["id"],
+    isAbsentInFirestore: boolean
+  ): boolean =>
+    localAbsentees[slot.id] &&
+    localAbsentees[slot.id][bookingId] &&
+    localAbsentees[slot.id][bookingId] !== isAbsentInFirestore;
 
   return (
     <Container maxWidth="sm">
@@ -112,13 +126,17 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                 />
               </ListItem>
               {slot.users.map((userBooking) => {
+                // set absence status with respect to firestore state
                 let isAbsent = Boolean((slot.absentees || {})[userBooking.id]);
 
+                // check for discrepancy between local attendance (absence) status and the one in firestore
                 const hasLocalChange = checkLocalChange(
                   slot,
-                  userBooking,
+                  userBooking.id,
                   isAbsent
                 );
+
+                // update absence status (for UI display) with respect to local state
                 isAbsent = hasLocalChange ? !isAbsent : isAbsent;
 
                 const absenteeButtons = markAbsentee ? (
@@ -161,7 +179,6 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
 // ***** End Region Main Component ***** //
 
 // ***** Region Local Utils ***** //
-
 const getPeriods = (bookingDayInfo: BookingDayInfo) =>
   bookingDayInfo.reduce((acc, currEntry) => {
     return [...acc, ...splitPeriod(currEntry)];

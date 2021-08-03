@@ -2,6 +2,7 @@ import { adminDb } from "./settings";
 import { deleteAll } from "./utils";
 import { DocumentData } from "@google-cloud/firestore";
 import pRetry from "p-retry";
+
 beforeEach(async () => {
   await deleteAll(["bookings", "bookingsByDay"]);
   await adminDb
@@ -82,7 +83,7 @@ const waitForBookingWithCondition: WaitForBookingWithCondition = async (
 
   await pRetry(
     // Try to fetch the bookingsByDay aggregation until
-    // it includes the booking we were asked to
+    // it includes the booking we asked for
     async () => {
       doc = await coll.doc(monthStr).get();
       return condition(doc.data())

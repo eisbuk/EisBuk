@@ -63,7 +63,6 @@ const SlotValidation = Yup.object().shape({
     .of(Yup.number().min(1))
     .required(i18n.t("SlotValidations.Duration")),
 });
-
 // ***** End Region Form Setup ***** //
 
 // ***** Region Time Picker Field ***** //
@@ -76,16 +75,22 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
   const { setFieldValue } = useFormikContext();
 
   /**
-   *
-   * @param delta
-   * @returns
+   * Get ISO time string of current value with applied difference,
+   * used with increment/decrement handlers
+   * @param delta time diff to add/substract
+   * @returns ISO time string
    */
   const getCurrentTime = (delta: number) => {
+    // try and parse time value
     const parsed = DateTime.fromISO(props.value);
-    if (!(parsed as any).invalid) {
-      /** @TEMP `any` assertion, according to TypeScript, this shouldn't work */
+
+    // if passed value is a valid ISO string (conversion was successful)
+    // return time with increment/decrement
+    if (!parsed.invalidReason) {
       return parsed.plus({ hours: delta }).toISOTime().substring(0, 5);
     }
+
+    // if conversion failed, return fallback value
     return "08:00";
   };
 
@@ -161,6 +166,12 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   const { t } = useTranslation();
 
   type OnSubmit = FormikConfig<Partial<typeof defaultValues>>["onSubmit"];
+
+  /**
+   * onSubmit handler for Formik
+   * @param values
+   * @param param1
+   */
   const handleSubmit: OnSubmit = async (
     values,
     { setSubmitting, resetForm }
@@ -195,6 +206,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
     resetForm();
     onClose();
   };
+
   return (
     <Dialog open={open} onClose={onClose}>
       <Formik

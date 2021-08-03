@@ -79,6 +79,9 @@ it("Populates bookings when a customer record is added or changed", async (done)
 });
 
 /**
+ * Check for secret_key in provided document.
+ * Used to test `addMissingSecretKey` function for
+ * customer registration
  * @param data document data
  * @returns whether secret key exists
  */
@@ -96,6 +99,11 @@ interface WaitForCondition {
   }): Promise<DocumentData | undefined>;
 }
 
+/**
+ * Retries to fetch item until condition is true or the max number of attempts exceeded
+ * @param param0
+ * @returns
+ */
 const waitForCondition: WaitForCondition = async ({
   collection,
   id,
@@ -103,15 +111,15 @@ const waitForCondition: WaitForCondition = async ({
   attempts = 10,
   sleep = 400,
 }) => {
-  // Retries to fetch item until condition is true.
   let doc: DocumentData | undefined;
   const coll = adminDb
     .collection("organizations")
     .doc("default")
     .collection(collection);
+
   await pRetry(
-    // Try to fetch the customer `foo` until
-    // it includes a `secret_key` key
+    // Try to fetch the document with provided id in the provided collection
+    // until the condition has been met
     async () => {
       doc = (await coll.doc(id).get()).data();
       return condition(doc)
@@ -120,5 +128,6 @@ const waitForCondition: WaitForCondition = async ({
     },
     { retries: attempts, minTimeout: sleep, maxTimeout: sleep }
   );
+
   return doc;
 };
