@@ -28,11 +28,12 @@ import {
   useField,
   ErrorMessage,
   useFormikContext,
+  FormikConfig,
 } from "formik";
 import { DateTime } from "luxon";
 import * as Yup from "yup";
 
-import { Slot, Duration } from "eisbuk-shared";
+import { Slot, Duration, Category, SlotType } from "eisbuk-shared";
 
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
@@ -45,10 +46,10 @@ const Timestamp = firebase.firestore.Timestamp;
 
 // ***** Region Form Setup ***** //
 const defaultValues = {
-  time: "08:00",
+  time: "08:00" as string,
   durations: [Duration["1h"]],
-  categories: [],
-  type: "",
+  categories: [] as Category[],
+  type: "" as SlotType,
   notes: "",
 };
 
@@ -159,10 +160,10 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   }
   const { t } = useTranslation();
 
-  //  type onSubmit = FormikConfig<Slot<"id"> & typeof defaultValues>["onSubmit"];
-  const handleSubmit = async (
-    values: any,
-    { setSubmitting, resetForm }: any
+  type OnSubmit = FormikConfig<Partial<typeof defaultValues>>["onSubmit"];
+  const handleSubmit: OnSubmit = async (
+    values,
+    { setSubmitting, resetForm }
   ) => {
     const parsedTime = DateTime.fromISO(isoDate + "T" + values.time);
 
