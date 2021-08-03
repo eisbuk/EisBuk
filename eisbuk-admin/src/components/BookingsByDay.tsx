@@ -60,6 +60,52 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
 
   const periods = getPeriods(bookingDayInfo);
 
+  /**
+   * Handler used to toggle athlete being absent,
+   * both locally and dispatch update to firestore
+   * @param slot slot for which we're marking attendance
+   * @param userBooking info of booking for which we're toggling attendance (user info, duration)
+   * @param isAbsent boolean, previous state of attendance
+   */
+  const toggleAbsent = (
+    slot: ProcessedSlot,
+    userBooking: UserBooking,
+    isAbsent: boolean
+  ) => {
+    // update local state with absentees
+    setLocalAbsentees((state) => ({
+      ...state,
+      [slot.id]: {
+        ...state[slot.id],
+        [userBooking.id]: !isAbsent,
+      },
+    }));
+    // presist attendance data to firestore
+    markAbsentee &&
+      markAbsentee({
+        slot,
+        user: userBooking,
+        isAbsent: !isAbsent,
+      });
+  };
+
+  /**
+   * Checks difference between firestore state and local state for given user,
+   * used to disable the toggle button until the attendance statuses are in sync
+   * @param slot for which we're checking attendance
+   * @param userBooking id of booking for which we're checking for difference
+   * @param isAbsentInFirestore boolean, attendance status in firestore
+   * @returns true if states (locally and in firestore) don't match
+   */
+  const checkLocalChange = (
+    slot: ProcessedSlot,
+    bookingId: UserBooking["id"],
+    isAbsentInFirestore: boolean
+  ): boolean =>
+    localAbsentees[slot.id] &&
+    localAbsentees[slot.id][bookingId] &&
+    localAbsentees[slot.id][bookingId] !== isAbsentInFirestore;
+
   return (
     <Container maxWidth="sm">
       <List className={classes.root}>
@@ -80,37 +126,25 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                 />
               </ListItem>
               {slot.users.map((userBooking) => {
+                // set absence status with respect to firestore state
                 let isAbsent = Boolean((slot.absentees || {})[userBooking.id]);
-                const hasLocalChange =
-                  typeof (
-                    localAbsentees[slot.id] &&
-                    localAbsentees[slot.id][userBooking.id]
-                  ) !== "undefined" &&
-                  localAbsentees[slot.id][userBooking.id] !== isAbsent;
-                if (hasLocalChange) {
-                  isAbsent = !isAbsent;
-                }
-                const toggleAbsent = () => {
-                  setLocalAbsentees((state) => ({
-                    ...state,
-                    [slot.id]: {
-                      ...state[slot.id],
-                      [userBooking.id]: !isAbsent,
-                    },
-                  }));
-                  markAbsentee &&
-                    markAbsentee({
-                      slot,
-                      user: userBooking,
-                      isAbsent: !isAbsent,
-                    });
-                };
+
+                // check for discrepancy between local attendance (absence) status and the one in firestore
+                const hasLocalChange = checkLocalChange(
+                  slot,
+                  userBooking.id,
+                  isAbsent
+                );
+
+                // update absence status (for UI display) with respect to local state
+                isAbsent = hasLocalChange ? !isAbsent : isAbsent;
+
                 const absenteeButtons = markAbsentee ? (
                   <Button
                     variant="contained"
                     size="small"
                     color={isAbsent ? "primary" : "secondary"}
-                    onClick={toggleAbsent}
+                    onClick={() => toggleAbsent(slot, userBooking, isAbsent)}
                     disabled={hasLocalChange}
                   >
                     {isAbsent ? "👎" : "👍"}
@@ -145,7 +179,6 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
 // ***** End Region Main Component ***** //
 
 // ***** Region Local Utils ***** //
-
 const getPeriods = (bookingDayInfo: BookingDayInfo) =>
   bookingDayInfo.reduce((acc, currEntry) => {
     return [...acc, ...splitPeriod(currEntry)];
