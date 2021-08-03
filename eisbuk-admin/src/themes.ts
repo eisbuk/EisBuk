@@ -57,7 +57,7 @@ export const development = {
 export const available = [igorice, eisbuk, development];
 
 /**
- * Gets theme settings for current organization (current build in this case)
+ * Gets theme settings for current organization
  * @returns
  */
 const getCurrentOrganizationSettings = () => {

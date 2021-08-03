@@ -38,7 +38,7 @@ import { queryUserAdminStatus } from "@/store/actions/actions";
  * General components to be returned from the AppContent, regardless of auth status
  * @returns
  */
-const AppComponents = () => {
+const AppComponents: React.FC = () => {
   return (
     <Switch>
       <LoginRoute path={Routes.Login} component={LoginPage} />
@@ -59,7 +59,7 @@ const AppComponents = () => {
  * Does additional Redux - Firestore connect for data available only to authenticated users
  * @returns
  */
-const AppContentAuthenticated = () => {
+const AppContentAuthenticated: React.FC = () => {
   const currentDate = useSelector(calendarDaySelector);
   const firestore = useFirestore();
 

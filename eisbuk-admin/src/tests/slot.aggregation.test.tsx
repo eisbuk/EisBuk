@@ -82,9 +82,12 @@ interface WaitForRecord {
   }): Promise<DocumentData>;
 }
 
-const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
-  // retry to get the given record until it contains the expected number of keys
-  return await pRetry(
+/**
+ * Retry to get the given record until it contains the expected number of keys,
+ * limit retries to 10
+ */
+const waitForRecord: WaitForRecord = ({ record, numKeys }) =>
+  pRetry(
     // Try to fetch the aggregate slots for the day until
     // we find the newly added one
     async () => {
@@ -100,4 +103,3 @@ const waitForRecord: WaitForRecord = async ({ record, numKeys }) => {
     // pause 400 ms between tries
     { retries: 10, minTimeout: 400, maxTimeout: 400 }
   );
-};

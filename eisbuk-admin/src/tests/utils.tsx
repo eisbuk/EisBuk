@@ -3,13 +3,7 @@ import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
 
-// The following function currently fails because of this issue
-// with the jsdom implementation of pre-flight CORS check:
-// https://github.com/jsdom/jsdom/pull/2867
-// For now you need to patch your local copy manually
-// A script `fix_jsdom.sh" is provided for this purpose
 /**
- *
  * @param email
  */
 export const loginWithUser = async (email: string): Promise<void> => {
@@ -21,7 +15,8 @@ export const loginWithUser = async (email: string): Promise<void> => {
 };
 
 /**
- * Test util: deletes default organization ("default") from emulated firestore db
+ * Test util: creates default organization ("default") in emulated firestore db
+ * and adds admin ("test@example.com")
  * @returns
  */
 export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
@@ -54,7 +49,7 @@ export const deleteAll = async (
 };
 
 /**
- * Test util: deletes provided collections from provided provided db
+ * Test util: deletes provided collections from provided db
  * @param db to delete from
  * @param collections to delete
  * @returns
