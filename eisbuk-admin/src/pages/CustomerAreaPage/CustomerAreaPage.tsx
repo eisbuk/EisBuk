@@ -110,8 +110,12 @@ export const CustomerAreaPage: React.FC = () => {
                   centered
                 >
                   <LinkTab
-                    label={t("CustomerArea.Book")}
+                    label={t("CustomerArea.iceSlots")}
                     icon={<EventNoteIcon />}
+                  />
+                  <LinkTab
+                    label={t("CustomerArea.offIceSlots")}
+                    icon={<PersonPinIcon />}
                   />
                   <LinkTab
                     label={t("CustomerArea.Calendar")}
@@ -122,10 +126,17 @@ export const CustomerAreaPage: React.FC = () => {
             </AppBar>
             <TabPanel value={activeTab} index={0}>
               <CustomerAreaCalendar
+                view="iceSlots"
                 category={(customerData[0] as any).category}
               />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
+              <CustomerAreaCalendar
+                view="offIceSlots"
+                category={(customerData[0] as any).category}
+              />
+            </TabPanel>
+            <TabPanel value={activeTab} index={2}>
               <CustomerAreaCalendar
                 view="bookings"
                 category={customerData[0].category}

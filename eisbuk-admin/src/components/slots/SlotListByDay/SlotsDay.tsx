@@ -58,7 +58,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   day,
   subscribedSlots,
   enableEdit = false,
-  view = "slots",
+  view = "bookings",
   isCustomer = false,
   setCreateEditDialog = () => {},
   onSubscribe,
@@ -135,7 +135,22 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   return (
     <>
-      {view === "slots" ? (
+      {view === "bookings" ? (
+        <Grid className={classes.bookingsListContainer} container spacing={3}>
+          {slotsList.map(
+            (slot) =>
+              subscribedSlots &&
+              subscribedSlots[slot.id] && (
+                <Grid key={slot.id} item xs={12} sm={6} md={4} lg={3}>
+                  <CustomerAreaBookingCard
+                    data={subscribedSlots[slot.id]}
+                    key={slot.id}
+                  />
+                </Grid>
+              )
+          )}
+        </Grid>
+      ) : (
         <>
           <ListSubheader key={day + "-title"} className={classes.listSubheader}>
             <Typography display="inline" variant="h4" className={classes.date}>
@@ -193,21 +208,6 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
             ))}
           </Grid>
         </>
-      ) : (
-        <Grid className={classes.bookingsListContainer} container spacing={3}>
-          {slotsList.map(
-            (slot) =>
-              subscribedSlots &&
-              subscribedSlots[slot.id] && (
-                <Grid key={slot.id} item xs={12} sm={6} md={4} lg={3}>
-                  <CustomerAreaBookingCard
-                    data={subscribedSlots[slot.id]}
-                    key={slot.id}
-                  />
-                </Grid>
-              )
-          )}
-        </Grid>
       )}
     </>
   );

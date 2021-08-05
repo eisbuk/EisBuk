@@ -27,6 +27,7 @@ import {
   deleteSlots,
 } from "@/store/actions/actions";
 import { calendarDaySelector } from "@/store/selectors";
+import { DateTime } from "luxon";
 
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},
@@ -54,9 +55,24 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
 
   const dispatch = useDispatch();
 
-  const datesToDisplay = Array(7)
-    .fill(null)
-    .map((_, i) => currentDate.plus({ days: i }).toISODate());
+  /**
+   * generates dates to display based on the view
+   * 7 days of the week in case of ice slots
+   * 4-5 Mondays, Tuesdays, etc.of the month in case of off-ice
+   * @param str sview passed from props
+   * @returns array of dates to display
+   */
+  const datesToDisplay =
+    props.view === "iceSlots"
+      ? Array(5)
+          .fill(null)
+          .map((_, i) => currentDate.plus({ week: i }).toISODate())
+          .filter((date) =>
+            DateTime.fromISO(date).hasSame(currentDate, "month")
+          )
+      : Array(7)
+          .fill(null)
+          .map((_, i) => currentDate.plus({ days: i }).toISODate());
 
   const slotsToDisplay = {
     // create empty days
