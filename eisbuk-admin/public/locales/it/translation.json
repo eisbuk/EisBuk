@@ -56,7 +56,8 @@
         "TryAgain": "Esci e riprova con un altro utente"
     },
     "CustomerArea":{
-        "Book":"Prenota",
+        "IceSlots":"Prenota Ice",
+        "OffIceSlots": "Prenota Off-Ice",
         "Calendar":"Calendario"
     },
 

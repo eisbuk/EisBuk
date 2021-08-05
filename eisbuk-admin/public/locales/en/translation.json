@@ -56,7 +56,8 @@
         "TryAgain": "Log out and try again with a different user"
     },
     "CustomerArea":{
-        "Book":"Book",
+        "IceSlots":"Book Ice",
+        "OffIceSlots":"Book Off-Ice",
         "Calendar":"Calendar"
     },
     "CustomersPage":{

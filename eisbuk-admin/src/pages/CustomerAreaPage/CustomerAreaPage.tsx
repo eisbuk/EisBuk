@@ -110,12 +110,12 @@ export const CustomerAreaPage: React.FC = () => {
                   centered
                 >
                   <LinkTab
-                    label={t("CustomerArea.iceSlots")}
+                    label={t("CustomerArea.IceSlots")}
                     icon={<EventNoteIcon />}
                   />
                   <LinkTab
-                    label={t("CustomerArea.offIceSlots")}
-                    icon={<PersonPinIcon />}
+                    label={t("CustomerArea.OffIceSlots")}
+                    icon={<EventNoteIcon />}
                   />
                   <LinkTab
                     label={t("CustomerArea.Calendar")}
