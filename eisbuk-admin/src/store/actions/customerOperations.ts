@@ -1,0 +1,81 @@
+import { NotifVariant } from "@/enums/store";
+
+import { CustomerInStore, FirestoreThunk } from "@/types/store";
+
+import { ORGANIZATION } from "@/config/envInfo";
+
+import {
+  enqueueNotification,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
+
+/**
+ * Creates firestore async thunk:
+ * - updates the customer in firestore
+ * - enqueues success/error snackbar depending on the outcome of firestore operation
+ * @param customer to update in firestore
+ * @returns async thunk
+ */
+export const updateCustomer = (
+  customer: CustomerInStore
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { id, ...updatedData } = { ...customer };
+
+  const firebase = getFirebase();
+
+  try {
+    await firebase
+      .firestore()
+      .collection("organizations")
+      .doc(ORGANIZATION)
+      .collection("customers")
+      .doc(customer.id || undefined)
+      .set(updatedData);
+    dispatch(
+      enqueueNotification({
+        key: new Date().getTime() + Math.random(),
+        message: `${customer.name} ${customer.surname} aggiornato`,
+        closeButton: true,
+      })
+    );
+  } catch {
+    showErrSnackbar();
+  }
+};
+
+/**
+ * Creates firestore async thunk:
+ * - deletes the customer from firestore
+ * - enqueues success/error snackbar depending on the outcome of firestore operation
+ * @param customer to delete from firestore
+ * @returns async thunk
+ */
+export const deleteCustomer = (
+  customer: CustomerInStore
+): FirestoreThunk => async (dispatch, _, { getFirebase }) => {
+  const firebase = getFirebase();
+
+  try {
+    await firebase
+      .firestore()
+      .collection("organizations")
+      .doc(ORGANIZATION)
+      .collection("customers")
+      .doc(customer.id)
+      .delete();
+
+    dispatch(
+      enqueueNotification({
+        key: new Date().getTime() + Math.random(),
+        message: `${customer.name} ${customer.surname} rimosso`,
+        closeButton: true,
+        options: {
+          variant: NotifVariant.Success,
+        },
+      })
+    );
+  } catch {
+    showErrSnackbar();
+  }
+};

@@ -1,16 +1,18 @@
-import { bookingDayInfoSelector, calendarDaySelector } from "./selectors";
 import { DateTime, Settings } from "luxon";
 
 import { LocalStore } from "@/types/store";
 import { FirestoreData } from "@/types/firestore";
 
+import { bookingDayInfoSelector } from "@/store/selectors/slots";
+import { getCalendarDay } from "@/store/selectors/app";
+
 Settings.defaultZoneName = "Europe/Rome";
 
 it("Selects the app date", () => {
   expect(
-    calendarDaySelector({
+    getCalendarDay({
       app: { calendarDay: ("foo" as unknown) as DateTime } as LocalStore["app"],
-    })
+    } as LocalStore)
   ).toEqual("foo");
 });
 

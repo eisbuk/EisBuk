@@ -5,9 +5,7 @@ import { isLoaded, isEmpty } from "react-redux-firebase";
 
 import { PrivateRoutes } from "@/enums/routes";
 
-import { LocalStore } from "@/types/store";
-
-const authSelector = (state: LocalStore) => state.firebase.auth;
+import { getFirebaseAuth } from "@/store/selectors/auth";
 
 /**
  * Login route, checks for auth, if auth not provided, renders passed route props (LoginComponent)
@@ -16,7 +14,7 @@ const authSelector = (state: LocalStore) => state.firebase.auth;
  * @returns JSX.Element
  */
 const LoginRoute: React.FC<RouteProps> = (props) => {
-  const auth = useSelector(authSelector);
+  const auth = useSelector(getFirebaseAuth);
 
   return (
     <>

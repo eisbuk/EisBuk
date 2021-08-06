@@ -39,7 +39,7 @@ export const fs2luxon = (fsdate: Timestamp): DateTime =>
 
 // ***** Region To Flatten ***** //
 interface ToFlatten {
-  (toFlatten: Record<string, any>[]): Record<string, any>;
+  (toFlatten?: Record<string, any>[]): Record<string, any>;
 }
 
 /** @TODO This should maybe be called merge, since it essentially merges two or more objects, rather then flattening (lowering depth of object by one level) */

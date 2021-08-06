@@ -198,5 +198,8 @@ module.exports = {
     // This just gets in the way
     "import/no-named-as-default-member": "off",
     "import/no-named-as-default": "off",
+
+    // no-case-declarations
+    "no-case-declarations": "off",
   },
 };

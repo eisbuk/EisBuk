@@ -12,7 +12,7 @@ import { rrfProps, store } from "@/store";
 
 import AppContent from "@/AppContent";
 
-import Notifier from "@/utils/Notifier";
+import Notifier from "@/components/Notifier";
 
 import { currentTheme } from "@/themes";
 

@@ -22,11 +22,12 @@ import {
 
 import { Duration, Slot as SlotInterface, BookingInfo } from "eisbuk-shared";
 
-import { LocalStore } from "@/types/store";
 import { SlotOperation } from "@/types/slotOperations";
 
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 import ProjectIcon from "@/components/global/ProjectIcons";
+
+import { getFirebaseAuth } from "@/store/selectors/auth";
 
 import { fb2Luxon } from "@/data/dtutils";
 
@@ -47,7 +48,7 @@ export interface SlotProps {
   onDelete?: SlotOperation;
   deleted: boolean;
   selected?: boolean;
-  onSubscribe?: SlotOperation;
+  onSubscribe?: SlotOperation<"subscribe">;
   onUnsubscribe?: SlotOperation;
   subscribedSlots?: Record<string, BookingInfo>;
   setCreateEditDialog?: SetCreateEditDialog;
@@ -77,8 +78,7 @@ const Slot: React.FC<SlotProps> = ({
 
   const [confirmDeleteDialog, setConfirmDeleteDialog] = useState(false);
 
-  /** @TODO rewrite this to use imported selector */
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const auth = useSelector(getFirebaseAuth);
 
   const slotLabel = slotsLabels.types[data.type];
 

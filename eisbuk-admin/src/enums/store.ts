@@ -2,23 +2,25 @@
  * All redux actions are contained here
  */
 export enum Action {
-  EnqueueSnackbar = "@@Eisbuk/ENQUEUE_SNACKBAR",
+  EnqueueNotification = "@@Eisbuk/ENQUEUE_NOTIFICATION",
+  RemoveNotification = "@@Eisbuk/REMOVE_NOTIFICATION",
   CloseSnackbar = "@@Eisbuk/CLOSE_SNACKBAR",
-  RemoveSnackbar = "@@Eisbuk/REMOVE_SNACKBAR",
 
   ChangeDay = "@@Eisbuk/CHANGE_DAY",
+
+  SetSlotTime = "@@Eisbuk/SET_SLOT_TIME",
 
   CopySlotDay = "@@Eisbuk/COPY_SLOT_DAY",
   CopySlotWeek = "@@Eisbuk/COPY_SLOT_WEEK",
   DeleteSlotFromClipboard = "@@Eisbuk/DELETE_SLOT_FROM_CLIPBOARD0",
   AddSlotToClipboard = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD",
 
-  SetSlotTime = "@@Eisbuk/SET_SLOT_TIME",
-
   IsAdminReceived = "@@Eisbuk/IS_ADMIN_RECEIVED",
 }
 
-// notification options
+/**
+ * Notification variants (success/error)
+ */
 export enum NotifVariant {
   Success = "success",
   Error = "error",

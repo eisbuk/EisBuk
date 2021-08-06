@@ -1,23 +1,24 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
-import _ from "lodash";
 
-import { LocalStore } from "@/types/store";
 import { SlotOperation } from "@/types/slotOperations";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import { deleteSlots, createSlots, editSlot } from "@/store/actions/actions";
+import {
+  deleteSlots,
+  createSlots,
+  editSlot,
+} from "@/store/actions/slotOperations";
 
-import { flatten, useTitle } from "@/utils/helpers";
+import { getAllSlotsByDay } from "@/store/selectors/slots";
 
-/** @TODO use imported selector */
-const selectSlots = (state: LocalStore) =>
-  flatten(state.firestore.ordered.slotsByDay);
+import { useTitle } from "@/utils/helpers";
 
 const SlotsPage: React.FC = () => {
-  const slots = _.omit(useSelector(selectSlots), "id");
+  const slots = useSelector(getAllSlotsByDay);
+
   useTitle("Slots");
 
   const dispatch = useDispatch();
@@ -30,7 +31,7 @@ const SlotsPage: React.FC = () => {
     dispatch(createSlots([slot]));
   };
 
-  const onEditSlot: SlotOperation<"edit"> = (slot) => {
+  const onEditSlot: SlotOperation = (slot) => {
     dispatch(editSlot(slot));
   };
 

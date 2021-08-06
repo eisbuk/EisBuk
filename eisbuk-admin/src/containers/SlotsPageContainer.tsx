@@ -11,9 +11,7 @@ import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
-import { LocalStore } from "@/types/store";
-
-import DateNavigationAppBar from "./DateNavigationAppBar";
+import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
 import SlotListByDay, { SlotListProps } from "@/components/slots/SlotListByDay";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
@@ -21,12 +19,11 @@ import { shiftSlotsWeek } from "@/data/slotutils";
 
 import { ETheme } from "@/themes";
 
-import {
-  copySlotWeek,
-  createSlots,
-  deleteSlots,
-} from "@/store/actions/actions";
-import { calendarDaySelector } from "@/store/selectors";
+import { createSlots, deleteSlots } from "@/store/actions/slotOperations";
+import { copySlotWeek } from "@/store/actions/copyPaste";
+
+import { getCurrentWeekStart } from "@/store/selectors/app";
+import { getWeekFromClipboard } from "@/store/selectors/copyPaste";
 
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},
@@ -37,9 +34,6 @@ const useStyles = makeStyles((theme: ETheme) => ({
   },
 }));
 
-/** @TODO make this imported selector */
-const weekCopyPasteSelector = (state: LocalStore) => state.copyPaste.week;
-
 type Props = Omit<Omit<SlotListProps, "enableEdit">, "className">;
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -49,8 +43,8 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   const [enableEdit, setEnableEdit] = useState(false);
   const [showWeekDeleteConfirm, setShowWeekDeleteConfirm] = useState(false);
 
-  const currentDate = useSelector(calendarDaySelector).startOf("week");
-  const weekToPaste = useSelector(weekCopyPasteSelector);
+  const currentDate = useSelector(getCurrentWeekStart);
+  const weekToPaste = useSelector(getWeekFromClipboard);
 
   const dispatch = useDispatch();
 

@@ -1,6 +1,6 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotType, Category, Duration, Slot } from "eisbuk-shared";
+import { SlotType, Category, Duration, BookingInfo } from "eisbuk-shared";
 
 /**
  * Params shared between different types of operation on slot ("create" | "edit")
@@ -13,12 +13,12 @@ export interface SlotOperationBaseParams {
 }
 
 /**
- * Params for operation on slot ("create" | "edit") and other
+ * Params for operation on slot ("create" | "subecribe" | "other")
  */
 type SlotOperationParams<
-  T extends "create" | "edit" | "other" = "other"
-> = T extends "other"
-  ? Slot<"id">
+  T extends "create" | "subscribe" | "other" = "other"
+> = T extends "subscribe"
+  ? BookingInfo
   : T extends "create"
   ? {
       date: Timestamp;
@@ -31,7 +31,7 @@ type SlotOperationParams<
  * An umbrella type for createSlot and editSlot
  */
 export interface SlotOperation<
-  T extends "create" | "edit" | "other" = "other"
+  T extends "create" | "subscribe" | "other" = "other"
 > {
   (params: SlotOperationParams<T>): void;
 }

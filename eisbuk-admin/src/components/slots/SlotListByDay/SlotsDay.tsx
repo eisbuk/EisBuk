@@ -21,27 +21,30 @@ import { Slot as SlotInterface } from "eisbuk-shared";
 
 import { __isStorybook__ } from "@/lib/constants";
 
-import { LocalStore } from "@/types/store";
-
 import { ETheme } from "@/themes";
+
+import { SlotOperation } from "@/types/slotOperations";
+
+import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
+import Slot, { SlotProps } from "@/components/slots//SlotListByDay/Slot";
 
 import {
   copySlotDay,
-  createSlots,
   deleteSlotFromClipboard,
   addSlotToClipboard,
-} from "@/store/actions/actions";
-import { calendarDaySelector } from "@/store/selectors";
+} from "@/store/actions/copyPaste";
+import { createSlots } from "@/store/actions/slotOperations";
 
-import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
-import Slot, { SlotProps } from "./Slot";
+import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getCurrentWeekStart } from "@/store/selectors/app";
 
 import { shiftSlotsDay } from "@/data/slotutils";
+import {
+  getDayFromClipboard,
+  getWeekFromClipboard,
+} from "@/store/selectors/copyPaste";
 
 const luxon = new LuxonUtils({ locale: "C" });
-
-/** @TODO refactor to use imported selector */
-const dayCopyPasteSelector = (state: LocalStore) => state.copyPaste.day ?? {};
 
 type SimplifiedSlotProps = Omit<Omit<SlotProps, "data">, "deleted">;
 
@@ -70,13 +73,12 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   const dispatch = useDispatch();
 
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const auth = useSelector(getFirebaseAuth);
 
   const { t } = useTranslation();
   const luxonDay = luxon.parse(day, "yyyy-LL-dd");
 
-  /** @TODO rewrite to use imported selector */
-  const copiedWeek = useSelector((state: LocalStore) => state.copyPaste.week);
+  const copiedWeek = useSelector(getWeekFromClipboard);
 
   const copiedWeekSlots = copiedWeek
     ? copiedWeek.slots.map((slot) => slot.id)
@@ -85,7 +87,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   const checkSelected = (id: SlotInterface<"id">["id"]) =>
     copiedWeekSlots.includes(id);
 
-  const currentWeek = useSelector(calendarDaySelector).startOf("week");
+  const currentWeek = useSelector(getCurrentWeekStart);
 
   const canClickSlots =
     enableEdit &&
@@ -94,7 +96,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   const extendedOnDelete =
     onDelete && enableEdit
-      ? (slot: SlotInterface<"id">) => {
+      ? (slot: Parameters<SlotOperation>[0]) => {
           // In order to get a more responsive UI we remember here the IDs of slots
           // that should be deleted. Firestore already short-circuits updates sent
           // to the server before receiving a reply, but here we'll be relying on
@@ -107,7 +109,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   const slotsList = _.sortBy(_.values(slots), (el) => el.date.seconds);
   const classes = useStyles();
-  const dayInClipboard = useSelector(dayCopyPasteSelector);
+  const dayInClipboard = useSelector(getDayFromClipboard);
   const showCreateForm = () => {
     setCreateEditDialog({
       isOpen: true,

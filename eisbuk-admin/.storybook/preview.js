@@ -8,7 +8,7 @@ import "@/i18next/i18n";
 import { available as availableThemes } from "@/themes";
 
 import { store } from "@/store";
-import { changeCalendarDate } from "@/store/actions/actions";
+import { changeCalendarDate } from "@/store/actions/appActions";
 
 export const parameters = {
   actions: { argTypesRegex: "^on[A-Z].*" },
