@@ -11,7 +11,7 @@
     "NonReversible": "This action is non-reversible",
     "Slot": "slot",
     "Book": "Book",
-    "Reserved": "Reserved",
+    "Booked": "Booked",
     "ConfirmDialogDate": "{{date, d MMMM}}",
     "ConfirmDialogTime": "{{date, HH:mm}}"
   },
@@ -63,7 +63,10 @@
     "AddAthlete": "AddAthlete"
   },
   "DashboardPage": {
-    "Reservations": "Reservations"
+    "Bookings": "Bookings"
+  },
+  "BookingsByDay": {
+    "Absent": "absent"
   },
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Are you sure you want to remove all slots",
@@ -81,7 +84,7 @@
     "NonReversible": "This action is not reversible, the user will definitely be deleted."
   },
   "Categories": {
-    "coures": "course",
+    "course": "course",
     "competitive": "competitive",
     "pre-competitive": "pre-competitive",
     "adults": "adults"

@@ -219,7 +219,7 @@ const Slot: React.FC<SlotProps> = ({
                   <>
                     <CheckCircleIcon color="primary" fontSize="small" />
                     <Typography className={classes.helpText}>
-                      Prenotato
+                      {t("Slots.Booked")}
                     </Typography>
                   </>
                 )}

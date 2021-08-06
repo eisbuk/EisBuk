@@ -11,7 +11,7 @@
     "NonReversible": "Questa azione non è reversibile",
     "Slot": "",
     "Book": "Prenota",
-    "Reserved": "Prenotato",
+    "Booked": "Prenotato",
     "ConfirmDialogDate": "{{date, d MMMM}}",
     "ConfirmDialogTime": "{{date, HH:mm}}"
   },
@@ -64,7 +64,10 @@
     "AddAthlete": "Aggiungi atleta"
   },
   "DashboardPage": {
-    "Reservations": "Prenotazioni"
+    "Bookings": "Prenotazioni"
+  },
+  "BookingsByDay": {
+    "Absent": "assente"
   },
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",

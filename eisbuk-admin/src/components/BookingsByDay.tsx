@@ -13,6 +13,7 @@ import _ from "lodash";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 import {
   Slot,
@@ -63,6 +64,7 @@ interface Props {
 
 const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [localAbsentees, setLocalAbsentees] = useState({});
 
@@ -159,9 +161,12 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                   </Button>
                 ) : null;
                 const listItemClass = isAbsent ? classes.absent : "";
-                const userName =
-                  `${userBooking.name} ${userBooking.surname}` +
-                  (isAbsent ? " (assente)" : "");
+
+                const absentTag = isAbsent
+                  ? ` (${t("BookingsByDay.Absent")})`
+                  : "";
+                const userName = `${userBooking.name} ${userBooking.surname} ${absentTag}`;
+
                 return (
                   <ListItem
                     key={`${slot.id}-${userBooking.id}`}

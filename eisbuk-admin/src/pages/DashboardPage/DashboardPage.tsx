@@ -21,7 +21,7 @@ const DashboardPage: React.FC = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  useTitle(t("DashboardPage.Reservations"));
+  useTitle(t("DashboardPage.Bookings"));
 
   const currentDate = useSelector(getCalendarDay);
   const monthStr = currentDate.toISO().substring(0, 10);
