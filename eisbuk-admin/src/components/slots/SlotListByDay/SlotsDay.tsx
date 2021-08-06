@@ -61,7 +61,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   day,
   subscribedSlots,
   enableEdit = false,
-  view = CustomerRoute.BookOffIce,
+  view = CustomerRoute.BookIce,
   isCustomer = false,
   setCreateEditDialog = () => {},
   onSubscribe,
