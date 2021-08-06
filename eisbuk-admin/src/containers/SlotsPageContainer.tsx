@@ -63,16 +63,16 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
    * @returns array of dates to display
    */
   const datesToDisplay =
-    props.view === "iceSlots"
-      ? Array(5)
+    props.view === "slots"
+      ? Array(7)
+          .fill(null)
+          .map((_, i) => currentDate.plus({ days: i }).toISODate())
+      : Array(5)
           .fill(null)
           .map((_, i) => currentDate.plus({ week: i }).toISODate())
           .filter((date) =>
             DateTime.fromISO(date).hasSame(currentDate, "month")
-          )
-      : Array(7)
-          .fill(null)
-          .map((_, i) => currentDate.plus({ days: i }).toISODate());
+          );
 
   const slotsToDisplay = {
     // create empty days

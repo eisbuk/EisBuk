@@ -126,13 +126,13 @@ export const CustomerAreaPage: React.FC = () => {
             </AppBar>
             <TabPanel value={activeTab} index={0}>
               <CustomerAreaCalendar
-                view="iceSlots"
+                view="slotsIce"
                 category={(customerData[0] as any).category}
               />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
               <CustomerAreaCalendar
-                view="offIceSlots"
+                view="slots"
                 category={(customerData[0] as any).category}
               />
             </TabPanel>
