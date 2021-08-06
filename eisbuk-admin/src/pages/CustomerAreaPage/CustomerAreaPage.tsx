@@ -19,6 +19,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerAreaCalendar from "./CustomerAreaCalendar";
 
 import { wrapOrganization } from "@/utils/firestore";
+import { CustomerRoute } from "@/enums/routes";
 
 // ***** Region Link Tab ***** //
 type TabProps = Parameters<typeof Tab>[0];
@@ -110,15 +111,15 @@ export const CustomerAreaPage: React.FC = () => {
                   centered
                 >
                   <LinkTab
-                    label={t("CustomerArea.IceSlots")}
+                    label={t(`CustomerArea.${CustomerRoute.BookIce}`)}
                     icon={<EventNoteIcon />}
                   />
                   <LinkTab
-                    label={t("CustomerArea.OffIceSlots")}
+                    label={t(`CustomerArea.${CustomerRoute.BookOffIce}`)}
                     icon={<EventNoteIcon />}
                   />
                   <LinkTab
-                    label={t("CustomerArea.Calendar")}
+                    label={t(`CustomerArea.${CustomerRoute.Calendar}`)}
                     icon={<PersonPinIcon />}
                   />
                 </Tabs>
@@ -126,19 +127,19 @@ export const CustomerAreaPage: React.FC = () => {
             </AppBar>
             <TabPanel value={activeTab} index={0}>
               <CustomerAreaCalendar
-                view="iceSlots"
-                category={(customerData[0] as any).category}
+                view={CustomerRoute.BookIce}
+                category={customerData[0].category}
               />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
               <CustomerAreaCalendar
-                view="offIceSlots"
-                category={(customerData[0] as any).category}
+                view={CustomerRoute.BookOffIce}
+                category={customerData[0].category}
               />
             </TabPanel>
             <TabPanel value={activeTab} index={2}>
               <CustomerAreaCalendar
-                view="bookings"
+                view={CustomerRoute.Calendar}
                 category={customerData[0].category}
               />
             </TabPanel>

@@ -12,6 +12,8 @@ import _ from "lodash";
 
 import { Category, OrgSubCollection, Slot } from "eisbuk-shared";
 
+import { CustomerRoute } from "@/enums/routes";
+
 import { LocalStore } from "@/types/store";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
@@ -31,12 +33,12 @@ const subscribedSlotsSelector = (state: LocalStore) =>
 
 interface Props {
   category: Category;
-  view?: string;
+  view?: CustomerRoute;
 }
 
 const CustomerAreaCalendar: React.FC<Props> = ({
   category,
-  view = "slots",
+  view = CustomerRoute.BookOffIce,
 }) => {
   const start = luxon.date().startOf("week");
 
