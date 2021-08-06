@@ -25,6 +25,8 @@ import CustomerForm from "@/components/customers/CustomerForm";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
+import { capitalizeFirst } from "@/utils/capitalizeFirst";
+
 // ***** Region Main Component ***** //
 interface Props {
   customers: Customer[];
@@ -56,7 +58,6 @@ const CustomerList: React.FC<Props> = ({
   const history = useHistory();
   const { t } = useTranslation();
 
-  console.log("On delete", onDeleteCustomer);
   return (
     <>
       <SearchField setSearchString={setSearchString}></SearchField>
@@ -118,7 +119,9 @@ const CustomerList: React.FC<Props> = ({
                   </TableCell>
                   <TableCell>{customer.name}</TableCell>
                   <TableCell>{customer.surname}</TableCell>
-                  <TableCell>{customer.category}</TableCell>
+                  <TableCell>
+                    {capitalizeFirst(t(`Categories.${customer.category}`))}
+                  </TableCell>
                   <TableCell>{customer.email}</TableCell>
                 </TableRow>
               );

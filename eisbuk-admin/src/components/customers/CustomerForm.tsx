@@ -23,15 +23,17 @@ import {
 } from "@material-ui/icons";
 import { Formik, Form, FastField, FieldConfig } from "formik";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
+import i18n from "i18next";
+import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 
 import { Customer } from "eisbuk-shared";
 
 import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
-import { useTranslation } from "react-i18next";
-import i18n from "i18next";
+
+import { capitalizeFirst } from "@/utils/capitalizeFirst";
 
 // ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
@@ -140,7 +142,7 @@ const CustomerForm: React.FC<Props> = ({
                   <FormControlLabel
                     key={level.id}
                     value={level.id}
-                    label={i18n.t(`Categories.${level.label}`)}
+                    label={capitalizeFirst(t(`Categories.${level.label}`))}
                     control={<Radio />}
                   />
                 ))}
