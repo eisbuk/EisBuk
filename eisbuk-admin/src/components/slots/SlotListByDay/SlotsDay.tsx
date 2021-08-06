@@ -26,7 +26,7 @@ import { ETheme } from "@/themes";
 import { SlotOperation } from "@/types/slotOperations";
 
 import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
-import Slot, { SlotProps } from "./Slot";
+import Slot, { SlotProps } from "@/components/slots//SlotListByDay/Slot";
 
 import {
   copySlotDay,

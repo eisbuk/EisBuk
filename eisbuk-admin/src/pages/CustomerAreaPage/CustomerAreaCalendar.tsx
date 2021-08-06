@@ -12,6 +12,8 @@ import _ from "lodash";
 
 import { BookingInfo, Category, OrgSubCollection } from "eisbuk-shared";
 
+import { SlotOperation } from "@/types/slotOperations";
+
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
 import {
@@ -19,10 +21,10 @@ import {
   unsubscribeFromSlot,
 } from "@/store/actions/bookingOperations";
 
+import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
+
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";
-import { SlotOperation } from "@/types/slotOperations";
-import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
 
 const luxon = new LuxonUtils();
 
