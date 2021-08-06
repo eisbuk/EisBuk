@@ -31,7 +31,7 @@ import { getMonthStr } from "@/utils/helpers";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { queryUserAdminStatus } from "@/store/actions/authOperations";
-import { getCalendarDay } from "./store/selectors/app";
+import { getCalendarDay } from "@/store/selectors/app";
 
 // ***** Region App Components ***** //
 /**

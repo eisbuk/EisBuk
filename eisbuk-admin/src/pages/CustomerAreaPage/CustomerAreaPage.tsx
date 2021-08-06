@@ -14,7 +14,7 @@ import { OrgSubCollection } from "eisbuk-shared";
 
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import CustomerAreaCalendar from "./CustomerAreaCalendar";
+import CustomerAreaCalendar from "@/pages/CustomerAreaPage/CustomerAreaCalendar";
 
 import { getFirebaseAuth } from "@/store/selectors/auth";
 import { getBookingsCustomer } from "@/store/selectors/bookings";

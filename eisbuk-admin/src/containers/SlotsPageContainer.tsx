@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 import { makeStyles } from "@material-ui/core/styles";
 import _ from "lodash";
 
-import DateNavigationAppBar from "./DateNavigationAppBar";
+import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
 import SlotListByDay, { SlotListProps } from "@/components/slots/SlotListByDay";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
