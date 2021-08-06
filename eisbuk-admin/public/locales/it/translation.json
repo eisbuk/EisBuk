@@ -1,116 +1,113 @@
 {
-    "AppbarAdmin": {
-      "Attendance": "Presenze",
-      "Athletes": "Atleti",
-      "Reservations": "Prenotazioni"
-    },
-    "Slots": {
-        "Amateur": "Preagonismo",
-        "DeleteConfirmation": "Sei sicuro di voler rimuovere lo slot del",
-        "All": "alle",
-        "NonReversible": "Questa azione non è reversibile",
-        "Slot": "",
-        "Book": "Prenota",
-        "Reserved" :"Prenotato",
-        "ConfirmDialogDate":"{{date, d MMMM}}",
-        "ConfirmDialogTime":"{{date, HH:mm}}"
-    },
-    "SlotValidations":{
-        "Time": "Manca l'ora",
-        "Category":"Scegli almeno una categoria",
-        "Training": "Scegli il tipo di allenamento",
-        "Duration": "Devi scegliere almeno una durata",
-        "Required": "Richiesto"
-    },
-    "SlotForm":{
-        "StartTime": "Ora di inizio",
-        "Type": "Tipo",
-        "EditSlot": "Modifica Slot",
-        "CreateSlot": "Crea Slot",
-        "Cancel": "Annulla",
-        "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-        "parsedDate": "{{date, EEEE d MMMM}}"
+  "AppbarAdmin": {
+    "Attendance": "Presenze",
+    "Athletes": "Atleti",
+    "Reservations": "Prenotazioni"
+  },
+  "Slots": {
+    "Amateur": "Preagonismo",
+    "DeleteConfirmation": "Sei sicuro di voler rimuovere lo slot del",
+    "All": "alle",
+    "NonReversible": "Questa azione non è reversibile",
+    "Slot": "",
+    "Book": "Prenota",
+    "Reserved": "Prenotato",
+    "ConfirmDialogDate": "{{date, d MMMM}}",
+    "ConfirmDialogTime": "{{date, HH:mm}}"
+  },
+  "SlotValidations": {
+    "Time": "Manca l'ora",
+    "Category": "Scegli almeno una categoria",
+    "Training": "Scegli il tipo di allenamento",
+    "Duration": "Devi scegliere almeno una durata",
+    "Required": "Richiesto"
+  },
+  "SlotForm": {
+    "StartTime": "Ora di inizio",
+    "Type": "Tipo",
+    "EditSlot": "Modifica Slot",
+    "CreateSlot": "Crea Slot",
+    "Cancel": "Annulla",
+    "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
+    "parsedDate": "{{date, EEEE d MMMM}}"
+  },
+  "CustomerForm": {
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "Phone": "Telefono",
+    "DateOfBirth": "Data di nascita",
+    "Category": "Categoria",
+    "MedicalCertificate": "Scadenza Cert. Medico",
+    "CardNumber": "Numero Tessera",
+    "Cancel": "Annulla",
+    "Save": "Salva",
+    "NewAthlete": "Nuovo atleta"
+  },
+  "CustomerValidations": {
+    "Email": "Inserisci una email valida",
+    "Category": "Scegli la categoria",
+    "Required": "Richiesto"
+  },
+  "Authorization": {
+    "NotAuthorized": "Non sei autorizzato ad accedere.",
+    "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "LoggedInWith": "Hai effettuato l'accesso con: ",
+    "TryAgain": "Esci e riprova con un altro utente"
+  },
+  "CustomerArea": {
+    "book_ice": "Prenota Ice",
+    "book_off_ice": "Prenota Off-Ice",
+    "calendar": "Calendario"
+  },
 
-    },
-    "CustomerForm": {
-        "Name": "Nome",
-        "Surname": "Cognome",
-        "Phone": "Telefono",
-        "DateOfBirth":"Data di nascita",
-        "Category": "Categoria",
-        "MedicalCertificate": "Scadenza Cert. Medico",
-        "CardNumber": "Numero Tessera",
-        "Cancel": "Annulla",
-        "Save": "Salva",
-        "NewAthlete": "Nuovo atleta"
-    },
-    "CustomerValidations":{
-        "Email": "Inserisci una email valida",
-        "Category": "Scegli la categoria",
-        "Required": "Richiesto"
-    },
-    "Authorization":{
-        "NotAuthorized": "Non sei autorizzato ad accedere.",
-        "AdminsOnly": "Questo spazio è riservato agli amministratori",
-        "LoggedInWith": "Hai effettuato l'accesso con: ",
-        "TryAgain": "Esci e riprova con un altro utente"
-    },
-    "CustomerArea":{
-        "IceSlots":"Prenota Ice",
-        "OffIceSlots": "Prenota Off-Ice",
-        "Calendar":"Calendario"
-    },
-
-    "CustomersPage":{
-        "Athletes": "Atleti",
-        "AddAthlete": "Aggiungi atleta"
-    },
-    "DashboardPage":{
-        "Reservations":"Prenotazioni"
-
-    },
-    "SlotsPageContainer":{
-        "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
-        "OfTheWeek": "della settimana del ",
-        "NonReversible": "Questa azione non è reversibile",
-        "CurrentDate": "{{date, d MMMM}}"
-
-    },
-    "CustomerList":{
-        "Name": "Nome",
-        "Surname":"Cognome",
-        "Category":"Categoria",
-        "Email":"Email",
-        "DeleteConfirmation": "Sei sicuro di voler rimuovere " ,
-        "NonReversible":"Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
-    },
-    "Categories":{
-        "Course": "Corso",
-        "Amateur": "Preagonismo",
-        "Professional": "Agonismo",
-        "Adults": "Adulti"
-    },
-      "Types": {
-        "OffIceDancing" : "off-ice-danza",
-        "Ice" : "ice",
-        "OffIceGym" : "off-ice-gym"
-      },
-      "DateNavigationBar":{
-          "Week": "{{date, d MMMM}}",
-          "Day": "{{date, EEEE d MMMM}}"
-      },
-      "CustomerAreaBookingCard":{
-          "Weekday": "{{date, EEE}}",
-          "Day": "{{date, d}}",
-          "Month": "{{date, MMMM}}"
-      },
-      "SlotsDay":{
-          "Date": "{{date,EEEE d MMMM}}"
-      },
-      "SlotCalendarDate":{
-          "Weekday":"{{date, EEEE}}",
-          "Day": "{{date, dd}}",
-          "Month": "{{date,MMMM}}",
-          "Year": "{{date,yyyy}}"
-      }
+  "CustomersPage": {
+    "Athletes": "Atleti",
+    "AddAthlete": "Aggiungi atleta"
+  },
+  "DashboardPage": {
+    "Reservations": "Prenotazioni"
+  },
+  "SlotsPageContainer": {
+    "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
+    "OfTheWeek": "della settimana del ",
+    "NonReversible": "Questa azione non è reversibile",
+    "CurrentDate": "{{date, d MMMM}}"
+  },
+  "CustomerList": {
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "Category": "Categoria",
+    "Email": "Email",
+    "DeleteConfirmation": "Sei sicuro di voler rimuovere ",
+    "NonReversible": "Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
+  },
+  "Categories": {
+    "Course": "Corso",
+    "Amateur": "Preagonismo",
+    "Professional": "Agonismo",
+    "Adults": "Adulti"
+  },
+  "Types": {
+    "OffIceDancing": "off-ice-danza",
+    "Ice": "ice",
+    "OffIceGym": "off-ice-gym"
+  },
+  "DateNavigationBar": {
+    "Week": "{{date, d MMMM}}",
+    "Day": "{{date, EEEE d MMMM}}"
+  },
+  "CustomerAreaBookingCard": {
+    "Weekday": "{{date, EEE}}",
+    "Day": "{{date, d}}",
+    "Month": "{{date, MMMM}}"
+  },
+  "SlotsDay": {
+    "Date": "{{date,EEEE d MMMM}}"
+  },
+  "SlotCalendarDate": {
+    "Weekday": "{{date, EEEE}}",
+    "Day": "{{date, dd}}",
+    "Month": "{{date,MMMM}}",
+    "Year": "{{date,yyyy}}"
   }
+}

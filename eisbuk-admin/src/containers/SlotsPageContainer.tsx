@@ -28,6 +28,7 @@ import {
 } from "@/store/actions/actions";
 import { calendarDaySelector } from "@/store/selectors";
 import { DateTime } from "luxon";
+import { CustomerRoute } from "@/enums/routes";
 
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},
@@ -55,25 +56,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
 
   const dispatch = useDispatch();
 
-  /**
-   * generates dates to display based on the view
-   * 7 days of the week in case of ice slots
-   * 4-5 Mondays, Tuesdays, etc.of the month in case of off-ice
-   * @param str sview passed from props
-   * @returns array of dates to display
-   */
-  const datesToDisplay =
-    props.view === "slots"
-      ? Array(7)
-          .fill(null)
-          .map((_, i) => currentDate.plus({ days: i }).toISODate())
-      : Array(5)
-          .fill(null)
-          .map((_, i) => currentDate.plus({ week: i }).toISODate())
-          .filter((date) =>
-            DateTime.fromISO(date).hasSame(currentDate, "month")
-          );
-
+  const datesToDisplay = getDatesToDisplay(currentDate, props.view);
   const slotsToDisplay = {
     // create empty days
     ..._.zipObject(datesToDisplay, [{}, {}, {}, {}, {}, {}, {}]),
@@ -183,5 +166,23 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
     </>
   );
 };
+
+/**
+ * Generates dates to display based on the view:
+ * - 7 days of the week in case of ice
+ * - 4-5 Mondays, Tuesdays, etc. of the month in case of off-ice
+ * @param currentDate start date for current view
+ * @param view passed from props: "book_ice", "book_off_ice" or "ice"
+ * @returns array of dates to display
+ */
+const getDatesToDisplay = (currentDate: DateTime, view?: CustomerRoute) =>
+  view === CustomerRoute.BookIce
+    ? Array(5)
+        .fill(null)
+        .map((_, i) => currentDate.plus({ week: i }).toISODate())
+        .filter((date) => DateTime.fromISO(date).hasSame(currentDate, "month"))
+    : Array(7)
+        .fill(null)
+        .map((_, i) => currentDate.plus({ days: i }).toISODate());
 
 export default SlotsPageContainer;

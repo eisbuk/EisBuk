@@ -21,9 +21,14 @@ import { Slot as SlotInterface } from "eisbuk-shared";
 
 import { __isStorybook__ } from "@/lib/constants";
 
+import { CustomerRoute } from "@/enums/routes";
+
 import { LocalStore } from "@/types/store";
 
 import { ETheme } from "@/themes";
+
+import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
+import Slot, { SlotProps } from "./Slot";
 
 import {
   copySlotDay,
@@ -31,10 +36,8 @@ import {
   deleteSlotFromClipboard,
   addSlotToClipboard,
 } from "@/store/actions/actions";
-import { calendarDaySelector } from "@/store/selectors";
 
-import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
-import Slot, { SlotProps } from "./Slot";
+import { calendarDaySelector } from "@/store/selectors";
 
 import { shiftSlotsDay } from "@/data/slotutils";
 
@@ -49,7 +52,7 @@ export interface SlotsDayProps extends SimplifiedSlotProps {
   slots: Record<string, SlotInterface<"id">>;
   day: string;
   enableEdit?: boolean;
-  view?: string;
+  view?: CustomerRoute;
   isCustomer?: boolean;
 }
 
@@ -58,7 +61,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   day,
   subscribedSlots,
   enableEdit = false,
-  view = "slots",
+  view = CustomerRoute.BookIce,
   isCustomer = false,
   setCreateEditDialog = () => {},
   onSubscribe,
@@ -135,7 +138,22 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   return (
     <>
-      {view.startsWith("slots") ? (
+      {view === CustomerRoute.Calendar ? (
+        <Grid className={classes.bookingsListContainer} container spacing={3}>
+          {slotsList.map(
+            (slot) =>
+              subscribedSlots &&
+              subscribedSlots[slot.id] && (
+                <Grid key={slot.id} item xs={12} sm={6} md={4} lg={3}>
+                  <CustomerAreaBookingCard
+                    data={subscribedSlots[slot.id]}
+                    key={slot.id}
+                  />
+                </Grid>
+              )
+          )}
+        </Grid>
+      ) : (
         <>
           <ListSubheader key={day + "-title"} className={classes.listSubheader}>
             <Typography display="inline" variant="h4" className={classes.date}>
@@ -193,21 +211,6 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
             ))}
           </Grid>
         </>
-      ) : (
-        <Grid className={classes.bookingsListContainer} container spacing={3}>
-          {slotsList.map(
-            (slot) =>
-              subscribedSlots &&
-              subscribedSlots[slot.id] && (
-                <Grid key={slot.id} item xs={12} sm={6} md={4} lg={3}>
-                  <CustomerAreaBookingCard
-                    data={subscribedSlots[slot.id]}
-                    key={slot.id}
-                  />
-                </Grid>
-              )
-          )}
-        </Grid>
       )}
     </>
   );
