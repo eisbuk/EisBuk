@@ -12,8 +12,17 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { grey } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
+import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
-import { Slot, Customer, BookingInfo, Duration } from "eisbuk-shared";
+import {
+  Slot,
+  Customer,
+  BookingInfo,
+  Duration,
+  Category,
+  SlotType,
+} from "eisbuk-shared";
 
 import { ETheme } from "@/themes";
 
@@ -55,6 +64,7 @@ interface Props {
 
 const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
 
   const [localAbsentees, setLocalAbsentees] = useState({});
 
@@ -122,7 +132,7 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                       {slot.time} - {slot.endTime} <b>({slot.users.length})</b>
                     </span>
                   }
-                  secondary={`${slot.categories.join(", ")} ${slot.type}`}
+                  secondary={translateAndJoinTags(slot.categories, slot.type)}
                 />
               </ListItem>
               {slot.users.map((userBooking) => {
@@ -151,9 +161,12 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                   </Button>
                 ) : null;
                 const listItemClass = isAbsent ? classes.absent : "";
-                const userName =
-                  `${userBooking.name} ${userBooking.surname}` +
-                  (isAbsent ? " (assente)" : "");
+
+                const absentTag = isAbsent
+                  ? ` (${t("BookingsByDay.Absent")})`
+                  : "";
+                const userName = `${userBooking.name} ${userBooking.surname} ${absentTag}`;
+
                 return (
                   <ListItem
                     key={`${slot.id}-${userBooking.id}`}
@@ -197,6 +210,15 @@ const splitPeriod = (bookingEntry: BookingEntry): ProcessedSlot[] => {
       .plus({ minutes: slotsLabels.durations[duration].minutes })
       .toFormat("HH:mm"),
   }));
+};
+
+const translateAndJoinTags = (categories: Category[], type: SlotType) => {
+  const translatedCategories = categories.map((category) =>
+    i18n.t(`Categories.${category}`)
+  );
+  const translatedType = i18n.t(`SlotTypes.${type}`);
+
+  return `${[...translatedCategories, translatedType].join(" ")}`;
 };
 // ***** End Region Local Utils ***** //
 

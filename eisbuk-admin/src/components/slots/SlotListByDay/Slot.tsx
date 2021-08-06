@@ -82,6 +82,9 @@ const Slot: React.FC<SlotProps> = ({
 
   const slotLabel = slotsLabels.types[data.type];
 
+  console.log("Slot label > ", slotLabel.label);
+  console.log("Slot label translation > ", t(`SlotTypes.${slotLabel.label}`));
+
   /**
    *
    * @param duration
@@ -153,7 +156,7 @@ const Slot: React.FC<SlotProps> = ({
                         color="textSecondary"
                         key={category}
                       >
-                        {category}
+                        {t(`Categories.${category}`)}
                       </Typography>
                     ))}
                   </Box>
@@ -216,7 +219,7 @@ const Slot: React.FC<SlotProps> = ({
                   <>
                     <CheckCircleIcon color="primary" fontSize="small" />
                     <Typography className={classes.helpText}>
-                      Prenotato
+                      {t("Slots.Booked")}
                     </Typography>
                   </>
                 )}
@@ -232,7 +235,7 @@ const Slot: React.FC<SlotProps> = ({
                   key="type"
                   color={slotLabel.color}
                 >
-                  {t(`Types.${slotLabel.label}`)}
+                  {t(`SlotTypes.${data.type}`)}
                 </Typography>
               </Box>
               {Boolean(onDelete) && !deleted ? (

@@ -1,3 +1,5 @@
+import i18n from "i18next";
+
 import { Slot } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
@@ -47,7 +49,7 @@ export const createSlots = (slots: Slot[]): FirestoreThunk => async (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Slot Aggiunto",
+        message: i18n.t("Notification.SlotAdded"),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -89,7 +91,7 @@ export const deleteSlots = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Slot Eliminato",
+        message: i18n.t("Notification.SlotRemoved"),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -130,7 +132,7 @@ export const editSlot = (slot: Omit<Slot, "date">): FirestoreThunk => async (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Slot Aggiornato",
+        message: i18n.t("Notification.SlotUpdated"),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,

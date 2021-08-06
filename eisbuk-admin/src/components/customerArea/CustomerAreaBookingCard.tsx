@@ -121,7 +121,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
                 key="type"
                 color={slotLabel.color}
               >
-                {t(`Types.${slotLabel.label}`)}
+                {t(`SlotTypes.${data.type}`)}
               </Typography>
             </Box>
           </Box>
