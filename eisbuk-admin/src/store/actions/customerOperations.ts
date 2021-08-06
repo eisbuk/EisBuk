@@ -1,3 +1,5 @@
+import i18n from "i18next";
+
 import { NotifVariant } from "@/enums/store";
 
 import { CustomerInStore, FirestoreThunk } from "@/types/store";
@@ -35,7 +37,9 @@ export const updateCustomer = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: `${customer.name} ${customer.surname} aggiornato`,
+        message: `${customer.name} ${customer.surname} ${i18n.t(
+          "Notification.Updated"
+        )}`,
         closeButton: true,
       })
     );
@@ -68,7 +72,9 @@ export const deleteCustomer = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: `${customer.name} ${customer.surname} rimosso`,
+        message: `${customer.name} ${customer.surname} ${i18n.t(
+          "Notification.Removed"
+        )}`,
         closeButton: true,
         options: {
           variant: NotifVariant.Success,

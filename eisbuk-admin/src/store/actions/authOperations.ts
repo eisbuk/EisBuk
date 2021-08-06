@@ -1,3 +1,5 @@
+import i18n from "i18next";
+
 import { ORGANIZATION, functionsZone } from "@/config/envInfo";
 
 import { NotifVariant, Action } from "@/enums/store";
@@ -35,7 +37,7 @@ export const signOut = (): FirestoreThunk => async (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Hai effettuato il logout",
+        message: i18n.t("Notification.LogoutSuccess"),
         options: {
           variant: NotifVariant.Success,
         },
@@ -45,7 +47,7 @@ export const signOut = (): FirestoreThunk => async (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Si è verificato un errore",
+        message: i18n.t("Notification.LogoutError"),
         options: {
           variant: NotifVariant.Error,
         },

@@ -1,3 +1,5 @@
+import i18n from "i18next";
+
 import { Customer, Slot, BookingInfo } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
@@ -40,7 +42,7 @@ export const subscribeToSlot = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Prenotazione effettuata",
+        message: i18n.t("Notification.BookingSuccess"),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -78,7 +80,7 @@ export const unsubscribeFromSlot = (
 
     dispatch(
       enqueueNotification({
-        message: "Prenotazione rimossa",
+        message: i18n.t("Notification.BookingCancelled"),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -89,7 +91,7 @@ export const unsubscribeFromSlot = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: "Errore nel rimuovere la prenotazione",
+        message: i18n.t("Notification.BookingCancelledError"),
         closeButton: true,
         options: {
           variant: NotifVariant.Error,

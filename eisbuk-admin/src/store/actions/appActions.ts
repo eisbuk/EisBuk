@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
 import { SnackbarKey } from "notistack";
+import i18n from "i18next";
 
 import { Action, NotifVariant } from "@/enums/store";
 
@@ -66,7 +67,7 @@ export const removeSnackbar = (
 export const showErrSnackbar = (): void => {
   store.dispatch(
     enqueueNotification({
-      message: "Errore",
+      message: i18n.t("Notification.Error"),
       options: {
         variant: NotifVariant.Error,
       },

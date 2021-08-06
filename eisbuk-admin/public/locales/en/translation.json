@@ -111,5 +111,18 @@
     "Day": "{{date, dd}}",
     "Month": "{{date,MMMM}}",
     "Year": "{{date,yyyy}}"
+  },
+  "Notification": {
+    "Error": "Error",
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+    "BookingSuccess": "Successfully booked",
+    "BookingCancelled": "Booking cancelled",
+    "BookingCancelledError": "Error cancelling booking",
+    "Updated": "updated",
+    "Removed": "removed",
+    "SlotAdded": "Slot Added",
+    "SlotRemoved": "Slot Removed",
+    "SlotUpdated": "Slot Updated"
   }
 }
