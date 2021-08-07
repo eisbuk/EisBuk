@@ -12,13 +12,13 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { LockOutlined as LockOutlinedIcon } from "@material-ui/icons";
 
+import { organizationInfo } from "@/themes";
+
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
 import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
 import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhouette.svg";
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
-
-import { organizationInfo } from "@/themes";
 
 const loginBackgrounds = [
   figureSkatingSilhouetteCouple,

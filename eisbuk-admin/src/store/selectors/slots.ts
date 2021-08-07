@@ -1,21 +1,19 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { createSelector } from "reselect";
-import { DateTime } from "luxon";
 
-import { Slot, Customer } from "eisbuk-shared";
+import { Slot, Customer, BookingInfo } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
-import { fs2luxon } from "@/utils/helpers";
+import { flatten, fs2luxon } from "@/utils/helpers";
 
-export const calendarDaySelector = (state: Partial<LocalStore>): DateTime =>
-  state.app!.calendarDay;
-export const extractSlotDate = (slot: Slot): number => slot.date.seconds;
-export const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
+import { getCustomersRecord } from "./firestore";
+
+const extractSlotDate = (slot: Slot): number => slot.date.seconds;
+const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
 
 /**
- *
  * Try to execute the passed function.
  * If it fails or it returns default value or empty object,
  * @param fn function to execute
@@ -25,7 +23,7 @@ export const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
 const getSafe = <F extends () => any>(
   fn: F,
   defaultVal?: ReturnType<F>
-): ReturnType<F> | Record<string, any> => {
+): NonNullable<ReturnType<F>> | Record<string, any> => {
   // if no default val provided, fall back to empty object
   const def = defaultVal || {};
 
@@ -41,33 +39,44 @@ const getSafe = <F extends () => any>(
 };
 
 /**
- * Get slots for day from firestore part of local store
- * @param dayStr date string for particular day ("yyyy-mm-dd")
- * @returns currried selector for record of slots for given day (keyed by slot id)
+ * Get all slots in a single record, keyed by (day) date
+ * @param state Local Redux Store
+ * @returns record of all slots, keyed by day, grouped together (regardless of month)
  */
-export const makeSlotsInfoDaySelector = (dayStr: string) => (
+export const getAllSlotsByDay = (
   state: LocalStore
-) => {
+): Record<string, Slot<"id">> =>
+  flatten(Object.values(getSafe(() => state.firestore.data.slotsByDay)));
+
+/**
+ * Get subscribed slots from state
+ * @param state Local Redux Store
+ * @returns record of subscribed slots
+ */
+export const getSubscribedSlots = (
+  state: LocalStore
+): Record<string, BookingInfo> =>
+  getSafe(() => state.firestore.data.subscribedSlots);
+
+/**
+ * Selector creator higher order function
+ * creates a selector for the day of slots (day provided as param)
+ * @param dayStr date string for particular day ("yyyy-mm-dd")
+ * @returns selector for record of slots (keyed by slot id), curried with the given day
+ */
+const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
   const monthStr = dayStr.substr(0, 7);
-  return getSafe(() => state.firestore.data.slotsByDay[monthStr][dayStr]);
+  return getSafe(() => state.firestore.data.slotsByDay![monthStr][dayStr]);
 };
 
 /**
- * Get bookings for day from firestore part of local store
+ * Selector creator higher order function
+ * creates a selector for the day of bookings (day provided as param)
  * @param dayStr date string for particular day ("yyyy-mm-dd")
- * @returns currried selector for record of bookings for given day (keyed by slot id)
+ * @returns selector for record of bookings (keyed by slot id), curried with the given day
  */
-export const makeBookingsInfoSelector = (dayStr: string) => (
-  state: LocalStore
-) => getSafe(() => state.firestore.data.bookingsByDay[dayStr.substr(0, 7)]);
-
-/**
- * Get all users (customers) from store
- * @param state local store state
- * @returns all customers from store
- */
-const allUsersSelector = (state: Partial<LocalStore>) =>
-  state.firestore?.data.customers;
+const makeBookingsInfoSelector = (dayStr: string) => (state: LocalStore) =>
+  getSafe(() => state.firestore.data.bookingsByDay![dayStr.substr(0, 7)]);
 
 /**
  * Get slots for day, mapped with time info, and customers who booked that slot
@@ -76,9 +85,9 @@ const allUsersSelector = (state: Partial<LocalStore>) =>
  */
 export const bookingDayInfoSelector = (dayStr: string) =>
   createSelector(
-    makeSlotsInfoDaySelector(dayStr),
+    getSlotsForADay(dayStr),
     makeBookingsInfoSelector(dayStr),
-    allUsersSelector,
+    getCustomersRecord,
     (slotsInfo, bookingsInfo, allUsers) => {
       const slots = _.sortBy(Object.values(slotsInfo), [
         extractSlotDate,

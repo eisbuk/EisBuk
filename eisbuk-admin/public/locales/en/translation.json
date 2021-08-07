@@ -12,6 +12,7 @@
     "Slot": "slot",
     "Book": "Book",
     "Reserved": "Reserved",
+    "Booked": "Booked",
     "ConfirmDialogDate": "{{date, d MMMM}}",
     "ConfirmDialogTime": "{{date, HH:mm}}"
   },
@@ -57,14 +58,20 @@
   "CustomerArea": {
     "book_ice": "Book Ice",
     "book_of_ice": "Book Off-Ice",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "Book": "Book",
+    "Calendar": "Calendar"
   },
   "CustomersPage": {
     "Athletes": "Athletes",
     "AddAthlete": "AddAthlete"
   },
   "DashboardPage": {
-    "Reservations": "Reservations"
+    "Reservations": "Reservations",
+    "Bookings": "Bookings"
+  },
+  "BookingsByDay": {
+    "Absent": "absent"
   },
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Are you sure you want to remove all slots",
@@ -109,5 +116,18 @@
     "Day": "{{date, dd}}",
     "Month": "{{date,MMMM}}",
     "Year": "{{date,yyyy}}"
+  },
+  "Notification": {
+    "Error": "Error",
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+    "BookingSuccess": "Successfully booked",
+    "BookingCancelled": "Booking cancelled",
+    "BookingCancelledError": "Error cancelling booking",
+    "Updated": "updated",
+    "Removed": "removed",
+    "SlotAdded": "Slot Added",
+    "SlotRemoved": "Slot Removed",
+    "SlotUpdated": "Slot Updated"
   }
 }

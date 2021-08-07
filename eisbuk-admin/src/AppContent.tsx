@@ -30,8 +30,8 @@ import { getMonthStr } from "@/utils/helpers";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { calendarDaySelector } from "@/store/selectors";
-import { queryUserAdminStatus } from "@/store/actions/actions";
+import { queryUserAdminStatus } from "@/store/actions/authOperations";
+import { getCalendarDay } from "@/store/selectors/app";
 
 // ***** Region App Components ***** //
 /**
@@ -60,7 +60,7 @@ const AppComponents: React.FC = () => {
  * @returns
  */
 const AppContentAuthenticated: React.FC = () => {
-  const currentDate = useSelector(calendarDaySelector);
+  const currentDate = useSelector(getCalendarDay);
   const firestore = useFirestore();
 
   const monthsToQuery = [

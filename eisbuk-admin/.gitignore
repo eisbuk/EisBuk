@@ -18,9 +18,6 @@
 .env.test.local
 .env.production.local
 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
 
 # Firebase cache
 .firebase/
@@ -31,5 +28,11 @@ firebase*.log
 firestore*.log
 ui-debug.log
 
+# Misc. .log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+build-storybook.log*
+
 # IDE specific
-.vscode
+.vscode\

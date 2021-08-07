@@ -10,26 +10,24 @@ import {
 import LuxonUtils from "@date-io/luxon";
 import _ from "lodash";
 
-import { Category, OrgSubCollection, Slot } from "eisbuk-shared";
+import { BookingInfo, Category, OrgSubCollection } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
-
-import { LocalStore } from "@/types/store";
+import { SlotOperation } from "@/types/slotOperations";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 
-import { subscribeToSlot, unsubscribeFromSlot } from "@/store/actions/actions";
+import {
+  subscribeToSlot,
+  unsubscribeFromSlot,
+} from "@/store/actions/bookingOperations";
+
+import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
 
 import { wrapOrganization } from "@/utils/firestore";
-import { flatten, getMonthStr } from "@/utils/helpers";
+import { getMonthStr } from "@/utils/helpers";
 
 const luxon = new LuxonUtils();
-
-/** @TODO refactor to use imported selectors */
-const slotsSelector = (state: LocalStore) =>
-  flatten(state.firestore.ordered.slotsByDay);
-const subscribedSlotsSelector = (state: LocalStore) =>
-  state.firestore.data.subscribedSlots;
 
 interface Props {
   category: Category;
@@ -77,25 +75,23 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     }),
   ]);
 
-  const allSlotsByDay = _.omitBy(
-    useSelector(slotsSelector),
-    (el) => typeof el === "string"
-  );
+  const allSlotsByDay = useSelector(getAllSlotsByDay);
+
   const slots = _.mapValues(allSlotsByDay, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return slot.categories.includes(category);
     })
   );
-  const subscribedSlots = useSelector(subscribedSlotsSelector);
+  const subscribedSlots = useSelector(getSubscribedSlots);
 
   const dispatch = useDispatch();
   const onSubscribe = isLoaded(subscribedSlots)
-    ? (slot: Slot<"id">) => {
-        dispatch(subscribeToSlot(secretKey, slot));
+    ? (bookingInfo: BookingInfo) => {
+        dispatch(subscribeToSlot(secretKey, bookingInfo));
       }
     : undefined;
 
-  const onUnsubscribe = (slot: Slot<"id">) => {
+  const onUnsubscribe = (slot: Parameters<SlotOperation>[0]) => {
     dispatch(unsubscribeFromSlot(secretKey, slot));
   };
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DateTime, DurationObjectUnits } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { Toolbar, AppBar, IconButton, Typography } from "@material-ui/core";
@@ -11,8 +11,9 @@ import i18n from "i18next";
 
 import { ETheme } from "@/themes";
 
-import { changeCalendarDate } from "@/store/actions/actions";
-import { calendarDaySelector } from "@/store/selectors";
+import { changeCalendarDate } from "@/store/actions/appActions";
+
+import { getStartForCurrentTimeframe } from "@/store/selectors/app";
 
 const JUMPS = {
   week: {
@@ -55,13 +56,23 @@ const DateNavigationAppBar: React.FC<Props> = ({
   jump = "week",
 }) => {
   const classes = useStyles();
-  const currentDate = useSelector(calendarDaySelector).startOf(jump);
   const dispatch = useDispatch();
+
+  // memoized selector for current time "jump"
+  // we're using useMemo here (instead of useCallback)
+  // because we want to memoize the result of `getStartForCurrentTimeframe` HOF with respect to "jump"
+  // even though the result is a (selector) function
+  const getStartOfTimeframe = useMemo(() => getStartForCurrentTimeframe(jump), [
+    jump,
+  ]);
+
+  const currentDate = useSelector(getStartOfTimeframe);
   const adjustCalendarDate = (factor: number) => {
     dispatch(
       changeCalendarDate(currentDate.plus(multiply(factor, JUMPS[jump].delta)))
     );
   };
+
   return (
     <AppBar position="sticky">
       <Toolbar variant="dense">

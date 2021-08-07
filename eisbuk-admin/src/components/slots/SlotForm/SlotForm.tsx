@@ -37,10 +37,12 @@ import { Slot, Duration, Category, SlotType } from "eisbuk-shared";
 
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
-import { LocalStore } from "@/types/store";
 import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 
+import { getNewSlotTime } from "@/store/selectors/app";
+
 import { fs2luxon } from "@/utils/helpers";
+import { capitalizeFirst } from "@/utils/capitalizeFirst";
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -132,7 +134,7 @@ type SimplifiedFormikProps = Omit<
 
 export interface SlotFormProps {
   createSlot?: SlotOperation<"create">;
-  editSlot?: SlotOperation<"edit">;
+  editSlot?: SlotOperation;
   isoDate: string;
   open: boolean;
   onClose?: () => void;
@@ -153,8 +155,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
 }) => {
   const classes = useStyles();
 
-  /** @TODO make this an imported selector */
-  const lastTime = useSelector((state: LocalStore) => state.app.newSlotTime);
+  const lastTime = useSelector(getNewSlotTime);
 
   const parsedDate = DateTime.fromISO(isoDate);
 
@@ -314,7 +315,7 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
     <FormControlLabel
       key={id}
       value={id}
-      label={i18n.t(`Types.${label}`)}
+      label={i18n.t(`SlotTypes.${label}`)}
       control={<Radio />}
     />
   ));
@@ -336,15 +337,20 @@ interface GetCheckBoxes {
  * @returns
  */
 const getCheckBoxes: GetCheckBoxes = (name, values, translate) => {
-  const capitalizedName = `${name.charAt(0).toUpperCase()}${name.slice(1)}`;
-  return values.map(({ id, label }) => (
-    <MyCheckbox
-      key={id.toString()}
-      name={name}
-      value={id.toString()}
-      label={translate ? i18n.t(`${capitalizedName}.${label}`) : label}
-    />
-  ));
+  // we need capitalized name as "name" prop of form element is lowercase
+  // and translations file's keys are 'PascalCased'
+  const capitalizedName = capitalizeFirst(name);
+
+  return values.map(({ id, label }) => {
+    const translatedLabel = translate
+      ? i18n.t(`${capitalizedName}.${label}`)
+      : label;
+
+    // final label, after needed processing
+    const finalLabel = capitalizeFirst(translatedLabel);
+
+    return <MyCheckbox key={id} name={name} value={id} label={finalLabel} />;
+  });
 };
 // ***** End Region Get Checkboxes ***** //
 

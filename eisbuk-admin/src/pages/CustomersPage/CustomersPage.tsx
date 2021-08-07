@@ -6,20 +6,20 @@ import { makeStyles } from "@material-ui/core/styles";
 import { Container, Fab, Grid, LinearProgress } from "@material-ui/core";
 import { useTranslation } from "react-i18next";
 
-import { LocalStore } from "@/types/store";
 import { ETheme } from "@/themes";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerList from "@/components/customers/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
 
-import { deleteCustomer, updateCustomer } from "@/store/actions/actions";
+import {
+  deleteCustomer,
+  updateCustomer,
+} from "@/store/actions/customerOperations";
+
+import { getCustomersList } from "@/store/selectors/firestore";
 
 import { useTitle } from "@/utils/helpers";
-
-/** @TODO use imported selector */
-const selectCustomers = (state: LocalStore) =>
-  state.firestore.ordered.customers;
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -30,7 +30,7 @@ const CustomersPage: React.FC = () => {
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
-  const customers = useSelector(selectCustomers);
+  const customers = useSelector(getCustomersList);
 
   return (
     <>

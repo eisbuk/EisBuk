@@ -12,11 +12,13 @@ import {
   Category,
   Duration,
   SlotType,
+  BookingInfo,
 } from "eisbuk-shared";
 
 import { __storybookDate__ } from "@/lib/constants";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
+import { SlotOperation } from "@/types/slotOperations";
 
 export default {
   title: "Slots Page Container",
@@ -48,14 +50,14 @@ const Template: ComponentStory<typeof SlotsPageContainer> = ({
   const [subscribedSlots, setSubscribedSlots] = useState({});
 
   const handleSubscribe = onSubscribe
-    ? (slot: SlotInterface<"id">) => {
+    ? (slot: BookingInfo) => {
         setSubscribedSlots({ ...subscribedSlots, [slot.id]: slot });
         onSubscribe(slot);
       }
     : () => {};
 
   const handleUnsubscribe = onUnsubscribe
-    ? (slot: SlotInterface<"id">) => {
+    ? (slot: Parameters<SlotOperation>[0]) => {
         const newSubscribedSlots = { ...subscribedSlots };
         delete newSubscribedSlots[slot.id];
 

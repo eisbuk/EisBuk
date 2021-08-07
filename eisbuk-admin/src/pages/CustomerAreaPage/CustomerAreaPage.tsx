@@ -12,11 +12,12 @@ import { useTranslation } from "react-i18next";
 
 import { OrgSubCollection } from "eisbuk-shared";
 
-import { LocalStore } from "@/types/store";
-
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import CustomerAreaCalendar from "./CustomerAreaCalendar";
+import CustomerAreaCalendar from "@/pages/CustomerAreaPage/CustomerAreaCalendar";
+
+import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { CustomerRoute } from "@/enums/routes";
@@ -62,17 +63,13 @@ const TabPanel: React.FC<TabPanelProps> = ({
 };
 // ***** End Region Tab Panel ***** //
 
-/** @TODO make these imported selectors */
-const selectAuth = (state: LocalStore) => state.firebase.auth;
-const selectBookings = (state: LocalStore) => state.firestore.ordered.bookings;
-
 export const CustomerAreaPage: React.FC = () => {
   const classes = useStyles();
 
   const { secretKey } = useParams() as { secretKey: string };
 
-  const customerData = useSelector(selectBookings);
-  const auth = useSelector(selectAuth);
+  const customerData = useSelector(getBookingsCustomer);
+  const auth = useSelector(getFirebaseAuth);
 
   useFirestoreConnect([
     wrapOrganization({
