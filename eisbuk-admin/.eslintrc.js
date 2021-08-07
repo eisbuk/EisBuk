@@ -39,7 +39,7 @@ module.exports = {
     "plugin:@typescript-eslint/recommended",
   ],
   ignorePatterns: [
-    "dist/*",
+    "build/*",
     "functions/*",
     "node_modules/*",
     "reportWebVitals.js",
