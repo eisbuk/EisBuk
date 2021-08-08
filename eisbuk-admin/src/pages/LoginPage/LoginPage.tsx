@@ -2,15 +2,16 @@ import React from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import firebase from "firebase/app";
 import _ from "lodash";
-import {
-  Avatar,
-  CssBaseline,
-  Paper,
-  Grid,
-  Typography,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { LockOutlined as LockOutlinedIcon } from "@material-ui/icons";
+
+import Avatar from "@material-ui/core/Avatar";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Paper from "@material-ui/core/Paper";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+
+import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { organizationInfo } from "@/themes";
 

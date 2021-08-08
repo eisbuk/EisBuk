@@ -4,9 +4,10 @@ import { Provider } from "react-redux";
 import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
-import { MuiPickersUtilsProvider } from "@material-ui/pickers";
+
+import CssBaseline from "@material-ui/core/CssBaseline";
+import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
 import { ThemeProvider } from "@material-ui/core/styles";
-import { CssBaseline } from "@material-ui/core";
 
 import { rrfProps, store } from "@/store";
 

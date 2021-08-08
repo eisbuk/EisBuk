@@ -1,4 +1,6 @@
-import { createTheme, responsiveFontSizes } from "@material-ui/core/styles";
+import createTheme from "@material-ui/core/styles/createTheme";
+import responsiveFontSizes from "@material-ui/core/styles/responsiveFontSizes";
+
 import * as colors from "@material-ui/core/colors";
 
 import { ORGANIZATION } from "@/config/envInfo";

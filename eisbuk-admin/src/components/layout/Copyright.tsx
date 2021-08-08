@@ -1,5 +1,7 @@
 import React from "react";
-import { Link, Typography } from "@material-ui/core";
+
+import Link from "@material-ui/core/Link";
+import Typography from "@material-ui/core/Typography";
 
 const Copyright: React.FC = () => {
   return (

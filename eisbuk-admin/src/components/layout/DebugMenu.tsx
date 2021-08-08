@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import firebase from "firebase/app";
-import { Button, Menu, MenuItem } from "@material-ui/core";
-import { BugReport as BugReportIcon } from "@material-ui/icons";
+
+import Button from "@material-ui/core/Button";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+
+import BugReportIcon from "@material-ui/icons/BugReport";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 

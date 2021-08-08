@@ -1,7 +1,10 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
+
+import Box from "@material-ui/core/Box";
+
+import makeStyles from "@material-ui/styles/makeStyles";
+
 import { DatePicker } from "@material-ui/pickers";
-import { Box } from "@material-ui/core";
 import { ParsableDate } from "@material-ui/pickers/constants/prop-types";
 
 import { ETheme } from "@/themes";

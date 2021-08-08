@@ -1,21 +1,19 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  Delete as DeleteIcon,
-  Edit as EditIcon,
-  DateRange as DateRangeIcon,
-} from "@material-ui/icons";
-import {
-  Box,
-  IconButton,
-  Table,
-  TableCell,
-  TableContainer,
-  TableBody,
-  TableHead,
-  TableRow,
-  TextField,
-} from "@material-ui/core";
+
+import Box from "@material-ui/core/Box";
+import IconButton from "@material-ui/core/IconButton";
+import Table from "@material-ui/core/Table";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableBody from "@material-ui/core/TableBody";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import TextField from "@material-ui/core/TextField";
+
+import DeleteIcon from "@material-ui/icons/Delete";
+import EditIcon from "@material-ui/icons/Edit";
+import DateRangeIcon from "@material-ui/icons/DateRange";
 
 import { Customer } from "eisbuk-shared";
 

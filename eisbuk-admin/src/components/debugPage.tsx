@@ -1,6 +1,9 @@
 import React from "react";
 import firebase from "firebase/app";
-import { Container, Box, Button } from "@material-ui/core";
+
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 
 import { CloudFunction } from "@/enums/functions";
 

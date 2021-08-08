@@ -1,8 +1,11 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { Box, Typography } from "@material-ui/core";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
+
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   weekDay: {

@@ -1,33 +1,31 @@
 import React from "react";
 import { makeStyles } from "@material-ui/styles";
-import {
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormHelperText,
-  InputAdornment,
-  Radio,
-  FormControlLabel,
-  SvgIconTypeMap,
-} from "@material-ui/core";
-import { RadioGroup, TextField } from "formik-material-ui";
-import {
-  AccountCircle,
-  Email,
-  Phone,
-  Cake,
-  LocalHospital,
-  Payment,
-} from "@material-ui/icons";
-import { Formik, Form, FastField, FieldConfig } from "formik";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
-import { OverridableComponent } from "@material-ui/core/OverridableComponent";
+import { Formik, Form, FastField, FieldConfig } from "formik";
+import { RadioGroup, TextField } from "formik-material-ui";
+
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormHelperText from "@material-ui/core/FormHelperText";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import Radio from "@material-ui/core/Radio";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+
+import AccountCircle from "@material-ui/icons/AccountCircle";
+import Email from "@material-ui/icons/Email";
+import Phone from "@material-ui/icons/Phone";
+import Cake from "@material-ui/icons/Cake";
+import LocalHospital from "@material-ui/icons/LocalHospital";
+import Payment from "@material-ui/icons/Payment";
 
 import { Customer } from "eisbuk-shared";
+
+import { SvgComponent } from "@/types/components";
 
 import { currentTheme } from "@/themes";
 
@@ -186,7 +184,7 @@ const CustomerForm: React.FC<Props> = ({
 
 // ***** Region Custom Field ***** //
 interface MyFieldProps extends FieldConfig<string> {
-  Icon?: OverridableComponent<SvgIconTypeMap<unknown, "svg">>;
+  Icon?: SvgComponent;
   row?: unknown /** @TODO clear this up */;
   label?: string;
   className?: string;

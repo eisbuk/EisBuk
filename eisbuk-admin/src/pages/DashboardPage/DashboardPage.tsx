@@ -1,7 +1,8 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 

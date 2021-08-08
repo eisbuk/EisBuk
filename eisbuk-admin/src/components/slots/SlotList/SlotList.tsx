@@ -1,6 +1,8 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { Box } from "@material-ui/core";
+
+import Box from "@material-ui/core/Box";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 import { Slot } from "eisbuk-shared";
 
