@@ -1,4 +1,4 @@
-import createTheme from "@material-ui/core/styles/createTheme";
+import createTheme, { Theme } from "@material-ui/core/styles/createTheme";
 import responsiveFontSizes from "@material-ui/core/styles/responsiveFontSizes";
 
 import * as colors from "@material-ui/core/colors";
@@ -91,4 +91,8 @@ export const currentTheme = responsiveFontSizes(
 /**
  * Stands for EisBuk Theme, typeof currentTheme (set for MUI)
  */
-export type ETheme = typeof currentTheme;
+export interface ETheme extends Theme {
+  palette: Theme["palette"] & {
+    absent: string;
+  };
+}

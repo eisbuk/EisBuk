@@ -64,8 +64,8 @@ const AppbarAdmin: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" className={(classes as any).appBar}>
-        <Toolbar className={(classes as any).toolbar}>
+      <AppBar position="static">
+        <Toolbar>
           <Typography
             variant="h6"
             onClick={handleClick}

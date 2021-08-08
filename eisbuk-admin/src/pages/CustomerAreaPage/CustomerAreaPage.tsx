@@ -83,7 +83,7 @@ export const CustomerAreaPage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleTabChange = (e: React.ChangeEvent<unknown>, newValue: any) => {
+  const handleTabChange = (e: React.ChangeEvent<unknown>, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -99,7 +99,7 @@ export const CustomerAreaPage: React.FC = () => {
       {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
       <AppbarCustomer headingText={title} />
 
-      <main className={(classes as any).content}>
+      <main>
         {isLoaded(customerData) && !isEmpty(customerData) && (
           <>
             <AppBar position="static" className={classes.customerNav}>
@@ -122,9 +122,7 @@ export const CustomerAreaPage: React.FC = () => {
               </Container>
             </AppBar>
             <TabPanel value={activeTab} index={0}>
-              <CustomerAreaCalendar
-                category={(customerData[0] as any).category}
-              />
+              <CustomerAreaCalendar category={customerData[0].category} />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
               <CustomerAreaCalendar

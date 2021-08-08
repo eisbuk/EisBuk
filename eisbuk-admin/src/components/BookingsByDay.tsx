@@ -235,7 +235,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
     borderColor: theme.palette.primary.main,
   },
   absent: {
-    backgroundColor: (theme.palette as any).absent || grey[500],
+    backgroundColor: theme.palette.absent || grey[500],
   },
 }));
 // ***** End Region Styles ***** //

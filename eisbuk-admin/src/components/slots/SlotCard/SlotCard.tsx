@@ -75,12 +75,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
         flexDirection="column"
         pr={3}
       >
-        <Typography
-          variant="h2"
-          className={(classes as any).slotTi /** @TEMP */}
-        >
-          {slotDateTime.toFormat("HH:mm")}
-        </Typography>
+        <Typography variant="h2">{slotDateTime.toFormat("HH:mm")}</Typography>
         <DurationsList durations={durations} labels={slotsLabels} />
       </Box>
       <Box

@@ -50,13 +50,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
             {t("CustomerAreaBookingCard.Month", { date })}
           </Typography>
         </Box>
-        <Box
-          /** @TODO check this, it doesn't seem to exist */
-          className={(classes as any).body}
-          display="flex"
-          flexGrow={1}
-          flexDirection="column"
-        >
+        <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
             <Box className={classes.time}>
               <Typography

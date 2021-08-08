@@ -45,9 +45,7 @@ const SlotCalendarDate: React.FC<Props> = ({ date }) => {
           <Typography variant="h5" className={classes.month}>
             {t("SlotCalendarDate.Month", { date })}
           </Typography>
-          <Typography className={(classes as any).year}>
-            {t("SlotCalendarDate.Year", { date })}
-          </Typography>
+          <Typography>{t("SlotCalendarDate.Year", { date })}</Typography>
         </Box>
       </Box>
     </>

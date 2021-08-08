@@ -127,7 +127,7 @@ export const flatten: ToFlatten = (toFlatten) =>
 
 // ***** Region Get Month String ***** //
 interface GetMonthString {
-  (startDate: DateTime, offset: number): unknown;
+  (startDate: DateTime, offset: number): string;
 }
 
 /**

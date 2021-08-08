@@ -41,6 +41,6 @@ FormWithValues.args = {
     categories: [Category.PreCompetitive],
     durations: [Duration["1h"], Duration["2h"]],
     type: SlotType.Ice,
-    notes: "Here are some notes\nWith two lines" as any,
+    notes: "Here are some notes\nWith two lines",
   },
 };
