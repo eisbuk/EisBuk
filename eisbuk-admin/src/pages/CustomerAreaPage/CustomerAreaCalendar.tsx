@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   useFirestoreConnect,
@@ -22,7 +22,7 @@ import {
   unsubscribeFromSlot,
 } from "@/store/actions/bookingOperations";
 
-import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
+import { getSubscribedSlots, getSlotsByView } from "@/store/selectors/slots";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";
@@ -75,8 +75,9 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     }),
   ]);
 
-  const allSlotsByDay = useSelector(getAllSlotsByDay);
+  const memSelector = useMemo(() => getSlotsByView(view), [view]);
 
+  const allSlotsByDay = useSelector(memSelector);
   const slots = _.mapValues(allSlotsByDay, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return slot.categories.includes(category);
