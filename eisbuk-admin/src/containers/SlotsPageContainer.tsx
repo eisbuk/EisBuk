@@ -15,7 +15,7 @@ import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
 import SlotListByDay, { SlotListProps } from "@/components/slots/SlotListByDay";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
-import { shiftSlotsWeek } from "@/data/slotutils";
+import { shiftSlotsWeek } from "@/utils/slots";
 
 import { ETheme } from "@/themes";
 
@@ -64,11 +64,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   );
   const doPaste = () => {
     if (weekToPaste) {
-      dispatch(
-        createSlots(
-          shiftSlotsWeek(weekToPaste.slots, weekToPaste.weekStart, currentDate)
-        )
-      );
+      dispatch(createSlots(shiftSlotsWeek(weekToPaste.slots, currentDate)));
     }
   };
   const switchButton = props.onDelete ? (

@@ -33,7 +33,7 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
 
-import { capitalizeFirst } from "@/utils/capitalizeFirst";
+import { capitalizeFirst } from "@/utils/helpers";
 
 // ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({

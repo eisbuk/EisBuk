@@ -41,8 +41,7 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 
 import { getNewSlotTime } from "@/store/selectors/app";
 
-import { fs2luxon } from "@/utils/helpers";
-import { capitalizeFirst } from "@/utils/capitalizeFirst";
+import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
 
 const Timestamp = firebase.firestore.Timestamp;
 

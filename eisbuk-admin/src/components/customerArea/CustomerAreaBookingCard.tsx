@@ -11,7 +11,7 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { fb2Luxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
 
 interface Props {

@@ -29,7 +29,7 @@ import ProjectIcon from "@/components/global/ProjectIcons";
 
 import { getFirebaseAuth } from "@/store/selectors/auth";
 
-import { fb2Luxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/utils/date";
 
 import { slotsLabels } from "@/config/appConfig";
 

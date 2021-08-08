@@ -38,7 +38,7 @@ import { createSlots } from "@/store/actions/slotOperations";
 import { getFirebaseAuth } from "@/store/selectors/auth";
 import { getCurrentWeekStart } from "@/store/selectors/app";
 
-import { shiftSlotsDay } from "@/data/slotutils";
+import { shiftSlotsDay } from "@/utils/slots";
 import {
   getDayFromClipboard,
   getWeekFromClipboard,

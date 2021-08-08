@@ -19,7 +19,7 @@ import {
 
 import { getCustomersList } from "@/store/selectors/firestore";
 
-import { useTitle } from "@/utils/helpers";
+import useTitle from "@/hooks/useTitle";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();

@@ -25,7 +25,7 @@ import CustomerForm from "@/components/customers/CustomerForm";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
-import { capitalizeFirst } from "@/utils/capitalizeFirst";
+import { capitalizeFirst } from "@/utils/helpers";
 
 // ***** Region Main Component ***** //
 interface Props {

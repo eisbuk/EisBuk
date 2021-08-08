@@ -1,6 +1,7 @@
-import { useEffect } from "react";
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
+
+type Primitive = string | number | boolean;
 
 // ***** Region Simple Helpers ***** //
 /**
@@ -25,6 +26,74 @@ interface CheckIndex {
  */
 export const onlyUnique: CheckIndex = (value, index, origArray) =>
   origArray.indexOf(value) === index;
+
+/**
+ * Returns string passed as prop with capitalized first letter.
+ * If separated by "-" symbol, returns every word capitalized.
+ * @param str
+ * @returns
+ */
+export const capitalizeFirst = (str: string): string => {
+  const words = str.split("-");
+
+  // if last recursive node, return processed string
+  if (words.length === 1) {
+    const word = words[0];
+    return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+  }
+
+  // if multi word, process all of the words
+  return words.map((word) => capitalizeFirst(word)).join("-");
+};
+
+/**
+ * - Calculates statistical mode (an array member with highest occurrence in the provided array)
+ * - If two values have the same number of occurrences, returns null
+ * @param arr array from which to calculate mode (all members need to be of same type)
+ * @returns value of calculated mode or null
+ * ```
+ * mode([1, 2, 2]) = 2
+ * mode(["bar", "foo", "bar"]) = "bar"
+ * mode([1, 1, 2, 2]) = null
+ * ```
+ */
+export const mode = <T extends Primitive>(arr: T[]): T | null => {
+  // create an object with array values as keys and number of occurrences as values
+  const occurrences: Record<string, number> = {};
+
+  // holds the value with currently highest occurrence (while looping)
+  let highestOccurrence: T = arr[0];
+  // a flag which, if true at the end of execution (two occurrences are equal),
+  // triggers return null
+  let twoEqual = false;
+
+  // loop through the array and find highest occurrence
+  arr.forEach((value) => {
+    // convert value to string for easier processing
+    const stringValue = value.toString();
+    // string representation of highest occurring value
+    const highestOccurrenceString = highestOccurrence.toString();
+
+    if (!occurrences[stringValue]) {
+      // if new value add new key to ocurrences
+      occurrences[stringValue] = 1;
+    } else {
+      occurrences[stringValue]++;
+    }
+
+    // update highest occurrence if needed
+    if (occurrences[highestOccurrenceString] < occurrences[stringValue]) {
+      highestOccurrence = value;
+    }
+
+    // check if two ocurrences are the same and add a flag
+    twoEqual =
+      occurrences[highestOccurrenceString] === occurrences[stringValue] &&
+      highestOccurrenceString !== stringValue;
+  });
+
+  return twoEqual ? null : highestOccurrence;
+};
 // ***** End Region Simple Helpers ***** //
 
 /**
@@ -76,20 +145,3 @@ export const getMonthStr: GetMonthString = (startDate, offset) =>
     .toISODate()
     .substring(0, 7);
 // ***** End Region Get Month String ***** //
-
-/** @TODO this should be in a separate file at least, since it is a simple hook, rather then a function */
-// ***** Region Use Title ***** //
-/**
- * A hook used to set the (html) title of the document
- * @param title
- */
-export const useTitle = (title: string): void => {
-  useEffect(() => {
-    const prevTitle = document.title;
-    document.title = title;
-    return () => {
-      document.title = prevTitle;
-    };
-  }, [title]);
-};
-// ***** End Region Use Title ***** //

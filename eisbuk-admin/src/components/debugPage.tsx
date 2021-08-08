@@ -6,7 +6,7 @@ import { CloudFunction } from "@/enums/functions";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import { useTitle } from "@/utils/helpers";
+import useTitle from "@/hooks/useTitle";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
