@@ -4,12 +4,9 @@ import _ from "lodash";
 import seedrandom from "seedrandom";
 import { v4 as uuidv4 } from "uuid";
 
-import { Category, Customer } from "eisbuk-shared";
+import { Category, Customer, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
 
 import CustomerList from "@/components/customers/CustomerList";
-
-import firstNames from "@/data/italian-names.json";
-import lastNames from "@/data/italian-surnames.json";
 
 export default {
   title: "Customer list",
@@ -41,8 +38,8 @@ const CATEGORIES = lodash.omit(
  * @returns random customer
  */
 const createDemoCustomer = () => {
-  const name = lodash.sample(firstNames);
-  const surname = lodash.sample(lastNames);
+  const name = lodash.sample(FIRST_NAMES);
+  const surname = lodash.sample(LAST_NAMES);
   return {
     name,
     surname,

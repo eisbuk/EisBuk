@@ -69,6 +69,8 @@ const AppContentAuthenticated: React.FC = () => {
     getMonthStr(currentDate, 1),
   ];
 
+  console.log("document id > ", (firestore.FieldPath as any).documentId());
+
   useFirestoreConnect([
     wrapOrganization({
       collection: OrgSubCollection.Customers,

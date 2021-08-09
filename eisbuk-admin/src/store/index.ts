@@ -63,7 +63,7 @@ if (__isDev__) {
   firebase.auth().useEmulator("http://localhost:9099/");
   functions.useEmulator("localhost", 5001);
   console.warn("Using emulator for functions and authentication");
-  window.firebase = firebase as any; /** @TEMP any */
+  window.firebase = firebase as any;
 } else {
   db.enablePersistence().catch((err) => {
     if (err.code === "failed-precondition") {
@@ -78,21 +78,11 @@ if (__isDev__) {
   });
 }
 
-/** @TEMP below */
-declare global {
-  interface Window {
-    __INITIAL_STATE__: any;
-  }
-}
-
 // Create Redux Store with Reducers and Initial state
-const initialState =
-  window &&
-  window.__INITIAL_STATE__; /** @TODO (code rewrite): this doesn't exist within the window */
 const middlewares = [thunk.withExtraArgument({ getFirebase })];
 export const store = createStore(
   rootReducer,
-  initialState,
+  {},
   composeWithDevTools(applyMiddleware(...middlewares))
 );
 

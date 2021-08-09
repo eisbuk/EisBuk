@@ -1,24 +1,23 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import clsx from "clsx";
-import {
-  Button,
-  ButtonGroup,
-  IconButton,
-  Card,
-  CardContent,
-  Typography,
-  CardActions,
-  Box,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
-import {
-  Delete as DeleteIcon,
-  Create as CreateIcon,
-  ArrowBack as ArrowBackIcon,
-  CheckCircle as CheckCircleIcon,
-} from "@material-ui/icons";
+
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import IconButton from "@material-ui/core/IconButton";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import CardActions from "@material-ui/core/CardActions";
+import Box from "@material-ui/core/Box";
+
+import DeleteIcon from "@material-ui/icons/Delete";
+import CreateIcon from "@material-ui/icons/Create";
+import ArrowBackIcon from "@material-ui/icons/ArrowBack";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Duration, Slot as SlotInterface, BookingInfo } from "eisbuk-shared";
 
@@ -29,7 +28,7 @@ import ProjectIcon from "@/components/global/ProjectIcons";
 
 import { getFirebaseAuth } from "@/store/selectors/auth";
 
-import { fb2Luxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/utils/date";
 
 import { slotsLabels } from "@/config/appConfig";
 
@@ -81,9 +80,6 @@ const Slot: React.FC<SlotProps> = ({
   const auth = useSelector(getFirebaseAuth);
 
   const slotLabel = slotsLabels.types[data.type];
-
-  console.log("Slot label > ", slotLabel.label);
-  console.log("Slot label translation > ", t(`SlotTypes.${slotLabel.label}`));
 
   /**
    *

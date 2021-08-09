@@ -1,9 +1,13 @@
 /* eslint-disable import/namespace */
 import React from "react";
-import { Avatar, Badge } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import * as colors from "@material-ui/core/colors";
 import { DateTime } from "luxon";
+
+import Avatar from "@material-ui/core/Avatar";
+import Badge from "@material-ui/core/Badge";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import * as colors from "@material-ui/core/colors";
 
 import { Category } from "eisbuk-shared";
 

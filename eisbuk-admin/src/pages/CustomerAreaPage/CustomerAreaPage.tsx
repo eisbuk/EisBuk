@@ -2,13 +2,17 @@ import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useFirestoreConnect, isLoaded, isEmpty } from "react-redux-firebase";
-import { makeStyles } from "@material-ui/core/styles";
-import { Container, AppBar, Tabs, Tab } from "@material-ui/core";
-import {
-  PersonPin as PersonPinIcon,
-  EventNote as EventNoteIcon,
-} from "@material-ui/icons";
 import { useTranslation } from "react-i18next";
+
+import Container from "@material-ui/core/Container";
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+
+import PersonPinIcon from "@material-ui/icons/PersonPin";
+import EventNoteIcon from "@material-ui/icons/EventNote";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { OrgSubCollection } from "eisbuk-shared";
 
@@ -79,7 +83,7 @@ export const CustomerAreaPage: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState(0);
 
-  const handleTabChange = (e: React.ChangeEvent<unknown>, newValue: any) => {
+  const handleTabChange = (e: React.ChangeEvent<unknown>, newValue: number) => {
     setActiveTab(newValue);
   };
 
@@ -95,7 +99,7 @@ export const CustomerAreaPage: React.FC = () => {
       {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
       <AppbarCustomer headingText={title} />
 
-      <main className={(classes as any).content}>
+      <main>
         {isLoaded(customerData) && !isEmpty(customerData) && (
           <>
             <AppBar position="static" className={classes.customerNav}>
@@ -118,9 +122,7 @@ export const CustomerAreaPage: React.FC = () => {
               </Container>
             </AppBar>
             <TabPanel value={activeTab} index={0}>
-              <CustomerAreaCalendar
-                category={(customerData[0] as any).category}
-              />
+              <CustomerAreaCalendar category={customerData[0].category} />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
               <CustomerAreaCalendar

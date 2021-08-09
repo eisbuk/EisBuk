@@ -1,21 +1,22 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { isLoaded, isEmpty } from "react-redux-firebase";
-import { makeStyles } from "@material-ui/core/styles";
-import {
-  IconButton,
-  ListSubheader,
-  Grid,
-  Typography,
-  Box,
-} from "@material-ui/core";
+import { useTranslation } from "react-i18next";
 import LuxonUtils from "@date-io/luxon";
 import { DateTime } from "luxon";
 import _ from "lodash";
-import { useTranslation } from "react-i18next";
+
+import IconButton from "@material-ui/core/IconButton";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import Grid from "@material-ui/core/Grid";
+import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
+
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import AssignmentIcon from "@material-ui/icons/Assignment";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Slot as SlotInterface } from "eisbuk-shared";
 
@@ -38,7 +39,7 @@ import { createSlots } from "@/store/actions/slotOperations";
 import { getFirebaseAuth } from "@/store/selectors/auth";
 import { getCurrentWeekStart } from "@/store/selectors/app";
 
-import { shiftSlotsDay } from "@/data/slotutils";
+import { shiftSlotsDay } from "@/utils/slots";
 import {
   getDayFromClipboard,
   getWeekFromClipboard,

@@ -1,21 +1,25 @@
-import { Badge, Container, IconButton, Switch } from "@material-ui/core";
-import {
-  Delete as DeleteIcon,
-  FileCopy as FileCopyIcon,
-  Assignment as AssignmentIcon,
-} from "@material-ui/icons";
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { makeStyles } from "@material-ui/core/styles";
+import Badge from "@material-ui/core/Badge";
+import Container from "@material-ui/core/Container";
+import IconButton from "@material-ui/core/IconButton";
+import Switch from "@material-ui/core/Switch";
+
+import DeleteIcon from "@material-ui/icons/Delete";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
+import AssignmentIcon from "@material-ui/icons/Assignment";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
 import _ from "lodash";
 
 import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
 import SlotListByDay, { SlotListProps } from "@/components/slots/SlotListByDay";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
-import { shiftSlotsWeek } from "@/data/slotutils";
+import { shiftSlotsWeek } from "@/utils/slots";
 
 import { ETheme } from "@/themes";
 
@@ -64,11 +68,7 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   );
   const doPaste = () => {
     if (weekToPaste) {
-      dispatch(
-        createSlots(
-          shiftSlotsWeek(weekToPaste.slots, weekToPaste.weekStart, currentDate)
-        )
-      );
+      dispatch(createSlots(shiftSlotsWeek(weekToPaste.slots, currentDate)));
     }
   };
   const switchButton = props.onDelete ? (

@@ -1,5 +1,8 @@
 import React from "react";
-import { AcUnit, AccessibilityNew, FitnessCenter } from "@material-ui/icons";
+
+import AcUnit from "@material-ui/icons/AcUnit";
+import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
+import FitnessCenter from "@material-ui/icons/FitnessCenter";
 
 import { SvgProps } from "@/types/components";
 

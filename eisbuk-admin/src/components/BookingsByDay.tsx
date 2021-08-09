@@ -1,19 +1,19 @@
 import React, { useState } from "react";
-import {
-  Button,
-  Container,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemSecondaryAction,
-  ListItemText,
-} from "@material-ui/core";
-import { DateTime } from "luxon";
-import _ from "lodash";
-import { grey } from "@material-ui/core/colors";
-import { makeStyles } from "@material-ui/core/styles";
 import i18n from "i18next";
 import { useTranslation } from "react-i18next";
+import { DateTime } from "luxon";
+import _ from "lodash";
+
+import Button from "@material-ui/core/Button";
+import Container from "@material-ui/core/Container";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemAvatar from "@material-ui/core/ListItemAvatar";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+
+import { grey } from "@material-ui/core/colors";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import {
   Slot,
@@ -235,7 +235,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
     borderColor: theme.palette.primary.main,
   },
   absent: {
-    backgroundColor: (theme.palette as any).absent || grey[500],
+    backgroundColor: theme.palette.absent || grey[500],
   },
 }));
 // ***** End Region Styles ***** //

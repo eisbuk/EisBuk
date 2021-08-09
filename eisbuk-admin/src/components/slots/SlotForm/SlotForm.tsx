@@ -1,26 +1,8 @@
 import React from "react";
 import firebase from "firebase/app";
 import { useSelector } from "react-redux";
-import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
-
-import {
-  Box,
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  IconButton,
-  Radio,
-  TextField,
-  TextFieldProps,
-} from "@material-ui/core";
-import { RadioGroup } from "formik-material-ui";
 import {
   Formik,
   Form,
@@ -30,8 +12,24 @@ import {
   useFormikContext,
   FormikConfig,
 } from "formik";
+import { RadioGroup } from "formik-material-ui";
 import { DateTime } from "luxon";
 import * as Yup from "yup";
+
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import FormControl from "@material-ui/core/FormControl";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
+import IconButton from "@material-ui/core/IconButton";
+import Radio from "@material-ui/core/Radio";
+import TextField, { TextFieldProps } from "@material-ui/core/TextField";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Slot, Duration, Category, SlotType } from "eisbuk-shared";
 
@@ -41,8 +39,7 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 
 import { getNewSlotTime } from "@/store/selectors/app";
 
-import { fs2luxon } from "@/utils/helpers";
-import { capitalizeFirst } from "@/utils/capitalizeFirst";
+import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
 
 const Timestamp = firebase.firestore.Timestamp;
 

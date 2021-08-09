@@ -1,7 +1,11 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { Box, Chip } from "@material-ui/core";
-import { ChevronRight } from "@material-ui/icons";
+
+import Box from "@material-ui/core/Box";
+import Chip from "@material-ui/core/Chip";
+
+import ChevronRight from "@material-ui/icons/ChevronRight";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 import { Duration } from "eisbuk-shared";
 
