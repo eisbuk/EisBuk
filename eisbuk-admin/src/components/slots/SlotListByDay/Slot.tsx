@@ -81,9 +81,6 @@ const Slot: React.FC<SlotProps> = ({
 
   const slotLabel = slotsLabels.types[data.type];
 
-  console.log("Slot label > ", slotLabel.label);
-  console.log("Slot label translation > ", t(`SlotTypes.${slotLabel.label}`));
-
   /**
    *
    * @param duration
