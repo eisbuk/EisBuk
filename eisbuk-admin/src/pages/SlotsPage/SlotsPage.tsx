@@ -14,7 +14,7 @@ import {
 
 import { getAllSlotsByDay } from "@/store/selectors/slots";
 
-import { useTitle } from "@/utils/helpers";
+import useTitle from "@/hooks/useTitle";
 
 const SlotsPage: React.FC = () => {
   const slots = useSelector(getAllSlotsByDay);

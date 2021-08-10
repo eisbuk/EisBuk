@@ -1,11 +1,16 @@
 import React from "react";
-import { makeStyles } from "@material-ui/core/styles";
-import { Avatar, Box, Typography, IconButton } from "@material-ui/core";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 
+import Avatar from "@material-ui/core/Avatar";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import IconButton from "@material-ui/core/IconButton";
+
 import DeleteIcon from "@material-ui/icons/Delete";
 import AddCircleOutline from "@material-ui/icons/AddCircleOutline";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Slot } from "eisbuk-shared";
 
@@ -70,12 +75,7 @@ export const SlotCard: React.FC<Props> = ({ deleteSlot, slot }) => {
         flexDirection="column"
         pr={3}
       >
-        <Typography
-          variant="h2"
-          className={(classes as any).slotTi /** @TEMP */}
-        >
-          {slotDateTime.toFormat("HH:mm")}
-        </Typography>
+        <Typography variant="h2">{slotDateTime.toFormat("HH:mm")}</Typography>
         <DurationsList durations={durations} labels={slotsLabels} />
       </Box>
       <Box

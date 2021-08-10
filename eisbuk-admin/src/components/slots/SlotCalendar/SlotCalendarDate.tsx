@@ -1,8 +1,11 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { Box, Typography } from "@material-ui/core";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
+
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 const useStyles = makeStyles(() => ({
   weekDay: {
@@ -42,9 +45,7 @@ const SlotCalendarDate: React.FC<Props> = ({ date }) => {
           <Typography variant="h5" className={classes.month}>
             {t("SlotCalendarDate.Month", { date })}
           </Typography>
-          <Typography className={(classes as any).year}>
-            {t("SlotCalendarDate.Year", { date })}
-          </Typography>
+          <Typography>{t("SlotCalendarDate.Year", { date })}</Typography>
         </Box>
       </Box>
     </>

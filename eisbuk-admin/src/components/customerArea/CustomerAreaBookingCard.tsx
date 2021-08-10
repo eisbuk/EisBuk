@@ -1,7 +1,13 @@
 import React from "react";
-import { Card, CardContent, Typography, Button, Box } from "@material-ui/core";
-import { makeStyles } from "@material-ui/styles";
 import { Timestamp } from "@google-cloud/firestore";
+
+import Box from "@material-ui/core/Box";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import Button from "@material-ui/core/Button";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 import { Duration, SlotType } from "eisbuk-shared";
 
@@ -11,7 +17,7 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { fb2Luxon } from "@/data/dtutils";
+import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
 
 interface Props {
@@ -44,13 +50,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
             {t("CustomerAreaBookingCard.Month", { date })}
           </Typography>
         </Box>
-        <Box
-          /** @TODO check this, it doesn't seem to exist */
-          className={(classes as any).body}
-          display="flex"
-          flexGrow={1}
-          flexDirection="column"
-        >
+        <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
             <Box className={classes.time}>
               <Typography

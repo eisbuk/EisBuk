@@ -1,6 +1,9 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
-import { Avatar, Tooltip } from "@material-ui/core";
+
+import Avatar from "@material-ui/core/Avatar";
+import Tooltip from "@material-ui/core/Tooltip";
+
+import makeStyles from "@material-ui/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 

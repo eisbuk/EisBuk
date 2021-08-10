@@ -1,12 +1,15 @@
 import React from "react";
 import firebase from "firebase/app";
-import { Container, Box, Button } from "@material-ui/core";
+
+import Container from "@material-ui/core/Container";
+import Box from "@material-ui/core/Box";
+import Button from "@material-ui/core/Button";
 
 import { CloudFunction } from "@/enums/functions";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import { useTitle } from "@/utils/helpers";
+import useTitle from "@/hooks/useTitle";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 

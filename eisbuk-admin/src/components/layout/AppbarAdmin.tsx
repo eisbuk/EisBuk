@@ -1,30 +1,28 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { makeStyles } from "@material-ui/core/styles";
 import { useTranslation } from "react-i18next";
 
-import {
-  AppBar,
-  Button,
-  ButtonGroup,
-  Hidden,
-  List,
-  Menu,
-  MenuItem,
-  Toolbar,
-  Typography,
-  SwipeableDrawer,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@material-ui/core";
-import {
-  People as PeopleIcon,
-  LibraryBooks as LibraryBooksIcon,
-  DateRange as DateRangeIcon,
-  Menu as MenuIcon,
-} from "@material-ui/icons";
+import AppBar from "@material-ui/core/AppBar";
+import Button from "@material-ui/core/Button";
+import ButtonGroup from "@material-ui/core/ButtonGroup";
+import Hidden from "@material-ui/core/Hidden";
+import List from "@material-ui/core/List";
+import Menu from "@material-ui/core/Menu";
+import MenuItem from "@material-ui/core/MenuItem";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
+import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import ListItemText from "@material-ui/core/ListItemText";
+
+import PeopleIcon from "@material-ui/icons/People";
+import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
+import DateRangeIcon from "@material-ui/icons/DateRange";
+import MenuIcon from "@material-ui/icons/Menu";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
 
@@ -66,8 +64,8 @@ const AppbarAdmin: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static" className={(classes as any).appBar}>
-        <Toolbar className={(classes as any).toolbar}>
+      <AppBar position="static">
+        <Toolbar>
           <Typography
             variant="h6"
             onClick={handleClick}
