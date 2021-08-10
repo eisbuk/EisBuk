@@ -2,7 +2,7 @@
   "AppbarAdmin": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Reservations": "Reservations"
+    "Bookings": "Bookings"
   },
   "Slots": {
     "Amateur": "Amateur",
@@ -11,7 +11,6 @@
     "NonReversible": "This action is non-reversible",
     "Slot": "slot",
     "Book": "Book",
-    "Reserved": "Reserved",
     "Booked": "Booked",
     "ConfirmDialogDate": "{{date, d MMMM}}",
     "ConfirmDialogTime": "{{date, HH:mm}}"
@@ -67,7 +66,6 @@
     "AddAthlete": "AddAthlete"
   },
   "DashboardPage": {
-    "Reservations": "Reservations",
     "Bookings": "Bookings"
   },
   "BookingsByDay": {
@@ -89,10 +87,10 @@
     "NonReversible": "This action is not reversible, the user will definitely be deleted."
   },
   "Categories": {
-    "course": "Course",
-    "competitive": "Competitive",
-    "pre-competitive": "Pre-competitive",
-    "adults": "Adults"
+    "course": "course",
+    "competitive": "competitive",
+    "pre-competitive": "pre-competitive",
+    "adults": "adults"
   },
   "SlotTypes": {
     "off-ice-dancing": "off-ice-dancing",
