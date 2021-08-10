@@ -75,9 +75,9 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     }),
   ]);
 
-  const memSelector = useMemo(() => getSlotsByView(view), [view]);
+  const slotSelector = useMemo(() => getSlotsByView(view), [view]);
 
-  const allSlotsByDay = useSelector(memSelector);
+  const allSlotsByDay = useSelector(slotSelector);
   const slots = _.mapValues(allSlotsByDay, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return slot.categories.includes(category);

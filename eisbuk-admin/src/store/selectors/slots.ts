@@ -75,18 +75,20 @@ const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
  * @param view tab viewed by customer (ice, off-ice)
  * @returns record of view-specific ice slots, keyed by day, grouped together (regardless of month)
  */
-export const getSlotsByView = (view: CustomerRoute) => (
-  state: LocalStore
-): any =>
-  _.mapValues(
-    flatten(Object.values(getSafe(() => state.firestore.data.slotsByDay))),
-    (daySlots) =>
-      _.pickBy(daySlots, (slot) => {
-        return view === CustomerRoute.BookIce
-          ? slot.type === "ice"
-          : slot.type !== "ice";
-      })
+export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
+  const allSlots = flatten(
+    Object.values(getSafe(() => state.firestore.data.slotsByDay))
   );
+
+  if (view === CustomerRoute.Calendar) return allSlots;
+  return _.mapValues(allSlots, (daySlots) =>
+    _.pickBy(daySlots, (slot) => {
+      return view === CustomerRoute.BookIce
+        ? slot.type === "ice"
+        : slot.type !== "ice";
+    })
+  );
+};
 
 /**
  * Selector creator higher order function
