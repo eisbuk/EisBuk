@@ -2,7 +2,7 @@
 import _ from "lodash";
 import { createSelector } from "reselect";
 
-import { Slot, Customer, BookingInfo } from "eisbuk-shared";
+import { Slot, Customer, BookingInfo, SlotType } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -84,8 +84,8 @@ export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
   return _.mapValues(allSlots, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return view === CustomerRoute.BookIce
-        ? slot.type === "ice"
-        : slot.type !== "ice";
+        ? slot.type === SlotType.Ice
+        : slot.type !== SlotType.Ice;
     })
   );
 };
