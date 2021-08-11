@@ -50,6 +50,7 @@
     "test:ci": "npm --prefix \"./functions\" run build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn run jest --forceExit --runInBand'",
     "deploy:eisbuk": "firebase deploy --project eisbuk --only hosting:eisbuk",
     "deploy:production": "firebase deploy --project eisbuk --only hosting:igorice; firebase deploy --project eisbuk --except hosting",
+    "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
