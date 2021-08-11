@@ -1,4 +1,4 @@
-name: Build
+name: Build and deploy preview
 
 on:
   - push
@@ -22,7 +22,58 @@ jobs:
       - name: Install and link packages
         run: ./eisbuk-install.sh
       - name: Build app
-        run: yarn --cwd eisbuk-admin build
+        run: |
+          yarn --cwd eisbuk-admin build | tee build.output
+          echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
+          cat build.output|grep File\ sizes -A5 >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+        env:
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          REACT_APP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v3.x
+      - name: Deploy preview channel
+        id: deploy
+        run: |
+          set -e
+          # Run the `deploy:preview` script, passing the current git branch to be used for the name
+          # of the preview channel
+          yarn --cwd eisbuk-admin deploy:preview -- ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          # To pass the info to a later task, use the $GITHUB_ENV file
+          cat deploy.output | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|" >> $GITHUB_ENV
+          # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        if: ${{ github.event.pull_request.number }}
+        id: findcomment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Deployed URLs
+
+      - name: Add preview channel URL to comment on PR
+        uses: peter-evans/create-or-update-comment@v1
+        if: ${{ github.event.pull_request.number }}
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.findcomment.outputs.comment-id }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            Deployed URLs:
+              * Igorice: ${{ env.igorice }}
+              * Eisbuk: ${{ env.eisbuk }}
+            ```
+            ${{ env.BUILD_STATS }}
+            ```
+          reactions: heart, hooray, laugh, rocket
+          edit-mode: replace
 
   test_v14:
     runs-on: ubuntu-latest
