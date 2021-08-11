@@ -37,7 +37,6 @@ FormWithValues.args = {
   slotToEdit: {
     id: "random_id",
     date: firebase.firestore.Timestamp.now(),
-    time: "11:30",
     categories: [Category.PreCompetitive],
     durations: [Duration["1h"], Duration["2h"]],
     type: SlotType.Ice,

@@ -132,7 +132,7 @@ type SimplifiedFormikProps = Omit<
 export interface SlotFormProps {
   createSlot?: SlotOperation<"create">;
   editSlot?: SlotOperation;
-  isoDate: string;
+  isoDate?: string;
   open: boolean;
   onClose?: () => void;
   onOpen?: unknown;
@@ -142,7 +142,7 @@ export interface SlotFormProps {
 const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   createSlot = () => {},
   editSlot = () => {},
-  isoDate,
+  isoDate = "01-01-2020",
   open,
   onClose = () => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
