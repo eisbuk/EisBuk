@@ -34,17 +34,27 @@ jobs:
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
       - name: Deploy preview channel
+        id: deploy
         run: |
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
           yarn --cwd eisbuk-admin deploy:preview -- ${{ env.GITHUB_HEAD_REF_SLUG_URL }} |
-            sed -E '/hosting:channel/s/^(.*)$/\1\n::warning file=url,line=1,col=1::\1/'
-          # and use a workflow command to make the deployed URLs more prominent
+            sed -E '/hosting:channel/s|^(.*\(([^\)]+)\).*(https://[^ ]+).*)$|\1\n::set-output name=\2::\3|'
+          # and use a workflow command to save the URLs for the next step to publish
           # see https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-a-warning-message
-          # for all lines that contain hosting:channel (the `/hosting:channel/` part) replace the
-          # beginning of the line (`^`) with the string `::warning file=url,line=1,col=1::`.
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+      - name: Add preview channel URL to comment on PR
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          issue-number: ${{ github.event.pull_request.number }}
+          body: |
+            ```
+            Igorice: ${{ steps.deploy.outputs.igorice }}
+            Eisbuk: ${{ steps.deploy.outputs.eisbuk }}
+            ```
+          reaction-type: 'rocket'
 
   test_v14:
     runs-on: ubuntu-latest
