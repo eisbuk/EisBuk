@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 import { Slot } from "eisbuk-shared";
 import { mode } from "./helpers";
+import { CustomerRoute } from "@/enums/routes";
 
 // ***** Region Shift Slots Day ***** //
 interface ShiftSlotsDay {
@@ -99,3 +100,24 @@ export const shiftSlotsWeek: ShiftSlotsWeek = (slots, newWeekStart) => {
   });
 };
 // ***** End Region Shift Slots Week ***** //
+
+/**
+ * Generates dates to display based on the view:
+ * - 7 days of the week in case of ice
+ * - 4-5 Mondays, Tuesdays, etc. of the month in case of off-ice
+ * @param currentDate start date for current view
+ * @param view passed from props: "book_ice", "book_off_ice" or "ice"
+ * @returns array of dates to display
+ */
+export const getDatesToDisplay = (
+  currentDate: DateTime,
+  view?: CustomerRoute
+) =>
+  view === CustomerRoute.BookIce
+    ? Array(5)
+        .fill(null)
+        .map((_, i) => currentDate.plus({ week: i }).toISODate())
+        .filter((date) => DateTime.fromISO(date).hasSame(currentDate, "month"))
+    : Array(7)
+        .fill(null)
+        .map((_, i) => currentDate.plus({ days: i }).toISODate());
