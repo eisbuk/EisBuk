@@ -45,7 +45,7 @@ jobs:
           # of the preview channel
           yarn --cwd eisbuk-admin deploy:preview -- ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
-          cat deploy.output | grep hosting:channel:[^d]|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|" >> $GITHUB_ENV
+          cat deploy.output | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|" >> $GITHUB_ENV
           # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
