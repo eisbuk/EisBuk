@@ -72,7 +72,7 @@ jobs:
             ```
             ${{ env.BUILD_STATS }}
             ```
-          reaction-type: 'rocket'
+          reactions: heart, hooray, laugh, rocket
           edit-mode: replace
 
   test_v14:
