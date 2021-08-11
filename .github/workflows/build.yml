@@ -24,7 +24,13 @@ jobs:
       - name: Build app
         run: yarn --cwd eisbuk-admin build
       - name: Deploy preview channel
-        run: yarn --cwd eisbuk-admin deploy:preview -- $(git branch --show-current)
+        run: |
+          # Run the `deploy:preview` script, passing the current git branch to be used for the name
+          # of the preview channel
+          yarn --cwd eisbuk-admin deploy:preview -- $(git branch --show-current) |
+            sed -E 's/^(...hosting:channel)/::debug::\1/'
+          # and use a workflow command to make the deployed URLs more prominent
+          # see https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-a-debug-message
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
 
