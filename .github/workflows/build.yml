@@ -47,6 +47,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Find Comment
         uses: peter-evans/find-comment@v1
+        if: ${{ github.event.pull_request.number }}
         id: findcomment
         with:
           issue-number: ${{ github.event.pull_request.number }}
