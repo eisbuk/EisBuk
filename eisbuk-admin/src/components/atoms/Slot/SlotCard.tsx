@@ -1,8 +1,6 @@
 import React from "react";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
-import { useParams } from "@reach/router";
-import { useDispatch } from "react-redux";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -20,11 +18,6 @@ import DurationsSection from "./DurationsSection";
 import SlotOperationButtons from "./SlotOperationButtons";
 import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
-
-import {
-  subscribeToSlot,
-  unsubscribeFromSlot,
-} from "@/store/actions/bookingOperations";
 
 import { fb2Luxon } from "@/utils/date";
 
@@ -44,7 +37,7 @@ export interface SlotCardProps extends SlotInterface<"id"> {
   /**
    * Enable edit/delete of the slot in admin view
    */
-  enableEdit: boolean;
+  enableEdit?: boolean;
 }
 
 // ***** Region Component Function ***** //
@@ -52,8 +45,6 @@ export interface SlotCardProps extends SlotInterface<"id"> {
  * Atomic component used to render slot data to the UI. Displayed content can vary according to `view` prop:
  * - "customer" - shows customer view: durations are clickable and trigger subscription to slot (with appropriate message)
  * - "admin" - shows all of the athlete categories for slot (hidden in "customer" view). Additionally, if `enableEdit` prop is `true`, admin can perform edit operations on the slot (edit, delete)
- * @param param0
- * @returns
  */
 const SlotCard: React.FC<SlotCardProps> = ({
   selected,
@@ -64,31 +55,10 @@ const SlotCard: React.FC<SlotCardProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const { secretKey } = useParams<{ secretKey?: string }>();
-  const dispatch = useDispatch();
 
   const date = fb2Luxon(slotData.date);
 
   const isSubscribed = Boolean(subscribedDuration);
-
-  /**
-   * HOF that generates onClick handler for each duration.
-   * - If duration subscribed to, removes subscription
-   * - If not subscribed to given duration, toggles a subscription and removes subscription to any other duration from slot
-   * @param duration duration for which to subscribe
-   * @returns onClick handler
-   */
-  const handleSubscription = (duration: Duration) => () => {
-    if (secretKey) {
-      if (subscribedDuration === duration) {
-        dispatch(unsubscribeFromSlot(secretKey!, slotData.id));
-      } else {
-        dispatch(subscribeToSlot(secretKey!, { ...slotData, duration }));
-      }
-    } else {
-      console.error("Illegel operation, no secret key present");
-    }
-  };
 
   return (
     <>
@@ -106,7 +76,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
             flexDirection="column"
           >
             {view === SlotView.Admin && (
-              <Box display="flex">
+              <Box className={classes.categories} display="flex">
                 {slotData.categories.map((category) => (
                   <Typography
                     className={classes.category}
@@ -126,12 +96,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
         <CardActions className={classes.actionsContainer} disableSpacing={true}>
           <Box display="flex" flexGrow={1}>
             <DurationsSection
-              {...{
-                durations: slotData.durations,
-                handleSubscription,
-                enableSubscription: view === SlotView.Customer,
-                subscribedDuration,
-              }}
+              {...slotData}
+              enableSubscription={view === SlotView.Customer}
+              subscribedDuration={subscribedDuration}
             />
             <SlotTypeLabel slotType={slotData.type} />
             {view === SlotView.Admin && enableEdit && (
@@ -163,6 +130,9 @@ const useStyles = makeStyles((theme) => ({
     "&:last-child": {
       paddingBottom: 0,
     },
+  },
+  categories: {
+    padding: 4,
   },
   category: {
     textTransform: "uppercase",

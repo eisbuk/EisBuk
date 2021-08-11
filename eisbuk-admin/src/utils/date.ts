@@ -10,8 +10,10 @@ const Timestamp = firebase.firestore.Timestamp;
  * @param fbDatetime
  * @returns
  */
-export const fb2Luxon = (fbDatetime: FbTimestamp): DateTime =>
-  DateTime.fromJSDate(new Date(fbDatetime.seconds * 1000));
+export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime =>
+  DateTime.fromJSDate(
+    new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
+  );
 
 /**
  * Convert ISO Date string to luxon string (DateTime)

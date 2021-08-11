@@ -1,5 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
@@ -11,30 +13,65 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration } from "eisbuk-shared";
+import { Duration, Slot } from "eisbuk-shared";
 
 import { slotsLabels } from "@/config/appConfig";
 
-interface DurationsProps {
-  durations: Duration[];
+import {
+  subscribeToSlot,
+  unsubscribeFromSlot,
+} from "@/store/actions/bookingOperations";
+
+interface Props extends Slot<"id"> {
+  /**
+   * Duration of particular slot a customer is subscribed to.
+   */
   subscribedDuration?: Duration;
-  enableSubscription?: boolean;
-  handleSubscription: (duration: Duration) => () => void;
+  /**
+   * Enable subscription actions only in customer view.
+   * Disable otherwise (and render UI accordingly).
+   */
+  enableSubscription: boolean;
 }
 
-const DurationsSection: React.FC<DurationsProps> = ({
-  durations,
+/**
+ * Renders durations for slot and enables booking (if customer view).
+ * All booking (slot subscription) action handlers are kept internally and dispatched directly to store.
+ */
+const DurationsSection: React.FC<Props> = ({
   subscribedDuration,
-  handleSubscription,
   enableSubscription,
+  ...slotData
 }) => {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
+
+  const { secretKey } = useParams<{ secretKey?: string }>();
 
   const classes = useStyles();
 
+  /**
+   * HOF that generates onClick handler for each duration.
+   * - If duration subscribed to, removes subscription
+   * - If not subscribed to given duration, toggles a subscription and removes subscription to any other duration from slot
+   * @param duration duration for which to subscribe
+   * @returns onClick handler
+   */
+  const handleSubscription = (duration: Duration) => () => {
+    if (secretKey) {
+      if (subscribedDuration === duration) {
+        dispatch(unsubscribeFromSlot(secretKey!, slotData.id));
+      } else {
+        dispatch(subscribeToSlot(secretKey!, { ...slotData, duration }));
+      }
+    } else {
+      console.error("Illegel operation, no secret key present");
+    }
+  };
+
   const durationButtons = (
     <ButtonGroup variant="text">
-      {durations.map((duration) => {
+      {slotData.durations.map((duration) => {
         const color =
           subscribedDuration === duration
             ? "primary"

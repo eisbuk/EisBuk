@@ -28,7 +28,6 @@ enum Dialog {
  *
  * Internally, contains logic for dispatching actions to the store as well as form and confirm dialog modals.
  * @param slotData slot we're displaying used for further slot operations
- * @returns
  */
 const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
   const dispatch = useDispatch();

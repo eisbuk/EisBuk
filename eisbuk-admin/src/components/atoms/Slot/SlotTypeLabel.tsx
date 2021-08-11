@@ -20,6 +20,10 @@ interface Props {
   slotType: SlotType;
 }
 
+/**
+ * Small presentational component, used to render icon and appropriately styled label for slot type.
+ * Gets passed `slotType` {`ice` | `off-ice-dancing` | `off-ice-gym`} as prop.
+ */
 const SlotTypeLabel: React.FC<Props> = ({ slotType }) => {
   const { t } = useTranslation();
   const classes = useStyles();

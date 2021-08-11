@@ -13,6 +13,10 @@ interface SlotTimeProps {
   startTime: DateTime;
 }
 
+/**
+ * Presentational component used to move slot time dispay out of main component (for readability).
+ * Gets passed start time and subscribed duration (if any).
+ */
 const SlotTime: React.FC<SlotTimeProps> = ({
   subscribedDuration,
   startTime,
