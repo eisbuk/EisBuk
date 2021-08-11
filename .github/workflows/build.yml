@@ -22,7 +22,11 @@ jobs:
       - name: Install and link packages
         run: ./eisbuk-install.sh
       - name: Build app
-        run: yarn --cwd eisbuk-admin build
+        run: |
+          yarn --cwd eisbuk-admin build | tee build.output
+          echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
+          cat build.output|grep File\ sizes -A5 >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
@@ -65,6 +69,9 @@ jobs:
             Deployed URLs:
               * Igorice: ${{ env.igorice }}
               * Eisbuk: ${{ env.eisbuk }}
+            ```
+            ${{ env.BUILD_STATS }}
+            ```
           reaction-type: 'rocket'
           edit-mode: replace
 
