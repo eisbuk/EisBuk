@@ -36,9 +36,10 @@ jobs:
       - name: Deploy preview channel
         id: deploy
         run: |
+          set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
-          yarn --cwd eisbuk-admin deploy:preview -- ${{ env.GITHUB_HEAD_REF_SLUG_URL }} |
+          yarn --cwd eisbuk-admin deploy:preview -- ${GITHUB_HEAD_REF_SLUG_URL:-dev} |
             sed -E '/hosting:channel/s|^(.*\(([^\)]+)\).*(https://[^ ]+).*)$|\1\n::set-output name=\2::\3|'
           # and use a workflow command to save the URLs for the next step to publish
           # see https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-a-warning-message
