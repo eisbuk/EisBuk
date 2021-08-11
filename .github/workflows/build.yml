@@ -46,6 +46,7 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Add preview channel URL to comment on PR
         uses: peter-evans/create-or-update-comment@v1
+        if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           issue-number: ${{ github.event.pull_request.number }}
