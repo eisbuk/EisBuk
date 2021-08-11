@@ -44,18 +44,27 @@ jobs:
           # see https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-a-warning-message
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+      - name: Find Comment
+        uses: peter-evans/find-comment@v1
+        id: findcomment
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: Build output
+
       - name: Add preview channel URL to comment on PR
         uses: peter-evans/create-or-update-comment@v1
         if: ${{ github.event.pull_request.number }}
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          comment-id: ${{ steps.findcomment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body: |
-            ```
-            Igorice: ${{ steps.deploy.outputs.igorice }}
-            Eisbuk: ${{ steps.deploy.outputs.eisbuk }}
-            ```
+            Deployed URLs:
+              * Igorice: ${{ steps.deploy.outputs.igorice }}
+              * Eisbuk: ${{ steps.deploy.outputs.eisbuk }}
           reaction-type: 'rocket'
+          edit-mode: replace
 
   test_v14:
     runs-on: ubuntu-latest
