@@ -112,7 +112,7 @@ export const shiftSlotsWeek: ShiftSlotsWeek = (slots, newWeekStart) => {
 export const getDatesToDisplay = (
   currentDate: DateTime,
   view?: CustomerRoute
-) =>
+): Array<string> =>
   view === CustomerRoute.BookIce
     ? Array(5)
         .fill(null)

@@ -2,7 +2,7 @@ import { getDatesToDisplay } from "@/utils/slots";
 import { DateTime } from "luxon";
 
 it("Selects the app date", () => {
-  let date = DateTime.local(2021, 8, 11);
+  const date = DateTime.local(2021, 8, 11);
   expect(getDatesToDisplay(date)).toEqual([
     "2021-08-11",
     "2021-08-12",
