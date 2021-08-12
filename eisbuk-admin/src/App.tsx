@@ -16,14 +16,17 @@ import AppContent from "@/AppContent";
 import Notifier from "@/components/Notifier";
 
 import { currentTheme } from "@/themes";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const App: React.FC = () => {
+  const classes = useStyles();
+
   return (
     <Provider store={store}>
       <ReactReduxFirebaseProvider {...rrfProps}>
         <ThemeProvider theme={currentTheme}>
           <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <SnackbarProvider maxSnack={3}>
+            <SnackbarProvider className={classes.root} maxSnack={3}>
               <Notifier />
               <CssBaseline />
               <BrowserRouter>
@@ -37,4 +40,14 @@ const App: React.FC = () => {
   );
 };
 
+// ***** Region Styles ***** //
+type Theme = typeof currentTheme;
+
+const useStyles = makeStyles((theme: Theme) => ({
+  root: {
+    margin: theme.spacing(0.75, 0),
+    pointerEvents: "all",
+  },
+}));
+// ***** End Region Styles ***** //
 export default App;
