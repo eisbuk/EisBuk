@@ -18,6 +18,14 @@ import Notifier from "@/components/Notifier";
 import { currentTheme } from "@/themes";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+/**
+ * The styles part is a, hopefully, temporary workaround to a
+ * bug in notistack that causes snackbars to be unclickable.
+ * Notistack v.1.0.10 fixes that bug however,
+ * it doesn't work with materialUI v.5
+ * The bug is caused by the root class not having the 'pointerEvents'
+ * property set to 'all', 'root' class here overrides that.
+ */
 const App: React.FC = () => {
   const classes = useStyles();
 
