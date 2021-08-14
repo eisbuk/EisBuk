@@ -29,3 +29,11 @@ export const fromISO = (isoStr: string): DateTime => DateTime.fromISO(isoStr);
  */
 export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
   Timestamp.fromDate(luxonTS.toJSDate());
+
+/**
+ * Converts the luxon DateTime to ISO date string format with only the day part (excluding time of day)
+ * @param luxonDate to convert
+ * @returns ISO `yyyy-mm-dd` string
+ */
+export const luxon2ISODate = (luxonDate: DateTime): string =>
+  luxonDate.toISO().substr(0, 10);

@@ -53,7 +53,8 @@
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --project-token dcmb4kmorxe"
+    "chromatic": "npx chromatic --project-token dcmb4kmorxe",
+    "test-temp": "yarn jest DateNavigation --watch --env=jest-environment-jsdom-sixteen"
   },
   "browserslist": {
     "production": [
@@ -77,8 +78,8 @@
     "@storybook/node-logger": "^6.3.4",
     "@storybook/preset-create-react-app": "^3.2.0",
     "@storybook/react": "^6.3.4",
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/jest-dom": "^5.14.1",
+    "@testing-library/react": "^12.0.0",
     "@testing-library/user-event": "^7.1.2",
     "@types/i18next": "^13.0.0",
     "@types/i18next-browser-languagedetector": "^3.0.0",
@@ -109,12 +110,14 @@
     "eslint-plugin-unused-imports": "^1.0.1",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.11.0",
+    "jest-environment-jsdom-sixteen": "^2.0.0",
     "p-retry": "^4.6.1",
     "react-app-rewired": "^2.1.8",
     "reselect": "^4.0.0",
     "seedrandom": "^3.0.5",
     "storybook-addon-material-ui": "^0.9.0-alpha.22",
     "storybook-react-router": "^1.0.8",
+    "ts-jest": "^27.0.4",
     "typescript": "^4.3.5"
   },
   "jest": {
