@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -386,27 +386,56 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
   // create field values from Formik
   const [field] = useField({ name, type: "checkbox", value });
 
-  // TODO: typing for useFormikConetxt
   const {
     values: { type },
-    touched,
+    // Step 8. Realize the touched lags one render behind (for some reason) so remove it altogether
     setFieldValue,
-  }: any = useFormikContext();
+  } = useFormikContext<{ type: SlotType }>();
+  // Step 1. remove 'any' assertion and find out that the touched is of type Record<string, boolean>, i.e. {[name]: <true if it was touched on this particular render>}
+
+  // Step 4. add state for disabled
+  const [disabled, setDisabled] = useState(false);
 
   React.useEffect(() => {
-    if (touched.type !== SlotType.Ice && touched.type) {
-      setFieldValue("categories", [
-        "course",
-        "pre-competitive",
-        "competitive",
-        "adults",
-      ]);
+    // Step 6. realize that the 'MyCheckbox' component will be used for more than one field ("categories" and "durations")
+    // We want all of the logic in 'useEffect' to run only once (in case of "categories")
+    // - To prevent excess rerenders: in you version, setFieldValue was ran twice: once from categories, once from "durations"
+    //   react tries to batch these internally, but it's always best to be as specific as possible to not depend on reacts "unstableBatchUpdates" -> self explanatory
+    // - To disable only the "categories", and leave the "durations" intact
+    if (name === "categories") {
+      // Step 2. adjust if condition according to step 1.
+      // "if (type !== SlotType.Ice && touched.type)"
+      // If type is ont ice, and type has been set (it's not initial), do the already implemented logic
+
+      // Step 8. Realize the touched lags one render behind (for some reason) so remove it altogether
+      if ([SlotType.OffIceDancing, SlotType.OffIceGym].includes(type)) {
+        setFieldValue("categories", [
+          "course",
+          "pre-competitive",
+          "competitive",
+          "adults",
+        ]);
+
+        // Step 5. add logic for changing of the disabled state
+        setDisabled(true);
+      } else {
+        // Step 5. add logic for changing of the disabled state
+        setDisabled(false);
+      }
     }
-  }, [type, touched.type, touched, setFieldValue]);
+    // Step 7. adjust deps: we don't need 'touched' since we're only using 'touched.type'
+    // Also, deps should contain primitives as much as possible (in 99% cases), as 'useEffect' does shallow comparison (will run every time touched is updated: unnecessary)
+    // add "name" since we've added it to 'useEffect' in Step 6.
+
+    // Step 8. Realize the touched lags one render behind (for some reason) so remove it altogether
+    /** @TODO delete the "Step {x}" comments and use @TODO flag like this: in multiline comments (for the fancy coloring ;) */
+  }, [type, setFieldValue, name]);
 
   return (
     <FormControlLabel
       control={<Checkbox {...{ name, value }} {...field} />}
+      // Step 3. disable the checkboxes in the UI in case of off-ice
+      disabled={name === "categories" ? disabled : false}
       label={label}
     />
   );
