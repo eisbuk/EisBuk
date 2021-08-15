@@ -158,6 +158,24 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
 
   const parsedSlotEditDate = slotToEdit ? fs2luxon(slotToEdit.date) : undefined;
 
+  // const {
+  //   values: { type },
+  //   touched,
+  //   setFieldValue,
+  // } = useFormikContext();
+  // const [field, meta] = useField(props as any);
+
+  // React.useEffect(() => {
+  //   // set the value of textC, based on textA and textB
+  //   if (
+
+  //     touched.type &&
+  //     type !== SlotType.Ice
+  //   ) {
+  //     setFieldValue(props.name, `textA: ${textA}, textB: ${textB}`);
+  //   }
+  // }, [textB, textA, touched.textA, touched.textB, setFieldValue, props.name]);
+
   if (lastTime !== null) {
     defaultValues["time"] = fs2luxon(lastTime).toFormat("HH:mm");
   }
@@ -316,6 +334,7 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
       control={<Radio />}
     />
   ));
+
 // ***** End Region Create Radio Buttons ***** //
 
 // ***** Region Get Checkboxes ***** //
@@ -366,6 +385,24 @@ interface CheckboxProps {
 export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
   // create field values from Formik
   const [field] = useField({ name, type: "checkbox", value });
+
+  // TODO: typing for useFormikConetxt
+  const {
+    values: { type },
+    touched,
+    setFieldValue,
+  }: any = useFormikContext();
+
+  React.useEffect(() => {
+    if (touched.type !== SlotType.Ice && touched.type) {
+      setFieldValue("categories", [
+        "course",
+        "pre-competitive",
+        "competitive",
+        "adults",
+      ]);
+    }
+  }, [type, touched.type, touched, setFieldValue]);
 
   return (
     <FormControlLabel
