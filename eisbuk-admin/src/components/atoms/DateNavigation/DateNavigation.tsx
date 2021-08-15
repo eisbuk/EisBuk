@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { DateTime, DurationObjectUnits } from "luxon";
 import i18n from "i18next";
 import { useHistory, useLocation, useParams } from "react-router-dom";
@@ -7,6 +7,7 @@ import Toolbar from "@material-ui/core/Toolbar";
 import AppBar from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
+import Switch from "@material-ui/core/Switch";
 
 import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
 import ChevronRightIcon from "@material-ui/icons/ChevronRight";
@@ -15,8 +16,11 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { luxon2ISODate } from "@/utils/date";
 
-import { __incrementId__, __decrementId__ } from "./__testData__/testData";
-import { set } from "lodash";
+import {
+  __toggleId__,
+  __incrementId__,
+  __decrementId__,
+} from "./__testData__/testData";
 
 /**
  * A render function passed as child for render prop usage
@@ -27,6 +31,11 @@ interface RenderFunction {
      * Date of start of currently viewed timeframe in ISO string format
      */
     currentViewStart: DateTime;
+    /**
+     * - `boolean` state of the toggle button
+     * - `undefined` if `showToggle = false`
+     */
+    toggleState?: boolean;
   }): JSX.Element | null | string;
 }
 
@@ -69,7 +78,9 @@ const DateNavigation: React.FC<Props> = ({
   const { date: routeDateISO } = useParams<{ date: string }>();
   const { pathname } = useLocation();
   const history = useHistory();
-  const routeDate = processDateParam(routeDateISO);
+  const routeDate = useMemo(() => processDateParam(routeDateISO), [
+    routeDateISO,
+  ]);
 
   // ISO date string representation of current time.
   // Used for calculating of the fallback default time
@@ -101,7 +112,15 @@ const DateNavigation: React.FC<Props> = ({
         setCurrentViewStart(routeDate);
       }
     }
-  });
+  }, [
+    setCurrentViewStart,
+    routeDateISO,
+    withRouter,
+    history,
+    pathname,
+    currentViewStart,
+    routeDate,
+  ]);
 
   /**
    * Handler we're using for pagination.
@@ -130,6 +149,18 @@ const DateNavigation: React.FC<Props> = ({
       setCurrentViewStart(newTimeframeStart);
     }
   };
+
+  const [toggleState, setToggleState] = useState(
+    showToggle ? false : undefined
+  );
+  const toggleButton = (
+    <Switch
+      edge="end"
+      onChange={(_, checked) => setToggleState(checked)}
+      checked={toggleState}
+      data-testid={__toggleId__}
+    />
+  );
 
   return (
     <>
@@ -163,9 +194,10 @@ const DateNavigation: React.FC<Props> = ({
             <ChevronRightIcon />
           </IconButton>
           {/* {extraButtons} */}
+          {showToggle && toggleButton}
         </Toolbar>
       </AppBar>
-      {children ? children({ currentViewStart }) : null}
+      {children ? children({ currentViewStart, toggleState }) : null}
     </>
   );
 };

@@ -8,4 +8,8 @@ export default {
   component: DateNavigation,
 } as ComponentMeta<typeof DateNavigation>;
 
-export const Default = (): JSX.Element => <DateNavigation />;
+export const WithToggle = (): JSX.Element => (
+  <DateNavigation showToggle>
+    {({ toggleState }) => String(toggleState)}
+  </DateNavigation>
+);
