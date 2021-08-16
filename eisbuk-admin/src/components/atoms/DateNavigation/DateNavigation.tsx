@@ -60,6 +60,13 @@ interface Props {
    * A flag used to trigger syncing local date with the router (both read and push)
    */
   withRouter?: boolean;
+  /**
+   * Additional buttons to be rendered on the right hand side of the navbar.
+   * Will be shown if:
+   * - `showToggle == true` will be displayed depending on `toggleState` i.e. if `toggleState == true`
+   * - `showToggle == false` will be rendered immediately
+   */
+  extraButtons?: JSX.Element | null;
 }
 
 /**
@@ -71,6 +78,7 @@ const DateNavigation: React.FC<Props> = ({
   defaultDate,
   withRouter = false,
   jump = "week",
+  extraButtons = null,
 }) => {
   const classes = useStyles();
 
@@ -162,6 +170,10 @@ const DateNavigation: React.FC<Props> = ({
     />
   );
 
+  // if 'showToggle == true', we're showing `extraButtons` depending on `toggleState`
+  // if `showToggle == false`, we're showing toggleState buttons immediately
+  const showExtraButtons = toggleState || !showToggle;
+
   return (
     <>
       <AppBar position="sticky">
@@ -193,7 +205,7 @@ const DateNavigation: React.FC<Props> = ({
           >
             <ChevronRightIcon />
           </IconButton>
-          {/* {extraButtons} */}
+          {showExtraButtons && extraButtons}
           {showToggle && toggleButton}
         </Toolbar>
       </AppBar>
