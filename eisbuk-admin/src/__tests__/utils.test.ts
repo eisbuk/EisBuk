@@ -10,7 +10,7 @@ import { shiftSlotsDay, shiftSlotsWeek } from "@/utils/slots";
 const Timestamp = firebase.firestore.Timestamp;
 
 // ***** Region Helpers ***** //
-describe("Test 'capitalizeFirst' function", () => {
+describe("The 'capitalizeFirst' function", () => {
   test("should return passed string, with first letter capitalized", () => {
     const str = "helloworld";
     const want = "Helloworld";
