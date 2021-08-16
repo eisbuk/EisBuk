@@ -17,8 +17,8 @@ beforeEach(async () => {
   await deleteAllCollections(adminDb, ["organizations"]);
 });
 
-describe("Selectors tests", () => {
-  it("updates the slots summary on slot creation", async () => {
+describe("Slot triggers", () => {
+  it("update the slots summary on slot creation", async () => {
     await Promise.all([createDefaultOrg(), loginDefaultUser()]);
     const org = db.collection("organizations").doc("default");
     // 1611964800 → Saturday, January 30, 2021 0:00:00 GMT

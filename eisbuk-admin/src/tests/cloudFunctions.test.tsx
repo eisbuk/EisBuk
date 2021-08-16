@@ -10,8 +10,8 @@ beforeAll(async () => {
   await firebase.auth().signOut();
 });
 
-describe("Cloud functions tests", () => {
-  it("Can ping the functions", async (done) => {
+describe("Cloud functions", () => {
+  it("can be pinged", async (done) => {
     const result = await firebase.app().functions().httpsCallable("ping")({
       foo: "bar",
     });
@@ -19,7 +19,7 @@ describe("Cloud functions tests", () => {
     done();
   });
 
-  it("responds whether the user is an admin or not in the given organization", async (done) => {
+  it("respond whether the user is an admin or not in the given organization", async (done) => {
     await adminDb
       .collection("organizations")
       .doc("default")
@@ -38,7 +38,7 @@ describe("Cloud functions tests", () => {
     done();
   });
 
-  it("Denies access to users not belonging to the organization", async (done) => {
+  it("deniy access to users not belonging to the organization", async (done) => {
     await adminDb
       .collection("organizations")
       .doc("default")

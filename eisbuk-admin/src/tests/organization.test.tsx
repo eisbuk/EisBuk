@@ -1,8 +1,8 @@
 import { db, adminDb } from "./settings";
 import { loginWithUser, loginWithPhone } from "./utils";
 
-describe("Organization tests", () => {
-  it("lets only admin access an organization data (by email)", async () => {
+describe("Organization permissions", () => {
+  it("let only admin access an organization data (by email)", async () => {
     const orgDefinition = {
       admins: ["test@example.com"],
     };
@@ -31,7 +31,7 @@ describe("Organization tests", () => {
     expect(retrievedDoc).toStrictEqual({ "I am": "deep" });
   });
 
-  it("lets admin access an organization data (by phone)", async () => {
+  it("let admin access an organization data (by phone)", async () => {
     const orgDefinition = {
       admins: ["+1234567890"],
     };

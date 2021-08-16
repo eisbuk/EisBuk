@@ -8,8 +8,8 @@ import { getCalendarDay } from "@/store/selectors/app";
 
 Settings.defaultZoneName = "Europe/Rome";
 
-describe("Selectors tests", () => {
-  it("Selects the app date", () => {
+describe("Selectors", () => {
+  it("can retrieve the app date", () => {
     expect(
       getCalendarDay({
         app: {
@@ -19,7 +19,7 @@ describe("Selectors tests", () => {
     ).toEqual("foo");
   });
 
-  it("Selects the bookings", () => {
+  it("can select the bookings", () => {
     expect(
       bookingDayInfoSelector("2021-01-19")(
         (COMPLEX_STATE as unknown) as LocalStore
@@ -96,7 +96,7 @@ describe("Selectors tests", () => {
     ]);
   });
 
-  it("does not explode when some values are undefined", () => {
+  it("do not explode when some values are undefined", () => {
     bookingDayInfoSelector("2021-01-19")(({
       firestore: ({
         data: ({

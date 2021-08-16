@@ -10,7 +10,7 @@ beforeEach(async () => {
 });
 
 describe("Customer triggers", () => {
-  it("Applies secret_key when a customer record is added and keeps customer data up to date", async (done) => {
+  it("apply secret_key when a customer record is added and keeps customer data up to date", async (done) => {
     const coll = adminDb
       .collection("organizations")
       .doc("default")
@@ -47,7 +47,7 @@ describe("Customer triggers", () => {
     done();
   });
 
-  it("Populates bookings when a customer record is added or changed", async (done) => {
+  it("populate bookings when a customer record is added or changed", async (done) => {
     const orgsColl = adminDb.collection("organizations").doc("default");
     const customersColl = orgsColl.collection("customers");
     const testCustomer = {
