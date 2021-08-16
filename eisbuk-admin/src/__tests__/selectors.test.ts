@@ -8,101 +8,105 @@ import { getCalendarDay } from "@/store/selectors/app";
 
 Settings.defaultZoneName = "Europe/Rome";
 
-it("Selects the app date", () => {
-  expect(
-    getCalendarDay({
-      app: { calendarDay: ("foo" as unknown) as DateTime } as LocalStore["app"],
-    } as LocalStore)
-  ).toEqual("foo");
-});
+describe("Selectors tests", () => {
+  it("Selects the app date", () => {
+    expect(
+      getCalendarDay({
+        app: {
+          calendarDay: ("foo" as unknown) as DateTime,
+        } as LocalStore["app"],
+      } as LocalStore)
+    ).toEqual("foo");
+  });
 
-it("Selects the bookings", () => {
-  expect(
-    bookingDayInfoSelector("2021-01-19")(
-      (COMPLEX_STATE as unknown) as LocalStore
-    )
-  ).toEqual([
-    {
-      categories: ["preagonismo", "agonismo"],
-      time: "10:00",
-      type: "off-ice-danza",
-      users: [],
-      id: "Zj5vUJitCYqn3kMR8LsH",
-      durations: [60],
-    },
-    {
-      categories: ["preagonismo"],
-      time: "11:00",
-      type: "off-ice-gym",
-      id: "5hAqGeEqEUr6iyTFYAJS",
-      durations: [60],
-      users: [
-        {
-          name: "Rocco",
-          surname: "Nocera",
-          certificateExpiration: "2021-12-11",
-          secret_key: "e4779485-33b4-4f8d-8f03-7761e78b4b67",
-          id: "ffd4ca76-1659-4eef-a52f-c40cabb81187",
-          duration: 60,
-        },
-      ],
-    },
-    {
-      time: "16:00",
-      categories: ["preagonismo"],
-      type: "ice",
-      durations: [60, 90, 120],
-      id: "dEn4dAy8mTEkzzYGvC9Y",
-      absentees: {
-        "fec4d032-8d5c-4604-9a32-e9e5058cc081": true,
+  it("Selects the bookings", () => {
+    expect(
+      bookingDayInfoSelector("2021-01-19")(
+        (COMPLEX_STATE as unknown) as LocalStore
+      )
+    ).toEqual([
+      {
+        categories: ["preagonismo", "agonismo"],
+        time: "10:00",
+        type: "off-ice-danza",
+        users: [],
+        id: "Zj5vUJitCYqn3kMR8LsH",
+        durations: [60],
       },
-      users: [
-        {
-          name: "Porfirio",
-          surname: "Manzi",
-          certificateExpiration: "2022-01-01",
-          secret_key: "2b54debf-6023-45ec-94c5-147084e6d1de",
-          id: "fec4d032-8d5c-4604-9a32-e9e5058cc081",
-          duration: 60,
+      {
+        categories: ["preagonismo"],
+        time: "11:00",
+        type: "off-ice-gym",
+        id: "5hAqGeEqEUr6iyTFYAJS",
+        durations: [60],
+        users: [
+          {
+            name: "Rocco",
+            surname: "Nocera",
+            certificateExpiration: "2021-12-11",
+            secret_key: "e4779485-33b4-4f8d-8f03-7761e78b4b67",
+            id: "ffd4ca76-1659-4eef-a52f-c40cabb81187",
+            duration: 60,
+          },
+        ],
+      },
+      {
+        time: "16:00",
+        categories: ["preagonismo"],
+        type: "ice",
+        durations: [60, 90, 120],
+        id: "dEn4dAy8mTEkzzYGvC9Y",
+        absentees: {
+          "fec4d032-8d5c-4604-9a32-e9e5058cc081": true,
         },
-        {
-          name: "Rocco",
-          surname: "Nocera",
-          certificateExpiration: "2021-12-11",
-          secret_key: "e4779485-33b4-4f8d-8f03-7761e78b4b67",
-          id: "ffd4ca76-1659-4eef-a52f-c40cabb81187",
-          duration: 120,
-        },
-        {
-          id: "non-existent-user",
-          name: "Cancellato",
-          secret_key: "Cancellato",
-          surname: "Cancellato",
-          duration: 60,
-        },
-      ],
-    },
-    {
-      categories: ["agonismo"],
-      time: "16:00",
-      type: "ice",
-      users: [],
-      id: "nnUF6szWatJP5R7byhwH",
-      durations: [60, 90, 120],
-    },
-  ]);
-});
+        users: [
+          {
+            name: "Porfirio",
+            surname: "Manzi",
+            certificateExpiration: "2022-01-01",
+            secret_key: "2b54debf-6023-45ec-94c5-147084e6d1de",
+            id: "fec4d032-8d5c-4604-9a32-e9e5058cc081",
+            duration: 60,
+          },
+          {
+            name: "Rocco",
+            surname: "Nocera",
+            certificateExpiration: "2021-12-11",
+            secret_key: "e4779485-33b4-4f8d-8f03-7761e78b4b67",
+            id: "ffd4ca76-1659-4eef-a52f-c40cabb81187",
+            duration: 120,
+          },
+          {
+            id: "non-existent-user",
+            name: "Cancellato",
+            secret_key: "Cancellato",
+            surname: "Cancellato",
+            duration: 60,
+          },
+        ],
+      },
+      {
+        categories: ["agonismo"],
+        time: "16:00",
+        type: "ice",
+        users: [],
+        id: "nnUF6szWatJP5R7byhwH",
+        durations: [60, 90, 120],
+      },
+    ]);
+  });
 
-it("does not explode when some values are undefined", () => {
-  bookingDayInfoSelector("2021-01-19")(({
-    firestore: ({
-      data: ({
-        slotsByDay: {
-          "2021-01": {},
-        },
-      } as unknown) as FirestoreData,
-    } as unknown) as LocalStore["firestore"],
-  } as unknown) as LocalStore);
+  it("does not explode when some values are undefined", () => {
+    bookingDayInfoSelector("2021-01-19")(({
+      firestore: ({
+        data: ({
+          slotsByDay: {
+            "2021-01": {},
+          },
+        } as unknown) as FirestoreData,
+      } as unknown) as LocalStore["firestore"],
+    } as unknown) as LocalStore);
+  });
 });
 
 const COMPLEX_STATE = {

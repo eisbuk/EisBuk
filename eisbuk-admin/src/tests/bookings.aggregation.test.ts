@@ -15,51 +15,53 @@ beforeEach(async () => {
     .delete();
 });
 
-it("Copies over booking when created", async (done) => {
-  // 1611964800 → Saturday, January 30, 2021 0:00:00 GMT
-  const day = 1611964800;
-  await adminDb
-    .collection("organizations")
-    .doc("default")
-    .collection("bookings")
-    .doc("foo-secret-key")
-    .create({
-      customer_id: "booker-id",
-    });
+describe("Booking aggregation tests", () => {
+  it("Copies over booking when created", async (done) => {
+    // 1611964800 → Saturday, January 30, 2021 0:00:00 GMT
+    const day = 1611964800;
+    await adminDb
+      .collection("organizations")
+      .doc("default")
+      .collection("bookings")
+      .doc("foo-secret-key")
+      .create({
+        customer_id: "booker-id",
+      });
 
-  await adminDb
-    .collection("organizations")
-    .doc("default")
-    .collection("bookings")
-    .doc("foo-secret-key")
-    .collection("data")
-    .doc("booked-slot-id")
-    .create({
-      date: { seconds: day },
-      categories: ["agonismo"],
-      id: "booked-slot-id",
-      duration: 60,
-    });
-  const record = await waitForBookingWithCondition(
-    "2021-01",
-    (data) =>
-      data && data["booked-slot-id"] && data["booked-slot-id"]["booker-id"]
-  );
-  expect(record["booked-slot-id"]["booker-id"]).toEqual(60);
+    await adminDb
+      .collection("organizations")
+      .doc("default")
+      .collection("bookings")
+      .doc("foo-secret-key")
+      .collection("data")
+      .doc("booked-slot-id")
+      .create({
+        date: { seconds: day },
+        categories: ["agonismo"],
+        id: "booked-slot-id",
+        duration: 60,
+      });
+    const record = await waitForBookingWithCondition(
+      "2021-01",
+      (data) =>
+        data && data["booked-slot-id"] && data["booked-slot-id"]["booker-id"]
+    );
+    expect(record["booked-slot-id"]["booker-id"]).toEqual(60);
 
-  await adminDb
-    .collection("organizations")
-    .doc("default")
-    .collection("bookings")
-    .doc("foo-secret-key")
-    .collection("data")
-    .doc("booked-slot-id")
-    .delete();
-  await waitForBookingWithCondition(
-    "2021-01",
-    (data) => !data!["booked-slot-id"]["booker-id"]
-  );
-  done();
+    await adminDb
+      .collection("organizations")
+      .doc("default")
+      .collection("bookings")
+      .doc("foo-secret-key")
+      .collection("data")
+      .doc("booked-slot-id")
+      .delete();
+    await waitForBookingWithCondition(
+      "2021-01",
+      (data) => !data!["booked-slot-id"]["booker-id"]
+    );
+    done();
+  });
 });
 
 // ***** Region Wait For Booking With Condition ***** //
