@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -316,6 +316,7 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
       control={<Radio />}
     />
   ));
+
 // ***** End Region Create Radio Buttons ***** //
 
 // ***** Region Get Checkboxes ***** //
@@ -367,9 +368,37 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
   // create field values from Formik
   const [field] = useField({ name, type: "checkbox", value });
 
+  const {
+    values: { type },
+    setFieldValue,
+  } = useFormikContext<{ type: SlotType }>();
+
+  const [disabled, setDisabled] = useState(false);
+
+  React.useEffect(() => {
+    if (name === "categories") {
+      if ([SlotType.OffIceDancing, SlotType.OffIceGym].includes(type)) {
+        setFieldValue("categories", [
+          "course",
+          "pre-competitive",
+          "competitive",
+          "adults",
+        ]);
+
+        setDisabled(true);
+      } else {
+        setDisabled(false);
+      }
+    }
+
+    /** @TODO delete the "Step {x}" comments and use @TODO flag like this: in multiline comments (for the fancy coloring ;) */
+  }, [type, setFieldValue, name]);
+
   return (
     <FormControlLabel
       control={<Checkbox {...{ name, value }} {...field} />}
+      // Step 3. disable the checkboxes in the UI in case of off-ice
+      disabled={name === "categories" ? disabled : false}
       label={label}
     />
   );
