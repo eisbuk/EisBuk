@@ -96,7 +96,8 @@
   },
   "DateNavigationBar": {
     "Week": "{{date, d MMMM}}",
-    "Day": "{{date, EEEE d MMMM}}"
+    "Day": "{{date, EEEE d MMMM}}",
+    "Month": "{{date, MMMM yyyy}}"
   },
   "CustomerAreaBookingCard": {
     "Weekday": "{{date, EEE}}",
