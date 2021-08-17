@@ -9,7 +9,10 @@ export const __isDev__ = process.env.NODE_ENV === "development";
 export const __eisbukSite__ = process.env.REACT_APP_EISBUK_SITE;
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
-export const __firebaseApiKey__ = process.env.REACT_APP_FIREBASE_API_KEY;
+export const __firebaseApiKey__ =
+  process.env.NODE_ENV === "test"
+    ? "test"
+    : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
 export const __messagingSenderId__ =
