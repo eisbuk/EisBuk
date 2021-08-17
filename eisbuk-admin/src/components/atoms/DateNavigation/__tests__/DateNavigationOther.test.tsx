@@ -13,7 +13,7 @@ import { __toggleId__ } from "../__testData__/testData";
 
 import { renderWithRouter } from "@/__testUtils__/wrappers";
 
-describe("DateNavigation", () => {
+describe("Date Navigation", () => {
   describe("Test toggle button functionality", () => {
     test("should not render toggle button if 'showToggle = false'", () => {
       renderWithRouter(<DateNavigation />);

@@ -33,7 +33,7 @@ export interface SlotCardProps extends SlotInterface<"id"> {
   /**
    * Display different parts and enable different actions with respect to the view ("admin"/"customer")
    */
-  view: SlotView;
+  view?: SlotView;
   /**
    * Enable edit/delete of the slot in admin view
    */
@@ -49,7 +49,7 @@ export interface SlotCardProps extends SlotInterface<"id"> {
 const SlotCard: React.FC<SlotCardProps> = ({
   selected,
   subscribedDuration,
-  view,
+  view = SlotView.Customer,
   enableEdit,
   ...slotData
 }) => {
@@ -95,11 +95,11 @@ const SlotCard: React.FC<SlotCardProps> = ({
         </CardContent>
         <CardActions className={classes.actionsContainer} disableSpacing={true}>
           <Box display="flex" flexGrow={1}>
-            <DurationsSection
+            {/* <DurationsSection
               {...slotData}
               enableSubscription={view === SlotView.Customer}
               subscribedDuration={subscribedDuration}
-            />
+            /> */}
             <SlotTypeLabel slotType={slotData.type} />
             {view === SlotView.Admin && enableEdit && (
               <SlotOperationButtons {...slotData} />
