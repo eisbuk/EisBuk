@@ -7,7 +7,9 @@ jobs:
   storybook:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
       - name: Cache node modules
         uses: actions/cache@v2
         with:
@@ -15,5 +17,11 @@ jobs:
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: ./eisbuk-install.sh
-      - name: build storybook and upload
-        run: cd eisbuk-admin && npx chromatic --exit-zero-on-changes --project-token=${{ secrets.CHROMAUI_PROJECT_TOKEN }}
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          projectToken: ${{ secrets.CHROMAUI_PROJECT_TOKEN }}
+          workingDir: eisbuk-admin
+          exitZeroOnChanges: true
+          exitOnceUploaded: true
