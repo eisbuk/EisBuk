@@ -43,15 +43,13 @@
     "start": "react-app-rewired start",
     "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app NODE_ENV=production react-app-rewired start --reset-cache",
     "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app NODE_ENV=production react-app-rewired start --reset-cache",
-    "emulators:inspect": "npm --prefix './functions' run build && exec firebase emulators:start --project eisbuk --inspect-functions 9229",
-    "emulators:start": "npm --prefix './functions' run build && exec firebase emulators:start --project eisbuk",
+    "emulators:inspect": "yarn --cwd functions run build && exec firebase emulators:start --project eisbuk --inspect-functions 9229",
+    "emulators:start": "yarn --cwd functions run build && exec firebase emulators:start --project eisbuk",
     "build": "eslint . && react-app-rewired build",
-    "test:emulators": "yarn --cwd './functions' build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --watch --runInBand src/tests src/__tests__/'",
-    "test:emulators:ci": "JEST_JUNIT_OUTPUT_NAME=test-result-emulators.xml yarn --cwd './functions' build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --ci --reporters=default --reporters=jest-junit --forceExit --runInBand src/tests src/__tests__/'",
-    "test:jsdom": "yarn jest --watch --env=jest-environment-jsdom-sixteen src/components",
-    "test:jsdom:ci": "JEST_JUNIT_OUTPUT_NAME=test-result-jsdom.xml yarn jest --ci --reporters=default --reporters=jest-junit --forceExit --env=jest-environment-jsdom-sixteen src/components",
-    "test": "yarn run test:jsdom && yarn run test:emulators",
-    "test:ci": "yarn run test:jsdom:ci && yarn run test:emulators:ci",
+    "test:emulators": "yarn --cwd functions build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --watch --runInBand src'",
+    "test:emulators:ci": "yarn --cwd functions build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --ci --reporters=default --reporters=jest-junit --collect-coverage --forceExit --runInBand'",
+    "test:quicktest": "echo Running tests with no emulators support && yarn jest --watch src",
+    "test": "echo 'Running all tests; using emulators.' && yarn test:emulators",
     "deploy:eisbuk": "firebase deploy --project eisbuk --only hosting:eisbuk",
     "deploy:production": "firebase deploy --project eisbuk --only hosting:igorice; firebase deploy --project eisbuk --except hosting",
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
@@ -59,7 +57,7 @@
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
     "chromatic": "npx chromatic --project-token dcmb4kmorxe",
-    "test-temp": "yarn jest SlotCard --watch --env=jest-environment-jsdom-sixteen"
+    "test-temp": "yarn jest SlotCard --watch"
   },
   "browserslist": {
     "production": [
@@ -129,6 +127,14 @@
   "jest": {
     "moduleNameMapper": {
       "@/(.*)": "<rootDir>/src/$1"
-    }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "src/*.{ts,tsx}",
+      "functions/**/*.{ts,tsx}",
+      "functions/*.{ts,tsx}",
+      "!dist/**",
+      "!**/node_modules/**"
+    ]
   }
 }
