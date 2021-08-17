@@ -127,6 +127,14 @@
   "jest": {
     "moduleNameMapper": {
       "@/(.*)": "<rootDir>/src/$1"
-    }
+    },
+    "collectCoverageFrom": [
+      "src/**/*.{ts,tsx}",
+      "src/*.{ts,tsx}",
+      "functions/**/*.{ts,tsx}",
+      "functions/*.{ts,tsx}",
+      "!dist/**",
+      "!**/node_modules/**"
+    ]
   }
 }
