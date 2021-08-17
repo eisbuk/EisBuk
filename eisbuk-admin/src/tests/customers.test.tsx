@@ -9,7 +9,11 @@ beforeEach(async () => {
   await deleteAll(["customers", "bookings"]);
 });
 
-describe("Customer triggers", () => {
+const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
+  ? describe
+  : xdescribe;
+
+maybeDescribe("Customer triggers", () => {
   it("apply secret_key when a customer record is added and keeps customer data up to date", async (done) => {
     const coll = adminDb
       .collection("organizations")

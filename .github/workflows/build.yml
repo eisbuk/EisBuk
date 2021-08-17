@@ -92,7 +92,7 @@ jobs:
       - name: Install and link packages
         run: ./eisbuk-install.sh
       - name: Run tests
-        run: yarn --cwd eisbuk-admin test:ci
+        run: yarn --cwd eisbuk-admin test:emulators:ci
       - name: Test Report
         uses: dorny/test-reporter@v1
         if: success() || failure()    # Do not run on cancelled; run in all other cases

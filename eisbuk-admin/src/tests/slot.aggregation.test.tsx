@@ -17,7 +17,11 @@ beforeEach(async () => {
   await deleteAllCollections(adminDb, ["organizations"]);
 });
 
-describe("Slot triggers", () => {
+const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
+  ? describe
+  : xdescribe;
+
+maybeDescribe("Slot triggers", () => {
   it("update the slots summary on slot creation", async () => {
     await Promise.all([createDefaultOrg(), loginDefaultUser()]);
     const org = db.collection("organizations").doc("default");

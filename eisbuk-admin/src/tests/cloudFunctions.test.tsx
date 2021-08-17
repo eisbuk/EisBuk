@@ -1,4 +1,3 @@
-/* eslint-disable import/no-duplicates */
 import { deleteAllCollections, loginWithPhone } from "./utils";
 import "./settings";
 import { adminDb } from "./settings";
@@ -10,7 +9,11 @@ beforeAll(async () => {
   await firebase.auth().signOut();
 });
 
-describe("Cloud functions", () => {
+const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
+  ? describe
+  : xdescribe;
+
+maybeDescribe("Cloud functions", () => {
   it("can be pinged", async (done) => {
     const result = await firebase.app().functions().httpsCallable("ping")({
       foo: "bar",
