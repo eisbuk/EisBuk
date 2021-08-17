@@ -101,6 +101,14 @@ jobs:
           path: eisbuk-admin/junit.xml
           reporter: jest-junit
 
+      - name: Deploy report page
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./eisbuk-admin/coverage/lcov-report
+          keep_files: true
+          destination_dir: coverage-results/${{ github.run_id }}-${{ github.run_number }}
+
   pre-commit:
     runs-on: ubuntu-latest
 
