@@ -1,6 +1,8 @@
 import i18n from "i18next";
 
-import { ORGANIZATION, functionsZone } from "@/config/envInfo";
+import { DocumentData, DocumentSnapshot } from "@firebase/firestore-types";
+
+import { ORGANIZATION } from "@/config/envInfo";
 
 import { NotifVariant, Action } from "@/enums/store";
 
@@ -11,12 +13,12 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
-const updateAdminStatus = (
+const updateOrganizationStatus = (
   uid: string,
-  amIAdmin: boolean
-): AuthReducerAction<Action.IsAdminReceived> => ({
-  type: Action.IsAdminReceived,
-  payload: { uid, amIAdmin },
+  admins: string[]
+): AuthReducerAction<Action.IsOrganizationStatusReceived> => ({
+  type: Action.IsOrganizationStatusReceived,
+  payload: { uid, admins },
 });
 
 /**
@@ -63,28 +65,27 @@ export const signOut = (): FirestoreThunk => async (
  * - on error enqueues error snackbar
  * @returns async thunk
  */
-export const queryUserAdminStatus = (): FirestoreThunk => async (
+export const queryOrganizationStatus = (): FirestoreThunk => async (
   dispatch,
   getState,
   { getFirebase }
 ) => {
   try {
-    const firebase = getFirebase();
+    const firestore = getFirebase().firestore();
 
-    const res = (await firebase
-      .app()
-      .functions(functionsZone)
-      .httpsCallable("amIAdmin")({
-      organization: ORGANIZATION,
-    })) as { data: { amIAdmin: boolean } };
-
-    const { amIAdmin } = res.data;
+    const res: DocumentSnapshot<DocumentData> = await firestore
+      .collection("organizations")
+      .doc(ORGANIZATION)
+      .get();
+    const admins: string[] = res.data()?.admins ?? [];
     const { uid } = getState().firebase.auth;
 
     if (uid) {
-      dispatch(updateAdminStatus(uid, amIAdmin));
+      dispatch(updateOrganizationStatus(uid, admins));
     }
   } catch (err) {
+    // TODO: inform the user that the login was successful, but
+    // the don't have permission to access
     showErrSnackbar();
   }
 };

@@ -16,3 +16,12 @@ export const getFirebaseAuth = (
  */
 export const getLocalAuth = (state: LocalStore): LocalStore["authInfoEisbuk"] =>
   state.authInfoEisbuk;
+
+/**
+ * Get boolean representing if currently logged in user is administrator
+ * @param state Local Redux Store
+ * @returns true is current user is admin (boolean)
+ */
+export const getAmIAdmin = (state: LocalStore): boolean =>
+  state.authInfoEisbuk.admins.includes(state.firebase.auth.email || "*") ||
+  state.authInfoEisbuk.admins.includes(state.firebase.auth.phoneNumber || "*");

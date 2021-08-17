@@ -30,8 +30,9 @@ import { getMonthStr } from "@/utils/helpers";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { queryUserAdminStatus } from "@/store/actions/authOperations";
+import { queryOrganizationStatus } from "@/store/actions/authOperations";
 import { getCalendarDay } from "@/store/selectors/app";
+import { getAmIAdmin } from "@/store/selectors/auth";
 
 // ***** Region App Components ***** //
 /**
@@ -69,8 +70,6 @@ const AppContentAuthenticated: React.FC = () => {
     getMonthStr(currentDate, 1),
   ];
 
-  console.log("document id > ", (firestore.FieldPath as any).documentId());
-
   useFirestoreConnect([
     wrapOrganization({
       collection: OrgSubCollection.Customers,
@@ -106,16 +105,14 @@ const AppContentAuthenticated: React.FC = () => {
  */
 const AppContent: React.FC = () => {
   const auth = useSelector((state: LocalStore) => state.firebase.auth);
-  const amIAdmin = useSelector(
-    (state: LocalStore) => state.authInfoEisbuk.amIAdmin
-  );
+  const amIAdmin = useSelector(getAmIAdmin);
   const dispatch = useDispatch();
 
   // When auth changes this component fires a query to determine
   // whether the current user is an administrator.
   useEffect(() => {
     if (isLoaded(auth) && !isEmpty(auth)) {
-      dispatch(queryUserAdminStatus());
+      dispatch(queryOrganizationStatus());
     }
   }, [auth, dispatch]);
 
