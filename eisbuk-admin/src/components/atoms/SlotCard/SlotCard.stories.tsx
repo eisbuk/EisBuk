@@ -1,19 +1,13 @@
 import React from "react";
-import {
-  ComponentMeta,
-  // ComponentStory
-} from "@storybook/react";
-import { DateTime } from "luxon";
+import { ComponentMeta } from "@storybook/react";
 
-import { Duration, SlotType, Category } from "eisbuk-shared";
-
-import { __storybookDate__ } from "@/lib/constants";
+import { Duration } from "eisbuk-shared";
 
 import { SlotView } from "@/enums/components";
 
-import SlotCard, { SlotCardProps } from "./SlotCard";
+import SlotCard from "./SlotCard";
 
-import { luxonToFB } from "@/utils/date";
+import { dummySlot } from "./__testData__";
 
 /**
  * Decorator used to prevent slots diaplayed from stratching to full width
@@ -32,19 +26,10 @@ export default {
   decorators,
 } as ComponentMeta<typeof SlotCard>;
 
-const baseProps: SlotCardProps = {
-  date: luxonToFB(DateTime.fromISO(__storybookDate__!).plus({ hours: 8 })),
-  id: "id",
-  durations: [Duration["1h"], Duration["1.5h"], Duration["2h"]],
-  type: SlotType.Ice,
-  categories: [Category.PreCompetitive],
-  notes: "",
+const baseProps = {
+  ...dummySlot,
   view: SlotView.Admin,
 };
-
-// const Template: ComponentStory<typeof SlotCard> = (args) => (
-//   <SlotCard {...baseProps} {...args} />
-// );
 
 export const AdminView = (): JSX.Element => <SlotCard {...baseProps} />;
 
