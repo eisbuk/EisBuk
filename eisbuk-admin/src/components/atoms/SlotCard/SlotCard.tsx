@@ -95,11 +95,11 @@ const SlotCard: React.FC<SlotCardProps> = ({
         </CardContent>
         <CardActions className={classes.actionsContainer} disableSpacing={true}>
           <Box display="flex" flexGrow={1}>
-            {/* <DurationsSection
+            <DurationsSection
               {...slotData}
               enableSubscription={view === SlotView.Customer}
               subscribedDuration={subscribedDuration}
-            /> */}
+            />
             <SlotTypeLabel slotType={slotData.type} />
             {view === SlotView.Admin && enableEdit && (
               <SlotOperationButtons {...slotData} />

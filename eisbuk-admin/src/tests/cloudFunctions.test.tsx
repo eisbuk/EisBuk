@@ -1,5 +1,4 @@
 import { deleteAllCollections, loginWithPhone } from "./utils";
-import "./settings";
 import { adminDb } from "./settings";
 import firebase from "firebase/app";
 import "firebase/functions";
