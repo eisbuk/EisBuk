@@ -100,6 +100,11 @@ jobs:
           name: JEST Tests
           path: eisbuk-admin/junit.xml
           reporter: jest-junit
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: eisbuk-admin/coverage/lcov.info
 
   pre-commit:
     runs-on: ubuntu-latest
