@@ -4,6 +4,5 @@ admin.initializeApp();
 
 export * from "./dataTriggers";
 export * from "./migrations";
-export * from "./security";
 export * from "./testData";
 export * from "./testSlots";

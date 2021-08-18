@@ -8,7 +8,7 @@ import { Routes } from "@/enums/routes";
 import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";
 
-import { getFirebaseAuth, getLocalAuth } from "@/store/selectors/auth";
+import { getFirebaseAuth, getAmIAdmin } from "@/store/selectors/auth";
 
 /**
  * Wrapper around route component to isolate (add auth check to) private routes
@@ -17,10 +17,8 @@ import { getFirebaseAuth, getLocalAuth } from "@/store/selectors/auth";
  */
 const PrivateRoute: React.FC<RouteProps> = (props) => {
   const auth = useSelector(getFirebaseAuth);
-  const authInfoEisbuk = useSelector(getLocalAuth);
 
-  const amIAdmin =
-    authInfoEisbuk.amIAdmin && authInfoEisbuk.myUserId === auth.uid;
+  const amIAdmin = useSelector(getAmIAdmin);
 
   switch (true) {
     // display loading state until auth is processed

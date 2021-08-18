@@ -74,7 +74,7 @@ export interface AppState {
  * In store auth info object
  */
 export interface AuthInfoEisbuk {
-  amIAdmin: boolean;
+  admins: string[];
   myUserId: string | null;
   uid: string | null;
 }
@@ -82,7 +82,7 @@ export interface AuthInfoEisbuk {
 /**
  * Whitelisted actions for auth reducer
  */
-export type AuthAction = Action.IsAdminReceived | string;
+export type AuthAction = Action.IsOrganizationStatusReceived | string;
 
 /**
  * Auth reducer action generic
@@ -90,9 +90,9 @@ export type AuthAction = Action.IsAdminReceived | string;
  */
 export type AuthReducerAction<
   A extends AuthAction
-> = A extends Action.IsAdminReceived
+> = A extends Action.IsOrganizationStatusReceived
   ? {
-      type: Action.IsAdminReceived;
+      type: Action.IsOrganizationStatusReceived;
       payload?: Omit<AuthInfoEisbuk, "myUserId">;
     }
   : { type: string };
