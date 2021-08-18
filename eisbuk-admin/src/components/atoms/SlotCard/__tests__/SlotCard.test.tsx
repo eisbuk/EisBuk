@@ -34,6 +34,12 @@ jest.mock("react-router-dom", () => ({
   useParams: () => ({ secretKey: "secret_key" }),
 }));
 
+jest.mock("i18next", () => ({
+  ...jest.requireActual("i18next"),
+  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
+  t: () => "",
+}));
+
 describe("SlotCard", () => {
   afterEach(() => {
     jest.clearAllMocks();

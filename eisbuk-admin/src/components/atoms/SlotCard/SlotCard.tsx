@@ -40,7 +40,7 @@ export interface SlotCardProps extends SlotInterface<"id"> {
   enableEdit?: boolean;
 }
 
-// ***** Region Component Function ***** //
+// #region componentFunction
 /**
  * Atomic component used to render slot data to the UI. Displayed content can vary according to `view` prop:
  * - "customer" - shows customer view: durations are clickable and trigger subscription to slot (with appropriate message)
@@ -110,9 +110,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
     </>
   );
 };
-// ***** Region Component Function ***** //
+// #endregion componentFunction
 
-// ***** Region Styles ***** //
+// #region styles
 const useStyles = makeStyles((theme) => ({
   root: {
     border: "1px solid",
@@ -155,6 +155,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.warning.light,
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion styles
 
 export default SlotCard;

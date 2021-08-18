@@ -55,9 +55,7 @@
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
-    "chromatic": "npx chromatic --project-token dcmb4kmorxe",
-    "test-temp": "yarn jest SlotCard --watch"
+    "build-storybook": "build-storybook -s public"
   },
   "browserslist": {
     "production": [

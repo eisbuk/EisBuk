@@ -39,7 +39,7 @@ const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
 
   const handleCloseDialog = () => setOpenDialog(null);
 
-  // *** Region Handle Edit Form *** //
+  // #region handleEditForm
   const openEditForm = () => setOpenDialog(Dialog.EditForm);
 
   type EditSlot = Parameters<typeof SlotForm>[0]["editSlot"];
@@ -51,9 +51,9 @@ const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
   const handleDeleteSlot = () => {
     dispatch(deleteSlots([slotData]));
   };
-  // *** End Region Handle Edit Form *** //
+  // #region handleEditForm
 
-  // *** Region Handle Delete *** //
+  // #region handleDelete
   /**
    * Dispatch delete slot action to store,
    * fired on delete dialog confirmation
@@ -71,7 +71,7 @@ const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
    */
   const controlDeleteDialog = (open: boolean) =>
     open ? setOpenDialog(Dialog.Delete) : handleCloseDialog();
-  // *** End Region Handle Delete *** //
+  // #endregion handleDelete
 
   return (
     <>

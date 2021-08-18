@@ -14,10 +14,10 @@ export default {
 const defaultDateISO = "2021-03-01";
 const defaultDate = DateTime.fromISO(defaultDateISO);
 
-// ***** Region Different Timeframe ***** //
+// #region differentTimeframe
 
 // All of the stories of this region are default
-// with changing timefrema (jump) value
+// with changing timefreme (jump) value
 
 export const Week = (): JSX.Element => (
   <DateNavigation defaultDate={defaultDate} />
@@ -31,10 +31,9 @@ export const Month = (): JSX.Element => (
   <DateNavigation defaultDate={defaultDate} jump="month" />
 );
 
-// ***** End Region Different Timeframe ***** //
+// #endregion differentTimeframe
 
-// ***** Region Other Options ***** //
-
+// #region otherOptions
 // All of the below stories will feature the default ("week")
 // value for `jump` and will showcase different rendering of additional options
 
@@ -65,5 +64,4 @@ export const WithCopyPaste = (): JSX.Element => (
 export const WithCopyPasteAndToggle = (): JSX.Element => (
   <DateNavigation extraButtons={<CopyPasteWeekButtons />} showToggle />
 );
-
-// ***** End Region Other Options ***** //
+// #endregion otherOptions
