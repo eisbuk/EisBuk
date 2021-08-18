@@ -27,11 +27,15 @@ export const createDateTitle = (
     case "month":
       return i18n.t("DateNavigationBar.Month", {
         date: startDate,
+        fallbackLng: "en",
       });
 
     // for day view we're using the specialized day string format
     case "day":
-      return i18n.t("DateNavigationBar.Day", { date: startDate });
+      return i18n.t("DateNavigationBar.Day", {
+        date: startDate,
+        fallbackLng: "en",
+      });
 
     // for week and other views we're using standardized format: showing first and last date within the timeframe
     default:
@@ -39,9 +43,11 @@ export const createDateTitle = (
 
       const startDateString = i18n.t("DateNavigationBar.Week", {
         date: startDate,
+        fallbackLng: "en",
       });
       const endDateString = i18n.t("DateNavigationBar.Week", {
         date: startDate.plus({ [jumpKey]: 1, days: -1 }),
+        fallbackLng: "en",
       });
 
       return [startDateString, endDateString].join(" - ");
