@@ -1,13 +1,13 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function isAdminByEmail(request, admins) {
+    function isAdminByEmail(request, org) {
         return (
           request.auth.token.email != null &&
           request.auth.token.email in org.data.admins
         );
     }
-    function isAdminByPhone(request, admins) {
+    function isAdminByPhone(request, org) {
         return (
           request.auth.token.phone_number != null &&
           request.auth.token.phone_number in org.data.admins
@@ -18,7 +18,7 @@ service cloud.firestore {
       // and check if the currently logged in user is part of the admin
       // array in that document. If they are return true.
       let org = get(/databases/$(database)/documents/organizations/$(organization));
-      return request.auth != null && (isAdminByEmail(request, admins) || isAdminByPhone(request, admins));
+      return request.auth != null && (isAdminByEmail(request, org) || isAdminByPhone(request, org));
     }
     match /organizations/{organization}/{document=**} {
       // Administrators can read and write any object in the organization
