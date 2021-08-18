@@ -41,6 +41,8 @@ import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
 
+import { __slotFormId__ } from "@/components/atoms/SlotCard/__testData__";
+
 const Timestamp = firebase.firestore.Timestamp;
 
 // ***** Region Form Setup ***** //
@@ -216,7 +218,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         {({ errors, isSubmitting, isValidating }) => (
           <>
             <Form>
-              <DialogTitle>
+              <DialogTitle data-testid={__slotFormId__}>
                 {parsedSlotEditDate
                   ? t("SlotForm.parsedSlotEditDate", {
                       date: parsedSlotEditDate,
@@ -236,13 +238,13 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                       <ErrorMessage name="time" />
                     </>
                   )}
-                  <Box display="flex" flexWrap="wrap">
+                  {/* <Box display="flex" flexWrap="wrap">
                     {getCheckBoxes(
                       "categories",
                       slotsLabelsLists.categories,
                       true
                     )}
-                  </Box>
+                  </Box> */}
                   <div className={classes.error}>
                     <ErrorMessage name="categories" />
                   </div>

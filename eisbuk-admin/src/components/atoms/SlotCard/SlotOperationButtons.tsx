@@ -15,6 +15,8 @@ import ConfirmDialog from "@/components/global/ConfirmDialog";
 
 import { deleteSlots, editSlot } from "@/store/actions/slotOperations";
 
+import { __editSlotId__, __deleteSlotId__ } from "./__testData__";
+
 /**
  * Used to set which dialog should open (edit form/confirm delete)
  */
@@ -79,6 +81,7 @@ const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
           aria-label="delete"
           onClick={openEditForm}
           size="small"
+          data-testid={__editSlotId__}
         >
           <CreateIcon />
         </IconButton>
@@ -87,6 +90,7 @@ const SlotOperationButtons: React.FC<Slot<"id">> = (slotData) => {
           aria-label="delete"
           onClick={handleDeleteSlot}
           size="small"
+          data-testid={__deleteSlotId__}
         >
           <DeleteIcon />
         </IconButton>

@@ -14,3 +14,8 @@ export const dummySlot: Slot<"id"> = {
   categories: [Category.PreCompetitive],
   notes: "",
 };
+
+export const __editSlotId__ = "edit-slot-button";
+export const __deleteSlotId__ = "delete-slot-button";
+
+export const __slotFormId__ = "slot-form-title";
