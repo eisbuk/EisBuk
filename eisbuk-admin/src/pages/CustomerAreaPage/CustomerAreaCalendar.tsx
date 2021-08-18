@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   useFirestoreConnect,
@@ -12,6 +12,7 @@ import _ from "lodash";
 
 import { BookingInfo, Category, OrgSubCollection } from "eisbuk-shared";
 
+import { CustomerRoute } from "@/enums/routes";
 import { SlotOperation } from "@/types/slotOperations";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
@@ -21,7 +22,7 @@ import {
   unsubscribeFromSlot,
 } from "@/store/actions/bookingOperations";
 
-import { getAllSlotsByDay, getSubscribedSlots } from "@/store/selectors/slots";
+import { getSubscribedSlots, getSlotsByView } from "@/store/selectors/slots";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";
@@ -30,12 +31,12 @@ const luxon = new LuxonUtils();
 
 interface Props {
   category: Category;
-  view?: string;
+  view?: CustomerRoute;
 }
 
 const CustomerAreaCalendar: React.FC<Props> = ({
   category,
-  view = "slots",
+  view = CustomerRoute.BookOffIce,
 }) => {
   const start = luxon.date().startOf("week");
 
@@ -74,8 +75,9 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     }),
   ]);
 
-  const allSlotsByDay = useSelector(getAllSlotsByDay);
+  const slotSelector = useMemo(() => getSlotsByView(view), [view]);
 
+  const allSlotsByDay = useSelector(slotSelector);
   const slots = _.mapValues(allSlotsByDay, (daySlots) =>
     _.pickBy(daySlots, (slot) => {
       return slot.categories.includes(category);

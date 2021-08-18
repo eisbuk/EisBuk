@@ -2,7 +2,7 @@
   "AppbarAdmin": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Reservations": "Reservations"
+    "Bookings": "Bookings"
   },
   "Slots": {
     "Amateur": "Amateur",
@@ -55,6 +55,9 @@
     "TryAgain": "Log out and try again with a different user"
   },
   "CustomerArea": {
+    "book_ice": "Book Ice",
+    "book_off_ice": "Book Off-Ice",
+    "calendar": "Calendar",
     "Book": "Book",
     "Calendar": "Calendar"
   },

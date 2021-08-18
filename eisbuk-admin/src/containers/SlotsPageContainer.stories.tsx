@@ -19,6 +19,7 @@ import { __storybookDate__ } from "@/lib/constants";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 import { SlotOperation } from "@/types/slotOperations";
+import { CustomerRoute } from "@/enums/routes";
 
 export default {
   title: "Slots Page Container",
@@ -78,21 +79,31 @@ const Template: ComponentStory<typeof SlotsPageContainer> = ({
   );
 };
 
-export const NoSlots = Template.bind({});
-NoSlots.args = {
+export const NoSlotsIce = Template.bind({});
+NoSlotsIce.args = {
   slots: {
     "2021-01-20": {},
     "2021-01-01": {},
   },
+  view: CustomerRoute.BookIce,
 };
 
-export const OneSlot = Template.bind({});
-OneSlot.args = {
-  ...NoSlots.args,
+export const NoSlotsOffIce = Template.bind({});
+NoSlotsOffIce.args = {
+  slots: {
+    "2021-01-20": {},
+    "2021-01-01": {},
+  },
+  view: CustomerRoute.BookOffIce,
+};
+
+export const OneSlotIce = Template.bind({});
+OneSlotIce.args = {
+  ...NoSlotsIce.args,
   slots: {
     "2021-01-21": {},
     "2021-01-18": {},
-    "2021-01-20": {
+    "2021-01-25": {
       foo: {
         id: "foo",
         categories: [Category.Competitive],
@@ -103,6 +114,27 @@ OneSlot.args = {
       },
     },
   },
+  view: CustomerRoute.BookIce,
+};
+
+export const OneSlotOffIce = Template.bind({});
+OneSlotOffIce.args = {
+  ...NoSlotsOffIce.args,
+  slots: {
+    "2021-01-21": {},
+    "2021-01-18": {},
+    "2021-01-20": {
+      foo: {
+        id: "foo",
+        categories: [Category.Competitive],
+        type: SlotType.OffIceDancing,
+        date: new Timestamp(1609513200, 0),
+        durations: [Duration["1h"]],
+        notes: "Pista 1",
+      },
+    },
+  },
+  view: CustomerRoute.BookOffIce,
 };
 
 const NOTES = ["", "Pista 1", "Pista 2"];
@@ -113,7 +145,7 @@ const NOTES = ["", "Pista 1", "Pista 2"];
  * @param seed
  * @returns
  */
-const createSlots = (date: DateTime, seed: string) => {
+const createSlots = (date: DateTime, seed: string, view: CustomerRoute) => {
   const random = seedrandom(seed);
 
   const slots: Record<string, Record<string, SlotInterface<"id">>> = {};
@@ -135,7 +167,10 @@ const createSlots = (date: DateTime, seed: string) => {
           id: uuidv4(),
           date: new Timestamp(slotDate.second, 0),
           categories: [Category.Competitive],
-          type: SlotType.Ice,
+          type:
+            view === CustomerRoute.BookOffIce
+              ? SlotType.OffIceDancing
+              : SlotType.Ice,
           durations: [Duration["1h"]],
           notes: lodash.sample(NOTES) || "",
         };
@@ -147,8 +182,16 @@ const createSlots = (date: DateTime, seed: string) => {
 
 const manySlotsDate = DateTime.fromISO(__storybookDate__!);
 
-export const ManySlots = Template.bind({});
-ManySlots.args = {
-  ...NoSlots.args,
-  slots: createSlots(manySlotsDate, "seed123"),
+export const ManySlotsIce = Template.bind({});
+ManySlotsIce.args = {
+  ...NoSlotsIce.args,
+  slots: createSlots(manySlotsDate, "seed123", CustomerRoute.BookIce),
+  view: CustomerRoute.BookIce,
+};
+
+export const ManySlotsOffIce = Template.bind({});
+ManySlotsOffIce.args = {
+  ...NoSlotsOffIce.args,
+  slots: createSlots(manySlotsDate, "seed123", CustomerRoute.BookOffIce),
+  view: CustomerRoute.BookOffIce,
 };

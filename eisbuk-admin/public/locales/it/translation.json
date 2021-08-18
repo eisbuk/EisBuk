@@ -2,7 +2,7 @@
   "AppbarAdmin": {
     "Attendance": "Presenze",
     "Athletes": "Atleti",
-    "Reservations": "Prenotazioni"
+    "Bookings": "Prenotazioni"
   },
   "Slots": {
     "Amateur": "Preagonismo",
@@ -55,6 +55,9 @@
     "TryAgain": "Esci e riprova con un altro utente"
   },
   "CustomerArea": {
+    "book_ice": "Prenota Ice",
+    "book_off_ice": "Prenota Off-Ice",
+    "calendar": "Calendario",
     "Book": "Prenota",
     "Calendar": "Calendario"
   },

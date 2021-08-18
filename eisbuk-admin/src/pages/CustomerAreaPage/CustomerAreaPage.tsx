@@ -24,6 +24,7 @@ import { getFirebaseAuth } from "@/store/selectors/auth";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 
 import { wrapOrganization } from "@/utils/firestore";
+import { CustomerRoute } from "@/enums/routes";
 
 // ***** Region Link Tab ***** //
 type TabProps = Parameters<typeof Tab>[0];
@@ -111,22 +112,35 @@ export const CustomerAreaPage: React.FC = () => {
                   centered
                 >
                   <LinkTab
-                    label={t("CustomerArea.Book")}
+                    label={t(`CustomerArea.${CustomerRoute.BookIce}`)}
                     icon={<EventNoteIcon />}
                   />
                   <LinkTab
-                    label={t("CustomerArea.Calendar")}
+                    label={t(`CustomerArea.${CustomerRoute.BookOffIce}`)}
+                    icon={<EventNoteIcon />}
+                  />
+                  <LinkTab
+                    label={t(`CustomerArea.${CustomerRoute.Calendar}`)}
                     icon={<PersonPinIcon />}
                   />
                 </Tabs>
               </Container>
             </AppBar>
             <TabPanel value={activeTab} index={0}>
-              <CustomerAreaCalendar category={customerData[0].category} />
+              <CustomerAreaCalendar
+                view={CustomerRoute.BookIce}
+                category={customerData[0].category}
+              />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
               <CustomerAreaCalendar
-                view="bookings"
+                view={CustomerRoute.BookOffIce}
+                category={customerData[0].category}
+              />
+            </TabPanel>
+            <TabPanel value={activeTab} index={2}>
+              <CustomerAreaCalendar
+                view={CustomerRoute.Calendar}
                 category={customerData[0].category}
               />
             </TabPanel>

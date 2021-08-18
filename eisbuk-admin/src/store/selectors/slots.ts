@@ -2,13 +2,14 @@
 import _ from "lodash";
 import { createSelector } from "reselect";
 
-import { Slot, Customer, BookingInfo } from "eisbuk-shared";
+import { Slot, Customer, BookingInfo, SlotType } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
 import { flatten, fs2luxon } from "@/utils/helpers";
 
 import { getCustomersRecord } from "./firestore";
+import { CustomerRoute } from "@/enums/routes";
 
 const extractSlotDate = (slot: Slot): number => slot.date.seconds;
 const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
@@ -67,6 +68,26 @@ export const getSubscribedSlots = (
 const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
   const monthStr = dayStr.substr(0, 7);
   return getSafe(() => state.firestore.data.slotsByDay![monthStr][dayStr]);
+};
+
+/**
+ * HOF that creates a selector for view-specific slots by view in a single record, keyed by (day) date
+ * @param view tab viewed by customer (ice, off-ice)
+ * @returns record of view-specific ice slots, keyed by day, grouped together (regardless of month)
+ */
+export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
+  const allSlots = flatten(
+    Object.values(getSafe(() => state.firestore.data.slotsByDay))
+  );
+
+  if (view === CustomerRoute.Calendar) return allSlots;
+  return _.mapValues(allSlots, (daySlots) =>
+    _.pickBy(daySlots, (slot) => {
+      return view === CustomerRoute.BookIce
+        ? slot.type === SlotType.Ice
+        : slot.type !== SlotType.Ice;
+    })
+  );
 };
 
 /**

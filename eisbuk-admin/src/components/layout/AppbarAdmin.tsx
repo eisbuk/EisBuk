@@ -150,7 +150,7 @@ const AppbarAdmin: React.FC = () => {
               <ListItemIcon>
                 <LibraryBooksIcon />
               </ListItemIcon>
-              <ListItemText primary={t("AppbarAdmin.Reservations")} />
+              <ListItemText primary={t("AppbarAdmin.Bookings")} />
             </ListItem>
             <ListItem
               button
