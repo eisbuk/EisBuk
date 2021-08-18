@@ -1,27 +1,37 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    function hasEmail(request) {
-        return request.auth.token.email != null;
+    function isAdminByEmail(request, admins) {
+        return (
+          request.auth.token.email != null &&
+          request.auth.token.email in org.data.admins
+        );
+    }
+    function isAdminByPhone(request, admins) {
+        return (
+          request.auth.token.phone_number != null &&
+          request.auth.token.phone_number in org.data.admins
+        );
     }
     function isAdmin(organization) {
       // Given an organization name retrieve it from firestore
       // and check if the currently logged in user is part of the admin
       // array in that document. If they are return true.
       let org = get(/databases/$(database)/documents/organizations/$(organization));
-      return request.auth != null && (
-          (request.auth.token.phone_number != null && request.auth.token.phone_number in org.data.admins)
-          ||
-          (hasEmail(request) && request.auth.token.email in org.data.admins)
-      )
+      return request.auth != null && (isAdminByEmail(request, admins) || isAdminByPhone(request, admins));
     }
     match /organizations/{organization}/{document=**} {
+      // Administrators can read and write any object in the organization
       allow read, write: if isAdmin(organization);
     }
     match /organizations/{organization}/bookings/{secret_key}/{document=**} {
+      // Users who now a secret bookings key have read/write access to that booking
       allow read, write: if true;
     }
     match /organizations/{organization}/slotsByDay/{document=**} {
+      // Everyone has access to all available slots.
+      // Security-wise this is equivalent to showing a form that lets unauthenticated
+      // users book their slots, as is the current solution.
       allow read: if true;
     }
   }
