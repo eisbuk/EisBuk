@@ -1,14 +1,17 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
-import Backend from "i18next-http-backend";
+// import Backend from "i18next-http-backend";
 import { DateTime } from "luxon";
 
-// import ns1 from 'locales/en/ns1.json';
-// import ns2 from 'locales/en/ns2.json';
+/** @TEMP */
+import en from "@/translations/en.json";
+import it from "@/translations/it.json";
+/** @TEMP */
 
 i18n
-  .use(Backend)
+  /** we're avoiding `.use(Backend)` in order to prevent unexpected behavior in chromatic checks @TODO fix this in the future */
+  // .use(Backend)
   .use(LanguageDetector)
   // pass the i18n instance to react-i18next.
   .use(initReactI18next)
@@ -21,6 +24,10 @@ i18n
       // this is temp as to not cause problems due to fallback not specified
       // in the fututre, we might want to integrate with some suspense/fallback logic
       useSuspense: false,
+    },
+    resources: {
+      en: { translation: en },
+      it: { translation: it },
     },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

@@ -1,0 +1,129 @@
+{
+  "AppbarAdmin": {
+    "Attendance": "Attendance",
+    "Athletes": "Athletes",
+    "Reservations": "Reservations"
+  },
+  "Slots": {
+    "Amateur": "Amateur",
+    "DeleteConfirmation": "Are you sure you want to delete the ",
+    "All": "",
+    "NonReversible": "This action is non-reversible",
+    "Slot": "slot",
+    "Book": "Book",
+    "Booked": "Booked",
+    "ConfirmDialogDate": "{{date, d MMMM}}",
+    "ConfirmDialogTime": "{{date, HH:mm}}"
+  },
+  "SlotValidations": {
+    "Time": "Select the time",
+    "Category": "Choose at least one category",
+    "Training": "Choose the type of training",
+    "Duration": "Choose at least one duration",
+    "Required": "Required"
+  },
+  "SlotForm": {
+    "StartTime": "Start Time",
+    "Type": "Type",
+    "EditSlot": "Edit Slot",
+    "CreateSlot": "Create Slot",
+    "Cancel": "Cancel",
+    "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
+    "parsedDate": "{{date, EEEE d MMMM}}"
+  },
+  "CustomerForm": {
+    "Name": "Name",
+    "Surname": "Surname",
+    "Phone": "Phone",
+    "DateOfBirth": "Date Of Birth",
+    "Category": "Category",
+    "MedicalCertificate": "Medical Certificate Expiration",
+    "CardNumber": "Card Number",
+    "Cancel": "Cancel",
+    "Save": "Save",
+    "NewAthlete": "New Athlete"
+  },
+  "CustomerValidations": {
+    "Email": "Please insert a valid email",
+    "Category": "Select a category",
+    "Required": "Required"
+  },
+  "Authorization": {
+    "NotAuthorized": "You are not authorized to login",
+    "AdminsOnly": "This space is reserved for administrators",
+    "LoggedInWith": "You are logged in with: ",
+    "TryAgain": "Log out and try again with a different user"
+  },
+  "CustomerArea": {
+    "Book": "Book",
+    "Calendar": "Calendar"
+  },
+  "CustomersPage": {
+    "Athletes": "Athletes",
+    "AddAthlete": "AddAthlete"
+  },
+  "DashboardPage": {
+    "Bookings": "Bookings"
+  },
+  "BookingsByDay": {
+    "Absent": "absent"
+  },
+  "SlotsPageContainer": {
+    "DeleteAllConfirmation": "Are you sure you want to remove all slots",
+    "OfTheWeek": "of the week",
+    "NonReversible": "This action is non-reversible",
+    "CurrentDate": "{{date, d MMMM}}"
+  },
+
+  "CustomerList": {
+    "Name": "Name",
+    "Surname": "Surname",
+    "Category": "Category",
+    "Email": "Email",
+    "DeleteConfirmation": "Are you sure you want to remove ",
+    "NonReversible": "This action is not reversible, the user will definitely be deleted."
+  },
+  "Categories": {
+    "course": "course",
+    "competitive": "competitive",
+    "pre-competitive": "pre-competitive",
+    "adults": "adults"
+  },
+  "SlotTypes": {
+    "off-ice-dancing": "off-ice-dancing",
+    "ice": "ice",
+    "off-ice-gym": "off-ice-gym"
+  },
+  "DateNavigationBar": {
+    "Week": "{{date, d MMMM}}",
+    "Day": "{{date, EEEE d MMMM}}",
+    "Month": "{{date, MMMM yyyy}}"
+  },
+  "CustomerAreaBookingCard": {
+    "Weekday": "{{date, EEE}}",
+    "Day": "{{date, d}}",
+    "Month": "{{date, MMMM}}"
+  },
+  "SlotsDay": {
+    "Date": "{{date,EEEE d MMMM}}"
+  },
+  "SlotCalendarDate": {
+    "Weekday": "{{date, EEEE}}",
+    "Day": "{{date, dd}}",
+    "Month": "{{date,MMMM}}",
+    "Year": "{{date,yyyy}}"
+  },
+  "Notification": {
+    "Error": "Error",
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+    "BookingSuccess": "Successfully booked",
+    "BookingCancelled": "Booking cancelled",
+    "BookingCancelledError": "Error cancelling booking",
+    "Updated": "updated",
+    "Removed": "removed",
+    "SlotAdded": "Slot Added",
+    "SlotRemoved": "Slot Removed",
+    "SlotUpdated": "Slot Updated"
+  }
+}
