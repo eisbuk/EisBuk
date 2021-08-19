@@ -18,6 +18,7 @@ import {
   __editSlotId__,
   __deleteSlotId__,
   __slotFormId__,
+  __slotId__,
 } from "../__testData__";
 
 const mockDispatch = jest.fn();
@@ -129,6 +130,28 @@ describe("SlotCard", () => {
     test("should dispatch delete action on delete click", () => {
       screen.getByTestId(__deleteSlotId__).click();
       expect(mockDispatch).toHaveBeenCalledWith({ slots: [dummySlot] });
+    });
+  });
+
+  describe("Test clicking on slot card", () => {
+    const mockOnClick = jest.fn();
+
+    test("should fire 'onClick' function if provided", () => {
+      render(
+        <SlotCard
+          {...dummySlot}
+          view={SlotView.Admin}
+          enableEdit
+          onClick={mockOnClick}
+        />
+      );
+      screen.getByTestId(__slotId__).click();
+      expect(mockOnClick).toHaveBeenCalledTimes(1);
+    });
+
+    test("should not explode on click if no 'onClick' handler has been provided", () => {
+      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      screen.getByTestId(__slotId__).click();
     });
   });
 });

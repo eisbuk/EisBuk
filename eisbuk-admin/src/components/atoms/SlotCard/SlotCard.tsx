@@ -21,6 +21,8 @@ import SlotTypeLabel from "./SlotTypeLabel";
 
 import { fb2Luxon } from "@/utils/date";
 
+import { __slotId__ } from "./__testData__";
+
 export interface SlotCardProps extends SlotInterface<"id"> {
   /**
    * Controls slot displaying different color when being selected
@@ -38,6 +40,10 @@ export interface SlotCardProps extends SlotInterface<"id"> {
    * Enable edit/delete of the slot in admin view
    */
   enableEdit?: boolean;
+  /**
+   * Click handler for the entire card, will default to empty function if none is provided
+   */
+  onClick?: (e: React.SyntheticEvent) => void;
 }
 
 // #region componentFunction
@@ -51,6 +57,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
   subscribedDuration,
   view = SlotView.Customer,
   enableEdit,
+  onClick,
   ...slotData
 }) => {
   const classes = useStyles();
@@ -60,12 +67,19 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   const isSubscribed = Boolean(subscribedDuration);
 
+  const canClick = Boolean(onClick);
+
   return (
     <>
       <Card
-        className={clsx(classes.root, { [classes.selected]: selected })}
+        className={clsx(classes.root, {
+          [classes.selected]: selected,
+          [classes.cursorPointer]: canClick,
+        })}
         raised={isSubscribed}
         variant="outlined"
+        data-testid={__slotId__}
+        onClick={onClick}
       >
         <CardContent className={classes.wrapper}>
           <SlotTime startTime={date} subscribedDuration={subscribedDuration} />
@@ -153,6 +167,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selected: {
     backgroundColor: theme.palette.warning.light,
+  },
+  cursorPointer: {
+    cursor: "pointer",
   },
 }));
 // #endregion styles

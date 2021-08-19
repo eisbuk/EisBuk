@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 
 import { Duration } from "eisbuk-shared";
@@ -21,7 +21,7 @@ const decorators: ComponentMeta<typeof SlotCard>["decorators"] = [
 ];
 
 export default {
-  title: "Slot",
+  title: "Slot Card",
   component: SlotCard,
   decorators,
 } as ComponentMeta<typeof SlotCard>;
@@ -38,10 +38,18 @@ export const AdminViewWithActionButtons = (): JSX.Element => (
   <SlotCard {...baseProps} {...adminViewWithActionButtonsProps} />
 );
 
-const selectedProps = { enableEdit: true, selected: true };
-export const Selected = (): JSX.Element => (
-  <SlotCard {...baseProps} {...selectedProps} />
-);
+export const Selected = (): JSX.Element => {
+  // we're using state here to keep things simple and test onClick functionality
+  const [selected, setSelected] = useState(true);
+  return (
+    <SlotCard
+      {...baseProps}
+      enableEdit
+      selected={selected}
+      onClick={() => setSelected(!selected)}
+    />
+  );
+};
 
 const customerViewProps = { view: SlotView.Customer };
 export const CustomerView = (): JSX.Element => (
