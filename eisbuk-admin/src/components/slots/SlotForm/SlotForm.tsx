@@ -41,8 +41,13 @@ import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
 
-import { __slotFormId__ } from "@/components/atoms/SlotCard/__testData__";
+import {
+  __slotFormId__,
+  __cancelFormId__,
+  __confirmFormId__,
+} from "@/__testData__/testIds";
 
+console.log("Firestore > ", firebase.firestore);
 const Timestamp = firebase.firestore.Timestamp;
 
 // #region formSetup
@@ -277,7 +282,11 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                 </FormControl>
               </DialogContent>
               <DialogActions>
-                <Button color="primary" onClick={onClose}>
+                <Button
+                  color="primary"
+                  onClick={onClose}
+                  data-testid={__cancelFormId__}
+                >
                   {t(`SlotForm.Cancel`)}
                 </Button>
                 <Button
@@ -288,6 +297,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     (isSubmitting || isValidating)
                   }
                   color="primary"
+                  data-testid={__confirmFormId__}
                 >
                   {slotToEdit
                     ? t("SlotForm.EditSlot")

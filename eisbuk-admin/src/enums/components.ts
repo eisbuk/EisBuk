@@ -1,12 +1,12 @@
-// region project icons
+// #region projectIcons
 export enum ProjectIcons {
   AcUnit = "AcUnit",
   AccessibilityNew = "AccessibilityNew",
   FitnessCenter = "FitnessCenter",
 }
-// end region
+// #endregion projectIcons
 
-// region slot
+// #region slot
 /**
  * Used to toggle between showing subscribe actions or slot operations (create, edit, etc.)
  */
@@ -14,4 +14,13 @@ export enum SlotView {
   Admin = "admin",
   Customer = "customer",
 }
-// end region
+// #endregion slot
+
+// #region slotOperationButtons
+export enum SlotButton {
+  New = "new",
+  Copy = "copy",
+  Paste = "paste",
+  Delete = "delete",
+}
+// #endregion slotOperationButtons

@@ -17,9 +17,9 @@ import {
   dummySlot,
   __editSlotId__,
   __deleteSlotId__,
-  __slotFormId__,
   __slotId__,
 } from "../__testData__";
+import { __slotFormId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 
@@ -35,6 +35,7 @@ jest.mock("react-router-dom", () => ({
   useParams: () => ({ secretKey: "secret_key" }),
 }));
 
+/** @TODO remove this when the i18next is instantiated with tests */
 jest.mock("i18next", () => ({
   ...jest.requireActual("i18next"),
   /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
