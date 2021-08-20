@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
@@ -40,15 +39,13 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
+import { luxonToFB } from "@/utils/date";
 
 import {
   __slotFormId__,
   __cancelFormId__,
   __confirmFormId__,
 } from "@/__testData__/testIds";
-
-console.log("Firestore > ", firebase.firestore);
-const Timestamp = firebase.firestore.Timestamp;
 
 // #region formSetup
 const defaultValues = {
@@ -204,7 +201,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         categories,
         durations,
         notes,
-        date: Timestamp.fromDate(parsedTime.toJSDate()),
+        date: luxonToFB(parsedTime),
       });
     }
     setSubmitting(false);
