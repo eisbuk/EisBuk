@@ -1,0 +1,69 @@
+import React, { useState, useContext } from "react";
+import { useDispatch } from "react-redux";
+
+import IconButton from "@material-ui/core/IconButton";
+
+import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+
+import { SlotOperation } from "@/types/slotOperations";
+
+import SlotForm from "@/components/slots/SlotForm";
+import { ButtonGroupContext } from "./SlotOperationButtons";
+
+import { createSlots } from "@/store/actions/slotOperations";
+
+import {
+  __noDateProvidedError,
+  __slotButtonNoContextError,
+} from "@/lib/errorMessages";
+
+import { __newSlotButtonId__ } from "./__testData__/testIds";
+
+export const NewSlotButton: React.FC = () => {
+  const buttonGroupContext = useContext(ButtonGroupContext);
+
+  const [openForm, setOpenForm] = useState(false);
+
+  const showForm = () => setOpenForm(true);
+  // const closeForm = () => setOpenForm(false);
+
+  /** @TEMP This should be handled within the `SlotForm` component */
+  const dispatch = useDispatch();
+  const onCreateSlot: SlotOperation<"create"> = (slot) => {
+    dispatch(createSlots([slot]));
+  };
+  /** @TEMP */
+
+  // prevent component from rendering and log error to console (but don't throw)
+  // if not rendered within of `ButtonGroupContext`
+  if (!buttonGroupContext) {
+    console.error(__slotButtonNoContextError);
+    return null;
+  }
+
+  // prevent component from rendering and log error to console (but don't throw)
+  // if not `date` param not provided within the context
+  if (!buttonGroupContext.date) {
+    console.error(__noDateProvidedError);
+    return null;
+  }
+
+  return (
+    <>
+      <IconButton
+        size="small"
+        onClick={showForm}
+        data-testid={__newSlotButtonId__}
+      >
+        <AddCircleOutlineIcon />
+      </IconButton>
+      <SlotForm
+        open={openForm}
+        onClose={() => setOpenForm(false)}
+        createSlot={onCreateSlot}
+      />
+    </>
+  );
+};
+
+export default NewSlotButton;

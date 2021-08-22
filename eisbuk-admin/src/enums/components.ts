@@ -17,10 +17,12 @@ export enum SlotView {
 // #endregion slot
 
 // #region slotOperationButtons
-export enum SlotButton {
-  New = "new",
-  Copy = "copy",
-  Paste = "paste",
-  Delete = "delete",
+/**
+ * Used to provide context (`slot`/`day`/`week`) to the slot buttons under the SlotOpeartionButtons button group.
+ */
+export enum ButtonGroupType {
+  Slot = "slot",
+  Day = "day",
+  Week = "week",
 }
 // #endregion slotOperationButtons

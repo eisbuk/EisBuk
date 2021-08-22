@@ -45,6 +45,7 @@ import {
   __slotFormId__,
   __cancelFormId__,
   __confirmFormId__,
+  __offIceDancingButtonId__,
 } from "@/__testData__/testIds";
 
 // #region formSetup
@@ -323,6 +324,10 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
       value={id}
       label={i18n.t(`SlotTypes.${label}`)}
       control={<Radio />}
+      /** Very @TEMP below until tests have a proper i18next setup */
+      {...(id === SlotType.OffIceDancing
+        ? { "data-testid": __offIceDancingButtonId__ }
+        : null)}
     />
   ));
 
@@ -399,14 +404,11 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
         setDisabled(false);
       }
     }
-
-    /** @TODO delete the "Step {x}" comments and use @TODO flag like this: in multiline comments (for the fancy coloring ;) */
   }, [type, setFieldValue, name]);
 
   return (
     <FormControlLabel
       control={<Checkbox {...{ name, value }} {...field} />}
-      // Step 3. disable the checkboxes in the UI in case of off-ice
       disabled={name === "categories" ? disabled : false}
       label={label}
     />

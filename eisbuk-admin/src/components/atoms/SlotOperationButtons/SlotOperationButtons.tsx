@@ -1,78 +1,59 @@
-import React, { useState } from "react";
+import React, { createContext } from "react";
+import { DateTime } from "luxon";
 
-import IconButton, { IconButtonProps } from "@material-ui/core/IconButton";
 import Box from "@material-ui/core/Box";
 
-import DeleteIcon from "@material-ui/icons/Delete";
-import FileCopyIcon from "@material-ui/icons/FileCopy";
-import AssignmentIcon from "@material-ui/icons/Assignment";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import { Slot } from "eisbuk-shared";
 
-import { SlotButton } from "@/enums/components";
+import { ButtonGroupType } from "@/enums/components";
 
-import SlotForm from "@/components/slots/SlotForm";
+type ContextParams = Partial<{
+  /**
+   * Context of buttons (place of appearance / functionality): `slot`/`day`/`week`
+   */
+  type: ButtonGroupType;
+  /**
+   * Slot to edit/delete/copy.
+   * - should be truthy if the buttons are within `slot` context
+   * - `undefined` otherwise
+   */
+  slot: Slot<"id">;
+  /**
+   * Date context for button functionalities:
+   * - should be the date of the day if in `day` context
+   * - should be the date of first day in the timeframe if in `week` context
+   * - not needed in `slot` context
+   */
+  date: DateTime;
+}>;
 
-import { __slotButtonId__ } from "./__testData__/testIds";
+export const ButtonGroupContext = createContext<ContextParams | undefined>(
+  undefined
+);
 
-const icons = {
-  [SlotButton.New]: null,
-  [SlotButton.Copy]: FileCopyIcon,
-  [SlotButton.Paste]: AssignmentIcon,
-  [SlotButton.Delete]: DeleteIcon,
-};
-
-interface DynamicButtonArgs extends IconButtonProps {
-  hidden?: boolean;
-}
-
-interface DynamicButtonProps extends DynamicButtonArgs {
-  component: SlotButton;
-}
-
-export const NewSlotButton: React.FC = () => {
-  const [openForm, setOpenForm] = useState(false);
-
-  const showForm = () => setOpenForm(true);
-
-  return (
-    <>
-      <IconButton
-        size="small"
-        onClick={showForm}
-        data-testid={__slotButtonId__}
-      >
-        <AddCircleOutlineIcon />
-      </IconButton>
-      <SlotForm open={openForm} onClose={() => setOpenForm(false)} />
-    </>
-  );
-};
-
-const DynamicButtonComponent: React.FC<DynamicButtonProps> = ({
-  component,
-  ...args
-}) => {
-  if (component === SlotButton.New) return <NewSlotButton />;
-  const Icon = icons[component];
-  return (
-    <IconButton data-testid={__slotButtonId__} {...args}>
-      <Icon />
-    </IconButton>
-  );
-};
-
-interface Props {
-  buttons: DynamicButtonProps[];
+interface Props extends ContextParams {
   className?: string;
 }
 
-const SlotOperationButtons: React.FC<Props> = ({ buttons, className }) => {
+/**
+ * Container (and context provider) for slot operation buttons:
+ * `NewSlotButton`, `EditSlotButton`, `CopyButton`, `PasteButton`, `DeleteButton`
+ *
+ * **Important:** None of the buttons above will render to DOM if not within the context of this component.
+ */
+const SlotOperationButtons: React.FC<Props> = ({
+  children,
+  type = ButtonGroupType.Week,
+  slot,
+  date,
+  className,
+}) => {
   return (
-    <Box display="flex" className={className}>
-      {buttons.map((props) => (
-        <DynamicButtonComponent key={props.component} {...props} />
-      ))}
-    </Box>
+    <ButtonGroupContext.Provider value={{ type, slot, date }}>
+      <Box display="flex" className={className}>
+        {children}
+      </Box>
+    </ButtonGroupContext.Provider>
   );
 };
 

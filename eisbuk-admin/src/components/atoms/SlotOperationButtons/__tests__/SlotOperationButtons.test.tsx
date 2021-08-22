@@ -1,96 +1,101 @@
 /**
  * @jest-environment jsdom-sixteen
  */
-import React from "react";
-import {
-  render,
-  screen,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import React, { useContext } from "react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { SlotButton } from "@/enums/components";
+import { Slot } from "eisbuk-shared";
 
-import SlotOperationButtons from "../SlotOperationButtons";
+import * as testIds from "../__testData__/testIds";
 
-import { __slotButtonId__ } from "../__testData__/testIds";
+import { ButtonGroupType } from "@/enums/components";
 
-import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
+import SlotOperationButtons, {
+  ButtonGroupContext,
+} from "../SlotOperationButtons";
+import NewSlotButton from "../NewSlotButton";
+import EditSlotButton from "../EditSlotButton";
+import CopyButton from "../CopyButton";
+import PasteButton from "../PasteButton";
+import DeleteButton from "../DeleteButton";
+
+import { luxon2ISODate } from "@/utils/date";
 
 jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
   /** @TODO Remove this when we update slot form to be more atomic  */
   useSelector: () => "",
 }));
 
 /** @TODO remove this when the i18next is instantiated with tests */
 jest.mock("i18next", () => ({
-  ...jest.requireActual("i18next"),
   /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
   t: () => "",
 }));
 
 describe("Slot Opeartion Buttons", () => {
+  afterEach(cleanup);
+
   describe("Smoke test", () => {
-    test("should render, without error, with all of the buttons passed in", () => {
-      const allButtons = Object.values(SlotButton);
-      const buttons = allButtons.map((component) => ({
-        component,
-      }));
-      render(<SlotOperationButtons {...{ buttons }} />);
-      const buttonsOnScreen = screen.queryAllByTestId(__slotButtonId__).length;
-      expect(buttonsOnScreen).toEqual(allButtons.length);
+    test("should render without error with all buttons passed in", () => {
+      render(
+        <SlotOperationButtons>
+          <NewSlotButton />
+          <EditSlotButton />
+          <CopyButton />
+          <PasteButton />
+          <DeleteButton />
+        </SlotOperationButtons>
+      );
+      Object.values(testIds).forEach((testId) => {
+        screen.getByTestId(testId);
+      });
     });
   });
 
-  describe("Test button functionality", () => {
-    test("should fire passed 'onClick' function on click", () => {
-      const mockClick = jest.fn();
-      const buttons = [
-        {
-          component: SlotButton.Copy,
-          onClick: mockClick,
-        },
-      ];
-      render(<SlotOperationButtons {...{ buttons }} />);
-      screen.getByTestId(__slotButtonId__).click();
-      expect(mockClick).toHaveBeenCalledTimes(1);
-    });
-  });
+  describe("Test context functionality", () => {
+    // a small util component we'll be using to test context
+    const ContextTest: React.FC = () => {
+      const context = useContext(ButtonGroupContext);
+      return (
+        <>
+          <p>Type: {context?.type}</p>
+          <p>SlotId: {context?.slot?.id}</p>
+          <p>Date: {context?.date ? luxon2ISODate(context.date) : null}</p>
+        </>
+      );
+    };
 
-  describe("Test new slot button", () => {
-    const mockClick = jest.fn();
-    const buttons = [
-      {
-        component: SlotButton.New,
-        onClick: mockClick,
-      },
-    ];
-
-    beforeEach(() => {
-      render(<SlotOperationButtons {...{ buttons }} />);
+    test("should provide children with the context of 'type' provided as props", () => {
+      render(
+        <SlotOperationButtons type={ButtonGroupType.Day}>
+          <ContextTest />
+        </SlotOperationButtons>
+      );
+      screen.getByText(`Type: ${ButtonGroupType.Day}`);
     });
 
-    test("should ignore 'onClick' function as it has internal 'onClick' functionality", () => {
-      expect(mockClick).not.toHaveBeenCalled();
+    test("should provide children with the context of 'slot' if provided as props", () => {
+      const testSlot = {
+        id: "test_slot_it",
+      } as Slot<"id">;
+      render(
+        <SlotOperationButtons slot={testSlot}>
+          <ContextTest />
+        </SlotOperationButtons>
+      );
+      screen.getByText(`SlotId: ${testSlot.id}`);
     });
 
-    test("should open createSlot form on click", () => {
-      const formOnScreen = screen.queryByTestId(__slotFormId__);
-      // should not appear on screen at first
-      expect(formOnScreen).toEqual(null);
-      screen.getByTestId(__slotButtonId__).click();
-      screen.getByTestId(__slotFormId__);
+    test("should provide children with the context of 'date' provided as props", () => {
+      const testDateISO = "2021-03-01";
+      const testDate = DateTime.fromISO(testDateISO);
+      render(
+        <SlotOperationButtons date={testDate}>
+          <ContextTest />
+        </SlotOperationButtons>
+      );
+      screen.getByText(`Date: ${testDateISO}`);
     });
-
-    // test("should close createSlot form on forms 'onClose' trigger", async () => {
-    //   // open form
-    //   screen.getByTestId(__slotButtonId__).click();
-    //   // should close form
-    //   screen.getByTestId(__cancelFormId__).click();
-    //   await waitForElementToBeRemoved(() =>
-    //     screen.queryByTestId(__slotFormId__)
-    //   );
-    // });
   });
 });
