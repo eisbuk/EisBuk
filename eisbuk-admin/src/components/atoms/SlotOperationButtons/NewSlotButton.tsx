@@ -19,13 +19,20 @@ import {
 
 import { __newSlotButtonId__ } from "./__testData__/testIds";
 
+/**
+ * Button to create a new slot. Opens up a blank SlotForm 'onClick'.
+ *
+ * **Important:** Will not render if:
+ * - not within `SlotOperationButtons` context
+ * - no value for `date` has been provided in the context (as it is needed for full functionality)
+ */
 export const NewSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const [openForm, setOpenForm] = useState(false);
 
   const showForm = () => setOpenForm(true);
-  // const closeForm = () => setOpenForm(false);
+  const closeForm = () => setOpenForm(false);
 
   /** @TEMP This should be handled within the `SlotForm` component */
   const dispatch = useDispatch();
@@ -57,11 +64,7 @@ export const NewSlotButton: React.FC = () => {
       >
         <AddCircleOutlineIcon />
       </IconButton>
-      <SlotForm
-        open={openForm}
-        onClose={() => setOpenForm(false)}
-        createSlot={onCreateSlot}
-      />
+      <SlotForm open={openForm} onClose={closeForm} createSlot={onCreateSlot} />
     </>
   );
 };

@@ -1,3 +1,6 @@
+/**
+ * @jest-envirnoment jsdom-sixteen
+ */
 import React from "react";
 import {
   screen,
@@ -28,7 +31,7 @@ import {
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
-  /** @TODO Remove this when we update slot form to be more atomic  */
+  /** @TODO Remove this when we update SlotForm to be more atomic  */
   useSelector: () => "",
   useDispatch: () => mockDispatch,
 }));
@@ -58,7 +61,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("should open createSlot form on click", () => {
+    test("should open 'SlotForm' on click", () => {
       const formOnScreen = screen.queryByTestId(__slotFormId__);
       // should not appear on screen at first
       expect(formOnScreen).toEqual(null);
@@ -66,7 +69,7 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByTestId(__slotFormId__);
     });
 
-    test("should close createSlot form on forms 'onClose' trigger", async () => {
+    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
       // open form
       screen.getByTestId(__newSlotButtonId__).click();
       // should close form
@@ -118,7 +121,7 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
-    test("should not render the button and should log error to console if no date has been provided in the context", () => {
+    test("should not render the button and should log error to console if no 'date' has been provided in the context", () => {
       render(
         <SlotOperationButtons>
           <NewSlotButton />

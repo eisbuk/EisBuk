@@ -15,7 +15,7 @@ import ConfirmDialog from "@/components/global/ConfirmDialog";
 
 import { deleteSlots, editSlot } from "@/store/actions/slotOperations";
 
-import { __editSlotId__, __deleteSlotId__ } from "./__testData__";
+import { __editSlotId__, __deleteSlotId__ } from "./__testData__/testIds";
 
 /**
  * Used to set which dialog should open (edit form/confirm delete)

@@ -9,7 +9,7 @@ import { Slot } from "eisbuk-shared";
 
 import * as testIds from "../__testData__/testIds";
 
-import { ButtonGroupType } from "@/enums/components";
+import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons, {
   ButtonGroupContext,
@@ -25,6 +25,7 @@ import { luxon2ISODate } from "@/utils/date";
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update slot form to be more atomic  */
   useSelector: () => "",
+  useDispatch: () => jest.fn(),
 }));
 
 /** @TODO remove this when the i18next is instantiated with tests */
@@ -33,13 +34,18 @@ jest.mock("i18next", () => ({
   t: () => "",
 }));
 
+const dummyDate = DateTime.fromISO("2021-03-01");
+
 describe("Slot Opeartion Buttons", () => {
   afterEach(cleanup);
 
   describe("Smoke test", () => {
     test("should render without error with all buttons passed in", () => {
       render(
-        <SlotOperationButtons>
+        <SlotOperationButtons
+          contextType={ButtonContextType.Slot}
+          date={dummyDate}
+        >
           <NewSlotButton />
           <EditSlotButton />
           <CopyButton />
@@ -59,7 +65,7 @@ describe("Slot Opeartion Buttons", () => {
       const context = useContext(ButtonGroupContext);
       return (
         <>
-          <p>Type: {context?.type}</p>
+          <p>Type: {context?.contextType}</p>
           <p>SlotId: {context?.slot?.id}</p>
           <p>Date: {context?.date ? luxon2ISODate(context.date) : null}</p>
         </>
@@ -68,11 +74,11 @@ describe("Slot Opeartion Buttons", () => {
 
     test("should provide children with the context of 'type' provided as props", () => {
       render(
-        <SlotOperationButtons type={ButtonGroupType.Day}>
+        <SlotOperationButtons contextType={ButtonContextType.Day}>
           <ContextTest />
         </SlotOperationButtons>
       );
-      screen.getByText(`Type: ${ButtonGroupType.Day}`);
+      screen.getByText(`Type: ${ButtonContextType.Day}`);
     });
 
     test("should provide children with the context of 'slot' if provided as props", () => {

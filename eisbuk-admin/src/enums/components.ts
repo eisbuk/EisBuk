@@ -20,7 +20,7 @@ export enum SlotView {
 /**
  * Used to provide context (`slot`/`day`/`week`) to the slot buttons under the SlotOpeartionButtons button group.
  */
-export enum ButtonGroupType {
+export enum ButtonContextType {
   Slot = "slot",
   Day = "day",
   Week = "week",

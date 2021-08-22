@@ -14,12 +14,12 @@ import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
 import {
-  dummySlot,
   __editSlotId__,
   __deleteSlotId__,
   __slotId__,
-} from "../__testData__";
+} from "../__testData__/testIds";
 import { __slotFormId__ } from "@/__testData__/testIds";
+import { dummySlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 

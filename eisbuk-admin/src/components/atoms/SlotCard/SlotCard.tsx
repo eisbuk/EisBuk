@@ -21,7 +21,7 @@ import SlotTypeLabel from "./SlotTypeLabel";
 
 import { fb2Luxon } from "@/utils/date";
 
-import { __slotId__ } from "./__testData__";
+import { __slotId__ } from "./__testData__/testIds";
 
 export interface SlotCardProps extends SlotInterface<"id"> {
   /**

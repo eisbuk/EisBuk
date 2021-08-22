@@ -5,13 +5,13 @@ import Box from "@material-ui/core/Box";
 
 import { Slot } from "eisbuk-shared";
 
-import { ButtonGroupType } from "@/enums/components";
+import { ButtonContextType } from "@/enums/components";
 
 type ContextParams = Partial<{
   /**
    * Context of buttons (place of appearance / functionality): `slot`/`day`/`week`
    */
-  type: ButtonGroupType;
+  contextType: ButtonContextType;
   /**
    * Slot to edit/delete/copy.
    * - should be truthy if the buttons are within `slot` context
@@ -43,13 +43,13 @@ interface Props extends ContextParams {
  */
 const SlotOperationButtons: React.FC<Props> = ({
   children,
-  type = ButtonGroupType.Week,
+  contextType = ButtonContextType.Week,
   slot,
   date,
   className,
 }) => {
   return (
-    <ButtonGroupContext.Provider value={{ type, slot, date }}>
+    <ButtonGroupContext.Provider value={{ contextType, slot, date }}>
       <Box display="flex" className={className}>
         {children}
       </Box>

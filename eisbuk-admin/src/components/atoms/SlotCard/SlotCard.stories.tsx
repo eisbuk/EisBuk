@@ -7,7 +7,7 @@ import { SlotView } from "@/enums/components";
 
 import SlotCard from "./SlotCard";
 
-import { dummySlot } from "./__testData__";
+import { dummySlot } from "@/__testData__/dummyData";
 
 /**
  * Decorator used to prevent slots diaplayed from stratching to full width

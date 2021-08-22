@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom-sixteen
+ * @jest-environment jest-environment-jsdom-sixteen
  */
 
 import "@testing-library/jest-dom";
@@ -158,12 +158,4 @@ describe("Date Navigation", () => {
       });
     });
   });
-
-  // describe("Test toggle logic", () => {
-  //   test("should display toggle when 'showToggle' flag true", () => {
-  //     render(<DateNavigation showToggle>{() => <div />}</DateNavigation>);
-
-  //     screen.getByTestId(__toggleId__);
-  //   });
-  // });
 });

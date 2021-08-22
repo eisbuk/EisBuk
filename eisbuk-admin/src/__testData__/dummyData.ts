@@ -6,6 +6,7 @@ import { __storybookDate__ } from "@/lib/constants";
 
 import { luxonToFB } from "@/utils/date";
 
+// #region slot
 export const dummySlot: Slot<"id"> = {
   date: luxonToFB(DateTime.fromISO(__storybookDate__!).plus({ hours: 8 })),
   id: "id",
@@ -14,8 +15,4 @@ export const dummySlot: Slot<"id"> = {
   categories: [Category.PreCompetitive],
   notes: "",
 };
-
-export const __slotId__ = "slot-component";
-
-export const __editSlotId__ = "edit-slot-button";
-export const __deleteSlotId__ = "delete-slot-button";
+// #endregion slot
