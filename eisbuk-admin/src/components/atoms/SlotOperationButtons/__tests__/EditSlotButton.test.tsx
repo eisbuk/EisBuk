@@ -98,7 +98,7 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__noSlotProvidedError);
     });
 
-    test("should not render the button and should log error to console if trying to render under any 'type' context different than 'slot'", () => {
+    test("should not render the button and should log error to console if trying to render under any contextType different than 'slot'", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Week}

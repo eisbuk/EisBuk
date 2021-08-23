@@ -11,8 +11,8 @@ export const __noSlotProvidedError =
 export const __editSlotButtonWrongContextError =
   "Error: EditSlotButton cannot be rendered in any 'contextType' context other than 'slot'. For more information, please read the documentation for 'EditSlotButton'";
 
-export const __noSlotToCopy =
-  "Error: CopyButton within 'contextType = \"slot\"' needs to have a value for 'slot' param provided in the context. For more information, please read the documentation for 'CopyButton'";
+export const __copyButtonWrongContextError =
+  "Error: CopyButton cannot be rendered within 'contextType = \"slot\"'. For more information, please read the documentation for 'EditSlotButton'";
 
 export const __noDateCopy =
   "Error: CopyButton within 'contextType = \"day\" | \"week\"' needs to have a value for 'date' param provided in the context. For more information, please read the documentation for 'CopyButton'";
