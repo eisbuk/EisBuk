@@ -24,6 +24,9 @@
   },
   "SlotForm": {
     "StartTime": "Ora di inizio",
+    "EndTime": "Tempo scaduto",
+    "AddInterval": "Aggiungi Intervallo",
+    "Intervals": "Intervalli",
     "Type": "Tipo",
     "EditSlot": "Modifica Slot",
     "CreateSlot": "Crea Slot",
