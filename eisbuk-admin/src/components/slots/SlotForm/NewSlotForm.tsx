@@ -11,6 +11,9 @@ import {
   ErrorMessage,
   useFormikContext,
   FormikConfig,
+  FieldArray,
+  FormikValues,
+  FormikHelpers,
 } from "formik";
 import { RadioGroup } from "formik-material-ui";
 import { DateTime } from "luxon";
@@ -26,7 +29,7 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 import Radio from "@material-ui/core/Radio";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
@@ -48,6 +51,7 @@ const Timestamp = firebase.firestore.Timestamp;
 // ***** Region Form Setup ***** //
 const defaultValues = {
   time: "08:00" as string,
+  Intervals: [{ startTime: "08:00", endTime: "08:00" }],
   durations: [Duration["1h"]],
   categories: [] as Category[],
   type: "" as SlotType,
@@ -75,6 +79,7 @@ type TimePickerProps = Omit<Omit<TextFieldProps, "name">, "value"> & {
   value: string;
 };
 
+type FormValues = Partial<typeof defaultValues>;
 const TimePickerField: React.FC<TimePickerProps> = (props) => {
   const { setFieldValue } = useFormikContext();
 
@@ -104,6 +109,8 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
   const useStyles = makeStyles(() => ({
     root: {
       whiteSpace: "nowrap",
+      display: "flex",
+      AlignItems: "center",
     },
   }));
 
@@ -168,7 +175,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   }
   const { t } = useTranslation();
 
-  type OnSubmit = FormikConfig<Partial<typeof defaultValues>>["onSubmit"];
+  type OnSubmit = FormikConfig<FormValues>["onSubmit"];
 
   /**
    * onSubmit handler for Formik
@@ -218,7 +225,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         onSubmit={handleSubmit}
         {...props}
       >
-        {({ errors, isSubmitting, isValidating }) => (
+        {({ errors, isSubmitting, isValidating, setValues, values }) => (
           <>
             <Form>
               <DialogTitle>
@@ -230,26 +237,6 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
               </DialogTitle>
               <DialogContent>
                 <FormControl component="fieldset">
-                  {!slotToEdit && (
-                    <div className={classes.interval}>
-                      <Field
-                        name="startTime"
-                        as={TimePickerField}
-                        label={t("SlotForm.StartTime")}
-                        className={classes.timeField}
-                      />
-                      <Field
-                        name="endTime"
-                        as={TimePickerField}
-                        label={t("SlotForm.StartTime")}
-                        className={classes.timeField}
-                      />
-                      <IconButton color="primary">
-                        <AddCircleOutlineIcon />
-                      </IconButton>
-                      <ErrorMessage name="time" />
-                    </div>
-                  )}
                   <Box display="flex" flexWrap="wrap">
                     {getCheckBoxes(
                       "categories",
@@ -272,13 +259,88 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                   <div className={classes.error}>
                     <ErrorMessage name="type" />
                   </div>
-                  <Box display="flex">
-                    {getCheckBoxes(
-                      "durations",
-                      slotsLabelsLists.durations,
-                      false
-                    )}
-                  </Box>
+
+                  <h5 className={classes.intervalTitles}>
+                    {t("SlotForm.Intervals")}
+                  </h5>
+                  {/* TODO: remove slot to edit => only  */}
+                  {!slotToEdit && (
+                    <FieldArray name="tickets">
+                      {/* TODO: values.Intervals could be undefined */}
+                      {() =>
+                        values.Intervals?.map((interval, i) => {
+                          //    const intervalErrors = errors.Intervals?.length && errors.Intervals[i] || {};
+                          //    const intervalTouched = touched.Intervals.length && touched.Intervals[i] || {};
+                          return (
+                            <div
+                              key={i}
+                              className="list-group list-group-flush"
+                            >
+                              <div className="list-group-item">
+                                <div
+                                  className={
+                                    i % 2 === 0
+                                      ? classes.intervalContainerEven
+                                      : classes.intervalContainer
+                                  }
+                                >
+                                  <Field
+                                    as={TimePickerField}
+                                    label={t("SlotForm.StartTime")}
+                                    name={`Intervals.${i}.startTime`}
+                                    data-testId="startTime"
+                                    type="text"
+                                    className={
+                                      classes.intervalField
+                                      // + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
+                                    }
+                                  />
+                                  <Field
+                                    as={TimePickerField}
+                                    label={t("SlotForm.EndTime")}
+                                    name={`Intervals.${i}.endTime`}
+                                    type="text"
+                                    className={
+                                      classes.intervalField
+                                      //  + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
+                                    }
+                                  />
+                                  <IconButton
+                                    aria-label="delete"
+                                    color="primary"
+                                    onClick={() =>
+                                      deleteInterval(i, values, setValues)
+                                    }
+                                  >
+                                    <DeleteIcon />
+                                  </IconButton>
+
+                                  <ErrorMessage
+                                    data-testid="startTime-error"
+                                    name="startTime"
+                                  />
+                                  <ErrorMessage
+                                    data-testid="endTime-error"
+                                    name="endTime"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })
+                      }
+                    </FieldArray>
+                  )}
+                  <div className={classes.buttonContainer}>
+                    <Button
+                      onClick={(e) => addInterval(values, setValues)}
+                      color="primary"
+                      variant="contained"
+                      className={classes.addInterval}
+                    >
+                      {t("SlotForm.AddInterval")}
+                    </Button>
+                  </div>
                   <Field
                     name="notes"
                     className={classes.field}
@@ -416,44 +478,91 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
 };
 // ***** End Region My Checkbox ***** //
 
-// ***** Region create Interval ***** //
+// ***** Region Interval Actions ***** //
 
 /**
  * Creates new interval element when plus button is clicked
  * @returns
  */
-//   const createInterval = (class, label) => {
-//       return <FormControl component="fieldset">
-//           <Field
-//       name="startTime"
-//       as={TimePickerField}
-//       label={label}
-//       className={class}
-//     /><Field
-//     name="endTime"
-//     as={TimePickerField}
-//     label={label}
-//     className={class}
-//   />
-//       </FormControl>;
-//   };
-// ***** End Region create Interval ***** //
+// TODO: interface for createInterval
+const addInterval = (
+  values: FormikValues,
+  setValues: FormikHelpers<FormValues>["setValues"]
+) => {
+  // update intervals
+  const Intervals = [...values.Intervals];
+
+  Intervals.push({ startTime: "08:00", endTime: "09:00" });
+  setValues({ ...values, Intervals });
+
+  // call formik onChange method
+  // field.onChange(e);
+};
+
+/**
+ * Deletes interval element when trash button is clicked
+ * @returns
+ */
+// TODO: interface for deleteInterval
+const deleteInterval = (i: number, values: FormikValues, setValues: any) => {
+  // update intervals
+  const Intervals = [...values.Intervals];
+  if (Intervals.length === 1) return;
+
+  Intervals.splice(i, 1);
+
+  setValues({ ...values, Intervals });
+};
+// ***** End Region Interval Actions ***** //
 
 // ***** Region Styles ***** //
 const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(0),
   },
-  timeField: {
-    width: theme.spacing(14),
+  intervalField: {
+    border: theme.spacing(0),
+    margin: theme.spacing(1),
+    display: "inline-flex",
+    padding: theme.spacing(0),
+    position: "relative",
+    minWidth: theme.spacing(0),
+    flexDirection: "column",
+    verticalAlign: "top",
+    width: theme.spacing(18),
   },
-  interval: {
+  addInterval: {
+    marginTop: theme.spacing(3),
+    borderRadius: theme.spacing(100),
+  },
+  buttonContainer: {
     display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   error: {
     color: theme.palette.error.dark,
     fontWeight: theme.typography.fontWeightBold,
+  },
+  intervalTitles: {
+    fontSize: theme.typography.pxToRem(17),
+    fontWeight: theme.typography.fontWeightLight,
+    fontFamily: theme.typography.fontFamily,
+    color: theme.palette.primary.light,
+  },
+  intervalContainerEven: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingBottom: theme.spacing(1),
+  },
+  intervalContainer: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: theme.palette.grey[50],
+    paddingBottom: theme.spacing(1),
   },
 }));
 // ***** End Region Styles ***** //
