@@ -51,7 +51,7 @@ const Timestamp = firebase.firestore.Timestamp;
 // ***** Region Form Setup ***** //
 const defaultValues = {
   time: "08:00" as string,
-  Intervals: [{ startTime: "08:00", endTime: "08:00" }],
+  intervals: [{ startTime: "08:00", endTime: "08:00" }],
   durations: [Duration["1h"]],
   categories: [] as Category[],
   type: "" as SlotType,
@@ -61,6 +61,12 @@ const defaultValues = {
 // TODO: check validation acoording to type
 const SlotValidation = Yup.object().shape({
   time: Yup.string().required(i18n.t("SlotValidations.Time")),
+  intervals: Yup.array().of(
+    Yup.object().shape({
+      startTime: Yup.string().required("Start Time is required"),
+      endTime: Yup.string().required("End Time is required"),
+    })
+  ),
   //   startTime: Yup.date().required(i18n.t("SlotValidations.Time")).max(endTime),
   //   endTime: Yup.date().required(i18n.t("SlotValidations.Time")).max(endTime),
   categories: Yup.array()
@@ -268,7 +274,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     <FieldArray name="tickets">
                       {/* TODO: values.Intervals could be undefined */}
                       {() =>
-                        values.Intervals?.map((interval, i) => {
+                        values.intervals?.map((interval, i) => {
                           //    const intervalErrors = errors.Intervals?.length && errors.Intervals[i] || {};
                           //    const intervalTouched = touched.Intervals.length && touched.Intervals[i] || {};
                           return (
@@ -484,16 +490,15 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
  * Creates new interval element when plus button is clicked
  * @returns
  */
-// TODO: interface for createInterval
 const addInterval = (
   values: FormikValues,
   setValues: FormikHelpers<FormValues>["setValues"]
 ) => {
   // update intervals
-  const Intervals = [...values.Intervals];
+  const intervals = [...values.Intervals];
 
-  Intervals.push({ startTime: "08:00", endTime: "09:00" });
-  setValues({ ...values, Intervals });
+  intervals.push({ startTime: "08:00", endTime: "09:00" });
+  setValues({ ...values, intervals });
 
   // call formik onChange method
   // field.onChange(e);
@@ -503,15 +508,18 @@ const addInterval = (
  * Deletes interval element when trash button is clicked
  * @returns
  */
-// TODO: interface for deleteInterval
-const deleteInterval = (i: number, values: FormikValues, setValues: any) => {
+const deleteInterval = (
+  i: number,
+  values: FormikValues,
+  setValues: FormikHelpers<FormValues>["setValues"]
+) => {
   // update intervals
-  const Intervals = [...values.Intervals];
-  if (Intervals.length === 1) return;
+  const intervals = [...values.intervals];
+  if (intervals.length === 1) return;
 
-  Intervals.splice(i, 1);
+  intervals.splice(i, 1);
 
-  setValues({ ...values, Intervals });
+  setValues({ ...values, intervals });
 };
 // ***** End Region Interval Actions ***** //
 
