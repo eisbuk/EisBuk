@@ -30,7 +30,6 @@ import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
-
 import Radio from "@material-ui/core/Radio";
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 
@@ -45,6 +44,13 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
+
+import {
+  __endTimeErrorId__,
+  __endTimeInputId__,
+  __startTimeErrorId__,
+  __startTimeInputId__,
+} from "./__testData__/testIds";
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -294,12 +300,12 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                     as={TimePickerField}
                                     label={t("SlotForm.StartTime")}
                                     name={`Intervals.${i}.startTime`}
-                                    data-testId="startTime"
                                     type="text"
                                     className={
                                       classes.intervalField
                                       // + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
                                     }
+                                    data-testId={__startTimeInputId__}
                                   />
                                   <Field
                                     as={TimePickerField}
@@ -310,6 +316,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                       classes.intervalField
                                       //  + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
                                     }
+                                    data-testId={__endTimeInputId__}
                                   />
                                   <IconButton
                                     aria-label="delete"
@@ -322,11 +329,11 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                   </IconButton>
 
                                   <ErrorMessage
-                                    data-testid="startTime-error"
+                                    data-testid={__startTimeErrorId__}
                                     name="startTime"
                                   />
                                   <ErrorMessage
-                                    data-testid="endTime-error"
+                                    data-testid={__endTimeErrorId__}
                                     name="endTime"
                                   />
                                 </div>
