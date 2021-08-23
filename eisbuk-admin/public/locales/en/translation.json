@@ -24,6 +24,9 @@
   },
   "SlotForm": {
     "StartTime": "Start Time",
+    "EndTime": "End Time",
+    "AddInterval": "Add Interval",
+    "Intervals": "Intervals",
     "Type": "Type",
     "EditSlot": "Edit Slot",
     "CreateSlot": "Create Slot",
