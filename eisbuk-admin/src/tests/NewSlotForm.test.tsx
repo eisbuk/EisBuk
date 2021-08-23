@@ -2,7 +2,6 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import React from "react";
 import NewSlotForm from "../components/slots/SlotForm/NewSlotForm";
-import { fb2Luxon, luxonToFB } from "../utils/date";
 import { DateTime } from "luxon";
 
 describe("NewSlotForm", () => {
@@ -13,7 +12,6 @@ describe("NewSlotForm", () => {
 
       // a dummy date comverted to DateTime for easier processing
       const testDate = DateTime.fromISO(testDateISO);
-
       render(<NewSlotForm open={true} isoDate="2021-03-01" />);
       const test = screen.getByTestId("startTime-error");
       userEvent.type(screen.getByTestId("startTime"), "");
