@@ -6,6 +6,11 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 
+import {
+  __confirmDialogYesId__,
+  __confirmDialogNoId__,
+} from "@/__testData__/testIds";
+
 interface Props {
   title: string;
   open: boolean;
@@ -39,10 +44,20 @@ const ConfirmDialog: React.FC<Props> = ({
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>{children}</DialogContent>
       <DialogActions>
-        <Button variant="contained" onClick={handleReject} color="secondary">
+        <Button
+          variant="contained"
+          onClick={handleReject}
+          color="secondary"
+          data-testid={__confirmDialogNoId__}
+        >
           No
         </Button>
-        <Button variant="contained" onClick={handleConfirm} color="primary">
+        <Button
+          variant="contained"
+          onClick={handleConfirm}
+          color="primary"
+          data-testid={__confirmDialogYesId__}
+        >
           Yes
         </Button>
       </DialogActions>
