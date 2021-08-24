@@ -25,6 +25,15 @@ type ContextParams = Partial<{
    * - not needed in `slot` context
    */
   date: DateTime;
+  /**
+   * Boolean flags for `day` and `week` context types.
+   * Used to pass information as to whether or not there are slots in clipboard for given `contextType`.
+   * Controls displaying/disabling certain elements of copy/paste functionality.
+   */
+  slotsToCopy: Partial<{
+    [ButtonContextType.Day]: boolean;
+    [ButtonContextType.Week]: boolean;
+  }>;
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(

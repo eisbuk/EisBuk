@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
 import IconButton from "@material-ui/core/IconButton";
+import Badge from "@material-ui/core/Badge";
 
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
@@ -31,7 +32,7 @@ export const CopyButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType } = buttonGroupContext;
+  const { date, contextType, slotsToCopy } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -53,10 +54,15 @@ export const CopyButton: React.FC = () => {
     contextType === ButtonContextType.Day ? newCopySlotDay : newCopySlotWeek;
   const onCopy = () => dispatch(copyActionCreator(date));
 
+  // check if there are slots in clipboard for given `contextType`
+  const displayBadge = slotsToCopy && slotsToCopy[contextType!];
+
   return (
     <>
       <IconButton size="small" onClick={onCopy} data-testid={__copyButtonId__}>
-        <FileCopyIcon />
+        <Badge color="secondary" variant="dot" invisible={!displayBadge}>
+          <FileCopyIcon />
+        </Badge>
       </IconButton>
     </>
   );
