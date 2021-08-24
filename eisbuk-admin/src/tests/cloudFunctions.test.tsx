@@ -19,25 +19,6 @@ describe("Cloud functions", () => {
     done();
   });
 
-  it("respond whether the user is an admin or not in the given organization", async (done) => {
-    await adminDb
-      .collection("organizations")
-      .doc("default")
-      .set({
-        admins: ["isanadmin@example.com"],
-      });
-    const res = await firebase.app().functions().httpsCallable("amIAdmin")({
-      organization: "default",
-    });
-    expect(res.data).toEqual({ amIAdmin: false });
-    await loginWithUser("isanadmin@example.com");
-    const res2 = await firebase.app().functions().httpsCallable("amIAdmin")({
-      organization: "default",
-    });
-    await expect(res2.data).toEqual({ amIAdmin: true });
-    done();
-  });
-
   it("deniy access to users not belonging to the organization", async (done) => {
     await adminDb
       .collection("organizations")

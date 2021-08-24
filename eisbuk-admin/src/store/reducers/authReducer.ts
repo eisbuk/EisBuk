@@ -5,7 +5,7 @@ import { Action } from "@/enums/store";
 import { AuthInfoEisbuk, AuthReducerAction, AuthAction } from "@/types/store";
 
 const initState = {
-  amIAdmin: false,
+  admins: [],
   myUserId: null,
   uid: null,
 };
@@ -15,9 +15,11 @@ export const authReducer = (
   action: AuthReducerAction<AuthAction>
 ): AuthInfoEisbuk => {
   switch (action.type) {
-    case Action.IsAdminReceived:
+    case Action.IsOrganizationStatusReceived:
       // get currectly typed payload
-      const { payload } = action as AuthReducerAction<Action.IsAdminReceived>;
+      const {
+        payload,
+      } = action as AuthReducerAction<Action.IsOrganizationStatusReceived>;
 
       // update state with newly received auth object
       return {
