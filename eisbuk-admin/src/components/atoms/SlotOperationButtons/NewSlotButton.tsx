@@ -5,6 +5,8 @@ import IconButton from "@material-ui/core/IconButton";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
+import { ButtonContextType } from "@/enums/components";
+
 import { SlotOperation } from "@/types/slotOperations";
 
 import SlotForm from "@/components/slots/SlotForm";
@@ -13,6 +15,7 @@ import { ButtonGroupContext } from "./SlotOperationButtons";
 import { createSlots } from "@/store/actions/slotOperations";
 
 import {
+  __newSlotButtonWrongContextError,
   __noDateProvidedError,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
@@ -45,6 +48,15 @@ export const NewSlotButton: React.FC = () => {
   // if not rendered within of `ButtonGroupContext`
   if (!buttonGroupContext) {
     console.error(__slotButtonNoContextError);
+    return null;
+  }
+
+  // prevent component from rendering and log error to console (but don't throw)
+  // if trying to render under any context other than `day`
+  // this is because adding a new slot on `SlotCard` doesn't make much sense
+  // and calling create slot on `week`'s view would not be precise enough (in terms of date)
+  if (buttonGroupContext.contextType !== ButtonContextType.Day) {
+    console.error(__newSlotButtonWrongContextError);
     return null;
   }
 

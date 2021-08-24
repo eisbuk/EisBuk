@@ -5,6 +5,9 @@ export const __slotButtonNoContextError =
 export const __noDateProvidedError =
   "Error: No 'date' was provided in the context. This button requires 'date' param in order to have full functionality. For more information, please read the documentation for 'SlotOperationButtons'";
 
+export const __newSlotButtonWrongContextError =
+  "Error: NewSlotButton is only allowed to render within \"day\" context. For more information, please read the documentation for 'SlotOperationButtons'";
+
 export const __noSlotProvidedError =
   "Error: No 'slot' was provided in the context. This button requires 'slot' param in order to have full functionality. For more information, please read the documentation for 'SlotOperationButtons'";
 

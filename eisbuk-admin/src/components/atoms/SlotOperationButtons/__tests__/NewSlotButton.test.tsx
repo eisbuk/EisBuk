@@ -14,10 +14,12 @@ import SlotOperationButtons from "../SlotOperationButtons";
 import NewSlotButton from "../NewSlotButton";
 
 import {
+  __newSlotButtonWrongContextError,
   __noDateProvidedError,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
+import { ButtonContextType } from "@/enums/components";
 // import * as slotActions from "@/store/actions/slotOperations";
 
 import { __newSlotButtonId__ } from "../__testData__/testIds";
@@ -55,7 +57,10 @@ describe("Slot Opeartion Buttons", () => {
 
     beforeEach(() => {
       render(
-        <SlotOperationButtons date={dummyDate}>
+        <SlotOperationButtons
+          date={dummyDate}
+          contextType={ButtonContextType.Day}
+        >
           <NewSlotButton />
         </SlotOperationButtons>
       );
@@ -121,9 +126,22 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
+    test('should not render the button and should log error to console if trying to render within any context other than "day"', () => {
+      render(
+        <SlotOperationButtons contextType={ButtonContextType.Slot}>
+          <NewSlotButton />
+        </SlotOperationButtons>
+      );
+      const buttonOnScreen = screen.queryByTestId(__newSlotButtonId__);
+      expect(buttonOnScreen).toEqual(null);
+      expect(spyConsoleError).toHaveBeenCalledWith(
+        __newSlotButtonWrongContextError
+      );
+    });
+
     test("should not render the button and should log error to console if no 'date' has been provided in the context", () => {
       render(
-        <SlotOperationButtons>
+        <SlotOperationButtons contextType={ButtonContextType.Day}>
           <NewSlotButton />
         </SlotOperationButtons>
       );
