@@ -56,8 +56,8 @@ type ProcessedSlot = BookingEntry & {
 interface Props {
   bookingDayInfo: BookingDayInfo;
   markAbsentee?: (payload: {
-    slot: ProcessedSlot;
-    user: UserBooking;
+    slotId: Slot<"id">["id"];
+    userId: UserBooking["id"];
     isAbsent: boolean;
   }) => void;
 }
@@ -93,8 +93,8 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
     // presist attendance data to firestore
     markAbsentee &&
       markAbsentee({
-        slot,
-        user: userBooking,
+        slotId: slot.id,
+        userId: userBooking.id,
         isAbsent: !isAbsent,
       });
   };

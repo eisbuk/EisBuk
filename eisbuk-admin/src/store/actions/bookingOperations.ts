@@ -5,7 +5,6 @@ import { Customer, Slot, BookingInfo } from "eisbuk-shared";
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
-import { SlotOperation } from "@/types/slotOperations";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -63,7 +62,7 @@ export const subscribeToSlot = (
  */
 export const unsubscribeFromSlot = (
   bookingId: string,
-  slot: Parameters<SlotOperation>[0]
+  slotId: Slot<"id">["id"]
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
 
@@ -75,7 +74,7 @@ export const unsubscribeFromSlot = (
       .collection("bookings")
       .doc(bookingId)
       .collection("data")
-      .doc(slot.id)
+      .doc(slotId)
       .delete();
 
     dispatch(
@@ -102,8 +101,8 @@ export const unsubscribeFromSlot = (
 };
 
 interface MarkAbsenteePayload {
-  slot: Pick<Slot, "id">;
-  user: Pick<Customer, "id">;
+  slotId: Slot<"id">["id"];
+  userId: Customer["id"];
   isAbsent: boolean;
 }
 
@@ -117,8 +116,8 @@ interface MarkAbsenteePayload {
  * @returns async thunk
  */
 export const markAbsentee = ({
-  slot,
-  user,
+  slotId,
+  userId,
   isAbsent,
 }: MarkAbsenteePayload): FirestoreThunk => async (
   dispatch,
@@ -133,8 +132,8 @@ export const markAbsentee = ({
       .collection("organizations")
       .doc(ORGANIZATION)
       .collection("slots")
-      .doc(slot.id)
-      .set({ absentees: { [user.id]: isAbsent } }, { merge: true });
+      .doc(slotId)
+      .set({ absentees: { [userId]: isAbsent } }, { merge: true });
   } catch {
     showErrSnackbar();
   }

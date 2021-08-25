@@ -1,7 +1,11 @@
 import { db, adminDb } from "./settings";
 import { loginWithUser, loginWithPhone } from "./utils";
 
-describe("Organization permissions", () => {
+const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
+  ? describe
+  : xdescribe;
+
+maybeDescribe("Organization permissions", () => {
   it("let only admin access an organization data (by email)", async () => {
     const orgDefinition = {
       admins: ["test@example.com"],

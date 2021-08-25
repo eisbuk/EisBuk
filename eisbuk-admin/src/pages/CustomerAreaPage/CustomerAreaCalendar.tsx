@@ -91,7 +91,7 @@ const CustomerAreaCalendar: React.FC<Props> = ({
     : undefined;
 
   const onUnsubscribe = (slot: Parameters<SlotOperation>[0]) => {
-    dispatch(unsubscribeFromSlot(secretKey, slot));
+    dispatch(unsubscribeFromSlot(secretKey, slot.id));
   };
 
   return (

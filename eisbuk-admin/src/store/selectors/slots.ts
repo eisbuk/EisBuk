@@ -45,8 +45,8 @@ const getSafe = <F extends () => any>(
  */
 export const getAllSlotsByDay = (
   state: LocalStore
-): Record<string, Slot<"id">> =>
-  flatten(Object.values(getSafe(() => state.firestore.data.slotsByDay)));
+): Record<string, Record<string, Slot<"id">>> =>
+  flatten(Object.values(() => state.firestore.data.slotsByDay || {}));
 
 /**
  * Get subscribed slots from state

@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { DocumentData, Timestamp } from "@google-cloud/firestore";
+import { Timestamp } from "@google-cloud/firestore";
 
 import {
   Duration,
@@ -22,11 +22,26 @@ export interface OrganizationMeta {
 /**
  * Base slot structure
  */
-interface SlotBase extends DocumentData {
+interface SlotBase {
+  /**
+   * Date in firebase Timestamp format
+   */
   date: Timestamp;
+  /**
+   * Durations (currently temp) for which the user can register
+   */
   durations: Duration[];
+  /**
+   * Categories of athletes (according to level of proficiency) this slot is aimed at
+   */
   categories: Category[];
+  /**
+   * Type of slot (ice, off-ice-dancing, off-ice-gym)
+   */
   type: SlotType;
+  /**
+   * Optional notes displayed on slot (training location etc.)
+   */
   notes: string;
 }
 
@@ -37,6 +52,9 @@ interface SlotBase extends DocumentData {
  */
 export type Slot<ID extends "id" | false = false> = ID extends "id"
   ? SlotBase & {
+      /**
+       * Id of the slot (not present in a few cases)
+       */
       id: string;
     }
   : SlotBase;
