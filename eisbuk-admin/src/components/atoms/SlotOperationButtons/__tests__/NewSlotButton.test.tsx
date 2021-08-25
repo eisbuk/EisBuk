@@ -22,6 +22,8 @@ import {
 import { ButtonContextType } from "@/enums/components";
 // import * as slotActions from "@/store/actions/slotOperations";
 
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+
 import { __newSlotButtonId__ } from "../__testData__/testIds";
 import {
   __slotFormId__,
@@ -44,7 +46,7 @@ jest.mock("i18next", () => ({
   t: () => "",
 }));
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
@@ -74,15 +76,18 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByTestId(__slotFormId__);
     });
 
-    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
-      // open form
-      screen.getByTestId(__newSlotButtonId__).click();
-      // should close form
-      screen.getByTestId(__cancelFormId__).click();
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId(__slotFormId__)
-      );
-    });
+    testWithMutationObserver(
+      "should close 'SlotForm' on forms 'onClose' trigger",
+      async () => {
+        // open form
+        screen.getByTestId(__newSlotButtonId__).click();
+        // should close form
+        screen.getByTestId(__cancelFormId__).click();
+        await waitForElementToBeRemoved(() =>
+          screen.queryByTestId(__slotFormId__)
+        );
+      }
+    );
 
     /**
      * @NOTE below test is not passing and is pretty complex.
@@ -119,7 +124,7 @@ describe("Slot Opeartion Buttons", () => {
   describe("'NewSlotButton' edge cases/error handling test", () => {
     const spyConsoleError = jest.spyOn(console, "error");
 
-    test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
+    test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<NewSlotButton />);
       const buttonOnScreen = screen.queryByTestId(__newSlotButtonId__);
       expect(buttonOnScreen).toEqual(null);
@@ -139,7 +144,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("should not render the button and should log error to console if no 'date' has been provided in the context", () => {
+    test("should not render the button and should log error to console if no value for 'date' param has been provided within the context", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <NewSlotButton />

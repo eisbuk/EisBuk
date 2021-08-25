@@ -21,6 +21,7 @@ import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
 import { luxon2ISODate } from "@/utils/date";
+import { dummySlot } from "@/__testData__/dummyData";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update slot form to be more atomic  */
@@ -36,26 +37,56 @@ jest.mock("i18next", () => ({
 
 const dummyDate = DateTime.fromISO("2021-03-01");
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(cleanup);
 
   describe("Smoke test", () => {
-    test("should render without error with all buttons passed in", () => {
+    test("should render whitelisted buttons 'contextType=\"slot\"' without error with all appropriate buttons passed in", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
           date={dummyDate}
+          slot={dummySlot}
+        >
+          <EditSlotButton />
+          <DeleteButton />
+        </SlotOperationButtons>
+      );
+      screen.getByTestId(testIds.__editSlotButtonId__);
+      screen.getByTestId(testIds.__deleteButtonId__);
+    });
+    test("should render whitelisted buttons 'contextType=\"day\"' without error with all appropriate buttons passed in", () => {
+      render(
+        <SlotOperationButtons
+          contextType={ButtonContextType.Day}
+          date={dummyDate}
         >
           <NewSlotButton />
-          <EditSlotButton />
           <CopyButton />
           <PasteButton />
           <DeleteButton />
         </SlotOperationButtons>
       );
-      Object.values(testIds).forEach((testId) => {
-        screen.getByTestId(testId);
-      });
+      screen.getByTestId(testIds.__newSlotButtonId__);
+      screen.getByTestId(testIds.__copyButtonId__);
+      screen.getByTestId(testIds.__pasteButtonId__);
+      screen.getByTestId(testIds.__deleteButtonId__);
+    });
+
+    test("should render whitelisted buttons 'contextType=\"week\"' without error with all appropriate buttons passed in", () => {
+      render(
+        <SlotOperationButtons
+          contextType={ButtonContextType.Week}
+          date={dummyDate}
+        >
+          <CopyButton />
+          <PasteButton />
+          <DeleteButton />
+        </SlotOperationButtons>
+      );
+      screen.getByTestId(testIds.__copyButtonId__);
+      screen.getByTestId(testIds.__pasteButtonId__);
+      screen.getByTestId(testIds.__deleteButtonId__);
     });
   });
 
@@ -72,7 +103,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     };
 
-    test("should provide children with the context of 'type' provided as props", () => {
+    test("should provide children with the 'contextType' provided as props", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <ContextTest />
@@ -83,7 +114,7 @@ describe("Slot Opeartion Buttons", () => {
 
     test("should provide children with the context of 'slot' if provided as props", () => {
       const testSlot = {
-        id: "test_slot_it",
+        id: "test_slot_id",
       } as Slot<"id">;
       render(
         <SlotOperationButtons slot={testSlot}>

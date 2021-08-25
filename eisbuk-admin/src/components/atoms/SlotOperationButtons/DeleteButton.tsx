@@ -25,12 +25,28 @@ import {
 import { __deleteButtonId__ } from "./__testData__/testIds";
 
 interface Props {
+  /**
+   * Optional confirm dialog. Used to open up a confirm dialog before dispatching action to store.
+   * Requires title and description (to render the `ConfirmDialog`).
+   * If not provided, the action is dispatched to the store directly `onClick`
+   */
   confirmDialog?: {
     title: string;
     description: string;
   };
 }
 
+/**
+ * Button in charge of delete functionality.
+ * It dispatches the delete action to the store with respect to `contextType` (`slot`/`day`/`week`).
+ * - if no prop for confirm dialog has been provided, the delete action is dispatched immediately `onClick`
+ * - if prop for dialog has been passed, the dialog button is opened `onClick` in order to confirm action before dispatching to store
+ *
+ * **Important:** Will not render if:
+ * - not within `SlotOperationButtons` context
+ * - under `contextType = "slot"` and no value for `slot` param has been provided within the context
+ * - under `contextType = "day" | "week"` and no value for `date` has been provided within the context
+ */
 export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
   const dispatch = useDispatch();
 
@@ -41,7 +57,7 @@ export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   // prevent component from rendering and log error to console (but don't throw)
-  // if not rendered within of `ButtonGroupContext`
+  // if not rendered within the `SlotOperationButtons` context
   if (!buttonGroupContext) {
     console.error(__slotButtonNoContextError);
     return null;

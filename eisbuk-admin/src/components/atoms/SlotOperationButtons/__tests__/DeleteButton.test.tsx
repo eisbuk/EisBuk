@@ -25,7 +25,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-// import * as slotActions from "@/store/actions/slotOperations";
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import { __deleteButtonId__ } from "../__testData__/testIds";
 import {
@@ -50,9 +50,9 @@ jest.mock("i18next", () => ({
 
 // #region mockDeleteActions
 /**
- * Mock implementation of `deleteSlot` we'll be using to both mock function within component
+ * Mock implementation of `deleteSlot` function we'll be using to both mock function within component
  * as well as for tests.
- * @param slot to delete (just like in the original function)
+ * @param slotId of slot to delete (just like in the original function)
  * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
  */
 const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
@@ -66,7 +66,7 @@ jest
 /**
  * Mock implementation of `deleteSlotsDay` we'll be using to both mock function within component
  * as well as for tests.
- * @param slot to delete (just like in the original function)
+ * @param date of day of slots to delete (just like in the original function)
  * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
  */
 const mockDelDayImplementation = (date: DateTime) => ({
@@ -80,7 +80,7 @@ jest
 /**
  * Mock implementation of `deleteSlotsWeek` we'll be using to both mock function within component
  * as well as for tests.
- * @param slot to delete (just like in the original function)
+ * @param date of first day of the week to delete (just like in the original function)
  * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
  */
 const mockDelWeekImplementation = (date: DateTime) => ({
@@ -95,7 +95,7 @@ jest
 // a dummy date we're using to test deleting of slots day and slots week
 const testDate = DateTime.fromISO("2021-03-01");
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
@@ -157,15 +157,15 @@ describe("Slot Opeartion Buttons", () => {
     });
   });
 
-  describe("Test straightforward dispatching with added dialog confirmation step", () => {
-    // props for dialog we'll use to test rendering the dialog first (before dispatching eny delete actions)
+  describe("Test delete action dispatching with added dialog confirmation step", () => {
+    // props for dialog we'll use to test rendering the dialog first (before dispatching any delete actions)
     const testDialog = {
       title: "Test dialog",
       description: "This is a test description of confirmation dialog",
     };
 
     beforeEach(() => {
-      // we'll be rendering the simplest setup: `contextType = "week"` (default)
+      // we'll be rendering the simplest setup: `contextType="week"` (default)
       // there's no need to test for each `contextType` but rather focus only on additional confirmation step
       render(
         <SlotOperationButtons
@@ -177,7 +177,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("if dialog provided, should open a confirm dialog on click (without dispatching the delete function)", () => {
+    test("if 'dialog' prop provided, should open a confirm dialog on click (without dispatching the delete function)", () => {
       screen.getByTestId(__deleteButtonId__).click();
       // check that no delete function has been called yet
       expect(mockDispatch).not.toHaveBeenCalled();
@@ -186,7 +186,7 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByText(testDialog.description);
     });
 
-    test("should dispatch delete function after confirming the dialog (if dialog labels are provided)", () => {
+    test("should dispatch delete function after confirming the dialog (if 'dialog' prop are provided)", () => {
       screen.getByTestId(__deleteButtonId__).click();
       screen.getByTestId(__confirmDialogYesId__).click();
       // create a dummy delete slot action object with proper values
@@ -196,24 +196,29 @@ describe("Slot Opeartion Buttons", () => {
       expect(mockDispatch).toHaveBeenCalledWith(mockWeekDelAction);
     });
 
-    test('should close the dialog on negative confirmation ("No")', async () => {
-      screen.getByTestId(__deleteButtonId__).click();
-      screen.getByTestId(__confirmDialogNoId__).click();
-      await waitForElementToBeRemoved(() => screen.getByText(testDialog.title));
-    });
+    testWithMutationObserver(
+      'should close the dialog on negative confirmation ("No")',
+      async () => {
+        screen.getByTestId(__deleteButtonId__).click();
+        screen.getByTestId(__confirmDialogNoId__).click();
+        await waitForElementToBeRemoved(() =>
+          screen.getByText(testDialog.title)
+        );
+      }
+    );
   });
 
   describe("'DeleteButton' edge cases/error handling test", () => {
     const spyConsoleError = jest.spyOn(console, "error");
 
-    test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
+    test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<DeleteButton />);
       const buttonOnScreen = screen.queryByTestId(__deleteButtonId__);
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"slot\"' and no value for 'slot' has been provided in the context", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"slot\"' and no value for 'slot' has been provided within the context", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Slot}>
           <DeleteButton />
@@ -224,7 +229,7 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__noSlotToDelete);
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"day\" | \"week\"' and no value for 'date' has been provided in the context", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"day\" | \"week\"' and no value for 'date' has been provided within the context", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <DeleteButton />

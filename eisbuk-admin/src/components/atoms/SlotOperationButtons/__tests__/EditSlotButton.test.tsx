@@ -20,6 +20,8 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+
 import { __editSlotButtonId__ } from "../__testData__/testIds";
 import { dummySlot } from "@/__testData__/dummyData";
 import { __slotFormId__, __cancelFormId__ } from "@/__testData__/testIds";
@@ -36,7 +38,7 @@ jest.mock("i18next", () => ({
   t: () => "",
 }));
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
@@ -55,7 +57,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("should open 'SlotForm' on click (with current slot as slot to edit)", () => {
+    test("should open 'SlotForm' on click (with current slot as 'slotToEdit')", () => {
       const formOnScreen = screen.queryByTestId(__slotFormId__);
       // should not appear on screen at first
       expect(formOnScreen).toEqual(null);
@@ -66,28 +68,31 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByText(new RegExp(notes));
     });
 
-    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
-      // open form
-      screen.getByTestId(__editSlotButtonId__).click();
-      // should close form
-      screen.getByTestId(__cancelFormId__).click();
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId(__slotFormId__)
-      );
-    });
+    testWithMutationObserver(
+      "should close 'SlotForm' on forms 'onClose' trigger",
+      async () => {
+        // open form
+        screen.getByTestId(__editSlotButtonId__).click();
+        // should close form
+        screen.getByTestId(__cancelFormId__).click();
+        await waitForElementToBeRemoved(() =>
+          screen.queryByTestId(__slotFormId__)
+        );
+      }
+    );
   });
 
   describe("'EditSlotButton' edge cases/error handling test", () => {
     const spyConsoleError = jest.spyOn(console, "error");
 
-    test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
+    test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<EditSlotButton />);
       const buttonOnScreen = screen.queryByTestId(__editSlotButtonId__);
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
-    test("should not render the button and should log error to console if no 'slot' has been provided in the context", () => {
+    test("should not render the button and should log error to console if no value for 'slot' param has been provided within the context", () => {
       render(
         <SlotOperationButtons>
           <EditSlotButton />
@@ -98,7 +103,7 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__noSlotProvidedError);
     });
 
-    test("should not render the button and should log error to console if trying to render under any contextType different than 'slot'", () => {
+    test("should not render the button and should log error to console if trying to render under any 'contextType' other than \"slot\"", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Week}

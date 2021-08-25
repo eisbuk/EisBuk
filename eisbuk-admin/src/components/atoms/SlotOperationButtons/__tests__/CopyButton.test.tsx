@@ -34,30 +34,28 @@ jest.mock("i18next", () => ({
   t: () => "",
 }));
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
   });
 
   describe("'CopyButton' functionality test", () => {
-    // this is a dummy date of no significance for the tests
-    // provided in order to render properly (as it's a requirement)
-    const dummyDate = DateTime.fromISO("2021-03-01");
+    // a dummy date we're using to test dispatching copy actions for slots day and slots week
+    const testDate = DateTime.fromISO("2021-03-01");
 
-    test("if 'contextType = \"day\"' should add all slots of the day to clipboard on click", () => {
-      // mock implementation of new copy slots day we'll be using to both
+    test("if 'contextType=\"day\"' should add all slots of the day to clipboard on click", () => {
+      // mock implementation of `newCopySlotsDay` function we'll be using to both
       // - create a test action object
       // - mock implementation within the component
       const mockCopyDayImplementation = (date: DateTime) =>
         ({ type: "copy_day", date } as any);
-      // mock implementation of `newCopySlotDay` within the component
       jest
         .spyOn(copyPasteActions, "newCopySlotDay")
         .mockImplementation(mockCopyDayImplementation);
       render(
         <SlotOperationButtons
-          date={dummyDate}
+          date={testDate}
           contextType={ButtonContextType.Day}
         >
           <CopyButton />
@@ -66,12 +64,12 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByTestId(__copyButtonId__).click();
       // test dispatch being called with the result of `newCopySlotDay` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockCopyDayImplementation(dummyDate)
+        mockCopyDayImplementation(testDate)
       );
     });
 
-    test("if 'contextType = \"week\"' should add all slots of the week to clipboard on click", () => {
-      // mock implementation of new copy slots week we'll be using to both
+    test("if 'contextType=\"week\"' should add all slots of the week to clipboard on click", () => {
+      // mock implementation of `newCopySlotsWeek` function we'll be using to both
       // - create a test action object
       // - mock implementation within the component
       const mockCopyWeekImplementation = (date: DateTime) =>
@@ -82,7 +80,7 @@ describe("Slot Opeartion Buttons", () => {
         .mockImplementation(mockCopyWeekImplementation);
       render(
         <SlotOperationButtons
-          date={dummyDate}
+          date={testDate}
           contextType={ButtonContextType.Week}
         >
           <CopyButton />
@@ -91,7 +89,7 @@ describe("Slot Opeartion Buttons", () => {
       screen.getByTestId(__copyButtonId__).click();
       // test dispatch being called with the result of `newCopySlotWeek` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockCopyWeekImplementation(dummyDate)
+        mockCopyWeekImplementation(testDate)
       );
     });
   });
@@ -106,7 +104,7 @@ describe("Slot Opeartion Buttons", () => {
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"slot\"'", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"slot\"'", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Slot}>
           <CopyButton />
@@ -119,7 +117,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"day\" | \"week\"' and no value for 'date' has been provided in the context", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"day\" | \"week\"' and no value for 'date' has been provided within the context", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <CopyButton />

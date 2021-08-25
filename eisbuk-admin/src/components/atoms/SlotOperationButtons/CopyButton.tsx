@@ -20,13 +20,25 @@ import {
 
 import { __copyButtonId__ } from "./__testData__/testIds";
 
+/**
+ * Button to handle copy operation:
+ * - if within `"day"` context, copies the whole day of slots (by dispatching `copySlotsDay` to store)
+ * - if within `"week"` context, copies the whole day of slots (by dispatching `copySlotsWeek` to store)
+ * - the copying of single slots date (within `constexType = "slot"`) is not yet supported
+ *   and it makes sense to do it in the future
+ *
+ * **Important:** Will not render if:
+ * - not within `SlotOperationButtons` context
+ * - under `contextType = "slot"` as this functionality is currently unsupported
+ * - no value for `date` has been provided in the context (as it is needed in order to dispatch copy action to the store)
+ */
 export const CopyButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   // prevent component from rendering and log error to console (but don't throw)
-  // if not rendered within of `ButtonGroupContext`
+  // if not rendered within the `SlotOpeartionButtons` context
   if (!buttonGroupContext) {
     console.error(__slotButtonNoContextError);
     return null;
@@ -36,7 +48,6 @@ export const CopyButton: React.FC = () => {
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
-  // if we wish to copy slot, we're copying slot(s) from within "day" or "week" context
   if (contextType === ButtonContextType.Slot) {
     console.error(__copyButtonWrongContextError);
     return null;

@@ -34,7 +34,7 @@ jest.mock("i18next", () => ({
   t: () => "",
 }));
 
-describe("Slot Opeartion Buttons", () => {
+describe("SlotOperationButtons", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
@@ -48,7 +48,7 @@ describe("Slot Opeartion Buttons", () => {
 
     const dummyDate = DateTime.fromISO("2021-03-01");
 
-    test("if 'contextType = \"day\"' should paste all slots of the day in clipboard to new day", () => {
+    test("if 'contextType=\"day\"' should paste all slots of the day in clipboard to new day", () => {
       // mock implementation of new paste slots day we'll be using to both
       // - create a test action object
       // - mock implementation within the component
@@ -74,7 +74,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("if 'contextType = \"week\"' should paste the week slots from clipboard to new week", () => {
+    test("if 'contextType=\"week\"' should paste the week slots from clipboard to new week", () => {
       // mock implementation of new paste slots week we'll be using to both
       // - create a test action object
       // - mock implementation within the component
@@ -117,14 +117,14 @@ describe("Slot Opeartion Buttons", () => {
   describe("'PasteButton' edge cases/error handling test", () => {
     const spyConsoleError = jest.spyOn(console, "error");
 
-    test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
+    test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<PasteButton />);
       const buttonOnScreen = screen.queryByTestId(__pasteButtonId__);
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"slot\"'", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"slot\"'", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Slot}>
           <PasteButton />
@@ -137,7 +137,7 @@ describe("Slot Opeartion Buttons", () => {
       );
     });
 
-    test("should not render the button and should log error to console if within 'contextType = \"day\" | \"week\"' and no value for 'date' has been provided in the context", () => {
+    test("should not render the button and should log error to console if within 'contextType=\"day\" | \"week\"' and no value for 'date' has been provided within the context", () => {
       render(
         <SlotOperationButtons contextType={ButtonContextType.Day}>
           <PasteButton />

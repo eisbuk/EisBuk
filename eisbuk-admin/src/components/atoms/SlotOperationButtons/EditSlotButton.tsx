@@ -23,12 +23,13 @@ import { editSlot } from "@/store/actions/slotOperations";
 import { __editSlotButtonId__ } from "./__testData__/testIds";
 
 /**
- * Button to edit an existing slot. Opens up a SlotForm (with current slot context passed as `slotToEdit`) 'onClick'.
+ * Button to edit an existing slot.
+ * Opens up a SlotForm with current `slot` from context passed as `slotToEdit`.
  *
  * **Important:** Will not render if:
  * - not within `SlotOperationButtons` context
- * - `contextType` of ButtonGroupContext is anything other than `slot` (as it only has functionality to handle this scenario)
- * - no value for `slot` has been provided in the context (as it is needed for full functionality)
+ * - not within `contextType = "slot"` as it's functionality handles only this scenario
+ * - no value for `slot` has been provided within the context (as it is needed for full functionality)
  */
 export const EditSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
@@ -46,21 +47,21 @@ export const EditSlotButton: React.FC = () => {
   /** @TEMP */
 
   // prevent component from rendering and log error to console (but don't throw)
-  // if not rendered within of `ButtonGroupContext`
+  // if not rendered within the `SlotOperationButtons` context
   if (!buttonGroupContext) {
     console.error(__slotButtonNoContextError);
     return null;
   }
 
   // prevent component from rendering and log error to console (but don't throw)
-  // if `slot` param not provided within the context
+  // if no `slot` param provided within the context
   if (!buttonGroupContext.slot) {
     console.error(__noSlotProvidedError);
     return null;
   }
 
   // prevent component from rendering and log error to console (but don't throw)
-  // if copntext any other than 'slot'
+  // if `contextType` is any other than "slot"
   if (buttonGroupContext.contextType !== ButtonContextType.Slot) {
     console.error(__editSlotButtonWrongContextError);
     return null;
