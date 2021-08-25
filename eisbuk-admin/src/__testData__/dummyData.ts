@@ -4,7 +4,7 @@ import { Slot, Duration, SlotType, Category } from "eisbuk-shared";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { luxonToFB } from "@/utils/date";
+import { fb2Luxon, luxonToFB } from "@/utils/date";
 
 // #region slot
 export const dummySlot: Slot<"id"> = {
@@ -15,4 +15,13 @@ export const dummySlot: Slot<"id"> = {
   categories: [Category.PreCompetitive],
   notes: "",
 };
+
+export const collectionOfSlots = Array(4)
+  .fill(null)
+  .map((_, i) => {
+    const defaultDate = fb2Luxon(dummySlot.date);
+    const newDate = defaultDate.plus({ hours: i * 2 });
+    const date = luxonToFB(newDate);
+    return { ...dummySlot, date };
+  });
 // #endregion slot

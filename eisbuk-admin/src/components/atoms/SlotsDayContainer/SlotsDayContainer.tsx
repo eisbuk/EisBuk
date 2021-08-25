@@ -63,13 +63,6 @@ const SlotsDayContainer: React.FC<Props> = ({
           ? children.map((child, i, { length }) => (
               <Grid
                 key={`${dateISO}-${length}-${i}`}
-                // className={canClickSlots ? classes.clickable : classes.unclickable}
-                // onClick={() =>
-                //   canClickSlots &&
-                //   (checkSelected(slot.id)
-                //     ? dispatch(deleteSlotFromClipboard(slot.id))
-                //     : dispatch(addSlotToClipboard(slot)))
-                // }
                 item
                 xs={12}
                 md={6}
