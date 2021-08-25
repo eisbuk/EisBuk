@@ -52,13 +52,16 @@ interface Props extends ContextParams {
  */
 const SlotOperationButtons: React.FC<Props> = ({
   children,
+  className,
   contextType = ButtonContextType.Week,
   slot,
   date,
-  className,
+  slotsToCopy,
 }) => {
   return (
-    <ButtonGroupContext.Provider value={{ contextType, slot, date }}>
+    <ButtonGroupContext.Provider
+      value={{ contextType, slot, date, slotsToCopy }}
+    >
       <Box display="flex" className={className}>
         {children}
       </Box>
