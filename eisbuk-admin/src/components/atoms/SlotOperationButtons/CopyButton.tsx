@@ -44,7 +44,7 @@ export const CopyButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType, slotsToCopy } = buttonGroupContext;
+  const { date, contextType, slotsToCopy, iconSize } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -70,7 +70,11 @@ export const CopyButton: React.FC = () => {
 
   return (
     <>
-      <IconButton size="small" onClick={onCopy} data-testid={__copyButtonId__}>
+      <IconButton
+        size={iconSize}
+        onClick={onCopy}
+        data-testid={__copyButtonId__}
+      >
         <Badge color="secondary" variant="dot" invisible={!displayBadge}>
           <FileCopyIcon />
         </Badge>

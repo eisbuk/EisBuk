@@ -53,16 +53,18 @@ export const EditSlotButton: React.FC = () => {
     return null;
   }
 
+  const { slot, iconSize, contextType } = buttonGroupContext;
+
   // prevent component from rendering and log error to console (but don't throw)
   // if no `slot` param provided within the context
-  if (!buttonGroupContext.slot) {
+  if (!slot) {
     console.error(__noSlotProvidedError);
     return null;
   }
 
   // prevent component from rendering and log error to console (but don't throw)
   // if `contextType` is any other than "slot"
-  if (buttonGroupContext.contextType !== ButtonContextType.Slot) {
+  if (contextType !== ButtonContextType.Slot) {
     console.error(__editSlotButtonWrongContextError);
     return null;
   }
@@ -70,7 +72,7 @@ export const EditSlotButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size="small"
+        size={iconSize}
         onClick={showForm}
         data-testid={__editSlotButtonId__}
       >

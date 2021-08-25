@@ -63,7 +63,7 @@ export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
     return null;
   }
 
-  const { contextType, date, slot } = buttonGroupContext;
+  const { contextType, date, slot, iconSize } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if rendered within `contextType === "slot"` but no value was provided for `slot` within the context
@@ -117,7 +117,7 @@ export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
   return (
     <>
       <IconButton
-        size="small"
+        size={iconSize}
         onClick={handleClick}
         data-testid={__deleteButtonId__}
       >

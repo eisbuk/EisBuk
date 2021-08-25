@@ -34,6 +34,10 @@ type ContextParams = Partial<{
     [ButtonContextType.Day]: boolean;
     [ButtonContextType.Week]: boolean;
   }>;
+  /**
+   * Material-UI `size` property, passed to all icons within context
+   */
+  iconSize: "small" | "medium";
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(
@@ -54,14 +58,10 @@ const SlotOperationButtons: React.FC<Props> = ({
   children,
   className,
   contextType = ButtonContextType.Week,
-  slot,
-  date,
-  slotsToCopy,
+  ...context
 }) => {
   return (
-    <ButtonGroupContext.Provider
-      value={{ contextType, slot, date, slotsToCopy }}
-    >
+    <ButtonGroupContext.Provider value={{ contextType, ...context }}>
       <Box display="flex" className={className}>
         {children}
       </Box>

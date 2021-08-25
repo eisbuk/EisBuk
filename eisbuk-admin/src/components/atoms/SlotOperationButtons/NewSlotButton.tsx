@@ -52,18 +52,20 @@ export const NewSlotButton: React.FC = () => {
     return null;
   }
 
+  const { contextType, date, iconSize } = buttonGroupContext;
+
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
   // this is because adding a new slot on `SlotCard` doesn't make much sense
   // and calling create slot on `week`'s view would not be precise enough (in terms of date the slot belongs to)
-  if (buttonGroupContext.contextType !== ButtonContextType.Day) {
+  if (contextType !== ButtonContextType.Day) {
     console.error(__newSlotButtonWrongContextError);
     return null;
   }
 
   // prevent component from rendering and log error to console (but don't throw)
   // if no `date` param provided within the context
-  if (!buttonGroupContext.date) {
+  if (!date) {
     console.error(__noDateProvidedError);
     return null;
   }
@@ -71,7 +73,7 @@ export const NewSlotButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size="small"
+        size={iconSize}
         onClick={showForm}
         data-testid={__newSlotButtonId__}
       >
