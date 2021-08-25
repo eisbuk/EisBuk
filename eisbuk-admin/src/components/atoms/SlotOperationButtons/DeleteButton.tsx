@@ -7,6 +7,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 
 import { ButtonContextType } from "@/enums/components";
 
+import { SlotButtonProps } from "@/types/components";
+
 import { ButtonGroupContext } from "./SlotOperationButtons";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
@@ -22,9 +24,9 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __deleteButtonId__ } from "./__testData__/testIds";
+import { __deleteButtonId__ } from "@/__testData__/testIds";
 
-interface Props {
+interface Props extends SlotButtonProps {
   /**
    * Optional confirm dialog. Used to open up a confirm dialog before dispatching action to store.
    * Requires title and description (to render the `ConfirmDialog`).
@@ -47,7 +49,7 @@ interface Props {
  * - under `contextType = "slot"` and no value for `slot` param has been provided within the context
  * - under `contextType = "day" | "week"` and no value for `date` has been provided within the context
  */
-export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
+export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
@@ -117,7 +119,7 @@ export const DeleteButton: React.FC<Props> = ({ confirmDialog }) => {
   return (
     <>
       <IconButton
-        size={iconSize}
+        size={size || iconSize}
         onClick={handleClick}
         data-testid={__deleteButtonId__}
       >

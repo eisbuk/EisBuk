@@ -4,6 +4,8 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
+import { Slot } from "eisbuk-shared";
+
 import { slotsLabels } from "@/config/appConfig";
 
 import { SlotView } from "@/enums/components";
@@ -13,12 +15,13 @@ import SlotCard from "../SlotCard";
 import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
+import { __slotId__ } from "../__testData__/testIds";
 import {
-  __editSlotId__,
-  __deleteSlotId__,
-  __slotId__,
-} from "../__testData__/testIds";
-import { __slotFormId__ } from "@/__testData__/testIds";
+  __confirmDialogYesId__,
+  __slotFormId__,
+  __deleteButtonId__,
+  __editSlotButtonId__,
+} from "@/__testData__/testIds";
 import { dummySlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
@@ -115,22 +118,31 @@ describe("SlotCard", () => {
   });
 
   describe("SlotOperationButtons functionality", () => {
-    // we're mocking the return of deleteSlots function for easier testing
-    const mockDelete = jest.spyOn(slotOperations, "deleteSlots");
-    mockDelete.mockImplementation((slots) => ({ slots } as any));
-
     beforeEach(() => {
       render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
     });
 
     test("should open slot form on edit slot click", () => {
-      screen.getByTestId(__editSlotId__).click();
+      screen.getByTestId(__editSlotButtonId__).click();
       screen.getByTestId(__slotFormId__);
     });
 
-    test("should dispatch delete action on delete click", () => {
-      screen.getByTestId(__deleteSlotId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith({ slots: [dummySlot] });
+    test("should dispatch delete action on delete confirmation click", () => {
+      // mock implementation of `deleteSlot` used to mock implementation in component and for testing
+      const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+        type: "delete_slot",
+        slotId,
+      });
+      // mock deleteSlot function
+      jest
+        .spyOn(slotOperations, "deleteSlot")
+        .mockImplementation(mockDelSlotImplementation);
+      // open delete dialog
+      screen.getByTestId(__deleteButtonId__).click();
+      // confirm delete dialog
+      screen.getByTestId(__confirmDialogYesId__).click();
+      const mockDeleteAction = mockDelSlotImplementation(dummySlot.id);
+      expect(mockDispatch).toHaveBeenCalledWith(mockDeleteAction);
     });
   });
 

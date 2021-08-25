@@ -14,7 +14,7 @@ import { luxon2ISODate } from "@/utils/date";
 
 interface Props {
   /**
-   * Boolean flag to show additional buttons (if now specified, will default to `true`)
+   * Boolean flag to show additional buttons (if not specified, will default to `true`)
    */
   showAdditionalButtons?: boolean;
   /**

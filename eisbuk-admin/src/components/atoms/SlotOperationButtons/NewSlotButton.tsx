@@ -7,6 +7,7 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
 import { ButtonContextType } from "@/enums/components";
 
+import { SlotButtonProps } from "@/types/components";
 import { SlotOperation } from "@/types/slotOperations";
 
 import SlotForm from "@/components/slots/SlotForm";
@@ -20,7 +21,7 @@ import {
   __newSlotButtonWrongContextError,
 } from "@/lib/errorMessages";
 
-import { __newSlotButtonId__ } from "./__testData__/testIds";
+import { __newSlotButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to create a new slot. Opens up a blank SlotForm 'onClick' to
@@ -30,7 +31,7 @@ import { __newSlotButtonId__ } from "./__testData__/testIds";
  * - not within `SlotOperationButtons` context
  * - no value for `date` has been provided in the context (as it is needed for full functionality)
  */
-export const NewSlotButton: React.FC = () => {
+export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const [openForm, setOpenForm] = useState(false);
@@ -73,7 +74,7 @@ export const NewSlotButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size={iconSize}
+        size={size || iconSize}
         onClick={showForm}
         data-testid={__newSlotButtonId__}
       >

@@ -64,10 +64,19 @@ export const DifferentSizes = (): JSX.Element => (
       <PasteButton />
       <DeleteButton />
     </SlotOperationButtons>
+    <br />
     Small:
+    <br />
     <SlotOperationButtons {...baseProps} iconSize="small">
       <CopyButton />
       <PasteButton />
+      <DeleteButton />
+    </SlotOperationButtons>
+    <br />
+    Small sides with medium middle:
+    <SlotOperationButtons {...baseProps} iconSize="small">
+      <CopyButton />
+      <PasteButton size="medium" />
       <DeleteButton />
     </SlotOperationButtons>
   </>

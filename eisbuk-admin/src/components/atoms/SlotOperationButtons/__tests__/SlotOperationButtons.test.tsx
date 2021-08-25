@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 
 import { Slot } from "eisbuk-shared";
 
-import * as testIds from "../__testData__/testIds";
+import * as testIds from "@/__testData__/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 

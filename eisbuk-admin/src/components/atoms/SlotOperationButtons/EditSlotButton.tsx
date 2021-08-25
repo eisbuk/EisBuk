@@ -7,6 +7,7 @@ import CreateIcon from "@material-ui/icons/Create";
 
 import { ButtonContextType } from "@/enums/components";
 
+import { SlotButtonProps } from "@/types/components";
 import { SlotOperation } from "@/types/slotOperations";
 
 import SlotForm from "@/components/slots/SlotForm";
@@ -20,7 +21,7 @@ import {
 
 import { editSlot } from "@/store/actions/slotOperations";
 
-import { __editSlotButtonId__ } from "./__testData__/testIds";
+import { __editSlotButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to edit an existing slot.
@@ -31,7 +32,7 @@ import { __editSlotButtonId__ } from "./__testData__/testIds";
  * - not within `contextType = "slot"` as it's functionality handles only this scenario
  * - no value for `slot` has been provided within the context (as it is needed for full functionality)
  */
-export const EditSlotButton: React.FC = () => {
+export const EditSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const [openForm, setOpenForm] = useState(false);
@@ -72,7 +73,7 @@ export const EditSlotButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size={iconSize}
+        size={size || iconSize}
         onClick={showForm}
         data-testid={__editSlotButtonId__}
       >

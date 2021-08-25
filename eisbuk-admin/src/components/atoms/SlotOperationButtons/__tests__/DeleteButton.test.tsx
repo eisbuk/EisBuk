@@ -27,7 +27,7 @@ import {
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
-import { __deleteButtonId__ } from "../__testData__/testIds";
+import { __deleteButtonId__ } from "@/__testData__/testIds";
 import {
   __confirmDialogNoId__,
   __confirmDialogYesId__,

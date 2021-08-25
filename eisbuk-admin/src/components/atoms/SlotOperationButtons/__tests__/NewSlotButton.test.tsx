@@ -24,7 +24,7 @@ import { ButtonContextType } from "@/enums/components";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
-import { __newSlotButtonId__ } from "../__testData__/testIds";
+import { __newSlotButtonId__ } from "@/__testData__/testIds";
 import {
   __slotFormId__,
   __cancelFormId__,

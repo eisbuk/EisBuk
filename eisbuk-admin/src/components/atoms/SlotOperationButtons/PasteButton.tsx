@@ -7,6 +7,8 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 
 import { ButtonContextType } from "@/enums/components";
 
+import { SlotButtonProps } from "@/types/components";
+
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import {
@@ -17,7 +19,7 @@ import {
 
 import { newPasteSlotDay, newPasteSlotWeek } from "@/store/actions/copyPaste";
 
-import { __pasteButtonId__ } from "./__testData__/testIds";
+import { __pasteButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to handle pasting of slots form clipboard to current `day`/`week`,
@@ -29,7 +31,7 @@ import { __pasteButtonId__ } from "./__testData__/testIds";
  * - trying to render within `contextType = "slot"` as it makes no sence to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
-export const PasteButton: React.FC = () => {
+export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
@@ -68,7 +70,7 @@ export const PasteButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size={iconSize}
+        size={size || iconSize}
         onClick={handlePaste}
         disabled={disableButton}
         data-testid={__pasteButtonId__}

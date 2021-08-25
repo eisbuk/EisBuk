@@ -22,7 +22,7 @@ import {
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
-import { __editSlotButtonId__ } from "../__testData__/testIds";
+import { __editSlotButtonId__ } from "@/__testData__/testIds";
 import { dummySlot } from "@/__testData__/dummyData";
 import { __slotFormId__, __cancelFormId__ } from "@/__testData__/testIds";
 

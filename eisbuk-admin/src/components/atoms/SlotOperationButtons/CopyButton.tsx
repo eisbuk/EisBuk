@@ -8,6 +8,8 @@ import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import { ButtonContextType } from "@/enums/components";
 
+import { SlotButtonProps } from "@/types/components";
+
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import { newCopySlotWeek, newCopySlotDay } from "@/store/actions/copyPaste";
@@ -18,7 +20,7 @@ import {
   __noDateCopy,
 } from "@/lib/errorMessages";
 
-import { __copyButtonId__ } from "./__testData__/testIds";
+import { __copyButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to handle copy operation:
@@ -32,7 +34,7 @@ import { __copyButtonId__ } from "./__testData__/testIds";
  * - under `contextType = "slot"` as this functionality is currently unsupported
  * - no value for `date` has been provided in the context (as it is needed in order to dispatch copy action to the store)
  */
-export const CopyButton: React.FC = () => {
+export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
@@ -71,7 +73,7 @@ export const CopyButton: React.FC = () => {
   return (
     <>
       <IconButton
-        size={iconSize}
+        size={size || iconSize}
         onClick={onCopy}
         data-testid={__copyButtonId__}
       >
