@@ -18,3 +18,8 @@ export const __copyButtonId__ = "copy-button";
 export const __pasteButtonId__ = "paste-button";
 export const __deleteButtonId__ = "delete-button";
 // #endregion SlotOperationButtons
+
+// #region DateNavigation
+export const __dateNavNextId__ = "date-navigation-next-page";
+export const __dateNavPrevId__ = "date-navigation-previous-page";
+// #endregion DateNavigation

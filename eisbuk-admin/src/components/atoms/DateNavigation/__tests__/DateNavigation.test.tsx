@@ -9,11 +9,11 @@ import i18n from "i18next";
 
 import DateNavigation from "../DateNavigation";
 
-import { __decrementId__, __incrementId__ } from "../__testData__/testData";
-
 import { renderWithRouter } from "@/__testUtils__/wrappers";
 
 import { luxon2ISODate } from "@/utils/date";
+
+import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
 
 // import { __toggleId__ } from "./testData";
 
@@ -71,8 +71,8 @@ describe("Date Navigation", () => {
         .plus({ months: -1 })
         .toISO()
         .substr(0, 10);
-      const incrementButton = screen.getByTestId(__incrementId__);
-      const decrementButton = screen.getByTestId(__decrementId__);
+      const incrementButton = screen.getByTestId(__dateNavNextId__);
+      const decrementButton = screen.getByTestId(__dateNavPrevId__);
       // initial view start should be default date
       screen.getByText(luxon2ISODate(currentMonthStart));
       // test increment
@@ -95,7 +95,7 @@ describe("Date Navigation", () => {
           {({ currentViewStart }) => luxon2ISODate(currentViewStart)}
         </DateNavigation>
       );
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(__dateNavNextId__).click();
       await screen.findByText(nextWeekStartISO);
     });
 

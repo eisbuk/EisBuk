@@ -9,11 +9,11 @@ import { DateTime } from "luxon";
 
 import DateNavigation from "../DateNavigation";
 
-import { __incrementId__ } from "../__testData__/testData";
-
 import { renderWithRouter } from "@/__testUtils__/wrappers";
 
 import { luxon2ISODate } from "@/utils/date";
+
+import { __dateNavNextId__ } from "@/__testData__/testIds";
 
 describe("DateNavigation", () => {
   describe("Integration test 'withRouter'", () => {
@@ -38,7 +38,7 @@ describe("DateNavigation", () => {
         </Route>,
         routerParams
       );
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(__dateNavNextId__).click();
 
       // expected date after the pagination
       const expectedDate = startDate.plus({ weeks: 1 });

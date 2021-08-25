@@ -16,11 +16,9 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { luxon2ISODate } from "@/utils/date";
 import { createDateTitle, getFallbackDate, processDateParam } from "./utils";
 
-import {
-  __toggleId__,
-  __incrementId__,
-  __decrementId__,
-} from "./__testData__/testData";
+import { __toggleId__ } from "./__testData__/testData";
+
+import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
 
 /**
  * A render function passed as child for render prop usage
@@ -183,7 +181,7 @@ const DateNavigation: React.FC<Props> = ({
             className={classes.prev}
             color="inherit"
             aria-label="menu"
-            data-testid={__decrementId__}
+            data-testid={__dateNavPrevId__}
             onClick={switchTimeframe("decrement")}
           >
             <ChevronLeftIcon />
@@ -200,7 +198,7 @@ const DateNavigation: React.FC<Props> = ({
             className={classes.next}
             color="inherit"
             aria-label="menu"
-            data-testid={__incrementId__}
+            data-testid={__dateNavNextId__}
             onClick={switchTimeframe("increment")}
           >
             <ChevronRightIcon />

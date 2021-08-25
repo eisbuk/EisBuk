@@ -10,8 +10,9 @@ import { DateTime } from "luxon";
 
 import DateNavigation from "../DateNavigation";
 
-import { __incrementId__ } from "../__testData__/testData";
 import { luxon2ISODate } from "@/utils/date";
+
+import { __dateNavNextId__ } from "@/__testData__/testIds";
 
 /**
  * Mock `push` method on the return interface of `useHistory` from `react-router-dom`.
@@ -98,7 +99,7 @@ describe("Date Navigation", () => {
       const nextDate = routerTestDate.plus({ days: 1 });
       const nextDateISO = luxon2ISODate(nextDate);
       const newRoute = `/location/${nextDateISO}`;
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(__dateNavNextId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(newRoute);
     });
 
