@@ -34,6 +34,7 @@ describe("AttendanceCard", () => {
           time={"11-12"}
           userBookings={users}
           category={Category.Competitive}
+          absentees={["heisenberg"]}
         />
       );
     });
@@ -46,6 +47,14 @@ describe("AttendanceCard", () => {
     });
     test("should render category", () => {
       screen.getByText("competitive");
+    });
+    test("should render absent emoji", () => {
+      const absentUser = screen.getByTestId("heisenberg");
+      expect(absentUser).toEqual(screen.getByText("👎"));
+    });
+    test("should render present emoji", () => {
+      const absentUser = screen.getByTestId("saul");
+      expect(absentUser).toEqual(screen.getByText("👍"));
     });
   });
 });

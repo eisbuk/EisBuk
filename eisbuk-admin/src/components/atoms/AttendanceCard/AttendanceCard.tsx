@@ -8,10 +8,12 @@ type UserBooking = Pick<Customer, "id"> &
   Pick<Customer, "surname"> &
   Pick<Customer, "certificateExpiration">;
 
+// absentees should be of type Pick<Customer, "id">
 interface Props {
   time: string;
   category: Category;
   userBookings: UserBooking[];
+  absentees: string[];
 }
 
 // mark attendees
@@ -24,6 +26,9 @@ const AttendanceCard: React.FC<Props> = (props) => {
         return (
           <div key={user.id}>
             <div>{user.name}</div>
+            <div data-testid={user.id}>
+              {props.absentees.includes(user.id) ? "👎" : "👍"}
+            </div>
           </div>
         );
       })}
