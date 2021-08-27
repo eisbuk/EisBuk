@@ -19,14 +19,8 @@ describe("AttendanceCard", () => {
     beforeEach(() => {
       render(
         <AttendanceCard
-          date={luxonToFB(DateTime.fromISO("2021-05-25T09:00:00.123"))}
-          durations={[
-            Duration["1.5h"],
-            Duration["2h"],
-            Duration["3h"],
-            Duration["4h"],
-            Duration["5h"],
-          ]}
+          date={luxonToFB(DateTime.fromMillis(1629198000000))}
+          durations={[Duration["1.5h"], Duration["2h"]]}
           type={SlotType.Ice}
           userBookings={users}
           categories={[Category.Competitive]}
@@ -37,7 +31,7 @@ describe("AttendanceCard", () => {
       );
     });
     test("should render props", () => {
-      expect(screen.getByTestId("timeString")).toBe("9-14");
+      expect(screen.getByText("13:00 - 15:00"));
       screen.getByText("Saul");
       screen.getByText("Walter");
       screen.getByText(Category.Competitive);
