@@ -1,5 +1,5 @@
 // storybook env constants
-export const __storybookDate__ = process.env.STORYBOOK_DATE || "2021-01-18";
+export const __storybookDate__ = process.env.STORYBOOK_DATE || "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable

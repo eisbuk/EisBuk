@@ -19,6 +19,7 @@ import { createDateTitle, getFallbackDate, processDateParam } from "./utils";
 import { __toggleId__ } from "./__testData__/testData";
 
 import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import { __isStorybook__, __storybookDate__ } from "@/lib/constants";
 
 /**
  * A render function passed as child for render prop usage
@@ -91,7 +92,10 @@ const DateNavigation: React.FC<Props> = ({
   // ISO date string representation of current time.
   // Used for calculating of the fallback default time
   const fallbackDate = getFallbackDate(jump);
-  const initialStartTime = withRouter
+  const initialStartTime = __isStorybook__
+    ? // set standardized date if in storybook env
+      DateTime.fromISO(__storybookDate__)
+    : withRouter
     ? routeDate || defaultDate || fallbackDate
     : defaultDate || fallbackDate;
   // we're employing fault tolerance here:
@@ -110,7 +114,7 @@ const DateNavigation: React.FC<Props> = ({
    */
   useEffect(() => {
     const localDateISO = luxon2ISODate(currentViewStart);
-    if (withRouter && routeDateISO !== localDateISO) {
+    if (!__isStorybook__ && withRouter && routeDateISO !== localDateISO) {
       if (!routeDate) {
         const pathnameWithLocalDate = `${pathname}/${localDateISO}`;
         history.push(pathnameWithLocalDate);
