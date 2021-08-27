@@ -4,8 +4,10 @@ import { render, screen } from "@testing-library/react";
 import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
-import { Category } from "../../../../../../eisbuk-shared/dist";
-
+import { Category, Duration, SlotType } from "eisbuk-shared";
+import { users } from "../__testData__/dummyData";
+import { DateTime } from "luxon";
+import { luxonToFB } from "@/utils/date";
 /**
  * Mocked `markAttendance` function, expect it to have been called when needed
  */
@@ -15,46 +17,30 @@ describe("AttendanceCard", () => {
   // write all of the tests (grouped by another describe) within this block
   describe("Smoke test", () => {
     beforeEach(() => {
-      const users = [
-        {
-          name: "Saul",
-          surname: "Goodman",
-          certificateExpiration: "2001-01-01",
-          id: "saul",
-        },
-        {
-          name: "Walter",
-          surname: "White",
-          id: "heisenberg",
-          certificateExpiration: "2001-01-01",
-        },
-      ];
       render(
         <AttendanceCard
-          time={"11-12"}
+          date={luxonToFB(DateTime.fromISO("2021-05-25T09:00:00.123"))}
+          durations={[
+            Duration["1.5h"],
+            Duration["2h"],
+            Duration["3h"],
+            Duration["4h"],
+            Duration["5h"],
+          ]}
+          type={SlotType.Ice}
           userBookings={users}
-          category={Category.Competitive}
+          categories={[Category.Competitive]}
           absentees={["heisenberg"]}
+          notes=""
+          id="123"
         />
       );
     });
-    test("should render time prop", () => {
-      screen.getByText("11-12");
-    });
-    test("should render attendees", () => {
+    test("should render props", () => {
+      expect(screen.getByTestId("timeString")).toBe("9-14");
       screen.getByText("Saul");
       screen.getByText("Walter");
-    });
-    test("should render category", () => {
-      screen.getByText("competitive");
-    });
-    test("should render absent emoji", () => {
-      const absentUser = screen.getByTestId("heisenberg");
-      expect(absentUser).toEqual(screen.getByText("👎"));
-    });
-    test("should render present emoji", () => {
-      const absentUser = screen.getByTestId("saul");
-      expect(absentUser).toEqual(screen.getByText("👍"));
+      screen.getByText(Category.Competitive);
     });
   });
 });
