@@ -1,9 +1,6 @@
 import React from "react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { render } from "@testing-library/react";
-import { ThemeProvider } from "@material-ui/core";
-
-import { currentTheme } from "@/themes";
 
 // #region RouterWrapper
 /**
@@ -28,22 +25,3 @@ export const renderWithRouter = (
 ): ReturnType<typeof render> =>
   render(ui, { wrapper: createRouterWrapper(routerParams) });
 // #endregion RouterWrapper
-
-// #region ThemeWrapper
-/**
- * Wrapper used to wrap children with Material-UI `ThemeProvder`
- * and pass `currentTheme` from `@/themes.ts` as theme
- * @param param0 children
- * @returns children wrapped in `ThemeProvider`
- */
-const ThemeWrapper: React.FC = ({ children }) => (
-  <ThemeProvider theme={currentTheme}>{children}</ThemeProvider>
-);
-/**
- * A custom render function wrapping passed ui with `ThemeWrapper` and rendering for tests.
- * @param ui we want to render for testing
- * @returns the result of `jest.render` function
- */
-export const renderWithTheme = (ui: JSX.Element): ReturnType<typeof render> =>
-  render(ui, { wrapper: ThemeWrapper });
-// #endregion ThemeWrapper
