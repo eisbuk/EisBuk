@@ -22,7 +22,7 @@ export const collectionOfSlots = Array(4)
     const defaultDate = fb2Luxon(dummySlot.date);
     const newDate = defaultDate.plus({ hours: i * 2 });
     const date = luxonToFB(newDate);
-    return { ...dummySlot, date };
+    return { ...dummySlot, date, id: `slot-${i}` };
   });
 
 /**

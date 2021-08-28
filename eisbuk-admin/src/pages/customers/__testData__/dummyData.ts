@@ -1,8 +1,13 @@
 import { dummySlot } from "@/__testData__/dummyData";
 
-import { SlotType } from "eisbuk-shared";
+import { SlotType, Duration } from "eisbuk-shared";
+
 import { CustomerRoute } from "@/enums/routes";
 
+import { luxonToFB } from "@/utils/date";
+import { DateTime } from "luxon";
+
+// #region CustomerRoute
 /**
  * Slot structure received from store
  */
@@ -42,3 +47,19 @@ export const dummySlotsSplitByRoute = {
     },
   },
 };
+// #region CustomerRoute
+
+// #region BookingsCalendar
+export const bookedSlots = Array(7)
+  .fill("2021-03-01")
+  .map((dateISO, i) => {
+    const luxonDay = DateTime.fromISO(dateISO).plus({ days: i, hours: 9 });
+    const date = luxonToFB(luxonDay);
+    return {
+      ...dummySlot,
+      id: `slot-${i}`,
+      date,
+      bookedDuration: Duration["1.5h"],
+    };
+  });
+// #endregion BookingsCalendar

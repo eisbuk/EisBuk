@@ -19,7 +19,7 @@ import { slotsLabels } from "@/config/appConfig";
 import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
 
-type Props = Pick<Slot, "type"> &
+export type Props = Pick<Slot, "type"> &
   Pick<Slot, "date"> &
   Pick<Slot, "notes"> & {
     bookedDuration: Duration;
