@@ -1,6 +1,6 @@
 import React from "react";
 import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
-import { fb2Luxon } from "../../../utils/date";
+import { fb2Luxon } from "@/utils/date";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -28,22 +28,12 @@ const AttendanceCard: React.FC<Props> = ({
   const luxonEnd = luxonStart.plus({ minutes: longestDuration });
 
   // get time for rendering
-  const {
-    hour: startHours,
-    minute: startMinutes,
-    second: startSeconds,
-  } = luxonStart.toObject();
-  const {
-    hour: endHours,
-    minute: endMinutes,
-    second: endSeconds,
-  } = luxonEnd.toObject();
-
-  const timeString = `${startHours}:${startMinutes}${startSeconds} - ${endHours}:${endMinutes}${endSeconds}`;
+  const timeString = `${luxonStart
+    .toISOTime()
+    .substring(0, 5)} - ${luxonEnd.toISOTime().substring(0, 5)}`;
   return (
     <div>
       <div data-testid="time-string">{timeString}</div>
-      <div data-testid="luxon-start">{luxonStart.toString()}</div>
       <div>{categories}</div>
       {userBookings.map((user) => {
         return (

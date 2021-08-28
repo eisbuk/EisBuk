@@ -1,4 +1,6 @@
-import { Category } from "eisbuk-shared";
+import { luxonToFB } from "@/utils/date";
+import { Category, Duration, SlotType } from "eisbuk-shared";
+import { DateTime } from "luxon";
 
 export const users = [
   {
@@ -16,3 +18,14 @@ export const users = [
     category: Category.PreCompetitive,
   },
 ];
+
+export const dummySlot = {
+  date: luxonToFB(DateTime.fromMillis(1629198000000)),
+  durations: [Duration["1.5h"], Duration["2h"]],
+  type: SlotType.Ice,
+  userBookings: users,
+  categories: [Category.Competitive],
+  absentees: ["heisenberg"],
+  notes: "",
+  id: "123",
+};
