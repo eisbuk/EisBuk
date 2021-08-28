@@ -133,7 +133,7 @@ const LinkTab: React.FC<LinkTabProps> = ({
 
   const history = useHistory();
 
-  const label = t(`CustomerArea.${customerRoute}`);
+  const label = t(`CustomerNavigation.${customerRoute}`);
 
   const handleClick = () => {
     if (asPath) {

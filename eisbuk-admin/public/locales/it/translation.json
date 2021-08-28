@@ -55,13 +55,14 @@
     "TryAgain": "Esci e riprova con un altro utente"
   },
   "CustomerArea": {
-    "book_ice": "Prenota Ice",
-    "book_off_ice": "Prenota Off-Ice",
-    "calendar": "Calendario",
     "Book": "Prenota",
     "Calendar": "Calendario"
   },
-
+  "CustomerNavigation": {
+    "book_ice": "Prenota Ice",
+    "book_off_ice": "Prenota Off-Ice",
+    "calendar": "Calendario"
+  },
   "CustomersPage": {
     "Athletes": "Atleti",
     "AddAthlete": "Aggiungi atleta"

@@ -55,11 +55,13 @@
     "TryAgain": "Log out and try again with a different user"
   },
   "CustomerArea": {
-    "book_ice": "Book Ice",
-    "book_off_ice": "Book Off-Ice",
-    "calendar": "Calendar",
     "Book": "Book",
     "Calendar": "Calendar"
+  },
+  "CustomerNavigation": {
+    "book_ice": "Book Ice",
+    "book_off_ice": "Book Off-Ice",
+    "calendar": "Calendar"
   },
   "CustomersPage": {
     "Athletes": "Athletes",
