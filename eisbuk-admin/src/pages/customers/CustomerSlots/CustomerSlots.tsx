@@ -4,11 +4,12 @@ import { DateTime } from "luxon";
 import { Slot, Duration } from "eisbuk-shared";
 
 import { SlotView } from "@/enums/components";
+import { CustomerRoute } from "@/enums/routes";
 
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotCard from "@/components/atoms/SlotCard";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
-import { CustomerRoute } from "@/enums/routes";
+
 import { orderByWeekDay } from "./utils";
 
 interface SlotsByDay {

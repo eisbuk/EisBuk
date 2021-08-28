@@ -9,7 +9,7 @@ import BookingCard, { BookingCardProps } from "@/components/atoms/BookingCard";
 
 interface Props {
   /**
-   * Array of bookeings to display -> booked slot data + duration
+   * Array of bookings to display -> booked slot data + duration
    */
   bookings?: Array<BookingCardProps & { id: string }>;
 }

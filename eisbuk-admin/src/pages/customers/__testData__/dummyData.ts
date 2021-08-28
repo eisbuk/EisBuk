@@ -48,18 +48,3 @@ export const dummySlotsSplitByRoute = {
   },
 };
 // #region CustomerRoute
-
-// #region BookingsCalendar
-export const bookedSlots = Array(7)
-  .fill("2021-03-01")
-  .map((dateISO, i) => {
-    const luxonDay = DateTime.fromISO(dateISO).plus({ days: i, hours: 9 });
-    const date = luxonToFB(luxonDay);
-    return {
-      ...dummySlot,
-      id: `slot-${i}`,
-      date,
-      bookedDuration: Duration["1.5h"],
-    };
-  });
-// #endregion BookingsCalendar
