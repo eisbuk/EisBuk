@@ -1,6 +1,10 @@
-import { luxonToFB } from "@/utils/date";
-import { Category, Duration, SlotType } from "eisbuk-shared";
 import { DateTime } from "luxon";
+
+import { Category, Duration, SlotType } from "eisbuk-shared";
+
+import { __storybookDate__ } from "@/lib/constants";
+
+import { luxonToFB } from "@/utils/date";
 
 export const users = [
   {
@@ -19,8 +23,11 @@ export const users = [
   },
 ];
 
+// here we're using storybook date as default date and making sure that the slots starts at 13:00
+const luxonDate = DateTime.fromISO(__storybookDate__).plus({ hours: 13 });
+
 export const dummySlot = {
-  date: luxonToFB(DateTime.fromMillis(1629198000000)),
+  date: luxonToFB(luxonDate),
   durations: [Duration["1.5h"], Duration["2h"]],
   type: SlotType.Ice,
   userBookings: users,
