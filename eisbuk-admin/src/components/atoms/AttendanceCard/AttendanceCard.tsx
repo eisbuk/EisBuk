@@ -28,9 +28,10 @@ const AttendanceCard: React.FC<Props> = ({
   const luxonEnd = luxonStart.plus({ minutes: longestDuration });
 
   // get time for rendering
-  const timeString = `${luxonStart
-    .toISOTime()
-    .substring(0, 5)} - ${luxonEnd.toISOTime().substring(0, 5)}`;
+  const startTime = luxonStart.toISOTime().substring(0, 5);
+  const endTime = luxonEnd.toISOTime().substring(0, 5);
+
+  const timeString = `${startTime} - ${endTime}`;
   return (
     <div>
       <div data-testid="time-string">{timeString}</div>
