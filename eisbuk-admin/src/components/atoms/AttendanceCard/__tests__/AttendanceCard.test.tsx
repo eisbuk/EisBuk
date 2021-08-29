@@ -1,17 +1,22 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 
 import AttendanceCard from "../AttendanceCard";
 
-// import * as attendanceOperations from "@/store/actions/attendanceOperations";
+import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category } from "eisbuk-shared";
 import { dummySlot } from "../__testData__/dummyData";
 
 /**
  * Mocked `markAttendance` function, expect it to have been called when needed
  */
-// const mockMarkAttendance = jest.spyOn(attendanceOperations, "markAttendance");
+const mockMarkAttendance = jest.spyOn(attendanceOperations, "markAttendance");
 
+const mockDispatch = jest.fn();
+jest.mock("react-redux", () => ({
+  useDispatch: () => mockDispatch,
+}));
 describe("AttendanceCard", () => {
   // write all of the tests (grouped by another describe) within this block
   describe("Smoke test", () => {
@@ -23,6 +28,10 @@ describe("AttendanceCard", () => {
       screen.getByText("Saul");
       screen.getByText("Walter");
       screen.getByText(Category.Competitive);
+    });
+    test("should call markAttendance with correct args", () => {
+      userEvent.click(screen.getByText("Mark Walter as present"));
+      expect(mockMarkAttendance).toHaveBeenCalledWith("heisenberg", true);
     });
   });
 });
