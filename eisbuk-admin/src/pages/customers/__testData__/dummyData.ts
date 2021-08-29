@@ -1,11 +1,8 @@
 import { dummySlot } from "@/__testData__/dummyData";
 
-import { SlotType, Duration } from "eisbuk-shared";
+import { SlotType } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
-
-import { luxonToFB } from "@/utils/date";
-import { DateTime } from "luxon";
 
 // #region CustomerRoute
 /**
@@ -45,6 +42,14 @@ export const dummySlotsSplitByRoute = {
       ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
       ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
     },
+  },
+  [CustomerRoute.Calendar]: {
+    ["slot-0"]: { ...dummySlot, id: "slot-0", type: SlotType.Ice },
+    ["slot-1"]: { ...dummySlot, id: "slot-1", type: SlotType.OffIceDancing },
+    ["slot-2"]: { ...dummySlot, id: "slot-2", type: SlotType.OffIceGym },
+    ["slot-3"]: { ...dummySlot, id: "slot-3", type: SlotType.Ice },
+    ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
+    ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
   },
 };
 // #region CustomerRoute

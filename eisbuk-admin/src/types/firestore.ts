@@ -38,7 +38,7 @@ export interface FirestoreData {
   [OrgSubCollection.BookingsByDay]: BookingsByDay;
   [OrgSubCollection.Bookings]: BookingsMeta;
   [BookingSubCollection.SubscribedSlots]: Record<string, BookingInfo>;
-  [OrgSubCollection.SlotsByDay]: SlotsByDay;
+  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay };
 }
 
 export interface FirestoreOrdered {
@@ -49,9 +49,7 @@ export interface FirestoreOrdered {
   >;
   [OrgSubCollection.Bookings]: [BookingsMeta & { id: string }];
   [BookingSubCollection.SubscribedSlots]: BookingInfo[];
-  [OrgSubCollection.SlotsByDay]: Array<
-    SlotsByDay[keyof SlotsByDay] & { id: string }
-  >;
+  [OrgSubCollection.SlotsByDay]: Array<SlotsByDay & { id: string }>;
 }
 
 // ***** End Region In-Store Firebase Date Scheme ***** //

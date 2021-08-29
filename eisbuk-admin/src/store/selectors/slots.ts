@@ -1,15 +1,25 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
 import { createSelector } from "reselect";
+import { DateTime } from "luxon";
 
-import { Slot, Customer, BookingInfo, SlotType } from "eisbuk-shared";
+import {
+  Slot,
+  Customer,
+  BookingInfo,
+  SlotType,
+  SlotsByDay,
+  Category,
+  SlotsById,
+} from "eisbuk-shared";
+
+import { CustomerRoute } from "@/enums/routes";
 
 import { LocalStore } from "@/types/store";
 
 import { flatten, fs2luxon } from "@/utils/helpers";
 
 import { getCustomersRecord } from "./firestore";
-import { CustomerRoute } from "@/enums/routes";
 
 const extractSlotDate = (slot: Slot): number => slot.date.seconds;
 const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
@@ -152,3 +162,83 @@ export const bookingDayInfoSelector = (dayStr: string) =>
       });
     }
   );
+
+// #region newSelectors
+export const getSlotsForCustomer = (
+  category: Category,
+  timeframe: "week" | "month",
+  startDate: DateTime
+) => (state: LocalStore): SlotsByDay => {
+  const allSlotsInStore = state.firestore.data.slotsByDay;
+
+  // return early if no slots in store
+  if (!allSlotsInStore) return {};
+
+  // get slots for current month
+  const monthString = startDate.toISO().substr(0, 7);
+  const slotsForAMonth = allSlotsInStore[monthString];
+
+  if (timeframe === "month") {
+    // filter slots from each day with respect to category
+    return Object.keys(slotsForAMonth).reduce((acc, date) => {
+      const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
+        slotsForAMonth[date],
+        category
+      );
+
+      return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
+    }, {} as SlotsByDay);
+  }
+
+  // continue processing in case `timeframe === "week"`
+  const endOfWeek = startDate.endOf("week");
+
+  // return `SlotsByDay` record with slots filtered by week and provided category
+  return Object.keys(slotsForAMonth).reduce((acc, date) => {
+    // check if slots day belongs to apropriate week
+    const luxonDay = DateTime.fromISO(date);
+
+    const { milliseconds: diffFromStart } = luxonDay.diff(startDate).toObject();
+    const { milliseconds: diffFromEnd } = luxonDay.diff(endOfWeek).toObject();
+
+    const isCurrentWeek = diffFromStart! >= 0 && diffFromEnd! < 0;
+
+    // filter slots (of slots day) not within the provided category
+    const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
+      slotsForAMonth[date],
+      category
+    );
+
+    return isCurrentWeek && !isFilteredDayEmpty
+      ? {
+          ...acc,
+          [date]: filteredSlotsDay,
+        }
+      : acc;
+  }, {} as SlotsByDay);
+};
+// #endregion newSelectors
+
+/**
+ * A helper function we're using to filter out slots not within provided category.
+ * @param slotsRecord record of slots keyed by slotId
+ * @param category customer's category we're checking against
+ * @returns a tuple of filtered slots record and boolean (true if filtered record is empty)
+ */
+const filterSlotsByCategory = (
+  slotsRecord: SlotsById,
+  category: Category
+): [SlotsById, boolean] => {
+  let isEmptyWhenFiltered = true;
+
+  const filteredRecord = Object.keys(slotsRecord).reduce((acc, slotId) => {
+    const slot = slotsRecord[slotId];
+    if (slot.categories.includes(category)) {
+      isEmptyWhenFiltered = false;
+      return { ...acc, [slotId]: slot };
+    }
+    return acc;
+  }, {} as SlotsById);
+
+  return [filteredRecord, isEmptyWhenFiltered];
+};
