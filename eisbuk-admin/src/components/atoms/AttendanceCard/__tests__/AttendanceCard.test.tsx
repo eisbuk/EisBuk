@@ -25,7 +25,7 @@ describe("AttendanceCard", () => {
       render(<AttendanceCard {...dummySlot} />);
     });
     test("should render props", () => {
-      expect(screen.getByText("13:00 - 15:00"));
+      screen.getByText("13:00 - 15:00");
       screen.getByText("Saul");
       screen.getByText("Walter");
       screen.getByText(Category.Competitive);
@@ -33,7 +33,7 @@ describe("AttendanceCard", () => {
     test("should dispatch markAttendance with correct args", () => {
       screen.getByText("Mark Walter as present").click();
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockMarkAttImplementation("heisebnerg", true)
+        mockMarkAttImplementation("heisenberg", true)
       );
     });
   });
