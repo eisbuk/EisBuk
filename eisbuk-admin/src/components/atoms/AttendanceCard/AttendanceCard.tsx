@@ -45,7 +45,7 @@ const AttendanceCard: React.FC<Props> = ({
         return (
           <div key={user.customer_id}>
             <div>{user.name}</div>
-            <div>{isAbsent ? "absent" : "present"}</div>
+            <div>{isAbsent ? "👎" : "👍"}</div>
             <button
               type="button"
               onClick={() =>
