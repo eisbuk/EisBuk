@@ -6,17 +6,14 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category } from "eisbuk-shared";
 import { dummySlot } from "../__testData__/dummyData";
 
-/**
- * Mocked `markAttendance` function, expect it to have been called when needed
- */
-const mockMarkAttendance = jest.spyOn(attendanceOperations, "markAttendance");
+const mockMarkAttImplementation = (customerId: string, attended: boolean) => ({
+  customerId,
+  attended,
+});
+jest
+  .spyOn(attendanceOperations, "markAttendance")
+  .mockImplementation(mockMarkAttImplementation);
 
-mockMarkAttendance.mockImplementation(
-  (customerId: string, attended: boolean) => ({
-    customerId,
-    attended,
-  })
-);
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
@@ -35,10 +32,9 @@ describe("AttendanceCard", () => {
     });
     test("should dispatch markAttendance with correct args", () => {
       screen.getByText("Mark Walter as present").click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        customerId: "heisenberg",
-        attended: true,
-      });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockMarkAttImplementation("heisebnerg", true)
+      );
     });
   });
 });
