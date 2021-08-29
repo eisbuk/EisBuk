@@ -13,6 +13,12 @@ import { dummySlot } from "../__testData__/dummyData";
  */
 const mockMarkAttendance = jest.spyOn(attendanceOperations, "markAttendance");
 
+mockMarkAttendance.mockImplementation(
+  (customerId: string, attended: boolean) => ({
+    customerId,
+    attended,
+  })
+);
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
@@ -29,9 +35,12 @@ describe("AttendanceCard", () => {
       screen.getByText("Walter");
       screen.getByText(Category.Competitive);
     });
-    test("should call markAttendance with correct args", () => {
+    test("should dispatch markAttendance with correct args", () => {
       userEvent.click(screen.getByText("Mark Walter as present"));
-      expect(mockMarkAttendance).toHaveBeenCalledWith("heisenberg", true);
+      expect(mockDispatch).toHaveBeenCalledWith({
+        customerId: "heisenberg",
+        attended: true,
+      });
     });
   });
 });
