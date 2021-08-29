@@ -1,7 +1,5 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-
 import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
@@ -36,7 +34,7 @@ describe("AttendanceCard", () => {
       screen.getByText(Category.Competitive);
     });
     test("should dispatch markAttendance with correct args", () => {
-      userEvent.click(screen.getByText("Mark Walter as present"));
+      screen.getByText("Mark Walter as present").click();
       expect(mockDispatch).toHaveBeenCalledWith({
         customerId: "heisenberg",
         attended: true,
