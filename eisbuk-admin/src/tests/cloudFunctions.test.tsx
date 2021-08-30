@@ -25,7 +25,7 @@ maybeDescribe("Cloud functions", () => {
     done();
   });
 
-  it("deny access to users not belonging to the organization", async (done) => {
+  it("denies access to users not belonging to the organization", async (done) => {
     await adminDb
       .collection("organizations")
       .doc("default")

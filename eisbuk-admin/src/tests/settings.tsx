@@ -5,6 +5,7 @@ import "firebase/functions";
 import "firebase/firestore";
 import { Firestore } from "@google-cloud/firestore";
 import { credentials } from "@grpc/grpc-js";
+import { functionsZone } from "@/config/envInfo";
 
 const projectId = "eisbuk";
 
@@ -24,6 +25,7 @@ firebase.initializeApp({
 });
 firebase.auth().useEmulator("http://localhost:9098/");
 firebase.functions().useEmulator("localhost", 5002);
+firebase.app().functions(functionsZone).useEmulator("localhost", 5002);
 
 export const db = firebase.firestore();
 
