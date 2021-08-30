@@ -1,6 +1,8 @@
 import React from "react";
 import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
 import { fb2Luxon } from "@/utils/date";
+import { markAttendance } from "@/store/actions/attendanceOperations";
+import { useDispatch } from "react-redux";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -17,6 +19,8 @@ const AttendanceCard: React.FC<Props> = ({
   userBookings,
   absentees,
 }) => {
+  const dispatch = useDispatch();
+
   // convert timestamp to luxon for easier processing
   const luxonStart = fb2Luxon(date);
 
@@ -37,12 +41,18 @@ const AttendanceCard: React.FC<Props> = ({
       <div data-testid="time-string">{timeString}</div>
       <div>{categories}</div>
       {userBookings.map((user) => {
+        const isAbsent = absentees?.includes(user.customer_id) || false;
         return (
           <div key={user.customer_id}>
             <div>{user.name}</div>
-            <div>
-              {absentees?.includes(user.customer_id) ? "absent" : "present"}
-            </div>
+            <button
+              type="button"
+              onClick={() =>
+                dispatch(markAttendance(user.customer_id, isAbsent))
+              }
+            >
+              {isAbsent ? "👎" : "👍"}
+            </button>
           </div>
         );
       })}
