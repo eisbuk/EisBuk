@@ -61,30 +61,40 @@ const CustomerNavigation: React.FC = () => {
   /**
    * If no `CustomerRoute` value found in `pathname`, redirect to default route
    */
+  console.log("Customer route in pathname > ", customerRouteInPathname);
   useEffect(() => {
     if (!customerRouteInPathname) {
       const defaultRoute = asPath.replace(
         __placeholder__,
         CustomerRoute.BookIce
       );
+      console.log("Default route > ", defaultRoute);
       history.push(defaultRoute);
     }
   }, [customerRouteInPathname, asPath, history]);
 
-  const activeTab = customerRouteInPathname
-    ? customerRoutes.findIndex((route) => customerRouteInPathname === route)
-    : -1;
+  const handleChange = (e: any, value: CustomerRoute) => {
+    if (asPath) {
+      const newRoute = asPath.replace(__placeholder__, value);
+      history.push(newRoute);
+    }
+  };
 
   return (
     <AppBar position="static" className={classes.customerNav}>
       <Container maxWidth="xl">
-        <Tabs indicatorColor="primary" centered>
+        <Tabs
+          indicatorColor="primary"
+          centered
+          value={customerRouteInPathname}
+          onChange={handleChange}
+        >
           <LinkTab
-            value={activeTab}
             customerRoute={CustomerRoute.BookIce}
             icon={<EventNoteIcon />}
             data-testid={__bookIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookIce}
+            value={CustomerRoute.BookIce}
             asPath={asPath}
           />
           <LinkTab
@@ -92,11 +102,13 @@ const CustomerNavigation: React.FC = () => {
             icon={<EventNoteIcon />}
             data-testid={__bookOffIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookOffIce}
+            value={CustomerRoute.BookOffIce}
             asPath={asPath}
           />
           <LinkTab
             customerRoute={CustomerRoute.Calendar}
             icon={<PersonPinIcon />}
+            value={CustomerRoute.Calendar}
             data-testid={__calendarButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.Calendar}
             asPath={asPath}
@@ -124,25 +136,12 @@ type LinkTabProps = Omit<TabProps, "onClick"> & {
  * A custom component for Material-UI `Tab` we're using to serve as a
  * `Link` component with some use-case specific functionality
  */
-const LinkTab: React.FC<LinkTabProps> = ({
-  customerRoute,
-  asPath,
-  ...props
-}) => {
+const LinkTab: React.FC<LinkTabProps> = ({ customerRoute, ...props }) => {
   const { t } = useTranslation();
-
-  const history = useHistory();
 
   const label = t(`CustomerNavigation.${customerRoute}`);
 
-  const handleClick = () => {
-    if (asPath) {
-      const newRoute = asPath.replace(__placeholder__, customerRoute);
-      history.push(newRoute);
-    }
-  };
-
-  return <Tab onClick={handleClick} {...{ ...props, label }} />;
+  return <Tab {...{ ...props, label }} />;
 };
 // #endregion LinkTab
 

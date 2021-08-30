@@ -70,9 +70,9 @@ const CustomerSlots: React.FC<Props> = ({
     <DateNavigation jump={paginateBy} withRouter>
       {() => (
         <>
-          {orderedDates.map((date) => {
+          {orderedDates?.map((date) => {
             const luxonDay = DateTime.fromISO(date);
-            const slostForDay = slots[date];
+            const slostForDay = slots[date] || {};
             const slotsArray = Object.values(slostForDay);
 
             return (

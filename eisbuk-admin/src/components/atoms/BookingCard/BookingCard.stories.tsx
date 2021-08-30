@@ -1,6 +1,5 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import { DateTime } from "luxon";
 
 import { Duration } from "eisbuk-shared";
 

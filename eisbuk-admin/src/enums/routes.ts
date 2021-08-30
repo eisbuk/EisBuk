@@ -15,4 +15,5 @@ export enum PrivateRoutes {
   Root = "/",
   Atleti = "/atleti",
   Prenotazioni = "/prenotazioni",
+  Customers = "/customers",
 }
