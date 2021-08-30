@@ -19,7 +19,6 @@ jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 describe("AttendanceCard", () => {
-  // write all of the tests (grouped by another describe) within this block
   describe("Smoke test", () => {
     beforeEach(() => {
       render(<AttendanceCard {...dummySlot} />);
@@ -29,6 +28,11 @@ describe("AttendanceCard", () => {
       screen.getByText("Saul");
       screen.getByText("Walter");
       screen.getByText(Category.Competitive);
+    });
+  });
+  describe("Test marking attendance functionality", () => {
+    beforeEach(() => {
+      render(<AttendanceCard {...dummySlot} />);
     });
     test("should dispatch markAttendance with correct args", () => {
       screen.getByText("👎").click();
