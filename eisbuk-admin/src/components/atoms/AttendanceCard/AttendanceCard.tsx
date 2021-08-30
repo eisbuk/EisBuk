@@ -45,14 +45,13 @@ const AttendanceCard: React.FC<Props> = ({
         return (
           <div key={user.customer_id}>
             <div>{user.name}</div>
-            <div>{isAbsent ? "👎" : "👍"}</div>
             <button
               type="button"
               onClick={() =>
                 dispatch(markAttendance(user.customer_id, isAbsent))
               }
             >
-              {`Mark ${user.name} as ${!isAbsent ? "absent" : "present"}`}
+              {isAbsent ? "👎" : "👍"}
             </button>
           </div>
         );

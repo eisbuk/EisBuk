@@ -31,7 +31,7 @@ describe("AttendanceCard", () => {
       screen.getByText(Category.Competitive);
     });
     test("should dispatch markAttendance with correct args", () => {
-      screen.getByText("Mark Walter as present").click();
+      screen.getByText("👎").click();
       expect(mockDispatch).toHaveBeenCalledWith(
         mockMarkAttImplementation("heisenberg", true)
       );
