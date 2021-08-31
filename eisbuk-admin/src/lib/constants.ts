@@ -1,5 +1,10 @@
 // storybook env constants
-export const __storybookDate__ = process.env.STORYBOOK_DATE || "2021-03-01";
+/**
+ * A date we're using for both storybook and testing
+ * - for storybook it's convenient to have any 'static' date, in order for chromatic checks to not produce false positives
+ * - this exact date is convenient for testing as it's both start of week as well as month
+ */
+export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable

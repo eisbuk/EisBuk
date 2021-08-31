@@ -9,6 +9,8 @@ import { DateTime } from "luxon";
 
 import DateNavigation from "../DateNavigation";
 
+import { __storybookDate__ } from "@/lib/constants";
+
 import { luxon2ISODate } from "@/utils/date";
 
 import { __dateNavNextId__ } from "@/__testData__/testIds";
@@ -40,7 +42,7 @@ const mockUseParams = mocked(useParams);
 const mockUseLocation = mocked(useLocation);
 
 // default date we'll be passing as a `defaultDate` prop to `DateNavigation` component
-const defaultDateISO = "2021-03-01";
+const defaultDateISO = __storybookDate__;
 const defaultDate = DateTime.fromISO(defaultDateISO);
 
 // router date we'll be passing as `date` property on `useParams()` return interface
@@ -57,6 +59,10 @@ describe("Date Navigation", () => {
     beforeEach(() => {
       jest.clearAllMocks();
       cleanup();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     test("should try and read date from router", () => {
@@ -103,18 +109,35 @@ describe("Date Navigation", () => {
     });
 
     test("if no date path param provided, should push default date (to synchronize route and local state)", () => {
-      mockUseParams.mockReturnValueOnce({ date: undefined });
+      mockUseParams.mockReturnValue({ date: undefined });
       mockUseLocation.mockReturnValue({ pathname: "/location" } as any);
       // to 'shake things up a bit' we'll be using "week" as a `jump` value and a date which isn't a start of it's week
       // we're expecting the safe default date (corrected to the start of the timeframe) to be pushed to the route
       // the `notWeekStart` is a tuesday and the monday of the same week is our 'defaultDate' used throughout the suite
-      const notWeekStartISO = "2021-03-02";
-      const notWeekStart = DateTime.fromISO(notWeekStartISO);
+      const notWeekStart = DateTime.fromISO(defaultDateISO).plus({
+        days: 1,
+      });
       render(
         <DateNavigation withRouter jump="week" defaultDate={notWeekStart} />
       );
       const locationWithDefaultDate = `/location/${defaultDateISO}`;
       expect(mockHistoryPush).toHaveBeenCalledWith(locationWithDefaultDate);
+    });
+
+    test('should update to \'date.startOf(<timeframe>)\' if date path param not start of timeframe (this is in case of switching from "week" to "month")', () => {
+      const monthStartISO = defaultDateISO;
+      // this is a realistic scenario as the date below is a start of it's own week, but not the month
+      const notMonthStart = DateTime.fromISO(monthStartISO).plus({ weeks: 1 });
+      const notMonthStartISO = luxon2ISODate(notMonthStart);
+      mockUseParams.mockReturnValue({ date: notMonthStartISO });
+      mockUseLocation.mockReturnValue({
+        pathname: `/location/${notMonthStartISO}`,
+      } as any);
+      render(
+        <DateNavigation withRouter jump="month" defaultDate={notMonthStart} />
+      );
+      const locationWithStartOfMonth = `/location/${monthStartISO}`;
+      expect(mockHistoryPush).toHaveBeenCalledWith(locationWithStartOfMonth);
     });
   });
 });

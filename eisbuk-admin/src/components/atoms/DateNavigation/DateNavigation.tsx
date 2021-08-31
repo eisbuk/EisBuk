@@ -110,7 +110,7 @@ const DateNavigation: React.FC<Props> = ({
   /**
    * Handle synchronization of the route and the local state (if `withRouter = true`):
    * - if route `date` param is undefined, push default date to the route
-   * - if route `date` param is defined, but different from local state, update local state accordingly
+   * - if route `date` param is defined, but different from local state, update local state accordinglyz
    */
   useEffect(() => {
     const localDateISO = luxon2ISODate(currentViewStart);
@@ -131,6 +131,25 @@ const DateNavigation: React.FC<Props> = ({
     currentViewStart,
     routeDate,
   ]);
+
+  /**
+   * If switching to "month" view after "week" view,
+   * check and update route date to start of "month" (if not so already)
+   */
+  useEffect(() => {
+    if (jump === "month" && routeDateISO) {
+      const localDateISO = luxon2ISODate(currentViewStart);
+      const correctedDate = currentViewStart.startOf(jump);
+      const correctedDateISO = luxon2ISODate(correctedDate);
+      if (localDateISO !== correctedDateISO) {
+        const pathnameWithCorrectedDate = pathname.replace(
+          routeDateISO,
+          correctedDateISO
+        );
+        history.push(pathnameWithCorrectedDate);
+      }
+    }
+  }, [jump, currentViewStart, routeDateISO, history, pathname]);
 
   /**
    * Handler we're using for pagination.
