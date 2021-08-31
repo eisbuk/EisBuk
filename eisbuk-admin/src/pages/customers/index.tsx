@@ -6,7 +6,7 @@ import { DateTime } from "luxon";
 
 import { Duration, OrgSubCollection } from "eisbuk-shared";
 
-import { CustomerRoute, PrivateRoutes } from "@/enums/routes";
+import { CustomerRoute, Routes } from "@/enums/routes";
 
 import CustomerSlots from "./CustomerSlots";
 import BookingsCalendar from "./BookingsCalendar";
@@ -88,7 +88,7 @@ const CustomerPage: React.FC = () => {
    * Extract:
    * - `bookings` (used for `BookingsCalendar`)
    * - `bookedSlots` (used for `CustomerSlots`)
-   * We're taking these values as a tuple to reduce the processing time (and amount of code)
+   * We're returning these values as a tuple to reduce the processing time (and amount of code)
    * by utilizing the same iteration for both structures
    * (as they're using the same data, only structured a bit differently)
    */
@@ -138,7 +138,7 @@ const CustomerPage: React.FC = () => {
       <CustomerNavigation />
       <Switch>
         <Route
-          path={`${PrivateRoutes.Customers}/:secretKey/${CustomerRoute.BookIce}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookIce}/:date?`}
         >
           <CustomerSlots
             view={CustomerRoute.BookIce}
@@ -147,7 +147,7 @@ const CustomerPage: React.FC = () => {
           />
         </Route>
         <Route
-          path={`${PrivateRoutes.Customers}/:secretKey/${CustomerRoute.BookOffIce}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookOffIce}/:date?`}
         >
           <CustomerSlots
             view={CustomerRoute.BookOffIce}
@@ -156,7 +156,7 @@ const CustomerPage: React.FC = () => {
           />
         </Route>
         <Route
-          path={`${PrivateRoutes.Customers}/:secretKey/${CustomerRoute.Calendar}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.Calendar}/:date?`}
         >
           <BookingsCalendar bookings={bookings} />
         </Route>
@@ -164,57 +164,5 @@ const CustomerPage: React.FC = () => {
     </>
   );
 };
-
-// /**
-//  * A wrapper component around the page. We're using this to:
-//  * - serve as a component for route catching all paths starting with `/customers/:secretKey`
-//  * - connect local store with apropriate `bookings` data for customer (determined by `secretKey` route param)
-//  * - render customer navigation: autamatically appending `customerRoute` to the path if not already provided (default `/customers/:secretKey/book_ice`)
-//  * - render sub routes catching all paths starting with `/customers/:secretKey/:customerRoute`
-//  * @returns
-//  */
-// const CustomerPage: React.FC = () => {
-//   const { secretKey } = useParams<{
-//     secretKey: string;
-//   }>();
-
-//   useFirestoreConnect([
-//     wrapOrganization({
-//       collection: OrgSubCollection.Bookings,
-//       doc: secretKey,
-//     }),
-//   ]);
-
-//   /** @TODO fix this selector to return singluar customer data */
-//   const [customerData] = useSelector(getBookingsCustomer) || [];
-
-//   /**
-//    * @TODO This is copy pasted from old `CustomerAreaPage`.
-//    * We might want to find a simpler way to handle this (admin status)
-//    */
-//   const auth = useSelector(getFirebaseAuth);
-
-//   const title =
-//     isLoaded(customerData) && customerData
-//       ? `${customerData.name} ${customerData.surname}`
-//       : "";
-
-//   const headers = (
-//     <>
-//       {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
-//       <AppbarCustomer headingText={title} />
-//     </>
-//   );
-//   return (
-//     <>
-//       {headers}
-//       <CustomerNavigation />
-//       <Route
-//         path={`${PrivateRoutes.Customers}/:secretKey/:customerRoute/:date?`}
-//         component={CustomerRoutes}
-//       />
-//     </>
-//   );
-// };
 
 export default CustomerPage;

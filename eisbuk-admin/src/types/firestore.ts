@@ -38,7 +38,7 @@ export interface FirestoreData {
   [OrgSubCollection.BookingsByDay]: BookingsByDay;
   [OrgSubCollection.Bookings]: BookingsMeta;
   [BookingSubCollection.SubscribedSlots]: Record<string, BookingInfo>;
-  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay };
+  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay | null };
 }
 
 export interface FirestoreOrdered {

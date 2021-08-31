@@ -1,8 +1,8 @@
 export enum Routes {
   Login = "/login",
   Unauthorized = "/unautorized",
-  Clienti = "/clienti/:secretKey",
   Debug = "/debug",
+  CustomerArea = "/customer_area",
 }
 
 export enum CustomerRoute {
@@ -15,5 +15,4 @@ export enum PrivateRoutes {
   Root = "/",
   Atleti = "/atleti",
   Prenotazioni = "/prenotazioni",
-  Customers = "/customers",
 }

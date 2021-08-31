@@ -57,7 +57,11 @@ const getSafe = <F extends () => any>(
 export const getAllSlotsByDay = (
   state: LocalStore
 ): Record<string, Record<string, Slot<"id">>> =>
-  flatten(Object.values(state.firestore.data.slotsByDay || {}));
+  flatten(
+    Object.values(
+      state.firestore.data.slotsByDay || ({} as Record<string, any>)
+    )
+  );
 
 /**
  * Get subscribed slots from state
@@ -77,7 +81,7 @@ export const getSubscribedSlots = (
  */
 const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
   const monthStr = dayStr.substr(0, 7);
-  return getSafe(() => state.firestore.data.slotsByDay![monthStr][dayStr]);
+  return getSafe(() => state.firestore.data.slotsByDay![monthStr]![dayStr]);
 };
 
 /**
@@ -176,7 +180,7 @@ export const getSlotsForCustomer = (
 
   // get slots for current month
   const monthString = startDate.toISO().substr(0, 7);
-  const slotsForAMonth = allSlotsInStore[monthString];
+  const slotsForAMonth = allSlotsInStore[monthString] || {};
 
   if (timeframe === "month") {
     // filter slots from each day with respect to category

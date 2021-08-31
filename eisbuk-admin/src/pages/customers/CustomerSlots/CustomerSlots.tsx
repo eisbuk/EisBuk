@@ -76,7 +76,11 @@ const CustomerSlots: React.FC<Props> = ({
             const slotsArray = Object.values(slostForDay);
 
             return (
-              <SlotsDayContainer date={luxonDay} view={SlotView.Customer}>
+              <SlotsDayContainer
+                key={date}
+                date={luxonDay}
+                view={SlotView.Customer}
+              >
                 {slotsArray.map((slot) => {
                   // check if slot is subscribed to
                   const subscribedDuration = subscribedSlots
@@ -84,6 +88,7 @@ const CustomerSlots: React.FC<Props> = ({
                     : undefined;
                   return (
                     <SlotCard
+                      key={slot.id}
                       {...slot}
                       view={SlotView.Customer}
                       {...{ subscribedDuration }}

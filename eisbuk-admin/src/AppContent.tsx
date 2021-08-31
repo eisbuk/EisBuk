@@ -23,8 +23,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import AthletesPage from "@/pages/CustomersPage";
 import SlotsPage from "@/pages/SlotsPage";
 import LoginPage from "@/pages/LoginPage";
-import CustomerAreaPage from "@/pages/CustomerAreaPage";
-import CustomersPage from "@/pages/customers";
+import CustomerAreaPage from "@/pages/customers";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";
@@ -47,12 +46,11 @@ const AppComponents: React.FC = () => {
       <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
       <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
-      <PrivateRoute
-        path={`${PrivateRoutes.Customers}/:secretKey/:customerRoute?/:date?`}
-        component={CustomersPage}
+      <Route
+        path={`${Routes.CustomerArea}/:secretKey/:customerRoute?/:date?`}
+        component={CustomerAreaPage}
       />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
-      <Route path={Routes.Clienti} children={<CustomerAreaPage />} />
       <Route path={Routes.Debug} children={<DebugPage />} />
     </Switch>
   );
