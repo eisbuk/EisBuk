@@ -1,4 +1,5 @@
 import { deleteAllCollections, loginWithPhone } from "./utils";
+import { functionsZone } from "@/config/envInfo";
 import { adminDb } from "./settings";
 import firebase from "firebase/app";
 import "firebase/functions";
@@ -14,14 +15,17 @@ const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
 
 maybeDescribe("Cloud functions", () => {
   it("can be pinged", async (done) => {
-    const result = await firebase.app().functions().httpsCallable("ping")({
+    const result = await firebase
+      .app()
+      .functions(functionsZone)
+      .httpsCallable("ping")({
       foo: "bar",
     });
     expect(result).toEqual({ data: { pong: true, data: { foo: "bar" } } });
     done();
   });
 
-  it("deniy access to users not belonging to the organization", async (done) => {
+  it("denies access to users not belonging to the organization", async (done) => {
     await adminDb
       .collection("organizations")
       .doc("default")
@@ -30,7 +34,7 @@ maybeDescribe("Cloud functions", () => {
       });
     // We're not logged in yet, so this should throw
     await expect(
-      firebase.app().functions().httpsCallable("createTestData")({
+      firebase.app().functions(functionsZone).httpsCallable("createTestData")({
         organization: "default",
       })
     ).rejects.toThrow();
@@ -38,7 +42,7 @@ maybeDescribe("Cloud functions", () => {
     // We log in with the wrong user
     await loginWithUser("wrong@example.com");
     await expect(
-      firebase.app().functions().httpsCallable("createTestData")({
+      firebase.app().functions(functionsZone).httpsCallable("createTestData")({
         organization: "default",
       })
     ).rejects.toThrow();
@@ -46,14 +50,20 @@ maybeDescribe("Cloud functions", () => {
     // ...and with the right one
     await firebase.auth().signOut();
     await loginWithUser("test@example.com");
-    await firebase.app().functions().httpsCallable("createTestData")({
+    await firebase
+      .app()
+      .functions(functionsZone)
+      .httpsCallable("createTestData")({
       organization: "default",
     });
 
     // or using the phone number
     await firebase.auth().signOut();
     await loginWithPhone("+1234567890");
-    await firebase.app().functions().httpsCallable("createTestData")({
+    await firebase
+      .app()
+      .functions(functionsZone)
+      .httpsCallable("createTestData")({
       organization: "default",
     });
     done();
