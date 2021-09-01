@@ -140,7 +140,7 @@ const DateNavigation: React.FC<Props> = ({
    * check and update route date to start of "month" (if not so already)
    */
   useEffect(() => {
-    if (jump === "month" && routeDateISO) {
+    if (routeDateISO) {
       const localDateISO = luxon2ISODate(currentViewStart);
       const correctedDate = currentViewStart.startOf(jump);
       const correctedDateISO = luxon2ISODate(correctedDate);

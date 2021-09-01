@@ -74,6 +74,7 @@ const CustomerPage: React.FC = () => {
   // get raw slots (slots by day) from store
   const rawSlots = useSelector(slotsSelector);
 
+  console.log("Raw slots > ", rawSlots);
   // process slots for each route
   const {
     [CustomerRoute.BookIce]: bookIceSlots,
@@ -131,6 +132,8 @@ const CustomerPage: React.FC = () => {
       <AppbarCustomer headingText={title} />
     </>
   );
+
+  console.log("Bookings", bookings);
 
   return (
     <>
