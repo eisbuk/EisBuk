@@ -4,7 +4,7 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category } from "eisbuk-shared";
-import { dummySlot } from "../__testData__/dummyData";
+import { customersSlot, emptySlot } from "../__testData__/dummyData";
 
 const mockMarkAttImplementation = (customerId: string, attended: boolean) => ({
   customerId,
@@ -21,7 +21,7 @@ jest.mock("react-redux", () => ({
 describe("AttendanceCard", () => {
   describe("Smoke test", () => {
     beforeEach(() => {
-      render(<AttendanceCard {...dummySlot} />);
+      render(<AttendanceCard {...customersSlot} />);
     });
     test("should render props", () => {
       screen.getByText("13:00 - 15:00");
@@ -32,7 +32,7 @@ describe("AttendanceCard", () => {
   });
   describe("Test marking attendance functionality", () => {
     beforeEach(() => {
-      render(<AttendanceCard {...dummySlot} />);
+      render(<AttendanceCard {...customersSlot} />);
     });
     test("should dispatch markAttendance with correct args", () => {
       screen.getByText("👎").click();
