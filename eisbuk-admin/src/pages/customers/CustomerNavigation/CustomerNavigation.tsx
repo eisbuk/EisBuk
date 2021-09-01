@@ -53,7 +53,7 @@ const CustomerNavigation: React.FC = () => {
     : !customerRouteInPathname
     ? // if no value for customer route in pathname,
       // add current customerRoute at the end of the pathname
-      `${pathname}/${__placeholder__}`
+      `${pathname.replace(/\/$/, "")}/${__placeholder__}`
     : // in most common case, replace the found customer route in pathname
       // with current customer route
       pathname.replace(customerRouteInPathname, __placeholder__);
@@ -61,14 +61,12 @@ const CustomerNavigation: React.FC = () => {
   /**
    * If no `CustomerRoute` value found in `pathname`, redirect to default route
    */
-  console.log("Customer route in pathname > ", customerRouteInPathname);
   useEffect(() => {
     if (!customerRouteInPathname) {
       const defaultRoute = asPath.replace(
         __placeholder__,
         CustomerRoute.BookIce
       );
-      console.log("Default route > ", defaultRoute);
       history.push(defaultRoute);
     }
   }, [customerRouteInPathname, asPath, history]);
@@ -86,7 +84,7 @@ const CustomerNavigation: React.FC = () => {
         <Tabs
           indicatorColor="primary"
           centered
-          value={customerRouteInPathname}
+          value={customerRouteInPathname || false}
           onChange={handleChange}
         >
           <LinkTab
@@ -95,7 +93,6 @@ const CustomerNavigation: React.FC = () => {
             data-testid={__bookIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookIce}
             value={CustomerRoute.BookIce}
-            asPath={asPath}
           />
           <LinkTab
             customerRoute={CustomerRoute.BookOffIce}
@@ -103,7 +100,6 @@ const CustomerNavigation: React.FC = () => {
             data-testid={__bookOffIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookOffIce}
             value={CustomerRoute.BookOffIce}
-            asPath={asPath}
           />
           <LinkTab
             customerRoute={CustomerRoute.Calendar}
@@ -111,7 +107,6 @@ const CustomerNavigation: React.FC = () => {
             value={CustomerRoute.Calendar}
             data-testid={__calendarButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.Calendar}
-            asPath={asPath}
           />
         </Tabs>
       </Container>
@@ -126,11 +121,6 @@ type LinkTabProps = Omit<TabProps, "onClick"> & {
    * A `CustomerRoute` we wish to use this tab for
    */
   customerRoute: CustomerRoute;
-  /**
-   * A generic string containing `<customerRoute>` to be replaced with
-   * value of `customerRoute` param
-   */
-  asPath?: string;
 };
 /**
  * A custom component for Material-UI `Tab` we're using to serve as a

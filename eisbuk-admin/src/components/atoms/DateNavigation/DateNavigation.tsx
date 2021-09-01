@@ -116,7 +116,10 @@ const DateNavigation: React.FC<Props> = ({
     const localDateISO = luxon2ISODate(currentViewStart);
     if (!__isStorybook__ && withRouter && routeDateISO !== localDateISO) {
       if (!routeDate) {
-        const pathnameWithLocalDate = `${pathname}/${localDateISO}`;
+        const pathnameWithLocalDate = `${pathname.replace(
+          /\/$/,
+          ""
+        )}/${localDateISO}`;
         history.push(pathnameWithLocalDate);
       } else {
         setCurrentViewStart(routeDate);
