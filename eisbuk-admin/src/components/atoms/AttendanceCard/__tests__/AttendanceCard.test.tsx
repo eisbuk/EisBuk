@@ -26,12 +26,12 @@ describe("AttendanceCard", () => {
   describe("Smoke test", () => {
     beforeEach(() => {
       render(<AttendanceCard {...customersSlot} />);
-      () => spyT.mockClear();
     });
     test("should render props", () => {
       screen.getByText("13:00 - 15:00");
       screen.getByText("Saul");
       screen.getByText("Walter");
+      // TODO: move back to getByText when i18next is implemented
       // screen.getByText(Category.Competitive);
       expect(spyT).toHaveBeenCalledWith(`Categories.${Category.Competitive}`);
       expect(spyT).toHaveBeenCalledWith(`SlotTypes.${SlotType.Ice}`);
