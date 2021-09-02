@@ -1,7 +1,6 @@
 /**
  * @jest-environment jsdom-sixteen
  */
-
 import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { useLocation, useParams } from "react-router-dom";
@@ -10,8 +9,11 @@ import { DateTime } from "luxon";
 
 import DateNavigation from "../DateNavigation";
 
-import { __incrementId__ } from "../__testData__/testData";
+import { __storybookDate__ } from "@/lib/constants";
+
 import { luxon2ISODate } from "@/utils/date";
+
+import { __dateNavNextId__ } from "@/__testData__/testIds";
 
 /**
  * Mock `push` method on the return interface of `useHistory` from `react-router-dom`.
@@ -40,7 +42,7 @@ const mockUseParams = mocked(useParams);
 const mockUseLocation = mocked(useLocation);
 
 // default date we'll be passing as a `defaultDate` prop to `DateNavigation` component
-const defaultDateISO = "2021-03-01";
+const defaultDateISO = __storybookDate__;
 const defaultDate = DateTime.fromISO(defaultDateISO);
 
 // router date we'll be passing as `date` property on `useParams()` return interface
@@ -57,6 +59,10 @@ describe("Date Navigation", () => {
     beforeEach(() => {
       jest.clearAllMocks();
       cleanup();
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
     test("should try and read date from router", () => {
@@ -98,18 +104,19 @@ describe("Date Navigation", () => {
       const nextDate = routerTestDate.plus({ days: 1 });
       const nextDateISO = luxon2ISODate(nextDate);
       const newRoute = `/location/${nextDateISO}`;
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(__dateNavNextId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(newRoute);
     });
 
     test("if no date path param provided, should push default date (to synchronize route and local state)", () => {
-      mockUseParams.mockReturnValueOnce({ date: undefined });
+      mockUseParams.mockReturnValue({ date: undefined });
       mockUseLocation.mockReturnValue({ pathname: "/location" } as any);
       // to 'shake things up a bit' we'll be using "week" as a `jump` value and a date which isn't a start of it's week
       // we're expecting the safe default date (corrected to the start of the timeframe) to be pushed to the route
       // the `notWeekStart` is a tuesday and the monday of the same week is our 'defaultDate' used throughout the suite
-      const notWeekStartISO = "2021-03-02";
-      const notWeekStart = DateTime.fromISO(notWeekStartISO);
+      const notWeekStart = DateTime.fromISO(defaultDateISO).plus({
+        days: 1,
+      });
       render(
         <DateNavigation withRouter jump="week" defaultDate={notWeekStart} />
       );
