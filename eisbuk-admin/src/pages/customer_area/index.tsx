@@ -74,7 +74,6 @@ const CustomerArea: React.FC = () => {
   // get raw slots (slots by day) from store
   const rawSlots = useSelector(slotsSelector);
 
-  console.log("Raw slots > ", rawSlots);
   // process slots for each route
   const {
     [CustomerRoute.BookIce]: bookIceSlots,
@@ -85,8 +84,6 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const subscribedSlots = useSelector(getSubscribedSlots);
 
-  console.log("Calendar Slots > ", calendarSlots);
-  console.log("Subscribed slots > ", subscribedSlots);
   /**
    * Extract:
    * - `bookings` (used for `BookingsCalendar`)

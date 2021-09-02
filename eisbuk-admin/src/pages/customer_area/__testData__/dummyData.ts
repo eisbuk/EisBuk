@@ -19,6 +19,15 @@ export const dummySlotsFromStore = {
     ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
     ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
   },
+  "2021-03-03": {
+    ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
+    ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
+  },
+  // book_ice should filter those, while book_off_ice should keep them
+  "2021-03-04": {},
+  "2021-03-05": {},
+  "2021-03-06": {},
+  "2021-03-07": {},
 };
 
 /**
@@ -42,6 +51,14 @@ export const dummySlotsSplitByRoute = {
       ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
       ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
     },
+    "2021-03-03": {
+      ["slot-4"]: { ...dummySlot, id: "slot-4", type: SlotType.OffIceDancing },
+      ["slot-5"]: { ...dummySlot, id: "slot-5", type: SlotType.OffIceGym },
+    },
+    "2021-03-04": {},
+    "2021-03-05": {},
+    "2021-03-06": {},
+    "2021-03-07": {},
   },
   [CustomerRoute.Calendar]: {
     ["slot-0"]: { ...dummySlot, id: "slot-0", type: SlotType.Ice },

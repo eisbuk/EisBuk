@@ -37,16 +37,19 @@ export const splitSlotsByCustomerRoute = (
   // lift grouping to top (month/week) level
   return {
     [CustomerRoute.BookIce]: days.reduce(
-      (acc, dayISO) => ({
-        ...acc,
-        [dayISO]: daysMap[dayISO][CustomerRoute.BookIce],
-      }),
+      (acc, dayISO) =>
+        daysMap[dayISO][CustomerRoute.BookIce]
+          ? {
+              ...acc,
+              [dayISO]: daysMap[dayISO][CustomerRoute.BookIce],
+            }
+          : acc,
       {} as SlotsByDay
     ),
     [CustomerRoute.BookOffIce]: days.reduce(
       (acc, dayISO) => ({
         ...acc,
-        [dayISO]: daysMap[dayISO][CustomerRoute.BookOffIce],
+        [dayISO]: daysMap[dayISO][CustomerRoute.BookOffIce] || {},
       }),
       {} as SlotsByDay
     ),
