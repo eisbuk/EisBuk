@@ -85,6 +85,8 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const subscribedSlots = useSelector(getSubscribedSlots);
 
+  console.log("Calendar Slots > ", calendarSlots);
+  console.log("Subscribed slots > ", subscribedSlots);
   /**
    * Extract:
    * - `bookings` (used for `BookingsCalendar`)

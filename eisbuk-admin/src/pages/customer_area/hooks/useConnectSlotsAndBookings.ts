@@ -35,8 +35,8 @@ const useConnectSlotsAndBookgins = (): void => {
   /** @TODO Check this and maybe aggregate and use the same logic as for slots */
   // connect bookings for next 14 days and last 14 days
   const where: WhereOptions[] = [
-    ["date", ">=", date?.minus({ days: 14 }).toJSDate()],
-    ["date", "<", date?.plus({ days: 14 }).toJSDate()],
+    ["date", ">=", date?.minus({ days: 31 }).toJSDate()],
+    ["date", "<", date?.plus({ days: 31 }).toJSDate()],
   ];
 
   const monthsToQuery = [
