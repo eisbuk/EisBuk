@@ -23,7 +23,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import AthletesPage from "@/pages/CustomersPage";
 import SlotsPage from "@/pages/SlotsPage";
 import LoginPage from "@/pages/LoginPage";
-import CustomerAreaPage from "@/pages/customers";
+import CustomerAreaPage from "@/pages/customer_area";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";

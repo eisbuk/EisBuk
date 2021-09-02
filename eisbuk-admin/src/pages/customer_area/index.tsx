@@ -37,7 +37,7 @@ import { wrapOrganization } from "@/utils/firestore";
  * - renders appropriate sub route with respect to `customerRoute` provided
  * @returns
  */
-const CustomerPage: React.FC = () => {
+const CustomerArea: React.FC = () => {
   const { customerRoute, date: isoDate, secretKey } = useParams<{
     secretKey: string;
     date: string | undefined;
@@ -168,4 +168,4 @@ const CustomerPage: React.FC = () => {
   );
 };
 
-export default CustomerPage;
+export default CustomerArea;
