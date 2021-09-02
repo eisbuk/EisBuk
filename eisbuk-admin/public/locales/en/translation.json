@@ -2,7 +2,7 @@
   "AppbarAdmin": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Reservations": "Reservations"
+    "Bookings": "Bookings"
   },
   "Slots": {
     "Amateur": "Amateur",
@@ -60,6 +60,11 @@
   "CustomerArea": {
     "Book": "Book",
     "Calendar": "Calendar"
+  },
+  "CustomerNavigation": {
+    "book_ice": "Book Ice",
+    "book_off_ice": "Book Off-Ice",
+    "calendar": "Calendar"
   },
   "CustomersPage": {
     "Athletes": "Athletes",

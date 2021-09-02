@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
@@ -17,7 +18,7 @@ import DateRangeIcon from "@material-ui/icons/DateRange";
 
 import { Customer } from "eisbuk-shared";
 
-import { useTranslation } from "react-i18next";
+import { Routes } from "@/enums/routes";
 
 import CustomerForm from "@/components/customers/CustomerForm";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
@@ -25,7 +26,7 @@ import ConfirmDialog from "@/components/global/ConfirmDialog";
 
 import { capitalizeFirst } from "@/utils/helpers";
 
-// ***** Region Main Component ***** //
+// #region mainComponent
 interface Props {
   customers: Customer[];
   onDeleteCustomer: (customer: Customer) => void;
@@ -96,10 +97,12 @@ const CustomerList: React.FC<Props> = ({
               const bookingsButton = customer.secret_key && (
                 <IconButton
                   color="primary"
-                  href={`/clienti/${customer.secret_key}`}
+                  href={`${Routes.CustomerArea}/${customer.secret_key}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    history.push(`/clienti/${customer.secret_key}`);
+                    history.push(
+                      `${Routes.CustomerArea}/${customer.secret_key}`
+                    );
                   }}
                 >
                   <DateRangeIcon />
@@ -151,9 +154,9 @@ const CustomerList: React.FC<Props> = ({
     </>
   );
 };
-// ***** End Region Main Component ***** //
+// #endregion mainComponent
 
-// ***** Region Search Field ***** //
+// #region SearchField
 const SearchField: React.FC<{ setSearchString: React.Dispatch<string> }> = ({
   setSearchString,
 }) => {
@@ -163,6 +166,6 @@ const SearchField: React.FC<{ setSearchString: React.Dispatch<string> }> = ({
 
   return <TextField label="Search" type="search" onChange={handleChange} />;
 };
-// ***** EndRegion Search Field ***** //
+// #endregion SearchField
 
 export default CustomerList;

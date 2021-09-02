@@ -68,15 +68,17 @@ export type DailySlotEntry = ExtendedSlot<{
   absentees?: Record<string, boolean>;
 }>;
 /**
- * Agregated slots in Firestore DB, named slots by day,
- * but in fact, agragated by month for easier access (containing full data about the slot)
+ * Record of slots keyed by slot id
+ */
+export interface SlotsById {
+  [slotId: string]: DailySlotEntry;
+}
+/**
+ * Record of days (keyed by date iso strin) and with
+ * every day being a record of slots, keyed by slot id
  */
 export interface SlotsByDay {
-  [monthStr: string]: {
-    [dayStr: string]: {
-      [slotId: string]: DailySlotEntry;
-    };
-  };
+  [dayStr: string]: SlotsById;
 }
 // ***** End Region Slots ***** //
 
@@ -137,7 +139,9 @@ export interface EFirestoreSchema {
   [Collection.Organizations]: {
     [organization: string]: OrganizationMeta & {
       [OrgSubCollection.Slots]: { [slotId: string]: Slot };
-      [OrgSubCollection.SlotsByDay]: SlotsByDay;
+      [OrgSubCollection.SlotsByDay]: {
+        [monthStr: string]: SlotsByDay;
+      };
       [OrgSubCollection.Customers]: {
         [customerId: string]: Customer;
       };
