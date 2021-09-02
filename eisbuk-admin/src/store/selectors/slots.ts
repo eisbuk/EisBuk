@@ -21,6 +21,8 @@ import { flatten, fs2luxon } from "@/utils/helpers";
 
 import { getCustomersRecord } from "./firestore";
 
+import { luxon2ISODate } from "@/utils/date";
+
 const extractSlotDate = (slot: Slot): number => slot.date.seconds;
 const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
 
@@ -168,58 +170,64 @@ export const bookingDayInfoSelector = (dayStr: string) =>
   );
 
 // #region newSelectors
+/**
+ * Get `slotsByDay` entry from store, filtered according to `timeframe`, `startDate` and `category`
+ * @param category category of customer viewing the slots
+ * @param timeframe "week" | "month"
+ * @param startDate start of timeframe
+ * @returns created selector
+ */
 export const getSlotsForCustomer = (
   category: Category,
   timeframe: "week" | "month",
   startDate: DateTime
+  // eslint-disable-next-line consistent-return
 ) => (state: LocalStore): SlotsByDay => {
   const allSlotsInStore = state.firestore.data.slotsByDay;
 
   // return early if no slots in store
   if (!allSlotsInStore) return {};
 
-  // get slots for current month
-  const monthString = startDate.toISO().substr(0, 7);
-  const slotsForAMonth = allSlotsInStore[monthString] || {};
+  switch (timeframe) {
+    case "month":
+      // get slots for current month
+      const monthString = startDate.toISO().substr(0, 7);
+      const slotsForAMonth = allSlotsInStore[monthString] || {};
 
-  if (timeframe === "month") {
-    // filter slots from each day with respect to category
-    return Object.keys(slotsForAMonth).reduce((acc, date) => {
-      const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
-        slotsForAMonth[date],
-        category
-      );
+      // filter slots from each day with respect to category
+      return Object.keys(slotsForAMonth).reduce((acc, date) => {
+        const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
+          slotsForAMonth[date],
+          category
+        );
 
-      return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
-    }, {} as SlotsByDay);
+        return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
+      }, {} as SlotsByDay);
+
+    case "week":
+      // get all week dates
+      const weekDates = Array(7)
+        .fill(startDate)
+        .map((startDate, i) => luxon2ISODate(startDate.plus({ days: i })));
+
+      // filter slots within each day with respect to category
+      const filteredDays = weekDates.reduce((acc, date) => {
+        const monthStaring = date.substr(0, 7);
+        const slotsMonth = allSlotsInStore[monthStaring] || {};
+        const slotsDay = slotsMonth[date] || {};
+
+        const slotKeys = Object.keys(slotsDay);
+        const newDay = slotKeys.reduce((acc, slotId) => {
+          const { categories } = slotsDay[slotId];
+          return categories.includes(category)
+            ? { ...acc, [slotId]: slotsDay[slotId] }
+            : acc;
+        }, {} as SlotsById);
+        return { ...acc, [date]: newDay };
+      }, {} as SlotsByDay);
+
+      return filteredDays;
   }
-
-  // continue processing in case `timeframe === "week"`
-  const endOfWeek = startDate.endOf("week");
-
-  // return `SlotsByDay` record with slots filtered by week and provided category
-  return Object.keys(slotsForAMonth).reduce((acc, date) => {
-    // check if slots day belongs to apropriate week
-    const luxonDay = DateTime.fromISO(date);
-
-    const { milliseconds: diffFromStart } = luxonDay.diff(startDate).toObject();
-    const { milliseconds: diffFromEnd } = luxonDay.diff(endOfWeek).toObject();
-
-    const isCurrentWeek = diffFromStart! >= 0 && diffFromEnd! < 0;
-
-    // filter slots (of slots day) not within the provided category
-    const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
-      slotsForAMonth[date],
-      category
-    );
-
-    return isCurrentWeek && !isFilteredDayEmpty
-      ? {
-          ...acc,
-          [date]: filteredSlotsDay,
-        }
-      : acc;
-  }, {} as SlotsByDay);
 };
 // #endregion newSelectors
 

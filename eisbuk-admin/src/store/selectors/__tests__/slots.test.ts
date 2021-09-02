@@ -2,23 +2,22 @@ import { DateTime } from "luxon";
 
 import { Category } from "eisbuk-shared";
 
-import { __storybookDate__ } from "@/lib/constants";
-
 import { LocalStore } from "@/types/store";
 
 import { getSlotsForCustomer } from "../slots";
 
 import {
+  currentWeekStartDate,
+  currentMonthStartDate,
   testStoreState,
-  currentWeekCompetitive,
-  currentMonthCompetitive,
+  expectedWeek,
+  expectedMonth,
 } from "../__testData__/dummyData";
 
 describe("Slot selectors > ", () => {
   describe("'getSlotsForCustomer' > ", () => {
-    const testDate = DateTime.fromISO(__storybookDate__);
-
-    test("if 'timeframe=\"month\"' should get slots for a month with respect to 'startDate' and provided category", () => {
+    test("should get slots for a month with respect to 'startDate' and provided category if 'timeframe=\"month\"'", () => {
+      const testDate = DateTime.fromISO(currentMonthStartDate);
       // create a selector curried with `timeframe` and `date` params (like we will be doing within the component)
       const selector = getSlotsForCustomer(
         Category.Competitive,
@@ -27,10 +26,11 @@ describe("Slot selectors > ", () => {
       );
       // test created selector against test store state
       const res = selector(testStoreState as LocalStore);
-      expect(res).toEqual(currentMonthCompetitive);
+      expect(res).toEqual(expectedMonth);
     });
 
-    test("if 'timeframe=\"week\"' should get slots for a week with respect to 'startDate' and provided category", () => {
+    test("should get slots for a week with respect to 'startDate' and provided category if 'timeframe=\"week\"'", () => {
+      const testDate = DateTime.fromISO(currentWeekStartDate);
       // create a selector curried with `timeframe` and `date` params (like we will be doing within the component)
       const selector = getSlotsForCustomer(
         Category.Competitive,
@@ -39,7 +39,7 @@ describe("Slot selectors > ", () => {
       );
       // test created selector against test store state
       const res = selector(testStoreState as LocalStore);
-      expect(res).toEqual(currentWeekCompetitive);
+      expect(res).toEqual(expectedWeek);
     });
   });
 });
