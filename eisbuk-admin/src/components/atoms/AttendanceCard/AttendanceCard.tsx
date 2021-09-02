@@ -71,12 +71,12 @@ const AttendanceCard: React.FC<Props> = ({
             />
           </ListItem>
           {userBookings.map((user) => {
-            const isAbsent = absentees?.includes(user.customer_id) || false;
+            const isAbsent = absentees?.includes(user.customer_id);
 
             return (
               <UserAttendance
                 key={`${id}-${user.customer_id}`}
-                isAbsent={isAbsent}
+                isAbsent={isAbsent!}
                 userBooking={user}
               ></UserAttendance>
             );
@@ -87,7 +87,7 @@ const AttendanceCard: React.FC<Props> = ({
   );
 };
 
-// ***** Start Region Local Utils ***** //
+// #region Start Region Local Utils
 
 const translateAndJoinTags = (categories: Category[], type: SlotType) => {
   const translatedCategories = categories.map((category) =>
@@ -97,8 +97,9 @@ const translateAndJoinTags = (categories: Category[], type: SlotType) => {
 
   return `${[...translatedCategories, translatedType].join(" ")}`;
 };
-// ***** End Region Local Utils ***** //
-// ***** Region Styles ***** //
+// #endregion Local Utils
+
+// #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},
   listHeader: {
@@ -114,5 +115,5 @@ const useStyles = makeStyles((theme: ETheme) => ({
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion Styles
 export default AttendanceCard;

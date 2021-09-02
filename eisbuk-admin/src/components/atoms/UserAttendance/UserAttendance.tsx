@@ -46,11 +46,11 @@ const UserAttendance: React.FC<Props> = ({ isAbsent, userBooking }) => {
   );
 };
 
-// ***** Region Styles ***** //
+// #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
   absent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion Styles
 export default UserAttendance;
