@@ -3,8 +3,7 @@ import { fb2Luxon } from "@/utils/date";
 import { markAttendance } from "@/store/actions/attendanceOperations";
 import { useDispatch } from "react-redux";
 import i18n from "i18next";
-import { useTranslation } from "react-i18next";
-import { DateTime } from "luxon";
+// import { useTranslation } from "react-i18next";
 import _ from "lodash";
 
 import Button from "@material-ui/core/Button";
@@ -21,9 +20,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import {
   Slot,
   Customer,
-  BookingInfo,
   BookingsMeta,
-  Duration,
   Category,
   SlotType,
 } from "eisbuk-shared";
@@ -32,7 +29,6 @@ import { ETheme } from "@/themes";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 
-import { slotsLabels } from "@/config/appConfig";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -54,7 +50,7 @@ const AttendanceCard: React.FC<Props> = ({
   const dispatch = useDispatch();
 
   const classes = useStyles();
-  const { t } = useTranslation();
+  // const { t } = useTranslation();
   // convert timestamp to luxon for easier processing
   const luxonStart = fb2Luxon(date);
 
@@ -74,46 +70,67 @@ const AttendanceCard: React.FC<Props> = ({
   return (
     <Container maxWidth="sm">
       <List className={classes.root}>
-        <div data-testid="time-string">{timeString}</div>
-        <div>{categories}</div>
-        {userBookings.map((user) => {
-          const isAbsent = absentees?.includes(user.customer_id) || false;
-          const listItemClass = isAbsent ? classes.absent : "";
-
-          const absenteeButtons = (
-            <Button
-              variant="contained"
-              size="small"
-              color={isAbsent ? "primary" : "secondary"}
-              onClick={() =>
-                dispatch(markAttendance(user.customer_id, isAbsent))
+        <div key={id + "-" + timeString} className={classes.slotWrapper}>
+          <ListItem className={classes.listHeader}>
+            <ListItemText
+              primary={
+                <span>
+                  {timeString} <b>({userBookings.length})</b>
+                </span>
               }
-              // disabled={hasLocalChange}
-            >
-              {isAbsent ? "👎" : "👍"}
-            </Button>
-          );
+              secondary={translateAndJoinTags(categories, type)}
+            />
+          </ListItem>
+          {userBookings.map((user) => {
+            const isAbsent = absentees?.includes(user.customer_id) || false;
+            const listItemClass = isAbsent ? classes.absent : "";
 
-          return (
-            <ListItem
-              key={`${id}-${user.customer_id}`}
-              className={listItemClass}
-            >
-              <ListItemAvatar>
-                <EisbukAvatar {...user} />
-              </ListItemAvatar>
-              <ListItemText primary={user.name} />
-              <ListItemSecondaryAction>
-                {absenteeButtons}
-              </ListItemSecondaryAction>
-            </ListItem>
-          );
-        })}
+            const absenteeButtons = (
+              <Button
+                variant="contained"
+                size="small"
+                color={isAbsent ? "primary" : "secondary"}
+                onClick={() =>
+                  dispatch(markAttendance(user.customer_id, isAbsent))
+                }
+                // disabled={hasLocalChange}
+              >
+                {isAbsent ? "👎" : "👍"}
+              </Button>
+            );
+
+            return (
+              <ListItem
+                key={`${id}-${user.customer_id}`}
+                className={listItemClass}
+              >
+                <ListItemAvatar>
+                  <EisbukAvatar {...user} />
+                </ListItemAvatar>
+                <ListItemText primary={user.name} />
+                <ListItemSecondaryAction>
+                  {absenteeButtons}
+                </ListItemSecondaryAction>
+              </ListItem>
+            );
+          })}
+        </div>
       </List>
     </Container>
   );
 };
 
+// ***** Start Region Local Utils ***** //
+
+const translateAndJoinTags = (categories: Category[], type: SlotType) => {
+  const translatedCategories = categories.map((category) =>
+    i18n.t(`Categories.${category}`)
+  );
+  const translatedType = i18n.t(`SlotTypes.${type}`);
+
+  return `${[...translatedCategories, translatedType].join(" ")}`;
+};
+// ***** End Region Local Utils ***** //
 // ***** Region Styles ***** //
 const useStyles = makeStyles((theme: ETheme) => ({
   root: {},

@@ -3,8 +3,9 @@ import { render, screen } from "@testing-library/react";
 import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
-import { Category } from "eisbuk-shared";
-import { customersSlot, emptySlot } from "../__testData__/dummyData";
+import { Category, SlotType } from "eisbuk-shared";
+import { customersSlot } from "../__testData__/dummyData";
+import i18n from "i18next";
 
 const mockMarkAttImplementation = (customerId: string, attended: boolean) => ({
   customerId,
@@ -18,16 +19,22 @@ const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
+
+const spyT = jest.spyOn(i18n, "t");
+beforeEach(() => spyT.mockClear());
 describe("AttendanceCard", () => {
   describe("Smoke test", () => {
     beforeEach(() => {
       render(<AttendanceCard {...customersSlot} />);
+      () => spyT.mockClear();
     });
     test("should render props", () => {
       screen.getByText("13:00 - 15:00");
       screen.getByText("Saul");
       screen.getByText("Walter");
-      screen.getByText(Category.Competitive);
+      // screen.getByText(Category.Competitive);
+      expect(spyT).toHaveBeenCalledWith(`Categories.${Category.Competitive}`);
+      expect(spyT).toHaveBeenCalledWith(`SlotTypes.${SlotType.Ice}`);
     });
   });
   describe("Test marking attendance functionality", () => {
