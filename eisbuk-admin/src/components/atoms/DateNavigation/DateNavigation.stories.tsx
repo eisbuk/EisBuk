@@ -3,16 +3,38 @@ import { ComponentMeta } from "@storybook/react";
 import { DateTime } from "luxon";
 
 import DateNavigation from "./DateNavigation";
-import CopyPasteWeekButtons from "@/components/atoms/CopyPasteWeekButtons";
+
+import { ButtonContextType } from "@/enums/components";
+
+import SlotOperationButtons, {
+  CopyButton,
+  PasteButton,
+  DeleteButton,
+} from "@/components/atoms/SlotOperationButtons";
 
 export default {
   title: "Date Navigation",
   component: DateNavigation,
 } as ComponentMeta<typeof DateNavigation>;
 
+// #region setup
+
 // we're using a standardized date not to fallback to current date and produce false positives with chromatic
 const defaultDateISO = "2021-03-01";
 const defaultDate = DateTime.fromISO(defaultDateISO);
+
+const confirmDialog = {
+  title: "Confirm Dialog",
+  description: "Confirm you wish to delete",
+};
+
+const extraButtonProps = {
+  date: defaultDate,
+  slotsToCopy: {
+    [ButtonContextType.Week]: true,
+  },
+};
+// #endregion setup
 
 // #region differentTimeframe
 
@@ -47,6 +69,14 @@ const center = {
   transform: "translatex(-50%)",
 } as React.CSSProperties;
 
+const extraButtons = (
+  <SlotOperationButtons {...extraButtonProps}>
+    <CopyButton />
+    <PasteButton size="medium" />
+    <DeleteButton confirmDialog={confirmDialog} />
+  </SlotOperationButtons>
+);
+
 export const WithToggleButton = (): JSX.Element => (
   <DateNavigation showToggle>
     {({ toggleState }) => (
@@ -58,10 +88,10 @@ export const WithToggleButton = (): JSX.Element => (
 );
 
 export const WithCopyPaste = (): JSX.Element => (
-  <DateNavigation extraButtons={<CopyPasteWeekButtons />} />
+  <DateNavigation {...{ extraButtons }} />
 );
 
 export const WithCopyPasteAndToggle = (): JSX.Element => (
-  <DateNavigation extraButtons={<CopyPasteWeekButtons />} showToggle />
+  <DateNavigation {...{ extraButtons }} showToggle />
 );
 // #endregion otherOptions

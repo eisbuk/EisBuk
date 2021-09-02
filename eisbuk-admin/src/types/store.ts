@@ -5,7 +5,7 @@ import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
 import firebase from "firebase";
 
-import { Customer, Slot } from "eisbuk-shared";
+import { Customer, Slot, SlotsByDay, SlotsById } from "eisbuk-shared";
 
 import { Action, NotifVariant } from "@/enums/store";
 
@@ -16,8 +16,9 @@ import {
   FirestoreData,
   FirestoreOrdered,
 } from "@/types/firestore";
+import { CustomerRoute } from "@/enums/routes";
 
-// ***** Region App Reducer ***** //
+// #region App Reducer
 /**
  * Notification interface used to enqueue notification snackbar
  */
@@ -67,9 +68,9 @@ export interface AppState {
   calendarDay: DateTime;
   newSlotTime: Timestamp | null;
 }
-// ***** End Region App ***** //
+// #endregion Region App
 
-// ****** Region Auth ***** //
+// #region Auth
 /**
  * In store auth info object
  */
@@ -96,9 +97,9 @@ export type AuthReducerAction<
       payload?: Omit<AuthInfoEisbuk, "myUserId">;
     }
   : { type: string };
-// ****** End Region Auth ***** //
+// #endregion Region Auth
 
-// ***** Region Copy Paste ***** //
+// #region Copy Paste
 export interface SlotDay {
   [slotId: string]: Slot<"id">;
 }
@@ -140,16 +141,16 @@ export interface CopyPasteReducerAction<A extends CopyPasteAction> {
   type: A;
   payload: CopyPastePayload[A];
 }
-// ***** End Region Copy Paste ***** //
+// #endregion Region Copy Paste
 
-// ***** Region Firebase Reducer ***** //
+// #region Firebase Reducer
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface ProfileType {}
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 interface Schema {}
-// ***** End Region Firebase Reducer ***** //
+// #endregion Region Firebase Reducer
 
-// ****** Region Firestore ***** //
+// #region Firestore
 type Dispatch = typeof store.dispatch;
 type GetState = typeof store.getState;
 
@@ -187,9 +188,9 @@ interface FirestoreRedux {
   };
   queries: {};
 }
-// ****** Region Firestore ***** //
+// #region Firestore
 
-// ****** Region Full Store ***** //
+// #region Full Store
 export interface LocalStore {
   firebase: FirebaseReducer.Reducer<ProfileType, Schema>;
   firestore: FirestoreRedux;
@@ -197,10 +198,18 @@ export interface LocalStore {
   copyPaste: CopyPasteState;
   authInfoEisbuk: AuthInfoEisbuk;
 }
-// ****** End Region Full Store ***** //
+// #endregion Region Full Store
 
-// ****** Region Other ***** //
+// #region Other
 export type CustomerInStore = Pick<Customer, "id"> &
   Pick<Customer, "name"> &
   Pick<Customer, "surname">;
-// ****** End Region Other ***** //
+// #endregion Region Other
+
+// #region mappedValues
+export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {
+  [CustomerRoute.BookIce]: S;
+  [CustomerRoute.BookOffIce]: S;
+  [CustomerRoute.Calendar]: S extends SlotsById ? undefined : SlotsById;
+}
+// #endregion mappedValues

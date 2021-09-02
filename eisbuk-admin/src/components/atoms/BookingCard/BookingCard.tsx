@@ -1,5 +1,4 @@
 import React from "react";
-import { Timestamp } from "@google-cloud/firestore";
 
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -9,7 +8,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/styles/makeStyles";
 
-import { Duration, SlotType } from "eisbuk-shared";
+import { Duration, Slot } from "eisbuk-shared";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
@@ -20,21 +19,44 @@ import { slotsLabels } from "@/config/appConfig";
 import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
 
-interface Props {
-  data: {
-    type: SlotType;
-    date: Timestamp;
-    duration: Duration;
-    notes: string;
+export type Props = Pick<Slot, "type"> &
+  Pick<Slot, "date"> &
+  Pick<Slot, "notes"> & {
+    bookedDuration: Duration;
   };
-}
 
-const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
+/** @TODO This component needs fixing (rebase), would be best to do if we implement tailwind */
+const BookingCard: React.FC<Props> = ({
+  type,
+  date: timestamp,
+  notes,
+  bookedDuration,
+}) => {
   const classes = useStyles();
 
   const { t } = useTranslation();
-  const slotLabel = slotsLabels.types[data.type];
-  const date = fb2Luxon(data.date);
+  const slotLabel = slotsLabels.types[type];
+  const date = fb2Luxon(timestamp);
+
+  // times to show
+  const startTimeISO = date.toISOTime().substring(0, 5);
+  const endTimeISO = date
+    .plus({ minutes: Number(bookedDuration) - 10 })
+    .toISOTime()
+    .substring(0, 5);
+
+  const timeSpan = (
+    <Box className={classes.time}>
+      <Typography component="h2">
+        <Typography color="primary" display="inline" variant="h5">
+          <strong>{startTimeISO}</strong>
+        </Typography>{" "}
+        <Typography className={classes.endTime} display="inline" variant="h6">
+          - {endTimeISO}
+        </Typography>
+      </Typography>
+    </Box>
+  );
 
   return (
     <Card variant="outlined" className={classes.root}>
@@ -52,37 +74,14 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            <Box className={classes.time}>
-              <Typography
-                color="primary"
-                display="inline"
-                variant="h5"
-                component="h2"
-              >
-                <strong>{date.toISOTime().substring(0, 5)}</strong>
-              </Typography>
-              <Typography
-                className={classes.endTime}
-                display="inline"
-                variant="h6"
-                component="h3"
-              >
-                {" "}
-                -{" "}
-                {date
-                  .plus({ minutes: Number(data.duration) })
-                  .minus({ minutes: 10 })
-                  .toISOTime()
-                  .substring(0, 5)}
-              </Typography>
-            </Box>
-            {data.notes && (
+            {timeSpan}
+            {notes && (
               <Box
                 display="flex"
                 className={classes.notesWrapper}
                 alignItems="center"
               >
-                <Typography className={classes.notes}>{data.notes}</Typography>
+                <Typography className={classes.notes}>{notes}</Typography>
               </Box>
             )}
           </Box>
@@ -94,13 +93,13 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
               className={classes.durationWrapper}
             >
               <Button
-                key={data.duration}
+                key={bookedDuration}
                 color="primary"
                 variant="text"
                 className={classes.duration}
                 disabled
               >
-                {slotsLabels.durations[data.duration].label}
+                {slotsLabels.durations[bookedDuration].label}
               </Button>
             </Box>
             <Box
@@ -121,7 +120,7 @@ const CustomerAreaBookingCard: React.FC<Props> = ({ data }) => {
                 key="type"
                 color={slotLabel.color}
               >
-                {t(`SlotTypes.${data.type}`)}
+                {t(`SlotTypes.${type}`)}
               </Typography>
             </Box>
           </Box>
@@ -201,4 +200,4 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 // ***** End Region Styles ***** //
 
-export default CustomerAreaBookingCard;
+export default BookingCard;

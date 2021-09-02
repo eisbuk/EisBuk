@@ -12,6 +12,8 @@ export enum Action {
 
   CopySlotDay = "@@Eisbuk/COPY_SLOT_DAY",
   CopySlotWeek = "@@Eisbuk/COPY_SLOT_WEEK",
+  PasteSlotDay = "@@Eisbuk/PASTE_SLOT_DAY",
+  PasteSlotWeek = "@@Eisbuk/PASTE_SLOT_WEEK",
   DeleteSlotFromClipboard = "@@Eisbuk/DELETE_SLOT_FROM_CLIPBOARD0",
   AddSlotToClipboard = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD",
 

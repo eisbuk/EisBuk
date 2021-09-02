@@ -1,4 +1,5 @@
 import i18n from "i18next";
+import { DateTime } from "luxon";
 
 import { Slot } from "eisbuk-shared";
 
@@ -141,3 +142,36 @@ export const editSlot = (
     showErrSnackbar();
   }
 };
+
+// #region newOperations
+/**
+ * These are new action written in accordance with new (`SlotOperationButtons`) components.
+ * We're using them for tests right now, but
+ * @TODO update to full functionality before integrating with new admin view
+ */
+
+/**
+ * Deletes slot with given id from firestore and (in effect) local store
+ * @param slotId od slot to delete
+ */
+export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
+  /** @TODO should call to `deleteSlots` function and pass `slotId` */
+};
+
+/**
+ * Deletes slots for the whole day from firestore and (in effect) local store
+ * @param date of the slots day to delete
+ */
+export const deleteSlotsDay = (date: DateTime): void => {
+  /** @TODO should read all slot ids for given date and call to `deleteSlots` function and pass ids for given slots */
+};
+
+/**
+ * Deletes slots for the whole week from firestore and (in effect) local store
+ * @param date of the first day of the slots week to delete
+ */
+export const deleteSlotsWeek = (date: DateTime): void => {
+  /** @TODO should read all slot ids for given a week starting with given date and call to `deleteSlots` function and pass ids for given slots */
+};
+
+// #endregion newOperations
