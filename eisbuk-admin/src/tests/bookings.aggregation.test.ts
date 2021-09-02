@@ -15,8 +15,12 @@ beforeEach(async () => {
     .delete();
 });
 
-describe("Booking aggregation tests", () => {
-  it("Copies over booking when created", async (done) => {
+const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
+  ? describe
+  : xdescribe;
+
+maybeDescribe("Booking aggregation triggers", () => {
+  it("copy over booking when created", async (done) => {
     // 1611964800 → Saturday, January 30, 2021 0:00:00 GMT
     const day = 1611964800;
     await adminDb

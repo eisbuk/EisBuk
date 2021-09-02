@@ -1,10 +1,12 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
-import firebase from "firebase";
+import { DateTime } from "luxon";
 
 import { Category, Duration, SlotType } from "eisbuk-shared";
 
 import NewSlotForm from "@/components/slots/SlotForm";
+
+import { luxonToFB } from "@/utils/date";
 
 export default {
   title: "SlotForm",
@@ -31,13 +33,14 @@ EmptyForm.args = {
   ...baseProps,
 };
 
+const date = luxonToFB(DateTime.fromISO("2021-01-01").plus({ hours: 8 }));
+
 export const FormWithValues = Template.bind({});
 FormWithValues.args = {
   ...baseProps,
   slotToEdit: {
     id: "random_id",
-    date: firebase.firestore.Timestamp.now(),
-    time: "11:30",
+    date,
     categories: [Category.PreCompetitive],
     durations: [Duration["1h"], Duration["2h"]],
     type: SlotType.Ice,

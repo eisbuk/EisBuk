@@ -41,9 +41,11 @@ import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
 
+import { __slotFormId__ } from "@/components/atoms/SlotCard/__testData__";
+
 const Timestamp = firebase.firestore.Timestamp;
 
-// ***** Region Form Setup ***** //
+// #region formSetup
 const defaultValues = {
   time: "08:00" as string,
   durations: [Duration["1h"]],
@@ -62,9 +64,9 @@ const SlotValidation = Yup.object().shape({
     .of(Yup.number().min(1))
     .required(i18n.t("SlotValidations.Duration")),
 });
-// ***** End Region Form Setup ***** //
+// #endregion formSetup
 
-// ***** Region Time Picker Field ***** //
+// #region  timePickerField
 type TimePickerProps = Omit<Omit<TextFieldProps, "name">, "value"> & {
   name: string;
   value: string;
@@ -116,9 +118,9 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
     </Box>
   );
 };
-// ***** End Region Time Picker Field ***** //
+// #endregion  timePickerField
 
-// ***** Region Main Component ***** //
+// #region mainComponent
 type FormikProps = Parameters<typeof Formik>[0];
 
 /**
@@ -132,7 +134,7 @@ type SimplifiedFormikProps = Omit<
 export interface SlotFormProps {
   createSlot?: SlotOperation<"create">;
   editSlot?: SlotOperation;
-  isoDate: string;
+  isoDate?: string;
   open: boolean;
   onClose?: () => void;
   onOpen?: unknown;
@@ -142,7 +144,7 @@ export interface SlotFormProps {
 const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   createSlot = () => {},
   editSlot = () => {},
-  isoDate,
+  isoDate = "01-01-2020",
   open,
   onClose = () => {},
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -216,7 +218,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         {({ errors, isSubmitting, isValidating }) => (
           <>
             <Form>
-              <DialogTitle>
+              <DialogTitle data-testid={__slotFormId__}>
                 {parsedSlotEditDate
                   ? t("SlotForm.parsedSlotEditDate", {
                       date: parsedSlotEditDate,
@@ -299,9 +301,9 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
     </Dialog>
   );
 };
-// ***** End Region Main Component ***** //
+// #endregion mainComponent
 
-// ***** Region Create Radio Buttons ***** //
+// #region createRadioButtons
 /**
  * Create redio buttons for form (used for SlotTypea in this case)
  * @param values
@@ -317,9 +319,9 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
     />
   ));
 
-// ***** End Region Create Radio Buttons ***** //
+// #endregion createRadioButtons
 
-// ***** Region Get Checkboxes ***** //
+// #region getCheckboxes
 interface GetCheckBoxes {
   <N extends keyof Omit<SlotsLabelList, "types">>(
     name: N,
@@ -350,9 +352,9 @@ const getCheckBoxes: GetCheckBoxes = (name, values, translate) => {
     return <MyCheckbox key={id} name={name} value={id} label={finalLabel} />;
   });
 };
-// ***** End Region Get Checkboxes ***** //
+// #endregion getCheckboxes
 
-// ***** Region My Checkbox ***** //
+// #region myCheckbox
 interface CheckboxProps {
   name: string;
   value: string;
@@ -403,9 +405,9 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
     />
   );
 };
-// ***** End Region My Checkbox ***** //
+// #endregion myCheckbox
 
-// ***** Region Styles ***** //
+// #region styles
 const useStyles = makeStyles((theme) => ({
   field: {
     marginTop: theme.spacing(1),
@@ -416,6 +418,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion styles
 
 export default SlotForm;

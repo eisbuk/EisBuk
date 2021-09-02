@@ -110,11 +110,9 @@ export const deleteSlots = (
  * @param slot updated slot
  * @returns async thunk
  */
-export const editSlot = (slot: Omit<Slot, "date">): FirestoreThunk => async (
-  dispatch,
-  getState,
-  { getFirebase }
-) => {
+export const editSlot = (
+  slot: Omit<Slot<"id">, "date">
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const db = getFirebase().firestore();
   try {
     await db
