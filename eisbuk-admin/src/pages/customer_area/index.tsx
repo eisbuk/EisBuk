@@ -97,7 +97,7 @@ const CustomerArea: React.FC = () => {
    */
   const [bookings, bookedSlots] = Object.values(subscribedSlots).reduce(
     (acc, bookingInfo) => {
-      const { id, duration: bookedDuration } = bookingInfo;
+      const { id, duration: bookedDuration } = bookingInfo || {};
 
       // apply filter mask to subscribedSlots (recieved from store)
       // against calendarSlots (processed from raw slots)
