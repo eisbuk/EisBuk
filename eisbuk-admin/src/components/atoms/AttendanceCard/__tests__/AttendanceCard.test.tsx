@@ -2,18 +2,9 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import AttendanceCard from "../AttendanceCard";
 
-import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category, SlotType } from "eisbuk-shared";
 import { customersSlot } from "../__testData__/dummyData";
 import i18n from "i18next";
-
-const mockMarkAttImplementation = (customerId: string, attended: boolean) => ({
-  customerId,
-  attended,
-});
-jest
-  .spyOn(attendanceOperations, "markAttendance")
-  .mockImplementation(mockMarkAttImplementation);
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -35,17 +26,6 @@ describe("AttendanceCard", () => {
       // screen.getByText(Category.Competitive);
       expect(spyT).toHaveBeenCalledWith(`Categories.${Category.Competitive}`);
       expect(spyT).toHaveBeenCalledWith(`SlotTypes.${SlotType.Ice}`);
-    });
-  });
-  describe("Test marking attendance functionality", () => {
-    beforeEach(() => {
-      render(<AttendanceCard {...customersSlot} />);
-    });
-    test("should dispatch markAttendance with correct args", () => {
-      screen.getByText("👎").click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockMarkAttImplementation("heisenberg", true)
-      );
     });
   });
 });

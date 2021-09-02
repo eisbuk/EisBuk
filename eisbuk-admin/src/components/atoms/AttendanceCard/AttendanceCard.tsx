@@ -1,22 +1,15 @@
 import React from "react";
 import { fb2Luxon } from "@/utils/date";
-import { markAttendance } from "@/store/actions/attendanceOperations";
-import { useDispatch } from "react-redux";
 import i18n from "i18next";
 // import { useTranslation } from "react-i18next";
 import _ from "lodash";
 
-import Button from "@material-ui/core/Button";
 import Container from "@material-ui/core/Container";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-
-import { grey } from "@material-ui/core/colors";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-
+import UserAttendance from "@/components/atoms/UserAttendance/UserAttendance";
 import {
   Slot,
   Customer,
@@ -26,8 +19,6 @@ import {
 } from "eisbuk-shared";
 
 import { ETheme } from "@/themes";
-
-import EisbukAvatar from "@/components/users/EisbukAvatar";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
@@ -47,8 +38,6 @@ const AttendanceCard: React.FC<Props> = ({
   id,
   type,
 }) => {
-  const dispatch = useDispatch();
-
   const classes = useStyles();
   // const { t } = useTranslation();
   // convert timestamp to luxon for easier processing
@@ -83,35 +72,13 @@ const AttendanceCard: React.FC<Props> = ({
           </ListItem>
           {userBookings.map((user) => {
             const isAbsent = absentees?.includes(user.customer_id) || false;
-            const listItemClass = isAbsent ? classes.absent : "";
-
-            const absenteeButtons = (
-              <Button
-                variant="contained"
-                size="small"
-                color={isAbsent ? "primary" : "secondary"}
-                onClick={() =>
-                  dispatch(markAttendance(user.customer_id, isAbsent))
-                }
-                // disabled={hasLocalChange}
-              >
-                {isAbsent ? "👎" : "👍"}
-              </Button>
-            );
 
             return (
-              <ListItem
+              <UserAttendance
                 key={`${id}-${user.customer_id}`}
-                className={listItemClass}
-              >
-                <ListItemAvatar>
-                  <EisbukAvatar {...user} />
-                </ListItemAvatar>
-                <ListItemText primary={user.name} />
-                <ListItemSecondaryAction>
-                  {absenteeButtons}
-                </ListItemSecondaryAction>
-              </ListItem>
+                isAbsent={isAbsent}
+                userBooking={user}
+              ></UserAttendance>
             );
           })}
         </div>
@@ -144,7 +111,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
     borderColor: theme.palette.primary.main,
   },
   absent: {
-    backgroundColor: theme.palette.absent || grey[500],
+    backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
 }));
 // ***** End Region Styles ***** //
