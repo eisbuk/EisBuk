@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
@@ -14,6 +13,8 @@ import {
   FieldArray,
   FormikValues,
   FormikHelpers,
+  getIn,
+  FormikErrors,
 } from "formik";
 import { RadioGroup } from "formik-material-ui";
 import { DateTime } from "luxon";
@@ -51,8 +52,8 @@ import {
   __startTimeErrorId__,
   __startTimeInputId__,
 } from "./__testData__/testIds";
-
-const Timestamp = firebase.firestore.Timestamp;
+import { luxonToFB } from "@/utils/date";
+import { __noStartTimeError } from "@/lib/errorMessages";
 
 // ***** Region Form Setup ***** //
 const defaultValues = {
@@ -69,10 +70,13 @@ const SlotValidation = Yup.object().shape({
   time: Yup.string().required(i18n.t("SlotValidations.Time")),
   intervals: Yup.array().of(
     Yup.object().shape({
-      startTime: Yup.string().required("Start Time is required"),
+      startTime: Yup.string().required(__noStartTimeError),
       endTime: Yup.string().required("End Time is required"),
     })
   ),
+  startTime: Yup.string().required(__noStartTimeError),
+  endTime: Yup.string().required("End Time is required"),
+
   //   startTime: Yup.date().required(i18n.t("SlotValidations.Time")).max(endTime),
   //   endTime: Yup.date().required(i18n.t("SlotValidations.Time")).max(endTime),
   categories: Yup.array()
@@ -141,6 +145,30 @@ const TimePickerField: React.FC<TimePickerProps> = (props) => {
   );
 };
 // ***** End Region Time Picker Field ***** //
+
+// ***** Start Region Custom ErrorMessage Field ***** //
+
+// TODO: better naming
+interface formType {
+  errors: FormikErrors<FormValues>;
+  touched: boolean;
+}
+
+const myErrorMessage: React.FC<{ name: string }> = ({ name }) => (
+  <Field
+    name={name}
+    render={({ form }: { form: formType }) => {
+      const error = getIn(form.errors, name);
+      const touch = getIn(form.touched, name);
+      return touch && error ? error : null;
+    }}
+  />
+);
+
+const getErrorMessage = (name: string): JSX.Element => {
+  return <myErrorMessage name={name} />;
+};
+// ***** End Region Custom ErrorMessage Field ***** //
 
 // ***** Region Main Component ***** //
 type FormikProps = Parameters<typeof Formik>[0];
@@ -221,7 +249,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         categories,
         durations,
         notes,
-        date: Timestamp.fromDate(parsedTime.toJSDate()),
+        date: luxonToFB(parsedTime),
       });
     }
     setSubmitting(false);
@@ -237,7 +265,14 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         onSubmit={handleSubmit}
         {...props}
       >
-        {({ errors, isSubmitting, isValidating, setValues, values }) => (
+        {({
+          errors,
+          isSubmitting,
+          isValidating,
+          setValues,
+          values,
+          touched,
+        }) => (
           <>
             <Form>
               <DialogTitle>
@@ -276,13 +311,12 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     {t("SlotForm.Intervals")}
                   </h5>
                   {/* TODO: remove slot to edit => only  */}
-                  {!slotToEdit && (
-                    <FieldArray name="tickets">
-                      {/* TODO: values.Intervals could be undefined */}
+                  {
+                    <FieldArray name="intervals">
                       {() =>
                         values.intervals?.map((interval, i) => {
-                          //    const intervalErrors = errors.Intervals?.length && errors.Intervals[i] || {};
-                          //    const intervalTouched = touched.Intervals.length && touched.Intervals[i] || {};
+                          // const intervalErrors = errors.intervals?.length && errors.intervals[i] || {};
+                          // const intervalTouched = touched.intervals?.length && touched.intervals[i] || {};
                           return (
                             <div
                               key={i}
@@ -303,10 +337,19 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                     type="text"
                                     className={
                                       classes.intervalField
-                                      // + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
+                                      // + (intervalErrors.name && intervalTouched.name ? ' is-invalid' : '' )
                                     }
                                     data-testId={__startTimeInputId__}
                                   />
+                                  <div className={classes.error}>
+                                    {/* <ErrorMessage
+                                      data-testid={__startTimeErrorId__}
+                                      name={`Intervals.${i}.startTime`}
+                                    /> */}
+                                    {getErrorMessage(
+                                      `Intervals.${i}.startTime`
+                                    )}
+                                  </div>
                                   <Field
                                     as={TimePickerField}
                                     label={t("SlotForm.EndTime")}
@@ -314,10 +357,17 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                     type="text"
                                     className={
                                       classes.intervalField
-                                      //  + (intervalErrors.name && IntervalTouched.name ? ' is-invalid' : '' )
+                                      //  + (intervalErrors.name && intervalTouched.name ? ' is-invalid' : '' )
                                     }
                                     data-testId={__endTimeInputId__}
                                   />
+                                  <div className={classes.error}>
+                                    {/* <ErrorMessage
+                                      data-testid={__endTimeErrorId__}
+                                      name={`Intervals.${i}.endTime`}
+                                    /> */}
+                                    {getErrorMessage(`Intervals.${i}.endTime`)}
+                                  </div>
                                   <IconButton
                                     aria-label="delete"
                                     color="primary"
@@ -327,15 +377,6 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                                   >
                                     <DeleteIcon />
                                   </IconButton>
-
-                                  <ErrorMessage
-                                    data-testid={__startTimeErrorId__}
-                                    name="startTime"
-                                  />
-                                  <ErrorMessage
-                                    data-testid={__endTimeErrorId__}
-                                    name="endTime"
-                                  />
                                 </div>
                               </div>
                             </div>
@@ -343,10 +384,10 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                         })
                       }
                     </FieldArray>
-                  )}
+                  }
                   <div className={classes.buttonContainer}>
                     <Button
-                      onClick={(e) => addInterval(values, setValues)}
+                      onClick={() => addInterval(values, setValues)}
                       color="primary"
                       variant="contained"
                       className={classes.addInterval}
@@ -502,11 +543,11 @@ const addInterval = (
   setValues: FormikHelpers<FormValues>["setValues"]
 ) => {
   // update intervals
-  const intervals = [...values.Intervals];
+  const intervals = [...values.intervals];
 
   intervals.push({ startTime: "08:00", endTime: "09:00" });
   setValues({ ...values, intervals });
-
+  console.log({ intervals });
   // call formik onChange method
   // field.onChange(e);
 };
