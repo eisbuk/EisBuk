@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { DateTime } from "luxon";
+// import { DateTime } from "luxon";
 
 import NewSlotForm from "../NewSlotForm";
 
@@ -11,7 +11,7 @@ import {
 } from "../__testData__/testIds";
 
 import { __noStartTimeError } from "@/lib/errorMessages";
-import firebase from "firebase";
+// import firebase from "firebase";
 
 jest.mock("react-redux", () => ({
   // here each call to selector will return "", we'll adapt for mocking later if and when needed
@@ -24,7 +24,7 @@ jest.mock("i18next", () => ({
 }));
 describe("NewSlotForm", () => {
   describe("time validation", () => {
-    const Timestamp = firebase.firestore.Timestamp;
+    // const Timestamp = firebase.firestore.Timestamp;
     /**
      * @Ivan : since we're writing tests to be as short as possible it makes sense to not add empty lines within "test" blocks.
      * This is just a personal preference, but imagine if you had a lot of "describe" blocks and "test" blocks.
@@ -33,11 +33,11 @@ describe("NewSlotForm", () => {
      */
     test("should print error message when startTime > endTime and vice versa", () => {
       // a dummy date we're using for tests
-      const testDateISO = "2021-03-01";
+      // const testDateISO = "2021-03-01";
       // a dummy date comverted to DateTime for easier processing
-      const testDate = DateTime.fromISO(testDateISO);
+      // const testDate = DateTime.fromISO(testDateISO);
       // a `newSlotTime` we'll be returning from mocked selector
-      const mockNewSlotTime = Timestamp.fromMillis(testDate.toMillis());
+      // const mockNewSlotTime = Timestamp.fromMillis(testDate.toMillis());
 
       render(<NewSlotForm open={true} isoDate="2021-03-01" />);
       /**

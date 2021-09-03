@@ -1,6 +1,5 @@
-// import SlotForm, { SlotFormProps as Props } from "./SlotForm";
-import NewSlotForm, { SlotFormProps as Props } from "./NewSlotForm";
+import SlotForm, { SlotFormProps as Props } from "./SlotForm";
 
 export type SlotFormProps = Props;
 
-export default NewSlotForm;
+export default SlotForm;
