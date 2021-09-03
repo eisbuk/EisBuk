@@ -31,7 +31,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Radio from "@material-ui/core/Radio";
-import TextField, { TextFieldProps } from "@material-ui/core/TextField";
+import TextField from "@material-ui/core/TextField";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -84,63 +84,6 @@ const SlotValidation = Yup.object().shape({
     .required(i18n.t("SlotValidations.Duration")),
 });
 // ***** End Region Form Setup ***** //
-
-// ***** Region Time Picker Field ***** //
-type TimePickerProps = Omit<Omit<TextFieldProps, "name">, "value"> & {
-  name: string;
-  value: string;
-};
-
-type FormValues = Partial<typeof defaultValues>;
-const TimePickerField: React.FC<TimePickerProps> = (props) => {
-  const { setFieldValue } = useFormikContext();
-
-  /**
-   * Get ISO time string of current value with applied difference,
-   * used with increment/decrement handlers
-   * @param delta time diff to add/substract
-   * @returns ISO time string
-   */
-  const getCurrentTime = (delta: number) => {
-    // try and parse time value
-    const parsed = DateTime.fromISO(props.value);
-
-    // if passed value is a valid ISO string (conversion was successful)
-    // return time with increment/decrement
-    if (!parsed.invalidReason) {
-      return parsed.plus({ hours: delta }).toISOTime().substring(0, 5);
-    }
-
-    // if conversion failed, return fallback value
-    return "08:00";
-  };
-
-  const decrease = () => setFieldValue(props.name, getCurrentTime(-1));
-  const increase = () => setFieldValue(props.name, getCurrentTime(1));
-
-  const useStyles = makeStyles(() => ({
-    root: {
-      whiteSpace: "nowrap",
-      display: "flex",
-      AlignItems: "center",
-    },
-  }));
-
-  const classes = useStyles();
-
-  return (
-    <Box className={classes.root}>
-      <IconButton color="primary" onClick={decrease}>
-        -
-      </IconButton>
-      <TextField {...props} />
-      <IconButton color="primary" onClick={increase}>
-        +
-      </IconButton>
-    </Box>
-  );
-};
-// ***** End Region Time Picker Field ***** //
 
 // ***** Region Main Component ***** //
 type FormikProps = Parameters<typeof Formik>[0];

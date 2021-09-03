@@ -1,5 +1,5 @@
-import React from "react";
-import { useField } from "formik";
+import React, { useEffect } from "react";
+import { ErrorMessage, useField } from "formik";
 import { DateTime } from "luxon";
 
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
@@ -7,7 +7,11 @@ import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { __invalidTime, __requiredField } from "@/lib/errorMessages";
+
 import { __decrementId__, __incrementId__ } from "./__testData__/testIds";
+import { useTranslation } from "react-i18next";
 
 type Props = Omit<Omit<TextFieldProps, "name">, "value"> & {
   /**
@@ -39,7 +43,13 @@ type Props = Omit<Omit<TextFieldProps, "name">, "value"> & {
  * **Important:** should be rendered as a decendant of `<Formik>` element (for context) and will throw otherwise.
  */
 const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
-  const [{ value: contextValue }, , { setValue }] = useField<string>(name);
+  const { t } = useTranslation();
+
+  const [
+    { value: contextValue },
+    { error },
+    { setValue, setError },
+  ] = useField<string>(name);
 
   interface UpdateChange {
     (value: string, shouldValidate?: boolean): void;
@@ -63,8 +73,22 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    * Change handler function, used to handle direct change (typing) of input.
    * @param e change event
    */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) =>
-    updateChange(e.target.value, true);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = e.target.value;
+
+    // update new value
+    updateChange(newValue, true);
+
+    // check new value for errors
+    switch (true) {
+      case newValue === "":
+        setError(t(__requiredField));
+        break;
+      case !/[0-9][0-9]-[0-9][0-9]/.test(newValue):
+        setError(t(__invalidTime));
+        break;
+    }
+  };
 
   /**
    * HOF returns appropriate `onClick` handler for increment/decrement.
@@ -96,6 +120,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
+      <div>{error}</div>
     </Box>
   );
 };
