@@ -16,8 +16,15 @@ type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 interface Props {
   isAbsent?: boolean;
   userBooking: UserBooking;
+  toggleAbsent: (UserBooking: UserBooking, isAbsent: boolean) => void;
+  hasLocalChange: boolean;
 }
-const UserAttendance: React.FC<Props> = ({ isAbsent, userBooking }) => {
+const UserAttendance: React.FC<Props> = ({
+  isAbsent,
+  userBooking,
+  toggleAbsent,
+  hasLocalChange,
+}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
   const listItemClass = isAbsent ? classes.absent : "";
@@ -28,9 +35,10 @@ const UserAttendance: React.FC<Props> = ({ isAbsent, userBooking }) => {
       size="small"
       color={isAbsent ? "primary" : "secondary"}
       onClick={() =>
-        dispatch(markAttendance(userBooking.customer_id, Boolean(isAbsent)))
+        // dispatch(markAttendance(userBooking.customer_id, Boolean(isAbsent)))
+        toggleAbsent(userBooking, Boolean(isAbsent))
       }
-      // disabled={hasLocalChange}
+      disabled={hasLocalChange}
     >
       {isAbsent ? "👎" : "👍"}
     </Button>

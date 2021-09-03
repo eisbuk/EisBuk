@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import AttendanceCard from "../AttendanceCard";
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category, SlotType } from "eisbuk-shared";
-import { customersSlot } from "../__testData__/dummyData";
+import { customersSlot, __attendanceToggle__ } from "../__testData__/dummyData";
 import i18n from "i18next";
 
 const mockDispatch = jest.fn();
@@ -39,10 +39,17 @@ describe("AttendanceCard", () => {
     beforeEach(() => {
       render(<AttendanceCard {...customersSlot} />);
     });
-    test("should dispatch markAttendance with correct args", () => {
+    // test("should dispatch markAttendance with correct args", () => {
+    //   screen.getByText("👎").click();
+    //   expect(mockDispatch).toHaveBeenCalledWith(
+    //     mockMarkAttImplementation("heisenberg", true)
+    //   );
+    // });
+    test("should disable attendance button while state and fb are synching", () => {
       screen.getByText("👎").click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockMarkAttImplementation("heisenberg", true)
+      expect(screen.getByTestId(__attendanceToggle__)).toHaveProperty(
+        "disabled",
+        true
       );
     });
   });
