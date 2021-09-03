@@ -14,7 +14,7 @@ import { useDispatch } from "react-redux";
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
 interface Props {
-  isAbsent: boolean;
+  isAbsent?: boolean;
   userBooking: UserBooking;
 }
 const UserAttendance: React.FC<Props> = ({ isAbsent, userBooking }) => {

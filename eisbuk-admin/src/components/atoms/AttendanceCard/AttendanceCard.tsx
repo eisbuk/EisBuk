@@ -2,10 +2,6 @@ import React from "react";
 import { fb2Luxon } from "@/utils/date";
 import i18n from "i18next";
 // import { useTranslation } from "react-i18next";
-import _ from "lodash";
-
-import Container from "@material-ui/core/Container";
-import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -57,33 +53,25 @@ const AttendanceCard: React.FC<Props> = ({
   const timeString = `${startTime} - ${endTime}`;
 
   return (
-    <Container maxWidth="sm">
-      <List className={classes.root}>
-        <div key={id + "-" + timeString} className={classes.slotWrapper}>
-          <ListItem className={classes.listHeader}>
-            <ListItemText
-              primary={
-                <span>
-                  {timeString} <b>({userBookings.length})</b>
-                </span>
-              }
-              secondary={translateAndJoinTags(categories, type)}
-            />
-          </ListItem>
-          {userBookings.map((user) => {
-            const isAbsent = absentees?.includes(user.customer_id);
-
-            return (
-              <UserAttendance
-                key={`${id}-${user.customer_id}`}
-                isAbsent={isAbsent!}
-                userBooking={user}
-              ></UserAttendance>
-            );
-          })}
-        </div>
-      </List>
-    </Container>
+    <div key={id + "-" + timeString} className={classes.wrapper}>
+      <ListItem className={classes.listHeader}>
+        <ListItemText
+          primary={
+            <span>
+              {timeString} <b>({userBookings.length})</b>
+            </span>
+          }
+          secondary={translateAndJoinTags(categories, type)}
+        />
+      </ListItem>
+      {userBookings.map((user) => (
+        <UserAttendance
+          key={user.customer_id}
+          isAbsent={absentees?.includes(user.customer_id)}
+          userBooking={user}
+        />
+      ))}
+    </div>
   );
 };
 
@@ -101,18 +89,14 @@ const translateAndJoinTags = (categories: Category[], type: SlotType) => {
 
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
-  root: {},
   listHeader: {
     backgroundColor: theme.palette.primary.light,
   },
-  slotWrapper: {
+  wrapper: {
     marginBottom: theme.spacing(1.5),
     borderWidth: 1,
     borderStyle: "solid",
     borderColor: theme.palette.primary.main,
-  },
-  absent: {
-    backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
 }));
 // #endregion Styles
