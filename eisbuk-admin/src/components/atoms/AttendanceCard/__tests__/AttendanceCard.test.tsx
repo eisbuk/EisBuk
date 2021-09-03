@@ -10,7 +10,7 @@ const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
-const mockMarkAttImplementation = (customerId: string, attended?: boolean) => ({
+const mockMarkAttImplementation = (customerId: string, attended: boolean) => ({
   customerId,
   attended,
 });

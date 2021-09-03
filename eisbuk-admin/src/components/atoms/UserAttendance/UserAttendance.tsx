@@ -28,7 +28,7 @@ const UserAttendance: React.FC<Props> = ({ isAbsent, userBooking }) => {
       size="small"
       color={isAbsent ? "primary" : "secondary"}
       onClick={() =>
-        dispatch(markAttendance(userBooking.customer_id, isAbsent))
+        dispatch(markAttendance(userBooking.customer_id, Boolean(isAbsent)))
       }
       // disabled={hasLocalChange}
     >

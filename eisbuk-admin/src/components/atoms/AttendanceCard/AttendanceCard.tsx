@@ -31,7 +31,6 @@ const AttendanceCard: React.FC<Props> = ({
   categories,
   userBookings,
   absentees,
-  id,
   type,
 }) => {
   const classes = useStyles();
@@ -53,7 +52,7 @@ const AttendanceCard: React.FC<Props> = ({
   const timeString = `${startTime} - ${endTime}`;
 
   return (
-    <div key={id + "-" + timeString} className={classes.wrapper}>
+    <div className={classes.wrapper}>
       <ListItem className={classes.listHeader}>
         <ListItemText
           primary={

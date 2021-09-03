@@ -9,5 +9,5 @@ import { Customer } from "eisbuk-shared";
  */
 export const markAttendance = (
   customerId: Customer["id"],
-  attended?: boolean
+  attended: boolean
 ): void => {};
