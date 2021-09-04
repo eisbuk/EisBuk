@@ -66,18 +66,14 @@ const AttendanceCard: React.FC<Props> = ({
           secondary={translateAndJoinTags(categories, type)}
         />
       </ListItem>
-      {userBookings.map((user) => {
-        // const isAbsent = Boolean(absentees?.includes(user.customer_id));
-
-        return (
-          <UserAttendance
-            key={user.customer_id}
-            slotId={id}
-            attended={!absentees?.includes(user.customer_id)}
-            userBooking={user}
-          />
-        );
-      })}
+      {userBookings.map((user) => (
+        <UserAttendance
+          key={user.customer_id}
+          slotId={id}
+          attended={!absentees?.includes(user.customer_id)}
+          userBooking={user}
+        />
+      ))}
     </div>
   );
 };

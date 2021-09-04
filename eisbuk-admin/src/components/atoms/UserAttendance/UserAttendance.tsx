@@ -24,14 +24,16 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
   const dispatch = useDispatch();
   const listItemClass = attended ? "" : classes.absent;
 
-  const handleClick = (
-    slotId: Slot<"id">["id"],
-    userId: Customer["id"],
-    attended: boolean
-  ) => {
+  const handleClick = () => {
     const newAttended = !attended;
     setLocalAttended(newAttended);
-    dispatch(markAttendance({ slotId, userId, attended: newAttended }));
+    dispatch(
+      markAttendance({
+        slotId,
+        userId: userBooking.customer_id,
+        attended: newAttended,
+      })
+    );
   };
 
   const absenteeButtons = (
@@ -40,7 +42,7 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
       variant="contained"
       size="small"
       color={attended ? "primary" : "secondary"}
-      onClick={() => handleClick(slotId, userBooking.customer_id, attended)}
+      onClick={handleClick}
       disabled={localAttended !== attended}
     >
       {attended ? "👎" : "👍"}
