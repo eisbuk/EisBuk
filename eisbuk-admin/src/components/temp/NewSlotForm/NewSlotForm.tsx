@@ -177,19 +177,6 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
               </DialogTitle>
               <DialogContent>
                 <FormControl component="fieldset">
-                  <Field
-                    component={RadioGroup}
-                    name="type"
-                    label={t("SlotForm.Type")}
-                    row
-                    className={classes.field}
-                  >
-                    {createRadioButtons(slotsLabelsLists.types)}
-                  </Field>
-                  <div className={classes.error}>
-                    <ErrorMessage name="type" />
-                  </div>
-
                   <h5 className={classes.intervalTitles}>
                     {t("SlotForm.Intervals")}
                   </h5>
@@ -238,24 +225,6 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   );
 };
 // ***** End Region Main Component ***** //
-
-// ***** Region Create Radio Buttons ***** //
-/**
- * Create redio buttons for form (used for SlotTypes in this case)
- * @param values
- * @returns
- */
-const createRadioButtons = (values: SlotsLabelList["types"]) =>
-  values.map(({ id, label }) => (
-    <FormControlLabel
-      key={id}
-      value={id}
-      label={i18n.t(`SlotTypes.${label}`)}
-      control={<Radio />}
-    />
-  ));
-
-// ***** End Region Create Radio Buttons ***** //
 
 // ***** Region Interval Actions ***** //
 
