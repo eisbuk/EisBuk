@@ -36,3 +36,7 @@ build-storybook.log*
 
 # IDE specific
 .vscode\
+
+# Test result files
+junit.xml
+coverage

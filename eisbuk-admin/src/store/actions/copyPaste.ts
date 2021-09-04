@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import { Slot } from "eisbuk-shared";
 
 import { Action } from "@/enums/store";
@@ -63,3 +65,85 @@ export const copySlotWeek = (
   type: Action.CopySlotWeek,
   payload: slotWeek,
 });
+
+// #region updatedActions
+/**
+ * These action are updated versions of existing `copySlotDay` and `copySlotWeek` actions.
+ * They're written is such a way that only the start date needs to be passed
+ * and the slots data will be read from the store to reduce data needed for action calls.
+ * @TODO These are just scaffolding for functions used to test those functions being called from new `SlotOperationButtons`,
+ * should write and test these functions when working on new atmoic component integration to admin `slots` view
+ * @TODO Upon integration rename to `copySlotDay` / `copySlotWeek` rather than `newCopySlotDay` / `newCopySlotWeek`
+ * and delete the old versions of same functions
+ */
+/**
+ * Payload for each respective `BulkSlotsAction` action
+ */
+interface CopySlotsPayload {
+  [Action.CopySlotDay]: SlotDay;
+  [Action.CopySlotWeek]: SlotWeek;
+  [Action.PasteSlotDay]: SlotDay;
+  [Action.PasteSlotWeek]: SlotWeek;
+}
+
+/**
+ * Generic function interface used to type `copySlotDay` | `copySlotWeek` action creators
+ */
+interface BulkSlotsAction<
+  A extends
+    | Action.CopySlotDay
+    | Action.CopySlotWeek
+    | Action.PasteSlotDay
+    | Action.PasteSlotWeek
+> {
+  (date: DateTime): {
+    type: A;
+    payload: CopySlotsPayload[A];
+  };
+}
+
+/**
+ * Creates Redux action to add a complete day of slots to clipboard for copyPaste reducer
+ * @param date of day to copy
+ * @returns Redux action object
+ */
+export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+  type: Action.CopySlotDay,
+  payload: {} as any,
+});
+
+/**
+ * Creates Redux action to add a complete week of slots to clipboard for copyPaste reducer
+ * @param date start day of week to copy
+ * @returns Redux action object
+ */
+export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
+  date
+) => ({
+  type: Action.CopySlotWeek,
+  payload: {} as any,
+});
+
+/**
+ * Creates Redux action to paste the day of slots from clipboard to a new day
+ * @param date of day to paste to
+ * @returns Redux action object
+ */
+export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+  type: Action.CopySlotDay,
+  payload: {} as any,
+});
+
+/**
+ * Creates Redux action to paste a week of slots from clipboard to new week (starting with provided date)
+ * @param date start day of week to paste to
+ * @returns Redux action object
+ */
+export const newPasteSlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
+  date
+) => ({
+  type: Action.CopySlotWeek,
+  payload: {} as any,
+});
+
+// #endregion updatedActions

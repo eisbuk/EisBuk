@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
@@ -40,10 +39,14 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
+import { luxonToFB } from "@/utils/date";
 
-import { __slotFormId__ } from "@/components/atoms/SlotCard/__testData__";
-
-const Timestamp = firebase.firestore.Timestamp;
+import {
+  __slotFormId__,
+  __cancelFormId__,
+  __confirmFormId__,
+  __offIceDancingButtonId__,
+} from "@/__testData__/testIds";
 
 // #region formSetup
 const defaultValues = {
@@ -199,7 +202,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
         categories,
         durations,
         notes,
-        date: Timestamp.fromDate(parsedTime.toJSDate()),
+        date: luxonToFB(parsedTime),
       });
     }
     setSubmitting(false);
@@ -277,7 +280,11 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                 </FormControl>
               </DialogContent>
               <DialogActions>
-                <Button color="primary" onClick={onClose}>
+                <Button
+                  color="primary"
+                  onClick={onClose}
+                  data-testid={__cancelFormId__}
+                >
                   {t(`SlotForm.Cancel`)}
                 </Button>
                 <Button
@@ -288,6 +295,7 @@ const SlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                     (isSubmitting || isValidating)
                   }
                   color="primary"
+                  data-testid={__confirmFormId__}
                 >
                   {slotToEdit
                     ? t("SlotForm.EditSlot")
@@ -316,6 +324,10 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
       value={id}
       label={i18n.t(`SlotTypes.${label}`)}
       control={<Radio />}
+      /** Very @TEMP below until tests have a proper i18next setup */
+      {...(id === SlotType.OffIceDancing
+        ? { "data-testid": __offIceDancingButtonId__ }
+        : null)}
     />
   ));
 
@@ -392,14 +404,11 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
         setDisabled(false);
       }
     }
-
-    /** @TODO delete the "Step {x}" comments and use @TODO flag like this: in multiline comments (for the fancy coloring ;) */
   }, [type, setFieldValue, name]);
 
   return (
     <FormControlLabel
       control={<Checkbox {...{ name, value }} {...field} />}
-      // Step 3. disable the checkboxes in the UI in case of off-ice
       disabled={name === "categories" ? disabled : false}
       label={label}
     />

@@ -7,6 +7,7 @@ import { Category, Duration, SlotType } from "eisbuk-shared";
 import SlotsDay from "@/components/slots/SlotListByDay/SlotsDay";
 
 import { ComponentStory } from "@storybook/react";
+import { CustomerRoute } from "@/enums/routes";
 
 export default {
   title: "Slots Day",
@@ -19,7 +20,7 @@ const uuid = v4;
 
 const baseProps = {
   day: "2021-01-15",
-  view: "slots",
+  view: CustomerRoute.BookOffIce,
 };
 
 const slots = {
