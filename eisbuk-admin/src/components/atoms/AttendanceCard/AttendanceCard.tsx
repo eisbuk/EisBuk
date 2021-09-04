@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React from "react";
 import { fb2Luxon } from "@/utils/date";
 import i18n from "i18next";
 
@@ -17,7 +16,6 @@ import {
 } from "eisbuk-shared";
 
 import { ETheme } from "@/themes";
-import { markAttendance } from "@/store/actions/attendanceOperations";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
@@ -38,7 +36,6 @@ const AttendanceCard: React.FC<Props> = ({
   id,
 }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   // const { t } = useTranslation();
   // convert timestamp to luxon for easier processing
@@ -57,43 +54,6 @@ const AttendanceCard: React.FC<Props> = ({
 
   const timeString = `${startTime} - ${endTime}`;
 
-  // #region absentees
-
-  // type MarkAbsentee = (payload: {
-  //   slotId: Slot<"id">["id"];
-  //   userId: UserBooking["customer_id"];
-  //   isAbsent: boolean;
-  // }) => void;
-
-  const [localAbsentees, setLocalAbsentees] = useState({});
-  // const markAbsentee: MarkAbsentee = (
-  //   args: Parameters<typeof markAbsentee>[0]
-  // ) => dispatch(markAbsentee(args));
-
-  /**
-   * Handler used to toggle athlete being absent,
-   * both locally and dispatch update to firestore
-   * @param userBooking info of booking for which we're toggling attendance (user info, duration)
-   * @param isAbsent boolean, previous state of attendance
-   */
-  const toggleAbsent = (userBooking: UserBooking, isAbsent: boolean) => {
-    // update local state with absentees
-    setLocalAbsentees((state) => ({
-      ...state,
-      [userBooking.customer_id]: !isAbsent,
-    }));
-    // presist attendance data to firestore
-    markAttendance && markAttendance(userBooking.customer_id, !isAbsent);
-  };
-
-  const checkLocalChange = (
-    bookingId: UserBooking["customer_id"],
-    isAbsentInFirestore: boolean
-  ): boolean =>
-    localAbsentees[bookingId] &&
-    localAbsentees[bookingId] !== isAbsentInFirestore;
-
-  // #endregion absentees
   return (
     <div className={classes.wrapper}>
       <ListItem className={classes.listHeader}>
@@ -107,19 +67,13 @@ const AttendanceCard: React.FC<Props> = ({
         />
       </ListItem>
       {userBookings.map((user) => {
-        // set absence status with respect to firestore state
-        const isAbsent = Boolean(absentees?.includes(user.customer_id));
-
-        // check for discrepancy between local attendance (absence) status and the one in firestore
-        const hasLocalChange = checkLocalChange(user.customer_id, isAbsent);
+        // const isAbsent = Boolean(absentees?.includes(user.customer_id));
 
         return (
           <UserAttendance
-            key={user.customer_id}
-            isAbsent={absentees?.includes(user.customer_id)}
+            slotId={id}
+            attended={!absentees?.includes(user.customer_id)}
             userBooking={user}
-            toggleAbsent={toggleAbsent}
-            hasLocalChange={hasLocalChange}
           />
         );
       })}

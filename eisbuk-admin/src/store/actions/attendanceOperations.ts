@@ -1,4 +1,4 @@
-import { Customer } from "eisbuk-shared";
+import { Customer, Slot } from "eisbuk-shared";
 
 /**
  * AttendanceCard should call to this function with customer id and attendance state (boolean for now).
@@ -7,7 +7,9 @@ import { Customer } from "eisbuk-shared";
  * @param customerId
  * @param attended
  */
-export const markAttendance = (
-  customerId: Customer["id"],
-  attended: boolean
-): void => {};
+
+export const markAttendance = (payload: {
+  slotId: Slot<"id">["id"];
+  userId: Customer["id"];
+  attended: boolean;
+}): void => {};

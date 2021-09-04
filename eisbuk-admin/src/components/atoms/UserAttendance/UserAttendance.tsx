@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
-import { Customer, BookingsMeta } from "eisbuk-shared";
+import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
 import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
@@ -14,33 +14,36 @@ import { useDispatch } from "react-redux";
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
 interface Props {
-  isAbsent?: boolean;
+  attended: boolean;
   userBooking: UserBooking;
-  toggleAbsent: (UserBooking: UserBooking, isAbsent: boolean) => void;
-  hasLocalChange: boolean;
+  slotId: Slot<"id">["id"];
 }
-const UserAttendance: React.FC<Props> = ({
-  isAbsent,
-  userBooking,
-  toggleAbsent,
-  hasLocalChange,
-}) => {
+const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
+  const [localAttended, setLocalAttended] = useState(attended);
   const classes = useStyles();
   const dispatch = useDispatch();
-  const listItemClass = isAbsent ? classes.absent : "";
+  const listItemClass = attended ? "" : classes.absent;
+
+  const handleClick = (
+    slotId: Slot<"id">["id"],
+    userId: Customer["id"],
+    attended: boolean
+  ) => {
+    const newAttended = !attended;
+    setLocalAttended(newAttended);
+    dispatch(markAttendance({ slotId, userId, attended: newAttended }));
+  };
 
   const absenteeButtons = (
     <Button
+      data-testid={`${userBooking.name}${userBooking.surname}`}
       variant="contained"
       size="small"
-      color={isAbsent ? "primary" : "secondary"}
-      onClick={() =>
-        // dispatch(markAttendance(userBooking.customer_id, Boolean(isAbsent)))
-        toggleAbsent(userBooking, Boolean(isAbsent))
-      }
-      disabled={hasLocalChange}
+      color={attended ? "primary" : "secondary"}
+      onClick={() => handleClick(slotId, userBooking.customer_id, attended)}
+      // disabled={}
     >
-      {isAbsent ? "👎" : "👍"}
+      {attended ? "👎" : "👍"}
     </Button>
   );
   return (
