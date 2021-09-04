@@ -1,6 +1,7 @@
 import React from "react";
 import {
   cleanup,
+  fireEvent,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
@@ -78,6 +79,12 @@ describe("SlotForm,", () => {
       // we're testing change being called with one hour decrement from initial 'value' as 'value' doesn't due to mocking
       expect(mockSetValue).toHaveBeenCalledWith("07:00");
     });
+
+    test('should default to "08:00" + increment/decrement if clicked with invalid time string', () => {
+      renderWithFormik(<TimePickerField name="time" value="invalid_string" />);
+      screen.getByTestId(__incrementId__).click();
+      expect(mockSetValue).toHaveBeenCalledWith("09:00");
+    });
   });
 
   describe("TimePickerField, validation", () => {
@@ -86,11 +93,18 @@ describe("SlotForm,", () => {
       jest.restoreAllMocks();
     });
 
-    test('should display error if invalid time string (different from "HH-mm")', () => {
+    test('should display error if invalid time string (different from "HH:mm")', () => {
       renderWithFormik(<TimePickerField name="time" />);
       const timeInput = screen.getByRole("textbox");
       userEvent.type(timeInput, "153:12");
       screen.getByText(__invalidTime);
+    });
+
+    test('should not display error for timestring format "9:00" (not 09:00. but still the same)', () => {
+      renderWithFormik(<TimePickerField name="time" />);
+      const timeInput = screen.getByRole("textbox");
+      fireEvent.change(timeInput, { target: { value: "9:00" } });
+      expect(screen.queryByText(__invalidTime)).toEqual(null);
     });
 
     testWithMutationObserver(

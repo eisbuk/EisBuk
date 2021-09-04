@@ -72,7 +72,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    * - if explicitly provided (as prop), will use the value from props
    * - if not explicitly set, will use the one received from `useField` context
    */
-  const value = props.value ?? contextValue;
+  const value = props.value ?? contextValue ?? "";
 
   /**
    * Change handler function, used to handle direct change (typing) of input.
@@ -89,7 +89,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       case newValue === "":
         setError(t(__requiredField));
         break;
-      case !/[0-9][0-9]-[0-9][0-9]/.test(newValue):
+      case !/[0-9]?[0-9]:[0-9][0-9]/.test(newValue):
         setError(t(__invalidTime));
         break;
     }
@@ -102,9 +102,19 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    * - 1 for increment
    */
   const handleClick = (delta: -1 | 1) => () => {
+    // fallback time in case current value is not valid time string
+    const fallbackTime = DateTime.fromISO("08:00");
+
     const luxonTime = DateTime.fromISO(value);
-    const newLuxonTime = luxonTime.plus({ hours: delta });
+
+    // check if current value is a valid timestring
+    const currentTimeValid = !luxonTime.invalidReason;
+
+    const newLuxonTime = currentTimeValid
+      ? luxonTime.plus({ hours: delta })
+      : fallbackTime.plus({ hours: delta });
     const newTime = newLuxonTime.toISOTime().substr(0, 5);
+
     updateChange(newTime);
   };
 
