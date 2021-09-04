@@ -54,6 +54,7 @@ const AttendanceCard: React.FC<Props> = ({
 
   const timeString = `${startTime} - ${endTime}`;
 
+  const dummyIntervals = ["13:00 -14:00", "13:15 : 14:15"];
   return (
     <div className={classes.wrapper}>
       <ListItem className={classes.listHeader}>
@@ -72,6 +73,7 @@ const AttendanceCard: React.FC<Props> = ({
           slotId={id}
           attended={!absentees?.includes(user.customer_id)}
           userBooking={user}
+          intervals={dummyIntervals}
         />
       ))}
     </div>

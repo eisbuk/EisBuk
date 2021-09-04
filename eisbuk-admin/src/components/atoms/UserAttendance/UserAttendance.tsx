@@ -10,6 +10,9 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
 import { markAttendance } from "@/store/actions/attendanceOperations";
 import { useDispatch } from "react-redux";
+import FormControl from "@material-ui/core/FormControl";
+import InputLabel from "@material-ui/core/InputLabel";
+import Select from "@material-ui/core/Select";
 
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -17,8 +20,15 @@ interface Props {
   attended: boolean;
   userBooking: UserBooking;
   slotId: Slot<"id">["id"];
+  intervals: string[];
 }
-const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
+
+const UserAttendance: React.FC<Props> = ({
+  attended,
+  userBooking,
+  slotId,
+  intervals,
+}) => {
   const [localAttended, setLocalAttended] = useState(attended);
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -48,6 +58,7 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
       {attended ? "👎" : "👍"}
     </Button>
   );
+
   return (
     <ListItem className={listItemClass}>
       <ListItemAvatar>
@@ -55,6 +66,26 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
       </ListItemAvatar>
       <ListItemText primary={userBooking.name} />
       <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>
+      <FormControl className={classes.formControl}>
+        <InputLabel>Intervals</InputLabel>
+        <Select
+          data-testid={`${userBooking.name}${userBooking.surname}Dropdown`}
+          native
+          value={intervals[0]}
+          // onChange={handleChange}
+          // inputProps={{
+          //   name: "",
+          //   id: "",
+          // }}
+        >
+          {/**  @TODO booked value as init value */}
+          <option aria-label="None" value="" />
+          {intervals.map((interval) => (
+            <option value={interval}>{interval}</option>
+          ))}
+        </Select>
+      </FormControl>
+      ;
     </ListItem>
   );
 };
@@ -63,6 +94,14 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
 const useStyles = makeStyles((theme: ETheme) => ({
   absent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
+  },
+  button: {
+    display: "block",
+    marginTop: theme.spacing(2),
+  },
+  formControl: {
+    margin: theme.spacing(1),
+    minWidth: 120,
   },
 }));
 // #endregion Styles

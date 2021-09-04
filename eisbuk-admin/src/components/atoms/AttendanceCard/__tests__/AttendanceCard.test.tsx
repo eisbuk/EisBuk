@@ -1,5 +1,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
+
 import AttendanceCard from "../AttendanceCard";
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { Category, SlotType } from "eisbuk-shared";
@@ -58,6 +60,11 @@ describe("AttendanceCard", () => {
         "disabled",
         true
       );
+    });
+    /** @TODO this test only works for native <select/> so will try to find alternative */
+    test("should render intervals in dropdown", () => {
+      screen.getByText("👎").click();
+      expect(screen.getByTestId("SaulGoodmanDropdown")).toHaveDisplayValue("");
     });
   });
 });
