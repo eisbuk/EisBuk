@@ -11,7 +11,6 @@ import {
   ErrorMessage,
   useFormikContext,
   FormikConfig,
-  FieldArray,
   FormikValues,
   FormikHelpers,
 } from "formik";
@@ -28,8 +27,6 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import FormControl from "@material-ui/core/FormControl";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
-import IconButton from "@material-ui/core/IconButton";
-import DeleteIcon from "@material-ui/icons/Delete";
 import Radio from "@material-ui/core/Radio";
 import TextField from "@material-ui/core/TextField";
 
@@ -44,13 +41,6 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 import { getNewSlotTime } from "@/store/selectors/app";
 
 import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
-
-import {
-  __endTimeErrorId__,
-  __endTimeInputId__,
-  __startTimeErrorId__,
-  __startTimeInputId__,
-} from "./__testData__/testIds";
 
 const Timestamp = firebase.firestore.Timestamp;
 
@@ -130,7 +120,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   }
   const { t } = useTranslation();
 
-  type OnSubmit = FormikConfig<FormValues>["onSubmit"];
+  type OnSubmit = FormikConfig<any>["onSubmit"];
 
   /**
    * onSubmit handler for Formik
@@ -218,70 +208,9 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
                   <h5 className={classes.intervalTitles}>
                     {t("SlotForm.Intervals")}
                   </h5>
-                  {/* TODO: remove slot to edit => only  */}
-                  {!slotToEdit && (
-                    <FieldArray name="tickets">
-                      {/* TODO: values.Intervals could be undefined */}
-                      {() =>
-                        values.intervals?.map((interval, i) => {
-                          //    const intervalErrors = errors.Intervals?.length && errors.Intervals[i] || {};
-                          //    const intervalTouched = touched.Intervals.length && touched.Intervals[i] || {};
-                          return (
-                            <div
-                              key={i}
-                              className="list-group list-group-flush"
-                            >
-                              <div className="list-group-item">
-                                <div
-                                  className={
-                                    i % 2 === 0
-                                      ? classes.intervalContainerEven
-                                      : classes.intervalContainer
-                                  }
-                                >
-                                  <Field
-                                    as={TimePickerField}
-                                    label={t("SlotForm.StartTime")}
-                                    name={`Intervals.${i}.startTime`}
-                                    type="text"
-                                    data-testId={__startTimeInputId__}
-                                  />
-                                  <Field
-                                    as={TimePickerField}
-                                    label={t("SlotForm.EndTime")}
-                                    name={`Intervals.${i}.endTime`}
-                                    type="text"
-                                    data-testId={__endTimeInputId__}
-                                  />
-                                  <IconButton
-                                    aria-label="delete"
-                                    color="primary"
-                                    onClick={() =>
-                                      deleteInterval(i, values, setValues)
-                                    }
-                                  >
-                                    <DeleteIcon />
-                                  </IconButton>
-
-                                  <ErrorMessage
-                                    data-testid={__startTimeErrorId__}
-                                    name="startTime"
-                                  />
-                                  <ErrorMessage
-                                    data-testid={__endTimeErrorId__}
-                                    name="endTime"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })
-                      }
-                    </FieldArray>
-                  )}
                   <div className={classes.buttonContainer}>
                     <Button
-                      onClick={(e) => addInterval(values, setValues)}
+                      onClick={() => addInterval(values, setValues)}
                       color="primary"
                       variant="contained"
                       className={classes.addInterval}
@@ -434,7 +363,7 @@ export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
  */
 const addInterval = (
   values: FormikValues,
-  setValues: FormikHelpers<FormValues>["setValues"]
+  setValues: FormikHelpers<any>["setValues"]
 ) => {
   // update intervals
   const intervals = [...values.Intervals];
@@ -446,23 +375,6 @@ const addInterval = (
   // field.onChange(e);
 };
 
-/**
- * Deletes interval element when trash button is clicked
- * @returns
- */
-const deleteInterval = (
-  i: number,
-  values: FormikValues,
-  setValues: FormikHelpers<FormValues>["setValues"]
-) => {
-  // update intervals
-  const intervals = [...values.intervals];
-  if (intervals.length === 1) return;
-
-  intervals.splice(i, 1);
-
-  setValues({ ...values, intervals });
-};
 // ***** End Region Interval Actions ***** //
 
 // ***** Region Styles ***** //

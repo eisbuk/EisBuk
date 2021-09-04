@@ -1,5 +1,5 @@
 import React from "react";
-import { Field, useField } from "formik";
+import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
 import IconButton from "@material-ui/core/IconButton";
@@ -13,8 +13,6 @@ import TimePickerField from "./TimePickerField";
 import {
   __startTimeInputId__,
   __endTimeInputId__,
-  __startTimeErrorId__,
-  __endTimeErrorId__,
   __deleteIntervalId__,
 } from "./__testData__/testIds";
 import { DateTime } from "luxon";
