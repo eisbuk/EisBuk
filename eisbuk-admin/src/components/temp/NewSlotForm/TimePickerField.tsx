@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
-import { ErrorMessage, useField } from "formik";
+import React from "react";
+import { useField } from "formik";
 import { DateTime } from "luxon";
+import { useTranslation } from "react-i18next";
 
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
@@ -11,9 +12,16 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { __invalidTime, __requiredField } from "@/lib/errorMessages";
 
 import { __decrementId__, __incrementId__ } from "./__testData__/testIds";
-import { useTranslation } from "react-i18next";
 
-type Props = Omit<Omit<TextFieldProps, "name">, "value"> & {
+/**
+ * Simple `onChange` handler type, assignable to Formik's `setValue`
+ * and `onChange` prop
+ */
+interface UpdateChange {
+  (value: string): void;
+}
+
+type Props = Omit<Omit<Omit<TextFieldProps, "name">, "value">, "onChange"> & {
   /**
    * Name for the input field. Used for HTML input element,
    * as well as a parameter for `useField()` hook
@@ -28,7 +36,7 @@ type Props = Omit<Omit<TextFieldProps, "name">, "value"> & {
    * Optional: change handler, accepts changed value string and `shouldValidate` boolean (always true).
    * If not provided, will default to `useField()` context's `setValue`
    */
-  onChange?: (value: string) => void;
+  onChange?: UpdateChange;
 };
 
 /**
@@ -43,6 +51,8 @@ type Props = Omit<Omit<TextFieldProps, "name">, "value"> & {
  * **Important:** should be rendered as a decendant of `<Formik>` element (for context) and will throw otherwise.
  */
 const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
+  const classes = useStyles();
+
   const { t } = useTranslation();
 
   const [
@@ -50,11 +60,6 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
     { error },
     { setValue, setError },
   ] = useField<string>(name);
-
-  interface UpdateChange {
-    (value: string, shouldValidate?: boolean): void;
-  }
-  const classes = useStyles();
 
   /**
    * Function in charge of dispatching chage of value in appropriate way.
@@ -77,7 +82,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
     const newValue = e.target.value;
 
     // update new value
-    updateChange(newValue, true);
+    updateChange(newValue);
 
     // check new value for errors
     switch (true) {
@@ -100,7 +105,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
     const luxonTime = DateTime.fromISO(value);
     const newLuxonTime = luxonTime.plus({ hours: delta });
     const newTime = newLuxonTime.toISOTime().substr(0, 5);
-    updateChange(newTime, true);
+    updateChange(newTime);
   };
 
   return (

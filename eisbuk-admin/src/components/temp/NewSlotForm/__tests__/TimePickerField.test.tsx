@@ -1,15 +1,13 @@
 import React from "react";
 import {
   cleanup,
-  render,
   screen,
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import * as formik from "formik";
-import * as i18n from "react-i18next";
 
-import { __invalidTime, __requiredField } from "@/lib/errorMessages";
+import { __invalidTime } from "@/lib/errorMessages";
 
 import TimePickerField from "../TimePickerField";
 
@@ -55,7 +53,7 @@ describe("SlotForm,", () => {
       renderWithFormik(<TimePickerField name="time" />);
       const timeInput = screen.getByRole("textbox");
       userEvent.type(timeInput, "09:00");
-      expect(mockSetValue).toHaveBeenCalledWith("09:00", true);
+      expect(mockSetValue).toHaveBeenCalledWith("09:00");
     });
 
     test("should give presedence (over 'value' from context) to 'value' recieved as props", () => {
@@ -68,17 +66,17 @@ describe("SlotForm,", () => {
       renderWithFormik(<TimePickerField name="time" onChange={mockOnChange} />);
       const timeInput = screen.getByRole("textbox");
       userEvent.type(timeInput, "09:00");
-      expect(mockOnChange).toHaveBeenCalledWith("09:00", true);
+      expect(mockOnChange).toHaveBeenCalledWith("09:00");
       expect(mockSetValue).not.toHaveBeenCalled();
     });
 
     test('should increment/decrement time by an hour on "+"/"-" button click', () => {
       renderWithFormik(<TimePickerField name="time" />);
       screen.getByTestId(__incrementId__).click();
-      expect(mockSetValue).toHaveBeenCalledWith("09:00", true);
+      expect(mockSetValue).toHaveBeenCalledWith("09:00");
       screen.getByTestId(__decrementId__).click();
       // we're testing change being called with one hour decrement from initial 'value' as 'value' doesn't due to mocking
-      expect(mockSetValue).toHaveBeenCalledWith("07:00", true);
+      expect(mockSetValue).toHaveBeenCalledWith("07:00");
     });
   });
 

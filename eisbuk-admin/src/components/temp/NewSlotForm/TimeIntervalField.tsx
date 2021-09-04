@@ -17,6 +17,8 @@ import {
   __endTimeErrorId__,
   __deleteIntervalId__,
 } from "./__testData__/testIds";
+import { DateTime } from "luxon";
+import { __timeMismatch } from "@/lib/errorMessages";
 
 interface Props {
   /**
@@ -38,38 +40,56 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
   const { t } = useTranslation();
 
   const classes = useStyles();
-  const [, , { setValue }] = useField<string>(name);
+  const [{ value }, { error }, { setValue, setError }] = useField<string>(name);
 
   const colorClass = dark ? classes.dark : "";
 
-  // const handleChange = (field: "start" | "end") => (
-  //   e: React.ChangeEvent<HTMLInputElement>
-  // ) => {
-  //   console.log("Called");
-  //   const value = e.target.value;
-  //   console.log("Start > ", value);
-  // };
+  let [startTime, endTime] = value.split("-");
 
-  setValue("test");
+  const handleChange = (field: "start" | "end") => (updatedValue: string) => {
+    switch (field) {
+      case "start":
+        startTime = updatedValue;
+        break;
+      case "end":
+        endTime = updatedValue;
+    }
+
+    // set updated time string
+    const newTime = `${startTime}-${endTime}`;
+    setValue(newTime);
+
+    // check for start/end time mismatch
+    const startTimeLuxon = DateTime.fromISO(startTime);
+    const endTimeLuxon = DateTime.fromISO(endTime);
+
+    // both times should be valid for validation,
+    // if not valid, error should be handled by different validation (inside TimePickerField)
+    if (!startTimeLuxon.invalidReason && !endTimeLuxon.invalidReason) {
+      const diff =
+        startTimeLuxon.diff(endTimeLuxon).toObject().milliseconds || 0;
+      if (diff > 0) setError(__timeMismatch);
+    }
+  };
+
   return (
     <div className="list-group list-group-flush">
       <div className="list-group-item">
         <div className={[classes.intervalContainer, colorClass].join(" ")}>
-          <Field
-            as={TimePickerField}
+          <TimePickerField
+            name="startTime"
+            className={classes.intervalField}
             label={t("SlotForm.StartTime")}
-            name="start_time"
-            type="text"
-            className={classes.intervalField}
+            value={startTime}
+            onChange={handleChange("start")}
             data-testid={__startTimeInputId__}
-            // onChange={handleChange("start")}
           />
-          <Field
-            as={TimePickerField}
-            label={t("SlotForm.EndTime")}
-            name="end_time"
-            type="text"
+          <TimePickerField
+            name="endTime"
             className={classes.intervalField}
+            label={t("SlotForm.EndTime")}
+            value={endTime}
+            onChange={handleChange("end")}
             data-testid={__endTimeInputId__}
           />
           <IconButton
@@ -81,16 +101,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
             <DeleteIcon />
           </IconButton>
 
-          {/* <ErrorMessage
-            className={classes.error}
-            data-testid={__startTimeErrorId__}
-            name="startTime"
-          />
-          <ErrorMessage
-            className={classes.error}
-            data-testid={__endTimeErrorId__}
-            name="endTime"
-          /> */}
+          <div>{error}</div>
         </div>
       </div>
     </div>
