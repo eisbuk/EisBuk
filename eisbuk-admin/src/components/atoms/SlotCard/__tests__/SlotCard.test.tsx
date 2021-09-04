@@ -4,6 +4,8 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
+import { Slot } from "eisbuk-shared";
+
 import { slotsLabels } from "@/config/appConfig";
 
 import { SlotView } from "@/enums/components";
@@ -13,12 +15,14 @@ import SlotCard from "../SlotCard";
 import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
+import { __slotId__ } from "../__testData__/testIds";
 import {
-  dummySlot,
-  __editSlotId__,
-  __deleteSlotId__,
+  __confirmDialogYesId__,
   __slotFormId__,
-} from "../__testData__";
+  __deleteButtonId__,
+  __editSlotButtonId__,
+} from "@/__testData__/testIds";
+import { dummySlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 
@@ -34,6 +38,7 @@ jest.mock("react-router-dom", () => ({
   useParams: () => ({ secretKey: "secret_key" }),
 }));
 
+/** @TODO remove this when the i18next is instantiated with tests */
 jest.mock("i18next", () => ({
   ...jest.requireActual("i18next"),
   /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
@@ -113,22 +118,53 @@ describe("SlotCard", () => {
   });
 
   describe("SlotOperationButtons functionality", () => {
-    // we're mocking the return of deleteSlots function for easier testing
-    const mockDelete = jest.spyOn(slotOperations, "deleteSlots");
-    mockDelete.mockImplementation((slots) => ({ slots } as any));
-
     beforeEach(() => {
       render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
     });
 
     test("should open slot form on edit slot click", () => {
-      screen.getByTestId(__editSlotId__).click();
+      screen.getByTestId(__editSlotButtonId__).click();
       screen.getByTestId(__slotFormId__);
     });
 
-    test("should dispatch delete action on delete click", () => {
-      screen.getByTestId(__deleteSlotId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith({ slots: [dummySlot] });
+    test("should dispatch delete action on delete confirmation click", () => {
+      // mock implementation of `deleteSlot` used to mock implementation in component and for testing
+      const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+        type: "delete_slot",
+        slotId,
+      });
+      // mock deleteSlot function
+      jest
+        .spyOn(slotOperations, "deleteSlot")
+        .mockImplementation(mockDelSlotImplementation);
+      // open delete dialog
+      screen.getByTestId(__deleteButtonId__).click();
+      // confirm delete dialog
+      screen.getByTestId(__confirmDialogYesId__).click();
+      const mockDeleteAction = mockDelSlotImplementation(dummySlot.id);
+      expect(mockDispatch).toHaveBeenCalledWith(mockDeleteAction);
+    });
+  });
+
+  describe("Test clicking on slot card", () => {
+    const mockOnClick = jest.fn();
+
+    test("should fire 'onClick' function if provided", () => {
+      render(
+        <SlotCard
+          {...dummySlot}
+          view={SlotView.Admin}
+          enableEdit
+          onClick={mockOnClick}
+        />
+      );
+      screen.getByTestId(__slotId__).click();
+      expect(mockOnClick).toHaveBeenCalledTimes(1);
+    });
+
+    test("should not explode on click if no 'onClick' handler has been provided", () => {
+      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      screen.getByTestId(__slotId__).click();
     });
   });
 });

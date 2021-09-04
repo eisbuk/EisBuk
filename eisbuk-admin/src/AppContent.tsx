@@ -20,10 +20,10 @@ import LoginRoute from "@/components/auth/LoginRoute";
 import DebugPage from "@/components/debugPage";
 
 import DashboardPage from "@/pages/DashboardPage";
-import CustomersPage from "@/pages/CustomersPage";
+import AthletesPage from "@/pages/CustomersPage";
 import SlotsPage from "@/pages/SlotsPage";
 import LoginPage from "@/pages/LoginPage";
-import CustomerAreaPage from "@/pages/CustomerAreaPage";
+import CustomerAreaPage from "@/pages/customer_area";
 
 import { wrapOrganization } from "@/utils/firestore";
 import { getMonthStr } from "@/utils/helpers";
@@ -44,10 +44,13 @@ const AppComponents: React.FC = () => {
     <Switch>
       <LoginRoute path={Routes.Login} component={LoginPage} />
       <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
-      <PrivateRoute path={PrivateRoutes.Atleti} component={CustomersPage} />
+      <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+      <Route
+        path={`${Routes.CustomerArea}/:secretKey/:customerRoute?/:date?`}
+        component={CustomerAreaPage}
+      />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
-      <Route path={Routes.Clienti} children={<CustomerAreaPage />} />
       <Route path={Routes.Debug} children={<DebugPage />} />
     </Switch>
   );

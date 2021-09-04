@@ -1,6 +1,8 @@
 import React from "react";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
+import { DateTime } from "luxon";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -12,14 +14,19 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Duration, Slot as SlotInterface } from "eisbuk-shared";
 
-import { SlotView } from "@/enums/components";
+import { ButtonContextType, SlotView } from "@/enums/components";
 
+import SlotOperationButtons, {
+  EditSlotButton,
+  DeleteButton,
+} from "@/components/atoms/SlotOperationButtons";
 import DurationsSection from "./DurationsSection";
-import SlotOperationButtons from "./SlotOperationButtons";
 import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
 import { fb2Luxon } from "@/utils/date";
+
+import { __slotId__ } from "./__testData__/testIds";
 
 export interface SlotCardProps extends SlotInterface<"id"> {
   /**
@@ -38,6 +45,10 @@ export interface SlotCardProps extends SlotInterface<"id"> {
    * Enable edit/delete of the slot in admin view
    */
   enableEdit?: boolean;
+  /**
+   * Click handler for the entire card, will default to empty function if none is provided
+   */
+  onClick?: (e: React.SyntheticEvent) => void;
 }
 
 // #region componentFunction
@@ -51,6 +62,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
   subscribedDuration,
   view = SlotView.Customer,
   enableEdit,
+  onClick,
   ...slotData
 }) => {
   const classes = useStyles();
@@ -60,12 +72,19 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   const isSubscribed = Boolean(subscribedDuration);
 
+  const canClick = Boolean(onClick);
+
   return (
     <>
       <Card
-        className={clsx(classes.root, { [classes.selected]: selected })}
+        className={clsx(classes.root, {
+          [classes.selected]: selected,
+          [classes.cursorPointer]: canClick,
+        })}
         raised={isSubscribed}
         variant="outlined"
+        data-testid={__slotId__}
+        onClick={onClick}
       >
         <CardContent className={classes.wrapper}>
           <SlotTime startTime={date} subscribedDuration={subscribedDuration} />
@@ -102,7 +121,14 @@ const SlotCard: React.FC<SlotCardProps> = ({
             />
             <SlotTypeLabel slotType={slotData.type} />
             {view === SlotView.Admin && enableEdit && (
-              <SlotOperationButtons {...slotData} />
+              <SlotOperationButtons
+                contextType={ButtonContextType.Slot}
+                slot={slotData}
+                iconSize="small"
+              >
+                <EditSlotButton />
+                <DeleteButton confirmDialog={createDeleteConfirmDialog(date)} />
+              </SlotOperationButtons>
             )}
           </Box>
         </CardActions>
@@ -111,6 +137,40 @@ const SlotCard: React.FC<SlotCardProps> = ({
   );
 };
 // #endregion componentFunction
+
+// #region localUtils
+/**
+ * Creates a confirm dialog for `DeleteButton` on slot.
+ * Uses i18n translations of delete confirmation propmt and returns
+ * everything as `{title, description}` object
+ * @param date date of slot to delete
+ * @returns `confirmDialog` object for `DeleteButton`
+ */
+const createDeleteConfirmDialog = (date: DateTime) => {
+  // get delete prompt translation
+  const deletePrompt = i18n.t("Slots.DeleteConfirmation");
+  // get date localization
+  const confirmDialogDate = i18n.t("Slots.ConfirmDialogDate", {
+    date,
+  });
+  // get time-of-day localization
+  const confirmDialogTime = i18n.t("Slots.ConfirmDialogTime", { date });
+  // get translation for word "slot"
+  const slotTranslation = i18n.t("Slots.Slot");
+
+  // join title parts into one string
+  const title = [
+    deletePrompt,
+    confirmDialogDate,
+    confirmDialogTime,
+    slotTranslation,
+  ].join(" ");
+
+  // get translated non-reversible-action message
+  const description = i18n.t("Slots.NonReversible");
+  return { title, description };
+};
+// #endregion localUtils
 
 // #region styles
 const useStyles = makeStyles((theme) => ({
@@ -153,6 +213,9 @@ const useStyles = makeStyles((theme) => ({
   },
   selected: {
     backgroundColor: theme.palette.warning.light,
+  },
+  cursorPointer: {
+    cursor: "pointer",
   },
 }));
 // #endregion styles

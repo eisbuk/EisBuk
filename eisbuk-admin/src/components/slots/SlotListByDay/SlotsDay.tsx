@@ -22,12 +22,12 @@ import { Slot as SlotInterface } from "eisbuk-shared";
 
 import { __isStorybook__ } from "@/lib/constants";
 
+import { CustomerRoute } from "@/enums/routes";
+
+import Slot, { SlotProps } from "./Slot";
 import { ETheme } from "@/themes";
 
 import { SlotOperation } from "@/types/slotOperations";
-
-import CustomerAreaBookingCard from "@/components/customerArea/CustomerAreaBookingCard";
-import Slot, { SlotProps } from "@/components/slots//SlotListByDay/Slot";
 
 import {
   copySlotDay,
@@ -53,7 +53,7 @@ export interface SlotsDayProps extends SimplifiedSlotProps {
   slots: Record<string, SlotInterface<"id">>;
   day: string;
   enableEdit?: boolean;
-  view?: string;
+  view?: CustomerRoute;
   isCustomer?: boolean;
 }
 
@@ -62,7 +62,6 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   day,
   subscribedSlots,
   enableEdit = false,
-  view = "slots",
   isCustomer = false,
   setCreateEditDialog = () => {},
   onSubscribe,
@@ -138,80 +137,59 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
 
   return (
     <>
-      {view === "slots" ? (
-        <>
-          <ListSubheader key={day + "-title"} className={classes.listSubheader}>
-            <Typography display="inline" variant="h4" className={classes.date}>
-              {t("SlotsDay.Date", { date: luxonDay })}
-            </Typography>
-            <Box display="flex" className={classes.dateButtons}>
-              {newSlotButton}
-              {enableEdit && Boolean(slotsList.length) && (
-                <IconButton
-                  size="small"
-                  onClick={() => dispatch(copySlotDay(slots))}
-                >
-                  <FileCopyIcon />
-                </IconButton>
-              )}
-              {enableEdit && Object.keys(dayInClipboard).length > 0 && (
-                <IconButton size="small" onClick={doPaste}>
-                  <AssignmentIcon />
-                </IconButton>
-              )}
-            </Box>
-          </ListSubheader>
-          <Grid className={classes.slotListContainer} container spacing={1}>
-            {slotsList.map((slot) => (
-              <Grid
-                key={slot.id}
-                className={
-                  canClickSlots ? classes.clickable : classes.unclickable
-                }
-                onClick={() =>
-                  canClickSlots &&
-                  (checkSelected(slot.id)
-                    ? dispatch(deleteSlotFromClipboard(slot.id))
-                    : dispatch(addSlotToClipboard(slot)))
-                }
-                item
-                xs={12}
-                md={6}
-                lg={!isCustomer ? 3 : 4}
-                xl={!isCustomer ? 2 : 3}
-              >
-                <Slot
-                  selected={checkSelected(slot.id)}
-                  data={slot}
-                  key={slot.id}
-                  deleted={Boolean(deletedSlots[slot.id])}
-                  onDelete={extendedOnDelete}
-                  {...{
-                    ...(enableEdit && { setCreateEditDialog }),
-                    ...(canChange && { onSubscribe, onUnsubscribe }),
-                    subscribedSlots,
-                  }}
-                ></Slot>
-              </Grid>
-            ))}
-          </Grid>
-        </>
-      ) : (
-        <Grid className={classes.bookingsListContainer} container spacing={3}>
-          {slotsList.map(
-            (slot) =>
-              subscribedSlots &&
-              subscribedSlots[slot.id] && (
-                <Grid key={slot.id} item xs={12} sm={6} md={4} lg={3}>
-                  <CustomerAreaBookingCard
-                    data={subscribedSlots[slot.id]}
-                    key={slot.id}
-                  />
-                </Grid>
-              )
+      <ListSubheader key={day + "-title"} className={classes.listSubheader}>
+        <Typography display="inline" variant="h4" className={classes.date}>
+          {t("SlotsDay.Date", { date: luxonDay })}
+        </Typography>
+        <Box display="flex" className={classes.dateButtons}>
+          {newSlotButton}
+          {enableEdit && Boolean(slotsList.length) && (
+            <IconButton
+              size="small"
+              onClick={() => dispatch(copySlotDay(slots))}
+            >
+              <FileCopyIcon />
+            </IconButton>
           )}
-        </Grid>
-      )}
+          {enableEdit && Object.keys(dayInClipboard).length > 0 && (
+            <IconButton size="small" onClick={doPaste}>
+              <AssignmentIcon />
+            </IconButton>
+          )}
+        </Box>
+      </ListSubheader>
+      <Grid className={classes.slotListContainer} container spacing={1}>
+        {slotsList.map((slot) => (
+          <Grid
+            key={slot.id}
+            className={canClickSlots ? classes.clickable : classes.unclickable}
+            onClick={() =>
+              canClickSlots &&
+              (checkSelected(slot.id)
+                ? dispatch(deleteSlotFromClipboard(slot.id))
+                : dispatch(addSlotToClipboard(slot)))
+            }
+            item
+            xs={12}
+            md={6}
+            lg={!isCustomer ? 3 : 4}
+            xl={!isCustomer ? 2 : 3}
+          >
+            <Slot
+              selected={checkSelected(slot.id)}
+              data={slot}
+              key={slot.id}
+              deleted={Boolean(deletedSlots[slot.id])}
+              onDelete={extendedOnDelete}
+              {...{
+                ...(enableEdit && { setCreateEditDialog }),
+                ...(canChange && { onSubscribe, onUnsubscribe }),
+                subscribedSlots,
+              }}
+            ></Slot>
+          </Grid>
+        ))}
+      </Grid>
     </>
   );
 };

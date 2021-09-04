@@ -16,11 +16,10 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { luxon2ISODate } from "@/utils/date";
 import { createDateTitle, getFallbackDate, processDateParam } from "./utils";
 
-import {
-  __toggleId__,
-  __incrementId__,
-  __decrementId__,
-} from "./__testData__/testData";
+import { __toggleId__ } from "./__testData__/testData";
+
+import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import { __isStorybook__, __storybookDate__ } from "@/lib/constants";
 
 /**
  * A render function passed as child for render prop usage
@@ -93,7 +92,10 @@ const DateNavigation: React.FC<Props> = ({
   // ISO date string representation of current time.
   // Used for calculating of the fallback default time
   const fallbackDate = getFallbackDate(jump);
-  const initialStartTime = withRouter
+  const initialStartTime = __isStorybook__
+    ? // set standardized date if in storybook env
+      DateTime.fromISO(__storybookDate__)
+    : withRouter
     ? routeDate || defaultDate || fallbackDate
     : defaultDate || fallbackDate;
   // we're employing fault tolerance here:
@@ -108,13 +110,16 @@ const DateNavigation: React.FC<Props> = ({
   /**
    * Handle synchronization of the route and the local state (if `withRouter = true`):
    * - if route `date` param is undefined, push default date to the route
-   * - if route `date` param is defined, but different from local state, update local state accordingly
+   * - if route `date` param is defined, but different from local state, update local state accordinglyz
    */
   useEffect(() => {
     const localDateISO = luxon2ISODate(currentViewStart);
-    if (withRouter && routeDateISO !== localDateISO) {
+    if (!__isStorybook__ && withRouter && routeDateISO !== localDateISO) {
       if (!routeDate) {
-        const pathnameWithLocalDate = `${pathname}/${localDateISO}`;
+        const pathnameWithLocalDate = `${pathname.replace(
+          /\/$/,
+          ""
+        )}/${localDateISO}`;
         history.push(pathnameWithLocalDate);
       } else {
         setCurrentViewStart(routeDate);
@@ -129,6 +134,25 @@ const DateNavigation: React.FC<Props> = ({
     currentViewStart,
     routeDate,
   ]);
+
+  /**
+   * If switching to "month" view after "week" view,
+   * check and update route date to start of "month" (if not so already)
+   */
+  useEffect(() => {
+    if (routeDateISO) {
+      const localDateISO = luxon2ISODate(currentViewStart);
+      const correctedDate = currentViewStart.startOf(jump);
+      const correctedDateISO = luxon2ISODate(correctedDate);
+      if (localDateISO !== correctedDateISO) {
+        const pathnameWithCorrectedDate = pathname.replace(
+          routeDateISO,
+          correctedDateISO
+        );
+        history.push(pathnameWithCorrectedDate);
+      }
+    }
+  }, [jump, currentViewStart, routeDateISO, history, pathname]);
 
   /**
    * Handler we're using for pagination.
@@ -183,7 +207,7 @@ const DateNavigation: React.FC<Props> = ({
             className={classes.prev}
             color="inherit"
             aria-label="menu"
-            data-testid={__decrementId__}
+            data-testid={__dateNavPrevId__}
             onClick={switchTimeframe("decrement")}
           >
             <ChevronLeftIcon />
@@ -200,7 +224,7 @@ const DateNavigation: React.FC<Props> = ({
             className={classes.next}
             color="inherit"
             aria-label="menu"
-            data-testid={__incrementId__}
+            data-testid={__dateNavNextId__}
             onClick={switchTimeframe("increment")}
           >
             <ChevronRightIcon />
