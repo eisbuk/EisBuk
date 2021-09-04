@@ -107,6 +107,7 @@ interface BulkSlotsAction<
  * @param date of day to copy
  * @returns Redux action object
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
   type: Action.CopySlotDay,
   payload: {} as any,
@@ -118,6 +119,7 @@ export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
  * @returns Redux action object
  */
 export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   date
 ) => ({
   type: Action.CopySlotWeek,
@@ -129,6 +131,7 @@ export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
  * @param date of day to paste to
  * @returns Redux action object
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
   type: Action.CopySlotDay,
   payload: {} as any,
@@ -140,6 +143,7 @@ export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
  * @returns Redux action object
  */
 export const newPasteSlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   date
 ) => ({
   type: Action.CopySlotWeek,

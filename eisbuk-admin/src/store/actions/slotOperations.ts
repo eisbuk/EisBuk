@@ -154,6 +154,7 @@ export const editSlot = (
  * Deletes slot with given id from firestore and (in effect) local store
  * @param slotId od slot to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
   /** @TODO should call to `deleteSlots` function and pass `slotId` */
 };
@@ -162,6 +163,7 @@ export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
  * Deletes slots for the whole day from firestore and (in effect) local store
  * @param date of the slots day to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlotsDay = (date: DateTime): void => {
   /** @TODO should read all slot ids for given date and call to `deleteSlots` function and pass ids for given slots */
 };
@@ -170,6 +172,7 @@ export const deleteSlotsDay = (date: DateTime): void => {
  * Deletes slots for the whole week from firestore and (in effect) local store
  * @param date of the first day of the slots week to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlotsWeek = (date: DateTime): void => {
   /** @TODO should read all slot ids for given a week starting with given date and call to `deleteSlots` function and pass ids for given slots */
 };

@@ -1,8 +1,22 @@
 import React from "react";
-import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
 import { fb2Luxon } from "@/utils/date";
-import { markAttendance } from "@/store/actions/attendanceOperations";
-import { useDispatch } from "react-redux";
+import i18n from "i18next";
+
+// import { useTranslation } from "react-i18next";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+import UserAttendance from "@/components/atoms/UserAttendance/UserAttendance";
+import {
+  Slot,
+  Customer,
+  BookingsMeta,
+  Category,
+  SlotType,
+} from "eisbuk-shared";
+
+import { ETheme } from "@/themes";
+
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -18,9 +32,12 @@ const AttendanceCard: React.FC<Props> = ({
   categories,
   userBookings,
   absentees,
+  type,
+  id,
 }) => {
-  const dispatch = useDispatch();
+  const classes = useStyles();
 
+  // const { t } = useTranslation();
   // convert timestamp to luxon for easier processing
   const luxonStart = fb2Luxon(date);
 
@@ -36,28 +53,54 @@ const AttendanceCard: React.FC<Props> = ({
   const endTime = luxonEnd.toISOTime().substring(0, 5);
 
   const timeString = `${startTime} - ${endTime}`;
+
   return (
-    <div>
-      <div data-testid="time-string">{timeString}</div>
-      <div>{categories}</div>
-      {userBookings.map((user) => {
-        const isAbsent = absentees?.includes(user.customer_id) || false;
-        return (
-          <div key={user.customer_id}>
-            <div>{user.name}</div>
-            <button
-              type="button"
-              onClick={() =>
-                dispatch(markAttendance(user.customer_id, isAbsent))
-              }
-            >
-              {isAbsent ? "👎" : "👍"}
-            </button>
-          </div>
-        );
-      })}
+    <div className={classes.wrapper}>
+      <ListItem className={classes.listHeader}>
+        <ListItemText
+          primary={
+            <span>
+              {timeString} <b>({userBookings.length})</b>
+            </span>
+          }
+          secondary={translateAndJoinTags(categories, type)}
+        />
+      </ListItem>
+      {userBookings.map((user) => (
+        <UserAttendance
+          key={user.customer_id}
+          slotId={id}
+          attended={!absentees?.includes(user.customer_id)}
+          userBooking={user}
+        />
+      ))}
     </div>
   );
 };
 
+// #region Start Region Local Utils
+
+const translateAndJoinTags = (categories: Category[], type: SlotType) => {
+  const translatedCategories = categories.map((category) =>
+    i18n.t(`Categories.${category}`)
+  );
+  const translatedType = i18n.t(`SlotTypes.${type}`);
+
+  return `${[...translatedCategories, translatedType].join(" ")}`;
+};
+// #endregion Local Utils
+
+// #region Styles
+const useStyles = makeStyles((theme: ETheme) => ({
+  listHeader: {
+    backgroundColor: theme.palette.primary.light,
+  },
+  wrapper: {
+    marginBottom: theme.spacing(1.5),
+    borderWidth: 1,
+    borderStyle: "solid",
+    borderColor: theme.palette.primary.main,
+  },
+}));
+// #endregion Styles
 export default AttendanceCard;
