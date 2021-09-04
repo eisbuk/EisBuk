@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import firebase from "firebase/app";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -7,9 +7,7 @@ import {
   Formik,
   Form,
   Field,
-  useField,
   ErrorMessage,
-  useFormikContext,
   FormikConfig,
   FormikValues,
   FormikHelpers,
@@ -18,9 +16,7 @@ import { RadioGroup } from "formik-material-ui";
 import { DateTime } from "luxon";
 import * as Yup from "yup";
 
-import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
-import Checkbox from "@material-ui/core/Checkbox";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -32,7 +28,7 @@ import TextField from "@material-ui/core/TextField";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Slot, Duration, Category, SlotType } from "eisbuk-shared";
+import { Slot, Category, SlotType } from "eisbuk-shared";
 
 import { SlotsLabelList, slotsLabelsLists } from "@/config/appConfig";
 
@@ -40,15 +36,19 @@ import { SlotOperation, SlotOperationBaseParams } from "@/types/slotOperations";
 
 import { getNewSlotTime } from "@/store/selectors/app";
 
-import { fs2luxon, capitalizeFirst } from "@/utils/helpers";
+import { fs2luxon } from "@/utils/helpers";
 
 const Timestamp = firebase.firestore.Timestamp;
 
 // ***** Region Form Setup ***** //
+interface SlotInterval {
+  startTime: string;
+  endTime: string;
+}
+
 const defaultValues = {
   time: "08:00" as string,
-  intervals: [{ startTime: "08:00", endTime: "08:00" }],
-  durations: [Duration["1h"]],
+  intervals: [{ startTime: "08:00", endTime: "09:00" }] as SlotInterval[],
   categories: [] as Category[],
   type: "" as SlotType,
   notes: "",
@@ -92,7 +92,6 @@ export interface SlotFormProps {
   isoDate: string;
   open: boolean;
   onClose?: () => void;
-  onOpen?: unknown;
   slotToEdit?: Slot<"id">;
 }
 
@@ -102,8 +101,6 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
   isoDate,
   open,
   onClose = () => {},
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  onOpen = () => {},
   slotToEdit,
   ...props
 }) => {
@@ -174,24 +171,12 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
           <>
             <Form>
               <DialogTitle>
-                {parsedSlotEditDate
-                  ? t("SlotForm.parsedSlotEditDate", {
-                      date: parsedSlotEditDate,
-                    })
-                  : t("SlotForm.parsedSlotEditDate", { date: parsedDate })}
+                {t("SlotForm.parsedSlotEditDate", {
+                  date: parsedSlotEditDate ?? parsedDate,
+                })}
               </DialogTitle>
               <DialogContent>
                 <FormControl component="fieldset">
-                  <Box display="flex" flexWrap="wrap">
-                    {getCheckBoxes(
-                      "categories",
-                      slotsLabelsLists.categories,
-                      true
-                    )}
-                  </Box>
-                  <div className={classes.error}>
-                    <ErrorMessage name="categories" />
-                  </div>
                   <Field
                     component={RadioGroup}
                     name="type"
@@ -256,7 +241,7 @@ const NewSlotForm: React.FC<SlotFormProps & SimplifiedFormikProps> = ({
 
 // ***** Region Create Radio Buttons ***** //
 /**
- * Create redio buttons for form (used for SlotTypea in this case)
+ * Create redio buttons for form (used for SlotTypes in this case)
  * @param values
  * @returns
  */
@@ -271,89 +256,6 @@ const createRadioButtons = (values: SlotsLabelList["types"]) =>
   ));
 
 // ***** End Region Create Radio Buttons ***** //
-
-// ***** Region Get Checkboxes ***** //
-interface GetCheckBoxes {
-  <N extends keyof Omit<SlotsLabelList, "types">>(
-    name: N,
-    values: SlotsLabelList[N],
-    translate: boolean
-  ): JSX.Element[];
-}
-
-/**
- * Creates checkbox elements for given entry (duration, slot type, notes)
- * @param name
- * @param values
- * @returns
- */
-const getCheckBoxes: GetCheckBoxes = (name, values, translate) => {
-  // we need capitalized name as "name" prop of form element is lowercase
-  // and translations file's keys are 'PascalCased'
-  const capitalizedName = capitalizeFirst(name);
-
-  return values.map(({ id, label }) => {
-    const translatedLabel = translate
-      ? i18n.t(`${capitalizedName}.${label}`)
-      : label;
-
-    // final label, after needed processing
-    const finalLabel = capitalizeFirst(translatedLabel);
-
-    return <MyCheckbox key={id} name={name} value={id} label={finalLabel} />;
-  });
-};
-// ***** End Region Get Checkboxes ***** //
-
-// ***** Region My Checkbox ***** //
-interface CheckboxProps {
-  name: string;
-  value: string;
-  label: string;
-}
-
-/**
- * A custom Checkbox component: mapping of Formik props to MUI FormControl - Checkbox
- * @param param0
- * @returns
- */
-export const MyCheckbox: React.FC<CheckboxProps> = ({ name, value, label }) => {
-  // create field values from Formik
-  const [field] = useField({ name, type: "checkbox", value });
-
-  const {
-    values: { type },
-    setFieldValue,
-  } = useFormikContext<{ type: SlotType }>();
-
-  const [disabled, setDisabled] = useState(false);
-
-  React.useEffect(() => {
-    if (name === "categories") {
-      if ([SlotType.OffIceDancing, SlotType.OffIceGym].includes(type)) {
-        setFieldValue("categories", [
-          "course",
-          "pre-competitive",
-          "competitive",
-          "adults",
-        ]);
-
-        setDisabled(true);
-      } else {
-        setDisabled(false);
-      }
-    }
-  }, [type, setFieldValue, name]);
-
-  return (
-    <FormControlLabel
-      control={<Checkbox {...{ name, value }} {...field} />}
-      disabled={name === "categories" ? disabled : false}
-      label={label}
-    />
-  );
-};
-// ***** End Region My Checkbox ***** //
 
 // ***** Region Interval Actions ***** //
 
@@ -401,19 +303,6 @@ const useStyles = makeStyles((theme) => ({
     fontWeight: theme.typography.fontWeightLight,
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.primary.light,
-  },
-  intervalContainerEven: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: theme.spacing(1),
-  },
-  intervalContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: theme.palette.grey[50],
-    paddingBottom: theme.spacing(1),
   },
 }));
 // ***** End Region Styles ***** //
