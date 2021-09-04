@@ -8,6 +8,7 @@ import { Customer, Slot } from "eisbuk-shared";
  * @param attended
  */
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const markAttendance = (payload: {
   slotId: Slot<"id">["id"];
   userId: Customer["id"];
