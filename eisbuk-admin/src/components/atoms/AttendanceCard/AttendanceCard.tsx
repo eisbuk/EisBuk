@@ -71,6 +71,7 @@ const AttendanceCard: React.FC<Props> = ({
 
         return (
           <UserAttendance
+            key={user.customer_id}
             slotId={id}
             attended={!absentees?.includes(user.customer_id)}
             userBooking={user}

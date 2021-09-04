@@ -41,7 +41,7 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
       size="small"
       color={attended ? "primary" : "secondary"}
       onClick={() => handleClick(slotId, userBooking.customer_id, attended)}
-      // disabled={}
+      disabled={localAttended !== attended}
     >
       {attended ? "👎" : "👍"}
     </Button>
