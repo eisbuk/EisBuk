@@ -61,10 +61,26 @@ describe("AttendanceCard", () => {
         true
       );
     });
-    /** @TODO this test only works for native <select/> so will try to find alternative */
-    test("should render intervals in dropdown", () => {
+    /** @TODO find a test for options */
+    test("should render intervals in dropdown when athlete is present", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanDropdown")).toHaveDisplayValue("");
+      expect(screen.getByTestId("SaulGoodmanDropdown")).toBeInTheDocument();
+
+      // expect(screen.getByTestId("SaulGoodmanDropdown")).toContainElement(
+      //   screen.getByTestId("SaulGoodman13:00 - 14:00")
+      // );
+      // screen.getByText("13:00 - 14:00");
+      // screen.getByText("13:15 - 14:15");
+    });
+    test("should render booked value as display value", () => {
+      screen.getByText("👎").click();
+      expect(screen.getByTestId("SaulGoodmanDropdown")).toBeInTheDocument();
+      const firstOption = screen.getByTestId("SaulGoodmanDropdown").firstChild;
+      expect(firstOption).toHaveTextContent("13:00 - 14:00");
+      // screen.getByText("13:00 -14:00");
+    });
+    test("should change bookedInterval to selected value", () => {
+      /** @TODO write test */
     });
   });
 });

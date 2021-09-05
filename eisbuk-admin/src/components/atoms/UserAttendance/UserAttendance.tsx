@@ -30,6 +30,10 @@ const UserAttendance: React.FC<Props> = ({
   intervals,
 }) => {
   const [localAttended, setLocalAttended] = useState(attended);
+  const [bookedInterval, setBookedInterval] = useState(
+    userBooking.bookedInterval
+  );
+
   const classes = useStyles();
   const dispatch = useDispatch();
   const listItemClass = attended ? "" : classes.absent;
@@ -45,18 +49,46 @@ const UserAttendance: React.FC<Props> = ({
       })
     );
   };
+  /** @TODO e type (tried e: React.ChangeEvent<HTMLInputElement> and it didn't work) */
+  const handleChange = (e: any) => {
+    setBookedInterval(e.target.value);
+  };
 
   const absenteeButtons = (
-    <Button
-      data-testid={`${userBooking.name}${userBooking.surname}`}
-      variant="contained"
-      size="small"
-      color={attended ? "primary" : "secondary"}
-      onClick={handleClick}
-      disabled={localAttended !== attended}
-    >
-      {attended ? "👎" : "👍"}
-    </Button>
+    <FormControl className={classes.formControl}>
+      <InputLabel>Intervals</InputLabel>
+      <Select
+        data-testid={`${userBooking.name}${userBooking.surname}Dropdown`}
+        value={intervals[0]}
+        onChange={handleChange}
+        // inputProps={{
+        //   name: "",
+        //   id: "",
+        // }}
+      >
+        {/**  @TODO booked value as init value */}
+        <option aria-label="None" value="" />
+        {intervals.map((interval) => (
+          <option
+            // data-testid={`${userBooking.name}${userBooking.surname}${interval}`}
+            key={`${userBooking.name}${userBooking.surname}${interval}`}
+            value={interval}
+          >
+            {interval}
+          </option>
+        ))}
+      </Select>
+      <Button
+        data-testid={`${userBooking.name}${userBooking.surname}`}
+        variant="contained"
+        size="small"
+        color={attended ? "primary" : "secondary"}
+        onClick={handleClick}
+        disabled={localAttended !== attended}
+      >
+        {attended ? "👎" : "👍"}
+      </Button>
+    </FormControl>
   );
 
   return (
@@ -65,27 +97,7 @@ const UserAttendance: React.FC<Props> = ({
         <EisbukAvatar {...userBooking} />
       </ListItemAvatar>
       <ListItemText primary={userBooking.name} />
-      <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>
-      <FormControl className={classes.formControl}>
-        <InputLabel>Intervals</InputLabel>
-        <Select
-          data-testid={`${userBooking.name}${userBooking.surname}Dropdown`}
-          native
-          value={intervals[0]}
-          // onChange={handleChange}
-          // inputProps={{
-          //   name: "",
-          //   id: "",
-          // }}
-        >
-          {/**  @TODO booked value as init value */}
-          <option aria-label="None" value="" />
-          {intervals.map((interval) => (
-            <option value={interval}>{interval}</option>
-          ))}
-        </Select>
-      </FormControl>
-      ;
+      <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>;
     </ListItem>
   );
 };
@@ -102,6 +114,8 @@ const useStyles = makeStyles((theme: ETheme) => ({
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
+    display: "flex",
+    flexDirection: "row",
   },
 }));
 // #endregion Styles
