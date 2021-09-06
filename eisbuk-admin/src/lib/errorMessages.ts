@@ -1,7 +1,7 @@
 // #region form
 export const __requiredEntry = "Form.RequiredEntry";
 export const __requiredField = "Form.RequiredField";
-export const __invalidTime = "Form.InvalidTimeError";
+export const __invalidTime = "Form.InvalidTime";
 export const __timeMismatch = "Form.TimeMismatch";
 // #endregion form
 

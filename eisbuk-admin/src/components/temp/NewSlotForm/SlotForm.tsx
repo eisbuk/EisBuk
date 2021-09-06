@@ -1,6 +1,7 @@
 import React from "react";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 
@@ -43,29 +44,33 @@ import { __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
 const validationSchema = yup.object().shape({
-  categories: yup.array().required().min(1, __requiredEntry).of(yup.string()),
+  categories: yup
+    .array()
+    .required()
+    .min(1, i18n.t(__requiredEntry))
+    .of(yup.string()),
   intervals: yup.array().of(
     yup
       .object()
       .shape({
         startTime: yup
           .string()
-          .required(__requiredField)
+          .required(i18n.t(__requiredField))
           .test({
-            message: __invalidTime,
+            message: i18n.t(__invalidTime),
             test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
           }),
         endTime: yup
           .string()
-          .required(__requiredField)
+          .required(i18n.t(__requiredField))
           .test({
-            message: __invalidTime,
+            message: i18n.t(__invalidTime),
             test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
           }),
       })
       .required()
       .test({
-        message: __timeMismatch,
+        message: i18n.t(__timeMismatch),
         test: (interval: SlotInterval) =>
           interval &&
           interval.startTime &&
@@ -73,7 +78,7 @@ const validationSchema = yup.object().shape({
           interval.startTime < interval.endTime,
       })
   ),
-  type: yup.string().required(__requiredField),
+  type: yup.string().required(i18n.t(__requiredField)),
 });
 // #endregion validation
 
@@ -128,7 +133,7 @@ const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
     <Dialog open={Boolean(open)} onClose={onClose}>
       <DialogTitle>{t(title, { date })}</DialogTitle>
       <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
-        {({ errors, isSubmitting, isValidating, values }) => (
+        {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>
             <DialogContent>
               <FormControl component="fieldset">

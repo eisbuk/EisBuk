@@ -130,5 +130,36 @@
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"
+  },
+
+  "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
+
+  "SlotType": {
+    "OffIceDancing": "off-ice-dancing",
+    "Ice": "ice",
+    "OffIceGym": "off-ice-gym"
+  },
+  "Category": {
+    "Course": "course",
+    "Competitive": "competitive",
+    "PreCompetitive": "pre-competitive",
+    "Adults": "adults"
+  },
+  "SlotForm": {
+    "NewSlotTitle": "New Slot ( {{ date, d MMMM }} )",
+    "Intervals": "Intervals",
+    "AddInterval": "Add Interval",
+    "StartTime": "Start Time",
+    "EndTime": "End Time"
+  },
+  "Action": {
+    "CreateSlot": "Create Slot",
+    "Cancel": "Cancel"
+  },
+  "Form": {
+    "RequiredEntry": "at least one value is required",
+    "RequiredField": "this field is required",
+    "InvalidTime": "invalid time format (\"HH:mm\")",
+    "TimeMismatch": "start time is greater than end time"
   }
 }

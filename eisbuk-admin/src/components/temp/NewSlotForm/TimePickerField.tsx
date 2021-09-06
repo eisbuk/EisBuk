@@ -86,7 +86,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
-      <div className={classes.error}>{t(error || "")}</div>
+      <div className={classes.error}>{error}</div>
     </Box>
   );
 };
