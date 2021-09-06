@@ -2,14 +2,15 @@ import React, { useState, useEffect } from "react";
 import { useField, ErrorMessage } from "formik";
 import { useTranslation } from "react-i18next";
 
-import { SlotType, Category } from "eisbuk-shared";
-
 import Box from "@material-ui/core/Box";
 import Checkbox from "@material-ui/core/Checkbox";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import { SlotType, Category } from "eisbuk-shared";
+
+import { categoryLabel } from "@/lib/labels";
 // #region main
 
 /**
@@ -31,13 +32,14 @@ const SelectCategories: React.FC = () => {
   useEffect(() => {
     // if slot type off_ice, disable all checkboxes and set value for "categories" to all
     if ([SlotType.OffIceDancing, SlotType.OffIceGym].includes(slotType)) {
-      setValue(["course", "pre-competitive", "competitive", "adults"]);
+      setValue(Object.values(Category));
 
       setDisabled(true);
     } else {
       setDisabled(false);
     }
-  }, [slotType, setValue]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slotType]);
 
   return (
     <>
@@ -84,7 +86,7 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
     <FormControlLabel
       control={<Checkbox {...field} />}
       disabled={disabled}
-      label={t(`Categories.${category}`)}
+      label={t(categoryLabel[category])}
     />
   );
 };

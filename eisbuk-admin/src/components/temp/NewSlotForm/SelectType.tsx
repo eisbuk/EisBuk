@@ -10,6 +10,10 @@ import Radio from "@material-ui/core/Radio";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import { slotTypeLabel } from "@/lib/labels";
+
+import { __selectTypeId__ } from "./__testData__/testIds";
+
 /**
  * Selection radio buttons for `type` value of `SlotForm`.
  * Registers `"type"` value in Formik context and handles field
@@ -28,12 +32,13 @@ const SelectType: React.FC = () => {
         label={t("SlotForm.Type")}
         row
         className={classes.field}
+        data-testid={__selectTypeId__}
       >
         {Object.values(SlotType).map((slotType) => (
           <FormControlLabel
             key={slotType}
             value={slotType}
-            label={t(`SlotTypes.${slotType}`)}
+            label={t(slotTypeLabel[slotType])}
             control={<Radio />}
           />
         ))}

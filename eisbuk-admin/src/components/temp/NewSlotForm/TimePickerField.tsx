@@ -9,34 +9,14 @@ import IconButton from "@material-ui/core/IconButton";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { __invalidTime, __requiredField } from "@/lib/errorMessages";
-
 import { __decrementId__, __incrementId__ } from "./__testData__/testIds";
 
-/**
- * Simple `onChange` handler type, assignable to Formik's `setValue`
- * and `onChange` prop
- */
-interface UpdateChange {
-  (value: string): void;
-}
-
-type Props = Omit<Omit<Omit<TextFieldProps, "name">, "value">, "onChange"> & {
+type Props = Omit<TextFieldProps, "name"> & {
   /**
    * Name for the input field. Used for HTML input element,
    * as well as a parameter for `useField()` hook
    */
   name: string;
-  /**
-   * Optional: explicitly set `value` for the input field.
-   * If not provided, falls back to `value` received from `useField()` context
-   */
-  value?: string;
-  /**
-   * Optional: change handler, accepts changed value string and `shouldValidate` boolean (always true).
-   * If not provided, will default to `useField()` context's `setValue`
-   */
-  onChange?: UpdateChange;
 };
 
 /**
@@ -55,24 +35,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
 
   const { t } = useTranslation();
 
-  const [
-    { value: contextValue },
-    { error },
-    { setValue, setError },
-  ] = useField<string>(name);
-
-  /**
-   * Function in charge of dispatching chage of value in appropriate way.
-   * - if `onChange` prop was provided, will dispatch changed value only to onChange function
-   * - if no `onChange` prop was provided, will dispatch `setValue` received from `useField()` context
-   */
-  const updateChange: UpdateChange = props.onChange ?? setValue;
-  /**
-   * Field `value`:
-   * - if explicitly provided (as prop), will use the value from props
-   * - if not explicitly set, will use the one received from `useField` context
-   */
-  const value = props.value ?? contextValue ?? "";
+  const [{ value }, { error }, { setValue }] = useField<string>(name);
 
   /**
    * Change handler function, used to handle direct change (typing) of input.
@@ -80,19 +43,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-
-    // update new value
-    updateChange(newValue);
-
-    // check new value for errors
-    switch (true) {
-      case newValue === "":
-        setError(t(__requiredField));
-        break;
-      case !/[0-9]?[0-9]:[0-9][0-9]/.test(newValue):
-        setError(t(__invalidTime));
-        break;
-    }
+    setValue(newValue);
   };
 
   /**
@@ -115,7 +66,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       : fallbackTime.plus({ hours: delta });
     const newTime = newLuxonTime.toISOTime().substr(0, 5);
 
-    updateChange(newTime);
+    setValue(newTime);
   };
 
   return (
@@ -135,16 +86,20 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
-      <div>{error}</div>
+      <div className={classes.error}>{t(error || "")}</div>
     </Box>
   );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     whiteSpace: "nowrap",
     display: "flex",
     AlignItems: "center",
+  },
+  error: {
+    color: theme.palette.error.dark,
+    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

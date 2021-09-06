@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { render } from "@testing-library/react";
 import { Formik, FormikConfig } from "formik";
@@ -31,16 +31,19 @@ export const renderWithRouter = (
 
 // #region FormikWrapper
 
-type PartialFormikProps = Partial<FormikConfig<Record<string, string>>>;
+type PartialFormikProps = Partial<FormikConfig<Record<string, any>>>;
 
 /**
  * Function returne a router wrapper used for custom render function.
- * @param props Props to pass onto `MemoryRouter`
+ * @param props Props to pass onto `Formik` and `updateFormValues` function used to extract current form `values` state
  * @returns a wrapper component accepting `children` as props and wrapping them in `MemoryRouter`
  */
-const createFormikWrapper = (props?: PartialFormikProps): React.FC => ({
-  children,
-}) => {
+const createFormikWrapper = ({
+  formValuesHOF,
+  ...props
+}: PartialFormikProps & {
+  formValuesHOF: (values: Record<string, any>) => void;
+}): React.FC => ({ children }) => {
   // fallback props in case of not being provided from parent fuction props
   const fallbackProps = {
     onSubmit: () => {},
@@ -49,7 +52,13 @@ const createFormikWrapper = (props?: PartialFormikProps): React.FC => ({
 
   return (
     <Formik {...fallbackProps} {...props}>
-      {children}
+      {({ values }) => {
+        useEffect(() => {
+          formValuesHOF(values);
+        }, [values]);
+
+        return children;
+      }}
     </Formik>
   );
 };
@@ -64,6 +73,14 @@ const createFormikWrapper = (props?: PartialFormikProps): React.FC => ({
 export const renderWithFormik = (
   ui: JSX.Element,
   formikParams?: PartialFormikProps
-): ReturnType<typeof render> =>
-  render(ui, { wrapper: createFormikWrapper(formikParams) });
+): { getFormValues: () => Record<string, any> } => {
+  let getFormValues: () => Record<string, any> = () => ({});
+  const formValuesHOF = (values: Record<string, any>) => {
+    getFormValues = () => values;
+  };
+  render(ui, {
+    wrapper: createFormikWrapper({ ...formikParams, formValuesHOF }),
+  });
+  return { getFormValues };
+};
 // #endregion FormikWrapper
