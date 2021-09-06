@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { SlotType } from "eisbuk-shared";
 
-import RadioGroup from "@material-ui/core/RadioGroup";
+import { RadioGroup } from "formik-material-ui";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Radio from "@material-ui/core/Radio";
 

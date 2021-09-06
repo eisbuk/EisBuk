@@ -10,7 +10,7 @@ export const __addNewInterval__ = "SlotForm.AddInterval";
 export const slotTypeLabel = {
   [SlotType.Ice]: "SlotType.Ice",
   [SlotType.OffIceDancing]: "SlotType.OffIceDancing",
-  [SlotType.OffIceGym]: "SlotType.IceIceGym",
+  [SlotType.OffIceGym]: "SlotType.OffIceGym",
 };
 // #endregion SlotType
 

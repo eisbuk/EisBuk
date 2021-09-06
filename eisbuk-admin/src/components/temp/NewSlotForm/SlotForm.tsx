@@ -128,7 +128,7 @@ const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
     <Dialog open={Boolean(open)} onClose={onClose}>
       <DialogTitle>{t(title, { date })}</DialogTitle>
       <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
-        {({ errors, isSubmitting, isValidating }) => (
+        {({ errors, isSubmitting, isValidating, values }) => (
           <Form data-testid={__slotFormId__}>
             <DialogContent>
               <FormControl component="fieldset">

@@ -10,5 +10,9 @@ export default {
 };
 
 export const Default = (): JSX.Element => (
-  <SlotForm date={DateTime.fromISO(__storybookDate__)} onClose={() => {}} />
+  <SlotForm
+    date={DateTime.fromISO(__storybookDate__)}
+    onClose={() => {}}
+    open
+  />
 );
