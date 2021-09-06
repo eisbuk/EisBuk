@@ -64,7 +64,7 @@ describe("AttendanceCard", () => {
     /** @TODO find a good test for options */
     test("should render intervals in dropdown when athlete is present", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanDropdown")).toBeInTheDocument();
+      expect(screen.getByTestId("SaulGoodmanInput")).toBeInTheDocument();
 
       // expect(screen.getAllByTestId("SaulGoodman13:00 - 14:00").length).toEqual(
       //   customersSlot.intervals.length
@@ -72,16 +72,34 @@ describe("AttendanceCard", () => {
     });
     test("should render bookedInterval value as display value", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanSelect")).toBeInTheDocument();
-      const firstOption = screen.getByTestId("SaulGoodmanSelect").firstChild;
+      expect(screen.getByTestId("SaulGoodmanMUISelect")).toBeInTheDocument();
+      const firstOption = screen.getByTestId("SaulGoodmanMUISelect").firstChild;
       expect(firstOption).toHaveTextContent("13:00 - 14:00");
     });
-    test("should change bookedInterval to selected value", () => {
-      fireEvent.change(screen.getByTestId("SaulGoodmanDropdown"), {
+    test("should allow for selecting multiple intervals", () => {
+      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
         target: { value: "13:15 - 14:15" },
       });
-      expect(screen.getByTestId("SaulGoodmanDropdown")).toHaveDisplayValue(
-        "13:15 - 14:15"
+      expect(screen.getByTestId("SaulGoodmanInput")).toHaveDisplayValue([
+        "13:00 - 14:00,13:15 - 14:15",
+      ]);
+    });
+    test("should allow for deselecting intervals", () => {
+      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
+        target: { value: "13:15 - 14:15" },
+      });
+      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
+        target: { value: "13:15 - 14:15" },
+      });
+      expect(screen.getByTestId("SaulGoodmanInput")).toHaveDisplayValue([
+        "13:00 - 14:00",
+      ]);
+    });
+    test("should disable dropdown when athlete is marked absent", () => {
+      // screen.getByText("👍").click();
+      expect(screen.getByTestId("WalterWhiteInput")).toHaveProperty(
+        "disabled",
+        true
       );
     });
   });

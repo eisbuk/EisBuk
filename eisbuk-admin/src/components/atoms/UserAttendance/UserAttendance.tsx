@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
+import _ from "lodash";
 
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -30,9 +31,9 @@ const UserAttendance: React.FC<Props> = ({
   intervals,
 }) => {
   const [localAttended, setLocalAttended] = useState(attended);
-  const [bookedInterval, setBookedInterval] = useState(
-    userBooking.bookedInterval
-  );
+  const [bookedIntervals, setBookedIntervals] = useState([
+    userBooking.bookedInterval,
+  ]);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -51,21 +52,28 @@ const UserAttendance: React.FC<Props> = ({
   };
   /** @TODO e type (tried e: React.ChangeEvent<HTMLInputElement> and it didn't work) */
   const handleChange = (e: any) => {
-    setBookedInterval(e.target.value);
+    if (!bookedIntervals.includes(e.target.value)) {
+      setBookedIntervals(_.concat(bookedIntervals, e.target.value));
+    } else {
+      bookedIntervals.length > 0
+        ? setBookedIntervals(_.without(bookedIntervals, e.target.value))
+        : bookedIntervals;
+    }
   };
 
   const absenteeButtons = (
     <FormControl className={classes.formControl}>
       <InputLabel>Intervals</InputLabel>
       <Select
-        data-testid={`${userBooking.name}${userBooking.surname}Select`}
-        value={bookedInterval}
+        data-testid={`${userBooking.name}${userBooking.surname}MUISelect`}
+        value={bookedIntervals}
         onChange={handleChange}
         // materialUI <select> element is an abstraction for a bunch of other elements
         // inputProps sets the testid of <input> element inside the <select>
         // so that rtl can fireEvents on it
         inputProps={{
-          "data-testid": `${userBooking.name}${userBooking.surname}Dropdown`,
+          "data-testid": `${userBooking.name}${userBooking.surname}Input`,
+          disabled: !localAttended,
         }}
       >
         {intervals.map((interval) => (
