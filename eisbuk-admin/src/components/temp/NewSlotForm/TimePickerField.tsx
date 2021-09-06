@@ -1,7 +1,6 @@
 import React from "react";
 import { useField } from "formik";
 import { DateTime } from "luxon";
-import { useTranslation } from "react-i18next";
 
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
@@ -33,8 +32,6 @@ type Props = Omit<TextFieldProps, "name"> & {
 const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
   const classes = useStyles();
 
-  const { t } = useTranslation();
-
   const [{ value }, { error }, { setValue }] = useField<string>(name);
 
   /**
@@ -42,7 +39,10 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    * @param e change event
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newValue = e.target.value;
+    let newValue = e.target.value;
+    if (/^[0-9]:[0-9][0-9]/.test(newValue)) {
+      newValue = `0${newValue}`;
+    }
     setValue(newValue);
   };
 
@@ -70,7 +70,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
   };
 
   return (
-    <Box className={classes.root}>
+    <Box className={classes.container}>
       <IconButton
         color="primary"
         onClick={handleClick(-1)}
@@ -86,20 +86,30 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
-      <div className={classes.error}>{error}</div>
+      <span className={classes.error}>{error}</span>
     </Box>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    whiteSpace: "nowrap",
+  container: {
+    position: "relative",
+    padding: "1.75rem 0",
     display: "flex",
-    AlignItems: "center",
+    alignItems: "center",
   },
   error: {
+    position: "absolute",
+    bottom: 8,
+    left: "50%",
+    width: "100%",
+    display: "inline-block",
+    whitespace: "nowrap",
+    textAlign: "center",
+    transform: "translateX(-50%)",
+    fontSize: 14,
+    fontFamily: theme.typography.fontFamily,
     color: theme.palette.error.dark,
-    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

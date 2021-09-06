@@ -17,9 +17,12 @@ const date = luxonToFB(DateTime.fromISO(__storybookDate__));
 export const dummySlot: SlotInterface = {
   id: "some-random-slot",
   date,
-  type: SlotType.OffIceDancing,
+  type: SlotType.Ice,
   categories: Object.values(Category),
-  intervals: { ["10:00-11:30"]: { startTime: "10:00", endTime: "11:30" } },
+  intervals: {
+    ["10:00-11:30"]: { startTime: "10:00", endTime: "11:30" },
+    ["10:00-12:00"]: { startTime: "10:00", endTime: "12:00" },
+  },
   notes: "",
 };
 

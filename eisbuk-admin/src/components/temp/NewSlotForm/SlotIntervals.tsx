@@ -38,19 +38,18 @@ const SlotIntervals: React.FC = () => {
           key={i}
           name={`intervals[${i}]`}
           onDelete={() => deleteInterval(i)}
+          dark={i % 2 === 1}
         />
       ))}
-      <div className="list-group list-group-flush">
-        <div className={classes.buttonContainer}>
-          <Button
-            onClick={addInterval}
-            color="primary"
-            variant="contained"
-            className={classes.addInterval}
-          >
-            {t(__addNewInterval__)}
-          </Button>
-        </div>
+      <div className={classes.buttonContainer}>
+        <Button
+          onClick={addInterval}
+          color="primary"
+          variant="contained"
+          className={classes.addInterval}
+        >
+          {t(__addNewInterval__)}
+        </Button>
       </div>
     </>
   );
@@ -58,7 +57,8 @@ const SlotIntervals: React.FC = () => {
 
 const useStyles = makeStyles((theme) => ({
   intervalsTitle: {
-    fontSize: theme.typography.pxToRem(17),
+    letterSpacing: 1,
+    fontSize: theme.typography.pxToRem(18),
     fontWeight: theme.typography.fontWeightLight,
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.primary.light,

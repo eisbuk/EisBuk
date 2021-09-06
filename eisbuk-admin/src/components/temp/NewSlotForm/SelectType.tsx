@@ -25,39 +25,46 @@ const SelectType: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <>
-      <Field
-        component={RadioGroup}
-        name="type"
-        label={t("SlotForm.Type")}
-        row
-        className={classes.field}
-        data-testid={__selectTypeId__}
-      >
-        {Object.values(SlotType).map((slotType) => (
-          <FormControlLabel
-            key={slotType}
-            value={slotType}
-            label={t(slotTypeLabel[slotType])}
-            control={<Radio />}
-          />
-        ))}
-      </Field>
+    <Field
+      component={RadioGroup}
+      name="type"
+      label={t("SlotForm.Type")}
+      row
+      className={classes.container}
+      data-testid={__selectTypeId__}
+    >
+      {Object.values(SlotType).map((slotType) => (
+        <FormControlLabel
+          key={slotType}
+          value={slotType}
+          label={t(slotTypeLabel[slotType])}
+          control={<Radio />}
+        />
+      ))}
       <div className={classes.error}>
         <ErrorMessage name="type" />
       </div>
-    </>
+    </Field>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  field: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(0),
+  container: {
+    position: "relative",
+    display: "flex",
+    justifyContent: "space-evenly",
+    paddingBottom: theme.spacing(2),
   },
   error: {
+    position: "absolute",
+    bottom: 0,
+    left: "50%",
+    witdh: "80%",
+    whitespace: "normal",
+    transform: "translateX(-50%)",
+    fontSize: 14,
+    fontFamily: theme.typography.fontFamily,
     color: theme.palette.error.dark,
-    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

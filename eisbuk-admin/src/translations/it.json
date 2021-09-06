@@ -146,6 +146,7 @@
   },
   "SlotForm": {
     "NewSlotTitle": "Crea Slot ( {{ date, d MMMM }} )",
+    "EditSlotTitle": "Modifica Slot ( {{ date, d MMMM }} )",
     "Intervals": "Intervalli",
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
@@ -153,6 +154,7 @@
   },
   "Action": {
     "CreateSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot",
     "Cancel": "Annulla"
   },
   "Form": {

@@ -43,14 +43,14 @@ const SelectCategories: React.FC = () => {
 
   return (
     <>
-      <Box display="flex" flexWrap="wrap">
+      <Box className={classes.container} display="flex" flexWrap="wrap">
         {Object.values(Category).map((category) => (
           <CategoryCheckbox {...{ category, disabled, key: category }} />
         ))}
+        <div className={classes.error}>
+          <ErrorMessage name="categories" />
+        </div>
       </Box>
-      <div className={classes.error}>
-        <ErrorMessage name="categories" />
-      </div>
     </>
   );
 };
@@ -94,9 +94,22 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
 // #endregion CategoryCheckbox
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    position: "relative",
+    display: "flex",
+    justifyContent: "space-evenly",
+    paddingBottom: theme.spacing(1),
+  },
   error: {
+    position: "absolute",
+    bottom: 0,
+    left: "50%",
+    witdh: "80%",
+    whitespace: "normal",
+    transform: "translateX(-50%)",
+    fontSize: 14,
+    fontFamily: theme.typography.fontFamily,
     color: theme.palette.error.dark,
-    fontWeight: theme.typography.fontWeightBold,
   },
 }));
 

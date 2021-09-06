@@ -43,64 +43,57 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
   const [, { error }] = useField<string>(name);
 
   return (
-    <div data-testid={__timeIntervalFieldId__} className="list-group-item">
-      <div className={[classes.intervalContainer, colorClass].join(" ")}>
-        <TimePickerField
-          name={`${name}.startTime`}
-          className={classes.intervalField}
-          label={t("SlotForm.StartTime")}
-          data-testid={__startTimeInputId__}
-        />
-        <TimePickerField
-          name={`${name}.endTime`}
-          className={classes.intervalField}
-          label={t("SlotForm.EndTime")}
-          data-testid={__endTimeInputId__}
-        />
-        <IconButton
-          data-testid={__deleteIntervalId__}
-          aria-label="delete"
-          color="primary"
-          onClick={onDelete}
-        >
-          <DeleteIcon />
-        </IconButton>
+    <div
+      data-testid={__timeIntervalFieldId__}
+      className={[classes.container, colorClass].join(" ")}
+    >
+      <TimePickerField
+        name={`${name}.startTime`}
+        label={t("SlotForm.StartTime")}
+        data-testid={__startTimeInputId__}
+      />
+      <TimePickerField
+        name={`${name}.endTime`}
+        label={t("SlotForm.EndTime")}
+        data-testid={__endTimeInputId__}
+      />
+      <IconButton
+        data-testid={__deleteIntervalId__}
+        aria-label="delete"
+        color="primary"
+        onClick={onDelete}
+      >
+        <DeleteIcon />
+      </IconButton>
 
-        <div className={classes.error}>
-          {typeof error === "string" && error}
-        </div>
-      </div>
+      <div className={classes.error}>{typeof error === "string" && error}</div>
     </div>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
-  intervalField: {
-    border: theme.spacing(0),
-    margin: theme.spacing(1),
-    display: "inline-flex",
-    padding: theme.spacing(0),
+  container: {
     position: "relative",
-    minWidth: theme.spacing(0),
-    flexDirection: "column",
-    verticalAlign: "top",
-    width: theme.spacing(18),
+    display: "flex",
+    justifyContent: "space-evenly",
+    margin: "0 -1.5rem",
   },
   error: {
+    position: "absolute",
+    bottom: 4,
+    left: "50%",
+    witdh: "80%",
+    whitespace: "normal",
+    transform: "translateX(-50%)",
+    fontSize: 14,
+    fontFamily: theme.typography.fontFamily,
     color: theme.palette.error.dark,
-    fontWeight: theme.typography.fontWeightBold,
   },
   intervalTitles: {
     fontSize: theme.typography.pxToRem(17),
     fontWeight: theme.typography.fontWeightLight,
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.primary.light,
-  },
-  intervalContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingBottom: theme.spacing(1),
   },
   dark: {
     backgroundColor: theme.palette.grey[50],
