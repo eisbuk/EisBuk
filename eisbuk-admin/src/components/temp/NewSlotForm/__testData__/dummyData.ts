@@ -3,7 +3,6 @@ import { DateTime } from "luxon";
 import { Category, SlotType } from "eisbuk-shared";
 
 import { __storybookDate__ } from "@/lib/constants";
-import { SlotFormValues } from "@/lib/data";
 
 import { SlotInterface } from "@/types/temp";
 
@@ -27,4 +26,6 @@ export const dummySlot: SlotInterface = {
 /**
  * Form values of dummySlot when passed as `slotToEdit` to `SlotForm`
  */
-export const { date: a, ...dummySlotFormValues } = slotToFormValues(dummySlot)!;
+export const { date: dummySlotDate, ...dummySlotFormValues } = slotToFormValues(
+  dummySlot
+)!;

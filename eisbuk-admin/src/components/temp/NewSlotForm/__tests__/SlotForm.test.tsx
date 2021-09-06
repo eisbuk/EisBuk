@@ -43,6 +43,8 @@ import {
 import { dummySlot, dummySlotFormValues } from "../__testData__/dummyData";
 import { __slotFormId__ } from "@/__testData__/testIds";
 
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+
 // test date we'll be using for the tests
 const testDate = DateTime.fromISO(__storybookDate__);
 
@@ -145,40 +147,43 @@ describe("SlotForm ->", () => {
     const updateSlotSpy = jest.spyOn(slotOperations, "updateSlot");
     const mockOnClose = jest.fn();
 
-    test("should call on submit with set values and close the form", async () => {
-      render(<SlotForm {...baseProps} onClose={mockOnClose} />);
-      // values for submit we're filling out as we go and expecting on submit
-      let submitValues = {
-        ...defaultSlotFormValues,
-        date: testDate,
-      };
-      // select `adults` category
-      screen.getByText(categoryLabel[Category.Adults]).click();
-      submitValues = { ...submitValues, categories: [Category.Adults] };
-      // select slot type `ice`
-      screen.getByText(slotTypeLabel[SlotType.Ice]).click();
-      submitValues = { ...submitValues, type: SlotType.Ice };
-      // fill interval
-      const [startTime1, endTime1] = screen.getAllByRole("textbox");
-      await userEvent.type(startTime1, "15:00");
-      await userEvent.type(endTime1, "16:30");
-      submitValues = {
-        ...submitValues,
-        intervals: [{ startTime: "15:00", endTime: "16:30" }],
-      };
-      // add new (default) interval
-      screen.getByText(__addNewInterval__).click();
-      submitValues = {
-        ...submitValues,
-        intervals: [...submitValues.intervals, defaultInterval],
-      };
-      // submit form
-      screen.getByText(__createSlot__).click();
-      await waitFor(() => {
-        expect(createSlotSpy).toHaveBeenCalledWith(submitValues);
-        expect(mockOnClose).toHaveBeenCalled();
-      });
-    });
+    testWithMutationObserver(
+      "should call on submit with set values and close the form",
+      async () => {
+        render(<SlotForm {...baseProps} onClose={mockOnClose} />);
+        // values for submit we're filling out as we go and expecting on submit
+        let submitValues = {
+          ...defaultSlotFormValues,
+          date: testDate,
+        };
+        // select `adults` category
+        screen.getByText(categoryLabel[Category.Adults]).click();
+        submitValues = { ...submitValues, categories: [Category.Adults] };
+        // select slot type `ice`
+        screen.getByText(slotTypeLabel[SlotType.Ice]).click();
+        submitValues = { ...submitValues, type: SlotType.Ice };
+        // fill interval
+        const [startTime1, endTime1] = screen.getAllByRole("textbox");
+        await userEvent.type(startTime1, "15:00");
+        await userEvent.type(endTime1, "16:30");
+        submitValues = {
+          ...submitValues,
+          intervals: [{ startTime: "15:00", endTime: "16:30" }],
+        };
+        // add new (default) interval
+        screen.getByText(__addNewInterval__).click();
+        submitValues = {
+          ...submitValues,
+          intervals: [...submitValues.intervals, defaultInterval],
+        };
+        // submit form
+        screen.getByText(__createSlot__).click();
+        await waitFor(() => {
+          expect(createSlotSpy).toHaveBeenCalledWith(submitValues);
+          expect(mockOnClose).toHaveBeenCalled();
+        });
+      }
+    );
 
     test("should call 'onClose' on cancel button click", () => {
       render(<SlotForm {...baseProps} onClose={mockOnClose} />);
@@ -186,19 +191,26 @@ describe("SlotForm ->", () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    test("should call 'updateSlot' on submit, if passed 'slotToEdit'", async () => {
-      render(
-        <SlotForm {...baseProps} onClose={mockOnClose} slotToEdit={dummySlot} />
-      );
-      screen.getByText(__editSlot__).click();
-      await waitFor(() =>
-        expect(updateSlotSpy).toHaveBeenCalledWith({
-          ...dummySlotFormValues,
-          date: fb2Luxon(dummySlot.date),
-          id: dummySlot.id,
-        })
-      );
-    });
+    testWithMutationObserver(
+      "should call 'updateSlot' on submit, if passed 'slotToEdit'",
+      async () => {
+        render(
+          <SlotForm
+            {...baseProps}
+            onClose={mockOnClose}
+            slotToEdit={dummySlot}
+          />
+        );
+        screen.getByText(__editSlot__).click();
+        await waitFor(() =>
+          expect(updateSlotSpy).toHaveBeenCalledWith({
+            ...dummySlotFormValues,
+            date: fb2Luxon(dummySlot.date),
+            id: dummySlot.id,
+          })
+        );
+      }
+    );
   });
 
   describe("Test validation errors ->", () => {
@@ -206,28 +218,40 @@ describe("SlotForm ->", () => {
       render(<SlotForm {...baseProps} />);
     });
 
-    test("should show error if no categories are selected", async () => {
-      screen.getByText(__createSlot__).click();
-      await screen.findByText(__requiredEntry);
-    });
+    testWithMutationObserver(
+      "should show error if no categories are selected",
+      async () => {
+        screen.getByText(__createSlot__).click();
+        await screen.findByText(__requiredEntry);
+      }
+    );
 
-    test("should show error if time input empty", async () => {
-      const [startTime] = screen.getAllByRole("textbox");
-      fireEvent.change(startTime, { target: { value: "" } });
-      await screen.findByText(__requiredField);
-    });
+    testWithMutationObserver(
+      "should show error if time input empty",
+      async () => {
+        const [startTime] = screen.getAllByRole("textbox");
+        fireEvent.change(startTime, { target: { value: "" } });
+        await screen.findByText(__requiredField);
+      }
+    );
 
-    test('should show error if one of the time input doesn\'t follow "HH:mm" format', async () => {
-      const [startTime] = screen.getAllByRole("textbox");
-      userEvent.type(startTime, "not_time_string");
-      await screen.findByText(__invalidTime);
-    });
+    testWithMutationObserver(
+      'should show error if one of the time input doesn\'t follow "HH:mm" format',
+      async () => {
+        const [startTime] = screen.getAllByRole("textbox");
+        userEvent.type(startTime, "not_time_string");
+        await screen.findByText(__invalidTime);
+      }
+    );
 
-    test("should show error if startTime > endTime", async () => {
-      const [startTime, endTime] = screen.getAllByRole("textbox");
-      userEvent.type(startTime, "15:00");
-      userEvent.type(endTime, "07:00");
-      await screen.findByText(__timeMismatch);
-    });
+    testWithMutationObserver(
+      "should show error if startTime > endTime",
+      async () => {
+        const [startTime, endTime] = screen.getAllByRole("textbox");
+        userEvent.type(startTime, "15:00");
+        userEvent.type(endTime, "07:00");
+        await screen.findByText(__timeMismatch);
+      }
+    );
   });
 });
