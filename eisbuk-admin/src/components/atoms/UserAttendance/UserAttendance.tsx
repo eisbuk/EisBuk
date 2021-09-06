@@ -58,19 +58,18 @@ const UserAttendance: React.FC<Props> = ({
     <FormControl className={classes.formControl}>
       <InputLabel>Intervals</InputLabel>
       <Select
-        data-testid={`${userBooking.name}${userBooking.surname}Dropdown`}
-        value={intervals[0]}
+        data-testid={`${userBooking.name}${userBooking.surname}Select`}
+        value={bookedInterval}
         onChange={handleChange}
-        // inputProps={{
-        //   name: "",
-        //   id: "",
-        // }}
+        // materialUI <select> element is an abstraction for a bunch of other elements
+        // inputProps sets the testid of <input> element inside the <select>
+        // so that rtl can fireEvents on it
+        inputProps={{
+          "data-testid": `${userBooking.name}${userBooking.surname}Dropdown`,
+        }}
       >
-        {/**  @TODO booked value as init value */}
-        <option aria-label="None" value="" />
         {intervals.map((interval) => (
           <option
-            // data-testid={`${userBooking.name}${userBooking.surname}${interval}`}
             key={`${userBooking.name}${userBooking.surname}${interval}`}
             value={interval}
           >

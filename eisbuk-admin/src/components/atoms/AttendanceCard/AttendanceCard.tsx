@@ -54,6 +54,7 @@ const AttendanceCard: React.FC<Props> = ({
 
   const timeString = `${startTime} - ${endTime}`;
 
+  /** @TODO remove this when slots have intervals */
   const dummyIntervals = ["13:00 - 14:00", "13:15 - 14:15"];
   return (
     <div className={classes.wrapper}>

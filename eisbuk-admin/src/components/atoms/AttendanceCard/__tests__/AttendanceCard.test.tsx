@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import AttendanceCard from "../AttendanceCard";
@@ -61,26 +61,28 @@ describe("AttendanceCard", () => {
         true
       );
     });
-    /** @TODO find a test for options */
+    /** @TODO find a good test for options */
     test("should render intervals in dropdown when athlete is present", () => {
       screen.getByText("👎").click();
       expect(screen.getByTestId("SaulGoodmanDropdown")).toBeInTheDocument();
 
-      // expect(screen.getByTestId("SaulGoodmanDropdown")).toContainElement(
-      //   screen.getByTestId("SaulGoodman13:00 - 14:00")
+      // expect(screen.getAllByTestId("SaulGoodman13:00 - 14:00").length).toEqual(
+      //   customersSlot.intervals.length
       // );
-      // screen.getByText("13:00 - 14:00");
-      // screen.getByText("13:15 - 14:15");
     });
-    test("should render booked value as display value", () => {
+    test("should render bookedInterval value as display value", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanDropdown")).toBeInTheDocument();
-      const firstOption = screen.getByTestId("SaulGoodmanDropdown").firstChild;
+      expect(screen.getByTestId("SaulGoodmanSelect")).toBeInTheDocument();
+      const firstOption = screen.getByTestId("SaulGoodmanSelect").firstChild;
       expect(firstOption).toHaveTextContent("13:00 - 14:00");
-      // screen.getByText("13:00 -14:00");
     });
     test("should change bookedInterval to selected value", () => {
-      /** @TODO write test */
+      fireEvent.change(screen.getByTestId("SaulGoodmanDropdown"), {
+        target: { value: "13:15 - 14:15" },
+      });
+      expect(screen.getByTestId("SaulGoodmanDropdown")).toHaveDisplayValue(
+        "13:15 - 14:15"
+      );
     });
   });
 });
