@@ -106,7 +106,7 @@ export const EisbukAvatar: React.FC<Props> = ({
     const daysFromCovidCert = -luxonCovidCertDate.diffNow("days")?.days || -1;
 
     const [covidCertColor, covidCertHidden]: CertColorHideTuple =
-      daysFromCovidCert < 0
+      daysFromCovidCert > 365 // Covid certificate expires in one year
         ? ["error", false]
         : covidCertificateSuspended
         ? ["primary", false]
