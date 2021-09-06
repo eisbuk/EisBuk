@@ -25,8 +25,6 @@ import Payment from "@material-ui/icons/Payment";
 
 import { Customer } from "eisbuk-shared";
 
-import { __requiredField } from "@/lib/errorMessages";
-
 import { SvgComponent } from "@/types/components";
 
 import { currentTheme } from "@/themes";
@@ -45,7 +43,7 @@ const CustomerValidation = Yup.object().shape({
   phone: Yup.string(),
   birth: Yup.mixed(),
   certificateExpiration: Yup.mixed(),
-  covidCertificateReleaseDate: Yup.string().required(i18n.t(__requiredField)),
+  covidCertificateReleaseDate: Yup.mixed(),
   covidCertificateSuspended: Yup.boolean(),
   category: Yup.string().required(i18n.t("CustomerValidations.Category")),
   subscriptionNumber: Yup.number(),

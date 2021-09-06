@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import { Category, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
+import { Category, Customer, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
 
 import { checkUser } from "./utils";
 
@@ -69,19 +69,23 @@ const createUsers = async (
   const org = db.collection("organizations").doc(organization);
 
   _.range(numUsers).map(async () => {
-    const name = _.sample(FIRST_NAMES);
-    const surname = _.sample(LAST_NAMES);
-    const customer = {
+    const name = _.sample(FIRST_NAMES)!;
+    const surname = _.sample(LAST_NAMES)!;
+    const customer: Omit<Customer, "secret_key"> = {
       id: uuidv4(),
       birthday: "2000-01-01",
       name,
       surname,
       email: toEmail(`${name}.${surname}@example.com`.toLowerCase()),
       phone: "12345",
-      category: _.sample(Object.values(Category)),
+      category: _.sample(Object.values(Category))!,
       certificateExpiration: DateTime.local()
         .plus({ days: _.random(-40, 200) })
         .toISODate(),
+      covidCertificateReleaseDate: DateTime.local()
+        .plus({ days: _.random(-100, 40) })
+        .toISODate(),
+      covidCertificateSuspended: _.sample([true, false])!,
     };
 
     await org.collection("customers").doc(customer.id).set(customer);

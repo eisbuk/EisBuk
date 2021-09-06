@@ -13,6 +13,8 @@ import { Category } from "eisbuk-shared";
 
 import { getInitials } from "@/utils/helpers";
 
+type CertColorHideTuple = ["primary" | "error" | undefined, boolean];
+
 // For all available colors make a CSS class
 const colorsDef = {};
 // eslint-disable-next-line array-callback-return
@@ -64,6 +66,8 @@ interface Props {
   surname: string;
   category?: Category;
   certificateExpiration?: string;
+  covidCertificateReleaseDate?: string;
+  covidCertificateSuspended?: boolean;
   className?: string;
 }
 
@@ -73,28 +77,54 @@ export const EisbukAvatar: React.FC<Props> = ({
   className,
   category,
   certificateExpiration,
+  covidCertificateReleaseDate,
+  covidCertificateSuspended,
 }) => {
   const classes = useStyles();
-  let wrapAvatar = (el: JSX.Element) => el;
 
-  try {
-    const daysToExpiration = DateTime.fromISO(certificateExpiration!).diffNow(
-      "days"
-    ).days;
-    if (daysToExpiration < 0) {
-      // Certificate is expired
-      wrapAvatar = (children) => (
-        <Badge color="error" badgeContent="!">
-          {children}
+  const wrapAvatar = (el: JSX.Element): JSX.Element => {
+    // get medical certificate data
+    const luxonMedCertExpiration = DateTime.fromISO(
+      certificateExpiration || ""
+    );
+    // if customer doesn't have medical certificate, should display warning the same as if certificate expired
+    const untilCertExpiration =
+      luxonMedCertExpiration.diffNow("days")?.days || -1;
+
+    const [medCertColor, medCertHidden]: CertColorHideTuple =
+      untilCertExpiration < 0
+        ? ["error", false]
+        : untilCertExpiration < 20
+        ? ["primary", false]
+        : [undefined, true];
+
+    // get covid certificate data
+    const luxonCovidCertDate = DateTime.fromISO(
+      covidCertificateReleaseDate || ""
+    );
+    // elapsed days from covid certificate release date, fallback is -1: customer dosan't have a covid certificate (yet)
+    const daysFromCovidCert = -luxonCovidCertDate.diffNow("days")?.days || -1;
+
+    const [covidCertColor, covidCertHidden]: CertColorHideTuple =
+      daysFromCovidCert < 0
+        ? ["error", false]
+        : covidCertificateSuspended
+        ? ["primary", false]
+        : [undefined, true];
+
+    return (
+      <Badge
+        color={covidCertColor}
+        anchorOrigin={{ horizontal: "left", vertical: "top" }}
+        invisible={covidCertHidden}
+        badgeContent="c"
+      >
+        <Badge color={medCertColor} invisible={medCertHidden} badgeContent="!">
+          {el}
         </Badge>
-      );
-    } else if (daysToExpiration < 20) {
-      // Certificate is about to expire
-      wrapAvatar = (children) => <Badge color="primary">{children}</Badge>;
-    }
-  } catch (err) {
-    console.error(err);
-  }
+      </Badge>
+    );
+  };
 
   let variant: Parameters<typeof Avatar>[0]["variant"];
   let additionalClass = classes[getColor({ name, surname })];
