@@ -104,44 +104,36 @@ interface BulkSlotsAction<
 
 /**
  * Creates Redux action to add a complete day of slots to clipboard for copyPaste reducer
- * @param date of day to copy
  * @returns Redux action object
  */
-export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = () => ({
   type: Action.CopySlotDay,
   payload: {} as any,
 });
 
 /**
  * Creates Redux action to add a complete week of slots to clipboard for copyPaste reducer
- * @param date start day of week to copy
  * @returns Redux action object
  */
-export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
-  date
-) => ({
+export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = () => ({
   type: Action.CopySlotWeek,
   payload: {} as any,
 });
 
 /**
  * Creates Redux action to paste the day of slots from clipboard to a new day
- * @param date of day to paste to
  * @returns Redux action object
  */
-export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = () => ({
   type: Action.CopySlotDay,
   payload: {} as any,
 });
 
 /**
  * Creates Redux action to paste a week of slots from clipboard to new week (starting with provided date)
- * @param date start day of week to paste to
  * @returns Redux action object
  */
-export const newPasteSlotWeek: BulkSlotsAction<Action.CopySlotWeek> = (
-  date
-) => ({
+export const newPasteSlotWeek: BulkSlotsAction<Action.CopySlotWeek> = () => ({
   type: Action.CopySlotWeek,
   payload: {} as any,
 });
