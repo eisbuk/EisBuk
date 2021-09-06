@@ -83,7 +83,7 @@ const createUsers = async (
         .plus({ days: _.random(-40, 200) })
         .toISODate(),
       covidCertificateReleaseDate: DateTime.local()
-        .plus({ days: _.random(-200, 40) })
+        .plus({ days: _.random(-500, 0) })
         .toISODate(),
       covidCertificateSuspended: _.sample([true, false])!,
     };

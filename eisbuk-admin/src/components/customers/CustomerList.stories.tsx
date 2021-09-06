@@ -51,7 +51,7 @@ const createDemoCustomer = (): Partial<Customer> => {
     category: lodash.sample(CATEGORIES)!,
     covidCertificateSuspended: lodash.sample([true, false]),
     covidCertificateReleaseDate: DateTime.local()
-      .plus({ days: _.random(-100, 40) })
+      .plus({ days: _.random(-500, 0) })
       .toISODate(),
     certificateExpiration: DateTime.local()
       .plus({ days: _.random(-40, 200) })
