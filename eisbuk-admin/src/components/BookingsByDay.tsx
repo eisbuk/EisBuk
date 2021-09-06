@@ -35,7 +35,9 @@ type UserBooking = Pick<Customer, "id"> &
   Pick<Customer, "name"> &
   Pick<Customer, "surname"> &
   Pick<Customer, "certificateExpiration"> &
-  Pick<BookingInfo, "duration">;
+  Pick<BookingInfo, "duration"> &
+  Pick<Customer, "covidCertificateReleaseDate"> &
+  Pick<Customer, "covidCertificateSuspended">;
 
 type BookingEntry = Pick<BookingInfo, "categories"> &
   Pick<Slot, "type"> &
