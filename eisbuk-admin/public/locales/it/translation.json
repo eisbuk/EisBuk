@@ -23,13 +23,19 @@
     "Required": "Richiesto"
   },
   "SlotForm": {
-    "StartTime": "Ora di inizio",
     "Type": "Tipo",
     "EditSlot": "Modifica Slot",
     "CreateSlot": "Crea Slot",
     "Cancel": "Annulla",
     "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}"
+    "parsedDate": "{{date, EEEE d MMMM}}",
+
+    "NewSlotTitle": "Crea Slot ( {{ date, d MMMM }} )",
+    "EditSlotTitle": "Modifica Slot ( {{ date, d MMMM }} )",
+    "Intervals": "Intervalli",
+    "AddInterval": "Aggiungi Intervallo",
+    "StartTime": "Ora di inizio",
+    "EndTime": "Ora di fine"
   },
   "CustomerForm": {
     "Name": "Nome",
@@ -143,14 +149,6 @@
     "Competitive": "agonismo",
     "PreCompetitive": "pre-agonismo",
     "Adults": "adulti"
-  },
-  "SlotForm": {
-    "NewSlotTitle": "Crea Slot ( {{ date, d MMMM }} )",
-    "EditSlotTitle": "Modifica Slot ( {{ date, d MMMM }} )",
-    "Intervals": "Intervalli",
-    "AddInterval": "Aggiungi Intervallo",
-    "StartTime": "Ora di inizio",
-    "EndTime": "Ora di fine"
   },
   "Action": {
     "CreateSlot": "Crea Slot",
