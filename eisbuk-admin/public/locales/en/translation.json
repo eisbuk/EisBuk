@@ -23,13 +23,19 @@
     "Required": "Required"
   },
   "SlotForm": {
-    "StartTime": "Start Time",
     "Type": "Type",
     "EditSlot": "Edit Slot",
     "CreateSlot": "Create Slot",
     "Cancel": "Cancel",
     "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}"
+    "parsedDate": "{{date, EEEE d MMMM}}",
+
+    "NewSlotTitle": "New Slot ( {{ date, d MMMM }} )",
+    "EditSlotTitle": "Edit Slot ( {{ date, d MMMM }} )",
+    "Intervals": "Intervals",
+    "AddInterval": "Add Interval",
+    "StartTime": "Start Time",
+    "EndTime": "End Time"
   },
   "CustomerForm": {
     "Name": "Name",

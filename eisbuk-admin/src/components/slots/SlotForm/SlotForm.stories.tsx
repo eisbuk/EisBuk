@@ -4,28 +4,28 @@ import { DateTime } from "luxon";
 
 import { Category, Duration, SlotType } from "eisbuk-shared";
 
-import SlotForm from "@/components/slots/SlotForm";
+import NewSlotForm from "@/components/slots/SlotForm";
 
 import { luxonToFB } from "@/utils/date";
 
 export default {
   title: "SlotForm",
-  component: SlotForm,
+  component: NewSlotForm,
   argTypes: {
     editSlot: { action: "udpated" },
     createSlot: { action: "created" },
     onClose: { action: "closed" },
     onOpen: { action: "opened" },
   },
-} as ComponentMeta<typeof SlotForm>;
+} as ComponentMeta<typeof NewSlotForm>;
 
 const baseProps = {
   open: true,
   isoDate: "2021-01-15",
 };
 
-const Template: ComponentStory<typeof SlotForm> = (args) => (
-  <SlotForm {...args} />
+const Template: ComponentStory<typeof NewSlotForm> = (args) => (
+  <NewSlotForm {...args} />
 );
 
 export const EmptyForm = Template.bind({});

@@ -35,10 +35,9 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-firestore": "^0.13.0",
     "redux-thunk": "^2.3.0",
-    "ts-jest": "^24.3.0",
     "unix-timestamp": "^0.2.0",
     "uuid": "^8.3.0",
-    "yup": "^0.29.3"
+    "yup": "0.32.9"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -121,6 +120,7 @@
     "seedrandom": "^3.0.5",
     "storybook-addon-material-ui": "^0.9.0-alpha.22",
     "storybook-react-router": "^1.0.8",
+    "ts-jest": "^24.3.0",
     "typescript": "^4.3.5"
   },
   "jest": {
