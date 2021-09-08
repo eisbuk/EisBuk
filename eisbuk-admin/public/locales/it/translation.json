@@ -23,13 +23,19 @@
     "Required": "Richiesto"
   },
   "SlotForm": {
-    "StartTime": "Ora di inizio",
     "Type": "Tipo",
     "EditSlot": "Modifica Slot",
     "CreateSlot": "Crea Slot",
     "Cancel": "Annulla",
     "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}"
+    "parsedDate": "{{date, EEEE d MMMM}}",
+
+    "NewSlotTitle": "Crea Slot ( {{ date, d MMMM }} )",
+    "EditSlotTitle": "Modifica Slot ( {{ date, d MMMM }} )",
+    "Intervals": "Intervalli",
+    "AddInterval": "Aggiungi Intervallo",
+    "StartTime": "Ora di inizio",
+    "EndTime": "Ora di fine"
   },
   "CustomerForm": {
     "Name": "Nome",
@@ -41,7 +47,9 @@
     "CardNumber": "Numero Tessera",
     "Cancel": "Annulla",
     "Save": "Salva",
-    "NewAthlete": "Nuovo atleta"
+    "NewAthlete": "Nuovo atleta",
+    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
+    "CovidCertificateSuspended": "Certificazione verde sospesa"
   },
   "CustomerValidations": {
     "Email": "Inserisci una email valida",
@@ -129,5 +137,30 @@
     "SlotAdded": "Slot Aggiunto",
     "SlotRemoved": "Slot Eliminato",
     "SlotUpdated": "Slot Aggiornato"
+  },
+
+  "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
+
+  "SlotType": {
+    "OffIceDancing": "off-ice-danza",
+    "Ice": "ice",
+    "OffIceGym": "off-ice-gym"
+  },
+  "Category": {
+    "Course": "corso",
+    "Competitive": "agonismo",
+    "PreCompetitive": "pre-agonismo",
+    "Adults": "adulti"
+  },
+  "Action": {
+    "CreateSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot",
+    "Cancel": "Annulla"
+  },
+  "Form": {
+    "RequiredEntry": "è richiesto almeno un valore",
+    "RequiredField": "Questo campo è obbligatorio",
+    "InvalidTime": "formato dell'ora non valido (\"HH:mm\")",
+    "TimeMismatch": "l'ora di inizio è maggiore dell'ora di fine"
   }
 }

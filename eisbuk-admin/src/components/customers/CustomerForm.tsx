@@ -31,6 +31,8 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
 
+import CustomCheckbox from "./CustomCheckbox";
+
 import { capitalizeFirst } from "@/utils/helpers";
 
 // ***** Region Yup Validation ***** //
@@ -41,6 +43,8 @@ const CustomerValidation = Yup.object().shape({
   phone: Yup.string(),
   birth: Yup.mixed(),
   certificateExpiration: Yup.mixed(),
+  covidCertificateReleaseDate: Yup.mixed(),
+  covidCertificateSuspended: Yup.boolean(),
   category: Yup.string().required(i18n.t("CustomerValidations.Category")),
   subscriptionNumber: Yup.number(),
 });
@@ -78,6 +82,8 @@ const CustomerForm: React.FC<Props> = ({
           birthday: "",
           category: slotsLabelsLists[0],
           certificateExpiration: "",
+          covidCertificateReleaseDate: "",
+          covidCertificateSuspended: false,
           subscriptionNumber: "",
           ...customer,
         }}
@@ -153,6 +159,17 @@ const CustomerForm: React.FC<Props> = ({
                 label={t("CustomerForm.MedicalCertificate")}
                 className={classes.field}
                 Icon={LocalHospital}
+              />
+              <MyField
+                type="date"
+                name="covidCertificateReleaseDate"
+                label={t("CustomerForm.CovidCertificateReleaseDate")}
+                className={classes.field}
+                Icon={LocalHospital}
+              />
+              <CustomCheckbox
+                name="covidCertificateSuspended"
+                label={t("CustomerForm.CovidCertificateSuspended")}
               />
               <MyField
                 name="subscriptionNumber"

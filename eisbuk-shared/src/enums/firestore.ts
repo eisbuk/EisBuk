@@ -18,15 +18,15 @@ export enum BookingSubCollection {
 
 // region slots
 export enum SlotType {
-  OffIceDancing = "off-ice-dancing",
   Ice = "ice",
+  OffIceDancing = "off-ice-dancing",
   OffIceGym = "off-ice-gym",
 }
 
 export enum Category {
   Course = "course",
-  Competitive = "competitive",
   PreCompetitive = "pre-competitive",
+  Competitive = "competitive",
   Adults = "adults",
 }
 

@@ -23,13 +23,19 @@
     "Required": "Required"
   },
   "SlotForm": {
-    "StartTime": "Start Time",
     "Type": "Type",
     "EditSlot": "Edit Slot",
     "CreateSlot": "Create Slot",
     "Cancel": "Cancel",
     "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}"
+    "parsedDate": "{{date, EEEE d MMMM}}",
+
+    "NewSlotTitle": "New Slot ( {{ date, d MMMM }} )",
+    "EditSlotTitle": "Edit Slot ( {{ date, d MMMM }} )",
+    "Intervals": "Intervals",
+    "AddInterval": "Add Interval",
+    "StartTime": "Start Time",
+    "EndTime": "End Time"
   },
   "CustomerForm": {
     "Name": "Name",
@@ -41,7 +47,9 @@
     "CardNumber": "Card Number",
     "Cancel": "Cancel",
     "Save": "Save",
-    "NewAthlete": "New Athlete"
+    "NewAthlete": "New Athlete",
+    "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
+    "CovidCertificateSuspended": "COVID-19 Certificate supsended"
   },
   "CustomerValidations": {
     "Email": "Please insert a valid email",
@@ -130,5 +138,30 @@
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"
+  },
+
+  "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
+
+  "SlotType": {
+    "OffIceDancing": "off-ice-dancing",
+    "Ice": "ice",
+    "OffIceGym": "off-ice-gym"
+  },
+  "Category": {
+    "Course": "course",
+    "Competitive": "competitive",
+    "PreCompetitive": "pre-competitive",
+    "Adults": "adults"
+  },
+  "Action": {
+    "CreateSlot": "Create Slot",
+    "EditSlot": "Edit Slot",
+    "Cancel": "Cancel"
+  },
+  "Form": {
+    "RequiredEntry": "at least one value is required",
+    "RequiredField": "this field is required",
+    "InvalidTime": "invalid time format (\"HH:mm\")",
+    "TimeMismatch": "start time is greater than end time"
   }
 }

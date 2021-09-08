@@ -95,6 +95,8 @@ export interface Customer {
   phone: string;
   category: Category;
   certificateExpiration?: string;
+  covidCertificateReleaseDate: string;
+  covidCertificateSuspended: boolean;
   // eslint-disable-next-line camelcase
   secret_key: string;
 }

@@ -3,6 +3,8 @@ import { DateTime } from "luxon";
 
 import { Slot } from "eisbuk-shared";
 
+import { SlotFormValues } from "@/lib/data";
+
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
@@ -154,6 +156,7 @@ export const editSlot = (
  * Deletes slot with given id from firestore and (in effect) local store
  * @param slotId od slot to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
   /** @TODO should call to `deleteSlots` function and pass `slotId` */
 };
@@ -162,6 +165,7 @@ export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
  * Deletes slots for the whole day from firestore and (in effect) local store
  * @param date of the slots day to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlotsDay = (date: DateTime): void => {
   /** @TODO should read all slot ids for given date and call to `deleteSlots` function and pass ids for given slots */
 };
@@ -170,8 +174,27 @@ export const deleteSlotsDay = (date: DateTime): void => {
  * Deletes slots for the whole week from firestore and (in effect) local store
  * @param date of the first day of the slots week to delete
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlotsWeek = (date: DateTime): void => {
   /** @TODO should read all slot ids for given a week starting with given date and call to `deleteSlots` function and pass ids for given slots */
 };
+
+/**
+ * Takes in slot values from `SlotForm` for new slot and updates the db.
+ * @param payload `SlotForm` values + slot date
+ */
+export const createNewSlot = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  payload: SlotFormValues & { date: DateTime }
+): void => {};
+
+/**
+ * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
+ * @param payload `SlotForm` values + slot date
+ */
+export const updateSlot = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  payload: SlotFormValues & { date: DateTime; id: string }
+): void => {};
 
 // #endregion newOperations
