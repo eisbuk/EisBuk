@@ -1,3 +1,5 @@
+import { LocalStore } from "./store";
+
 /**
  * This is a collection of types for updated data model.
  * When the new data model has been integrated, these types should replace the existing
@@ -25,22 +27,6 @@ export interface SlotInterval {
    * @TO_ALWAYS_DO add checks for "HH:mm" compatibility when storing to firestore
    */
   endTime: string;
-}
-
-/**
- * Entry for attendance of single user on single slot.
- *
- * `booked` represents interval booked by the customer
- * - if customer booked, this should always be non-null
- * - if not booked by customer (attended without booking) will be `null`
- *
- * `attended` represents interval customer has attended
- * - if customer booked and didn't attend, will be `null`
- * - if not booked and not attended (customer added by mistake), won't be `null` and entry should be deleted.
- */
-interface CustomerAttendance {
-  booked: string | null;
-  attended: string | null;
 }
 
 /**
@@ -80,16 +66,48 @@ export interface SlotInterface {
     [key: string]: SlotInterval;
   };
   /**
-   * Included for book keeping. A record of attendance for each customer
-   * (keyed by customer id) for this particular slot
-   *
-   * @TODO move this somewhere else in the future
-   */
-  attendance?: {
-    [customerId: string]: CustomerAttendance;
-  };
-  /**
    * Notes on the slot
    */
   notes: string;
 }
+
+/**
+ * Entry for attendance of single user on single slot.
+ *
+ * `booked` represents interval booked by the customer
+ * - if customer booked, this should always be non-null
+ * - if not booked by customer (attended without booking) will be `null`
+ *
+ * `attended` represents interval customer has attended
+ * - if customer booked and didn't attend, will be `null`
+ * - if not booked and not attended (customer added by mistake), won't be `null` and entry should be deleted.
+ */
+export interface CustomerAttendance {
+  booked: string | null;
+  attended: string | null;
+}
+
+export interface Attendance {
+  [month: string]: {
+    [date: string]: {
+      [slotId: string]: {
+        [customerId: string]: CustomerAttendance;
+      };
+    };
+  };
+}
+
+/**
+ * A temporary Redux store state. we're using this for tests and as a blueprint for updated store
+ */
+export type TempStore = Omit<LocalStore, "firestore"> & {
+  firestore: ReduxFirestore;
+};
+
+type ReduxFirestore = Omit<LocalStore["firestore"], "data"> & {
+  data: ReduxFirestoreData;
+};
+
+type ReduxFirestoreData = LocalStore["firestore"]["data"] & {
+  attendance: Attendance;
+};
