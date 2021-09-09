@@ -106,7 +106,8 @@ interface BulkSlotsAction<
  * Creates Redux action to add a complete day of slots to clipboard for copyPaste reducer
  * @returns Redux action object
  */
-export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = () => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
   type: Action.CopySlotDay,
   payload: {} as any,
 });
@@ -124,7 +125,9 @@ export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = () => ({
  * Creates Redux action to paste the day of slots from clipboard to a new day
  * @returns Redux action object
  */
-export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = () => ({
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   type: Action.CopySlotDay,
   payload: {} as any,
 });

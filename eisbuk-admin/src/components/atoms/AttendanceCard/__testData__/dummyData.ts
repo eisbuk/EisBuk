@@ -26,7 +26,17 @@ export const users = [
 // here we're using storybook date as default date and making sure that the slots starts at 13:00
 const luxonDate = DateTime.fromISO(__storybookDate__).plus({ hours: 13 });
 
-export const dummySlot = {
+export const emptySlot = {
+  date: luxonToFB(luxonDate),
+  durations: [Duration["1.5h"], Duration["2h"]],
+  type: SlotType.Ice,
+  userBookings: [],
+  categories: [Category.Competitive],
+  absentees: [],
+  notes: "",
+  id: "123",
+};
+export const customersSlot = {
   date: luxonToFB(luxonDate),
   durations: [Duration["1.5h"], Duration["2h"]],
   type: SlotType.Ice,
