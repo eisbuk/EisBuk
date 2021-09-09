@@ -14,3 +14,9 @@ export const markAttendance = (payload: {
   userId: Customer["id"];
   attended: boolean;
 }): void => {};
+
+export const selectInterval = (payload: {
+  slotId: Slot<"id">["id"];
+  userId: Customer["id"];
+  interval: string;
+}): void => {};

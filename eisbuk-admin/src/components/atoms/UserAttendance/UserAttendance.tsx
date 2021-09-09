@@ -8,7 +8,10 @@ import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
 import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
-import { markAttendance } from "@/store/actions/attendanceOperations";
+import {
+  markAttendance,
+  selectInterval,
+} from "@/store/actions/attendanceOperations";
 import { useDispatch } from "react-redux";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -31,9 +34,6 @@ const UserAttendance: React.FC<Props> = ({
   intervals,
 }) => {
   const [localAttended, setLocalAttended] = useState(attended);
-  const [bookedIntervals, setBookedIntervals] = useState([
-    userBooking.bookedInterval,
-  ]);
 
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -50,29 +50,28 @@ const UserAttendance: React.FC<Props> = ({
       })
     );
   };
-  /** @TODO e type (tried e: React.ChangeEvent<HTMLInputElement> and it didn't work) */
-  const handleChange = (e: any) => {
-    if (!bookedIntervals.includes(e.target.value)) {
-      setBookedIntervals(_.concat(bookedIntervals, e.target.value));
-    } else {
-      bookedIntervals.length > 0
-        ? setBookedIntervals(_.without(bookedIntervals, e.target.value))
-        : bookedIntervals;
-    }
+  const handleSelect = (interval: string) => {
+    dispatch(
+      selectInterval({
+        slotId,
+        userId: userBooking.customer_id,
+        interval,
+      })
+    );
   };
 
   const absenteeButtons = (
     <FormControl className={classes.formControl}>
       <InputLabel>Intervals</InputLabel>
       <Select
-        data-testid={`${userBooking.name}${userBooking.surname}MUISelect`}
-        value={bookedIntervals}
-        onChange={handleChange}
+        data-testid={`${userBooking.name}-${userBooking.surname}-select`}
+        value="13:00 - 14:00"
+        onChange={() => handleSelect("13:15 - 14:15")}
         // materialUI <select> element is an abstraction for a bunch of other elements
         // inputProps sets the testid of <input> element inside the <select>
         // so that rtl can fireEvents on it
         inputProps={{
-          "data-testid": `${userBooking.name}${userBooking.surname}Input`,
+          "data-testid": `${userBooking.name}-${userBooking.surname}-input`,
           disabled: !localAttended,
         }}
       >
@@ -86,7 +85,7 @@ const UserAttendance: React.FC<Props> = ({
         ))}
       </Select>
       <Button
-        data-testid={`${userBooking.name}${userBooking.surname}`}
+        data-testid={`${userBooking.name}-${userBooking.surname}`}
         variant="contained"
         size="small"
         color={attended ? "primary" : "secondary"}

@@ -19,9 +19,21 @@ const mockMarkAttImplementation = (payload: {
 }) => ({
   payload,
 });
+const mockSelectIntervalImplementation = (payload: {
+  slotId: string;
+  userId: string;
+  interval: string;
+}) => ({
+  payload,
+});
+
 jest
   .spyOn(attendanceOperations, "markAttendance")
   .mockImplementation(mockMarkAttImplementation);
+
+jest
+  .spyOn(attendanceOperations, "selectInterval")
+  .mockImplementation(mockSelectIntervalImplementation);
 
 const spyT = jest.spyOn(i18n, "t");
 beforeEach(() => spyT.mockClear());
@@ -56,7 +68,7 @@ describe("AttendanceCard", () => {
     });
     test("should disable attendance button while state and fb are synching", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodman")).toHaveProperty(
+      expect(screen.getByTestId("Saul-Goodman")).toHaveProperty(
         "disabled",
         true
       );
@@ -64,7 +76,7 @@ describe("AttendanceCard", () => {
     /** @TODO find a good test for options */
     test("should render intervals in dropdown when athlete is present", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanInput")).toBeInTheDocument();
+      expect(screen.getByTestId("Saul-Goodman-input")).toBeInTheDocument();
 
       // expect(screen.getAllByTestId("SaulGoodman13:00 - 14:00").length).toEqual(
       //   customersSlot.intervals.length
@@ -72,34 +84,44 @@ describe("AttendanceCard", () => {
     });
     test("should render bookedInterval value as display value", () => {
       screen.getByText("👎").click();
-      expect(screen.getByTestId("SaulGoodmanMUISelect")).toBeInTheDocument();
-      const firstOption = screen.getByTestId("SaulGoodmanMUISelect").firstChild;
+      expect(screen.getByTestId("Saul-Goodman-select")).toBeInTheDocument();
+      const firstOption = screen.getByTestId("Saul-Goodman-select").firstChild;
       expect(firstOption).toHaveTextContent("13:00 - 14:00");
     });
     test("should allow for selecting multiple intervals", () => {
-      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
+      fireEvent.change(screen.getByTestId("Saul-Goodman-input"), {
         target: { value: "13:15 - 14:15" },
       });
-      expect(screen.getByTestId("SaulGoodmanInput")).toHaveDisplayValue([
-        "13:00 - 14:00,13:15 - 14:15",
-      ]);
-    });
-    test("should allow for deselecting intervals", () => {
-      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
-        target: { value: "13:15 - 14:15" },
-      });
-      fireEvent.change(screen.getByTestId("SaulGoodmanInput"), {
-        target: { value: "13:15 - 14:15" },
-      });
-      expect(screen.getByTestId("SaulGoodmanInput")).toHaveDisplayValue([
+      expect(screen.getByTestId("Saul-Goodman-input")).toHaveDisplayValue([
         "13:00 - 14:00",
       ]);
     });
-    test("should disable dropdown when athlete is marked absent", () => {
-      // screen.getByText("👍").click();
-      expect(screen.getByTestId("WalterWhiteInput")).toHaveProperty(
-        "disabled",
-        true
+    test("should allow for deselecting intervals", () => {
+      fireEvent.change(screen.getByTestId("Saul-Goodman-input"), {
+        target: { value: "13:15 - 14:15" },
+      });
+      fireEvent.change(screen.getByTestId("Saul-Goodman-input"), {
+        target: { value: "13:15 - 14:15" },
+      });
+      expect(screen.getByTestId("Saul-Goodman-input")).toHaveDisplayValue([
+        "13:00 - 14:00",
+      ]);
+    });
+    // test("should disable dropdown when athlete is marked absent", () => {
+    //   // screen.getByText("👍").click();
+    //   expect(screen.getByTestId("WalterWhiteInput")).toHaveProperty(
+    //     "disabled",
+    //     true
+    //   );
+    // });
+    test("should dispatch selectInterval with correct args", () => {
+      screen.getByText("👎").click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockSelectIntervalImplementation({
+          slotId: "123",
+          userId: "saul",
+          interval: "13:15 - 14:15",
+        })
       );
     });
   });
