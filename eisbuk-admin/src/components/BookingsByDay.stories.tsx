@@ -20,6 +20,9 @@ const gus = {
   surname: "Fring",
   id: "gus",
   category: Category.Course,
+  certificateExpiration: "2021-04-01",
+  covidCertificateReleaseDate: "2021-02-05",
+  covidCertificateSuspended: false,
 };
 
 const saul = {
@@ -27,7 +30,8 @@ const saul = {
   surname: "Goodman",
   id: "saul",
   category: Category.Competitive,
-  certificateExpiration: "2001-01-01",
+  covidCertificateReleaseDate: "2021-02-05",
+  covidCertificateSuspended: false,
 };
 
 const heisenberg = {
@@ -35,6 +39,9 @@ const heisenberg = {
   surname: "White",
   id: "heisenberg",
   category: Category.PreCompetitive,
+  certificateExpiration: "2021-03-15",
+  covidCertificateReleaseDate: "2021-02-05",
+  covidCertificateSuspended: false,
 };
 
 const jesse = {
@@ -42,6 +49,9 @@ const jesse = {
   surname: "Pinkman",
   id: "jesse",
   category: Category.PreCompetitive,
+  certificateExpiration: "2021-04-01",
+  covidCertificateReleaseDate: "2021-02-05",
+  covidCertificateSuspended: true,
 };
 // ***** End Region Setup ***** //
 

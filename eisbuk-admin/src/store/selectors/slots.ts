@@ -146,6 +146,8 @@ export const bookingDayInfoSelector = (dayStr: string) =>
             name: user.name,
             surname: user.surname,
             certificateExpiration: user.certificateExpiration,
+            covidCertificateReleaseDate: user.covidCertificateReleaseDate,
+            covidCertificateSuspended: user.covidCertificateSuspended,
             secret_key: user.secret_key,
             id: user.id,
             duration: bookingsInfo[slot.id][key],

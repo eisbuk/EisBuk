@@ -28,8 +28,6 @@ import {
   __newSlotButtonId__,
   __slotFormId__,
   __cancelFormId__,
-  // __confirmFormId__,
-  // __offIceDancingButtonId__,
 } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();

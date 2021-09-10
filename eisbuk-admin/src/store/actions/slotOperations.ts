@@ -3,6 +3,8 @@ import { DateTime } from "luxon";
 
 import { Slot } from "eisbuk-shared";
 
+import { SlotFormValues } from "@/lib/data";
+
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
@@ -176,5 +178,23 @@ export const deleteSlotsDay = (date: DateTime): void => {
 export const deleteSlotsWeek = (date: DateTime): void => {
   /** @TODO should read all slot ids for given a week starting with given date and call to `deleteSlots` function and pass ids for given slots */
 };
+
+/**
+ * Takes in slot values from `SlotForm` for new slot and updates the db.
+ * @param payload `SlotForm` values + slot date
+ */
+export const createNewSlot = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  payload: SlotFormValues & { date: DateTime }
+): void => {};
+
+/**
+ * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
+ * @param payload `SlotForm` values + slot date
+ */
+export const updateSlot = (
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  payload: SlotFormValues & { date: DateTime; id: string }
+): void => {};
 
 // #endregion newOperations

@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 import { Category, Customer, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
 
 import CustomerList from "@/components/customers/CustomerList";
+import { DateTime } from "luxon";
 
 export default {
   title: "Customer list",
@@ -37,9 +38,9 @@ const CATEGORIES = lodash.omit(
  * Create a dummy user for storybook show
  * @returns random customer
  */
-const createDemoCustomer = () => {
-  const name = lodash.sample(FIRST_NAMES);
-  const surname = lodash.sample(LAST_NAMES);
+const createDemoCustomer = (): Partial<Customer> => {
+  const name = lodash.sample(FIRST_NAMES)!;
+  const surname = lodash.sample(LAST_NAMES)!;
   return {
     name,
     surname,
@@ -47,7 +48,14 @@ const createDemoCustomer = () => {
       .deburr(`${name}.${surname}@example.com`.toLowerCase())
       .replace(" ", "."),
     id: uuidv4(),
-    category: lodash.sample(CATEGORIES),
+    category: lodash.sample(CATEGORIES)!,
+    covidCertificateSuspended: lodash.sample([true, false]),
+    covidCertificateReleaseDate: DateTime.local()
+      .plus({ days: _.random(-500, 0) })
+      .toISODate(),
+    certificateExpiration: DateTime.local()
+      .plus({ days: _.random(-40, 200) })
+      .toISODate(),
   };
 };
 
