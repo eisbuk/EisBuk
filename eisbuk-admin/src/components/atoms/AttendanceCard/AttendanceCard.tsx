@@ -7,8 +7,8 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import UserAttendance from "@/components/atoms/UserAttendance/UserAttendance";
+import { SlotInterface } from "@/types/temp";
 import {
-  Slot,
   Customer,
   BookingsMeta,
   Category,
@@ -20,18 +20,17 @@ import { ETheme } from "@/themes";
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
-interface Props extends Slot<"id"> {
+interface Props extends SlotInterface {
   userBookings: UserBooking[];
-  absentees?: string[];
 }
 
 // mark attendees
 const AttendanceCard: React.FC<Props> = ({
   date,
-  durations,
   categories,
   userBookings,
-  absentees,
+  attendance,
+  intervals,
   type,
   id,
 }) => {
@@ -39,7 +38,7 @@ const AttendanceCard: React.FC<Props> = ({
 
   // const { t } = useTranslation();
   // convert timestamp to luxon for easier processing
-  const luxonStart = fb2Luxon(date);
+  // const luxonStart = fb2Luxon(date);
 
   // convert durations to number values
   const durationNumbers = durations.map((duration) => Number(duration));
@@ -54,15 +53,14 @@ const AttendanceCard: React.FC<Props> = ({
 
   const timeString = `${startTime} - ${endTime}`;
 
-  /** @TODO remove this when slots have intervals */
-  const dummyIntervals = ["13:00 - 14:00", "13:15 - 14:15"];
+
   return (
     <div className={classes.wrapper}>
       <ListItem className={classes.listHeader}>
         <ListItemText
           primary={
             <span>
-              {timeString} <b>({userBookings.length})</b>
+              {"13:00 - 14:00"} <b>({userBookings.length})</b>
             </span>
           }
           secondary={translateAndJoinTags(categories, type)}
@@ -72,9 +70,9 @@ const AttendanceCard: React.FC<Props> = ({
         <UserAttendance
           key={user.customer_id}
           slotId={id}
-          attended={!absentees?.includes(user.customer_id)}
+          attended={attendance?[user.customer_id].attended}
           userBooking={user}
-          intervals={dummyIntervals}
+          intervals={intervals}
         />
       ))}
     </div>

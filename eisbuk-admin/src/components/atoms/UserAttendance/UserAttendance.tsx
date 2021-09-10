@@ -17,6 +17,7 @@ import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
 import Select from "@material-ui/core/Select";
 import _ from "lodash";
+import { SlotInterface } from "@/types/temp";
 
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
@@ -24,7 +25,7 @@ interface Props {
   attended: boolean;
   userBooking: UserBooking;
   slotId: Slot<"id">["id"];
-  intervals: string[];
+  intervals: SlotInterface["intervals"];
 }
 
 const UserAttendance: React.FC<Props> = ({
@@ -75,10 +76,10 @@ const UserAttendance: React.FC<Props> = ({
           disabled: !localAttended,
         }}
       >
-        {intervals.map((interval) => (
+        {_.entries(intervals).map((interval) => (
           <option
             key={`${userBooking.name}${userBooking.surname}${interval}`}
-            value={interval}
+            value={interval[0]}
           >
             {interval}
           </option>
