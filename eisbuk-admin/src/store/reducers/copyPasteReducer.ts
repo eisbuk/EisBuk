@@ -6,7 +6,7 @@ import {
   CopyPasteAction,
 } from "@/types/store";
 
-const defaultState = {
+export const defaultState = {
   day: null,
   week: null,
 };

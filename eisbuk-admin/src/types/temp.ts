@@ -1,5 +1,3 @@
-import { LocalStore } from "./store";
-
 /**
  * This is a collection of types for updated data model.
  * When the new data model has been integrated, these types should replace the existing
@@ -7,9 +5,13 @@ import { LocalStore } from "./store";
  *
  * @TODO remove this file when new data model integrated
  */
-import { Timestamp } from "@google-cloud/firestore";
+import { Timestamp, Firestore } from "@google-cloud/firestore";
+import { Dispatch } from "redux";
+import { ExtendedFirebaseInstance } from "react-redux-firebase";
 
 import { Category, SlotType } from "eisbuk-shared";
+
+import { LocalStore } from "./store";
 
 /**
  * Interval for booking. Includes start/end time of the interval.
@@ -87,14 +89,16 @@ export interface CustomerAttendance {
   attended: string | null;
 }
 
-export interface Attendance {
-  [month: string]: {
-    [date: string]: {
-      [slotId: string]: {
-        [customerId: string]: CustomerAttendance;
-      };
+export interface MonthAttendance {
+  [date: string]: {
+    [slotId: string]: {
+      [customerId: string]: CustomerAttendance | undefined;
     };
   };
+}
+
+export interface FirestoreAttendance {
+  [month: string]: MonthAttendance;
 }
 
 /**
@@ -109,5 +113,21 @@ type ReduxFirestore = Omit<LocalStore["firestore"], "data"> & {
 };
 
 type ReduxFirestoreData = LocalStore["firestore"]["data"] & {
-  attendance: Attendance;
+  attendance?: FirestoreAttendance;
 };
+
+export interface FirestoreGetters {
+  getFirebase: () => { firestore: () => Firestore };
+}
+
+/**
+ * Async Thunk in charge of updating the firestore and dispatching action
+ * to local store with respect to firestore update outcome
+ */
+export interface NewFirestoreThunk {
+  (
+    dispatch: Dispatch,
+    getState: () => TempStore,
+    firebaseParams: { getFirebase: () => ExtendedFirebaseInstance }
+  ): Promise<void>;
+}

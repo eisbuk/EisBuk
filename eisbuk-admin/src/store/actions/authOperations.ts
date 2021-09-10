@@ -1,7 +1,5 @@
 import i18n from "i18next";
 
-import { DocumentData, DocumentSnapshot } from "@firebase/firestore-types";
-
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { NotifVariant, Action } from "@/enums/store";
@@ -73,7 +71,7 @@ export const queryOrganizationStatus = (): FirestoreThunk => async (
   try {
     const firestore = getFirebase().firestore();
 
-    const res: DocumentSnapshot<DocumentData> = await firestore
+    const res = await firestore
       .collection("organizations")
       .doc(ORGANIZATION)
       .get();

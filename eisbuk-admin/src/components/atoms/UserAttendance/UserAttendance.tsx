@@ -8,7 +8,10 @@ import { Customer, BookingsMeta, Slot } from "eisbuk-shared";
 import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
-import { markAttendance } from "@/store/actions/attendanceOperations";
+import {
+  markAbsence,
+  markAttendance,
+} from "@/store/actions/attendanceOperations";
 import { useDispatch } from "react-redux";
 
 type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
@@ -28,11 +31,13 @@ const UserAttendance: React.FC<Props> = ({ attended, userBooking, slotId }) => {
     const newAttended = !attended;
     setLocalAttended(newAttended);
     dispatch(
-      markAttendance({
-        slotId,
-        userId: userBooking.customer_id,
-        attended: newAttended,
-      })
+      newAttended
+        ? markAttendance({
+            slotId,
+            customerId: userBooking.customer_id,
+            attendedInterval: "",
+          })
+        : markAbsence({ slotId, customerId: userBooking.customer_id })
     );
   };
 
