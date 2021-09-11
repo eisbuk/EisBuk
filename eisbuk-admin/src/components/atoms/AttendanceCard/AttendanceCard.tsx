@@ -1,5 +1,4 @@
 import React from "react";
-import { fb2Luxon } from "@/utils/date";
 import i18n from "i18next";
 
 // import { useTranslation } from "react-i18next";
@@ -21,7 +20,7 @@ import _ from "lodash";
 
 interface Props extends SlotInterface {
   customers: Customer[];
-  attendance: CustomerAttendance;
+  attendance: CustomerAttendance[];
 }
 
 // mark attendees
@@ -71,10 +70,10 @@ const AttendanceCard: React.FC<Props> = ({
           key={user.id}
           customer={user}
           intervals={intervals}
-          attendance={attendance}
+          attendance={attendance[user.id]}
           markAttendance={() => {
             markAttendance({
-              attendedInterval: attendance.attended!,
+              attendedInterval: attendance[user.id].attended!,
               slotId: id,
               customerId: user.id,
             });
