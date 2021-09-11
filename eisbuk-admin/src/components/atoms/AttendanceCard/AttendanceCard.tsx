@@ -16,11 +16,12 @@ import {
 } from "@/store/actions/attendanceOperations";
 import _ from "lodash";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-
+interface CustomerAttendanceKeyed {
+  [key: string]: CustomerAttendance;
+}
 interface Props extends SlotInterface {
   customers: Customer[];
-  attendance: CustomerAttendance[];
+  attendance: CustomerAttendanceKeyed[];
 }
 
 // mark attendees
