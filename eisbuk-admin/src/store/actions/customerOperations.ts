@@ -22,7 +22,7 @@ export const updateCustomer = (
   customer: CustomerInStore
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...updatedData } = { ...customer };
+  const { id, ...updatedData } = customer;
 
   const firebase = getFirebase();
 
@@ -32,7 +32,7 @@ export const updateCustomer = (
       .collection("organizations")
       .doc(ORGANIZATION)
       .collection("customers")
-      .doc(customer.id || undefined)
+      .doc(id)
       .set(updatedData);
     dispatch(
       enqueueNotification({

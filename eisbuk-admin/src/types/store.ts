@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import { FirebaseReducer } from "react-redux-firebase";
+import {
+  ExtendedFirebaseInstance,
+  FirebaseReducer,
+} from "react-redux-firebase";
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
-import firebase from "firebase";
 
 import { Customer, Slot, SlotsByDay, SlotsById } from "eisbuk-shared";
 
@@ -154,8 +156,8 @@ interface Schema {}
 type Dispatch = typeof store.dispatch;
 type GetState = typeof store.getState;
 
-interface FirestoreGetters {
-  getFirebase: () => typeof firebase;
+export interface FirebaseGetters {
+  getFirebase: () => ExtendedFirebaseInstance;
 }
 
 /**
@@ -166,11 +168,11 @@ export interface FirestoreThunk {
   (
     dispatch: Dispatch,
     getState: GetState,
-    firebaseParams: FirestoreGetters
+    firebaseParams: FirebaseGetters
   ): Promise<void>;
 }
 
-interface FirestoreRedux {
+type FirestoreRedux = {
   status: {
     requesting: FirestoreStatusEntry<boolean>;
     requested: FirestoreStatusEntry<boolean>;
@@ -187,7 +189,7 @@ interface FirestoreRedux {
     allIds: [];
   };
   queries: {};
-}
+};
 // #region Firestore
 
 // #region Full Store

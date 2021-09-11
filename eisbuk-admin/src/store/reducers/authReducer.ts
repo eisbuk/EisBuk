@@ -4,14 +4,14 @@ import { Action } from "@/enums/store";
 
 import { AuthInfoEisbuk, AuthReducerAction, AuthAction } from "@/types/store";
 
-const initState = {
+export const defaultState = {
   admins: [],
   myUserId: null,
   uid: null,
 };
 
 export const authReducer = (
-  state: AuthInfoEisbuk = initState,
+  state: AuthInfoEisbuk = defaultState,
   action: AuthReducerAction<AuthAction>
 ): AuthInfoEisbuk => {
   switch (action.type) {
@@ -30,7 +30,7 @@ export const authReducer = (
 
     case constants.actionTypes.LOGOUT:
       // Reset state on logout
-      return initState;
+      return defaultState;
 
     default:
       return state;

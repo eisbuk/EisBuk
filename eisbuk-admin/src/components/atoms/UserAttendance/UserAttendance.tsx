@@ -9,8 +9,8 @@ import Button from "@material-ui/core/Button";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
 import {
+  markAbsence,
   markAttendance,
-  selectInterval,
 } from "@/store/actions/attendanceOperations";
 import { useDispatch } from "react-redux";
 import FormControl from "@material-ui/core/FormControl";
@@ -44,11 +44,13 @@ const UserAttendance: React.FC<Props> = ({
     const newAttended = !attended;
     setLocalAttended(newAttended);
     dispatch(
-      markAttendance({
-        slotId,
-        userId: userBooking.customer_id,
-        attended: newAttended,
-      })
+      newAttended
+        ? markAttendance({
+            slotId,
+            customerId: userBooking.customer_id,
+            attendedInterval: "",
+          })
+        : markAbsence({ slotId, customerId: userBooking.customer_id })
     );
   };
   const handleSelect = (interval: string) => {

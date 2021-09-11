@@ -61,7 +61,7 @@ export const getAllSlotsByDay = (
 ): Record<string, Record<string, Slot<"id">>> =>
   flatten(
     Object.values(
-      state.firestore.data.slotsByDay || ({} as Record<string, any>)
+      state.firestore.data?.slotsByDay || ({} as Record<string, any>)
     )
   );
 
@@ -73,7 +73,7 @@ export const getAllSlotsByDay = (
 export const getSubscribedSlots = (
   state: LocalStore
 ): Record<string, BookingInfo> =>
-  getSafe(() => state.firestore.data.subscribedSlots);
+  getSafe(() => state.firestore.data?.subscribedSlots);
 
 /**
  * Selector creator higher order function
@@ -83,7 +83,7 @@ export const getSubscribedSlots = (
  */
 const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
   const monthStr = dayStr.substr(0, 7);
-  return getSafe(() => state.firestore.data.slotsByDay![monthStr]![dayStr]);
+  return getSafe(() => state.firestore.data?.slotsByDay![monthStr]![dayStr]);
 };
 
 /**
@@ -93,7 +93,7 @@ const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
  */
 export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
   const allSlots = flatten(
-    Object.values(getSafe(() => state.firestore.data.slotsByDay))
+    Object.values(getSafe(() => state.firestore.data?.slotsByDay))
   );
 
   if (view === CustomerRoute.Calendar) return allSlots;
@@ -113,7 +113,7 @@ export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
  * @returns selector for record of bookings (keyed by slot id), curried with the given day
  */
 const makeBookingsInfoSelector = (dayStr: string) => (state: LocalStore) =>
-  getSafe(() => state.firestore.data.bookingsByDay![dayStr.substr(0, 7)]);
+  getSafe(() => state.firestore.data?.bookingsByDay![dayStr.substr(0, 7)]);
 
 /**
  * Get slots for day, mapped with time info, and customers who booked that slot
@@ -185,7 +185,7 @@ export const getSlotsForCustomer = (
   startDate: DateTime
   // eslint-disable-next-line consistent-return
 ) => (state: LocalStore): SlotsByDay => {
-  const allSlotsInStore = state.firestore.data.slotsByDay;
+  const allSlotsInStore = state.firestore.data?.slotsByDay;
 
   // return early if no slots in store
   if (!allSlotsInStore) return {};
