@@ -16,12 +16,9 @@ import {
 } from "@/store/actions/attendanceOperations";
 import _ from "lodash";
 
-interface CustomerAttendanceKeyed {
-  [key: string]: CustomerAttendance;
-}
 interface Props extends SlotInterface {
   customers: Customer[];
-  attendance: CustomerAttendanceKeyed[];
+  attendance: { [key: string]: CustomerAttendance }[];
 }
 
 // mark attendees
