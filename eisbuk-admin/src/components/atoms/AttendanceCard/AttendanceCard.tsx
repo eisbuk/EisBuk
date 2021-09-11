@@ -6,29 +6,29 @@ import i18n from "i18next";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import UserAttendance from "@/components/atoms/UserAttendance/UserAttendance";
-import { SlotInterface } from "@/types/temp";
-import {
-  Customer,
-  BookingsMeta,
-  Category,
-  SlotType,
-} from "eisbuk-shared";
+import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
+import { CustomerAttendance, SlotInterface } from "@/types/temp";
+import { Customer, Category, SlotType } from "eisbuk-shared";
 
 import { ETheme } from "@/themes";
+import {
+  markAbsence,
+  markAttendance,
+} from "@/store/actions/attendanceOperations";
+import _ from "lodash";
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-type UserBooking = BookingsMeta & Pick<Customer, "certificateExpiration">;
 
 interface Props extends SlotInterface {
-  userBookings: UserBooking[];
+  customers: Customer[];
+  attendance: CustomerAttendance;
 }
 
 // mark attendees
 const AttendanceCard: React.FC<Props> = ({
   date,
   categories,
-  userBookings,
+  customers,
   attendance,
   intervals,
   type,
@@ -41,18 +41,20 @@ const AttendanceCard: React.FC<Props> = ({
   // const luxonStart = fb2Luxon(date);
 
   // convert durations to number values
-  const durationNumbers = durations.map((duration) => Number(duration));
-  const longestDuration = Math.max(...durationNumbers);
-
-  // get end time of longest duration (we're still using durations here, so it's pretty straightforward)
-  const luxonEnd = luxonStart.plus({ minutes: longestDuration });
+  const startTimes = _.entries(intervals).map((interval) =>
+    Number(interval[1].startTime)
+  );
+  const startTime = Math.min(...startTimes);
+  const endTimes = _.entries(intervals).map((interval) =>
+    Number(interval[1].endTime)
+  );
+  const endTime = Math.max(...endTimes);
 
   // get time for rendering
-  const startTime = luxonStart.toISOTime().substring(0, 5);
-  const endTime = luxonEnd.toISOTime().substring(0, 5);
+  // const startTime = luxonStart.toISOTime().substring(0, 5);
+  // const endTime = luxonEnd.toISOTime().substring(0, 5);
 
   const timeString = `${startTime} - ${endTime}`;
-
 
   return (
     <div className={classes.wrapper}>
@@ -60,19 +62,31 @@ const AttendanceCard: React.FC<Props> = ({
         <ListItemText
           primary={
             <span>
-              {"13:00 - 14:00"} <b>({userBookings.length})</b>
+              {timeString} <b>({customers.length})</b>
             </span>
           }
           secondary={translateAndJoinTags(categories, type)}
         />
       </ListItem>
-      {userBookings.map((user) => (
+      {customers.map((user) => (
         <UserAttendance
-          key={user.customer_id}
-          slotId={id}
-          attended={attendance?[user.customer_id].attended}
-          userBooking={user}
+          key={user.id}
+          customer={user}
           intervals={intervals}
+          attendance={attendance}
+          markAttendance={() => {
+            markAttendance({
+              attendedInterval: attendance.attended!,
+              slotId: id,
+              customerId: user.id,
+            });
+          }}
+          markAbsence={() => {
+            markAbsence({
+              slotId: id,
+              customerId: user.id,
+            });
+          }}
         />
       ))}
     </div>
