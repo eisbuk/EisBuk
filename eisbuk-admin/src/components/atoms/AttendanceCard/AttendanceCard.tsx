@@ -37,10 +37,8 @@ const AttendanceCard: React.FC<Props> = ({
   const classes = useStyles();
 
   // const { t } = useTranslation();
-  // convert timestamp to luxon for easier processing
-  // const luxonStart = fb2Luxon(date);
 
-  // convert durations to number values
+  // get earliest startTme and latest endTme from intervals
   const startTimes = _.entries(intervals).map((interval) =>
     Number(interval[1].startTime)
   );
