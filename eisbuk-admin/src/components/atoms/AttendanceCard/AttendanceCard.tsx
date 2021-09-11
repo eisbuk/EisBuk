@@ -18,7 +18,9 @@ import _ from "lodash";
 
 interface Props extends SlotInterface {
   customers: Customer[];
-  attendance: { [key: string]: CustomerAttendance }[];
+  attendance: {
+    [key: string]: CustomerAttendance;
+  };
 }
 
 // mark attendees
