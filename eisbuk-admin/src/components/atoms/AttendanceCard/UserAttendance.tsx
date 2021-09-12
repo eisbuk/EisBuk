@@ -93,7 +93,7 @@ const UserAttendance: React.FC<Props> = ({
         <EisbukAvatar {...customer} />
       </ListItemAvatar>
       <ListItemText primary={customer.name} />
-      <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>;
+      <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>
     </ListItem>
   );
 };
