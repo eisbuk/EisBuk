@@ -1,28 +1,33 @@
 import { DateTime } from "luxon";
 
-import { Category, Duration, SlotType } from "eisbuk-shared";
+import { Category, SlotType } from "eisbuk-shared";
 
 import { __storybookDate__ } from "@/lib/constants";
 
 import { luxonToFB } from "@/utils/date";
 
-export const users = [
+export const customers = [
   {
     name: "Saul",
     surname: "Goodman",
     certificateExpiration: "2001-01-01",
-    customer_id: "saul",
+    id: "saul",
+    email: "saul@better.call",
+    phone: "123456777",
+    birthday: "2001-01-01",
+    covidCertificateReleaseDate: "2021-01-01",
+    covidCertificateSuspended: true,
     category: Category.PreCompetitive,
-    bookedInterval: "13:00 - 14:00",
+    secret_key: "123445",
   },
-  {
-    name: "Walter",
-    surname: "White",
-    customer_id: "heisenberg",
-    certificateExpiration: "2001-01-01",
-    category: Category.PreCompetitive,
-    bookedInterval: "13:15 - 14:15",
-  },
+  // {
+  //   name: "Walter",
+  //   surname: "White",
+  //   customer_id: "heisenberg",
+  //   certificateExpiration: "2001-01-01",
+  //   category: Category.PreCompetitive,
+
+  // },
 ];
 
 // here we're using storybook date as default date and making sure that the slots starts at 13:00
@@ -30,23 +35,27 @@ const luxonDate = DateTime.fromISO(__storybookDate__).plus({ hours: 13 });
 
 export const emptySlot = {
   date: luxonToFB(luxonDate),
-  durations: [Duration["1.5h"], Duration["2h"]],
-  intervals: ["13:00 - 14:00", "13:15 - 14:15"],
+  intervals: {
+    "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
+    "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
+  },
   type: SlotType.Ice,
-  userBookings: [],
+  customers: [],
   categories: [Category.Competitive],
-  absentees: [],
+  attendance: {},
   notes: "",
   id: "123",
 };
 export const customersSlot = {
   date: luxonToFB(luxonDate),
-  durations: [Duration["1.5h"], Duration["2h"]],
-  intervals: ["13:00 - 14:00", "13:15 - 14:15"],
+  intervals: {
+    "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
+    "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
+  },
   type: SlotType.Ice,
-  userBookings: users,
+  customers: customers,
   categories: [Category.Competitive],
-  absentees: ["heisenberg"],
+  attendance: { saul: { booked: "13:00-14:00", attended: "13:00-14:00" } },
   notes: "",
   id: "123",
 };
