@@ -8,6 +8,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
 import { CustomerAttendance, SlotInterface } from "@/types/temp";
 import { Customer, Category, SlotType } from "eisbuk-shared";
+import { useDispatch } from "react-redux";
 
 import { ETheme } from "@/themes";
 import {
@@ -15,6 +16,7 @@ import {
   markAttendance,
 } from "@/store/actions/attendanceOperations";
 import _ from "lodash";
+import { DateTime } from "luxon";
 
 interface Props extends SlotInterface {
   customers: Customer[];
@@ -34,18 +36,19 @@ const AttendanceCard: React.FC<Props> = ({
   id,
 }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   // const { t } = useTranslation();
 
   // get earliest startTme and latest endTme from intervals
   const startTimes = _.entries(intervals).map((interval) =>
-    Number(interval[1].startTime)
+    DateTime.fromFormat(interval[1].startTime, "HH:mm")
   );
-  const startTime = Math.min(...startTimes);
+  const startTime = DateTime.min(...startTimes).toFormat("HH:mm");
   const endTimes = _.entries(intervals).map((interval) =>
-    Number(interval[1].endTime)
+    DateTime.fromFormat(interval[1].endTime, "HH:mm")
   );
-  const endTime = Math.max(...endTimes);
+  const endTime = DateTime.max(...endTimes).toFormat("HH:mm");
 
   // get time for rendering
   // const startTime = luxonStart.toISOTime().substring(0, 5);
@@ -71,19 +74,23 @@ const AttendanceCard: React.FC<Props> = ({
           customer={user}
           intervals={intervals}
           attendance={attendance[user.id]}
-          markAttendance={() => {
-            markAttendance({
-              attendedInterval: attendance[user.id].attended!,
-              slotId: id,
-              customerId: user.id,
-            });
-          }}
-          markAbsence={() => {
-            markAbsence({
-              slotId: id,
-              customerId: user.id,
-            });
-          }}
+          markAttendance={() =>
+            dispatch(
+              markAttendance({
+                attendedInterval: attendance[user.id].attended!,
+                slotId: id,
+                customerId: user.id,
+              })
+            )
+          }
+          markAbsence={() =>
+            dispatch(
+              markAbsence({
+                slotId: id,
+                customerId: user.id,
+              })
+            )
+          }
         />
       ))}
     </div>
