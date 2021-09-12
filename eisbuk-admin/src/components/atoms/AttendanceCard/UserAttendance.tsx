@@ -12,7 +12,6 @@ import { ETheme } from "@/themes";
 import { useDispatch } from "react-redux";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import Select from "@material-ui/core/Select";
 import _ from "lodash";
 import { SlotInterface, CustomerAttendance } from "@/types/temp";
 
@@ -20,8 +19,11 @@ interface Props {
   customer: Customer;
   attendance: CustomerAttendance;
   intervals: SlotInterface["intervals"];
-  markAttendance: () => void;
-  markAbsence: () => void;
+  markAttendance: (payload: {
+    customerId: Customer["id"];
+    attendedInterval: string;
+  }) => void;
+  markAbsence: (payload: { customerId: Customer["id"] }) => void;
 }
 
 const UserAttendance: React.FC<Props> = ({
@@ -41,37 +43,37 @@ const UserAttendance: React.FC<Props> = ({
 
   const handleClick = () => {
     const newAttended = attended && null;
+    const customerId = customer.id;
     setLocalAttended(newAttended);
-    dispatch(newAttended ? markAttendance() : markAbsence());
+    dispatch(
+      newAttended
+        ? markAttendance({ attendedInterval: selectedInterval!, customerId })
+        : markAbsence({ customerId })
+    );
   };
-  const handleSelect = (interval: string) => {
-    setSelectedInterval(interval);
+  /** MUI Select in not a real select element so HTMLInputElement doesn't work as a type */
+  const handleSelect = (e: React.ChangeEvent<{ value: unknown }>) => {
+    setSelectedInterval(e.target.value as string);
   };
 
   const absenteeButtons = (
     <FormControl className={classes.formControl}>
       <InputLabel>Intervals</InputLabel>
-      <Select
+      <select
         data-testid="select"
-        value="13:00 - 14:00"
-        onChange={() => handleSelect("13:15 - 14:15")}
-        // materialUI <select> element is an abstraction for a bunch of other elements
-        // inputProps sets the testid of <input> element inside the <select>
-        // so that rtl can fireEvents on it
-        inputProps={{
-          "data-testid": "input",
-          disabled: !localAttended,
-        }}
+        value={booked!}
+        onChange={handleSelect}
+        disabled={!localAttended}
       >
-        {_.entries(intervals).map((interval) => (
+        {_.keys(intervals).map((interval) => (
           <option
             key={`${customer.name}${customer.surname}${interval}`}
-            value={booked!}
+            value={interval}
           >
             {interval}
           </option>
         ))}
-      </Select>
+      </select>
       <Button
         data-testid="attendance-button"
         variant="contained"
@@ -80,7 +82,7 @@ const UserAttendance: React.FC<Props> = ({
         onClick={handleClick}
         disabled={localAttended !== attended}
       >
-        {attended ? "👎" : "👍"}
+        {localAttended ? "👎" : "👍"}
       </Button>
     </FormControl>
   );
