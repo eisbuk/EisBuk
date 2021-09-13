@@ -47,6 +47,7 @@
     "emulators:start": "yarn --cwd functions run build && exec firebase emulators:start --project eisbuk",
     "build": "eslint . && react-app-rewired build",
     "test:emulators": "yarn --cwd functions build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --watch --runInBand src'",
+    "test:temp": "yarn --cwd functions build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --watch --runInBand dataTriggers'",
     "test:emulators:ci": "yarn --cwd functions build && firebase -c firebase-testing.json  emulators:exec --project eisbuk -- 'yarn jest --ci --reporters=default --reporters=jest-junit --collect-coverage --forceExit --runInBand'",
     "test:quicktest": "echo Running tests with no emulators support && yarn jest --watch src",
     "test": "echo 'Running all tests; using emulators.' && yarn test:emulators",
@@ -134,6 +135,7 @@
       "functions/*.{ts,tsx}",
       "!dist/**",
       "!**/node_modules/**"
-    ]
+    ],
+    "testTimeout": 10000
   }
 }

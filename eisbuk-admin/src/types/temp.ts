@@ -14,6 +14,13 @@ import { Category, SlotType } from "eisbuk-shared";
 import { LocalStore } from "./store";
 
 /**
+ * @TEMP while Timestamp issue is resolved
+ */
+type TempTimestamp = {
+  seconds: number;
+};
+
+/**
  * Interval for booking. Includes start/end time of the interval.
  */
 export interface SlotInterval {
@@ -74,6 +81,36 @@ export interface SlotInterface {
 }
 
 /**
+ * Booking entry in user's bookings `bookedSlots` collection
+ */
+export interface CustomerBookingEntry {
+  /**
+   * Date of booked slot (used for easier querying from store)
+   */
+  date: TempTimestamp;
+  /**
+   * Booked interval for particular slot
+   */
+  interval: string;
+}
+
+/**
+ * Bookings document for customer
+ */
+export interface CustomerBookings {
+  /**
+   * Id of customer (user to get rest of customer's data from `customers` entry)
+   */
+  customerId: string;
+  /**
+   * Slots the customer has booked, keyed by slot id and containing `date` and `bookedInterval`
+   */
+  bookedSlots?: {
+    [slotId: string]: CustomerBookingEntry;
+  };
+}
+
+/**
  * Entry for attendance of single user on single slot.
  *
  * `booked` represents interval booked by the customer
@@ -89,16 +126,15 @@ export interface CustomerAttendance {
   attended: string | null;
 }
 
-export interface MonthAttendance {
-  [date: string]: {
-    [slotId: string]: {
-      [customerId: string]: CustomerAttendance | undefined;
-    };
+export type SlotAttendnace = {
+  date: TempTimestamp;
+  attendances: {
+    [customerId: string]: CustomerAttendance;
   };
-}
+};
 
 export interface FirestoreAttendance {
-  [month: string]: MonthAttendance;
+  [slotId: string]: SlotAttendnace;
 }
 
 /**

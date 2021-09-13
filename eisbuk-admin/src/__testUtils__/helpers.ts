@@ -36,14 +36,14 @@ export const waitForCondition: WaitForCondition = async ({
 }) => {
   const docId = documentPath.split("/").slice(-1);
 
-  const document = getDocFromPath(adminDb, documentPath);
+  const document = getDocumentRef(adminDb, documentPath);
 
   return await pRetry(
     // Try to fetch the document with provided id in the provided collection
     // until the condition has been met
     async () => {
       const doc = (await document.get()).data();
-
+      console.log(doc);
       if (condition(doc)) {
         return Promise.resolve(doc);
       }
@@ -76,7 +76,7 @@ export const waitForCondition: WaitForCondition = async ({
  *  .doc("2021-08")
  * ```
  */
-export const getDocFromPath = (
+export const getDocumentRef = (
   accRef: DocumentReference | Firestore,
   pathToDoc: string
 ): DocumentReference => {
@@ -91,7 +91,7 @@ export const getDocFromPath = (
   // we're taking first collection/documentId tuple from string path
   // and passing the rest further
   const [coll, doc] = collectionsToDoc.splice(0, 2);
-  return getDocFromPath(
+  return getDocumentRef(
     accRef.collection(coll).doc(doc) as DocumentReference,
     collectionsToDoc.join("/")
   );

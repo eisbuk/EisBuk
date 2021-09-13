@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
+import { ORGANIZATION } from "@/config/envInfo";
 
 /**
  * @param email
@@ -43,7 +44,7 @@ export const loginDefaultUser = (): Promise<void> => {
 export const deleteAll = async (
   collections: string[]
 ): Promise<FirebaseFirestore.WriteResult[]> => {
-  const org = adminDb.collection("organizations").doc("default");
+  const org = adminDb.collection("organizations").doc(ORGANIZATION);
 
   return deleteAllCollections(org, collections);
 };
