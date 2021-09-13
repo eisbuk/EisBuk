@@ -1,24 +1,11 @@
-import { DateTime } from "luxon";
-
-import { __storybookDate__ } from "@/lib/constants";
-
-import { luxonToFB } from "@/utils/date";
 import {
   CustomerAttendance,
   CustomerBookingEntry,
   SlotAttendnace,
 } from "@/types/temp";
 
-/**
- * ISO date we're using across all tests
- */
-export const testDate = __storybookDate__;
-/**
- * Test date in milliseconds (placeholder until @TODO we've solve the issue with Timestamp)
- */
-const timestampDate = {
-  seconds: luxonToFB(DateTime.fromISO(__storybookDate__)).seconds,
-};
+import { timestampDate } from "@/__testData__/date";
+
 /**
  * Customer id we're using across tests
  */

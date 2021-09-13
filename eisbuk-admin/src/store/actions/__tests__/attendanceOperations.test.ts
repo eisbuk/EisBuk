@@ -1,18 +1,21 @@
+import { Collection, OrgSubCollection } from "eisbuk-shared";
+
+import { ORGANIZATION } from "@/config/envInfo";
+
 import { markAbsence, markAttendance } from "../attendanceOperations";
 
 import {
   createDocumentWithObservedAttendance,
-  monthString,
   observedSlotId,
 } from "../__testData__/attendanceOperations";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { getFirebase } from "@/__testUtils__/firestore";
 import { setupTestAttendance } from "../__testUtils__/firestore";
-import { ORGANIZATION } from "@/config/envInfo";
 
 // test data
 const customerId = "customer-0";
+const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
@@ -20,10 +23,10 @@ const attendedInterval = "11:00-12:30";
 // as we'll be using it throughout
 const attendanceMonth = getFirebase()
   .firestore()
-  .collection("organizations")
+  .collection(Collection.Organizations)
   .doc(ORGANIZATION)
-  .collection("attendance")
-  .doc(monthString);
+  .collection(OrgSubCollection.Attendance)
+  .doc(slotId);
 
 describe("Attendance operations ->", () => {
   describe("markAttendance ->", () => {
@@ -35,7 +38,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [monthString]: initialDoc,
+          [slotId]: initialDoc,
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -62,7 +65,7 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [monthString]: initialDoc,
+          [slotId]: initialDoc,
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -93,7 +96,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [monthString]: initialDoc,
+          [slotId]: initialDoc,
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({
@@ -120,7 +123,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [monthString]: initialDoc,
+          [slotId]: initialDoc,
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({

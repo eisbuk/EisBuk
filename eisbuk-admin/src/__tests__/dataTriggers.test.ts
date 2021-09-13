@@ -6,7 +6,6 @@ import { adminDb } from "@/tests/settings";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import {
-  dummyAttendance,
   customerId,
   slotId,
   testBooking,
@@ -71,40 +70,5 @@ describe("Cloud functions -> Data triggers ->,", () => {
         expect(docRes2).toEqual(baseAttendance);
       }
     );
-
-    // testWithEmulator(
-    //   "should delete attendance entry if booking deleted but not the existing data in slot",
-    //   async () => {
-    //     const bookedInterval = "10:00-11:00";
-    //     // set up booking entry for customers booking info
-    //     await userBookingRef.set({ customer_id: customerId });
-    //     // set up dummy data in the same slot, not to be overwritten
-    //     const bookingEntry = {
-    //       date: timestampDate,
-    //       interval: bookedInterval,
-    //     };
-    //     await slotAttendanceRef.set({
-    //       ...dummyAttendance,
-    //       date: timestampDate,
-    //       [customerId]: {
-    //         booked: bookingEntry.interval,
-    //         attended: null,
-    //       },
-    //     });
-    //     // add new booking
-    //     await userBookingRef.collection("bookedSlots").doc(slotId).delete();
-
-    //     const expectedAttendanceEntry = {
-    //       ...dummyAttendance,
-    //       date: timestampDate,
-    //     };
-
-    //     const docRes = await waitForCondition({
-    //       documentPath: `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Attendance}/${slotId}`,
-    //       condition: (data) => Boolean(data && !data[customerId]),
-    //     });
-    //     expect(docRes).toEqual(expectedAttendanceEntry);
-    //   }
-    // );
   });
 });

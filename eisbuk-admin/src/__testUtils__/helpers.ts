@@ -43,7 +43,6 @@ export const waitForCondition: WaitForCondition = async ({
     // until the condition has been met
     async () => {
       const doc = (await document.get()).data();
-      console.log(doc);
       if (condition(doc)) {
         return Promise.resolve(doc);
       }
