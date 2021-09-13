@@ -29,8 +29,8 @@ export const setupTestAttendance = async (
     .collection("organizations")
     .doc(ORGANIZATION)
     .collection("attendance");
-  const updates = Object.keys(attendance!).map((monthString) =>
-    attendanceColl.doc(monthString).set(attendance![monthString])
+  const updates = Object.keys(attendance!).map((slotId) =>
+    attendanceColl.doc(slotId).set(attendance![slotId])
   );
 
   await Promise.all(updates);

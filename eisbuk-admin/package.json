@@ -134,6 +134,7 @@
       "functions/*.{ts,tsx}",
       "!dist/**",
       "!**/node_modules/**"
-    ]
+    ],
+    "testTimeout": 10000
   }
 }
