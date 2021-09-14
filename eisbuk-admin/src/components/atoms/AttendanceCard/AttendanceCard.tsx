@@ -25,10 +25,21 @@ import { ETheme } from "@/themes";
 import { categoryLabel, slotTypeLabel } from "@/lib/labels";
 
 export interface Props extends SlotInterface {
+  /**
+   * Record of customers who have booked (or are manually as attended),
+   * keyed by `customerId` and having all of the data for the customer plus
+   * values for `bookedInterval` and `attendedInterval`.
+   */
   customers: CustomerWithAttendance[];
 }
 
-// mark attendees
+/**
+ * Attendance card for particular slot, used in order for admin
+ * to be able to mark customer as being present and for which duration
+ * for a particular slot. By default it shows all the customers who have
+ * booked the slot and allows for manually adding customers who have not booked,
+ * but have attended the slot for certain interval
+ */
 const AttendanceCard: React.FC<Props> = ({
   categories,
   customers,
@@ -42,7 +53,7 @@ const AttendanceCard: React.FC<Props> = ({
   const timeString = getTimeString(intervals);
 
   return (
-    <div className={classes.wrapper}>
+    <div className={classes.container}>
       <ListItem className={classes.listHeader}>
         <ListItemText
           primary={
@@ -122,10 +133,12 @@ const useStyles = makeStyles((theme: ETheme) => ({
   listHeader: {
     backgroundColor: theme.palette.primary.light,
   },
-  wrapper: {
-    marginBottom: theme.spacing(1.5),
+  container: {
+    marginBottom: theme.spacing(2),
     borderWidth: 1,
     borderStyle: "solid",
+    borderRadius: "0.5rem",
+    overflow: "hidden",
     borderColor: theme.palette.primary.main,
   },
 }));

@@ -1,6 +1,6 @@
 import React from "react";
 import i18n from "i18next";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Customer, Slot } from "eisbuk-shared";
@@ -19,6 +19,7 @@ import {
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -154,7 +155,7 @@ describe("AttendanceCard", () => {
       );
     });
 
-    test("should disable attendance button while there's a discrepency between local attended and attended from firestore (booledn)", () => {
+    test("should disable attendance button while there's a discrepency between local attended and attended from firestore (boolean)", () => {
       render(
         <AttendanceCard
           {...baseProps}
@@ -163,6 +164,21 @@ describe("AttendanceCard", () => {
       );
       screen.getByText(thumbsUp).click();
       // we've created a discrepency by updating local state, while attendance from props stayed the same
+      expect(screen.getByTestId(__attendanceButton__)).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+
+    test("should disable attendance button while picking new interval - 'attendedInterval != selectedInterval' (this doesn't apply when 'attendedInterval = null'", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval }]}
+        />
+      );
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      // we've created a discrepency by updating local state, while attendedInterval from props stayed the same
       expect(screen.getByTestId(__attendanceButton__)).toHaveProperty(
         "disabled",
         true
@@ -210,14 +226,55 @@ describe("AttendanceCard", () => {
       expect(nextButton).toHaveProperty("disabled", true);
     });
 
-    test("should dispatch 'markAttendance' on change of interval", () => {
+    test("should dispatch 'markAttendance' on change of interval", async () => {
       screen.getByTestId(__nextIntervalButtonId__).click();
       const mockDispatchAction = mockMarkAttImplementation({
         slotId,
         customerId,
         attendedInterval: intervalKeys[2],
       });
-      expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
+      await waitFor(() =>
+        expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction)
+      );
     });
   });
+
+  describe("Test debounce", () => {
+    testWithMutationObserver(
+      "should only dispatch interval update once if changes are to close to each other",
+      async () => {
+        render(
+          <AttendanceCard
+            {...baseProps}
+            customers={[
+              { ...saul, bookedInterval, attendedInterval: bookedInterval },
+            ]}
+          />
+        );
+        // we're testing with first interval as initial
+        const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+        // selectedInterval -> interval[1]
+        nextButton.click();
+        expect(mockDispatch).toHaveBeenCalledTimes(0);
+        await hold(200);
+        expect(mockDispatch).toHaveBeenCalledTimes(0);
+        // selectedInterval -> interval[2]
+        nextButton.click();
+        await hold(1000);
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+        // final interval = interval[2]
+        const mockDispatchAction = mockMarkAttImplementation({
+          slotId,
+          customerId,
+          attendedInterval: intervalKeys[2],
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
+      }
+    );
+  });
 });
+
+const hold = (timeout: number) =>
+  new Promise<void>((res) => {
+    setTimeout(() => res(), timeout);
+  });

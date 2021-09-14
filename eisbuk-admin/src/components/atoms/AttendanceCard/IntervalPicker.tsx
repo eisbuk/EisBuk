@@ -1,7 +1,13 @@
 import React from "react";
 
 import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/Button";
+import TextField from "@material-ui/core/TextField";
+
+import Left from "@material-ui/icons/ChevronLeft";
+import Right from "@material-ui/icons/ChevronRight";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import {
   __nextIntervalButtonId__,
@@ -21,6 +27,8 @@ const IntervalPicker: React.FC<Props> = ({
   disabled,
   onChange,
 }) => {
+  const classes = useStyles();
+
   // get place of current interval in intervals array
   // used to disable prev/next buttons for first/last interval respectively
   const intervalIndex = intervals.findIndex((interval) => interval === value);
@@ -37,20 +45,33 @@ const IntervalPicker: React.FC<Props> = ({
   };
 
   return (
-    <ButtonGroup disabled={disabled}>
-      <Button
+    <ButtonGroup className={classes.container} disabled={disabled}>
+      <IconButton
         onClick={handleClick(-1)}
         disabled={intervalIndex === 0}
         data-testid={__prevIntervalButtonId__}
-      />
-      <span>{value}</span>
-      <Button
+      >
+        <Left />
+      </IconButton>
+      <TextField disabled={true} size="small" {...{ value }} />
+      <IconButton
         onClick={handleClick(1)}
         disabled={intervalIndex === numIntervals - 1}
         data-testid={__nextIntervalButtonId__}
-      />
+      >
+        <Right />
+      </IconButton>
     </ButtonGroup>
   );
 };
+
+const useStyles = makeStyles(() => ({
+  container: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "stretch",
+    width: "12.5rem",
+  },
+}));
 
 export default IntervalPicker;

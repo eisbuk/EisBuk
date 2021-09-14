@@ -14,17 +14,34 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { CustomerWithAttendance, SlotInterface } from "@/types/temp";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
+import IntervalPicker from "./IntervalPicker";
+
+import useDebounce from "@/hooks/useDebounce";
 
 import { ETheme } from "@/themes";
 import { __attendanceButton__ } from "./__testData__/testIds";
-import IntervalPicker from "./IntervalPicker";
 
 interface Props extends CustomerWithAttendance {
+  /**
+   * List of intervals to choose from
+   */
   intervals: SlotInterface["intervals"];
+  /**
+   * Function used to mark customer as having attended appropriate interval
+   */
   markAttendance: (payload: { attendedInterval: string }) => void;
+  /**
+   * Function used to mark customer as absent
+   */
   markAbsence: () => void;
 }
 
+/**
+ * User attendance card component. Used to display and update customer attendance.
+ * Should recieve all data through props, while marking attendance dispatches
+ * updates to the firestore (through Redux) and provides some UX boundaries such as debounced updates (to prevent excess calls to the server)
+ * and disabling buttons while the states are syncing.
+ */
 const UserAttendance: React.FC<Props> = ({
   bookedInterval,
   attendedInterval,
@@ -34,8 +51,18 @@ const UserAttendance: React.FC<Props> = ({
   ...customer
 }) => {
   const classes = useStyles();
+  const listItemClass = [
+    classes.listItem,
+    attendedInterval ? "" : classes.absent,
+  ].join(" ");
+
   const dispatch = useDispatch();
 
+  /**
+   * Local (boolean) state for attended/absent.
+   * We're using this to change attendance button's icon immediately
+   * and disable the button until attendance state is synced with the db.
+   */
   const [localAttended, setLocalAttended] = useState<boolean>(
     Boolean(attendedInterval)
   );
@@ -48,8 +75,19 @@ const UserAttendance: React.FC<Props> = ({
     attendedInterval || bookedInterval!
   );
 
-  const listItemClass = attendedInterval ? "" : classes.absent;
+  /**
+   * Debounced version of `markAttendance`. Used to prevent excess server requests
+   * when switching through the intervals
+   * (only fire `markAttendance` when user stops clicking through the interval picker).
+   */
+  const debMarkAttendance = useDebounce(markAttendance, 800);
 
+  /**
+   * Attendance button click handler:
+   * - updates `localAttended` immediately (for more responsive UI)
+   * - dispatches `markAttendance`/`markAbsence` to firestore (according to current state)
+   * - if dispatching `markAttendance`, uses last remembered interval (or booked interval) as `attendedInterval` value
+   */
   const handleClick = () => {
     const newAttended = !attendedInterval;
     setLocalAttended(newAttended);
@@ -59,14 +97,29 @@ const UserAttendance: React.FC<Props> = ({
         : markAbsence()
     );
   };
+
+  /**
+   * Interval picker change handler:
+   * - updates `selectedInterval` locally (for more responsive UI)
+   * - updates `attendedInterval` (in firesore), through debounced `markAttendance` function.s
+   * @param value
+   */
   const handleIntervalChange = (value: string) => {
     setSelectedInterval(value);
-    markAttendance({ attendedInterval: value });
+    debMarkAttendance({ attendedInterval: value });
   };
 
-  const absenteeButtons = (
+  /**
+   * We're disabling attendance button while `localAttended` (boolean) syncs with state in firestore (`attendedInterval !== null`)
+   * and when switchig through intervals -> `selectedInterval` and `attendedInterval` (from firestore) are not the same
+   * the second doesn't apply if `attendedInterval = null` (as that would cause problems and isn't exactly expected behavior).
+   */
+  const disableButton =
+    localAttended !== Boolean(attendedInterval) ||
+    Boolean(attendedInterval && attendedInterval !== selectedInterval);
+
+  const attendnaceControl = (
     <FormControl className={classes.formControl}>
-      <InputLabel>Intervals</InputLabel>
       <IntervalPicker
         disabled={!localAttended}
         intervals={orderedIntervals}
@@ -79,7 +132,7 @@ const UserAttendance: React.FC<Props> = ({
         size="small"
         color={localAttended ? "primary" : "secondary"}
         onClick={handleClick}
-        disabled={localAttended !== Boolean(attendedInterval)}
+        disabled={disableButton}
       >
         {localAttended ? "👍" : "👎"}
       </Button>
@@ -92,7 +145,7 @@ const UserAttendance: React.FC<Props> = ({
         <EisbukAvatar {...customer} />
       </ListItemAvatar>
       <ListItemText primary={customer.name} />
-      <ListItemSecondaryAction>{absenteeButtons}</ListItemSecondaryAction>
+      <ListItemSecondaryAction>{attendnaceControl}</ListItemSecondaryAction>
     </ListItem>
   );
 };
@@ -106,8 +159,10 @@ const useStyles = makeStyles((theme: ETheme) => ({
     display: "block",
     marginTop: theme.spacing(2),
   },
+  listItem: {
+    padding: theme.spacing(1),
+  },
   formControl: {
-    margin: theme.spacing(1),
     minWidth: 120,
     display: "flex",
     flexDirection: "row",
