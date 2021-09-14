@@ -9,7 +9,7 @@ import { Timestamp, Firestore } from "@google-cloud/firestore";
 import { Dispatch } from "redux";
 import { ExtendedFirebaseInstance } from "react-redux-firebase";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, Customer, SlotType } from "eisbuk-shared";
 
 import { LocalStore } from "./store";
 
@@ -166,4 +166,9 @@ export interface NewFirestoreThunk {
     getState: () => TempStore,
     firebaseParams: { getFirebase: () => ExtendedFirebaseInstance }
   ): Promise<void>;
+}
+
+export interface CustomerWithAttendance extends Customer {
+  bookedInterval: string | null;
+  attendedInterval: string | null;
 }

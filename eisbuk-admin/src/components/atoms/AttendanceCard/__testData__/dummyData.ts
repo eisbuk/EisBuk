@@ -1,48 +1,74 @@
+import firebase from "firebase";
 import { DateTime } from "luxon";
 
-import { Category, Duration, SlotType } from "eisbuk-shared";
+import { Category, Customer, SlotType } from "eisbuk-shared";
 
-import { __storybookDate__ } from "@/lib/constants";
+import { CustomerWithAttendance } from "@/types/temp";
 
-import { luxonToFB } from "@/utils/date";
+import { Props as AttendanceCardProps } from "../AttendanceCard";
 
-export const users = [
-  {
-    name: "Saul",
-    surname: "Goodman",
-    certificateExpiration: "2001-01-01",
-    customer_id: "saul",
-    category: Category.PreCompetitive,
-  },
-  {
-    name: "Walter",
-    surname: "White",
-    customer_id: "heisenberg",
-    certificateExpiration: "2001-01-01",
-    category: Category.PreCompetitive,
-  },
-];
+import { timestampDate } from "@/__testData__/date";
 
-// here we're using storybook date as default date and making sure that the slots starts at 13:00
-const luxonDate = DateTime.fromISO(__storybookDate__).plus({ hours: 13 });
+import { luxon2ISODate } from "@/utils/date";
 
-export const emptySlot = {
-  date: luxonToFB(luxonDate),
-  durations: [Duration["1.5h"], Duration["2h"]],
-  type: SlotType.Ice,
-  userBookings: [],
-  categories: [Category.Competitive],
-  absentees: [],
-  notes: "",
-  id: "123",
+type Timestamp = firebase.firestore.Timestamp;
+
+export const saul: Customer = {
+  name: "Saul",
+  surname: "Goodman",
+  certificateExpiration: "2001-01-01",
+  id: "saul",
+  email: "saul@better.call",
+  phone: "123456777",
+  birthday: "2001-01-01",
+  covidCertificateReleaseDate: "2021-01-01",
+  covidCertificateSuspended: true,
+  category: Category.PreCompetitive,
+  secret_key: "123445",
 };
-export const customersSlot = {
-  date: luxonToFB(luxonDate),
-  durations: [Duration["1.5h"], Duration["2h"]],
-  type: SlotType.Ice,
-  userBookings: users,
-  categories: [Category.Competitive],
-  absentees: ["heisenberg"],
-  notes: "",
+
+export const walt: Customer = {
+  id: "heisenberg",
+  name: "Walter",
+  surname: "White",
+  certificateExpiration: "2001-01-01",
+  category: Category.Competitive,
+  email: "walt@im_the_one_who.knocks",
+  phone: "123456777",
+  birthday: "2001-01-01",
+  covidCertificateReleaseDate: "2021-01-01",
+  covidCertificateSuspended: false,
+  secret_key: "000001",
+};
+
+export const gus: Customer = {
+  id: "gus",
+  name: "Gustavo",
+  surname: "Fring",
+  certificateExpiration: "2001-01-01",
+  category: Category.Course,
+  email: "gus@lospollos.me",
+  phone: "123456777",
+  birthday: "2001-01-01",
+  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
+  covidCertificateSuspended: false,
+  secret_key: "000002",
+};
+
+export const intervals = {
+  "13:00-13:30": { startTime: "13:00", endTime: "13:30" },
+  "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
+  "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
+};
+
+export const intervalStrings = Object.keys(intervals);
+
+export const baseProps: AttendanceCardProps = {
   id: "123",
+  date: timestampDate as Timestamp,
+  type: SlotType.Ice,
+  intervals,
+  categories: [Category.Competitive],
+  notes: "",
+  customers: [] as CustomerWithAttendance[],
 };

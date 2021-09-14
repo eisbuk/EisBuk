@@ -9,8 +9,12 @@ import { luxonToFB } from "@/utils/date";
  */
 export const testDate = __storybookDate__;
 /**
+ * DateTime representation of our test data
+ */
+export const testDateLuxon = DateTime.fromISO(__storybookDate__);
+/**
  * Test date in milliseconds (placeholder until @TODO we've solve the issue with Timestamp)
  */
 export const timestampDate = {
-  seconds: luxonToFB(DateTime.fromISO(__storybookDate__)).seconds,
+  seconds: luxonToFB(testDateLuxon).seconds,
 };

@@ -175,7 +175,7 @@ const BookingsByDay: React.FC<Props> = ({ bookingDayInfo, markAbsentee }) => {
                     className={listItemClass}
                   >
                     <ListItemAvatar>
-                      <EisbukAvatar {...userBooking} />
+                      <EisbukAvatar {...(userBooking as any)} />
                     </ListItemAvatar>
                     <ListItemText primary={userName} />
                     <ListItemSecondaryAction>
