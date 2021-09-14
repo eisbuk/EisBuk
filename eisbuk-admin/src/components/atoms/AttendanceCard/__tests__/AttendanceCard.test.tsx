@@ -196,9 +196,10 @@ describe("AttendanceCard", () => {
       );
     });
 
-    test("should show only selected interval", () => {
-      screen.getByText(attendedInterval);
-      expect(screen.queryByText(bookedInterval)).toBeNull();
+    test("should show selected interval in interval field", () => {
+      // for UI purposes, we're displaying interval within (controlled) disabled text field
+      const intervalField = screen.getByRole("textbox");
+      expect(intervalField).toHaveProperty("value", attendedInterval);
     });
 
     test("should disable prev button if first interval selected and next if las selected", () => {
@@ -226,17 +227,20 @@ describe("AttendanceCard", () => {
       expect(nextButton).toHaveProperty("disabled", true);
     });
 
-    test("should dispatch 'markAttendance' on change of interval", async () => {
-      screen.getByTestId(__nextIntervalButtonId__).click();
-      const mockDispatchAction = mockMarkAttImplementation({
-        slotId,
-        customerId,
-        attendedInterval: intervalKeys[2],
-      });
-      await waitFor(() =>
-        expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction)
-      );
-    });
+    testWithMutationObserver(
+      "should dispatch 'markAttendance' on change of interval",
+      async () => {
+        screen.getByTestId(__nextIntervalButtonId__).click();
+        const mockDispatchAction = mockMarkAttImplementation({
+          slotId,
+          customerId,
+          attendedInterval: intervalKeys[2],
+        });
+        await waitFor(() =>
+          expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction)
+        );
+      }
+    );
   });
 
   describe("Test debounce", () => {

@@ -6,8 +6,6 @@ import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
 import Button from "@material-ui/core/Button";
-import FormControl from "@material-ui/core/FormControl";
-import InputLabel from "@material-ui/core/InputLabel";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -19,6 +17,7 @@ import IntervalPicker from "./IntervalPicker";
 import useDebounce from "@/hooks/useDebounce";
 
 import { ETheme } from "@/themes";
+
 import { __attendanceButton__ } from "./__testData__/testIds";
 
 interface Props extends CustomerWithAttendance {
@@ -119,7 +118,7 @@ const UserAttendance: React.FC<Props> = ({
     Boolean(attendedInterval && attendedInterval !== selectedInterval);
 
   const attendnaceControl = (
-    <FormControl className={classes.formControl}>
+    <div className={classes.actionsContainer}>
       <IntervalPicker
         disabled={!localAttended}
         intervals={orderedIntervals}
@@ -136,7 +135,7 @@ const UserAttendance: React.FC<Props> = ({
       >
         {localAttended ? "👍" : "👎"}
       </Button>
-    </FormControl>
+    </div>
   );
 
   return (
@@ -162,7 +161,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
   listItem: {
     padding: theme.spacing(1),
   },
-  formControl: {
+  actionsContainer: {
     minWidth: 120,
     display: "flex",
     flexDirection: "row",
