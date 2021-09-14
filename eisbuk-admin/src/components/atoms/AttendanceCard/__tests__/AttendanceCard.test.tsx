@@ -1,106 +1,223 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import i18n from "i18next";
+import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import AttendanceCard from "../AttendanceCard";
-import * as attendanceOperations from "@/store/actions/attendanceOperations";
-import { Category, Customer, Slot, SlotType } from "eisbuk-shared";
-import { customersSlot } from "../__testData__/dummyData";
+import { Customer, Slot } from "eisbuk-shared";
 
-import i18n from "i18next";
+import { CustomerWithAttendance } from "@/types/temp";
+
+import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+
+import AttendanceCard from "../AttendanceCard";
+
+import * as attendanceOperations from "@/store/actions/attendanceOperations";
+
+import { saul, baseProps, intervals } from "../__testData__/dummyData";
+import {
+  __attendanceButton__,
+  __nextIntervalButtonId__,
+  __prevIntervalButtonId__,
+} from "../__testData__/testIds";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
-const mockMarkAttendanceImplementation = (payload: {
+
+/**
+ * Mock implementation we're using for `markAttendnace` function to both
+ * mock behavior in calls within the component as well as easier test calling the function with proper values
+ *
+ * Note: this function behaves differently in production
+ * @param payload
+ * @returns
+ */
+const mockMarkAttImplementation = (payload: {
   slotId: Slot<"id">["id"];
   customerId: Customer["id"];
   attendedInterval: string;
 }) => ({
   payload,
 });
-const mockMarkAbsenceImplementation = (payload: {
+/**
+ * Mock implementation we're using for `markAbsence` function to both
+ * mock behavior in calls within the component as well as easier test calling the function with proper values
+ *
+ * Note: this function behaves differently in production
+ * @param payload
+ * @returns payload
+ */
+const mockMarkAbsImplementation = (payload: {
   slotId: Slot<"id">["id"];
   customerId: Customer["id"];
 }) => ({
   payload,
 });
 
+// mock implementations of attendance operations for easier testing
 jest
   .spyOn(attendanceOperations, "markAttendance")
-  .mockImplementation(mockMarkAttendanceImplementation as any);
+  .mockImplementation(mockMarkAttImplementation as any);
 
 jest
   .spyOn(attendanceOperations, "markAbsence")
-  .mockImplementation(mockMarkAbsenceImplementation as any);
+  .mockImplementation(mockMarkAbsImplementation as any);
 
-const spyT = jest.spyOn(i18n, "t");
-beforeEach(() => spyT.mockClear());
+/**
+ * We're mocking the implementation of translate function to return the same value passed in.
+ * We're not testing the i18n right now
+ * @TODO remove when we initialize i18n with tests
+ */
+jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
+
+// aliases for thumbs button for easier access
+const thumbsUp = "👍";
+const thumbsDown = "👎";
+
+const customerId = saul.id;
+const slotId = baseProps.id;
+
+// interval values we're using across tests
+const intervalKeys = Object.keys(intervals);
+const bookedInterval = intervalKeys[0];
+// we're using different interval then booked for more versatile tests
+const attendedInterval = intervalKeys[1];
+
 describe("AttendanceCard", () => {
+  afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
+  });
+
   describe("Smoke test", () => {
-    beforeEach(() => {
-      render(<AttendanceCard {...customersSlot} />);
-    });
-    test("should render props", () => {
+    test("should render proper values passed from props", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[saul as CustomerWithAttendance]}
+        />
+      );
       screen.getByText("13:00 - 14:15");
-      screen.getByText("Saul");
-      /** @TODO move back to getByText when i18next is implemented */
-      // screen.getByText(Category.Competitive);
-      expect(spyT).toHaveBeenCalledWith(`Categories.${Category.Competitive}`);
-      expect(spyT).toHaveBeenCalledWith(`SlotTypes.${SlotType.Ice}`);
+      screen.getByText(saul.name);
+      // create regex for type and category as they're part of the same string in the UI
+      const categoryRegex = new RegExp(categoryLabel[baseProps.categories[0]]);
+      const typeRegex = new RegExp(slotTypeLabel[baseProps.type]);
+      screen.getByText(categoryRegex);
+      screen.getByText(typeRegex);
     });
   });
+
   describe("Test marking attendance functionality", () => {
-    beforeEach(() => {
-      render(<AttendanceCard {...customersSlot} />);
+    test("should update local state immediately on button click", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
+        />
+      );
+      screen.getByText(thumbsDown).click();
+      expect(screen.queryByText(thumbsDown)).toBeNull();
+      screen.getByText(thumbsUp);
     });
-    // test("should dispatch markAttendance with correct args", () => {
-    //   screen.getByText("👎").click();
-    //   expect(mockDispatch).toHaveBeenCalledWith(
-    //     mockMarkAttImplementation({
-    //       slotId: "123",
-    //       customerId: "saul",
-    //       attended: false,
-    //     })
-    //   );
-    // });
-    test("should disable attendance button while state and fb are synching", () => {
-      screen.getByText("👎").click();
-      expect(screen.getByTestId("attendance-button")).toHaveProperty(
+
+    test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
+        />
+      );
+      screen.getByText(thumbsDown).click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockMarkAttImplementation({
+          slotId,
+          customerId,
+          attendedInterval: bookedInterval,
+        })
+      );
+    });
+
+    test("should dispatch 'markAbsence' on attendance button click if `attended != null`", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval }]}
+        />
+      );
+      screen.getByText(thumbsUp).click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockMarkAbsImplementation({
+          slotId,
+          customerId,
+        })
+      );
+    });
+
+    test("should disable attendance button while there's a discrepency between local attended and attended from firestore (booledn)", () => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval }]}
+        />
+      );
+      screen.getByText(thumbsUp).click();
+      // we've created a discrepency by updating local state, while attendance from props stayed the same
+      expect(screen.getByTestId(__attendanceButton__)).toHaveProperty(
         "disabled",
         true
       );
     });
-    /** @TODO find a good test for options */
-    test("should render intervals in dropdown when athlete is present", () => {
-      screen.getByText("👎").click();
-      screen.getByTestId("select");
+  });
 
-      screen.getByText("13:00-14:00");
-      screen.getByText("13:15-14:15");
-    });
-    test("should render bookedInterval value as display value", () => {
-      screen.getByText("👎").click();
-      screen.getByTestId("select");
-      const firstOption = screen.getByTestId("select").firstChild;
-      expect(firstOption).toHaveTextContent("13:00-14:00");
-    });
-
-    test("should disable dropdown when athlete is marked absent", () => {
-      screen.getByText("👎").click();
-
-      screen.getByText("👍").click();
-      expect(screen.getByTestId("select")).toHaveProperty("disabled", true);
-    });
-    test("should dispatch MarkAbsence with correct args", () => {
-      screen.getByText("👎").click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockMarkAbsenceImplementation({
-          slotId: "123",
-          customerId: "saul",
-        })
+  describe("Test interval picker ->", () => {
+    beforeEach(() => {
+      render(
+        <AttendanceCard
+          {...baseProps}
+          customers={[{ ...saul, bookedInterval, attendedInterval }]}
+        />
       );
+    });
+
+    test("should show only selected interval", () => {
+      screen.getByText(attendedInterval);
+      expect(screen.queryByText(bookedInterval)).toBeNull();
+    });
+
+    test("should disable prev button if first interval selected and next if las selected", () => {
+      const prevButton = screen.getByTestId(__prevIntervalButtonId__);
+      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      // buttons shouldn't be disabled as we're starting with middle interval
+      expect(prevButton).not.toHaveProperty("disabled", true);
+      // switch to first interval
+      prevButton.click();
+      expect(prevButton).toHaveProperty("disabled", true);
+      expect(nextButton).not.toHaveProperty("disabled", true);
+      // switch to last interval (there are 3 in total)
+      nextButton.click();
+      nextButton.click();
+      expect(prevButton).not.toHaveProperty("disabled", true);
+      expect(nextButton).toHaveProperty("disabled", true);
+    });
+
+    test("should disable the interval picker if 'localAttended = false'", () => {
+      // set local attendance to false
+      screen.getByText(thumbsUp).click();
+      const prevButton = screen.getByTestId(__prevIntervalButtonId__);
+      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      expect(prevButton).toHaveProperty("disabled", true);
+      expect(nextButton).toHaveProperty("disabled", true);
+    });
+
+    test("should dispatch 'markAttendance' on change of interval", () => {
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      const mockDispatchAction = mockMarkAttImplementation({
+        slotId,
+        customerId,
+        attendedInterval: intervalKeys[2],
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
     });
   });
 });

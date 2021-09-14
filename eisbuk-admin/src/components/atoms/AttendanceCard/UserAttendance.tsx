@@ -1,88 +1,87 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
 import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
 import ListItemText from "@material-ui/core/ListItemText";
-import EisbukAvatar from "@/components/users/EisbukAvatar";
-import { Customer } from "eisbuk-shared";
 import Button from "@material-ui/core/Button";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import { ETheme } from "@/themes";
-
-import { useDispatch } from "react-redux";
 import FormControl from "@material-ui/core/FormControl";
 import InputLabel from "@material-ui/core/InputLabel";
-import _ from "lodash";
-import { SlotInterface, CustomerAttendance } from "@/types/temp";
 
-interface Props {
-  customer: Customer;
-  attendance: CustomerAttendance;
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { CustomerWithAttendance, SlotInterface } from "@/types/temp";
+
+import EisbukAvatar from "@/components/users/EisbukAvatar";
+
+import { ETheme } from "@/themes";
+import { __attendanceButton__ } from "./__testData__/testIds";
+import IntervalPicker from "./IntervalPicker";
+
+interface Props extends CustomerWithAttendance {
   intervals: SlotInterface["intervals"];
-  markAttendance: (payload: {
-    customerId: Customer["id"];
-    attendedInterval: string;
-  }) => void;
-  markAbsence: (payload: { customerId: Customer["id"] }) => void;
+  markAttendance: (payload: { attendedInterval: string }) => void;
+  markAbsence: () => void;
 }
 
 const UserAttendance: React.FC<Props> = ({
-  customer,
-  attendance,
+  bookedInterval,
+  attendedInterval,
   intervals,
   markAttendance,
   markAbsence,
+  ...customer
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const { attended, booked } = attendance;
-  const [localAttended, setLocalAttended] = useState(attended);
-  const [selectedInterval, setSelectedInterval] = useState(booked);
-  const listItemClass = attended ? "" : classes.absent;
+  const [localAttended, setLocalAttended] = useState<boolean>(
+    Boolean(attendedInterval)
+  );
+
+  // intervals we're using to control interval picker
+  const orderedIntervals = Object.keys(intervals).sort((a, b) =>
+    a < b ? -1 : 1
+  );
+  const [selectedInterval, setSelectedInterval] = useState<string>(
+    attendedInterval || bookedInterval!
+  );
+
+  const listItemClass = attendedInterval ? "" : classes.absent;
 
   const handleClick = () => {
-    const newAttended = attended && null;
-    const customerId = customer.id;
+    const newAttended = !attendedInterval;
     setLocalAttended(newAttended);
     dispatch(
       newAttended
-        ? markAttendance({ attendedInterval: selectedInterval!, customerId })
-        : markAbsence({ customerId })
+        ? markAttendance({ attendedInterval: selectedInterval })
+        : markAbsence()
     );
   };
-  /** MUI Select in not a real select element so HTMLInputElement doesn't work as a type */
-  const handleSelect = (e: React.ChangeEvent<{ value: unknown }>) => {
-    setSelectedInterval(e.target.value as string);
+  const handleIntervalChange = (value: string) => {
+    setSelectedInterval(value);
+    markAttendance({ attendedInterval: value });
   };
 
   const absenteeButtons = (
     <FormControl className={classes.formControl}>
       <InputLabel>Intervals</InputLabel>
-      <select
-        data-testid="select"
-        value={booked!}
-        onChange={handleSelect}
+      <IntervalPicker
         disabled={!localAttended}
-      >
-        {_.keys(intervals).map((interval) => (
-          <option
-            key={`${customer.name}${customer.surname}${interval}`}
-            value={interval}
-          >
-            {interval}
-          </option>
-        ))}
-      </select>
+        intervals={orderedIntervals}
+        value={selectedInterval}
+        onChange={handleIntervalChange}
+      />
       <Button
-        data-testid="attendance-button"
+        data-testid={__attendanceButton__}
         variant="contained"
         size="small"
-        color={attended ? "primary" : "secondary"}
+        color={localAttended ? "primary" : "secondary"}
         onClick={handleClick}
-        disabled={localAttended !== attended}
+        disabled={localAttended !== Boolean(attendedInterval)}
       >
-        {localAttended ? "👎" : "👍"}
+        {localAttended ? "👍" : "👎"}
       </Button>
     </FormControl>
   );

@@ -1,25 +1,36 @@
-import { DateTime } from "luxon";
+import firebase from "firebase";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, Customer, SlotType } from "eisbuk-shared";
 
-import { __storybookDate__ } from "@/lib/constants";
+import { Props as AttendanceCardProps } from "../AttendanceCard";
 
-import { luxonToFB } from "@/utils/date";
+import { timestampDate } from "@/__testData__/date";
+import { CustomerWithAttendance } from "@/types/temp";
+
+type Timestamp = firebase.firestore.Timestamp;
+
+export const saul: Customer = {
+  name: "Saul",
+  surname: "Goodman",
+  certificateExpiration: "2001-01-01",
+  id: "saul",
+  email: "saul@better.call",
+  phone: "123456777",
+  birthday: "2001-01-01",
+  covidCertificateReleaseDate: "2021-01-01",
+  covidCertificateSuspended: true,
+  category: Category.PreCompetitive,
+  secret_key: "123445",
+};
+
+export const intervals = {
+  "13:00-13:30": { startTime: "13:00", endTime: "13:30" },
+  "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
+  "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
+};
 
 export const customers = [
-  {
-    name: "Saul",
-    surname: "Goodman",
-    certificateExpiration: "2001-01-01",
-    id: "saul",
-    email: "saul@better.call",
-    phone: "123456777",
-    birthday: "2001-01-01",
-    covidCertificateReleaseDate: "2021-01-01",
-    covidCertificateSuspended: true,
-    category: Category.PreCompetitive,
-    secret_key: "123445",
-  },
+  saul,
   // {
   //   name: "Walter",
   //   surname: "White",
@@ -30,32 +41,12 @@ export const customers = [
   // },
 ];
 
-// here we're using storybook date as default date and making sure that the slots starts at 13:00
-const luxonDate = DateTime.fromISO(__storybookDate__).plus({ hours: 13 });
-
-export const emptySlot = {
-  date: luxonToFB(luxonDate),
-  intervals: {
-    "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
-    "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
-  },
-  type: SlotType.Ice,
-  customers: [],
-  categories: [Category.Competitive],
-  attendance: {},
-  notes: "",
+export const baseProps: AttendanceCardProps = {
   id: "123",
-};
-export const customersSlot = {
-  date: luxonToFB(luxonDate),
-  intervals: {
-    "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
-    "13:15-14:15": { startTime: "13:15", endTime: "14:15" },
-  },
+  date: timestampDate as Timestamp,
   type: SlotType.Ice,
-  customers: customers,
+  intervals,
   categories: [Category.Competitive],
-  attendance: { saul: { booked: "13:00-14:00", attended: "13:00-14:00" } },
   notes: "",
-  id: "123",
+  customers: [] as CustomerWithAttendance[],
 };

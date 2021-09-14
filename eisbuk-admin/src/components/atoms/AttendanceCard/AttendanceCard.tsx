@@ -1,36 +1,37 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 import i18n from "i18next";
 
-// import { useTranslation } from "react-i18next";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
 import makeStyles from "@material-ui/core/styles/makeStyles";
-import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
-import { CustomerAttendance, SlotInterface } from "@/types/temp";
-import { Customer, Category, SlotType } from "eisbuk-shared";
-import { useDispatch } from "react-redux";
 
-import { ETheme } from "@/themes";
+import { Category, SlotType } from "eisbuk-shared";
+
+import {
+  CustomerWithAttendance,
+  SlotInterface,
+  SlotInterval,
+} from "@/types/temp";
+
+import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
+
 import {
   markAbsence,
   markAttendance,
 } from "@/store/actions/attendanceOperations";
-import _ from "lodash";
-import { DateTime } from "luxon";
 
-interface Props extends SlotInterface {
-  customers: Customer[];
-  attendance: {
-    [key: string]: CustomerAttendance;
-  };
+import { ETheme } from "@/themes";
+import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+
+export interface Props extends SlotInterface {
+  customers: CustomerWithAttendance[];
 }
 
 // mark attendees
 const AttendanceCard: React.FC<Props> = ({
-  date,
   categories,
   customers,
-  attendance,
   intervals,
   type,
   id,
@@ -38,23 +39,7 @@ const AttendanceCard: React.FC<Props> = ({
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  // const { t } = useTranslation();
-
-  // get earliest startTme and latest endTme from intervals
-  const startTimes = _.entries(intervals).map((interval) =>
-    DateTime.fromFormat(interval[1].startTime, "HH:mm")
-  );
-  const startTime = DateTime.min(...startTimes).toFormat("HH:mm");
-  const endTimes = _.entries(intervals).map((interval) =>
-    DateTime.fromFormat(interval[1].endTime, "HH:mm")
-  );
-  const endTime = DateTime.max(...endTimes).toFormat("HH:mm");
-
-  // get time for rendering
-  // const startTime = luxonStart.toISOTime().substring(0, 5);
-  // const endTime = luxonEnd.toISOTime().substring(0, 5);
-
-  const timeString = `${startTime} - ${endTime}`;
+  const timeString = getTimeString(intervals);
 
   return (
     <div className={classes.wrapper}>
@@ -68,18 +53,16 @@ const AttendanceCard: React.FC<Props> = ({
           secondary={translateAndJoinTags(categories, type)}
         />
       </ListItem>
-      {customers.map((user) => (
+      {customers.map((customer) => (
         <UserAttendance
-          key={user.id}
-          customer={user}
-          intervals={intervals}
-          attendance={attendance[user.id]}
-          markAttendance={() =>
+          {...{ ...customer, intervals }}
+          key={customer.id}
+          markAttendance={({ attendedInterval }) =>
             dispatch(
               markAttendance({
-                attendedInterval: attendance[user.id].attended!,
+                attendedInterval,
                 slotId: id,
-                customerId: user.id,
+                customerId: customer.id,
               })
             )
           }
@@ -87,7 +70,7 @@ const AttendanceCard: React.FC<Props> = ({
             dispatch(
               markAbsence({
                 slotId: id,
-                customerId: user.id,
+                customerId: customer.id,
               })
             )
           }
@@ -97,17 +80,42 @@ const AttendanceCard: React.FC<Props> = ({
   );
 };
 
-// #region Start Region Local Utils
+// #region localUtils
+/**
+ * Calculates earliest startTime and latest endTime out of intervals. And returns `"${startTime} - ${endTime}""` string
+ * @param intervals all intervals for the slot
+ * @returns time string
+ */
+const getTimeString = (intervals: Props["intervals"]): string => {
+  // calculate single { startTime, endTime } object
+  const { startTime, endTime } = Object.values(intervals).reduce(
+    (acc, interval) => {
+      const startTime =
+        !acc.startTime || acc.startTime > interval.startTime
+          ? interval.startTime
+          : acc.startTime;
+      const endTime =
+        !acc.endTime || acc.endTime < interval.endTime
+          ? interval.endTime
+          : acc.endTime;
+
+      return { startTime, endTime };
+    },
+    {} as SlotInterval
+  );
+  // return time string
+  return `${startTime} - ${endTime}`;
+};
 
 const translateAndJoinTags = (categories: Category[], type: SlotType) => {
   const translatedCategories = categories.map((category) =>
-    i18n.t(`Categories.${category}`)
+    i18n.t(categoryLabel[category])
   );
-  const translatedType = i18n.t(`SlotTypes.${type}`);
+  const translatedType = i18n.t(slotTypeLabel[type]);
 
   return `${[...translatedCategories, translatedType].join(" ")}`;
 };
-// #endregion Local Utils
+// #endregion localUtils
 
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
