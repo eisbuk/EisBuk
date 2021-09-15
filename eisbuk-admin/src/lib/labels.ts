@@ -28,3 +28,7 @@ export const __cancel__ = "Action.Cancel";
 export const __createSlot__ = "Action.CreateSlot";
 export const __editSlot__ = "Action.EditSlot";
 // #endregion actionButtons
+
+// #region attendanceCard
+export const __addCustomersTitle__ = "AttendanceCard.AddCustomersTitle";
+// #endregion attendanceCard

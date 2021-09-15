@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { CustomerWithAttendance, SlotInterface } from "@/types/temp";
+import { CustomerWithAttendance } from "@/types/temp";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import IntervalPicker from "./IntervalPicker";
@@ -24,7 +24,7 @@ interface Props extends CustomerWithAttendance {
   /**
    * List of intervals to choose from
    */
-  intervals: SlotInterface["intervals"];
+  intervals: string[];
   /**
    * Function used to mark customer as having attended appropriate interval
    */
@@ -66,10 +66,6 @@ const UserAttendance: React.FC<Props> = ({
     Boolean(attendedInterval)
   );
 
-  // intervals we're using to control interval picker
-  const orderedIntervals = Object.keys(intervals).sort((a, b) =>
-    a < b ? -1 : 1
-  );
   const [selectedInterval, setSelectedInterval] = useState<string>(
     attendedInterval || bookedInterval!
   );
@@ -121,7 +117,7 @@ const UserAttendance: React.FC<Props> = ({
     <div className={classes.actionsContainer}>
       <IntervalPicker
         disabled={!localAttended}
-        intervals={orderedIntervals}
+        intervals={intervals}
         value={selectedInterval}
         onChange={handleIntervalChange}
       />

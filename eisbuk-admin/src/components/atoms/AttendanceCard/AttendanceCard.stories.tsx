@@ -9,7 +9,6 @@ import {
   baseProps,
   saul,
   walt,
-  gus,
   intervalStrings as intervals,
 } from "./__testData__/dummyData";
 
@@ -37,22 +36,14 @@ const waltBookings = {
   attendedInterval: null,
 };
 
-const gusBookings = {
-  bookedInterval: null,
-  attendedInterval: intervals[2],
-};
-
 const customers = [
   { ...saul, ...saulBookings },
   { ...walt, ...waltBookings },
-  { ...gus, ...gusBookings },
 ];
 
 export const MultipleWithCustomers = (): JSX.Element => (
   <>
     <AttendanceCard {...{ ...baseProps, customers }} />
-    <AttendanceCard
-      {...{ ...baseProps, customers: [customers[0], customers[1]] }}
-    />
+    <AttendanceCard {...{ ...baseProps, customers: [customers[0]] }} />
   </>
 );

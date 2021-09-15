@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import i18n from "i18next";
 
+import IconButton from "@material-ui/core/IconButton";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemText from "@material-ui/core/ListItemText";
+
+import AddNew from "@material-ui/icons/AddCircle";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, SlotType, Customer } from "eisbuk-shared";
+
+import { categoryLabel, slotTypeLabel } from "@/lib/labels";
 
 import {
   CustomerWithAttendance,
@@ -15,6 +21,7 @@ import {
 } from "@/types/temp";
 
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
+import AddCustomersList from "./AddCustomers";
 
 import {
   markAbsence,
@@ -22,7 +29,8 @@ import {
 } from "@/store/actions/attendanceOperations";
 
 import { ETheme } from "@/themes";
-import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+
+import { __addCustomersButtonId__ } from "./__testData__/testIds";
 
 export interface Props extends SlotInterface {
   /**
@@ -31,6 +39,11 @@ export interface Props extends SlotInterface {
    * values for `bookedInterval` and `attendedInterval`.
    */
   customers: CustomerWithAttendance[];
+  /**
+   * List of all of the customers from the store. We're using this to filter
+   * the list and display on add customers list
+   */
+  allCustomers: Customer[];
 }
 
 /**
@@ -45,12 +58,56 @@ const AttendanceCard: React.FC<Props> = ({
   customers,
   intervals,
   type,
-  id,
+  id: slotId,
+  allCustomers,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const timeString = getTimeString(intervals);
+
+  /**
+   * We don't need the interval record, but rather a sorted array of interval keys.
+   * We're confident interval values won't change inside attendance view so it's ok to
+   * memoize the array for lifetime of the component
+   */
+  const orderedIntervals = useMemo(
+    () => Object.keys(intervals).sort((a, b) => (a < b ? -1 : 1)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+
+  /**
+   * State we're using to control opening of customer list when adding customers who haven't booked,
+   * but have attended
+   */
+  const [addCustomers, setAddCustomers] = useState<boolean>(false);
+
+  /**
+   * Filtered customers to show in add customers list.
+   * We're filtering customers not belonging to slot's categories
+   * and those already marked as attended
+   */
+  const filteredCustomers = useMemo(
+    () =>
+      allCustomers.filter(
+        ({ category, id }) =>
+          categories.includes(category) &&
+          !customers.find(({ id: customerId }) => customerId === id)
+      ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [customers]
+  );
+
+  /**
+   * Function we're passing down to add customers list to handle marking customers as attended
+   */
+  const handleAddCustomer = (customer: Customer) => {
+    const { id: customerId } = customer;
+    const attendedInterval = orderedIntervals[0];
+    // dispatch update to firestore
+    dispatch(markAttendance({ customerId, slotId, attendedInterval }));
+  };
 
   return (
     <div className={classes.container}>
@@ -66,13 +123,14 @@ const AttendanceCard: React.FC<Props> = ({
       </ListItem>
       {customers.map((customer) => (
         <UserAttendance
-          {...{ ...customer, intervals }}
+          {...customer}
           key={customer.id}
+          intervals={orderedIntervals}
           markAttendance={({ attendedInterval }) =>
             dispatch(
               markAttendance({
                 attendedInterval,
-                slotId: id,
+                slotId,
                 customerId: customer.id,
               })
             )
@@ -80,13 +138,26 @@ const AttendanceCard: React.FC<Props> = ({
           markAbsence={() =>
             dispatch(
               markAbsence({
-                slotId: id,
+                slotId,
                 customerId: customer.id,
               })
             )
           }
         />
       ))}
+      <IconButton
+        className={classes.addCustomersButton}
+        onClick={() => setAddCustomers(true)}
+        data-testid={__addCustomersButtonId__}
+      >
+        <AddNew />
+      </IconButton>
+      <AddCustomersList
+        open={addCustomers}
+        onClose={() => setAddCustomers(false)}
+        customers={filteredCustomers}
+        onAddCustomer={handleAddCustomer}
+      />
     </div>
   );
 };
@@ -140,6 +211,11 @@ const useStyles = makeStyles((theme: ETheme) => ({
     borderRadius: "0.5rem",
     overflow: "hidden",
     borderColor: theme.palette.primary.main,
+  },
+  addCustomersButton: {
+    width: "100%",
+    height: "3rem",
+    borderRadius: 0,
   },
 }));
 // #endregion Styles

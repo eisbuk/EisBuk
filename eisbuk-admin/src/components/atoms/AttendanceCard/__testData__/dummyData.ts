@@ -23,7 +23,7 @@ export const saul: Customer = {
   birthday: "2001-01-01",
   covidCertificateReleaseDate: "2021-01-01",
   covidCertificateSuspended: true,
-  category: Category.PreCompetitive,
+  category: Category.Competitive,
   secret_key: "123445",
 };
 
@@ -55,6 +55,22 @@ export const gus: Customer = {
   secret_key: "000002",
 };
 
+export const jian: Customer = {
+  id: "jian",
+  name: "Jian",
+  surname: "Yang",
+  certificateExpiration: "2022-01-01",
+  category: Category.Competitive,
+  email: "mike.hunt@isyourrefrigeratorrunning.me",
+  phone: "123456777",
+  birthday: "2001-01-01",
+  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
+  covidCertificateSuspended: false,
+  secret_key: "000002",
+};
+
+export const allCustomers = [gus, walt, saul, jian];
+
 export const intervals = {
   "13:00-13:30": { startTime: "13:00", endTime: "13:30" },
   "13:00-14:00": { startTime: "13:00", endTime: "14:00" },
@@ -71,4 +87,5 @@ export const baseProps: AttendanceCardProps = {
   categories: [Category.Competitive],
   notes: "",
   customers: [] as CustomerWithAttendance[],
+  allCustomers,
 };
