@@ -1,6 +1,8 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotType, Category, Duration, BookingInfo } from "eisbuk-shared";
+import { SlotType, Category } from "eisbuk-shared";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
+import { DeprecatedBookingInfo } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 /**
  * Params shared between different types of operation on slot ("create" | "edit")
@@ -8,7 +10,7 @@ import { SlotType, Category, Duration, BookingInfo } from "eisbuk-shared";
 export interface SlotOperationBaseParams {
   type: SlotType;
   categories: Category[];
-  durations: Duration[];
+  durations: DeprecatedDuration[];
   notes: string;
 }
 
@@ -18,7 +20,7 @@ export interface SlotOperationBaseParams {
 type SlotOperationParams<
   T extends "create" | "subscribe" | "other" = "other"
 > = T extends "subscribe"
-  ? BookingInfo
+  ? DeprecatedBookingInfo
   : T extends "create"
   ? {
       date: Timestamp;

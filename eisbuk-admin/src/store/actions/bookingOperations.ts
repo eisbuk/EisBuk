@@ -1,6 +1,7 @@
 import i18n from "i18next";
 
-import { Customer, Slot, BookingInfo } from "eisbuk-shared";
+import { Customer, SlotInterface } from "eisbuk-shared";
+import { DeprecatedBookingInfo } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -23,7 +24,7 @@ import {
  */
 export const subscribeToSlot = (
   bookingId: string,
-  slot: BookingInfo
+  slot: DeprecatedBookingInfo
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
 
@@ -62,7 +63,7 @@ export const subscribeToSlot = (
  */
 export const unsubscribeFromSlot = (
   bookingId: string,
-  slotId: Slot<"id">["id"]
+  slotId: SlotInterface["id"]
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const firebase = getFirebase();
 
@@ -101,12 +102,13 @@ export const unsubscribeFromSlot = (
 };
 
 interface MarkAbsenteePayload {
-  slotId: Slot<"id">["id"];
+  slotId: SlotInterface["id"];
   userId: Customer["id"];
   isAbsent: boolean;
 }
 
 /**
+ * @TODELETE
  * Creates firestore async thunk:
  * - updates the attendance for given athlete for given slot in firestore (updated back using real time DB)
  * - in case of failure enqueues error snackbar

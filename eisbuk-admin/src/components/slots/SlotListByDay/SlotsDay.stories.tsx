@@ -2,7 +2,9 @@ import React from "react";
 import firebase from "firebase";
 import { v4 } from "uuid";
 
-import { Category, Duration, SlotType } from "eisbuk-shared";
+import { Category, SlotType } from "eisbuk-shared";
+
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import SlotsDay from "@/components/slots/SlotListByDay/SlotsDay";
 

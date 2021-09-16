@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import SlotOperationButtons from "../SlotOperationButtons";
 import DeleteButton from "../DeleteButton";
@@ -55,7 +55,7 @@ jest.mock("i18next", () => ({
  * @param slotId of slot to delete (just like in the original function)
  * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
  */
-const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
   type: "delete_slot",
   slotId,
 });

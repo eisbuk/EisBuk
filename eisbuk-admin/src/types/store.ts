@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
 
-import { Customer, Slot, SlotsByDay, SlotsById } from "eisbuk-shared";
+import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
 
 import { Action, NotifVariant } from "@/enums/store";
 
@@ -101,19 +101,16 @@ export type AuthReducerAction<
   : { type: string };
 // #endregion Region Auth
 
-// #region Copy Paste
-export interface SlotDay {
-  [slotId: string]: Slot<"id">;
-}
+// #region copyPaste
 
-export interface SlotWeek {
+export interface SlotsWeek {
   weekStart: DateTime;
-  slots: Slot<"id">[];
+  slots: SlotInterface[];
 }
 
 export interface CopyPasteState {
-  day: SlotDay | null;
-  week: SlotWeek | null;
+  day: SlotsById | null;
+  week: SlotsWeek | null;
 }
 
 /**
@@ -131,8 +128,8 @@ export type CopyPasteAction =
 interface CopyPastePayload {
   [Action.CopySlotDay]: CopyPasteState["day"];
   [Action.CopySlotWeek]: CopyPasteState["week"];
-  [Action.DeleteSlotFromClipboard]: Slot<"id">["id"];
-  [Action.AddSlotToClipboard]: Slot<"id">;
+  [Action.DeleteSlotFromClipboard]: SlotInterface["id"];
+  [Action.AddSlotToClipboard]: SlotInterface;
 }
 
 /**
@@ -201,12 +198,6 @@ export interface LocalStore {
   authInfoEisbuk: AuthInfoEisbuk;
 }
 // #endregion Region Full Store
-
-// #region Other
-export type CustomerInStore = Pick<Customer, "id"> &
-  Pick<Customer, "name"> &
-  Pick<Customer, "surname">;
-// #endregion Region Other
 
 // #region mappedValues
 export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {

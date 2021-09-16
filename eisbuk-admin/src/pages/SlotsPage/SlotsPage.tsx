@@ -1,15 +1,15 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { SlotOperation } from "@/types/slotOperations";
+import { SlotOperation } from "@/types/deprecated/slotOperations";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import {
   deleteSlots,
-  createSlots,
-  editSlot,
+  // createSlots,
+  // editSlot,
 } from "@/store/actions/slotOperations";
 
 import { getAllSlotsByDay } from "@/store/selectors/slots";
@@ -27,22 +27,22 @@ const SlotsPage: React.FC = () => {
     dispatch(deleteSlots([slot]));
   };
 
-  const onCreateSlot: SlotOperation<"create"> = (slot) => {
-    dispatch(createSlots([slot]));
-  };
+  // const onCreateSlot: SlotOperation<"create"> = (slot) => {
+  //   dispatch(createSlots([slot]));
+  // };
 
-  const onEditSlot: SlotOperation = (slot) => {
-    dispatch(editSlot(slot));
-  };
+  // const onEditSlot: SlotOperation = (slot) => {
+  //   dispatch(editSlot(slot));
+  // };
 
   return (
     <div>
       <AppbarAdmin />
       <SlotsPageContainer
-        slots={slots}
+        slots={slots as any}
         onDelete={onDelete}
-        onCreateSlot={onCreateSlot}
-        onEditSlot={onEditSlot}
+        // onCreateSlot={onCreateSlot}
+        // onEditSlot={onEditSlot}
       />
     </div>
   );

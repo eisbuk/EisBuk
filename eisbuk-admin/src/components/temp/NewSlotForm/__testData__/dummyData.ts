@@ -1,10 +1,8 @@
 import { DateTime } from "luxon";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, SlotType, SlotInterface } from "eisbuk-shared";
 
 import { __storybookDate__ } from "@/lib/constants";
-
-import { SlotInterface } from "@/types/temp";
 
 import { luxonToFB } from "@/utils/date";
 import { slotToFormValues } from "../utils";

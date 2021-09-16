@@ -1,45 +1,44 @@
-import React, { useState } from "react";
+import React from "react";
 
 import List from "@material-ui/core/List";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Slot } from "eisbuk-shared";
+import { DeprecatedSlot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import SlotsDay, { SlotsDayProps } from "./SlotsDay";
-import SlotForm, { SlotFormProps } from "@/components/slots/SlotForm";
 
 export interface SlotListProps
   extends Omit<
     Omit<Omit<SlotsDayProps, "slots">, "day">,
     "setCreateEditDialog"
   > {
-  slots: Record<string, Record<string, Slot<"id">>>;
+  slots: Record<string, Record<string, DeprecatedSlot<"id">>>;
   className?: string;
-  onCreateSlot?: SlotFormProps["createSlot"];
-  onEditSlot?: SlotFormProps["editSlot"];
+  // onCreateSlot?: SlotFormProps["createSlot"];
+  // onEditSlot?: SlotFormProps["editSlot"];
 }
 
 const SlotListByDay: React.FC<SlotListProps> = ({
   slots,
-  onCreateSlot,
-  onEditSlot,
+  // onCreateSlot,
+  // onEditSlot,
   className,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   children,
   ...props
 }) => {
-  const [createEditDialog, setCreateEditDialog] = useState<
-    Partial<{
-      isOpen: boolean;
-      day: string | null;
-      slotToEdit: Slot<"id"> | null;
-    }>
-  >({
-    isOpen: false,
-    day: null,
-    slotToEdit: null,
-  });
+  // const [createEditDialog, setCreateEditDialog] = useState<
+  //   Partial<{
+  //     isOpen: boolean;
+  //     day: string | null;
+  //     slotToEdit: DeprecatedSlot<"id"> | null;
+  //   }>
+  // >({
+  //   isOpen: false,
+  //   day: null,
+  //   slotToEdit: null,
+  // });
 
   const classes = useStyles();
   if (typeof slots === "undefined") {
@@ -50,13 +49,13 @@ const SlotListByDay: React.FC<SlotListProps> = ({
     .filter((el) => el !== "id")
     .sort();
 
-  const onCloseCreateEditDialog = () => {
-    setCreateEditDialog({
-      isOpen: false,
-      day: null,
-      slotToEdit: null,
-    });
-  };
+  // const onCloseCreateEditDialog = () => {
+  //   setCreateEditDialog({
+  //     isOpen: false,
+  //     day: null,
+  //     slotToEdit: null,
+  //   });
+  // };
 
   return (
     <>
@@ -68,19 +67,19 @@ const SlotListByDay: React.FC<SlotListProps> = ({
             slots={slots[day]}
             {...{
               ...props,
-              setCreateEditDialog,
+              // setCreateEditDialog,
             }}
           ></SlotsDay>
         ))}
       </List>
-      <SlotForm
+      {/* <SlotForm
         isoDate={createEditDialog.day!}
         slotToEdit={createEditDialog.slotToEdit!}
         createSlot={onCreateSlot}
         editSlot={onEditSlot}
         open={createEditDialog.isOpen!}
         onClose={onCloseCreateEditDialog}
-      ></SlotForm>
+      ></SlotForm> */}
     </>
   );
 };

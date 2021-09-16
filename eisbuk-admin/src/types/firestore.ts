@@ -6,9 +6,9 @@ import {
   OrganizationMeta,
   SlotsByDay,
   Customer,
-  BookingsMeta,
-  BookingInfo,
-  BookingsByDay,
+  CustomerBookingEntry,
+  SlotAttendnace,
+  CustomerBase,
 } from "eisbuk-shared";
 
 // ***** Region In-Store Firebase Date Scheme ***** //
@@ -17,7 +17,7 @@ type FirestoreStatusKey =
   | BookingSubCollection
   | string;
 // this (last) part should be written as `organization/${string}` to be more specific
-// but as it's a relatively new feature, it doesn't provide much difference in type safety
+// but as it's a relatively new feature and it doesn't provide much difference in type safety
 // it's omitted because prettier finds it as syntax error and refuses to format
 
 /**
@@ -33,23 +33,24 @@ export type FirestoreStatusEntry<V extends boolean | number> = Record<
  * firestore.data structure in local store
  */
 export interface FirestoreData {
-  [Collection.Organizations]: Record<string, OrganizationMeta>;
-  [OrgSubCollection.Customers]: Record<string, Customer>;
-  [OrgSubCollection.BookingsByDay]: BookingsByDay;
-  [OrgSubCollection.Bookings]: BookingsMeta;
-  [BookingSubCollection.SubscribedSlots]: Record<string, BookingInfo>;
+  [Collection.Organizations]: { [organization: string]: OrganizationMeta };
+  [OrgSubCollection.Customers]: { [customerId: string]: Customer };
+  [OrgSubCollection.Bookings]: CustomerBase;
+  [BookingSubCollection.BookedSlots]: {
+    [slotId: string]: CustomerBookingEntry;
+  };
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay | null };
+  [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
 }
 
 export interface FirestoreOrdered {
-  [Collection.Organizations]: Array<{ id: string; admins: string[] }>;
+  [Collection.Organizations]: { id: string; admins: string[] }[];
   [OrgSubCollection.Customers]: Customer[];
-  [OrgSubCollection.BookingsByDay]: Array<
-    BookingsByDay[keyof BookingsByDay] & { id: string }
-  >;
-  [OrgSubCollection.Bookings]: [BookingsMeta & { id: string }];
-  [BookingSubCollection.SubscribedSlots]: BookingInfo[];
+  [OrgSubCollection.Attendance]: SlotAttendnace[];
+  [OrgSubCollection.Bookings]: [CustomerBase];
+  [BookingSubCollection.BookedSlots]: CustomerBookingEntry[];
   [OrgSubCollection.SlotsByDay]: Array<SlotsByDay & { id: string }>;
+  [OrgSubCollection.Attendance]: SlotAttendnace[];
 }
 
 // ***** End Region In-Store Firebase Date Scheme ***** //

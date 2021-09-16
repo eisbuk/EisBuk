@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 import Box from "@material-ui/core/Box";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -17,7 +17,7 @@ type ContextParams = Partial<{
    * - should be truthy if the buttons are within `slot` context
    * - `undefined` otherwise
    */
-  slot: Slot<"id">;
+  slot: SlotInterface;
   /**
    * Date context for button functionalities:
    * - should be the date of the day if in `day` context

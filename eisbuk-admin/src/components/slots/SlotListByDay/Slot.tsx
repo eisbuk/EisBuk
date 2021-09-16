@@ -19,9 +19,13 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration, Slot as SlotInterface, BookingInfo } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
+import {
+  DeprecatedSlot as SlotInterface,
+  DeprecatedBookingInfo as BookingInfo,
+} from "eisbuk-shared/dist/types/deprecated/firestore";
 
-import { SlotOperation } from "@/types/slotOperations";
+import { SlotOperation } from "@/types/deprecated/slotOperations";
 
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 import ProjectIcon from "@/components/global/ProjectIcons";

@@ -7,18 +7,17 @@ import seedrandom from "seedrandom";
 import _ from "lodash";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
+import { Category, SlotType } from "eisbuk-shared";
 import {
-  Slot as SlotInterface,
-  Category,
-  Duration,
-  SlotType,
-  BookingInfo,
-} from "eisbuk-shared";
+  DeprecatedSlot,
+  DeprecatedBookingInfo as BookingInfo,
+} from "eisbuk-shared/dist/types/deprecated/firestore";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { __storybookDate__ } from "@/lib/constants";
 
 import SlotsPageContainer from "@/containers/SlotsPageContainer";
-import { SlotOperation } from "@/types/slotOperations";
+import { SlotOperation } from "@/types/deprecated/slotOperations";
 import { CustomerRoute } from "@/enums/routes";
 
 export default {
@@ -109,7 +108,7 @@ OneSlotIce.args = {
         categories: [Category.Competitive],
         type: SlotType.Ice,
         date: new Timestamp(1609513200, 0),
-        durations: [Duration["1h"]],
+        durations: [DeprecatedDuration["1h"]],
         notes: "Pista 1",
       },
     },
@@ -129,7 +128,7 @@ OneSlotOffIce.args = {
         categories: [Category.Competitive],
         type: SlotType.OffIceDancing,
         date: new Timestamp(1609513200, 0),
-        durations: [Duration["1h"]],
+        durations: [DeprecatedDuration["1h"]],
         notes: "Pista 1",
       },
     },
@@ -148,7 +147,7 @@ const NOTES = ["", "Pista 1", "Pista 2"];
 const createSlots = (date: DateTime, seed: string, view: CustomerRoute) => {
   const random = seedrandom(seed);
 
-  const slots: Record<string, Record<string, SlotInterface<"id">>> = {};
+  const slots: Record<string, Record<string, DeprecatedSlot<"id">>> = {};
 
   Array(30)
     .fill(null)
@@ -171,7 +170,7 @@ const createSlots = (date: DateTime, seed: string, view: CustomerRoute) => {
             view === CustomerRoute.BookOffIce
               ? SlotType.OffIceDancing
               : SlotType.Ice,
-          durations: [Duration["1h"]],
+          durations: [DeprecatedDuration["1h"]],
           notes: lodash.sample(NOTES) || "",
         };
       }

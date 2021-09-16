@@ -1,12 +1,14 @@
 import { fb2Luxon, fromISO, luxonToFB } from "./date";
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
+
 import { mode } from "./helpers";
 
-// ***** Region Shift Slots Day ***** //
+// #region shiftSlotsDay
+
 interface ShiftSlotsDay {
-  <S extends Slot | Slot<"id">>(slots: S[], newDay: string): S[];
+  (slots: SlotInterface[], newDay: string): SlotInterface[];
 }
 
 /**
@@ -28,11 +30,13 @@ export const shiftSlotsDay: ShiftSlotsDay = (slots, newDay) =>
 
     return { ...slot, date: luxonToFB(newDate) };
   });
-// ***** End Region Shift Slots Day ***** //
 
-// ***** Region Shift Slots Week ***** //
+// #endregion shiftSlotsDay
+
+// #region shiftSlotsWeek
+
 interface ShiftSlotsWeek {
-  <S extends Slot | Slot<"id">>(slots: S[], newWeekStart: DateTime): S[];
+  (slots: SlotInterface[], newWeekStart: DateTime): SlotInterface[];
 }
 
 /**
@@ -98,4 +102,5 @@ export const shiftSlotsWeek: ShiftSlotsWeek = (slots, newWeekStart) => {
     return { ...slot, date: luxonToFB(oldDate.plus({ days: difference })) };
   });
 };
-// ***** End Region Shift Slots Week ***** //
+
+// #endregion shiftSlotsWeek

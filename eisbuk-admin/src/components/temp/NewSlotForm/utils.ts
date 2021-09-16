@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 import { SlotFormValues } from "@/lib/data";
 
-import { SlotInterface } from "@/types/temp";
+import { SlotInterface } from "eisbuk-shared";
 
 import { fb2Luxon } from "@/utils/date";
 

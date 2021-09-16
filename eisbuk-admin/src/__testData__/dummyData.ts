@@ -1,6 +1,8 @@
 import { DateTime } from "luxon";
 
-import { Slot, Duration, SlotType, Category } from "eisbuk-shared";
+import { SlotType, Category, SlotInterface } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
+import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { __storybookDate__ } from "@/lib/constants";
 
@@ -29,7 +31,7 @@ export const collectionOfSlots = Array(4)
  * Dummy month of slots (resembling a structure we should receive from store).
  * Used for `CustomerRoute="book_ice"`
  */
-export const slotsMonth = Array(8)
+export const slotsMonth = (Array(8)
   .fill(null)
   // create dates
   .map((_, i) => {
@@ -59,7 +61,10 @@ export const slotsMonth = Array(8)
         [slotId]: { ...dummySlot, id: slotId, type: SlotType.Ice, date },
       },
     };
-  }, {} as Record<string, Record<string, Slot<"id">>>);
+  }, {} as Record<string, Record<string, Slot<"id">>>) as unknown) as Record<
+  string,
+  Record<string, SlotInterface>
+>;
 // #endregion slot
 
 /**

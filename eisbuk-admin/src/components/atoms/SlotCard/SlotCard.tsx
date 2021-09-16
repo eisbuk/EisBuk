@@ -12,7 +12,8 @@ import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration, Slot as SlotInterface } from "eisbuk-shared";
+import { DeprecatedSlot as SlotInterface } from "eisbuk-shared/dist/types/deprecated/firestore";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { ButtonContextType, SlotView } from "@/enums/components";
 
@@ -123,7 +124,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
             {view === SlotView.Admin && enableEdit && (
               <SlotOperationButtons
                 contextType={ButtonContextType.Slot}
-                slot={slotData}
+                slot={slotData as any}
                 iconSize="small"
               >
                 <EditSlotButton />

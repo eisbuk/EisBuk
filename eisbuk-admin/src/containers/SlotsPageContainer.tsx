@@ -67,7 +67,9 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
   );
   const doPaste = () => {
     if (weekToPaste) {
-      dispatch(createSlots(shiftSlotsWeek(weekToPaste.slots, currentDate)));
+      dispatch(
+        createSlots(shiftSlotsWeek(weekToPaste.slots, currentDate) as any)
+      );
     }
   };
   const switchButton = props.onDelete ? (
@@ -117,7 +119,10 @@ const SlotsPageContainer: React.FC<Props> = ({ slots, children, ...props }) => {
             disabled={slotsArray.length === 0}
             onClick={() =>
               dispatch(
-                copySlotWeek({ weekStart: currentDate, slots: slotsArray })
+                copySlotWeek({
+                  weekStart: currentDate,
+                  slots: slotsArray as any,
+                })
               )
             }
           >

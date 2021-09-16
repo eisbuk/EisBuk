@@ -5,10 +5,10 @@ import { useField } from "formik";
 
 import Button from "@material-ui/core/Button";
 
+import { SlotInterval } from "eisbuk-shared";
+
 import { __addNewInterval__ } from "@/lib/labels";
 import { defaultInterval } from "@/lib/data";
-
-import { SlotInterval } from "@/types/temp";
 
 import TimeIntervalField from "./TimeIntervalField";
 

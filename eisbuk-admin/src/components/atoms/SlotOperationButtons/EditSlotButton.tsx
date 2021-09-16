@@ -1,5 +1,8 @@
-import React, { useState, useContext } from "react";
-import { useDispatch } from "react-redux";
+import React, {
+  // useState,
+  useContext,
+} from "react";
+// import { useDispatch } from "react-redux";
 
 import IconButton from "@material-ui/core/IconButton";
 
@@ -8,9 +11,9 @@ import CreateIcon from "@material-ui/icons/Create";
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotButtonProps } from "@/types/components";
-import { SlotOperation } from "@/types/slotOperations";
+// import { SlotOperation } from "@/types/deprecated/slotOperations";
 
-import SlotForm from "@/components/slots/SlotForm";
+// import SlotForm from "@/components/temp/NewSlotForm/SlotForm";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import {
@@ -19,7 +22,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { editSlot } from "@/store/actions/slotOperations";
+// import { editSlot } from "@/store/actions/slotOperations";
 
 import { __editSlotButtonId__ } from "@/__testData__/testIds";
 
@@ -35,16 +38,16 @@ import { __editSlotButtonId__ } from "@/__testData__/testIds";
 export const EditSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
-  const [openForm, setOpenForm] = useState(false);
+  // const [openForm, setOpenForm] = useState(false);
 
-  const showForm = () => setOpenForm(true);
-  const closeForm = () => setOpenForm(false);
+  // const showForm = () => setOpenForm(true);
+  // const closeForm = () => setOpenForm(false);
 
   /** @TEMP This should be handled within the `SlotForm` component */
-  const dispatch = useDispatch();
-  const onEditSlot: SlotOperation = (slot) => {
-    dispatch(editSlot(slot));
-  };
+  // const dispatch = useDispatch();
+  // const onEditSlot: SlotOperation = (slot) => {
+  //   dispatch(editSlot(slot));
+  // };
   /** @TEMP */
 
   // prevent component from rendering and log error to console (but don't throw)
@@ -74,17 +77,17 @@ export const EditSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     <>
       <IconButton
         size={size || iconSize}
-        onClick={showForm}
+        // onClick={showForm}
         data-testid={__editSlotButtonId__}
       >
         <CreateIcon />
       </IconButton>
-      <SlotForm
+      {/* <SlotForm
         open={openForm}
         slotToEdit={buttonGroupContext.slot}
         onClose={closeForm}
-        editSlot={onEditSlot}
-      />
+        // editSlot={onEditSlot}
+      /> */}
     </>
   );
 };

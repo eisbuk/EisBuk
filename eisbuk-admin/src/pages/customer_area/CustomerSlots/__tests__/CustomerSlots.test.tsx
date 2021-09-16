@@ -2,7 +2,7 @@ import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { BookingInfo } from "eisbuk-shared";
+import { CustomerBookingEntry } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -88,7 +88,7 @@ describe("CustomerSlots", () => {
     // as well as mocking implementations of asid functions within the component
     const mockSubscribeImplementation = (
       bookingId: string,
-      bookingInfo: BookingInfo
+      bookingInfo: CustomerBookingEntry
     ) => ({ action: "subscribe", bookingId, bookingInfo });
     const mockUnsubscribeImplementation = (
       bookingId: string,

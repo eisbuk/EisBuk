@@ -4,7 +4,8 @@ import { useSelector } from "react-redux";
 import { isEmpty, isLoaded, useFirestoreConnect } from "react-redux-firebase";
 import { DateTime } from "luxon";
 
-import { Duration, OrgSubCollection } from "eisbuk-shared";
+import { OrgSubCollection } from "eisbuk-shared";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -94,7 +95,7 @@ const CustomerArea: React.FC = () => {
    */
   const [bookings, bookedSlots] = Object.values(subscribedSlots).reduce(
     (acc, bookingInfo) => {
-      const { id, duration: bookedDuration } = bookingInfo || {};
+      const { id, duration: bookedDuration } = (bookingInfo as any) || {};
 
       // apply filter mask to subscribedSlots (recieved from store)
       // against calendarSlots (processed from raw slots)
@@ -110,7 +111,7 @@ const CustomerArea: React.FC = () => {
     },
     [[], {}] as [
       Array<BookingCardProps & { id: string }>,
-      Record<string, Duration>
+      Record<string, DeprecatedDuration>
     ]
   );
 

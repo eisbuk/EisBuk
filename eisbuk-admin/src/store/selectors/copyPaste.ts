@@ -1,4 +1,6 @@
-import { LocalStore, SlotDay } from "@/types/store";
+import { SlotsById } from "eisbuk-shared";
+
+import { LocalStore } from "@/types/store";
 
 /**
  * Get copied week of slots from clipboard
@@ -14,5 +16,5 @@ export const getWeekFromClipboard = (
  * @param state Local Redux State
  * @returns slot dat or empty object
  */
-export const getDayFromClipboard = (state: LocalStore): SlotDay =>
+export const getDayFromClipboard = (state: LocalStore): SlotsById =>
   state.copyPaste.day || {};

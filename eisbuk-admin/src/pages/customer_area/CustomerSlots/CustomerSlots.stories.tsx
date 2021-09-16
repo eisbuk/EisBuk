@@ -13,9 +13,9 @@ export default {
 } as ComponentMeta<typeof CustomerSlots>;
 
 export const BookIce = (): JSX.Element => (
-  <CustomerSlots slots={slotsMonth} view={CustomerRoute.BookIce} />
+  <CustomerSlots slots={slotsMonth as any} view={CustomerRoute.BookIce} />
 );
 
 export const BookOffIce = (): JSX.Element => (
-  <CustomerSlots slots={slotsWeek} view={CustomerRoute.BookOffIce} />
+  <CustomerSlots slots={slotsWeek as any} view={CustomerRoute.BookOffIce} />
 );

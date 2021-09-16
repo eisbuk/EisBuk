@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import * as testIds from "@/__testData__/testIds";
 
@@ -115,7 +115,7 @@ describe("SlotOperationButtons", () => {
     test("should provide children with the context of 'slot' if provided as props", () => {
       const testSlot = {
         id: "test_slot_id",
-      } as Slot<"id">;
+      } as SlotInterface;
       render(
         <SlotOperationButtons slot={testSlot}>
           <ContextTest />

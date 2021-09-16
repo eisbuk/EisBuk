@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
 
 import { Action } from "@/enums/store";
 
-import { SlotDay, SlotWeek } from "@/types/store";
+import { SlotsWeek } from "@/types/store";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -12,10 +12,10 @@ import { SlotDay, SlotWeek } from "@/types/store";
  * @returns Redux action object
  */
 export const deleteSlotFromClipboard = (
-  id: Slot<"id">["id"]
+  id: SlotInterface["id"]
 ): {
   type: Action;
-  payload: Slot<"id">["id"];
+  payload: SlotInterface["id"];
 } => ({
   type: Action.DeleteSlotFromClipboard,
   payload: id,
@@ -27,10 +27,10 @@ export const deleteSlotFromClipboard = (
  * @returns Redux action object
  */
 export const addSlotToClipboard = (
-  slot: Slot<"id">
+  slot: SlotInterface
 ): {
   type: Action;
-  payload: Slot<"id">;
+  payload: SlotInterface;
 } => ({
   type: Action.AddSlotToClipboard,
   payload: slot,
@@ -42,10 +42,10 @@ export const addSlotToClipboard = (
  * @returns Redux action object
  */
 export const copySlotDay = (
-  slotDay: SlotDay
+  slotDay: SlotsById
 ): {
   type: Action;
-  payload: SlotDay;
+  payload: SlotsById;
 } => ({
   type: Action.CopySlotDay,
   payload: slotDay,
@@ -57,10 +57,10 @@ export const copySlotDay = (
  * @returns Redux action object
  */
 export const copySlotWeek = (
-  slotWeek: SlotWeek
+  slotWeek: SlotsWeek
 ): {
   type: Action;
-  payload: SlotWeek;
+  payload: SlotsWeek;
 } => ({
   type: Action.CopySlotWeek,
   payload: slotWeek,
@@ -80,10 +80,10 @@ export const copySlotWeek = (
  * Payload for each respective `BulkSlotsAction` action
  */
 interface CopySlotsPayload {
-  [Action.CopySlotDay]: SlotDay;
-  [Action.CopySlotWeek]: SlotWeek;
-  [Action.PasteSlotDay]: SlotDay;
-  [Action.PasteSlotWeek]: SlotWeek;
+  [Action.CopySlotDay]: SlotsById;
+  [Action.CopySlotWeek]: SlotsByDay;
+  [Action.PasteSlotDay]: SlotsById;
+  [Action.PasteSlotWeek]: SlotsByDay;
 }
 
 /**

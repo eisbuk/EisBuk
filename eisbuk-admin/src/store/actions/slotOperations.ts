@@ -1,14 +1,15 @@
 import i18n from "i18next";
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
+import { DeprecatedSlot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { SlotFormValues } from "@/lib/data";
 
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
-import { SlotOperation } from "@/types/slotOperations";
+import { SlotOperation } from "@/types/deprecated/slotOperations";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -26,7 +27,7 @@ import {
  * @param slots a list of slots to create in firestore
  * @returns async thunk
  */
-export const createSlots = (slots: Slot[]): FirestoreThunk => async (
+export const createSlots = (slots: DeprecatedSlot[]): FirestoreThunk => async (
   dispatch,
   getState,
   { getFirebase }
@@ -114,7 +115,7 @@ export const deleteSlots = (
  * @returns async thunk
  */
 export const editSlot = (
-  slot: Omit<Slot<"id">, "date">
+  slot: Omit<DeprecatedSlot<"id">, "date">
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const db = getFirebase().firestore();
   try {
@@ -126,7 +127,7 @@ export const editSlot = (
       .update({
         categories: slot.categories,
         type: slot.type,
-        durations: slot.durations,
+        // durations: slot.durations,
         notes: slot.notes,
       });
 
@@ -157,7 +158,7 @@ export const editSlot = (
  * @param slotId od slot to delete
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const deleteSlot = (slotId: Slot<"id">["id"]): void => {
+export const deleteSlot = (slotId: SlotInterface["id"]): void => {
   /** @TODO should call to `deleteSlots` function and pass `slotId` */
 };
 

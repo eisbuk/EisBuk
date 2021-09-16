@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Duration } from "eisbuk-shared";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { luxonToFB } from "@/utils/date";
 
@@ -15,6 +15,6 @@ export const bookedSlots = Array(7)
       ...dummySlot,
       id: `slot-${i}`,
       date,
-      bookedDuration: Duration["1.5h"],
+      bookedDuration: DeprecatedDuration["1.5h"],
     };
   });

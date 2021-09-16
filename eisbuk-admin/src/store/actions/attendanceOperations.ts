@@ -1,11 +1,13 @@
-import { Collection, Customer, OrgSubCollection } from "eisbuk-shared";
-
 import {
+  Collection,
+  Customer,
+  OrgSubCollection,
   CustomerAttendance,
-  NewFirestoreThunk,
   SlotAttendnace,
   SlotInterface,
-} from "@/types/temp";
+} from "eisbuk-shared";
+
+import { FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -27,7 +29,7 @@ export const markAttendance = ({
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
   attendedInterval: string;
-}): NewFirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const db = getFirebase().firestore();
 
   const localState = getState();
@@ -71,7 +73,7 @@ export const markAbsence = ({
 }: {
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
-}): NewFirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   const db = getFirebase().firestore();
 
   const localState = getState();

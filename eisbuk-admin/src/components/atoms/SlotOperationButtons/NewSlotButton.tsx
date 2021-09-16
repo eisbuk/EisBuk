@@ -1,5 +1,8 @@
-import React, { useState, useContext } from "react";
-import { useDispatch } from "react-redux";
+import React, {
+  // useState,
+  useContext,
+} from "react";
+// import { useDispatch } from "react-redux";
 
 import IconButton from "@material-ui/core/IconButton";
 
@@ -8,12 +11,12 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotButtonProps } from "@/types/components";
-import { SlotOperation } from "@/types/slotOperations";
+// import { SlotOperation } from "@/types/deprecated/slotOperations";
 
-import SlotForm from "@/components/slots/SlotForm";
+// import SlotForm from "@/components/slots/SlotForm";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
-import { createSlots } from "@/store/actions/slotOperations";
+// import { createSlots } from "@/store/actions/slotOperations";
 
 import {
   __slotButtonNoContextError,
@@ -34,16 +37,16 @@ import { __newSlotButtonId__ } from "@/__testData__/testIds";
 export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
-  const [openForm, setOpenForm] = useState(false);
+  // const [openForm, setOpenForm] = useState(false);
 
-  const showForm = () => setOpenForm(true);
-  const closeForm = () => setOpenForm(false);
+  // const showForm = () => setOpenForm(true);
+  // const closeForm = () => setOpenForm(false);
 
   /** @TEMP This should be handled within the `SlotForm` component */
-  const dispatch = useDispatch();
-  const onCreateSlot: SlotOperation<"create"> = (slot) => {
-    dispatch(createSlots([slot]));
-  };
+  // const dispatch = useDispatch();
+  // const onCreateSlot: SlotOperation<"create"> = (slot) => {
+  //   dispatch(createSlots([slot]));
+  // };
   /** @TEMP */
 
   // prevent component from rendering and log error to console (but don't throw)
@@ -75,12 +78,12 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     <>
       <IconButton
         size={size || iconSize}
-        onClick={showForm}
+        // onClick={showForm}
         data-testid={__newSlotButtonId__}
       >
         <AddCircleOutlineIcon />
       </IconButton>
-      <SlotForm open={openForm} onClose={closeForm} createSlot={onCreateSlot} />
+      {/* <SlotForm open={openForm} onClose={closeForm} createSlot={onCreateSlot} /> */}
     </>
   );
 };

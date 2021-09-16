@@ -4,7 +4,7 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import { Slot } from "eisbuk-shared";
+import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { slotsLabels } from "@/config/appConfig";
 

@@ -1,7 +1,8 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import { Slot, Duration } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { SlotView } from "@/enums/components";
 import { CustomerRoute } from "@/enums/routes";
@@ -14,12 +15,12 @@ import { orderByWeekDay } from "./utils";
 
 interface SlotsByDay {
   [dayISO: string]: {
-    [slotId: string]: Slot<"id">;
+    [slotId: string]: SlotInterface;
   };
 }
 
 interface SubscribedSlots {
-  [slotId: string]: Duration;
+  [slotId: string]: DeprecatedDuration;
 }
 
 interface Props {
@@ -89,7 +90,7 @@ const CustomerSlots: React.FC<Props> = ({
                   return (
                     <SlotCard
                       key={slot.id}
-                      {...slot}
+                      {...(slot as any)}
                       view={SlotView.Customer}
                       {...{ subscribedDuration }}
                     />

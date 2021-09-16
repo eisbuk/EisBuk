@@ -248,7 +248,7 @@ const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
   ["2021-08"]: prevMonth,
   ["2021-09"]: currentMonth,
   ["2021-10"]: nextMonth,
-};
+} as any;
 
 /**
  * An intermediate step (used for easier type casting).

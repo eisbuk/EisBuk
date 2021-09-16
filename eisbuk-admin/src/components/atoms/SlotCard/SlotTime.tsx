@@ -6,7 +6,7 @@ import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 interface SlotTimeProps {
   subscribedDuration?: Duration;

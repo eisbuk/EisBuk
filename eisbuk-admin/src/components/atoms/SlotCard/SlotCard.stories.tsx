@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import { Duration } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { SlotView } from "@/enums/components";
 

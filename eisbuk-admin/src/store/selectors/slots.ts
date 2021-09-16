@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import _ from "lodash";
-import { createSelector } from "reselect";
+// import { createSelector } from "reselect";
 import { DateTime } from "luxon";
 
 import {
-  Slot,
-  Customer,
-  BookingInfo,
+  SlotInterface,
+  // Customer,
+  CustomerBookingEntry,
   SlotType,
   SlotsByDay,
   Category,
@@ -17,14 +17,14 @@ import { CustomerRoute } from "@/enums/routes";
 
 import { LocalStore } from "@/types/store";
 
-import { flatten, fs2luxon } from "@/utils/helpers";
+import { flatten } from "@/utils/helpers";
 
-import { getCustomersRecord } from "./firestore";
+// import { getCustomersRecord } from "./firestore";
 
 import { luxon2ISODate } from "@/utils/date";
 
-const extractSlotDate = (slot: Slot): number => slot.date.seconds;
-const extractSlotId = (slot: Slot<"id">): Slot<"id">["id"] => slot.id;
+// const extractSlotDate = (slot: SlotInterface): number => slot.date.seconds;
+// const extractSlotId = (slot: SlotInterface): SlotInterface["id"] => slot.id;
 
 /**
  * Try to execute the passed function.
@@ -58,7 +58,7 @@ const getSafe = <F extends () => any>(
  */
 export const getAllSlotsByDay = (
   state: LocalStore
-): Record<string, Record<string, Slot<"id">>> =>
+): Record<string, Record<string, SlotInterface>> =>
   flatten(
     Object.values(
       state.firestore.data?.slotsByDay || ({} as Record<string, any>)
@@ -72,19 +72,19 @@ export const getAllSlotsByDay = (
  */
 export const getSubscribedSlots = (
   state: LocalStore
-): Record<string, BookingInfo> =>
-  getSafe(() => state.firestore.data?.subscribedSlots);
+): Record<string, CustomerBookingEntry> =>
+  getSafe(() => state.firestore.data?.bookedSlots);
 
-/**
- * Selector creator higher order function
- * creates a selector for the day of slots (day provided as param)
- * @param dayStr date string for particular day ("yyyy-mm-dd")
- * @returns selector for record of slots (keyed by slot id), curried with the given day
- */
-const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
-  const monthStr = dayStr.substr(0, 7);
-  return getSafe(() => state.firestore.data?.slotsByDay![monthStr]![dayStr]);
-};
+// /**
+//  * Selector creator higher order function
+//  * creates a selector for the day of slots (day provided as param)
+//  * @param dayStr date string for particular day ("yyyy-mm-dd")
+//  * @returns selector for record of slots (keyed by slot id), curried with the given day
+//  */
+// const getSlotsForADay = (dayStr: string) => (state: LocalStore) => {
+//   const monthStr = dayStr.substr(0, 7);
+//   return getSafe(() => state.firestore.data?.slotsByDay![monthStr]![dayStr]);
+// };
 
 /**
  * HOF that creates a selector for view-specific slots by view in a single record, keyed by (day) date
@@ -106,70 +106,70 @@ export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
   );
 };
 
-/**
- * Selector creator higher order function
- * creates a selector for the day of bookings (day provided as param)
- * @param dayStr date string for particular day ("yyyy-mm-dd")
- * @returns selector for record of bookings (keyed by slot id), curried with the given day
- */
-const makeBookingsInfoSelector = (dayStr: string) => (state: LocalStore) =>
-  getSafe(() => state.firestore.data?.bookingsByDay![dayStr.substr(0, 7)]);
+// /**
+//  * Selector creator higher order function
+//  * creates a selector for the day of bookings (day provided as param)
+//  * @param dayStr date string for particular day ("yyyy-mm-dd")
+//  * @returns selector for record of bookings (keyed by slot id), curried with the given day
+//  */
+// const makeBookingsInfoSelector = (dayStr: string) => (state: LocalStore) =>
+//   getSafe(() => state.firestore.data?.bookingsByDay![dayStr.substr(0, 7)]);
 
-/**
- * Get slots for day, mapped with time info, and customers who booked that slot
- * @param dayStr date string for particular day ("yyyy-mm-dd")
- * @returns
- */
-export const bookingDayInfoSelector = (dayStr: string) =>
-  createSelector(
-    getSlotsForADay(dayStr),
-    makeBookingsInfoSelector(dayStr),
-    getCustomersRecord,
-    (slotsInfo, bookingsInfo, allUsers) => {
-      const slots = _.sortBy(Object.values(slotsInfo), [
-        extractSlotDate,
-        extractSlotId,
-      ]);
+// /**
+//  * Get slots for day, mapped with time info, and customers who booked that slot
+//  * @param dayStr date string for particular day ("yyyy-mm-dd")
+//  * @returns
+//  */
+// export const bookingDayInfoSelector = (dayStr: string) =>
+//   createSelector(
+//     getSlotsForADay(dayStr),
+//     makeBookingsInfoSelector(dayStr),
+//     getCustomersRecord,
+//     (slotsInfo, bookingsInfo, allUsers) => {
+//       const slots = _.sortBy(Object.values(slotsInfo), [
+//         extractSlotDate,
+//         extractSlotId,
+//       ]);
 
-      return slots.map((slot) => {
-        const users = Object.keys(bookingsInfo[slot.id] ?? {}).map((key) => {
-          const user =
-            allUsers && allUsers[key]
-              ? allUsers[key]
-              : ({
-                  name: "Cancellato",
-                  surname: "Cancellato",
-                  secret_key: "Cancellato",
-                  id: key,
-                } as Customer);
-          return {
-            name: user.name,
-            surname: user.surname,
-            certificateExpiration: user.certificateExpiration,
-            covidCertificateReleaseDate: user.covidCertificateReleaseDate,
-            covidCertificateSuspended: user.covidCertificateSuspended,
-            secret_key: user.secret_key,
-            id: user.id,
-            duration: bookingsInfo[slot.id][key],
-          };
-        });
+//       return slots.map((slot) => {
+//         const users = Object.keys(bookingsInfo[slot.id] ?? {}).map((key) => {
+//           const user =
+//             allUsers && allUsers[key]
+//               ? allUsers[key]
+//               : ({
+//                   name: "Cancellato",
+//                   surname: "Cancellato",
+//                   secret_key: "Cancellato",
+//                   id: key,
+//                 } as Customer);
+//           return {
+//             name: user.name,
+//             surname: user.surname,
+//             certificateExpiration: user.certificateExpiration,
+//             covidCertificateReleaseDate: user.covidCertificateReleaseDate,
+//             covidCertificateSuspended: user.covidCertificateSuspended,
+//             secret_key: user.secret_key,
+//             id: user.id,
+//             duration: bookingsInfo[slot.id][key],
+//           };
+//         });
 
-        // process slot data for return type
-        // this seems a little weird and should be reviewed within code rewrite
-        /** @TODO */
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { notes, date, ...slotBase } = slot;
+//         // process slot data for return type
+//         // this seems a little weird and should be reviewed within code rewrite
+//         /** @TODO */
+//         // eslint-disable-next-line @typescript-eslint/no-unused-vars
+//         const { notes, date, ...slotBase } = slot;
 
-        return {
-          ...slotBase,
-          time: fs2luxon(slot.date).toFormat(
-            "HH:mm"
-          ) /** @TODO check this out, might be better to do this kind of transformation at component level */,
-          users: users,
-        };
-      });
-    }
-  );
+//         return {
+//           ...slotBase,
+//           time: fs2luxon(slot.date).toFormat(
+//             "HH:mm"
+//           ) /** @TODO check this out, might be better to do this kind of transformation at component level */,
+//           users: users,
+//         };
+//       });
+//     }
+//   );
 
 // #region newSelectors
 /**

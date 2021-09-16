@@ -13,7 +13,8 @@ import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration, Slot } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
+import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { slotsLabels } from "@/config/appConfig";
 

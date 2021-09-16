@@ -18,7 +18,7 @@ import AssignmentIcon from "@material-ui/icons/Assignment";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Slot as SlotInterface } from "eisbuk-shared";
+import { DeprecatedSlot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { __isStorybook__ } from "@/lib/constants";
 
@@ -27,7 +27,7 @@ import { CustomerRoute } from "@/enums/routes";
 import Slot, { SlotProps } from "./Slot";
 import { ETheme } from "@/themes";
 
-import { SlotOperation } from "@/types/slotOperations";
+import { SlotOperation } from "@/types/deprecated/slotOperations";
 
 import {
   copySlotDay,
@@ -50,7 +50,7 @@ const luxon = new LuxonUtils({ locale: "C" });
 type SimplifiedSlotProps = Omit<Omit<SlotProps, "data">, "deleted">;
 
 export interface SlotsDayProps extends SimplifiedSlotProps {
-  slots: Record<string, SlotInterface<"id">>;
+  slots: Record<string, DeprecatedSlot<"id">>;
   day: string;
   enableEdit?: boolean;
   view?: CustomerRoute;
@@ -84,7 +84,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
     ? copiedWeek.slots.map((slot) => slot.id)
     : [];
 
-  const checkSelected = (id: SlotInterface<"id">["id"]) =>
+  const checkSelected = (id: DeprecatedSlot<"id">["id"]) =>
     copiedWeekSlots.includes(id);
 
   const currentWeek = useSelector(getCurrentWeekStart);
@@ -119,7 +119,9 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
   };
 
   const doPaste = () =>
-    dispatch(createSlots(shiftSlotsDay(Object.values(dayInClipboard), day)));
+    dispatch(
+      createSlots(shiftSlotsDay(Object.values(dayInClipboard), day) as any)
+    );
 
   const newSlotButton = enableEdit && (
     <>
@@ -146,7 +148,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
           {enableEdit && Boolean(slotsList.length) && (
             <IconButton
               size="small"
-              onClick={() => dispatch(copySlotDay(slots))}
+              onClick={() => dispatch(copySlotDay(slots as any))}
             >
               <FileCopyIcon />
             </IconButton>
@@ -167,7 +169,7 @@ const SlotsDay: React.FC<SlotsDayProps> = ({
               canClickSlots &&
               (checkSelected(slot.id)
                 ? dispatch(deleteSlotFromClipboard(slot.id))
-                : dispatch(addSlotToClipboard(slot)))
+                : dispatch(addSlotToClipboard(slot as any)))
             }
             item
             xs={12}

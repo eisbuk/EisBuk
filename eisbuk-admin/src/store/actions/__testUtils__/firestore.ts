@@ -1,12 +1,12 @@
 import { Dispatch } from "redux";
 
-import { TempStore, NewFirestoreThunk } from "@/types/temp";
+import { LocalStore, FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
 
-type ThunkParams = Parameters<NewFirestoreThunk>;
+type ThunkParams = Parameters<FirestoreThunk>;
 
 /**
  * Set up `attendance` data in emulated store and create `getState()` returning redux store
@@ -15,7 +15,7 @@ type ThunkParams = Parameters<NewFirestoreThunk>;
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
 export const setupTestAttendance = async (
-  attendance: TempStore["firestore"]["data"]["attendance"]
+  attendance: LocalStore["firestore"]["data"]["attendance"]
 ): Promise<ThunkParams> => {
   // we're not using dispatch so it's here just to comply with type structure
   const dispatch: Dispatch = (value: any) => value;
