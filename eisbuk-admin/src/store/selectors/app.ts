@@ -48,15 +48,3 @@ export const getCalendarDay: CurrentTimeframeSelector = (state) =>
  */
 export const getCurrentWeekStart: CurrentTimeframeSelector = (state) =>
   state.app.calendarDay.startOf("week");
-
-/**
- * Selector creator higher order function,
- * creates a selector for current timeframe (passed as param)
- * @param timeframe timeframe for selector (day, week, etc.)
- * @returns Redux selctor for start of passed timeframe in `DateTime` format
- */
-export const getStartForCurrentTimeframe = (
-  timeframe: keyof DurationObjectUnits
-): CurrentTimeframeSelector => (state) =>
-  state.app.calendarDay.startOf(timeframe);
-// ***** Region Current Timeframe ***** //
