@@ -6,6 +6,7 @@ import { Duration } from "eisbuk-shared";
 import BookingCard from "./BookingCard";
 
 import { dummySlot } from "@/__testData__/dummyData";
+import { SlotView } from "@/enums/components";
 
 export default {
   title: "Booking Card",
@@ -19,5 +20,15 @@ const Template: ComponentStory<typeof BookingCard> = (args) => (
 export const Default = Template.bind({});
 Default.args = {
   ...dummySlot,
-  bookedDuration: Duration["1.5h"],
+  view: SlotView.Calendar,
 };
+
+const calendarProps = { view: SlotView.Calendar };
+export const Calendar = (): JSX.Element => (
+  <BookingCard {...dummySlot} {...calendarProps} />
+);
+
+const bookingProps = { view: SlotView.Booking };
+export const Booking = (): JSX.Element => (
+  <BookingCard {...dummySlot} {...bookingProps} />
+);
