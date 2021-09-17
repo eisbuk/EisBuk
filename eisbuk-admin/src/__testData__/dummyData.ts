@@ -5,15 +5,24 @@ import { Slot, Duration, SlotType, Category } from "eisbuk-shared";
 import { __storybookDate__ } from "@/lib/constants";
 
 import { fb2Luxon, luxon2ISODate, luxonToFB } from "@/utils/date";
+import { SlotInterval } from "@/types/temp";
 
 // #region slot
-export const dummySlot: Slot<"id"> = {
+export const dummySlot: Slot<"id"> & { interval: SlotInterval } = {
   date: luxonToFB(DateTime.fromISO(__storybookDate__!).plus({ hours: 8 })),
+  interval: {
+    startTime: "08:00",
+    endTime: "09:00",
+  },
   id: "id",
   durations: [Duration["1h"], Duration["1.5h"], Duration["2h"]],
   type: SlotType.Ice,
   categories: [Category.PreCompetitive],
   notes: "",
+};
+export const tempSlot = {
+  ...dummySlot,
+  bookedDuration: Duration["1.5h"],
 };
 
 export const collectionOfSlots = Array(4)
