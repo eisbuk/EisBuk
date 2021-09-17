@@ -8,11 +8,13 @@ export enum ProjectIcons {
 
 // #region slot
 /**
- * Used to toggle between showing subscribe actions or slot operations (create, edit, etc.)
+ * Used to toggle between enabling booking action vs just displaying the interval
  */
 export enum SlotView {
   Admin = "admin",
   Customer = "customer",
+  Calendar = "calendar",
+  Booking = "booking",
 }
 // #endregion slot
 
