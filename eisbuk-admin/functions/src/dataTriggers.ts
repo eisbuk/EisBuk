@@ -3,9 +3,17 @@ import admin from "firebase-admin";
 import { v4 as uuidv4 } from "uuid";
 import { DateTime } from "luxon";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
-
-import { fs2luxon } from "./utils";
+import {
+  BookingSubCollection,
+  Collection,
+  Customer,
+  CustomerAttendance,
+  CustomerBase,
+  CustomerBookingEntry,
+  OrgSubCollection,
+  SlotAttendnace,
+  SlotInterface,
+} from "eisbuk-shared";
 
 /**
  * Adds the secret_key to a user if it's missing.
@@ -14,7 +22,9 @@ import { fs2luxon } from "./utils";
  */
 export const addMissingSecretKey = functions
   .region("europe-west6")
-  .firestore.document("organizations/{organization}/customers/{customerId}")
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
+  )
   .onWrite(async (change, context) => {
     const db = admin.firestore();
 
@@ -23,34 +33,80 @@ export const addMissingSecretKey = functions
       string
     >;
 
-    const after = change.after.data()!;
+    const after = change.after.data() as
+      | (Omit<Customer, "secretKey"> & { secretKey?: string })
+      | undefined;
 
     if (after) {
-      const secretKey: string = after.secret_key || uuidv4();
+      const secretKey = after.secretKey || uuidv4();
 
       // Create a record in /bookings with this secret key as id
       // and the customer name
-      const bookingsRoot = {
+      const bookingsRoot: CustomerBase = {
         // // eslint-disable-next-line @typescript-eslint/camelcase
-        customer_id: customerId,
-        ...(after.name && { name: after.name }),
-        ...(after.surname && { surname: after.surname }),
-        ...(after.category && { category: after.category }),
+        id: customerId,
+        name: after.name || "",
+        surname: after.surname || "",
+        category: after.category,
       };
 
       await db
-        .collection("organizations")
+        .collection(Collection.Organizations)
         .doc(organization)
-        .collection("bookings")
+        .collection(OrgSubCollection.Bookings)
         .doc(secretKey)
         .set(bookingsRoot);
 
-      return after.secret_key
+      return after.secretKey
         ? null
         : // // eslint-disable-next-line @typescript-eslint/camelcase
-          change.after.ref.update({ secret_key: secretKey });
+          change.after.ref.update({ secretKey } as Pick<Customer, "secretKey">);
     }
     return change.after;
+  });
+
+/**
+ * Data trigger listening to create/delete slot document and creates/deletes attendance entry for given slot.
+ * Doesn't run if slot is only updated.
+ */
+export const triggerAttendanceEntryForSlot = functions
+  .region("europe-west6")
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+  )
+  .onWrite(async (change, context) => {
+    const db = admin.firestore();
+
+    const { organization, slotId } = context.params as Record<string, string>;
+
+    let attendanceEntry: SlotAttendnace | FirebaseFirestore.FieldValue;
+
+    const isCreate = !change.before.exists;
+    const isDelete = !change.after.exists;
+
+    switch (true) {
+      case !isCreate:
+        // add empay entry for slot's attendance
+        attendanceEntry = {
+          date: change.after.data()!.date,
+          attendances: {},
+        } as SlotAttendnace;
+        break;
+      case !isDelete:
+        // delete attendance entry for slot
+        attendanceEntry = admin.firestore.FieldValue.delete();
+        break;
+      default:
+        // exit if slot was just updated
+        return;
+    }
+
+    await db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Attendance)
+      .doc(slotId)
+      .set(attendanceEntry);
   });
 
 /**
@@ -61,7 +117,9 @@ export const addMissingSecretKey = functions
  */
 export const aggregateSlots = functions
   .region("europe-west6")
-  .firestore.document("organizations/{organization}/slots/{slotId}")
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+  )
   .onWrite(async (change, context) => {
     const db = admin.firestore();
 
@@ -71,9 +129,11 @@ export const aggregateSlots = functions
     >;
 
     let luxonDay: DateTime;
-    let newSlot: FirebaseFirestore.DocumentData;
+    let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
 
-    const afterData = change.after.data();
+    const afterData = change.after.data() as
+      | Omit<SlotInterface, "id">
+      | undefined;
 
     if (afterData) {
       newSlot = { ...afterData, id };
@@ -89,9 +149,9 @@ export const aggregateSlots = functions
     const dayStr = luxonDay.toISO().substring(0, 10);
 
     await db
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(organization)
-      .collection("slotsByDay")
+      .collection(OrgSubCollection.SlotsByDay)
       /** @TODO : Maybe name these slotsByMonth to avoid confusion */
       .doc(monthStr)
       .set({ [dayStr]: { [id]: newSlot } }, { merge: true });
@@ -100,69 +160,15 @@ export const aggregateSlots = functions
   });
 
 /**
- * Maintain a copy of each slot in a different structure aggregated by month.
- * This allows to update small documents while still being able to get data for
- * a whole month in a single read.
- * The cost is one extra write per each update to the slots.
- */
-export const aggregateBookings = functions
-  .region("europe-west6")
-  .firestore.document(
-    "organizations/{organization}/bookings/{secretKey}/data/{bookingId}"
-  )
-  .onWrite(async (change, context) => {
-    const db = admin.firestore();
-
-    const { organization, secretKey } = context.params as Record<
-      string,
-      string
-    >;
-
-    const userData = (
-      await db
-        .collection("organizations")
-        .doc(organization)
-        .collection("bookings")
-        .doc(secretKey)
-        .get()
-    ).data();
-
-    const customerId = userData!.customer_id;
-
-    // check if update or delete
-    const isUpdate = change.after.exists;
-
-    const bookingData = isUpdate ? change.after.data()! : change.before.data()!;
-
-    const luxonDay = fs2luxon(bookingData.date);
-    const monthStr = luxonDay.toISO().substring(0, 7);
-
-    // on update field value will be duration from update
-    // on delete it will be delete sentinel
-    const fieldValue = isUpdate
-      ? bookingData.duration
-      : admin.firestore.FieldValue.delete();
-
-    if (!change.after.exists) functions.logger.log("deleting");
-
-    return db
-      .collection("organizations")
-      .doc(organization)
-      .collection("bookingsByDay")
-      .doc(monthStr)
-      .set({ [bookingData.id]: { [customerId]: fieldValue } }, { merge: true });
-  });
-
-/**
  * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
  *
  * - listens to `organizations/{organization}/bookings/{secretKey}/bookedSlots/{slotId}`
  * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
  */
-export const aggregateAttendance = functions
+export const createAttendanceForBooking = functions
   .region("europe-west6")
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/bookedSlots/{bookingId}`
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
   .onWrite(async (change, context) => {
     const { organization, secretKey, bookingId } = context.params as Record<
@@ -173,22 +179,24 @@ export const aggregateAttendance = functions
 
     const isUpdate = Boolean(change.after.exists);
 
-    const { customerId } = (
+    const { id: customerId } = (
       await db
         .collection(Collection.Organizations)
         .doc(organization)
         .collection(OrgSubCollection.Bookings)
         .doc(secretKey)
         .get()
-    ).data()!;
+    ).data() as CustomerBase;
+
+    const afterData = change.after.data() as CustomerBookingEntry | undefined;
 
     const updatedEntry = {
       attendances: {
         [customerId]: isUpdate
-          ? {
-              booked: change.after.data()!.interval,
-              attended: null,
-            }
+          ? ({
+              booked: afterData!.interval,
+              attended: afterData!.interval,
+            } as CustomerAttendance)
           : admin.firestore.FieldValue.delete(),
       },
     };

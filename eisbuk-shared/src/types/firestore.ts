@@ -109,13 +109,13 @@ export interface CustomerBase {
   surname: string;
   category: Category;
   // eslint-disable-next-line camelcase
-  secret_key: string;
 }
 
 /**
  * Customer entry in the Firestore DB
  */
 export interface Customer extends CustomerBase {
+  secretKey: string;
   birthday: string;
   email: string;
   phone: string;
@@ -208,7 +208,7 @@ export interface FirestoreSchema {
         [customerId: string]: Customer;
       };
       [OrgSubCollection.Bookings]: {
-        [secret_key: string]: CustomerBookings;
+        [secretKey: string]: CustomerBookings;
       };
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
