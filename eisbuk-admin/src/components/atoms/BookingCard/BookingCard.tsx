@@ -22,7 +22,7 @@ import { SlotInterval } from "@/types/temp";
 //   Pick<Slot, "notes"> & {
 //     bookedDuration: Duration;
 //   };
-export interface BookingCardProps extends SlotInterface<"id"> {
+export interface Props extends SlotInterface<"id"> {
   /**
    * Controls slot displaying different color when being selected
    */
@@ -47,7 +47,7 @@ export interface BookingCardProps extends SlotInterface<"id"> {
 }
 
 /** @TODO This component needs fixing (rebase), would be best to do if we implement tailwind */
-const BookingCard: React.FC<BookingCardProps> = ({
+const BookingCard: React.FC<Props> = ({
   subscribedDuration,
   view = SlotView.Calendar,
   ...slotData
