@@ -4,84 +4,78 @@ import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
 
-import makeStyles from "@material-ui/styles/makeStyles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration, Slot } from "eisbuk-shared";
+import { Duration, Slot as SlotInterface } from "eisbuk-shared";
 
-import ProjectIcon from "@/components/global/ProjectIcons";
+import SlotTime from "./SlotTime";
 
-import { currentTheme } from "@/themes";
+import { SlotView } from "@/enums/components";
+import SlotTypeLabel from "./SlotTypeLabel";
+import { SlotInterval } from "@/types/temp";
 
-import { slotsLabels } from "@/config/appConfig";
+// export type Props = Pick<Slot, "type"> & { view?: SlotView } & Pick<
+//     Slot,
+//     "date"
+//   > &
+//   Pick<Slot, "notes"> & {
+//     bookedDuration: Duration;
+//   };
+export interface BookingCardProps extends SlotInterface<"id"> {
+  /**
+   * Controls slot displaying different color when being selected
+   */
+  selected?: boolean;
+  /**
+   * Duration, on this particular slot, for which the user has subscribed
+   */
+  subscribedDuration?: Duration;
+  /**
+   * Interval (one of the available intervals for this slot)
+   */
 
-import { fb2Luxon } from "@/utils/date";
-import { useTranslation } from "react-i18next";
-
-export type Props = Pick<Slot, "type"> &
-  Pick<Slot, "date"> &
-  Pick<Slot, "notes"> & {
-    bookedDuration: Duration;
-  };
+  interval: SlotInterval;
+  /**
+   * Display different parts and enable different actions with respect to the view ("admin"/"customer")
+   */
+  view?: SlotView;
+  /**
+   * Click handler for the entire card, will default to empty function if none is provided
+   */
+  onClick?: (e: React.SyntheticEvent) => void;
+}
 
 /** @TODO This component needs fixing (rebase), would be best to do if we implement tailwind */
-const BookingCard: React.FC<Props> = ({
-  type,
-  date: timestamp,
-  notes,
-  bookedDuration,
+const BookingCard: React.FC<BookingCardProps> = ({
+  subscribedDuration,
+  view = SlotView.Calendar,
+  ...slotData
 }) => {
   const classes = useStyles();
 
-  const { t } = useTranslation();
-  const slotLabel = slotsLabels.types[type];
-  const date = fb2Luxon(timestamp);
-
-  // times to show
-  const startTimeISO = date.toISOTime().substring(0, 5);
-  const endTimeISO = date
-    .plus({ minutes: Number(bookedDuration) - 10 })
-    .toISOTime()
-    .substring(0, 5);
-
-  const timeSpan = (
-    <Box className={classes.time}>
-      <Typography component="h2">
-        <Typography color="primary" display="inline" variant="h5">
-          <strong>{startTimeISO}</strong>
-        </Typography>{" "}
-        <Typography className={classes.endTime} display="inline" variant="h6">
-          - {endTimeISO}
-        </Typography>
-      </Typography>
-    </Box>
-  );
+  // const { t } = useTranslation();
+  // const slotLabel = slotsLabels.types[slotData.type];
 
   return (
     <Card variant="outlined" className={classes.root}>
       <CardContent className={classes.content}>
-        <Box className={classes.date} textAlign="center">
-          <Typography variant="h5" className={classes.weekday}>
-            {t("CustomerAreaBookingCard.Weekday", { date })}
-          </Typography>
-          <Typography className={classes.day}>
-            {t("CustomerAreaBookingCard.Day", { date })}
-          </Typography>
-          <Typography className={classes.month}>
-            {t("CustomerAreaBookingCard.Month", { date })}
-          </Typography>
-        </Box>
+        <SlotTime
+          interval={slotData.interval}
+          disabled={view === SlotView.Calendar}
+        />
+
         <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {timeSpan}
-            {notes && (
+            {slotData.notes && (
               <Box
                 display="flex"
                 className={classes.notesWrapper}
                 alignItems="center"
               >
-                <Typography className={classes.notes}>{notes}</Typography>
+                <Typography className={classes.notes}>
+                  {slotData.notes}
+                </Typography>
               </Box>
             )}
           </Box>
@@ -92,36 +86,7 @@ const BookingCard: React.FC<Props> = ({
               flexGrow={1}
               className={classes.durationWrapper}
             >
-              <Button
-                key={bookedDuration}
-                color="primary"
-                variant="text"
-                className={classes.duration}
-                disabled
-              >
-                {slotsLabels.durations[bookedDuration].label}
-              </Button>
-            </Box>
-            <Box
-              flexGrow={1}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
-              pl={1}
-              pr={1}
-            >
-              <ProjectIcon
-                className={classes.typeIcon}
-                icon={slotLabel.icon}
-                fontSize="small"
-              />
-              <Typography
-                className={classes.type}
-                key="type"
-                color={slotLabel.color}
-              >
-                {t(`SlotTypes.${type}`)}
-              </Typography>
+              <SlotTypeLabel slotType={slotData.type} />
             </Box>
           </Box>
         </Box>
@@ -131,9 +96,9 @@ const BookingCard: React.FC<Props> = ({
 };
 
 // ***** Region Styles ***** //
-type Theme = typeof currentTheme;
+// type Theme = typeof currentTheme;
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     marginTop: theme.spacing(1),
@@ -197,6 +162,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: theme.typography.fontWeightBold,
   },
   deleteButton: {},
+  slotTime: {
+    borderRightWidth: 1,
+    borderRightColor: theme.palette.divider,
+    borderRightStyle: "solid",
+  },
 }));
 // ***** End Region Styles ***** //
 
