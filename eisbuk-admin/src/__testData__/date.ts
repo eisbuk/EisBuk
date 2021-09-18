@@ -1,3 +1,4 @@
+import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
 
 import { __storybookDate__ } from "@/lib/constants";
@@ -15,6 +16,6 @@ export const testDateLuxon = DateTime.fromISO(__storybookDate__);
 /**
  * Test date in milliseconds (placeholder until @TODO we've solve the issue with Timestamp)
  */
-export const timestampDate = {
+export const timestampDate: Timestamp = {
   seconds: luxonToFB(testDateLuxon).seconds,
-};
+} as Timestamp;

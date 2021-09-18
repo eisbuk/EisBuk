@@ -1,67 +1,102 @@
 import { DateTime } from "luxon";
 
 import { SlotType, Category, SlotInterface } from "eisbuk-shared";
-import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
-import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
-import { __storybookDate__ } from "@/lib/constants";
+import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
-import { fb2Luxon, luxon2ISODate, luxonToFB } from "@/utils/date";
+import { testDateLuxon, timestampDate } from "./date";
 
 // #region slot
-export const dummySlot: Slot<"id"> = {
-  date: luxonToFB(DateTime.fromISO(__storybookDate__!).plus({ hours: 8 })),
+/**
+ * A helper function used to create a slotInterval.
+ * Receives startHour (0-24) and duration and creates a record containing
+ * one slot interval keyed "<startTime>-<endTime>" and containing start and end time strings
+ * @param startHour
+ * @param duration
+ * @returns
+ */
+const createIntervalEntry = (startHour: number, duration: number) => {
+  const startTimeLuxon = DateTime.fromObject({ hour: startHour });
+  const endTimeLuxon = startTimeLuxon.plus({ hours: duration });
+
+  const startTime = startTimeLuxon.toISOTime().substr(0, 5);
+  const endTime = endTimeLuxon.toISOTime().substr(0, 5);
+
+  return {
+    [`${startTime}-${endTime}`]: {
+      startTime,
+      endTime,
+    },
+  };
+};
+
+/**
+ * A helper function used to create intervals record.
+ * Receives start hour (number 0-24) and creates two hour slot with intervals:
+ * - `(startHour) - (startHour + 1)`
+ * - `(startHour + 1) - (startHour + 2)`
+ * - `(startHour) - (startHour + 2)`
+ * @param startHour
+ * @returns
+ */
+const createIntervals = (startHour: number) => ({
+  ...createIntervalEntry(startHour, 1),
+  ...createIntervalEntry(startHour + 1, 1),
+  ...createIntervalEntry(startHour, 2),
+});
+
+export const intervals = createIntervals(9);
+
+export const baseSlot: SlotInterface = {
+  date: timestampDate,
   id: "id",
-  durations: [Duration["1h"], Duration["1.5h"], Duration["2h"]],
   type: SlotType.Ice,
   categories: [Category.PreCompetitive],
+  intervals,
   notes: "",
 };
 
 export const collectionOfSlots = Array(4)
   .fill(null)
-  .map((_, i) => {
-    const defaultDate = fb2Luxon(dummySlot.date);
-    const newDate = defaultDate.plus({ hours: i * 2 });
-    const date = luxonToFB(newDate);
-    return { ...dummySlot, date, id: `slot-${i}` };
-  });
+  .map((_, i) => ({
+    ...baseSlot,
+    id: `slot-${i}`,
+    intervals: createIntervals(9 + i * 2),
+  }));
 
 /**
  * Dummy month of slots (resembling a structure we should receive from store).
  * Used for `CustomerRoute="book_ice"`
  */
-export const slotsMonth = (Array(8)
-  .fill(null)
+export const slotsMonth = Array(8)
+  .fill(testDateLuxon)
   // create dates
-  .map((_, i) => {
-    // dummy date -> start of week and month (for convenience)
-    const baseDateISO = "2021-03-01";
-    const baseDateLuxon = DateTime.fromISO(baseDateISO);
-
+  .map((baseDate, i) => {
     // we're putting two slots in each week
     const weekJump = Math.floor(i / 2);
     // one monday and one wednesday
     const dayJump = (i % 2) * 2;
 
-    const resultDate = baseDateLuxon.plus({ weeks: weekJump, days: dayJump });
+    const resultDate = baseDate.plus({ weeks: weekJump, days: dayJump });
     return luxon2ISODate(resultDate);
   })
   // create a record keyed by iso dates (from last step)
   .reduce((acc, isoDate, i) => {
-    // a fb Timestamp date calculated from key (ISO string)
-    // start each slot at 9:00 am
-    const date = luxonToFB(DateTime.fromISO(isoDate).plus({ hours: 9 }));
-
     // create a simple slot id from current index of the array
     const slotId = `slot-${i}`;
+
+    const date = luxonToFB(DateTime.fromISO(isoDate));
     return {
       ...acc,
       [isoDate]: {
-        [slotId]: { ...dummySlot, id: slotId, type: SlotType.Ice, date },
+        [slotId]: {
+          ...baseSlot,
+          id: slotId,
+          date,
+        },
       },
     };
-  }, {} as Record<string, Record<string, Slot<"id">>>) as unknown) as Record<
+  }, {} as Record<string, Record<string, SlotInterface>>) as Record<
   string,
   Record<string, SlotInterface>
 >;
@@ -72,29 +107,22 @@ export const slotsMonth = (Array(8)
  * Used for `CustomerRoute="book_off_ice"`
  */
 export const slotsWeek = Array(7)
-  .fill(null)
+  .fill(testDateLuxon)
   // create dates
-  .map((_, i) => {
-    // dummy date -> start of week and month (for convenience)
-    const baseDateISO = "2021-03-01";
-    const baseDateLuxon = DateTime.fromISO(baseDateISO);
-
-    const resultDate = baseDateLuxon.plus({ days: i });
-    return luxon2ISODate(resultDate);
-  })
+  .map((baseDate, i) => baseDate.plus({ days: i }))
   // create a record keyed by iso dates (from last step)
-  .reduce((acc, isoDate, i) => {
+  .reduce((acc, luxonDate, i) => {
     // a fb Timestamp date calculated from key (ISO string)
-    // start each slot at 9:00 am
-    const date = luxonToFB(DateTime.fromISO(isoDate).plus({ hours: 9 }));
-
+    const date = luxonToFB(luxonDate);
+    // create iso date for keys
+    const isoDate = luxon2ISODate(luxonDate);
     // create a simple slot id from current index of the array
     const slotId = `slot-${i}`;
     return {
       ...acc,
       [isoDate]: {
-        [slotId]: { ...dummySlot, id: slotId, type: SlotType.Ice, date },
+        [slotId]: { ...baseSlot, id: slotId, date },
       },
     };
-  }, {} as Record<string, Record<string, Slot<"id">>>);
+  }, {} as Record<string, Record<string, SlotInterface>>);
 // #endregion slot

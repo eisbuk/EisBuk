@@ -8,8 +8,6 @@ import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/fire
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { SlotView } from "@/enums/components";
-
 import SlotCard from "../SlotCard";
 
 import * as bookingActions from "@/store/actions/bookingOperations";
@@ -22,7 +20,7 @@ import {
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 
@@ -53,73 +51,20 @@ describe("SlotCard", () => {
 
   describe("Smoke test", () => {
     test("should render properly", () => {
-      render(<SlotCard {...dummySlot} />);
-    });
-  });
-
-  describe("DurationsSection functionality", () => {
-    const mockSubscribe = jest.spyOn(bookingActions, "subscribeToSlot");
-    const mockUnsubscribe = jest.spyOn(bookingActions, "unsubscribeFromSlot");
-
-    // we're mocking booking operations to return payload they've been called with rather than thunk
-    // any assertion comes to explicitly say we're ok with returning a Record instead of async thunk
-    mockSubscribe.mockImplementationOnce(
-      (bookingId, bookingInfo) =>
-        ({ action: "subscribe", bookingId, bookingInfo } as any)
-    );
-    mockUnsubscribe.mockImplementation(
-      (bookingId, slotId) =>
-        ({ action: "unsubscribe", bookingId, slotId } as any)
-    );
-
-    test("if clicked duration is not subscribed to, should subscribe to said duration and unsubscribe from any other duration", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      const subscribedDuration = dummySlot.durations[0];
-      render(
-        <SlotCard {...dummySlot} subscribedDuration={subscribedDuration} />
-      );
-      const notSubscribedDuration = dummySlot.durations[1];
-      const notSubscribedDurationLabel =
-        slotsLabels.durations[notSubscribedDuration].label;
-      screen.getByText(notSubscribedDurationLabel).click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        action: "subscribe",
-        bookingId: "secret_key",
-        bookingInfo: { ...dummySlot, duration: notSubscribedDuration },
-      });
+      render(<SlotCard {...baseSlot} />);
     });
 
-    test("if clicked duration is subscribed to, should unsubscribe from said duration", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      const subscribedDuration = dummySlot.durations[0];
-      render(
-        <SlotCard {...dummySlot} subscribedDuration={subscribedDuration} />
-      );
-      const subscribedDurationLabel =
-        slotsLabels.durations[subscribedDuration].label;
-      screen.getByText(subscribedDurationLabel).click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        action: "unsubscribe",
-        bookingId: "secret_key",
-        slotId: dummySlot.id,
+    test("should render intervals", () => {
+      render(<SlotCard {...baseSlot} />);
+      Object.keys(baseSlot.intervals).forEach((slotKey) => {
+        screen.getByText(slotKey.split("-").join(" - "));
       });
-    });
-
-    test("if admin view, clicking on durations won't have any effect", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} />);
-      // click all of the buttons
-      dummySlot.durations.forEach((duration) => {
-        const durationLabel = slotsLabels.durations[duration].label;
-        screen.getByText(durationLabel).click();
-      });
-      expect(mockDispatch).toHaveBeenCalledTimes(0);
     });
   });
 
   describe("SlotOperationButtons functionality", () => {
     beforeEach(() => {
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      render(<SlotCard {...baseSlot} enableEdit />);
     });
 
     test("should open slot form on edit slot click", () => {
@@ -141,7 +86,7 @@ describe("SlotCard", () => {
       screen.getByTestId(__deleteButtonId__).click();
       // confirm delete dialog
       screen.getByTestId(__confirmDialogYesId__).click();
-      const mockDeleteAction = mockDelSlotImplementation(dummySlot.id);
+      const mockDeleteAction = mockDelSlotImplementation(baseSlot.id);
       expect(mockDispatch).toHaveBeenCalledWith(mockDeleteAction);
     });
   });
@@ -150,20 +95,13 @@ describe("SlotCard", () => {
     const mockOnClick = jest.fn();
 
     test("should fire 'onClick' function if provided", () => {
-      render(
-        <SlotCard
-          {...dummySlot}
-          view={SlotView.Admin}
-          enableEdit
-          onClick={mockOnClick}
-        />
-      );
+      render(<SlotCard {...baseSlot} enableEdit onClick={mockOnClick} />);
       screen.getByTestId(__slotId__).click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
     test("should not explode on click if no 'onClick' handler has been provided", () => {
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      render(<SlotCard {...baseSlot} enableEdit />);
       screen.getByTestId(__slotId__).click();
     });
   });

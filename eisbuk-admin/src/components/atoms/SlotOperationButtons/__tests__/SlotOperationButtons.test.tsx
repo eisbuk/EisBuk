@@ -21,7 +21,7 @@ import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
 import { luxon2ISODate } from "@/utils/date";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update slot form to be more atomic  */
@@ -46,7 +46,7 @@ describe("SlotOperationButtons", () => {
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
           date={dummyDate}
-          slot={dummySlot}
+          slot={baseSlot}
         >
           <EditSlotButton />
           <DeleteButton />

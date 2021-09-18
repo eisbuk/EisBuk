@@ -32,7 +32,7 @@ import {
   __confirmDialogNoId__,
   __confirmDialogYesId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 
@@ -106,7 +106,7 @@ describe("SlotOperationButtons", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
-          slot={dummySlot}
+          slot={baseSlot}
         >
           <DeleteButton />
         </SlotOperationButtons>
@@ -114,7 +114,7 @@ describe("SlotOperationButtons", () => {
       // initiate delete
       screen.getByTestId(__deleteButtonId__).click();
       // create a dummy delete slots day action object with proper values
-      const mockSlotDelAction = mockDelSlotImplementation(dummySlot.id);
+      const mockSlotDelAction = mockDelSlotImplementation(baseSlot.id);
       // test (using mocking tactics explained above) if `deleteSlot`
       // has been dispatched to the store with proper slot data
       expect(mockDispatch).toHaveBeenCalledWith(mockSlotDelAction);

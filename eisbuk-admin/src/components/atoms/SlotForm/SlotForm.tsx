@@ -40,7 +40,7 @@ import { createNewSlot, updateSlot } from "@/store/actions/slotOperations";
 
 import { slotToFormValues } from "./utils";
 
-import { __slotFormId__ } from "@/__testData__/testIds";
+import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
 const validationSchema = yup.object().shape({
@@ -150,7 +150,11 @@ const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
               </FormControl>
             </DialogContent>
             <DialogActions>
-              <Button color="primary" onClick={onClose}>
+              <Button
+                color="primary"
+                data-testid={__cancelFormId__}
+                onClick={onClose}
+              >
                 {t(__cancel__)}
               </Button>
               <Button

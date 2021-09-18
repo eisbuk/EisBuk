@@ -20,7 +20,6 @@ import {
 } from "@/lib/errorMessages";
 
 import { ButtonContextType } from "@/enums/components";
-// import * as slotActions from "@/store/actions/slotOperations";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
@@ -33,7 +32,6 @@ import {
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
-  /** @TODO Remove this when we update SlotForm to be more atomic  */
   useSelector: () => "",
   useDispatch: () => mockDispatch,
 }));
