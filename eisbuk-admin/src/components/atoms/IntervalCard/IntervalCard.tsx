@@ -49,9 +49,10 @@ const BookingCard: React.FC<Props> = ({
   type,
   date: timestamp,
   notes,
-  // interval,
-  //   bookInterval,
-  //   cancelBooking
+  interval,
+  bookInterval,
+  cancelBooking,
+  booked,
 }) => {
   const classes = useStyles();
 
@@ -64,30 +65,13 @@ const BookingCard: React.FC<Props> = ({
    * - you need to refactor this to use interval instead of calculating from duration
    * - should be straight forward, no fancy calculations or conversions (the start and end times are already received as `interval` properties as strings)
    */
-  // const startTimeISO = date.toISOTime().substring(0, 5);
-  // const endTimeISO = date
-  //   .plus({ minutes: Number(bookedDuration) - 10 })
-  //   .toISOTime()
-  //   .substring(0, 5);
-
-  // const timeSpan = (
-  //   <Box className={classes.time}>
-  //     <Typography component="h2">
-  //       <Typography color="primary" display="inline" variant="h5">
-  //         <strong>{startTimeISO}</strong>
-  //       </Typography>
-  //       <Typography className={classes.endTime} display="inline" variant="h6">
-  //         - {endTimeISO}
-  //       </Typography>
-  //     </Typography>
-  //   </Box>
-  // );
 
   const handleClick = () => {
     /**
      * @FOR_FADWA_TASK_2
      * should call proper booking operation (with respect to `booked` flag)
      */
+    booked ? cancelBooking() : bookInterval();
   };
 
   return (
@@ -106,7 +90,7 @@ const BookingCard: React.FC<Props> = ({
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {/* {timeSpan} */}
+            {interval.startTime - interval.endTime}
             {notes && (
               <Box
                 display="flex"
