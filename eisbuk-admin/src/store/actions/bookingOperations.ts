@@ -5,6 +5,7 @@ import { Customer, Slot, BookingInfo } from "eisbuk-shared";
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
+import { SlotInterface } from "@/types/temp";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -24,7 +25,7 @@ import {
 export const subscribeToSlot = (
   bookingId: string,
   slot: BookingInfo
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch, _getState, { getFirebase }) => {
   const firebase = getFirebase();
 
   try {
@@ -63,7 +64,7 @@ export const subscribeToSlot = (
 export const unsubscribeFromSlot = (
   bookingId: string,
   slotId: Slot<"id">["id"]
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch, _getState, { getFirebase }) => {
   const firebase = getFirebase();
 
   try {
@@ -120,8 +121,8 @@ export const markAbsentee = ({
   userId,
   isAbsent,
 }: MarkAbsenteePayload): FirestoreThunk => async (
-  dispatch,
-  getState,
+  _dispatch,
+  _getState,
   { getFirebase }
 ) => {
   const firebase = getFirebase();
@@ -138,3 +139,23 @@ export const markAbsentee = ({
     showErrSnackbar();
   }
 };
+
+/**
+ * Dispatches booked interval to firestore.
+ * Additionally, it cancels booked interval for the same slot if one is already booked.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const bookInterval = (params: {
+  slotId: SlotInterface["id"];
+  customerId: Customer["id"];
+  bookedInterval: string;
+}): void => {};
+
+/**
+ * Cancels booked inteval of the provided slot for provided customer.
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const cancelBooking = (params: {
+  slotId: SlotInterface["id"];
+  customerId: Customer["id"];
+}): void => {};

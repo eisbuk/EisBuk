@@ -8,7 +8,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/styles/makeStyles";
 
-import { Duration, Slot } from "eisbuk-shared";
+import { SlotInterface, SlotInterval } from "@/types/temp";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
@@ -19,18 +19,39 @@ import { slotsLabels } from "@/config/appConfig";
 import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
 
-export type Props = Pick<Slot, "type"> &
-  Pick<Slot, "date"> &
-  Pick<Slot, "notes"> & {
-    bookedDuration: Duration;
+export type Props = Pick<SlotInterface, "type"> &
+  Pick<SlotInterface, "date"> &
+  Pick<SlotInterface, "notes"> & {
+    /**
+     * Start/end time of an interval
+     */
+    interval: SlotInterval;
+    /**
+     * A boolean flag we're using to mark interval which is booked:
+     * - controls button label
+     * - controls dispatching of the propper booking operation `bookInterval`, `cancelBooking`
+     */
+    booked?: boolean;
+    /**
+     * A boolean flag we're using to fade non booked intervals of a booked slot.
+     */
+    fade?: boolean;
+    /**
+     * Fires (parent provided) function to book interval
+     */
+    bookInterval?: () => void;
+    /**
+     * Cancels booked interval (through the parent component)
+     */
+    cancelBooking?: () => void;
   };
-
-/** @TODO This component needs fixing (rebase), would be best to do if we implement tailwind */
 const BookingCard: React.FC<Props> = ({
   type,
   date: timestamp,
   notes,
-  bookedDuration,
+  // interval,
+  //   bookInterval,
+  //   cancelBooking
 }) => {
   const classes = useStyles();
 
@@ -38,25 +59,36 @@ const BookingCard: React.FC<Props> = ({
   const slotLabel = slotsLabels.types[type];
   const date = fb2Luxon(timestamp);
 
-  // times to show
-  const startTimeISO = date.toISOTime().substring(0, 5);
-  const endTimeISO = date
-    .plus({ minutes: Number(bookedDuration) - 10 })
-    .toISOTime()
-    .substring(0, 5);
+  /**
+   * @FOR_FADWA_TASK_1
+   * - you need to refactor this to use interval instead of calculating from duration
+   * - should be straight forward, no fancy calculations or conversions (the start and end times are already received as `interval` properties as strings)
+   */
+  // const startTimeISO = date.toISOTime().substring(0, 5);
+  // const endTimeISO = date
+  //   .plus({ minutes: Number(bookedDuration) - 10 })
+  //   .toISOTime()
+  //   .substring(0, 5);
 
-  const timeSpan = (
-    <Box className={classes.time}>
-      <Typography component="h2">
-        <Typography color="primary" display="inline" variant="h5">
-          <strong>{startTimeISO}</strong>
-        </Typography>
-        <Typography className={classes.endTime} display="inline" variant="h6">
-          - {endTimeISO}
-        </Typography>
-      </Typography>
-    </Box>
-  );
+  // const timeSpan = (
+  //   <Box className={classes.time}>
+  //     <Typography component="h2">
+  //       <Typography color="primary" display="inline" variant="h5">
+  //         <strong>{startTimeISO}</strong>
+  //       </Typography>
+  //       <Typography className={classes.endTime} display="inline" variant="h6">
+  //         - {endTimeISO}
+  //       </Typography>
+  //     </Typography>
+  //   </Box>
+  // );
+
+  const handleClick = () => {
+    /**
+     * @FOR_FADWA_TASK_2
+     * should call proper booking operation (with respect to `booked` flag)
+     */
+  };
 
   return (
     <Card variant="outlined" className={classes.root}>
@@ -74,7 +106,7 @@ const BookingCard: React.FC<Props> = ({
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
           <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {timeSpan}
+            {/* {timeSpan} */}
             {notes && (
               <Box
                 display="flex"
@@ -87,22 +119,7 @@ const BookingCard: React.FC<Props> = ({
           </Box>
           <Box display="flex">
             <Box
-              display="flex"
-              justifyContent="center"
-              flexGrow={1}
-              className={classes.durationWrapper}
-            >
-              <Button
-                key={bookedDuration}
-                color="primary"
-                variant="text"
-                className={classes.duration}
-                disabled
-              >
-                {slotsLabels.durations[bookedDuration].label}
-              </Button>
-            </Box>
-            <Box
+              className={classes.split}
               flexGrow={1}
               display="flex"
               alignItems="center"
@@ -122,6 +139,21 @@ const BookingCard: React.FC<Props> = ({
               >
                 {t(`SlotTypes.${type}`)}
               </Typography>
+            </Box>
+            <Box
+              className={classes.split}
+              display="flex"
+              justifyContent="center"
+              flexGrow={1}
+            >
+              <Button
+                className={classes.actionButton}
+                onClick={handleClick}
+                color="secondary"
+                variant="contained"
+              >
+                Cancel
+              </Button>
             </Box>
           </Box>
         </Box>
@@ -156,6 +188,13 @@ const useStyles = makeStyles((theme: Theme) => ({
       lineHeight: 1,
     },
   },
+  split: {
+    diaplay: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    width: "50%",
+    height: "100%",
+  },
   topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
   time: {
     padding: theme.spacing(1.5),
@@ -178,10 +217,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(10),
   },
-  durationWrapper: {
-    borderRight: `1px solid ${theme.palette.divider}`,
+  actionButton: {
+    width: "100%",
+    height: "100%",
   },
-  duration: {},
   weekday: {
     textTransform: "uppercase",
     fontSize: theme.typography.pxToRem(20),
