@@ -4,7 +4,7 @@ import { Category } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
-import { getSlotsForCustomer } from "../slots";
+import { getAdminSlots, getSlotsForCustomer } from "../slots";
 
 import {
   currentWeekStartDate,
@@ -13,9 +13,13 @@ import {
   expectedWeek,
   expectedMonth,
 } from "../__testData__/dummyData";
+import {
+  testStore,
+  expectedWeek as expectedWeekAdmin,
+} from "../__testData__/slots";
 
 describe("Slot selectors > ", () => {
-  describe("'getSlotsForCustomer' > ", () => {
+  xdescribe("'getSlotsForCustomer' > ", () => {
     test("should get slots for a month with respect to 'startDate' and provided category if 'timeframe=\"month\"'", () => {
       const testDate = DateTime.fromISO(currentMonthStartDate);
       // create a selector curried with `timeframe` and `date` params (like we will be doing within the component)
@@ -40,6 +44,13 @@ describe("Slot selectors > ", () => {
       // test created selector against test store state
       const res = selector(testStoreState as LocalStore);
       expect(res).toEqual(expectedWeek);
+    });
+  });
+
+  describe("Test 'getAdminSlots' selector", () => {
+    test("should get all slots for given week", () => {
+      const slotsForWeek = getAdminSlots(testStore);
+      expect(slotsForWeek).toEqual(expectedWeekAdmin);
     });
   });
 });

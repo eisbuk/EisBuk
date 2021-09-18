@@ -1,6 +1,7 @@
 import { ExtendedFirebaseInstance } from "react-redux-firebase";
+import { DateTime } from "luxon";
 
-import { TempStore } from "@/types/temp";
+import { LocalStore } from "@/types/store";
 
 import { defaultState as app } from "@/store/reducers/appReducer";
 import { defaultState as copyPaste } from "@/store/reducers/copyPasteReducer";
@@ -30,7 +31,7 @@ const fbData = {
   queries: {},
 };
 
-const testStoreDefaultState: TempStore = {
+const testStoreDefaultState: LocalStore = {
   firebase: {
     ...fbData,
     ...fbStatus,
@@ -55,10 +56,19 @@ const testStoreDefaultState: TempStore = {
  * only with (simulated) `firestore` data provided by `data` param
  */
 export const createTestStore = (
-  data: TempStore["firestore"]["data"]
-): TempStore => {
+  data: LocalStore["firestore"]["data"],
+  calendarDay?: DateTime
+): LocalStore => {
   return {
     ...testStoreDefaultState,
-    firestore: { data } as TempStore["firestore"],
+    firestore: { data } as LocalStore["firestore"],
+    ...(calendarDay
+      ? {
+          app: {
+            ...testStoreDefaultState.app,
+            calendarDay,
+          },
+        }
+      : {}),
   };
 };

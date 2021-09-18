@@ -256,3 +256,31 @@ const filterSlotsByCategory = (
 
   return [filteredRecord, isEmptyWhenFiltered];
 };
+
+export const getAdminSlots = (state: LocalStore): SlotsByDay => {
+  const {
+    firestore: {
+      data: { slotsByDay: allSlotsInStore },
+    },
+    app: { calendarDay },
+  } = state;
+
+  // exit early if if store empty
+  if (!allSlotsInStore) return {};
+
+  // create all dates for a week
+  return Array(7)
+    .fill(null)
+    .reduce((acc, _, i) => {
+      const date = calendarDay.plus({ days: i });
+      const dateISO = luxon2ISODate(date);
+      const monthString = dateISO.substr(0, 7);
+
+      const monthSlots = allSlotsInStore[monthString] || {};
+
+      return {
+        ...acc,
+        [dateISO]: monthSlots[dateISO] || {},
+      };
+    }, {} as SlotsByDay);
+};
