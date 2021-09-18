@@ -73,20 +73,6 @@ const SlotsDayContainer: React.FC<Props> = ({
               </Grid>
             ))
           : children}
-        {/* {slotsList.map((slot) => (
-            <Slot
-              selected={checkSelected(slot.id)}
-              data={slot}
-              key={slot.id}
-              deleted={Boolean(deletedSlots[slot.id])}
-              onDelete={extendedOnDelete}
-              {...{
-                ...(enableEdit && { setCreateEditDialog }),
-                ...(canChange && { onSubscribe, onUnsubscribe }),
-                subscribedSlots,
-              }}
-            ></Slot>
-        ))} */}
       </Grid>
     </>
   );

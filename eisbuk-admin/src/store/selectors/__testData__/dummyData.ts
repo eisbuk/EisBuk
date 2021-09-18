@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 import { LocalStore } from "@/types/store";
 
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 import { luxon2ISODate } from "@/utils/date";
 
@@ -22,7 +22,7 @@ export const currentMonthStartDate = "2021-09-01";
 const prevWeek = {
   "2021-08-23": {
     ["slot-0"]: {
-      ...dummySlot,
+      ...baseSlot,
       categories: [Category.Competitive],
       id: "slot-0",
       type: SlotType.Ice,
@@ -30,7 +30,7 @@ const prevWeek = {
   },
   "2021-08-24": {
     ["slot-1"]: {
-      ...dummySlot,
+      ...baseSlot,
       categories: [Category.PreCompetitive],
       id: "slot-1",
       type: SlotType.OffIceDancing,
@@ -38,7 +38,7 @@ const prevWeek = {
   },
   "2021-08-25": {
     ["slot-2"]: {
-      ...dummySlot,
+      ...baseSlot,
       categories: [Category.Course],
       id: "slot-2",
       type: SlotType.OffIceGym,
@@ -52,7 +52,7 @@ const prevWeek = {
 export const currentWeekPrevMonth = {
   "2021-08-31": {
     ["slot-3"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-3",
       categories: [Category.Competitive, Category.PreCompetitive],
       type: SlotType.Ice,
@@ -66,7 +66,7 @@ export const currentWeekPrevMonth = {
 export const currentWeekThisMonth = {
   "2021-09-01": {
     ["slot-4"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-4",
       categories: [Category.Competitive, Category.PreCompetitive],
       type: SlotType.Ice,
@@ -74,7 +74,7 @@ export const currentWeekThisMonth = {
   },
   "2021-09-03": {
     ["slot-5"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-5",
       categories: [Category.Competitive],
       type: SlotType.OffIceGym,
@@ -89,7 +89,7 @@ export const currentWeekThisMonth = {
 const currentWeekNonCompetitive = {
   "2021-09-01": {
     ["slot-6"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-6",
       categories: [Category.PreCompetitive],
       type: SlotType.Ice,
@@ -97,7 +97,7 @@ const currentWeekNonCompetitive = {
   },
   "2021-09-03": {
     ["slot-7"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-7",
       categories: [Category.PreCompetitive],
       type: SlotType.OffIceDancing,
@@ -112,7 +112,7 @@ const currentWeekNonCompetitive = {
 const nextWeek = {
   "2021-09-06": {
     ["slot-8"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-8",
       categories: [Category.Competitive, Category.PreCompetitive],
       type: SlotType.Ice,
@@ -120,7 +120,7 @@ const nextWeek = {
   },
   "2021-09-07": {
     ["slot-9"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-9",
       categories: [Category.Competitive],
       type: SlotType.OffIceGym,
@@ -135,7 +135,7 @@ const nextWeek = {
 const nextWeekNonCompetitive = {
   "2021-09-06": {
     ["slot-10"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-10",
       categories: [Category.PreCompetitive],
       type: SlotType.Ice,
@@ -143,7 +143,7 @@ const nextWeekNonCompetitive = {
   },
   "2021-09-07": {
     ["slot-11"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-11",
       categories: [Category.PreCompetitive],
       type: SlotType.OffIceDancing,
@@ -217,7 +217,7 @@ const currentMonth = { ...fullCurrentWeekThisMonth, ...fullNextWeek };
 const nextMonth = {
   "2021-10-01": {
     ["slot-12"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-12",
       categories: [Category.Competitive],
       type: SlotType.OffIceDancing,
@@ -225,7 +225,7 @@ const nextMonth = {
   },
   "2021-10-09": {
     ["slot-13"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-13",
       categories: [Category.PreCompetitive],
       type: SlotType.OffIceGym,
@@ -233,7 +233,7 @@ const nextMonth = {
   },
   "2021-10-10": {
     ["slot-14"]: {
-      ...dummySlot,
+      ...baseSlot,
       id: "slot-14",
       categories: [Category.Competitive, Category.PreCompetitive],
       type: SlotType.Ice,
