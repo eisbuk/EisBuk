@@ -20,6 +20,18 @@ export const dummySlot: Slot<"id"> & { interval: SlotInterval } = {
   categories: [Category.PreCompetitive],
   notes: "",
 };
+export const nonBookedSlot: Slot<"id"> & { interval: SlotInterval } = {
+  date: luxonToFB(DateTime.fromISO(__storybookDate__!).plus({ hours: 8 })),
+  interval: {
+    startTime: "09:00",
+    endTime: "10:00",
+  },
+  id: "id",
+  durations: [Duration["1h"], Duration["1.5h"], Duration["2h"]],
+  type: SlotType.Ice,
+  categories: [Category.PreCompetitive],
+  notes: "",
+};
 export const tempSlot = {
   ...dummySlot,
   bookedDuration: Duration["1.5h"],

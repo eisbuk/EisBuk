@@ -198,21 +198,4 @@ export const updateSlot = (
   payload: SlotFormValues & { date: DateTime; id: string }
 ): void => {};
 
-/**
- * Takes in slotId, customerId, bookedInterval and updates entry in db.
- * @param payload slotId, customerId and bookedInterval
- */
-export const bookInterval = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  payload: { slotId: string; customerId: string; bookedInterval: SlotInterval }
-): void => {};
-
-/**
- * Takes in slotId, customerId and updates entry to booked = null in db.
- * @param payload slotId, customerId of cancelled booking
- */
-export const cancelBooking = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  payload: { slotId: string; customerId: string }
-): void => {};
 // #endregion newOperations

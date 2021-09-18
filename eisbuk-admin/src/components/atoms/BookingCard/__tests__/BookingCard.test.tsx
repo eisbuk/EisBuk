@@ -2,7 +2,7 @@
  * @jest-environment jsdom-sixteen
  */
 import React from "react";
-import { cleanup, render } from "@testing-library/react";
+import { cleanup, screen, render } from "@testing-library/react";
 
 // import { Slot } from "eisbuk-shared";
 
@@ -20,8 +20,10 @@ import {
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { dummySlot, nonBookedSlot } from "@/__testData__/dummyData";
 import BookingCard from "../BookingCard";
+import { SlotView } from "@/enums/components";
+import { SlotInterval } from "./../../../../types/temp";
 
 const mockDispatch = jest.fn();
 
@@ -56,37 +58,32 @@ describe("BookingCard", () => {
     });
   });
 
-  describe("DurationsSection functionality", () => {
-    const mockSubscribe = jest.spyOn(bookingActions, "subscribeToSlot");
-    const mockUnsubscribe = jest.spyOn(bookingActions, "unsubscribeFromSlot");
+  describe("Booking operations functionality", () => {
+    const mockBookInterval = jest.spyOn(bookingActions, "bookInterval");
+    const mockCancelBooking = jest.spyOn(bookingActions, "cancelBooking");
 
     // we're mocking booking operations to return payload they've been called with rather than thunk
     // any assertion comes to explicitly say we're ok with returning a Record instead of async thunk
-    mockSubscribe.mockImplementationOnce(
-      (bookingId, bookingInfo) =>
-        ({ action: "subscribe", bookingId, bookingInfo } as any)
+    mockBookInterval.mockImplementationOnce(
+      (payload: {
+        slotId: string;
+        customerId: string;
+        bookedInterval: SlotInterval;
+      }) => ({ payload })
     );
-    mockUnsubscribe.mockImplementation(
-      (bookingId, slotId) =>
-        ({ action: "unsubscribe", bookingId, slotId } as any)
+    mockCancelBooking.mockImplementation(
+      (payload: { slotId: string; customerId: string }) => ({ payload })
     );
 
-    // test("if clicked duration is not subscribed to, should subscribe to said duration and unsubscribe from any other duration", () => {
-    //   // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-    //   const subscribedDuration = dummySlot.durations[0];
-    //   render(
-    //     <BookingCard {...dummySlot} subscribedDuration={subscribedDuration} />
-    //   );
-    //   const notSubscribedDuration = dummySlot.durations[1];
-    //   const notSubscribedDurationLabel =
-    //     slotsLabels.durations[notSubscribedDuration].label;
-    //   screen.getByText(notSubscribedDurationLabel).click();
-    //   expect(mockDispatch).toHaveBeenCalledWith({
-    //     action: "subscribe",
-    //     bookingId: "secret_key",
-    //     bookingInfo: { ...dummySlot, duration: notSubscribedDuration },
-    //   });
-    // });
+    test("if clicked bookingCard/interval is not subscribed to, should subscribe to said bookingCard and unsubscribe from any other bookingCard related to the same slot", () => {
+      // subscribed interval
+      render(<BookingCard {...dummySlot} view={SlotView.Booking} />);
+      const nonBookedSlotLabel = `${nonBookedSlot.interval.startTime}-${nonBookedSlot.interval.endTime}`;
+      // const bookedSlotLabel = `${dummySlot.interval.startTime}-${dummySlot.interval.endTime}`
+      screen.getByText(nonBookedSlotLabel).click();
+      expect(mockDispatch).toHaveBeenCalledWith(mockBookInterval);
+      expect(mockDispatch).toHaveBeenCalledWith(mockCancelBooking);
+    });
 
     // test("if clicked duration is subscribed to, should unsubscribe from said duration", () => {
     //   // we're simulating a case where the customer is subscribed to first duration of the dummy slot
