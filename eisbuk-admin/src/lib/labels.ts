@@ -28,3 +28,8 @@ export const __cancel__ = "Action.Cancel";
 export const __createSlot__ = "Action.CreateSlot";
 export const __editSlot__ = "Action.EditSlot";
 // #endregion actionButtons
+
+// #region intervals
+export const __bookInterval__ = "BookingCard.BookInterval";
+export const __cancelBooking__ = "BookingCard.CancelBooking";
+// #endregion intervals
