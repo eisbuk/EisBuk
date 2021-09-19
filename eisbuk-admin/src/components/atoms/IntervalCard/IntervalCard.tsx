@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -8,17 +9,21 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import {
+  __bookInterval__,
+  __cancelBooking__,
+  slotTypeLabel,
+} from "@/lib/labels";
+
+import { slotsLabels } from "@/config/appConfig";
+
 import { SlotInterface, SlotInterval } from "@/types/temp";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
 import { currentTheme } from "@/themes";
 
-import { slotsLabels } from "@/config/appConfig";
-
 import { fb2Luxon } from "@/utils/date";
-import { useTranslation } from "react-i18next";
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -54,6 +59,7 @@ const BookingCard: React.FC<Props> = ({
   bookInterval = () => {},
   cancelBooking = () => {},
   booked,
+  fade,
 }) => {
   const classes = useStyles();
 
@@ -63,7 +69,11 @@ const BookingCard: React.FC<Props> = ({
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
   return (
-    <Card variant="outlined" className={classes.root}>
+    <Card
+      variant="outlined"
+      data-faded={Boolean(fade)}
+      className={classes.root}
+    >
       <CardContent className={classes.content}>
         <Box className={classes.date} textAlign="center">
           <Typography variant="h5" className={classes.weekday}>
@@ -114,7 +124,7 @@ const BookingCard: React.FC<Props> = ({
                 key="type"
                 color={slotLabel.color}
               >
-                {t(`SlotTypes.${type}`)}
+                {t(slotTypeLabel[type])}
               </Typography>
             </Box>
             <Box
@@ -129,7 +139,7 @@ const BookingCard: React.FC<Props> = ({
                 color="secondary"
                 variant="contained"
               >
-                {booked ? __cancelBooking__ : __bookInterval__}
+                {t(booked ? __cancelBooking__ : __bookInterval__)}
               </Button>
             </Box>
           </Box>

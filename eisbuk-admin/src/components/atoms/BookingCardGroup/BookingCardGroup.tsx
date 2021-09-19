@@ -4,8 +4,6 @@ import { SlotInterface } from "@/types/temp";
 
 import IntervalCard from "../IntervalCard";
 
-// import IntervalCard from "@/components/IntervalCard";
-
 export interface Props extends SlotInterface {
   /**
    * Booked interval used to update local state
