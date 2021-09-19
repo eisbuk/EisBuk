@@ -82,7 +82,6 @@ const BookingCard: React.FC<Props> = ({
             className={classes.topWrapper}
             onClick={handleClick}
           >
-            {interval.startTime} - {interval.endTime}
             {notes && (
               <Box
                 display="flex"
@@ -125,10 +124,10 @@ const BookingCard: React.FC<Props> = ({
               <Button
                 className={classes.actionButton}
                 onClick={handleClick}
-                color="secondary"
+                color={booked ? "secondary" : "primary"}
                 variant="contained"
               >
-                Cancel
+                {interval.startTime} - {interval.endTime}{" "}
               </Button>
             </Box>
           </Box>
