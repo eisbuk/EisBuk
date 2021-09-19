@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import { SlotInterface } from "@/types/temp";
+
 import IntervalCard from "../IntervalCard";
-import { useEffect } from "@storybook/addons";
 
 // import IntervalCard from "@/components/IntervalCard";
 
