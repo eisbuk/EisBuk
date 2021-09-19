@@ -50,8 +50,8 @@ const BookingCard: React.FC<Props> = ({
   date: timestamp,
   notes,
   interval,
-  bookInterval,
-  cancelBooking,
+  bookInterval = () => {},
+  cancelBooking = () => {},
   booked,
 }) => {
   const classes = useStyles();
@@ -60,20 +60,7 @@ const BookingCard: React.FC<Props> = ({
   const slotLabel = slotsLabels.types[type];
   const date = fb2Luxon(timestamp);
 
-  /**
-   * @FOR_FADWA_TASK_1
-   * - you need to refactor this to use interval instead of calculating from duration
-   * - should be straight forward, no fancy calculations or conversions (the start and end times are already received as `interval` properties as strings)
-   */
-
-  const handleClick = () => {
-    /**
-     * @FOR_FADWA_TASK_2
-     * should call proper booking operation (with respect to `booked` flag)
-     */
-    booked ? cancelBooking() : bookInterval();
-  };
-
+  const handleClick = () => (booked ? cancelBooking() : bookInterval());
   return (
     <Card variant="outlined" className={classes.root}>
       <CardContent className={classes.content}>
@@ -89,8 +76,13 @@ const BookingCard: React.FC<Props> = ({
           </Typography>
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
-          <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {interval.startTime - interval.endTime}
+          <Box
+            display="flex"
+            flexGrow={1}
+            className={classes.topWrapper}
+            onClick={handleClick}
+          >
+            {interval.startTime} - {interval.endTime}
             {notes && (
               <Box
                 display="flex"

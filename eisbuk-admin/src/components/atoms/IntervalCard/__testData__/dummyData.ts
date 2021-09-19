@@ -9,7 +9,7 @@ import { luxonToFB } from "@/utils/date";
 
 const date = luxonToFB(DateTime.fromISO(__storybookDate__));
 
-export const bookedSlot: Props = {
+export const baseProps: Props = {
   date,
   type: SlotType.Ice,
   interval: {
@@ -17,15 +17,4 @@ export const bookedSlot: Props = {
     endTime: "10:00",
   },
   notes: "",
-  booked: false,
-};
-export const nonBookedSlot: Props = {
-  date,
-  type: SlotType.Ice,
-  interval: {
-    startTime: "10:00",
-    endTime: "11:00",
-  },
-  notes: "",
-  booked: true,
 };
