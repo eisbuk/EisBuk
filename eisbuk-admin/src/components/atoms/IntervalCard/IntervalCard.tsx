@@ -6,7 +6,7 @@ import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
-import makeStyles from "@material-ui/styles/makeStyles";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface, SlotInterval } from "@/types/temp";
 
@@ -18,6 +18,7 @@ import { slotsLabels } from "@/config/appConfig";
 
 import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
+import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -49,9 +50,10 @@ const BookingCard: React.FC<Props> = ({
   type,
   date: timestamp,
   notes,
-  // interval,
-  //   bookInterval,
-  //   cancelBooking
+  interval,
+  bookInterval = () => {},
+  cancelBooking = () => {},
+  booked,
 }) => {
   const classes = useStyles();
 
@@ -59,37 +61,7 @@ const BookingCard: React.FC<Props> = ({
   const slotLabel = slotsLabels.types[type];
   const date = fb2Luxon(timestamp);
 
-  /**
-   * @FOR_FADWA_TASK_1
-   * - you need to refactor this to use interval instead of calculating from duration
-   * - should be straight forward, no fancy calculations or conversions (the start and end times are already received as `interval` properties as strings)
-   */
-  // const startTimeISO = date.toISOTime().substring(0, 5);
-  // const endTimeISO = date
-  //   .plus({ minutes: Number(bookedDuration) - 10 })
-  //   .toISOTime()
-  //   .substring(0, 5);
-
-  // const timeSpan = (
-  //   <Box className={classes.time}>
-  //     <Typography component="h2">
-  //       <Typography color="primary" display="inline" variant="h5">
-  //         <strong>{startTimeISO}</strong>
-  //       </Typography>
-  //       <Typography className={classes.endTime} display="inline" variant="h6">
-  //         - {endTimeISO}
-  //       </Typography>
-  //     </Typography>
-  //   </Box>
-  // );
-
-  const handleClick = () => {
-    /**
-     * @FOR_FADWA_TASK_2
-     * should call proper booking operation (with respect to `booked` flag)
-     */
-  };
-
+  const handleClick = () => (booked ? cancelBooking() : bookInterval());
   return (
     <Card variant="outlined" className={classes.root}>
       <CardContent className={classes.content}>
@@ -105,8 +77,13 @@ const BookingCard: React.FC<Props> = ({
           </Typography>
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
-          <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {/* {timeSpan} */}
+          <Box
+            display="flex"
+            flexGrow={1}
+            className={classes.topWrapper}
+            onClick={handleClick}
+          >
+            {interval.startTime} - {interval.endTime}
             {notes && (
               <Box
                 display="flex"
@@ -152,7 +129,7 @@ const BookingCard: React.FC<Props> = ({
                 color="secondary"
                 variant="contained"
               >
-                Cancel
+                {booked ? __cancelBooking__ : __bookInterval__}
               </Button>
             </Box>
           </Box>
