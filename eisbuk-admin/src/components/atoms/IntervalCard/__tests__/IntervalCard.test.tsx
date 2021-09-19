@@ -1,13 +1,12 @@
 import React from "react";
-import {cleanup, screen render } from "@testing-library/react";
+import { cleanup, screen, render } from "@testing-library/react";
 
 import IntervalCard from "../IntervalCard";
 import * as bookingActions from "@/store/actions/bookingOperations";
 import { bookedSlot, nonBookedSlot } from "../__testData__/dummyData";
 
-import { Customer, Slot } from "eisbuk-shared";
-import { SlotInterface, SlotInterval } from "@/types/temp";
-
+import { Customer } from "eisbuk-shared";
+import { SlotInterface } from "@/types/temp";
 
 const mockDispatch = jest.fn();
 
@@ -47,13 +46,15 @@ describe("Interval Card ->", () => {
     mockBookInterval.mockImplementationOnce(
       (params: {
         slotId: SlotInterface["id"];
-  customerId: Customer["id"];
-  bookedInterval: string;
+        customerId: Customer["id"];
+        bookedInterval: string;
       }) => ({ params })
     );
     mockCancelBooking.mockImplementation(
-      (params: { slotId: SlotInterface["id"];
-      customerId: Customer["id"]; }) => ({ params })
+      (params: {
+        slotId: SlotInterface["id"];
+        customerId: Customer["id"];
+      }) => ({ params })
     );
     test("should fire `bookInterval` on click, if the interval is not already booked", () => {
       render(<IntervalCard {...nonBookedSlot} />);
@@ -62,14 +63,10 @@ describe("Interval Card ->", () => {
       expect(mockDispatch).toHaveBeenCalledWith(mockBookInterval);
     });
     test("should fire `cancelBooking` on click, if the interval is booked", () => {
-      render(<IntervalCard {...bookedSlot}  />);
-      const bookedSlotLabel = `${bookedSlot.interval.startTime}-${bookedSlot.interval.endTime}`
+      render(<IntervalCard {...bookedSlot} />);
+      const bookedSlotLabel = `${bookedSlot.interval.startTime}-${bookedSlot.interval.endTime}`;
       screen.getByText(bookedSlotLabel).click();
       expect(mockDispatch).toHaveBeenCalledWith(mockCancelBooking);
     });
   });
 });
-
-
-
-
