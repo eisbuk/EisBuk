@@ -18,6 +18,7 @@ import { slotsLabels } from "@/config/appConfig";
 
 import { fb2Luxon } from "@/utils/date";
 import { useTranslation } from "react-i18next";
+import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -82,6 +83,7 @@ const BookingCard: React.FC<Props> = ({
             className={classes.topWrapper}
             onClick={handleClick}
           >
+            {interval.startTime} - {interval.endTime}
             {notes && (
               <Box
                 display="flex"
@@ -124,10 +126,10 @@ const BookingCard: React.FC<Props> = ({
               <Button
                 className={classes.actionButton}
                 onClick={handleClick}
-                color={booked ? "secondary" : "primary"}
+                color="secondary"
                 variant="contained"
               >
-                {interval.startTime} - {interval.endTime}{" "}
+                {booked ? __cancelBooking__ : __bookInterval__}
               </Button>
             </Box>
           </Box>

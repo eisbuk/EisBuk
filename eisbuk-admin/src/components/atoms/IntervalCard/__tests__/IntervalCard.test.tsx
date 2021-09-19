@@ -3,9 +3,7 @@ import { cleanup, screen, render } from "@testing-library/react";
 
 import IntervalCard from "../IntervalCard";
 import { baseProps } from "../__testData__/dummyData";
-import { __bookInterval__ } from "@/lib/labels";
-import { Customer } from "eisbuk-shared";
-import { SlotInterface } from "@/types/temp";
+import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
 
 /** @TODO remove this when the i18next is instantiated with tests */
 jest.mock("i18next", () => ({
@@ -27,31 +25,16 @@ describe("Interval Card ->", () => {
     const mockBookInterval = jest.fn();
     const mockCancelBooking = jest.fn();
 
-    mockBookInterval.mockImplementationOnce(
-      (params: {
-        slotId: SlotInterface["id"];
-        customerId: Customer["id"];
-        bookedInterval: string;
-      }) => ({ params })
-    );
-    mockCancelBooking.mockImplementation(
-      (params: {
-        slotId: SlotInterface["id"];
-        customerId: Customer["id"];
-      }) => ({ params })
-    );
     test("should fire `bookInterval` on click, if the interval is not already booked", () => {
       render(<IntervalCard {...baseProps} bookInterval={mockBookInterval} />);
-      const nonBookedSlotLabel = `${baseProps.interval.startTime} - ${baseProps.interval.endTime}`;
-      screen.getByText(nonBookedSlotLabel).click();
+      screen.getByText(__bookInterval__).click();
       expect(mockBookInterval).toHaveBeenCalled();
     });
     test("should fire `cancelBooking` on click, if the interval is booked", () => {
       render(
         <IntervalCard {...baseProps} booked cancelBooking={mockCancelBooking} />
       );
-      const bookedSlotLabel = `${baseProps.interval.startTime} - ${baseProps.interval.endTime}`;
-      screen.getByText(bookedSlotLabel).click();
+      screen.getByText(__cancelBooking__).click();
       expect(mockCancelBooking).toHaveBeenCalled();
     });
   });
