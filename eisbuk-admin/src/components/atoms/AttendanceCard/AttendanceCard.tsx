@@ -10,15 +10,17 @@ import AddNew from "@material-ui/icons/AddCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Category, SlotType, Customer } from "eisbuk-shared";
-
-import { categoryLabel, slotTypeLabel } from "@/lib/labels";
-
 import {
-  CustomerWithAttendance,
+  Category,
+  SlotType,
+  Customer,
   SlotInterface,
   SlotInterval,
-} from "@/types/temp";
+} from "eisbuk-shared";
+
+import { CustomerWithAttendance } from "@/types/components";
+
+import { categoryLabel, slotTypeLabel } from "@/lib/labels";
 
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
 import AddCustomersList from "./AddCustomers";

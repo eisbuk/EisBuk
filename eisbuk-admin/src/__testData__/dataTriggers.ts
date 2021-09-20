@@ -80,8 +80,8 @@ export const testBooking: CustomerBookingEntry = {
  */
 export const dummyAttendance: Record<string, CustomerAttendance> = {
   ["dummy-customer"]: {
-    booked: "11:30-12:30",
-    attended: "11:30-12:30",
+    bookedInterval: "11:30-12:30",
+    attendedInterval: "11:30-12:30",
   },
 };
 /**
@@ -109,8 +109,8 @@ export const attendanceWithTestCustomer: SlotAttendnace = {
   attendances: {
     ...dummyAttendance,
     [customerId]: {
-      booked: bookedInterval,
-      attended: bookedInterval,
+      bookedInterval: bookedInterval,
+      attendedInterval: bookedInterval,
     },
   },
 };

@@ -39,7 +39,9 @@ const createIntervalEntry = (startHour: number, duration: number) => {
  * @param startHour
  * @returns
  */
-const createIntervals = (startHour: number) => ({
+export const createIntervals = (
+  startHour: number
+): SlotInterface["intervals"] => ({
   ...createIntervalEntry(startHour, 1),
   ...createIntervalEntry(startHour + 1, 1),
   ...createIntervalEntry(startHour, 2),
@@ -51,7 +53,7 @@ export const baseSlot: SlotInterface = {
   date: timestampDate,
   id: "id",
   type: SlotType.Ice,
-  categories: [Category.PreCompetitive],
+  categories: [Category.Competitive],
   intervals,
   notes: "",
 };
@@ -126,3 +128,7 @@ export const slotsWeek = Array(7)
     };
   }, {} as Record<string, Record<string, SlotInterface>>);
 // #endregion slot
+
+// #region customers
+
+// #endregion customers

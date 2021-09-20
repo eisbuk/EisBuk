@@ -170,8 +170,8 @@ export interface CustomerBookings extends CustomerBase {
  * - if not booked and not attended (customer added by mistake), won't be `null` and entry should be deleted.
  */
 export interface CustomerAttendance {
-  booked: string | null;
-  attended: string | null;
+  bookedInterval: string | null;
+  attendedInterval: string | null;
 }
 
 /**
