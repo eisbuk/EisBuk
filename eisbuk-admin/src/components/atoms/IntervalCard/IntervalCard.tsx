@@ -24,6 +24,7 @@ import ProjectIcon from "@/components/global/ProjectIcons";
 import { currentTheme } from "@/themes";
 
 import { fb2Luxon } from "@/utils/date";
+import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -68,10 +69,24 @@ const BookingCard: React.FC<Props> = ({
   const date = fb2Luxon(timestamp);
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
+
+  const timeSpan = (
+    <Box className={classes.time}>
+      <Typography component="h2">
+        <Typography color="primary" display="inline" variant="h5">
+          <strong>{interval.startTime}</strong>
+        </Typography>
+        <Typography className={classes.endTime} display="inline" variant="h6">
+          - {interval.endTime}
+        </Typography>
+      </Typography>
+    </Box>
+  );
   return (
     <Card
       variant="outlined"
       data-faded={Boolean(fade)}
+      data-testid={__bookingCardId__}
       className={classes.root}
     >
       <CardContent className={classes.content}>
@@ -93,7 +108,7 @@ const BookingCard: React.FC<Props> = ({
             className={classes.topWrapper}
             onClick={handleClick}
           >
-            {interval.startTime} - {interval.endTime}
+            {timeSpan}
             {notes && (
               <Box
                 display="flex"
