@@ -7,7 +7,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
 
 import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
-// import BookingsByDay from "@/components/BookingsByDay";
+import BookingsByDay from "@/components/BookingsByDay";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 // import { markAbsentee } from "@/store/actions/bookingOperations";
