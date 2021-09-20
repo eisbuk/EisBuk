@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import { SlotInterface } from "@/types/temp";
 
 import IntervalCard from "../IntervalCard";
-import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export interface Props extends SlotInterface {
   /**
@@ -59,7 +58,7 @@ const BookingCardGroup: React.FC<Props> = ({
       {intervalKeys.map((interval) => (
         <IntervalCard
           {...slotData}
-          fade={interval === bookedInterval}
+          fade={Boolean(localSelected) && interval !== localSelected}
           interval={intervals[interval]}
           bookInterval={handleBookInterval(interval)}
           cancelBooking={handleCancelBooking}

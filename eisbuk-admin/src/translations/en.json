@@ -163,5 +163,9 @@
     "RequiredField": "this field is required",
     "InvalidTime": "invalid time format (\"HH:mm\")",
     "TimeMismatch": "start time is greater than end time"
+  },
+  "BookingCard": {
+    "BookInterval": "Book",
+    "CancelBooking": "Cancel"
   }
 }

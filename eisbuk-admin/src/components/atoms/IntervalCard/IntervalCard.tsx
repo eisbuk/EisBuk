@@ -75,7 +75,7 @@ const BookingCard: React.FC<Props> = ({
       <Typography component="h2">
         <Typography color="primary" display="inline" variant="h5">
           <strong>{interval.startTime}</strong>
-        </Typography>
+        </Typography>{" "}
         <Typography className={classes.endTime} display="inline" variant="h6">
           - {interval.endTime}
         </Typography>
@@ -102,12 +102,7 @@ const BookingCard: React.FC<Props> = ({
           </Typography>
         </Box>
         <Box display="flex" flexGrow={1} flexDirection="column">
-          <Box
-            display="flex"
-            flexGrow={1}
-            className={classes.topWrapper}
-            onClick={handleClick}
-          >
+          <Box display="flex" flexGrow={1} className={classes.topWrapper}>
             {timeSpan}
             {notes && (
               <Box
