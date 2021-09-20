@@ -14,6 +14,7 @@ import {
   SlotAttendnace,
   SlotInterface,
 } from "eisbuk-shared";
+import fs from "fs";
 
 /**
  * Adds the secret_key to a user if it's missing.
@@ -47,7 +48,7 @@ export const addMissingSecretKey = functions
         id: customerId,
         name: after.name || "",
         surname: after.surname || "",
-        category: after.category,
+        category: after.category || "",
       };
 
       await db
@@ -121,43 +122,58 @@ export const aggregateSlots = functions
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onWrite(async (change, context) => {
-    const db = admin.firestore();
-
     const { organization, slotId: id } = context.params as Record<
       string,
       string
     >;
 
-    let luxonDay: DateTime;
-    let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
+    let report: Record<string, any> = { organization, id };
+    try {
+      const db = admin.firestore();
 
-    const afterData = change.after.data() as
-      | Omit<SlotInterface, "id">
-      | undefined;
+      let luxonDay: DateTime;
+      let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
 
-    if (afterData) {
-      newSlot = { ...afterData, id };
-      luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
-    } else {
-      luxonDay = DateTime.fromJSDate(
-        new Date(change.before.data()!.date.seconds * 1000)
-      );
-      newSlot = admin.firestore.FieldValue.delete();
+      if (change.after.exists) {
+        const afterData = change.after.data()! as SlotInterface;
+        report = { ...report, afterData };
+        newSlot = { ...afterData, id };
+        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
+      } else {
+        const beforeData = change.before.data()!;
+        report = { ...report, beforeData };
+        luxonDay = DateTime.fromJSDate(
+          new Date(beforeData.date.seconds * 1000)
+        );
+        newSlot = admin.firestore.FieldValue.delete();
+      }
+
+      const monthStr = luxonDay.toISO().substring(0, 7);
+      const dayStr = luxonDay.toISO().substring(0, 10);
+
+      const monthSlotsRef = db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(monthStr);
+
+      await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
+
+      const monthSlots = (await monthSlotsRef.get()).data();
+
+      logToFS({ ...report, monthSlots });
+      return change.after;
+    } catch {
+      logToFS(report);
+      return change.after;
     }
-
-    const monthStr = luxonDay.toISO().substring(0, 7);
-    const dayStr = luxonDay.toISO().substring(0, 10);
-
-    await db
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.SlotsByDay)
-      /** @TODO : Maybe name these slotsByMonth to avoid confusion */
-      .doc(monthStr)
-      .set({ [dayStr]: { [id]: newSlot } }, { merge: true });
-
-    return change.after;
   });
+
+const logToFS = (data: Record<string, any>) => {
+  const timeString = Date.now().toString();
+  const dataString = JSON.stringify(data, null, 2);
+  fs.writeFileSync(`./logs/${timeString}.json`, dataString);
+};
 
 /**
  * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
@@ -194,8 +210,8 @@ export const createAttendanceForBooking = functions
       attendances: {
         [customerId]: isUpdate
           ? ({
-              booked: afterData!.interval,
-              attended: afterData!.interval,
+              bookedInterval: afterData!.interval,
+              attendedInterval: afterData!.interval,
             } as CustomerAttendance)
           : admin.firestore.FieldValue.delete(),
       },

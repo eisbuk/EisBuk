@@ -16,9 +16,9 @@ export const observedSlotId = "slot-0";
  * Dummy attendance info we're using to provide additional data (not to be overwritten).
  * We're not using these values for our "observed" attendace (the one we'll be updating).
  */
-const dummyAttendance = {
-  booked: "10:00-10:30",
-  attended: "10:00-10:30",
+const dummyAttendance: CustomerAttendance = {
+  bookedInterval: "10:00-10:30",
+  attendedInterval: "10:00-10:30",
 };
 // #region additionalData
 

@@ -1,11 +1,11 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-import { Duration } from "eisbuk-shared";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import BookingCard from "./BookingCard";
 
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 export default {
   title: "Booking Card",
@@ -18,6 +18,6 @@ const Template: ComponentStory<typeof BookingCard> = (args) => (
 
 export const Default = Template.bind({});
 Default.args = {
-  ...dummySlot,
+  ...baseSlot,
   bookedDuration: Duration["1.5h"],
 };

@@ -46,8 +46,9 @@ export const markAttendance = ({
 
   // update customer attendance from local store with new values
   const updatedCustomerAttendance: CustomerAttendance = {
-    booked: localAttendnaceEntry.attendances[customerId]?.booked || null,
-    attended: attendedInterval,
+    bookedInterval:
+      localAttendnaceEntry.attendances[customerId]?.booked || null,
+    attendedInterval: attendedInterval,
   };
 
   // update month document with new values

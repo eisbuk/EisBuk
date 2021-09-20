@@ -45,7 +45,7 @@ beforeEach(async () => {
   await Promise.all(clearAll);
 });
 
-describe("Cloud functions -> Data triggers ->,", () => {
+xdescribe("Cloud functions -> Data triggers ->,", () => {
   describe("createAttendanceForBooking", () => {
     testWithEmulator(
       "should create attendance entry for booking and not overwrite existing data in slot",

@@ -1,0 +1,58 @@
+{
+  "organization": "localhost",
+  "id": "testSlot",
+  "afterData": {
+    "date": {
+      "seconds": 1614553200
+    },
+    "notes": "",
+    "type": "ice",
+    "intervals": {
+      "09:00-11:00": {
+        "startTime": "09:00",
+        "endTime": "11:00"
+      },
+      "10:00-11:00": {
+        "startTime": "10:00",
+        "endTime": "11:00"
+      },
+      "09:00-10:00": {
+        "startTime": "09:00",
+        "endTime": "10:00"
+      }
+    },
+    "id": "testSlot",
+    "categories": [
+      "competitive"
+    ]
+  },
+  "monthSlots": {
+    "2021-02-28": {
+      "testSlot": {
+        "date": {
+          "seconds": 1614553200
+        },
+        "intervals": {
+          "09:00-11:00": {
+            "startTime": "09:00",
+            "endTime": "11:00"
+          },
+          "10:00-11:00": {
+            "startTime": "10:00",
+            "endTime": "11:00"
+          },
+          "09:00-10:00": {
+            "startTime": "09:00",
+            "endTime": "10:00"
+          }
+        },
+        "notes": "",
+        "categories": [
+          "competitive"
+        ],
+        "id": "testSlot",
+        "type": "ice"
+      }
+    }
+  }
+}

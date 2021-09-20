@@ -19,9 +19,9 @@ import Unauthorized from "@/components/auth/Unauthorized";
 import LoginRoute from "@/components/auth/LoginRoute";
 import DebugPage from "@/components/debugPage";
 
-import DashboardPage from "@/pages/DashboardPage";
+import DashboardPage from "@/pages/root";
 import AthletesPage from "@/pages/CustomersPage";
-import SlotsPage from "@/pages/SlotsPage";
+import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/LoginPage";
 import CustomerAreaPage from "@/pages/customer_area";
 
@@ -84,9 +84,9 @@ const AppContentAuthenticated: React.FC = () => {
       where: [(firestore.FieldPath as any).documentId(), "in", monthsToQuery],
     }),
     wrapOrganization({
-      collection: OrgSubCollection.BookingsByDay,
+      collection: OrgSubCollection.Attendance,
       /** @TEMP below, investigate this later */
-      where: [(firestore.FieldPath as any).documentId(), "in", monthsToQuery],
+      where: ["date", "in", monthsToQuery],
     }),
     {
       collection: Collection.Organizations,

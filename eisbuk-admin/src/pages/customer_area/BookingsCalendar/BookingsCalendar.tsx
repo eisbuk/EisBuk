@@ -21,7 +21,7 @@ const BookingsCalendar: React.FC<Props> = ({ bookings }) => {
   const classes = useStyles();
 
   return (
-    <DateNavigation jump="week" withRouter>
+    <DateNavigation jump="week">
       {() => (
         <>
           <Grid className={classes.bookingsListContainer} container spacing={3}>

@@ -1,7 +1,7 @@
 import firebase from "firebase";
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import { capitalizeFirst, mode } from "@/utils/helpers";
 import { fb2Luxon, luxon2ISODate } from "@/utils/date";
@@ -43,7 +43,7 @@ describe("Slot utils", () => {
   const testDate = new Date("10 Jan 2021 11:30:00 GMT+1");
   const testSlot = {
     date: Timestamp.fromDate(testDate),
-  } as Slot<"id">;
+  } as SlotInterface;
 
   describe("'shiftSlotsDay' function", () => {
     test("should shift a list of slots to a new day, maintaining the time", () => {
@@ -70,14 +70,14 @@ describe("Slot utils", () => {
     const testDateSameWeek = new Date("9 Jan 2021 11:30:00 GMT+1");
     const testSlotSameWeek = {
       date: Timestamp.fromDate(testDateSameWeek),
-    } as Slot;
+    } as SlotInterface;
 
     // another test slot, belonging to a week different from other slots
     // used as an intruder for testing of error handling
     const testDateAnotherWeek = new Date("15 Jan 2021 11:30:00 GMT+1");
     const testSlotAnotherWeek = {
       date: Timestamp.fromDate(testDateAnotherWeek),
-    } as Slot;
+    } as SlotInterface;
 
     test("should shift a list of slots to a new week, maintaining the time and the day of week", () => {
       const newSlots = shiftSlotsWeek([testSlot], newWeek);

@@ -87,9 +87,9 @@ export const dummyAttendance: Record<string, CustomerAttendance> = {
 /**
  * Empty attendance entry for slot. Should be created when the slot is created.
  */
-export const emptyAttendance = {
+export const emptyAttendance: SlotAttendnace = {
   date: timestampDate as Timestamp,
-  attendance: {},
+  attendances: {},
 };
 /**
  * Base attendance entry for slot without test user's attendance

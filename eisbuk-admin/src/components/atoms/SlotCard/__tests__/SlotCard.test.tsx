@@ -6,11 +6,8 @@ import { cleanup, screen, render } from "@testing-library/react";
 
 import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
-import { slotsLabels } from "@/config/appConfig";
-
 import SlotCard from "../SlotCard";
 
-import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
 import { __slotId__ } from "../__testData__/testIds";

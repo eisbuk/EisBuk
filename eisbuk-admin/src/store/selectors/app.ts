@@ -1,8 +1,8 @@
-import { DateTime, DurationObjectUnits } from "luxon";
+import { DateTime } from "luxon";
 
 import { LocalStore, Notification } from "@/types/store";
 
-// ***** Region Notifications ***** //
+// #region notifications
 /**
  * Get notifications from store
  * @param state Local Redux State
@@ -10,7 +10,7 @@ import { LocalStore, Notification } from "@/types/store";
  */
 export const getNotifications = (state: LocalStore): Notification[] =>
   state.app.notifications;
-// ***** End Region Notifications ***** //
+// #endregion notifications
 
 // ***** Region Slot Time ***** //
 /**

@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { CustomerWithAttendance } from "@/types/temp";
+import { CustomerWithAttendance } from "@/types/components";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import IntervalPicker from "./IntervalPicker";

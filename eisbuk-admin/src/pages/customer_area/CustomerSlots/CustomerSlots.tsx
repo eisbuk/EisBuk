@@ -68,7 +68,7 @@ const CustomerSlots: React.FC<Props> = ({
   const paginateBy = view === CustomerRoute.BookIce ? "month" : "week";
 
   return (
-    <DateNavigation jump={paginateBy} withRouter>
+    <DateNavigation jump={paginateBy}>
       {() => (
         <>
           {orderedDates?.map((date) => {

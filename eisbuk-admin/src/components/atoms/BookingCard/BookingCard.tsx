@@ -8,7 +8,8 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/styles/makeStyles";
 
-import { Duration, Slot } from "eisbuk-shared";
+import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
+import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 

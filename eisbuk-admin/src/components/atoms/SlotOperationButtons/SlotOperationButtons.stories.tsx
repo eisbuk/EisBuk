@@ -13,7 +13,7 @@ import DeleteButton from "./DeleteButton";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 export default {
   title: "Slot Operation Buttons",
@@ -22,7 +22,7 @@ export default {
 
 const baseProps = {
   date: DateTime.fromISO(__storybookDate__),
-  slot: dummySlot,
+  slot: baseSlot,
   slotsToCopy: {
     [ButtonContextType.Day]: true,
     [ButtonContextType.Week]: true,

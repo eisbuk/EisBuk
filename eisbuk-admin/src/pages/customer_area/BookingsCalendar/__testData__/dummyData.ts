@@ -4,7 +4,7 @@ import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestor
 
 import { luxonToFB } from "@/utils/date";
 
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 export const bookedSlots = Array(7)
   .fill("2021-03-01")
@@ -12,7 +12,7 @@ export const bookedSlots = Array(7)
     const luxonDay = DateTime.fromISO(dateISO).plus({ days: i, hours: 9 });
     const date = luxonToFB(luxonDay);
     return {
-      ...dummySlot,
+      ...baseSlot,
       id: `slot-${i}`,
       date,
       bookedDuration: DeprecatedDuration["1.5h"],

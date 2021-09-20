@@ -6,7 +6,7 @@ import { CustomerBookingEntry } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
-import { slotsLabels } from "@/config/appConfig";
+// import { slotsLabels } from "@/config/appConfig";
 
 import CustomerSlots from "../CustomerSlots";
 
@@ -80,8 +80,8 @@ xdescribe("CustomerSlots", () => {
 
   describe("Test booking actions", () => {
     // we're passing a slot month (for type safety), but we'll be testing actions only on the first slot
-    const testSlotId = "slot-0";
-    const testSlot = slotsMonth["2021-03-01"][testSlotId];
+    // const testSlotId = "slot-0";
+    // const testSlot = slotsMonth["2021-03-01"][testSlotId];
 
     // mock implementations for `subscribeToSlot` and `unsubscribeFromSlot`
     // we'll be using those implementations to easier test dispatching to store with appropriate actions
@@ -103,43 +103,43 @@ xdescribe("CustomerSlots", () => {
       .spyOn(bookingActions, "unsubscribeFromSlot")
       .mockImplementation(mockUnsubscribeImplementation as any);
 
-    test("should subscribe to given slot (and a given duration) on click", () => {
-      // we try subscribing to the first available duration of the first slot
-      const testDuration = testSlot.durations[0];
-      const testDurationLabel = slotsLabels.durations[testDuration].label;
-      render(<CustomerSlots slots={slotsMonth} />);
-      // we're looking for first occurence of said duration
-      // (as there will be another slots with given duration available)
-      const durationButtonOnScreen = screen.queryAllByText(
-        testDurationLabel
-      )[0];
-      durationButtonOnScreen.click();
-      // createa mock redux action to test dispatch being called with proper data
-      const mockSubscribeAction = mockSubscribeImplementation(testSecret, {
-        ...testSlot,
-        duration: testDuration,
-      });
-      expect(mockDispatch).toHaveBeenCalledWith(mockSubscribeAction);
-    });
+    // test("should subscribe to given slot (and a given duration) on click", () => {
+    //   // we try subscribing to the first available duration of the first slot
+    //   const testDuration = testSlot.durations[0];
+    //   const testDurationLabel = slotsLabels.durations[testDuration].label;
+    //   render(<CustomerSlots slots={slotsMonth} />);
+    //   // we're looking for first occurence of said duration
+    //   // (as there will be another slots with given duration available)
+    //   const durationButtonOnScreen = screen.queryAllByText(
+    //     testDurationLabel
+    //   )[0];
+    //   durationButtonOnScreen.click();
+    //   // createa mock redux action to test dispatch being called with proper data
+    //   const mockSubscribeAction = mockSubscribeImplementation(testSecret, {
+    //     ...testSlot,
+    //     duration: testDuration,
+    //   });
+    //   expect(mockDispatch).toHaveBeenCalledWith(mockSubscribeAction);
+    // });
 
-    test("should unsubscribe from duration on click if that duration is subscribed to", () => {
-      // we'll be using the first duration from test slot as subscribed duration
-      const subscribedDuration = testSlot.durations[0];
-      const subscribedSlots = { [testSlotId]: subscribedDuration };
-      render(<CustomerSlots slots={slotsMonth} {...{ subscribedSlots }} />);
-      const testDurationLabel = slotsLabels.durations[subscribedDuration].label;
-      // we're looking for first occurence of said duration
-      // (as there will be another slots with given duration available)
-      const durationButtonOnScreen = screen.queryAllByText(
-        testDurationLabel
-      )[0];
-      durationButtonOnScreen.click();
-      // createa mock redux action to test dispatch being called with proper data
-      const mockUnubscribeAction = mockUnsubscribeImplementation(
-        testSecret,
-        testSlot.id
-      );
-      expect(mockDispatch).toHaveBeenCalledWith(mockUnubscribeAction);
-    });
+    // test("should unsubscribe from duration on click if that duration is subscribed to", () => {
+    //   // we'll be using the first duration from test slot as subscribed duration
+    //   const subscribedDuration = testSlot.durations[0];
+    //   const subscribedSlots = { [testSlotId]: subscribedDuration };
+    //   render(<CustomerSlots slots={slotsMonth} {...{ subscribedSlots }} />);
+    //   const testDurationLabel = slotsLabels.durations[subscribedDuration].label;
+    //   // we're looking for first occurence of said duration
+    //   // (as there will be another slots with given duration available)
+    //   const durationButtonOnScreen = screen.queryAllByText(
+    //     testDurationLabel
+    //   )[0];
+    //   durationButtonOnScreen.click();
+    //   // createa mock redux action to test dispatch being called with proper data
+    //   const mockUnubscribeAction = mockUnsubscribeImplementation(
+    //     testSecret,
+    //     testSlot.id
+    //   );
+    //   expect(mockDispatch).toHaveBeenCalledWith(mockUnubscribeAction);
+    // });
   });
 });

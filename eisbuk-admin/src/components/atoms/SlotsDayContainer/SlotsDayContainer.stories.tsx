@@ -30,6 +30,7 @@ const baseProps = {
 
 export const Empty = (): JSX.Element => <SlotsDayContainer {...baseProps} />;
 
+/** @TODO update this with BookingCard */
 export const CustomerViewWithSlots = (): JSX.Element => (
   <SlotsDayContainer {...baseProps} view={SlotView.Customer}>
     {collectionOfSlots.map((slot) => (
@@ -41,7 +42,7 @@ export const CustomerViewWithSlots = (): JSX.Element => (
 export const AdminViewWithSlots = (): JSX.Element => (
   <SlotsDayContainer {...baseProps}>
     {collectionOfSlots.map((slot) => (
-      <SlotCard key={slot.id} {...slot} view={SlotView.Admin} />
+      <SlotCard key={slot.id} {...slot} />
     ))}
   </SlotsDayContainer>
 );
@@ -71,7 +72,7 @@ export const AdminViewWithAdditionalButtons = (): JSX.Element => (
     showAdditionalButtons
   >
     {collectionOfSlots.map((slot) => (
-      <SlotCard key={slot.id} {...slot} view={SlotView.Admin} />
+      <SlotCard key={slot.id} {...slot} />
     ))}
   </SlotsDayContainer>
 );

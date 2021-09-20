@@ -28,13 +28,13 @@ const attendanceMonth = getFirebase()
   .collection(OrgSubCollection.Attendance)
   .doc(slotId);
 
-describe("Attendance operations ->", () => {
+xdescribe("Attendance operations ->", () => {
   describe("markAttendance ->", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: null, booked: bookedInterval },
+          [customerId]: { attendedInterval: null, bookedInterval },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
@@ -49,7 +49,7 @@ describe("Attendance operations ->", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: bookedInterval },
+          [customerId]: { attendedInterval, bookedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
@@ -77,7 +77,7 @@ describe("Attendance operations ->", () => {
         await testThunk(...thunkArgs);
         // booked should be null (since customer didn't book beforehand, but did attend)
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { booked: null, attended: attendedInterval },
+          [customerId]: { bookedInterval: null, attendedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
@@ -92,7 +92,7 @@ describe("Attendance operations ->", () => {
       "should mark customers attended interval as 'null' if customer booked beforehand (and not overwrite the rest of the data for given document in the process)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: bookedInterval },
+          [customerId]: { attendedInterval, bookedInterval },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
@@ -106,7 +106,7 @@ describe("Attendance operations ->", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: null, booked: bookedInterval },
+          [customerId]: { attendedInterval: null, bookedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
@@ -119,7 +119,7 @@ describe("Attendance operations ->", () => {
       "should remove customer from attendance record for slot if customer didn't book (and is marked absent)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: null },
+          [customerId]: { attendedInterval, bookedInterval: null },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
