@@ -187,7 +187,7 @@ export const deleteSlotsWeek = (date: DateTime): void => {
 export const createNewSlot = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   payload: SlotFormValues & { date: DateTime }
-): void => {};
+): FirestoreThunk => async () => {};
 
 /**
  * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
