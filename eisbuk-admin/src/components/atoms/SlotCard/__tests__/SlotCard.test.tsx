@@ -12,7 +12,7 @@ import { SlotView } from "@/enums/components";
 
 import SlotCard from "../SlotCard";
 
-import * as bookingActions from "@/store/actions/bookingOperations";
+// import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
 import { __slotId__ } from "../__testData__/testIds";
@@ -58,19 +58,19 @@ describe("SlotCard", () => {
   });
 
   describe("DurationsSection functionality", () => {
-    const mockSubscribe = jest.spyOn(bookingActions, "subscribeToSlot");
-    const mockUnsubscribe = jest.spyOn(bookingActions, "unsubscribeFromSlot");
+    // const mockSubscribe = jest.spyOn(bookingActions, "subscribeToSlot");
+    // const mockUnsubscribe = jest.spyOn(bookingActions, "unsubscribeFromSlot");
 
     // we're mocking booking operations to return payload they've been called with rather than thunk
     // any assertion comes to explicitly say we're ok with returning a Record instead of async thunk
-    mockSubscribe.mockImplementationOnce(
-      (bookingId, bookingInfo) =>
-        ({ action: "subscribe", bookingId, bookingInfo } as any)
-    );
-    mockUnsubscribe.mockImplementation(
-      (bookingId, slotId) =>
-        ({ action: "unsubscribe", bookingId, slotId } as any)
-    );
+    // mockSubscribe.mockImplementationOnce(
+    //   (bookingId, bookingInfo) =>
+    //     ({ action: "subscribe", bookingId, bookingInfo } as any)
+    // );
+    // mockUnsubscribe.mockImplementation(
+    //   (bookingId, slotId) =>
+    //     ({ action: "unsubscribe", bookingId, slotId } as any)
+    // );
 
     test("if clicked duration is not subscribed to, should subscribe to said duration and unsubscribe from any other duration", () => {
       // we're simulating a case where the customer is subscribed to first duration of the dummy slot

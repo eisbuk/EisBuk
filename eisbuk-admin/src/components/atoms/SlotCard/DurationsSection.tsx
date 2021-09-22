@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+// import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 
 import Button from "@material-ui/core/Button";
@@ -17,10 +17,10 @@ import { Duration, Slot } from "eisbuk-shared";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import {
-  subscribeToSlot,
-  unsubscribeFromSlot,
-} from "@/store/actions/bookingOperations";
+// import {
+//   subscribeToSlot,
+//   unsubscribeFromSlot,
+// } from "@/store/actions/bookingOperations";
 
 interface Props extends Slot<"id"> {
   /**
@@ -44,7 +44,7 @@ const DurationsSection: React.FC<Props> = ({
   ...slotData
 }) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const { secretKey } = useParams<{ secretKey?: string }>();
 
@@ -60,9 +60,9 @@ const DurationsSection: React.FC<Props> = ({
   const handleSubscription = (duration: Duration) => () => {
     if (secretKey) {
       if (subscribedDuration === duration) {
-        dispatch(unsubscribeFromSlot(secretKey!, slotData.id));
+        // dispatch(unsubscribeFromSlot(secretKey!, slotData.id));
       } else {
-        dispatch(subscribeToSlot(secretKey!, { ...slotData, duration }));
+        // dispatch(subscribeToSlot(secretKey!, { ...slotData, duration }));
       }
     } else {
       console.error("Illegel operation, no secret key present");

@@ -26,3 +26,13 @@ export enum ButtonContextType {
   Week = "week",
 }
 // #endregion slotOperationButtons
+
+// #region BookingCard
+/**
+ * Controlls different rendering options of `BookingCard` for `book_ice/book_off_ice` or `calendar` views.
+ */
+export enum BookingCardVariant {
+  Booking = "booking",
+  Calendar = "calendar",
+}
+// #endregion BookingCard

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -8,17 +9,22 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import {
+  __bookInterval__,
+  __cancelBooking__,
+  slotTypeLabel,
+} from "@/lib/labels";
+
+import { slotsLabels } from "@/config/appConfig";
+
+import { BookingCardVariant } from "@/enums/components";
+
 import { SlotInterface, SlotInterval } from "@/types/temp";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
-import { currentTheme } from "@/themes";
-
-import { slotsLabels } from "@/config/appConfig";
-
 import { fb2Luxon } from "@/utils/date";
-import { useTranslation } from "react-i18next";
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -34,9 +40,17 @@ export type Props = Pick<SlotInterface, "type"> &
      */
     booked?: boolean;
     /**
+     * A flag in charge of rendering different variants of `IntervalCard` for `calendar` view or `book_ice/book_off_ice`
+     */
+    variant?: BookingCardVariant;
+    /**
      * A boolean flag we're using to fade non booked intervals of a booked slot.
      */
     fade?: boolean;
+    /**
+     * A boolean flag we're using to disable all buttons while the local/firestore state is syncing.
+     */
+    disabled?: boolean;
     /**
      * Fires (parent provided) function to book interval
      */
@@ -46,6 +60,7 @@ export type Props = Pick<SlotInterface, "type"> &
      */
     cancelBooking?: () => void;
   };
+
 const BookingCard: React.FC<Props> = ({
   type,
   date: timestamp,
@@ -54,6 +69,9 @@ const BookingCard: React.FC<Props> = ({
   bookInterval = () => {},
   cancelBooking = () => {},
   booked,
+  fade,
+  disabled,
+  variant = BookingCardVariant.Booking,
 }) => {
   const classes = useStyles();
 
@@ -62,28 +80,68 @@ const BookingCard: React.FC<Props> = ({
   const date = fb2Luxon(timestamp);
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
+
+  /**
+   * Date box is shown in `calendar` variant, but hidden in `booking` variant
+   * as cards in `booking` view will already be inside date container.
+   */
+  const dateBox = (
+    <Box className={classes.date} textAlign="center">
+      <Typography variant="h5" className={classes.weekday}>
+        {t("CustomerAreaBookingCard.Weekday", { date })}
+      </Typography>
+      <Typography className={classes.day}>
+        {t("CustomerAreaBookingCard.Day", { date })}
+      </Typography>
+      <Typography className={classes.month}>
+        {t("CustomerAreaBookingCard.Month", { date })}
+      </Typography>
+    </Box>
+  );
+
+  const timeSpan = (
+    <Typography
+      className={[classes.time, classes.flexCenter, classes.boxCenter].join(
+        " "
+      )}
+      component="h2"
+    >
+      <strong>{interval.startTime}</strong> - {interval.endTime}
+    </Typography>
+  );
+
+  /**
+   * An overlay we're using to achieve fade effect.
+   * Comes after the card, but before button (to leave button unfaded)
+   */
+  const fadeOverlay = <div className={classes.fadeOverlay} />;
+
+  /**
+   * Action button for `bookInterval`/`cancelBooking`
+   */
+  const actionButton = (
+    <Button
+      disabled={disabled}
+      className={classes.actionButton}
+      onClick={handleClick}
+      color={booked ? "secondary" : "primary"}
+      variant="contained"
+    >
+      {t(booked ? __cancelBooking__ : __bookInterval__)}
+    </Button>
+  );
+
   return (
-    <Card variant="outlined" className={classes.root}>
+    <Card
+      variant="outlined"
+      data-testid={__bookingCardId__}
+      className={classes.root}
+    >
       <CardContent className={classes.content}>
-        <Box className={classes.date} textAlign="center">
-          <Typography variant="h5" className={classes.weekday}>
-            {t("CustomerAreaBookingCard.Weekday", { date })}
-          </Typography>
-          <Typography className={classes.day}>
-            {t("CustomerAreaBookingCard.Day", { date })}
-          </Typography>
-          <Typography className={classes.month}>
-            {t("CustomerAreaBookingCard.Month", { date })}
-          </Typography>
-        </Box>
+        {variant === BookingCardVariant.Calendar && dateBox}
         <Box display="flex" flexGrow={1} flexDirection="column">
-          <Box
-            display="flex"
-            flexGrow={1}
-            className={classes.topWrapper}
-            onClick={handleClick}
-          >
-            {interval.startTime} - {interval.endTime}
+          <Box display="flex" flexGrow={1} className={classes.topWrapper}>
+            {timeSpan}
             {notes && (
               <Box
                 display="flex"
@@ -94,13 +152,16 @@ const BookingCard: React.FC<Props> = ({
               </Box>
             )}
           </Box>
-          <Box display="flex">
+          <Box className={classes.bottomBox}>
             <Box
-              className={classes.split}
+              className={[
+                classes.flexCenter,
+                classes.typeLabel,
+                variant === BookingCardVariant.Booking
+                  ? classes.boxLeft
+                  : classes.boxCenter,
+              ].join(" ")}
               flexGrow={1}
-              display="flex"
-              alignItems="center"
-              justifyContent="center"
               pl={1}
               pr={1}
             >
@@ -114,35 +175,21 @@ const BookingCard: React.FC<Props> = ({
                 key="type"
                 color={slotLabel.color}
               >
-                {t(`SlotTypes.${type}`)}
+                {t(slotTypeLabel[type])}
               </Typography>
-            </Box>
-            <Box
-              className={classes.split}
-              display="flex"
-              justifyContent="center"
-              flexGrow={1}
-            >
-              <Button
-                className={classes.actionButton}
-                onClick={handleClick}
-                color="secondary"
-                variant="contained"
-              >
-                {booked ? __cancelBooking__ : __bookInterval__}
-              </Button>
             </Box>
           </Box>
         </Box>
       </CardContent>
+      {(fade || disabled) && fadeOverlay}
+      {variant === BookingCardVariant.Booking && actionButton}
     </Card>
   );
 };
 
-// ***** Region Styles ***** //
-type Theme = typeof currentTheme;
+// #region styles
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     marginTop: theme.spacing(1),
@@ -165,26 +212,44 @@ const useStyles = makeStyles((theme: Theme) => ({
       lineHeight: 1,
     },
   },
-  split: {
-    diaplay: "flex",
+  bottomBox: {
+    height: "2.25rem",
+  },
+  flexCenter: {
+    display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    width: "50%",
+  },
+  typeLabel: {
     height: "100%",
+  },
+  boxCenter: {
+    width: "100%",
+  },
+  boxLeft: {
+    boxSizing: "border-box",
+    width: "50%",
+    marginRight: "auto",
   },
   topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
   time: {
+    boxSizing: "border-box",
     padding: theme.spacing(1.5),
+    fontSize: theme.typography.h6.fontSize!,
+    color: theme.palette.grey[700],
+    "& strong": {
+      fontSize: theme.typography.h5.fontSize!,
+      color: theme.palette.primary.main,
+      marginRight: "0.25rem",
+    },
   },
   notesWrapper: {
     borderLeft: `1px solid ${theme.palette.divider}`,
     paddingLeft: theme.spacing(1),
+    width: "100%",
   },
   notes: {
     fontWeight: theme.typography.fontWeightLight,
-  },
-  endTime: {
-    color: theme.palette.grey[700],
   },
   typeIcon: {
     opacity: 0.5,
@@ -194,9 +259,21 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(10),
   },
+  fadeOverlay: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    opacity: 0.8,
+    background: "white",
+  },
   actionButton: {
-    width: "100%",
-    height: "100%",
+    position: "absolute",
+    right: 0,
+    bottom: 0,
+    width: "50%",
+    height: "2.25rem",
   },
   weekday: {
     textTransform: "uppercase",
@@ -214,6 +291,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   deleteButton: {},
 }));
-// ***** End Region Styles ***** //
+
+// #endregion styles
 
 export default BookingCard;
