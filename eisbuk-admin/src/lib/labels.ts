@@ -32,3 +32,8 @@ export const __editSlot__ = "Action.EditSlot";
 // #region attendanceCard
 export const __addCustomersTitle__ = "AttendanceCard.AddCustomersTitle";
 // #endregion attendanceCard
+
+// #region intervals
+export const __bookInterval__ = "BookingCard.BookInterval";
+export const __cancelBooking__ = "BookingCard.CancelBooking";
+// #endregion intervals

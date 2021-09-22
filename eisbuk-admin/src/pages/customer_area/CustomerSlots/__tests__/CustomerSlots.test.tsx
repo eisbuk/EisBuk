@@ -2,7 +2,7 @@ import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { CustomerBookingEntry } from "eisbuk-shared";
+// import { CustomerBookingEntry } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -10,7 +10,7 @@ import { CustomerRoute } from "@/enums/routes";
 
 import CustomerSlots from "../CustomerSlots";
 
-import * as bookingActions from "@/store/actions/bookingOperations";
+// import * as bookingActions from "@/store/actions/bookingOperations";
 
 import { luxon2ISODate } from "@/utils/date";
 
@@ -82,27 +82,24 @@ xdescribe("CustomerSlots", () => {
     // we're passing a slot month (for type safety), but we'll be testing actions only on the first slot
     // const testSlotId = "slot-0";
     // const testSlot = slotsMonth["2021-03-01"][testSlotId];
-
     // mock implementations for `subscribeToSlot` and `unsubscribeFromSlot`
     // we'll be using those implementations to easier test dispatching to store with appropriate actions
     // as well as mocking implementations of asid functions within the component
-    const mockSubscribeImplementation = (
-      bookingId: string,
-      bookingInfo: CustomerBookingEntry
-    ) => ({ action: "subscribe", bookingId, bookingInfo });
-    const mockUnsubscribeImplementation = (
-      bookingId: string,
-      slotId: string
-    ) => ({ action: "unsubscribe", bookingId, slotId });
-
+    // const mockSubscribeImplementation = (
+    //   bookingId: string,
+    //   bookingInfo: CustomerBookingEntry
+    // ) => ({ action: "subscribe", bookingId, bookingInfo });
+    // const mockUnsubscribeImplementation = (
+    //   bookingId: string,
+    //   slotId: string
+    // ) => ({ action: "unsubscribe", bookingId, slotId });
     // apply mock implenetations to component
-    jest
-      .spyOn(bookingActions, "subscribeToSlot")
-      .mockImplementation(mockSubscribeImplementation as any);
-    jest
-      .spyOn(bookingActions, "unsubscribeFromSlot")
-      .mockImplementation(mockUnsubscribeImplementation as any);
-
+    // jest
+    //   .spyOn(bookingActions, "subscribeToSlot")
+    //   .mockImplementation(mockSubscribeImplementation as any);
+    // jest
+    //   .spyOn(bookingActions, "unsubscribeFromSlot")
+    //   .mockImplementation(mockUnsubscribeImplementation as any);
     // test("should subscribe to given slot (and a given duration) on click", () => {
     //   // we try subscribing to the first available duration of the first slot
     //   const testDuration = testSlot.durations[0];
@@ -121,7 +118,6 @@ xdescribe("CustomerSlots", () => {
     //   });
     //   expect(mockDispatch).toHaveBeenCalledWith(mockSubscribeAction);
     // });
-
     // test("should unsubscribe from duration on click if that duration is subscribed to", () => {
     //   // we'll be using the first duration from test slot as subscribed duration
     //   const subscribedDuration = testSlot.durations[0];

@@ -5,13 +5,14 @@ import Grid from "@material-ui/core/Grid";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import BookingCard, { BookingCardProps } from "@/components/atoms/BookingCard";
+import BookingCard from "@/components/atoms/BookingCard";
 
 interface Props {
   /**
    * Array of bookings to display -> booked slot data + duration
    */
-  bookings?: Array<BookingCardProps & { id: string }>;
+  // bookings?: Array<BookingCardProps & { id: string }>;
+  bookings?: Array<any & { id: string }>;
 }
 
 /**

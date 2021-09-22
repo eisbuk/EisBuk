@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 import { SlotInterface } from "eisbuk-shared";
 
-import { ButtonContextType, SlotView } from "@/enums/components";
+import { ButtonContextType } from "@/enums/components";
 
 import { SlotsWeek } from "@/types/store";
 
@@ -97,19 +97,24 @@ const SlotsPage: React.FC = () => {
                     date,
                     additionalButtons,
                     showAdditionalButtons: toggleState,
-                    view: SlotView.Admin,
                   }}
                 >
-                  {slotsForDay.map((slot) => {
-                    const selected = checkSelected(slot.id, weekToPaste);
+                  {({ WrapElement }) => (
+                    <>
+                      {slotsForDay.map((slot) => {
+                        const selected = checkSelected(slot.id, weekToPaste);
 
-                    return (
-                      <SlotCard
-                        {...{ ...slot, selected }}
-                        onClick={handleSlotClick({ slot, selected })}
-                      />
-                    );
-                  })}
+                        return (
+                          <WrapElement>
+                            <SlotCard
+                              {...{ ...slot, selected }}
+                              onClick={handleSlotClick({ slot, selected })}
+                            />
+                          </WrapElement>
+                        );
+                      })}
+                    </>
+                  )}
                 </SlotsDayContainer>
               );
             })}

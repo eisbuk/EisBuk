@@ -4,7 +4,6 @@ import { DateTime } from "luxon";
 import { SlotInterface } from "eisbuk-shared";
 import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
-import { SlotView } from "@/enums/components";
 import { CustomerRoute } from "@/enums/routes";
 
 import DateNavigation from "@/components/atoms/DateNavigation";
@@ -49,7 +48,7 @@ interface Props {
 /**
  * A component used by `customers` page to render the slots available for booking.
  * - `book_ice` - would be passed slots of type `"ice"`, shows a month and orders days to show all Mondays first, then all Tuesdays, and so on
- * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "Off_ice_gym"`, shows a week and orders days in regular weekly order
+ * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "off_ice_gym"`, shows a week and orders days in regular weekly order
  *
  * **note: slots passed are controlled outside the component, only the displaying/pagination is controlled within the component**
  */
@@ -77,25 +76,26 @@ const CustomerSlots: React.FC<Props> = ({
             const slotsArray = Object.values(slostForDay);
 
             return (
-              <SlotsDayContainer
-                key={date}
-                date={luxonDay}
-                view={SlotView.Customer}
-              >
-                {slotsArray.map((slot) => {
-                  // check if slot is subscribed to
-                  const subscribedDuration = subscribedSlots
-                    ? subscribedSlots[slot.id]
-                    : undefined;
-                  return (
-                    <SlotCard
-                      key={slot.id}
-                      {...(slot as any)}
-                      view={SlotView.Customer}
-                      {...{ subscribedDuration }}
-                    />
-                  );
-                })}
+              <SlotsDayContainer key={date} date={luxonDay}>
+                {({ WrapElement }) => (
+                  <>
+                    {slotsArray.map((slot) => {
+                      // check if slot is subscribed to
+                      const subscribedDuration = subscribedSlots
+                        ? subscribedSlots[slot.id]
+                        : undefined;
+                      return (
+                        <WrapElement>
+                          <SlotCard
+                            key={slot.id}
+                            {...(slot as any)}
+                            {...{ subscribedDuration }}
+                          />
+                        </WrapElement>
+                      );
+                    })}
+                  </>
+                )}
               </SlotsDayContainer>
             );
           })}

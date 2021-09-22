@@ -1,4 +1,4 @@
-import { testDate, testDateLuxon, timestampDate } from "@/__testData__/date";
+import { testDate, testDateLuxon } from "@/__testData__/date";
 import {
   baseSlot as baseSlotWithId,
   createIntervals,

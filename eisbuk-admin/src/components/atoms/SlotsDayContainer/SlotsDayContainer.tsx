@@ -8,9 +8,20 @@ import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotView } from "@/enums/components";
+/**
+ * Wrapper function we're using to wrap each child element (for styling).
+ * We're using this in case some of the children components render an array of elements
+ * inside of `React.Fragment` (`BookingCardGroup`), thus making it difficult to iterate over said elements,
+ * so this way each child component can apply wrapper to elements in a way native to that component.
+ */
+type ElementWrapper = React.FC;
 
-import { luxon2ISODate } from "@/utils/date";
+/**
+ * A render function we're accepting as `children` and passing the element wrapper to.
+ */
+interface RenderFunction {
+  (params: { WrapElement: ElementWrapper }): JSX.Element;
+}
 
 interface Props {
   /**
@@ -26,9 +37,11 @@ interface Props {
    */
   date: DateTime;
   /**
-   *
+   * We're using this component as a render prop, in order to be able to pass
+   * wrapper component for each element (MUI `<Grid />`) to a render function.
+   * The render function is accepted as children prop.
    */
-  view?: SlotView;
+  children?: RenderFunction;
 }
 
 /**
@@ -42,13 +55,16 @@ const SlotsDayContainer: React.FC<Props> = ({
   date,
   additionalButtons = null,
   showAdditionalButtons = true,
-  children,
-  view = SlotView.Admin,
+  children: render = () => <></>,
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const dateISO = luxon2ISODate(date);
+  const WrapElement: ElementWrapper = ({ children }) => (
+    <Grid item xs={12} md={6} lg={4} xl={3}>
+      {children}
+    </Grid>
+  );
 
   return (
     <>
@@ -59,20 +75,7 @@ const SlotsDayContainer: React.FC<Props> = ({
         {showAdditionalButtons && additionalButtons}
       </ListSubheader>
       <Grid className={classes.slotListContainer} container spacing={1}>
-        {children instanceof Array
-          ? children.map((child, i, { length }) => (
-              <Grid
-                key={`${dateISO}-${length}-${i}`}
-                item
-                xs={12}
-                md={6}
-                lg={view === SlotView.Admin ? 3 : 4}
-                xl={view === SlotView.Admin ? 2 : 3}
-              >
-                {child}
-              </Grid>
-            ))
-          : children}
+        {render({ WrapElement })}
       </Grid>
     </>
   );

@@ -1,23 +1,56 @@
-import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
-
-import { DeprecatedDuration as Duration } from "eisbuk-shared/dist/enums/deprecated/firestore";
+import React, { useState } from "react";
+import { ComponentMeta } from "@storybook/react";
 
 import BookingCard from "./BookingCard";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseProps } from "./__testData__/dummyData";
+import { BookingCardVariant } from "@/enums/components";
 
 export default {
   title: "Booking Card",
   component: BookingCard,
+  decorators: [
+    (Story) => (
+      <div style={{ width: 400 }}>
+        <Story />
+      </div>
+    ),
+  ],
 } as ComponentMeta<typeof BookingCard>;
 
-const Template: ComponentStory<typeof BookingCard> = (args) => (
-  <BookingCard {...args} />
+export const Default = (): JSX.Element => {
+  /** We're using this in development to interactively test booked and non booked display */
+  const [booked, setBooked] = useState<boolean>(false);
+
+  return (
+    <BookingCard
+      {...{ ...baseProps, booked }}
+      bookInterval={() => setBooked(true)}
+      cancelBooking={() => setBooked(false)}
+    />
+  );
+};
+
+export const WithNotes = (): JSX.Element => (
+  <BookingCard {...baseProps} notes="Pista 1" />
 );
 
-export const Default = Template.bind({});
-Default.args = {
-  ...baseSlot,
-  bookedDuration: Duration["1.5h"],
-};
+export const Booked = (): JSX.Element => <BookingCard {...baseProps} booked />;
+
+export const Faded = (): JSX.Element => <BookingCard {...baseProps} fade />;
+
+export const Disabled = (): JSX.Element => (
+  <BookingCard {...baseProps} disabled />
+);
+
+export const CalendarVariant = (): JSX.Element => (
+  <BookingCard {...baseProps} variant={BookingCardVariant.Calendar} />
+);
+
+export const CalendarVariantWithNotes = (): JSX.Element => (
+  <BookingCard
+    {...baseProps}
+    variant={BookingCardVariant.Calendar}
+    notes="Pista 1"
+  />
+);

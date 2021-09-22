@@ -166,5 +166,9 @@
   },
   "AttendanceCard": {
     "AddCustomersTitle": "Add customers"
+  },
+  "BookingCard": {
+    "BookInterval": "Book",
+    "CancelBooking": "Cancel"
   }
 }

@@ -165,5 +165,9 @@
   },
   "AttendanceCard": {
     "AddCustomersTitle": "Aggiungi clienti"
+  },
+  "BookingCard": {
+    "BookInterval": "Prenota",
+    "CancelBooking": "Annulla"
   }
 }

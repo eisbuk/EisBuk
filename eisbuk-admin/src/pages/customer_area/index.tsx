@@ -14,7 +14,6 @@ import BookingsCalendar from "./BookingsCalendar";
 import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import { BookingCardProps } from "@/components/atoms/BookingCard";
 
 import useConnectSlotsAndBookgins from "./hooks/useConnectSlotsAndBookings";
 
@@ -110,7 +109,8 @@ const CustomerArea: React.FC = () => {
           acc;
     },
     [[], {}] as [
-      Array<BookingCardProps & { id: string }>,
+      // Array<BookingCardProps & { id: string }>,
+      Array<any & { id: string }>,
       Record<string, DeprecatedDuration>
     ]
   );
