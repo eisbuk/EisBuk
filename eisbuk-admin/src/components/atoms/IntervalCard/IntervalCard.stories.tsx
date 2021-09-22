@@ -1,9 +1,10 @@
-import React from "react";
-import { ComponentMeta, ComponentStory } from "@storybook/react";
+import React, { useState } from "react";
+import { ComponentMeta } from "@storybook/react";
 
 import IntervalCard from "./IntervalCard";
 
 import { baseProps } from "./__testData__/dummyData";
+import { BookingCardVariant } from "@/enums/components";
 
 export default {
   title: "Interval Card",
@@ -17,11 +18,39 @@ export default {
   ],
 } as ComponentMeta<typeof IntervalCard>;
 
-const Template: ComponentStory<typeof IntervalCard> = (args) => (
-  <IntervalCard {...args} />
+export const Default = (): JSX.Element => {
+  /** We're using this in development to interactively test booked and non booked display */
+  const [booked, setBooked] = useState<boolean>(false);
+
+  return (
+    <IntervalCard
+      {...{ ...baseProps, booked }}
+      bookInterval={() => setBooked(true)}
+      cancelBooking={() => setBooked(false)}
+    />
+  );
+};
+
+export const WithNotes = (): JSX.Element => (
+  <IntervalCard {...baseProps} notes="Pista 1" />
 );
 
-export const Default = Template.bind({});
-Default.args = {
-  ...baseProps,
-};
+export const Booked = (): JSX.Element => <IntervalCard {...baseProps} booked />;
+
+export const Faded = (): JSX.Element => <IntervalCard {...baseProps} fade />;
+
+export const Disabled = (): JSX.Element => (
+  <IntervalCard {...baseProps} disabled />
+);
+
+export const CalendarVariant = (): JSX.Element => (
+  <IntervalCard {...baseProps} variant={BookingCardVariant.Calendar} />
+);
+
+export const CalendarVariantWithNotes = (): JSX.Element => (
+  <IntervalCard
+    {...baseProps}
+    variant={BookingCardVariant.Calendar}
+    notes="Pista 1"
+  />
+);

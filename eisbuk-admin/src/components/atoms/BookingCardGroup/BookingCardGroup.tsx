@@ -20,12 +20,18 @@ export interface Props extends SlotInterface {
    * Customer id is used for dispatching of the booking operations
    */
   customerId: Customer["id"];
+  /**
+   * Since we can't return an array of JSX elements (but rather a React.Fragment with elements inside),
+   * we're providing this option if we wan't to wrap each element in a wrapper (passed from parent component)
+   */
+  WrapElement?: React.FC;
 }
 
 const BookingCardGroup: React.FC<Props> = ({
   bookedInterval = null,
   intervals,
   customerId,
+  WrapElement = ({ children }) => <>{children}</>,
   ...slotData
 }) => {
   const dispatch = useDispatch();
@@ -84,16 +90,18 @@ const BookingCardGroup: React.FC<Props> = ({
   return (
     <>
       {intervalKeys.map((interval) => (
-        <IntervalCard
-          {...slotData}
-          key={interval}
-          disabled={bookedInterval !== localSelected}
-          fade={Boolean(localSelected) && interval !== localSelected}
-          interval={intervals[interval]}
-          booked={localSelected === interval}
-          bookInterval={handleBookInterval(interval)}
-          cancelBooking={handleCancelBooking}
-        />
+        <WrapElement>
+          <IntervalCard
+            {...slotData}
+            key={interval}
+            disabled={bookedInterval !== localSelected}
+            fade={Boolean(localSelected) && interval !== localSelected}
+            interval={intervals[interval]}
+            booked={localSelected === interval}
+            bookInterval={handleBookInterval(interval)}
+            cancelBooking={handleCancelBooking}
+          />
+        </WrapElement>
       ))}
     </>
   );

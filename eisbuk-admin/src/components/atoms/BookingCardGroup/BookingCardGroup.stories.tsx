@@ -11,21 +11,27 @@ import { __storybookDate__ } from "@/lib/constants";
 export default {
   title: "Booking Card Group",
   component: BookingCardGroup,
-  decorators: [
-    (Story) => (
-      <SlotsDayContainer date={DateTime.fromISO(__storybookDate__)}>
-        <Story />
-      </SlotsDayContainer>
-    ),
-  ],
 } as ComponentMeta<typeof BookingCardGroup>;
 
 export const Default = (): JSX.Element => (
-  <BookingCardGroup {...{ ...slot, customerId }} />
+  <SlotsDayContainer date={DateTime.fromISO(__storybookDate__)}>
+    {({ WrapElement }) => (
+      <BookingCardGroup {...{ ...slot, customerId, WrapElement }} />
+    )}
+  </SlotsDayContainer>
 );
 
 export const WithBookedInterval = (): JSX.Element => (
-  <BookingCardGroup
-    {...{ ...slot, customerId, bookedInterval: Object.keys(intervals)[0] }}
-  />
+  <SlotsDayContainer date={DateTime.fromISO(__storybookDate__)}>
+    {({ WrapElement }) => (
+      <BookingCardGroup
+        {...{
+          ...slot,
+          customerId,
+          WrapElement,
+          bookedInterval: Object.keys(intervals)[0],
+        }}
+      />
+    )}
+  </SlotsDayContainer>
 );
