@@ -21,8 +21,6 @@ import { SlotInterface, SlotInterval } from "@/types/temp";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
-import { currentTheme } from "@/themes";
-
 import { fb2Luxon } from "@/utils/date";
 import { __bookingCardId__ } from "@/__testData__/testIds";
 
@@ -44,6 +42,10 @@ export type Props = Pick<SlotInterface, "type"> &
      */
     fade?: boolean;
     /**
+     * A boolean flag we're using to disable all buttons while the local/firestore state is syncing.
+     */
+    disabled?: boolean;
+    /**
      * Fires (parent provided) function to book interval
      */
     bookInterval?: () => void;
@@ -61,6 +63,7 @@ const BookingCard: React.FC<Props> = ({
   cancelBooking = () => {},
   booked,
   fade,
+  disabled,
 }) => {
   const classes = useStyles();
 
@@ -144,6 +147,7 @@ const BookingCard: React.FC<Props> = ({
               flexGrow={1}
             >
               <Button
+                disabled={disabled}
                 className={classes.actionButton}
                 onClick={handleClick}
                 color="secondary"
@@ -160,9 +164,8 @@ const BookingCard: React.FC<Props> = ({
 };
 
 // ***** Region Styles ***** //
-type Theme = typeof currentTheme;
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles((theme) => ({
   root: {
     position: "relative",
     marginTop: theme.spacing(1),

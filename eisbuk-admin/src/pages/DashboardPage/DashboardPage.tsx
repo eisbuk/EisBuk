@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -10,7 +10,7 @@ import DateNavigationAppBar from "@/containers/DateNavigationAppBar";
 import BookingsByDay from "@/components/BookingsByDay";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import { markAbsentee } from "@/store/actions/bookingOperations";
+// import { markAbsentee } from "@/store/actions/bookingOperations";
 
 import { bookingDayInfoSelector } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -20,7 +20,7 @@ import useTitle from "@/hooks/useTitle";
 const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   useTitle(t("DashboardPage.Bookings"));
 
@@ -28,17 +28,14 @@ const DashboardPage: React.FC = () => {
   const monthStr = currentDate.toISO().substring(0, 10);
   const bookingDayInfo = useSelector(bookingDayInfoSelector(monthStr));
 
-  const dispatchMarkAbsentee = (args: Parameters<typeof markAbsentee>[0]) =>
-    dispatch(markAbsentee(args));
+  // const dispatchMarkAbsentee = (args: Parameters<typeof markAbsentee>[0]) =>
+  //   dispatch(markAbsentee(args));
 
   return (
     <div className={classes.root}>
       <AppbarAdmin />
       <DateNavigationAppBar jump="day" />
-      <BookingsByDay
-        bookingDayInfo={bookingDayInfo}
-        markAbsentee={dispatchMarkAbsentee}
-      />
+      <BookingsByDay bookingDayInfo={bookingDayInfo} markAbsentee={() => {}} />
     </div>
   );
 };

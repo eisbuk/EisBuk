@@ -10,7 +10,7 @@ import { slotsLabels } from "@/config/appConfig";
 
 import CustomerSlots from "../CustomerSlots";
 
-import * as bookingActions from "@/store/actions/bookingOperations";
+// import * as bookingActions from "@/store/actions/bookingOperations";
 
 import { luxon2ISODate } from "@/utils/date";
 
@@ -96,12 +96,12 @@ describe("CustomerSlots", () => {
     ) => ({ action: "unsubscribe", bookingId, slotId });
 
     // apply mock implenetations to component
-    jest
-      .spyOn(bookingActions, "subscribeToSlot")
-      .mockImplementation(mockSubscribeImplementation as any);
-    jest
-      .spyOn(bookingActions, "unsubscribeFromSlot")
-      .mockImplementation(mockUnsubscribeImplementation as any);
+    // jest
+    //   .spyOn(bookingActions, "subscribeToSlot")
+    //   .mockImplementation(mockSubscribeImplementation as any);
+    // jest
+    //   .spyOn(bookingActions, "unsubscribeFromSlot")
+    //   .mockImplementation(mockUnsubscribeImplementation as any);
 
     test("should subscribe to given slot (and a given duration) on click", () => {
       // we try subscribing to the first available duration of the first slot

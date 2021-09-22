@@ -1,38 +1,98 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, cleanup } from "@testing-library/react";
 
 import BookingCardGroup from "../BookingCardGroup";
 
-import { __bookingCardId__ } from "@/__testData__/testIds";
-import { intervals, slot } from "../__testData__/dummyData";
+import * as bookingOperations from "@/store/actions/bookingOperations";
+
+import { intervals, slot, customerId } from "../__testData__/dummyData";
+import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+
+const mockDispatch = jest.fn();
+jest.mock("react-redux", () => ({
+  ...jest.requireActual("react-redux"),
+  useDispatch: () => mockDispatch,
+}));
+
+jest.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (str: string) => str }),
+}));
+
+// mock implementations we're using for easier testing
+// as well as to mock implementation insode the component
+const mockBookImplementation = (
+  payload: Parameters<typeof bookingOperations.bookInterval>[0]
+) => payload;
+const mockCancelImplementation = (
+  payload: Parameters<typeof bookingOperations.cancelBooking>[0]
+) => payload;
+
+// mocked functions to controll in component behavior
+jest
+  .spyOn(bookingOperations, "bookInterval")
+  .mockImplementation(mockBookImplementation as any);
+jest
+  .spyOn(bookingOperations, "cancelBooking")
+  .mockImplementation(mockCancelImplementation as any);
 
 describe("Booking Card Group ->", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+    cleanup();
+  });
+
   describe("Smoke test ->", () => {
     test("should render", () => {
-      render(<BookingCardGroup {...slot} />);
+      render(
+        <>
+          <BookingCardGroup {...{ ...slot, customerId }} />
+        </>
+      );
     });
   });
 
-  describe("Test local functionality ->", () => {
-    const bookedInterval = Object.keys(intervals)[0];
+  describe("Test booking functionality ->", () => {
+    const intervalKeys = Object.keys(intervals);
+    const bookedInterval = intervalKeys[0];
+    const { id: slotId } = slot;
 
     beforeEach(() => {
-      render(<BookingCardGroup {...{ ...slot, bookedInterval, intervals }} />);
+      render(
+        <>
+          {
+            <BookingCardGroup
+              {...{ ...slot, bookedInterval, intervals, customerId }}
+            />
+          }
+        </>
+      );
     });
 
-    test("should fade the booked interval", () => {
-      /** @FOR_FADWA uncomment this to start */
-      const intervalCards = screen.getAllByTestId(__bookingCardId__);
-      /**
-       * We're using `data-faded` property to test that the `faded` has been passed properly,
-       * as there is no way to test CSS styling. This is what we want for now and I will add CSS logic later.
-       * Use this property for the other tests as well
-       */
-      expect(intervalCards[0]).toHaveProperty("data-faded", true);
+    test("should switch booked interval on 'bookInterval' click (on a non-booked interval)", () => {
+      screen.getAllByText(__bookInterval__)[0].click();
+      const mockBookAction = mockBookImplementation({
+        slotId,
+        customerId,
+        bookedInterval: intervalKeys[1],
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
     });
 
-    test("should switch booked interval on 'bookInterval' click (on a non-booked interval)", () => {});
+    test("should remove booked interval on 'cancelBooking' click", () => {
+      screen.getByText(__cancelBooking__).click();
+      const mockCancelAction = mockCancelImplementation({
+        slotId,
+        customerId,
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(mockCancelAction);
+    });
 
-    test("should remove booked interval on 'cancelBooking' click", () => {});
+    test("should disable all buttons while the state is syncing (bookedInterval and localSelected are in discrepency)", () => {
+      // the `bookedInterval` prop has athe value of the first interval, this way we're setting i to  null
+      screen.getByText(__cancelBooking__).click();
+      screen.getAllByRole("button").forEach((button) => {
+        expect(button).toHaveProperty("disabled", true);
+      });
+    });
   });
 });
