@@ -25,11 +25,9 @@ import { ButtonContextType } from "@/enums/components";
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import {
+  __newSlotButtonId__,
   __slotFormId__,
   __cancelFormId__,
-  __newSlotButtonId__,
-  // __confirmFormId__,
-  // __offIceDancingButtonId__,
 } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();

@@ -5,9 +5,20 @@
  *
  * @TODO remove this file when new data model integrated
  */
-import { Timestamp } from "@google-cloud/firestore";
+import { Timestamp, Firestore } from "@google-cloud/firestore";
+import { Dispatch } from "redux";
+import { ExtendedFirebaseInstance } from "react-redux-firebase";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, Customer, SlotType } from "eisbuk-shared";
+
+import { LocalStore } from "./store";
+
+/**
+ * @TEMP while Timestamp issue is resolved
+ */
+type TempTimestamp = {
+  seconds: number;
+};
 
 /**
  * Interval for booking. Includes start/end time of the interval.
@@ -25,22 +36,6 @@ export interface SlotInterval {
    * @TO_ALWAYS_DO add checks for "HH:mm" compatibility when storing to firestore
    */
   endTime: string;
-}
-
-/**
- * Entry for attendance of single user on single slot.
- *
- * `booked` represents interval booked by the customer
- * - if customer booked, this should always be non-null
- * - if not booked by customer (attended without booking) will be `null`
- *
- * `attended` represents interval customer has attended
- * - if customer booked and didn't attend, will be `null`
- * - if not booked and not attended (customer added by mistake), won't be `null` and entry should be deleted.
- */
-interface CustomerAttendance {
-  booked: string | null;
-  attended: string | null;
 }
 
 /**
@@ -80,16 +75,100 @@ export interface SlotInterface {
     [key: string]: SlotInterval;
   };
   /**
-   * Included for book keeping. A record of attendance for each customer
-   * (keyed by customer id) for this particular slot
-   *
-   * @TODO move this somewhere else in the future
-   */
-  attendance?: {
-    [customerId: string]: CustomerAttendance;
-  };
-  /**
    * Notes on the slot
    */
   notes: string;
+}
+
+/**
+ * Booking entry in user's bookings `bookedSlots` collection
+ */
+export interface CustomerBookingEntry {
+  /**
+   * Date of booked slot (used for easier querying from store)
+   */
+  date: TempTimestamp;
+  /**
+   * Booked interval for particular slot
+   */
+  interval: string;
+}
+
+/**
+ * Bookings document for customer
+ */
+export interface CustomerBookings {
+  /**
+   * Id of customer (user to get rest of customer's data from `customers` entry)
+   */
+  customerId: string;
+  /**
+   * Slots the customer has booked, keyed by slot id and containing `date` and `bookedInterval`
+   */
+  bookedSlots?: {
+    [slotId: string]: CustomerBookingEntry;
+  };
+}
+
+/**
+ * Entry for attendance of single user on single slot.
+ *
+ * `booked` represents interval booked by the customer
+ * - if customer booked, this should always be non-null
+ * - if not booked by customer (attended without booking) will be `null`
+ *
+ * `attended` represents interval customer has attended
+ * - if customer booked and didn't attend, will be `null`
+ * - if not booked and not attended (customer added by mistake), won't be `null` and entry should be deleted.
+ */
+export interface CustomerAttendance {
+  booked: string | null;
+  attended: string | null;
+}
+
+export type SlotAttendnace = {
+  date: TempTimestamp;
+  attendances: {
+    [customerId: string]: CustomerAttendance;
+  };
+};
+
+export interface FirestoreAttendance {
+  [slotId: string]: SlotAttendnace;
+}
+
+/**
+ * A temporary Redux store state. we're using this for tests and as a blueprint for updated store
+ */
+export type TempStore = Omit<LocalStore, "firestore"> & {
+  firestore: ReduxFirestore;
+};
+
+type ReduxFirestore = Omit<LocalStore["firestore"], "data"> & {
+  data: ReduxFirestoreData;
+};
+
+type ReduxFirestoreData = LocalStore["firestore"]["data"] & {
+  attendance?: FirestoreAttendance;
+};
+
+export interface FirestoreGetters {
+  getFirebase: () => { firestore: () => Firestore };
+}
+
+/**
+ * Async Thunk in charge of updating the firestore and dispatching action
+ * to local store with respect to firestore update outcome
+ */
+export interface NewFirestoreThunk {
+  (
+    dispatch: Dispatch,
+    getState: () => TempStore,
+    firebaseParams: { getFirebase: () => ExtendedFirebaseInstance }
+  ): Promise<void>;
+}
+
+export interface CustomerWithAttendance extends Customer {
+  bookedInterval: string | null;
+  attendedInterval: string | null;
 }

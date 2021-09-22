@@ -3,6 +3,8 @@ import admin from "firebase-admin";
 import { v4 as uuidv4 } from "uuid";
 import { DateTime } from "luxon";
 
+import { Collection, OrgSubCollection } from "eisbuk-shared";
+
 import { fs2luxon } from "./utils";
 
 /**
@@ -149,4 +151,52 @@ export const aggregateBookings = functions
       .collection("bookingsByDay")
       .doc(monthStr)
       .set({ [bookingData.id]: { [customerId]: fieldValue } }, { merge: true });
+  });
+
+/**
+ * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
+ *
+ * - listens to `organizations/{organization}/bookings/{secretKey}/bookedSlots/{slotId}`
+ * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
+ */
+export const aggregateAttendance = functions
+  .region("europe-west6")
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/bookedSlots/{bookingId}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, secretKey, bookingId } = context.params as Record<
+      string,
+      string
+    >;
+    const db = admin.firestore();
+
+    const isUpdate = Boolean(change.after.exists);
+
+    const { customerId } = (
+      await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Bookings)
+        .doc(secretKey)
+        .get()
+    ).data()!;
+
+    const updatedEntry = {
+      attendances: {
+        [customerId]: isUpdate
+          ? {
+              booked: change.after.data()!.interval,
+              attended: null,
+            }
+          : admin.firestore.FieldValue.delete(),
+      },
+    };
+
+    await db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Attendance)
+      .doc(bookingId)
+      .set(updatedEntry, { merge: true });
   });

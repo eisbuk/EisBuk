@@ -163,5 +163,8 @@
     "RequiredField": "this field is required",
     "InvalidTime": "invalid time format (\"HH:mm\")",
     "TimeMismatch": "start time is greater than end time"
+  },
+  "AttendanceCard": {
+    "AddCustomersTitle": "Add customers"
   }
 }

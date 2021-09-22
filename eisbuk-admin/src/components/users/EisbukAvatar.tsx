@@ -9,7 +9,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import * as colors from "@material-ui/core/colors";
 
-import { Category } from "eisbuk-shared";
+import { Category, Customer } from "eisbuk-shared";
 
 import { getInitials } from "@/utils/helpers";
 
@@ -61,17 +61,7 @@ const getColor = ({ name, surname }: { name: string; surname: string }) => {
 };
 
 // ***** Region Main Component ***** //
-interface Props {
-  name: string;
-  surname: string;
-  category?: Category;
-  certificateExpiration?: string;
-  covidCertificateReleaseDate?: string;
-  covidCertificateSuspended?: boolean;
-  className?: string;
-}
-
-export const EisbukAvatar: React.FC<Props> = ({
+export const EisbukAvatar: React.FC<Customer & { className?: string }> = ({
   name,
   surname,
   className,

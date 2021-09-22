@@ -162,5 +162,8 @@
     "RequiredField": "Questo campo è obbligatorio",
     "InvalidTime": "formato dell'ora non valido (\"HH:mm\")",
     "TimeMismatch": "l'ora di inizio è maggiore dell'ora di fine"
+  },
+  "AttendanceCard": {
+    "AddCustomersTitle": "Aggiungi clienti"
   }
 }

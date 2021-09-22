@@ -17,3 +17,17 @@ export const testWithMutationObserver: TestClosure = (...args) => {
     xtest(...args);
   }
 };
+
+/**
+ * A test util which serves as a wrapper around test closure.
+ * Runs test provided if firestore emulator fired up.
+ * Akips test provided (runs `xtext`) if no firestore emulator found
+ * @param testArgs paramaters of `test` function
+ */
+export const testWithEmulator: TestClosure = (...args) => {
+  if (process.env.FIRESTORE_EMULATOR_HOST) {
+    test(...args);
+  } else {
+    xtest(...args);
+  }
+};

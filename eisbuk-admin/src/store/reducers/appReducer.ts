@@ -6,13 +6,14 @@ import { Action } from "@/enums/store";
 
 import { AppState, AppReducerAction, AppAction } from "@/types/store";
 
-const defaultState = {
+export const defaultState = {
   notifications: [],
-  calendarDay: __isStorybook__
-    ? // If the env is storybook, set the standard date to keep chromatic consistent
-      DateTime.fromISO(__storybookDate__)
-    : // In dev/production, the date is current date
-      DateTime.local(),
+  calendarDay:
+    __isStorybook__ || process.env.NODE_ENV === "test"
+      ? // If the env is storybook, set the standard date to keep chromatic consistent
+        DateTime.fromISO(__storybookDate__)
+      : // In dev/production, the date is current date
+        DateTime.local(),
   newSlotTime: null,
 };
 
