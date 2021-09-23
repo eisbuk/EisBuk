@@ -14,7 +14,6 @@ import {
   SlotAttendnace,
   SlotInterface,
 } from "eisbuk-shared";
-import fs from "fs";
 
 /**
  * Adds the secret_key to a user if it's missing.
@@ -127,53 +126,34 @@ export const aggregateSlots = functions
       string
     >;
 
-    let report: Record<string, any> = { organization, id };
-    try {
-      const db = admin.firestore();
+    const db = admin.firestore();
 
-      let luxonDay: DateTime;
-      let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
+    let luxonDay: DateTime;
+    let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
 
-      if (change.after.exists) {
-        const afterData = change.after.data()! as SlotInterface;
-        report = { ...report, afterData };
-        newSlot = { ...afterData, id };
-        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
-      } else {
-        const beforeData = change.before.data()!;
-        report = { ...report, beforeData };
-        luxonDay = DateTime.fromJSDate(
-          new Date(beforeData.date.seconds * 1000)
-        );
-        newSlot = admin.firestore.FieldValue.delete();
-      }
-
-      const monthStr = luxonDay.toISO().substring(0, 7);
-      const dayStr = luxonDay.toISO().substring(0, 10);
-
-      const monthSlotsRef = db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.SlotsByDay)
-        .doc(monthStr);
-
-      await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
-
-      const monthSlots = (await monthSlotsRef.get()).data();
-
-      logToFS({ ...report, monthSlots });
-      return change.after;
-    } catch {
-      logToFS(report);
-      return change.after;
+    if (change.after.exists) {
+      const afterData = change.after.data()! as SlotInterface;
+      newSlot = { ...afterData, id };
+      luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
+    } else {
+      const beforeData = change.before.data()!;
+      luxonDay = DateTime.fromJSDate(new Date(beforeData.date.seconds * 1000));
+      newSlot = admin.firestore.FieldValue.delete();
     }
-  });
 
-const logToFS = (data: Record<string, any>) => {
-  const timeString = Date.now().toString();
-  const dataString = JSON.stringify(data, null, 2);
-  fs.writeFileSync(`./logs/${timeString}.json`, dataString);
-};
+    const monthStr = luxonDay.toISO().substring(0, 7);
+    const dayStr = luxonDay.toISO().substring(0, 10);
+
+    const monthSlotsRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.SlotsByDay)
+      .doc(monthStr);
+
+    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
+
+    return change.after;
+  });
 
 /**
  * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
