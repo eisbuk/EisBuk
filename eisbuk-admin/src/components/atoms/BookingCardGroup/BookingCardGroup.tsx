@@ -7,8 +7,6 @@ import BookingCard from "../BookingCard";
 
 import { bookInterval, cancelBooking } from "@/store/actions/bookingOperations";
 
-import { slot } from "./__testData__/dummyData";
-
 export interface Props extends SlotInterface {
   /**
    * Booked interval used to update local state
@@ -55,12 +53,12 @@ const BookingCardGroup: React.FC<Props> = ({
       dispatch(
         bookInterval({
           bookedInterval,
-          slotId: slot.id,
+          slotId: slotData.id,
           customerId,
         })
       );
     } else {
-      dispatch(cancelBooking({ slotId: slot.id, customerId }));
+      dispatch(cancelBooking({ slotId: slotData.id, customerId }));
     }
   };
 
@@ -89,7 +87,7 @@ const BookingCardGroup: React.FC<Props> = ({
   return (
     <>
       {intervalKeys.map((interval) => (
-        <WrapElement>
+        <WrapElement key={interval}>
           <BookingCard
             {...slotData}
             key={interval}

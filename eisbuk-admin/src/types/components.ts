@@ -1,7 +1,7 @@
 import { SvgIconTypeMap } from "@material-ui/core/SvgIcon";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 
-import { Customer } from "eisbuk-shared";
+import { Customer, SlotInterface } from "eisbuk-shared";
 
 // #region svg
 
@@ -39,3 +39,9 @@ export interface CustomerWithAttendance extends Customer {
   attendedInterval: string | null;
 }
 // #endregion attendanceCard
+
+// #region bookingCard
+export interface SlotWithBookedInterval extends SlotInterface {
+  bookedInterval?: string | null;
+}
+// #endregion bookingCard
