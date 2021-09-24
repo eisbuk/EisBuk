@@ -5,7 +5,6 @@ import { isEmpty, isLoaded, useFirestoreConnect } from "react-redux-firebase";
 import { DateTime } from "luxon";
 
 import { OrgSubCollection } from "eisbuk-shared";
-import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -18,10 +17,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import useConnectSlotsAndBookgins from "./hooks/useConnectSlotsAndBookings";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
-import {
-  getSlotsForCustomer,
-  getSubscribedSlots,
-} from "@/store/selectors/slots";
+import { getSlotsForCustomer, getBookedSlots } from "@/store/selectors/slots";
 import { getFirebaseAuth } from "@/store/selectors/auth";
 
 import { splitSlotsByCustomerRoute } from "./utils";
@@ -82,38 +78,7 @@ const CustomerArea: React.FC = () => {
   } = splitSlotsByCustomerRoute(rawSlots);
 
   // create bookings to display
-  const subscribedSlots = useSelector(getSubscribedSlots);
-
-  /**
-   * Extract:
-   * - `bookings` (used for `BookingsCalendar`)
-   * - `bookedSlots` (used for `CustomerSlots`)
-   * We're returning these values as a tuple to reduce the processing time (and amount of code)
-   * by utilizing the same iteration for both structures
-   * (as they're using the same data, only structured a bit differently)
-   */
-  const [bookings, bookedSlots] = Object.values(subscribedSlots).reduce(
-    (acc, bookingInfo) => {
-      const { id, duration: bookedDuration } = (bookingInfo as any) || {};
-
-      // apply filter mask to subscribedSlots (recieved from store)
-      // against calendarSlots (processed from raw slots)
-      return calendarSlots[id]
-        ? [
-            // update `bookings` structure
-            [...acc[0], { ...calendarSlots[id], bookedDuration }],
-            // update `bookedSlots` structure
-            { ...acc[1], [id]: bookedDuration },
-          ]
-        : // if slot data for subscribedSlot not found omit that slot altogether
-          acc;
-    },
-    [[], {}] as [
-      // Array<BookingCardProps & { id: string }>,
-      Array<any & { id: string }>,
-      Record<string, DeprecatedDuration>
-    ]
-  );
+  const bookedSlots = useSelector(getBookedSlots);
 
   /**
    * @TODO This is copy pasted from old `CustomerAreaPage`.
@@ -133,8 +98,6 @@ const CustomerArea: React.FC = () => {
     </>
   );
 
-  console.log("Bookings", bookings);
-
   return (
     <>
       {headers}
@@ -146,7 +109,7 @@ const CustomerArea: React.FC = () => {
           <CustomerSlots
             view={CustomerRoute.BookIce}
             slots={bookIceSlots}
-            subscribedSlots={bookedSlots}
+            {...{ bookedSlots }}
           />
         </Route>
         <Route
@@ -155,13 +118,13 @@ const CustomerArea: React.FC = () => {
           <CustomerSlots
             view={CustomerRoute.BookOffIce}
             slots={bookOffIceSlots}
-            subscribedSlots={bookedSlots}
+            {...{ bookedSlots }}
           />
         </Route>
         <Route
           path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.Calendar}/:date?`}
         >
-          <BookingsCalendar bookings={bookings} />
+          <BookingsCalendar slots={calendarSlots} {...{ bookedSlots }} />
         </Route>
       </Switch>
     </>

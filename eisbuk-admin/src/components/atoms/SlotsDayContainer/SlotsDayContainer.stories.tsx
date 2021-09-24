@@ -7,6 +7,7 @@ import { ButtonContextType } from "@/enums/components";
 import { __storybookDate__ } from "@/lib/constants";
 
 import SlotsDayContainer from "./SlotsDayContainer";
+import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 import SlotCard from "@/components/atoms/SlotCard";
 import SlotOperationButtons, {
   NewSlotButton,
@@ -16,7 +17,6 @@ import SlotOperationButtons, {
 } from "@/components/atoms/SlotOperationButtons";
 
 import { collectionOfSlots } from "@/__testData__/dummyData";
-import BookingCardGroup from "../BookingCardGroup";
 
 export default {
   title: "Slots Day Container",
@@ -86,15 +86,9 @@ export const CustomerViewWithBookings = (): JSX.Element => (
     {({ WrapElement }) => (
       <>
         {collectionOfSlots.map((slot) => (
-          <BookingCardGroup
-            key={slot.id}
-            customerId="id"
-            {...{ ...slot, WrapElement }}
-          />
+          <BookingCardGroup key={slot.id} {...{ ...slot, WrapElement }} />
         ))}
       </>
     )}
   </SlotsDayContainer>
 );
-
-/** @TODO update this with BookingCard */

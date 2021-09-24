@@ -1,7 +1,7 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import { Customer, SlotInterface } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -19,10 +19,6 @@ interface SlotsByDay {
 }
 
 interface Props {
-  /**
-   * Customer id to pass down for interval booking operations.
-   */
-  customerId: Customer["id"];
   /**
    * Record of slots grouped by day's ISO date (day),
    * keyed by slotId within each day.
@@ -49,7 +45,6 @@ interface Props {
  * **note: slots passed are controlled outside the component, only the displaying/pagination is controlled within the component**
  */
 const CustomerSlots: React.FC<Props> = ({
-  customerId,
   slots,
   bookedSlots,
   view = CustomerRoute.BookIce,
@@ -88,7 +83,6 @@ const CustomerSlots: React.FC<Props> = ({
                             ...slot,
                             bookedInterval,
                             WrapElement,
-                            customerId,
                           }}
                         />
                       );

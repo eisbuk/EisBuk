@@ -70,7 +70,7 @@ export const getAllSlotsByDay = (
  * @param state Local Redux Store
  * @returns record of subscribed slots
  */
-export const getSubscribedSlots = (
+export const getBookedSlots = (
   state: LocalStore
 ): Record<string, CustomerBookingEntry> =>
   getSafe(() => state.firestore.data?.bookedSlots);

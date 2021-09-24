@@ -1,9 +1,11 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import BookingCard from "../BookingCard";
-import { baseProps } from "../__testData__/dummyData";
 import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+
+import BookingCard from "../BookingCard";
+
+import { baseProps } from "../__testData__/dummyData";
 
 /** @TODO remove this when the i18next is instantiated with tests */
 jest.mock("i18next", () => ({

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 
-import { Customer, SlotInterface } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import BookingCard from "../BookingCard";
 
 import { bookInterval, cancelBooking } from "@/store/actions/bookingOperations";
+import { useParams } from "react-router-dom";
 
 export interface Props extends SlotInterface {
   /**
@@ -13,10 +14,6 @@ export interface Props extends SlotInterface {
    * and pass down to children for proper rendering/functionality
    */
   bookedInterval?: string;
-  /**
-   * Customer id is used for dispatching of the booking operations
-   */
-  customerId: Customer["id"];
   /**
    * Since we can't return an array of JSX elements (but rather a React.Fragment with elements inside),
    * we're providing this option if we wan't to wrap each element in a wrapper (passed from parent component)
@@ -27,11 +24,12 @@ export interface Props extends SlotInterface {
 const BookingCardGroup: React.FC<Props> = ({
   bookedInterval = null,
   intervals,
-  customerId,
   WrapElement = ({ children }) => <>{children}</>,
   ...slotData
 }) => {
   const dispatch = useDispatch();
+
+  const { secretKey } = useParams<{ secretKey: string }>();
 
   /**
    * Local state for booked interval we're using for more responsive UI
@@ -54,11 +52,11 @@ const BookingCardGroup: React.FC<Props> = ({
         bookInterval({
           bookedInterval,
           slotId: slotData.id,
-          customerId,
+          secretKey,
         })
       );
     } else {
-      dispatch(cancelBooking({ slotId: slotData.id, customerId }));
+      dispatch(cancelBooking({ slotId: slotData.id, secretKey }));
     }
   };
 

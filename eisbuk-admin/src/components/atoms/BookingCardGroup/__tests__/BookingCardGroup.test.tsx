@@ -7,7 +7,13 @@ import BookingCardGroup from "../BookingCardGroup";
 
 import * as bookingOperations from "@/store/actions/bookingOperations";
 
-import { intervals, slot, customerId } from "../__testData__/dummyData";
+import { intervals, slot } from "../__testData__/dummyData";
+
+const secretKey = "secret-key";
+
+jest.mock("react-router", () => ({
+  useParams: () => ({ secretKey: "secret-key" }),
+}));
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -28,7 +34,7 @@ const mockCancelImplementation = (
   payload: Parameters<typeof bookingOperations.cancelBooking>[0]
 ) => payload;
 
-// mocked functions to controll in component behavior
+// mocked functions to controll in-component behavior
 jest
   .spyOn(bookingOperations, "bookInterval")
   .mockImplementation(mockBookImplementation as any);
@@ -46,7 +52,7 @@ describe("Booking Card Group ->", () => {
     test("should render", () => {
       render(
         <>
-          <BookingCardGroup {...{ ...slot, customerId }} />
+          <BookingCardGroup {...slot} />
         </>
       );
     });
@@ -59,13 +65,7 @@ describe("Booking Card Group ->", () => {
 
     beforeEach(() => {
       render(
-        <>
-          {
-            <BookingCardGroup
-              {...{ ...slot, bookedInterval, intervals, customerId }}
-            />
-          }
-        </>
+        <>{<BookingCardGroup {...{ ...slot, bookedInterval, intervals }} />}</>
       );
     });
 
@@ -73,7 +73,7 @@ describe("Booking Card Group ->", () => {
       screen.getAllByText(__bookInterval__)[0].click();
       const mockBookAction = mockBookImplementation({
         slotId,
-        customerId,
+        secretKey,
         bookedInterval: intervalKeys[1],
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
@@ -83,7 +83,7 @@ describe("Booking Card Group ->", () => {
       screen.getByText(__cancelBooking__).click();
       const mockCancelAction = mockCancelImplementation({
         slotId,
-        customerId,
+        secretKey,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockCancelAction);
     });

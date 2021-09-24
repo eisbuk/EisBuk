@@ -7,7 +7,7 @@ import { Customer, SlotInterface } from "eisbuk-shared";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const bookInterval = (params: {
   slotId: SlotInterface["id"];
-  customerId: Customer["id"];
+  secretKey: Customer["secretKey"];
   bookedInterval: string;
 }): void => {};
 
@@ -17,5 +17,5 @@ export const bookInterval = (params: {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const cancelBooking = (params: {
   slotId: SlotInterface["id"];
-  customerId: Customer["id"];
+  secretKey: Customer["secretKey"];
 }): void => {};

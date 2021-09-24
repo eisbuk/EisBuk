@@ -3,11 +3,8 @@ import { screen, render, cleanup } from "@testing-library/react";
 import * as reactRedux from "react-redux";
 
 import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
-// import { CustomerBookingEntry } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
-
-// import { slotsLabels } from "@/config/appConfig";
 
 import CustomerSlots from "../CustomerSlots";
 
@@ -25,6 +22,11 @@ const mockDispatch = jest.fn();
 jest.spyOn(reactRedux, "useSelector").mockImplementation(() => testDateLuxon);
 jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
 
+const secretKey = "secret-key";
+jest.mock("react-router", () => ({
+  useParams: () => ({ secretKey: "secret-key" }),
+}));
+
 describe("CustomerSlots", () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -33,13 +35,7 @@ describe("CustomerSlots", () => {
 
   describe("Test pagination", () => {
     test("should paginate by month if 'view=\"book_ice\"'", () => {
-      render(
-        <CustomerSlots
-          slots={slotsMonth}
-          view={CustomerRoute.BookIce}
-          customerId="dummy-customer-0"
-        />
-      );
+      render(<CustomerSlots slots={slotsMonth} view={CustomerRoute.BookIce} />);
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
       const expectedDate = testDateLuxon.plus({ month: 1 });
@@ -50,11 +46,7 @@ describe("CustomerSlots", () => {
 
     test("should paginate by week if 'view=\"book_off_ice\"'", () => {
       render(
-        <CustomerSlots
-          slots={slotsMonth}
-          view={CustomerRoute.BookOffIce}
-          customerId="dummy-customer-0"
-        />
+        <CustomerSlots slots={slotsMonth} view={CustomerRoute.BookOffIce} />
       );
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
@@ -98,10 +90,9 @@ describe("CustomerSlots", () => {
       // create a mock redux action to test dispatch being called with proper data
       const mockBookAction = mockBookImplementation({
         bookedInterval: testInterval,
-        customerId,
+        secretKey,
         slotId,
       });
-      screen.debug();
       expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
     });
 
@@ -118,7 +109,7 @@ describe("CustomerSlots", () => {
       // create a mock redux action to test dispatch being called with proper data
       const mockCancelAction = mockCancelImplementation({
         slotId,
-        customerId,
+        secretKey,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockCancelAction);
     });
