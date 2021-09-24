@@ -33,6 +33,8 @@ export const getSlotsWithAttendance = (
   const slotIds = Object.keys(slotsInDay);
 
   return slotIds.map((slotId) => {
+    console.log("Attendance > ", attendance);
+    console.log("SlotId > ", slotId);
     const slotsAttendance = attendance[slotId].attendances;
     // create customer + attendance-for-customer entries for slot
     const customers: AttendanceCardProps["customers"] = Object.keys(

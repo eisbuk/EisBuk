@@ -79,34 +79,31 @@ export const triggerAttendanceEntryForSlot = functions
 
     const { organization, slotId } = context.params as Record<string, string>;
 
-    let attendanceEntry: SlotAttendnace | FirebaseFirestore.FieldValue;
-
     const isCreate = !change.before.exists;
     const isDelete = !change.after.exists;
 
+    const attendanceEntryRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Attendance)
+      .doc(slotId);
+
     switch (true) {
-      case !isCreate:
+      case isCreate:
         // add empay entry for slot's attendance
-        attendanceEntry = {
+        await attendanceEntryRef.set({
           date: change.after.data()!.date,
           attendances: {},
-        } as SlotAttendnace;
+        } as SlotAttendnace);
         break;
-      case !isDelete:
+      case isDelete:
         // delete attendance entry for slot
-        attendanceEntry = admin.firestore.FieldValue.delete();
+        await attendanceEntryRef.delete();
         break;
       default:
         // exit if slot was just updated
         return;
     }
-
-    await db
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Attendance)
-      .doc(slotId)
-      .set(attendanceEntry);
   });
 
 /**

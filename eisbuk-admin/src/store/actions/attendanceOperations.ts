@@ -47,7 +47,7 @@ export const markAttendance = ({
   // update customer attendance from local store with new values
   const updatedCustomerAttendance: CustomerAttendance = {
     bookedInterval:
-      localAttendnaceEntry.attendances[customerId]?.booked || null,
+      localAttendnaceEntry.attendances[customerId]?.bookedInterval || null,
     attendedInterval: attendedInterval,
   };
 
@@ -96,12 +96,12 @@ export const markAbsence = ({
   } = localAttendnaceEntry.attendances;
 
   // if booked not null, customer should stay in db (only mark absence)
-  const { booked } = customerEntry || {};
-  const updatedCustomerAttendance = booked
+  const { bookedInterval } = customerEntry || {};
+  const updatedCustomerAttendance = bookedInterval
     ? {
         [customerId]: {
-          booked,
-          attended: null,
+          bookedInterval,
+          attendedInterval: null,
         },
       }
     : // if not booked and not attended, omit customer from updated document

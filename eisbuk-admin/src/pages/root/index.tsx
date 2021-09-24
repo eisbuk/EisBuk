@@ -27,7 +27,10 @@ const DashboardPage: React.FC = () => {
           <Container maxWidth="sm">
             <List className={classes.root}>
               {attendanceCards.map((attendanceCard) => (
-                <AttendanceCard {...{ ...attendanceCard, allCustomers }} />
+                <AttendanceCard
+                  key={attendanceCard.id}
+                  {...{ ...attendanceCard, allCustomers }}
+                />
               ))}
             </List>
           </Container>

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -55,8 +54,6 @@ const UserAttendance: React.FC<Props> = ({
     attendedInterval ? "" : classes.absent,
   ].join(" ");
 
-  const dispatch = useDispatch();
-
   /**
    * Local (boolean) state for attended/absent.
    * We're using this to change attendance button's icon immediately
@@ -86,11 +83,11 @@ const UserAttendance: React.FC<Props> = ({
   const handleClick = () => {
     const newAttended = !attendedInterval;
     setLocalAttended(newAttended);
-    dispatch(
-      newAttended
-        ? markAttendance({ attendedInterval: selectedInterval })
-        : markAbsence()
-    );
+    if (newAttended) {
+      markAttendance({ attendedInterval: selectedInterval });
+    } else {
+      markAbsence();
+    }
   };
 
   /**
