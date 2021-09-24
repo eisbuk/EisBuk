@@ -54,6 +54,7 @@ const SlotsPage: React.FC = () => {
     </SlotOperationButtons>
   );
 
+  const canClick = Boolean(weekToPaste);
   const handleSlotClick = ({
     slot,
     selected,
@@ -93,11 +94,12 @@ const SlotsPage: React.FC = () => {
 
               return (
                 <SlotsDayContainer
+                  key={date.toISO()}
                   {...{
                     date,
                     additionalButtons,
-                    showAdditionalButtons: toggleState,
                   }}
+                  showAdditionalButtons={toggleState}
                 >
                   {({ WrapElement }) => (
                     <>
@@ -105,10 +107,15 @@ const SlotsPage: React.FC = () => {
                         const selected = checkSelected(slot.id, weekToPaste);
 
                         return (
-                          <WrapElement>
+                          <WrapElement key={slot.id}>
                             <SlotCard
                               {...{ ...slot, selected }}
-                              onClick={handleSlotClick({ slot, selected })}
+                              onClick={
+                                canClick
+                                  ? handleSlotClick({ slot, selected })
+                                  : undefined
+                              }
+                              enableEdit={toggleState}
                             />
                           </WrapElement>
                         );

@@ -1,7 +1,13 @@
 import i18n from "i18next";
 import { DateTime } from "luxon";
+import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotInterface } from "eisbuk-shared";
+import {
+  Collection,
+  OrgSubCollection,
+  SlotInterface,
+  SlotInterval,
+} from "eisbuk-shared";
 import { DeprecatedSlot } from "eisbuk-shared/dist/types/deprecated/firestore";
 
 import { SlotFormValues } from "@/lib/data";
@@ -154,15 +160,6 @@ export const editSlot = (
  */
 
 /**
- * Deletes slot with given id from firestore and (in effect) local store
- * @param slotId od slot to delete
- */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const deleteSlot = (slotId: SlotInterface["id"]): void => {
-  /** @TODO should call to `deleteSlots` function and pass `slotId` */
-};
-
-/**
  * Deletes slots for the whole day from firestore and (in effect) local store
  * @param date of the slots day to delete
  */
@@ -186,8 +183,32 @@ export const deleteSlotsWeek = (date: DateTime): void => {
  */
 export const createNewSlot = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  payload: SlotFormValues & { date: DateTime }
-): FirestoreThunk => async () => {};
+  {
+    date: luxonDate,
+    intervals: intervalsArr,
+    ...slotData
+  }: SlotFormValues & { date: DateTime }
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  const db = getFirebase().firestore();
+
+  /** @TEMP until we figure out the Timestamp issue */
+  const date = { seconds: luxonDate.toObject().second } as Timestamp;
+  const intervals = intervalsArr.reduce(
+    (acc, { startTime, endTime }) => ({
+      ...acc,
+      [`${startTime}-${endTime}`]: { startTime, endTime },
+    }),
+    {} as Record<string, SlotInterval>
+  );
+
+  const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
+  await db
+    .collection(Collection.Organizations)
+    .doc(ORGANIZATION)
+    .collection(OrgSubCollection.Slots)
+    .doc()
+    .set(newSlot);
+};
 
 /**
  * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
@@ -195,7 +216,48 @@ export const createNewSlot = (
  */
 export const updateSlot = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  payload: SlotFormValues & { date: DateTime; id: string }
-): void => {};
+  {
+    date: luxonDate,
+    intervals: intervalsArr,
+    id,
+    ...slotData
+  }: SlotFormValues & { date: DateTime; id: string }
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  const db = getFirebase().firestore();
+
+  /** @TEMP until we figure out the Timestamp issue */
+  const date = { seconds: luxonDate.toObject().second } as Timestamp;
+  const intervals = intervalsArr.reduce(
+    (acc, { startTime, endTime }) => ({
+      ...acc,
+      [`${startTime}-${endTime}`]: { startTime, endTime },
+    }),
+    {} as Record<string, SlotInterval>
+  );
+  const updatedSlot: SlotInterface = { ...slotData, date, intervals, id };
+
+  await db
+    .collection(Collection.Organizations)
+    .doc(ORGANIZATION)
+    .collection(OrgSubCollection.Slots)
+    .doc(id)
+    .set(updatedSlot);
+};
+
+/**
+ * Deletes slot with given id from firestore and (in effect) local store
+ * @param slotId od slot to delete
+ */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const deleteSlot = (
+  slotId: SlotInterface["id"]
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) =>
+  await getFirebase()
+    .firestore()
+    .collection(Collection.Organizations)
+    .doc(ORGANIZATION)
+    .collection(OrgSubCollection.Slots)
+    .doc(slotId)
+    .delete();
 
 // #endregion newOperations

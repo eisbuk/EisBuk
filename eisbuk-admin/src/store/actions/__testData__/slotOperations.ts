@@ -4,21 +4,21 @@ import {
   createIntervals,
 } from "@/__testData__/dummyData";
 
-export const slotId = "slot-0";
-export const dateISO = testDate;
 export const monthStr = testDate.substr(0, 7);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const { id, ...baseSlot } = baseSlotWithId;
 
+export const initialSlotIds = ["dummy-slot-0", "dummy-slot-1"];
+
 /**
  * Initial slots present in the store (for setup)
  */
 export const initialSlots = {
-  ["dummy-slot-0"]: { ...baseSlot, id: "dummy-slot-0" },
-  ["dummy-slot-1"]: {
+  [initialSlotIds[0]]: { ...baseSlot, id: initialSlotIds[0] },
+  [initialSlotIds[1]]: {
     ...baseSlot,
-    id: "dummy-slot-1",
+    id: initialSlotIds[1],
     intervals: createIntervals(11),
   },
 };
