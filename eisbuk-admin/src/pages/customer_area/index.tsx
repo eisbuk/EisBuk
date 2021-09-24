@@ -1,10 +1,7 @@
 import React, { useMemo } from "react";
 import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isEmpty, isLoaded, useFirestoreConnect } from "react-redux-firebase";
-import { DateTime } from "luxon";
-
-import { OrgSubCollection } from "eisbuk-shared";
+import { isEmpty, isLoaded } from "react-redux-firebase";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -14,46 +11,37 @@ import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import useConnectSlotsAndBookgins from "./hooks/useConnectSlotsAndBookings";
+import useCustomerBookings from "@/hooks/useCustomerBookings";
 
-import { getBookingsCustomer } from "@/store/selectors/bookings";
-import { getSlotsForCustomer, getBookedSlots } from "@/store/selectors/slots";
+import {
+  getBookingsCustomer,
+  getBookedSlots,
+} from "@/store/selectors/bookings";
+import { getSlotsForCustomer } from "@/store/selectors/slots";
 import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import { splitSlotsByCustomerRoute } from "./utils";
-import { wrapOrganization } from "@/utils/firestore";
 
 /**
  * Customer sub routes:
  * - renders the apropriate `customerRoute` within `CustomersPage` and `CustomerNavigation`
- * - catches all `/customers/:secretKey/book_ice/:date` routes
- * - initializes `useFirestoreConnect` with appropriate params (handled through `useConnectSlotsAndBookings` hook)
- * - gets all slots from store (for appropriate timeframe)
+ * - catches all `/customers/:secretKey/<customerRoute>` routes
+ * - initializes `useFirestoreConnect` with appropriate params
+ * - gets all slots and bookings from store (for appropriate timeframe)
  *   and processes to prepare `slots`/`subscribedSlots`/`bookings` props for each respective sub route
  * - renders appropriate sub route with respect to `customerRoute` provided
- * @returns
  */
 const CustomerArea: React.FC = () => {
-  const { customerRoute, date: isoDate, secretKey } = useParams<{
+  const { customerRoute, secretKey } = useParams<{
     secretKey: string;
-    date: string | undefined;
     customerRoute: CustomerRoute;
   }>();
 
-  // connect slots and bookings in firebase and local store
-  useFirestoreConnect([
-    wrapOrganization({
-      collection: OrgSubCollection.Bookings,
-      doc: secretKey,
-    }),
-  ]);
-  useConnectSlotsAndBookgins();
+  useCustomerBookings(secretKey);
 
-  /** @TODO fix this selector to return singluar customer data */
-  const [customerData] = useSelector(getBookingsCustomer) || [];
-
-  // process date for easier handling
-  const date = isoDate ? DateTime.fromISO(isoDate) : undefined;
+  const customerData = useSelector(getBookingsCustomer);
+  const date = useSelector(getCalendarDay);
 
   // only the "book_ice" will use "month" timeframe, the rest will use "week"
   const timeframe = customerRoute === CustomerRoute.BookIce ? "month" : "week";
@@ -104,7 +92,7 @@ const CustomerArea: React.FC = () => {
       <CustomerNavigation />
       <Switch>
         <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookIce}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookIce}`}
         >
           <CustomerSlots
             view={CustomerRoute.BookIce}
@@ -113,7 +101,7 @@ const CustomerArea: React.FC = () => {
           />
         </Route>
         <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookOffIce}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookOffIce}`}
         >
           <CustomerSlots
             view={CustomerRoute.BookOffIce}
@@ -122,7 +110,7 @@ const CustomerArea: React.FC = () => {
           />
         </Route>
         <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.Calendar}/:date?`}
+          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.Calendar}`}
         >
           <BookingsCalendar slots={calendarSlots} {...{ bookedSlots }} />
         </Route>
