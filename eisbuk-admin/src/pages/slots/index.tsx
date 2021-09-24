@@ -71,7 +71,7 @@ const SlotsPage: React.FC = () => {
   return (
     <>
       <AppbarAdmin />
-      <DateNavigation {...{ extraButtons }}>
+      <DateNavigation {...{ extraButtons }} showToggle>
         {({ toggleState }) => (
           <>
             {daysToShow.map((dateISO) => {

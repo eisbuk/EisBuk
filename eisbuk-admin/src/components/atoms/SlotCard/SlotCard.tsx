@@ -102,6 +102,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
           <Box display="flex" justifyContent="space-evenly">
             {intervalStrings.map((interval) => (
               <Typography
+                key={interval}
                 component="span"
                 variant="body2"
                 className={classes.intervalTag}

@@ -28,7 +28,7 @@ const attendanceMonth = getFirebase()
   .collection(OrgSubCollection.Attendance)
   .doc(slotId);
 
-xdescribe("Attendance operations ->", () => {
+describe("Attendance operations ->", () => {
   describe("markAttendance ->", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",

@@ -19,7 +19,7 @@ import {
 } from "../__testData__/slots";
 
 describe("Slot selectors > ", () => {
-  xdescribe("'getSlotsForCustomer' > ", () => {
+  describe("'getSlotsForCustomer' > ", () => {
     test("should get slots for a month with respect to 'startDate' and provided category if 'timeframe=\"month\"'", () => {
       const testDate = DateTime.fromISO(currentMonthStartDate);
       // create a selector curried with `timeframe` and `date` params (like we will be doing within the component)
