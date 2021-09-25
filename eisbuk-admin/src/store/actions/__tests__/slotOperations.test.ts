@@ -40,7 +40,7 @@ describe("Slot operations ->", () => {
       "should add new slot to firestore (with generated uuid)",
       async () => {
         // set up initial state
-        const thunkArgs = await setupTestSlots(initialSlots);
+        const thunkArgs = await setupTestSlots({ slots: initialSlots });
         // create a thunk curried with test input values
         const testThunk = createNewSlot(testFromValues);
         await testThunk(...thunkArgs);
@@ -65,8 +65,10 @@ describe("Slot operations ->", () => {
       const slotId = "test-slot";
       // set up initial state
       const thunkArgs = await setupTestSlots({
-        ...initialSlots,
-        [slotId]: { ...testSlot, id: slotId },
+        slots: {
+          ...initialSlots,
+          [slotId]: { ...testSlot, id: slotId },
+        },
       });
       // updates we're applying to slot
       const updates = {
@@ -104,8 +106,10 @@ describe("Slot operations ->", () => {
       const slotId = "test-slot";
       // set up initial state
       const thunkArgs = await setupTestSlots({
-        ...initialSlots,
-        [slotId]: { ...testSlot, id: slotId },
+        slots: {
+          ...initialSlots,
+          [slotId]: { ...testSlot, id: slotId },
+        },
       });
       // create a thunk curried with slot id
       const testThunk = deleteSlot(slotId);

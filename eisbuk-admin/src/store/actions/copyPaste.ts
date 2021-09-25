@@ -4,7 +4,8 @@ import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
 
 import { Action } from "@/enums/store";
 
-import { SlotsWeek } from "@/types/store";
+import { FirestoreThunk, SlotsWeek } from "@/types/store";
+import { luxon2ISODate } from "@/utils/date";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -41,7 +42,7 @@ export const addSlotToClipboard = (
  * @param slotDay a record of all of the slots for a given day
  * @returns Redux action object
  */
-export const copySlotDay = (
+export const setSlotDayToClipboard = (
   slotDay: SlotsById
 ): {
   type: Action;
@@ -56,7 +57,7 @@ export const copySlotDay = (
  * @param slotDay a record containing a week start time and a list of all the slots for a given week
  * @returns Redux action object
  */
-export const copySlotWeek = (
+export const setSlotWeekToClipboard = (
   slotWeek: SlotsWeek
 ): {
   type: Action;
@@ -107,19 +108,68 @@ interface BulkSlotsAction<
  * @returns Redux action object
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const newCopySlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
-  type: Action.CopySlotDay,
-  payload: {} as any,
-});
+export const copySlotsDay = (date: DateTime): FirestoreThunk => async (
+  dispatch,
+  getState
+) => {
+  const dateISO = luxon2ISODate(date);
+  const monthStr = dateISO.substr(0, 7);
+
+  // get slots day to copy from store
+  const slotsByDay = getState().firestore.data.slotsByDay;
+  // exit if no slots in store
+  if (!slotsByDay) return;
+
+  const slotsMonth = slotsByDay[monthStr];
+  // exit if no slots for given month
+  if (!slotsMonth) return;
+
+  const slots = slotsMonth[dateISO];
+  // exit if slot day empty
+  if (!slots || !Object.values(slots).length) return;
+
+  // add slots to clipboard
+  dispatch(setSlotDayToClipboard(slots));
+};
 
 /**
  * Creates Redux action to add a complete week of slots to clipboard for copyPaste reducer
  * @returns Redux action object
  */
-export const newCopySlotWeek: BulkSlotsAction<Action.CopySlotWeek> = () => ({
-  type: Action.CopySlotWeek,
-  payload: {} as any,
-});
+export const copySlotsWeek = (): FirestoreThunk => async (
+  dispatch,
+  getState
+) => {
+  // get full store state
+  const state = getState();
+
+  // get week start and date keys
+  const weekStart = state.app.calendarDay;
+  const weekStartISO = luxon2ISODate(weekStart);
+  const monthStr = weekStartISO.substr(0, 7);
+
+  // get slots week to copy from store
+  const slotsByDay = state.firestore.data.slotsByDay;
+  // exit if no slots in store
+  if (!slotsByDay) return;
+
+  const slotsMonth = slotsByDay[monthStr];
+  // exit if no slots for given month
+  if (!slotsMonth) return;
+
+  // process slots month to return an array of slots for given week
+  const slots = Array(7)
+    .fill(weekStart)
+    .reduce((acc, baseDate, i) => {
+      const dateISO = luxon2ISODate(baseDate.plus({ days: i }));
+      // get slots for a given day of the week (if any)
+      const slotsInADay = slotsMonth[dateISO] || {};
+      // return slots in a day flattened with acc array
+      return [...acc, ...Object.values(slotsInADay)];
+    }, [] as SlotInterface[]);
+
+  dispatch(setSlotWeekToClipboard({ slots, weekStart }));
+};
 
 /**
  * Creates Redux action to paste the day of slots from clipboard to a new day

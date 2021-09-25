@@ -1,9 +1,12 @@
 import { Dispatch } from "redux";
+import { DateTime } from "luxon";
 
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 import { adminDb } from "@/tests/settings";
+
+import { fb2Luxon, luxon2ISODate } from "@/utils/date";
 
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
 import {
@@ -12,7 +15,8 @@ import {
   SlotInterface,
   SlotsByDay,
 } from "eisbuk-shared/dist";
-import { fb2Luxon, luxon2ISODate } from "@/utils/date";
+
+import { testDateLuxon } from "@/__testData__/date";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -51,11 +55,17 @@ export const setupTestAttendance = async (
  * @param attendance entry for firestore attendance we want to set
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
-export const setupTestSlots = async (
-  slots: Record<string, SlotInterface>
-): Promise<ThunkParams> => {
+export const setupTestSlots = async ({
+  slots,
+  mockDispatch,
+  date,
+}: {
+  slots: Record<string, SlotInterface>;
+  mockDispatch?: Dispatch;
+  date?: DateTime;
+}): Promise<ThunkParams> => {
   // we're not using dispatch so it's here just to comply with type structure
-  const dispatch: Dispatch = (value: any) => value;
+  const dispatch: Dispatch = mockDispatch || ((value: any) => value);
 
   // transform slots to `slotsByDay` store entry struct:
   // get keys (month, day) from `slot.date` and organize accordingly
@@ -73,13 +83,13 @@ export const setupTestSlots = async (
       ...acc,
       [monthStr]: {
         ...slotsForMonth,
-        [isoDate]: { ...slotsForDay, [isoDate]: slot },
+        [isoDate]: { ...slotsForDay, [slotId]: slot },
       },
     };
   }, {} as Record<string, SlotsByDay>);
 
   // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ slotsByDay });
+  const getState = () => createTestStore({ slotsByDay }, date || testDateLuxon);
 
   // set desired values to emulated db
   const slotsColl = adminDb

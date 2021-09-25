@@ -151,7 +151,7 @@ interface Schema {}
 
 // #region Firestore
 type Dispatch = typeof store.dispatch;
-type GetState = typeof store.getState;
+type GetState = () => LocalStore;
 
 export interface FirebaseGetters {
   getFirebase: () => ExtendedFirebaseInstance;

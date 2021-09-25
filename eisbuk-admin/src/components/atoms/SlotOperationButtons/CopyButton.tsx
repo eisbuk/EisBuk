@@ -12,7 +12,7 @@ import { SlotButtonProps } from "@/types/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
-import { newCopySlotWeek, newCopySlotDay } from "@/store/actions/copyPaste";
+import { copySlotsDay, copySlotsWeek } from "@/store/actions/copyPaste";
 
 import {
   __slotButtonNoContextError,
@@ -64,7 +64,7 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
 
   // pick the right action creator with respect to `contextType`
   const copyActionCreator =
-    contextType === ButtonContextType.Day ? newCopySlotDay : newCopySlotWeek;
+    contextType === ButtonContextType.Day ? copySlotsDay : copySlotsWeek;
   const onCopy = () => dispatch(copyActionCreator(date));
 
   // check if there are slots in clipboard for given `contextType`

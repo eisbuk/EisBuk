@@ -51,7 +51,7 @@ describe("SlotOperationButtons", () => {
       const mockCopyDayImplementation = (date: DateTime) =>
         ({ type: "copy_day", date } as any);
       jest
-        .spyOn(copyPasteActions, "newCopySlotDay")
+        .spyOn(copyPasteActions, "copySlotsDay")
         .mockImplementation(mockCopyDayImplementation);
       render(
         <SlotOperationButtons
@@ -72,11 +72,10 @@ describe("SlotOperationButtons", () => {
       // mock implementation of `newCopySlotsWeek` function we'll be using to both
       // - create a test action object
       // - mock implementation within the component
-      const mockCopyWeekImplementation = (date: DateTime) =>
-        ({ type: "copy_week", date } as any);
+      const mockCopyWeekImplementation = () => ({ type: "copy_week" } as any);
       // mock implementation of `newCopySlotWeek` within the component
       jest
-        .spyOn(copyPasteActions, "newCopySlotWeek")
+        .spyOn(copyPasteActions, "copySlotsWeek")
         .mockImplementation(mockCopyWeekImplementation);
       render(
         <SlotOperationButtons
@@ -88,9 +87,7 @@ describe("SlotOperationButtons", () => {
       );
       screen.getByTestId(__copyButtonId__).click();
       // test dispatch being called with the result of `newCopySlotWeek` mocked implementation
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockCopyWeekImplementation(testDate)
-      );
+      expect(mockDispatch).toHaveBeenCalledWith(mockCopyWeekImplementation());
     });
   });
 
