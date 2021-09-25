@@ -192,7 +192,7 @@ export const createNewSlot = (
   const db = getFirebase().firestore();
 
   /** @TEMP until we figure out the Timestamp issue */
-  const date = { seconds: luxonDate.toObject().second } as Timestamp;
+  const date = { seconds: luxonDate.toSeconds() } as Timestamp;
   const intervals = intervalsArr.reduce(
     (acc, { startTime, endTime }) => ({
       ...acc,
@@ -226,7 +226,7 @@ export const updateSlot = (
   const db = getFirebase().firestore();
 
   /** @TEMP until we figure out the Timestamp issue */
-  const date = { seconds: luxonDate.toObject().second } as Timestamp;
+  const date = { seconds: luxonDate.toSeconds() } as Timestamp;
   const intervals = intervalsArr.reduce(
     (acc, { startTime, endTime }) => ({
       ...acc,

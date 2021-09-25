@@ -1,20 +1,15 @@
-import { DateTime } from "luxon";
-
 import { Category, SlotType, SlotInterface } from "eisbuk-shared";
 
-import { __storybookDate__ } from "@/lib/constants";
-
-import { luxonToFB } from "@/utils/date";
 import { slotToFormValues } from "../utils";
 
-const date = luxonToFB(DateTime.fromISO(__storybookDate__));
+import { timestampDate } from "@/__testData__/date";
 
 /**
  * A generic, dummy slot we're using for tests as well as stories
  */
 export const dummySlot: SlotInterface = {
   id: "some-random-slot",
-  date,
+  date: timestampDate,
   type: SlotType.Ice,
   categories: Object.values(Category),
   intervals: {

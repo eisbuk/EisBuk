@@ -1,6 +1,7 @@
 import React from "react";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
 import i18n from "i18next";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
@@ -105,6 +106,7 @@ interface Props {
 
 const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   const { t } = useTranslation();
 
@@ -119,9 +121,9 @@ const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
 
   const handleSubmit = (values: SlotFormValues) => {
     if (slotToEdit) {
-      updateSlot({ ...values, date: slotDate, id: slotToEdit.id });
+      dispatch(updateSlot({ ...values, date: slotDate, id: slotToEdit.id }));
     } else {
-      createNewSlot({ ...values, date });
+      dispatch(createNewSlot({ ...values, date }));
     }
     onClose();
   };

@@ -15,5 +15,5 @@ export const testDateLuxon = DateTime.fromISO(__storybookDate__);
  * Test date in milliseconds (placeholder until @TODO we've solve the issue with Timestamp)
  */
 export const timestampDate: Timestamp = {
-  seconds: testDateLuxon.toObject().second,
+  seconds: testDateLuxon.toSeconds(),
 } as Timestamp;

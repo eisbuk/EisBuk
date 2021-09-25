@@ -12,7 +12,6 @@ import userEvent from "@testing-library/user-event";
 import { Category, SlotType } from "eisbuk-shared";
 
 import { defaultInterval, defaultSlotFormValues } from "@/lib/data";
-import { __storybookDate__ } from "@/lib/constants";
 import {
   __newSlotTitle__,
   __editSlotTitle__,
@@ -34,7 +33,9 @@ import SlotForm from "../SlotForm";
 
 import * as slotOperations from "@/store/actions/slotOperations";
 
-import { fb2Luxon, luxon2ISODate } from "@/utils/date";
+import { luxon2ISODate } from "@/utils/date";
+
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import {
   __timeIntervalFieldId__,
@@ -42,22 +43,28 @@ import {
 } from "../__testData__/testIds";
 import { dummySlot, dummySlotFormValues } from "../__testData__/dummyData";
 import { __slotFormId__ } from "@/__testData__/testIds";
+import { testDate, testDateLuxon } from "@/__testData__/date";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
-
-// test date we'll be using for the tests
-const testDate = DateTime.fromISO(__storybookDate__);
-
+/**
+ * We're mocking `i18next.t` function to return easily testable string for all calls
+ */
 const mockT = jest.fn();
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: mockT }),
 }));
-mockT.mockImplementation((string: string, options: { date?: DateTime }) => {
+mockT.mockImplementation((string: string, options?: { date?: DateTime }) => {
   const isoDay = options?.date ? luxon2ISODate(options.date) : undefined;
   return isoDay ? `${string} ${isoDay}` : string;
 });
 
-const baseProps = { date: testDate, onClose: () => {}, open: true };
+/**
+ * We need slot create and update actions to be dispatched as thunks,
+ * so we want to test them being dispatched, rather than called
+ */
+jest.mock("react-redux", () => ({ useDispatch: () => mockDispatch }));
+const mockDispatch = jest.fn();
+
+const baseProps = { date: testDateLuxon, onClose: () => {}, open: true };
 
 describe("SlotForm ->", () => {
   afterEach(() => {
@@ -73,7 +80,7 @@ describe("SlotForm ->", () => {
     test("should render \"New Slot\" title if no 'slotToEdit' passed in", () => {
       /** @TODO update this when we initialize i18next with tests */
       // a test string we'll be using to test the title, this isn't actual form the string will be presented in
-      const titleString = `${__newSlotTitle__} ${__storybookDate__}`;
+      const titleString = `${__newSlotTitle__} ${testDate}`;
       screen.getByText(titleString);
     });
 
@@ -106,9 +113,8 @@ describe("SlotForm ->", () => {
     });
 
     test("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
-      /** @TODO update this when we initialize i18next with tests */
       // a test string we'll be using to test the title, this isn't actual form the string will be presented in
-      const titleString = `${__editSlotTitle__} ${__storybookDate__}`;
+      const titleString = `${__editSlotTitle__} ${testDate}`;
       screen.getByText(titleString);
     });
   });
@@ -143,8 +149,23 @@ describe("SlotForm ->", () => {
   });
 
   describe("Test dialog button actions ->", () => {
-    const createSlotSpy = jest.spyOn(slotOperations, "createNewSlot");
-    const updateSlotSpy = jest.spyOn(slotOperations, "updateSlot");
+    // we're creating mockImplementations for create/update slots to be
+    // identity functions rather than thunks for easier testing of dispatching the correct functions
+    const mockCreateImplementation = (
+      payload: Parameters<typeof slotOperations.createNewSlot>[0]
+    ) => payload;
+    const mockUpdateImplementation = (
+      payload: Parameters<typeof slotOperations.updateSlot>[0]
+    ) => payload;
+
+    // mock implementation of slot operations to identity functions delcared above (for easier testing)
+    jest
+      .spyOn(slotOperations, "createNewSlot")
+      .mockImplementation(mockCreateImplementation as any);
+    jest
+      .spyOn(slotOperations, "updateSlot")
+      .mockImplementation(mockUpdateImplementation as any);
+
     const mockOnClose = jest.fn();
 
     testWithMutationObserver(
@@ -154,7 +175,7 @@ describe("SlotForm ->", () => {
         // values for submit we're filling out as we go and expecting on submit
         let submitValues = {
           ...defaultSlotFormValues,
-          date: testDate,
+          date: testDateLuxon,
         };
         // select `adults` category
         screen.getByText(categoryLabel[Category.Adults]).click();
@@ -178,8 +199,10 @@ describe("SlotForm ->", () => {
         };
         // submit form
         screen.getByText(__createSlot__).click();
+        // create mock action for form submission
+        const mockCreateAction = mockCreateImplementation(submitValues);
         await waitFor(() => {
-          expect(createSlotSpy).toHaveBeenCalledWith(submitValues);
+          expect(mockDispatch).toHaveBeenCalledWith(mockCreateAction);
           expect(mockOnClose).toHaveBeenCalled();
         });
       }
@@ -201,13 +224,16 @@ describe("SlotForm ->", () => {
             slotToEdit={dummySlot}
           />
         );
+        // trigger submit
         screen.getByText(__editSlot__).click();
+        // create mock action for form submission
+        const mockUpdateAction = mockUpdateImplementation({
+          ...dummySlotFormValues,
+          date: testDateLuxon,
+          id: dummySlot.id,
+        });
         await waitFor(() =>
-          expect(updateSlotSpy).toHaveBeenCalledWith({
-            ...dummySlotFormValues,
-            date: fb2Luxon(dummySlot.date),
-            id: dummySlot.id,
-          })
+          expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
         );
       }
     );
