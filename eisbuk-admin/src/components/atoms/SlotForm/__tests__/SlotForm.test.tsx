@@ -6,6 +6,7 @@ import {
   waitFor,
   fireEvent,
 } from "@testing-library/react";
+import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
 import userEvent from "@testing-library/user-event";
 
@@ -108,13 +109,25 @@ describe("SlotForm ->", () => {
   });
 
   describe("Test edit slot form ->", () => {
+    // we're imlicitly testing that the `slotToEdit.date` will take presedence over `date` prop
+    // and serve as assurance that the edit form will always have a date present
+    const differentDateISO = "2020-01-01";
+    const differentDate = {
+      seconds: DateTime.fromISO(differentDateISO).toSeconds(),
+    } as Timestamp;
+
     beforeEach(() => {
-      render(<SlotForm {...baseProps} slotToEdit={dummySlot} />);
+      render(
+        <SlotForm
+          {...baseProps}
+          slotToEdit={{ ...dummySlot, date: differentDate }}
+        />
+      );
     });
 
     test("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
       // a test string we'll be using to test the title, this isn't actual form the string will be presented in
-      const titleString = `${__editSlotTitle__} ${testDate}`;
+      const titleString = `${__editSlotTitle__} ${differentDateISO}`;
       screen.getByText(titleString);
     });
   });

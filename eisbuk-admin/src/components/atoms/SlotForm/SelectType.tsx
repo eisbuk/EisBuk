@@ -1,5 +1,5 @@
 import React from "react";
-import { Field, ErrorMessage } from "formik";
+import { Field, useField } from "formik";
 import { useTranslation } from "react-i18next";
 
 import { SlotType } from "eisbuk-shared";
@@ -24,6 +24,8 @@ const SelectType: React.FC = () => {
 
   const classes = useStyles();
 
+  const [, { error }] = useField("type");
+
   return (
     <Field
       component={RadioGroup}
@@ -42,7 +44,7 @@ const SelectType: React.FC = () => {
         />
       ))}
       <div className={classes.error}>
-        <ErrorMessage name="type" />
+        {typeof error === "string" && t(error)}
       </div>
     </Field>
   );

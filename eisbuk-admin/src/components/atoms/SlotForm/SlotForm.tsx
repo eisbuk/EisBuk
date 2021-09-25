@@ -2,7 +2,6 @@ import React from "react";
 import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import i18n from "i18next";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 
@@ -45,33 +44,29 @@ import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
 const validationSchema = yup.object().shape({
-  categories: yup
-    .array()
-    .required()
-    .min(1, i18n.t(__requiredEntry))
-    .of(yup.string()),
+  categories: yup.array().required().min(1, __requiredEntry).of(yup.string()),
   intervals: yup.array().of(
     yup
       .object()
       .shape({
         startTime: yup
           .string()
-          .required(i18n.t(__requiredField))
+          .required(__requiredField)
           .test({
-            message: i18n.t(__invalidTime),
+            message: __invalidTime,
             test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
           }),
         endTime: yup
           .string()
-          .required(i18n.t(__requiredField))
+          .required(__requiredField)
           .test({
-            message: i18n.t(__invalidTime),
+            message: __invalidTime,
             test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
           }),
       })
       .required()
       .test({
-        message: i18n.t(__timeMismatch),
+        message: __timeMismatch,
         test: (interval: SlotInterval) =>
           interval &&
           interval.startTime &&
@@ -79,7 +74,7 @@ const validationSchema = yup.object().shape({
           interval.startTime < interval.endTime,
       })
   ),
-  type: yup.string().required(i18n.t(__requiredField)),
+  type: yup.string().required(__requiredField),
 });
 // #endregion validation
 
@@ -104,15 +99,22 @@ interface Props {
   onClose: () => void;
 }
 
-const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
+const SlotForm: React.FC<Props> = ({
+  date: dateFromProps,
+  slotToEdit,
+  onClose,
+  open,
+}) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
 
-  const { date: slotDate, ...slotToEditValues } = slotToFormValues(
-    slotToEdit
-  ) || { date };
+  // get initial values and date
+  // get date from `slotToEdit` or fallback to date passed in
+  const { date, ...slotToEditValues } = slotToFormValues(slotToEdit) || {
+    date: dateFromProps,
+  };
 
   const initialValues = {
     ...defaultSlotFormValues,
@@ -121,7 +123,7 @@ const SlotForm: React.FC<Props> = ({ date, slotToEdit, onClose, open }) => {
 
   const handleSubmit = (values: SlotFormValues) => {
     if (slotToEdit) {
-      dispatch(updateSlot({ ...values, date: slotDate, id: slotToEdit.id }));
+      dispatch(updateSlot({ ...values, date, id: slotToEdit.id }));
     } else {
       dispatch(createNewSlot({ ...values, date }));
     }

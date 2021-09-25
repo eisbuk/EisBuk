@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useField, ErrorMessage } from "formik";
+import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
 import Box from "@material-ui/core/Box";
@@ -20,6 +20,7 @@ import { categoryLabel } from "@/lib/labels";
  * `"off_ice_dancing" | "off_ice_gym"`
  */
 const SelectCategories: React.FC = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
 
   const [disabled, setDisabled] = useState(false);
@@ -27,7 +28,7 @@ const SelectCategories: React.FC = () => {
   // check value for "type" field in the form context
   const [{ value: slotType }] = useField<SlotType>("type");
   // we want to set value for "categories" to all if "type" is off_ice
-  const [, , { setValue }] = useField<string[]>("categories");
+  const [, { error }, { setValue }] = useField<string[]>("categories");
 
   useEffect(() => {
     // if slot type off_ice, disable all checkboxes and set value for "categories" to all
@@ -48,7 +49,7 @@ const SelectCategories: React.FC = () => {
           <CategoryCheckbox {...{ category, disabled, key: category }} />
         ))}
         <div className={classes.error}>
-          <ErrorMessage name="categories" />
+          {typeof error === "string" && t(error)}
         </div>
       </Box>
     </>

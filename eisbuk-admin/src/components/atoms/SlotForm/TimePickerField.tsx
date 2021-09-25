@@ -1,6 +1,7 @@
 import React from "react";
 import { useField } from "formik";
 import { DateTime } from "luxon";
+import { useTranslation } from "react-i18next";
 
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
@@ -30,6 +31,8 @@ type Props = Omit<TextFieldProps, "name"> & {
  * **Important:** should be rendered as a decendant of `<Formik>` element (for context) and will throw otherwise.
  */
 const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
+  const { t } = useTranslation();
+
   const classes = useStyles();
 
   const [{ value }, { error }, { setValue }] = useField<string>(name);
@@ -86,7 +89,9 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
-      <span className={classes.error}>{error}</span>
+      <span className={classes.error}>
+        {typeof error === "string" && t(error)}
+      </span>
     </Box>
   );
 };

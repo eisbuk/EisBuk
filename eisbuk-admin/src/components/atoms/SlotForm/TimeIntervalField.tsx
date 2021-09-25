@@ -66,7 +66,9 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         <DeleteIcon />
       </IconButton>
 
-      <div className={classes.error}>{typeof error === "string" && error}</div>
+      <div className={classes.error}>
+        {typeof error === "string" && t(error)}
+      </div>
     </div>
   );
 };
