@@ -11,7 +11,7 @@ import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface } from "eisbuk-shared";
+import { SlotInterface, SlotInterval } from "eisbuk-shared";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -62,6 +62,21 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   const intervalStrings = Object.keys(slotData.intervals || {});
 
+  // calculate start time of first interval and end time of last interval
+  // for title string rendering
+  const intervalValues = Object.values(slotData.intervals || {});
+  const { startTime, endTime }: SlotInterval = intervalStrings.reduce(
+    (acc, intKey) => {
+      const { startTime, endTime } = slotData.intervals[intKey];
+
+      return {
+        startTime: startTime < acc.startTime ? startTime : acc.startTime,
+        endTime: endTime > acc.endTime ? endTime : acc.endTime,
+      };
+    },
+    intervalValues[0] || { startTime: "00:00", endTime: "00:00" }
+  );
+
   return (
     <>
       <Card
@@ -74,7 +89,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
         onClick={onClick}
       >
         <CardContent className={classes.wrapper}>
-          <SlotTime startTime="09:00" endTime="10:00" />
+          <SlotTime {...{ startTime, endTime }} />
           <Box
             display="flex"
             flexGrow={1}

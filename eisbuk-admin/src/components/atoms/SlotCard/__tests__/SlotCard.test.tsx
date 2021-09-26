@@ -4,6 +4,8 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
+import { SlotInterface } from "eisbuk-shared";
+
 import SlotCard from "../SlotCard";
 
 import * as slotOperations from "@/store/actions/slotOperations";
@@ -16,7 +18,6 @@ import {
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/dummyData";
-import { SlotInterface } from "eisbuk-shared/dist";
 
 const mockDispatch = jest.fn();
 
@@ -52,9 +53,27 @@ describe("SlotCard", () => {
 
     test("should render intervals", () => {
       render(<SlotCard {...baseSlot} />);
-      Object.keys(baseSlot.intervals).forEach((slotKey) => {
-        screen.getByText(slotKey.split("-").join(" - "));
+      Object.keys(baseSlot.intervals).forEach((intervalKey) => {
+        // we're using `getAllByText` because the longest test interval is in fact start-finish
+        // so it appears as both interval and slot time span (title)
+        screen.getAllByText(intervalKey.split("-").join(" - "));
       });
+    });
+
+    test("should render startTime-endTime string", () => {
+      // explicitly set intervals for straightforward testing
+      const intervals = {
+        ["09:00-10:00"]: {
+          startTime: "09:00",
+          endTime: "10:00",
+        },
+        ["15:00-18:00"]: {
+          startTime: "15:00",
+          endTime: "18:00",
+        },
+      };
+      render(<SlotCard {...{ ...baseSlot, intervals }} />);
+      screen.getByText("09:00 - 18:00");
     });
   });
 
