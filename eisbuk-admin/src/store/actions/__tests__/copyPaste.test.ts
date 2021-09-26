@@ -1,4 +1,9 @@
-import { Collection, OrgSubCollection } from "eisbuk-shared";
+import {
+  Collection,
+  OrgSubCollection,
+  SlotsByDay,
+  SlotsById,
+} from "eisbuk-shared";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -20,9 +25,12 @@ import {
   testSlots,
   testWeek,
 } from "../__testData__/copyPaste";
-import { testDateLuxon } from "@/__testData__/date";
+import { testDate, testDateLuxon } from "@/__testData__/date";
 import { deleteAll } from "@/tests/utils";
 import { getFirebase } from "@/__testUtils__/firestore";
+import { waitForCondition } from "@/__testUtils__/helpers";
+import { luxon2ISODate } from "@/utils/date";
+import { baseSlot } from "@/__testData__/dummyData";
 
 /**
  * Mock dispatch function we're feeding to our thunk testing function (`setUpTestSlots`)
@@ -83,6 +91,9 @@ describe("Copy Paste actions", () => {
     .doc(ORGANIZATION)
     .collection(OrgSubCollection.Slots);
 
+  const monthStr = testDate.substr(0, 7);
+  const slotsByIdPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
+
   describe("pasteSlotsDay", () => {
     testWithEmulator(
       "should update firestore with slots day from clipboard pasted to new day (with new slots having uuid generated ids and without messing up the new day)",
@@ -94,15 +105,33 @@ describe("Copy Paste actions", () => {
         });
         // we're pasting to wednesday of test week
         const newDate = testDateLuxon.plus({ days: 2 });
+        const newDateISO = luxon2ISODate(newDate);
         // create paste thunk curried with `newDate`
         const pasteThunk = pasteSlotsDay(newDate);
         await pasteThunk(...thunkArgs);
-        const updatedSlots = await slotsRef.get();
-        updatedSlots.forEach((slot) => {
-          // we're expecting the same data as base slot (as base slot was copied) but with updated date
-          const slotDate = slot.data().date;
-          expect(slotDate).toEqual({
-            seconds: newDate.toSeconds(),
+        const numSlotsToPaste = Object.keys(testDay).length;
+        // wait for slot aggregation
+        const updatedSlotsMonth = (await waitForCondition({
+          documentPath: slotsByIdPath,
+          condition: (data) => {
+            // exit early if no data found
+            if (!data) return false;
+            const newDateSlots = data[newDateISO] || ({} as SlotsById);
+            const numSlotsPasted = Object.keys(newDateSlots).length;
+            // we're testing if two new slots are added to new day (as we've copied two slots from test day)
+            return numSlotsPasted === numSlotsToPaste;
+          },
+        })) as SlotsByDay;
+        // check new slots
+        const updatedSlotDay = updatedSlotsMonth[newDateISO];
+        Object.keys(updatedSlotDay).forEach((slotId) => {
+          console.log(slotId);
+          // we're expecting the same data as base slot (as base slot was copied)
+          // but with updated date and id
+          expect(updatedSlotDay[slotId]).toEqual({
+            ...baseSlot,
+            id: slotId,
+            date: { seconds: newDate.toSeconds() + newDate.offset * 60 },
           });
         });
       }
