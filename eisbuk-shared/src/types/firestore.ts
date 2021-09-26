@@ -120,8 +120,8 @@ export interface Customer extends CustomerBase {
   email: string;
   phone: string;
   certificateExpiration?: string;
-  covidCertificateReleaseDate: string;
-  covidCertificateSuspended: boolean;
+  covidCertificateReleaseDate?: string;
+  covidCertificateSuspended?: boolean;
 }
 
 // #endregion customers
@@ -141,7 +141,6 @@ export interface CustomerBookingEntry {
    */
   interval: string;
 }
-
 /**
  * Bookings document for customer
  */

@@ -10,7 +10,7 @@ import SlotForm from "./SlotForm";
 import { dummySlot } from "./__testData__/dummyData";
 
 export default {
-  title: "New Slot Form",
+  title: "Slot Form",
   component: SlotForm,
 };
 

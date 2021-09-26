@@ -4,4 +4,5 @@ export enum CloudFunction {
   Ping = "ping",
   CreateOrganization = "createOrganization",
   CreateTestSlots = "createTestSlots",
+  MigrateToNewDataModel = "migrateToNewDataModel",
 }

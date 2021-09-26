@@ -1,5 +1,6 @@
 import { Timestamp } from "@google-cloud/firestore";
 
+import { Customer } from "../firestore";
 import { DeprecatedDuration } from "../../enums/deprecated/firestore";
 import { Category, SlotType } from "../../enums/firestore";
 
@@ -53,3 +54,13 @@ export type DeprecatedExtendedSlot<E extends Record<string, any>> =
 export type DeprecatedBookingInfo = DeprecatedExtendedSlot<{
   duration: DeprecatedDuration;
 }>;
+/**
+ * Deprecated entry for bookings meta. Now it's `CustomerBase`
+ * as each `bookings` entry actually contains customer's base data.
+ */
+export type DeprecatedBookingsMeta = Pick<Customer, "name"> &
+  Pick<Customer, "surname"> &
+  Pick<Customer, "category"> & {
+    // eslint-disable-next-line camelcase
+    customer_id: string;
+  };
