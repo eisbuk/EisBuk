@@ -8,8 +8,8 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { getFirebase } from "@/__testUtils__/firestore";
 
 import { mixedSlots } from "../__testData__/migrations";
-import { invokeFunction } from "@/components/debugPage";
-import { CloudFunction } from "@/enums/functions";
+// import { invokeFunction } from "@/components/debugPage";
+// import { CloudFunction } from "@/enums/functions";
 
 const db = getFirebase().firestore();
 

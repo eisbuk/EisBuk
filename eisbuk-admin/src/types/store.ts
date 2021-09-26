@@ -68,7 +68,6 @@ export interface AppReducerAction<A extends AppAction> {
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
-  newSlotTime: Timestamp | null;
 }
 // #endregion Region App
 

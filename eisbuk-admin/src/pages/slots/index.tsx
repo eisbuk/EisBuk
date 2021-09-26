@@ -11,7 +11,7 @@ import { SlotsWeek } from "@/types/store";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotOperationButtons, {
-  DeleteButton,
+  // DeleteButton,
   CopyButton,
   PasteButton,
   NewSlotButton,
@@ -48,7 +48,7 @@ const SlotsPage: React.FC = () => {
       contextType={ButtonContextType.Week}
       {...{ date }}
     >
-      <DeleteButton />
+      {/* <DeleteButton /> */}
       <CopyButton />
       <PasteButton />
     </SlotOperationButtons>

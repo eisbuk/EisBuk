@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { Timestamp } from "@google-cloud/firestore";
 import { SnackbarKey } from "notistack";
 import i18n from "i18next";
 
@@ -74,9 +73,7 @@ export const showErrSnackbar = (): void => {
     })
   );
 };
-// ***** End Region Notifications ***** //
 
-// ***** Region Date and Time ***** //
 /**
  * Creates Redux action for appReducer to update calendar date
  * @param date calendar date to set
@@ -88,16 +85,3 @@ export const changeCalendarDate = (
   type: Action.ChangeDay,
   payload: date,
 });
-
-/**
- * Creates Redux action for appReducer to update new slot time
- * @param time to set as new slot time
- * @returns Redux action object
- */
-export const setNewSlotTime = (
-  time: Timestamp
-): AppReducerAction<Action.SetSlotTime> => ({
-  type: Action.SetSlotTime,
-  payload: time,
-});
-// ***** End Region Date and Time ***** //
