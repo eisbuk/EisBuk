@@ -4,8 +4,6 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import { DeprecatedSlot as Slot } from "eisbuk-shared/dist/types/deprecated/firestore";
-
 import SlotCard from "../SlotCard";
 
 import * as slotOperations from "@/store/actions/slotOperations";
@@ -18,6 +16,7 @@ import {
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/dummyData";
+import { SlotInterface } from "eisbuk-shared/dist";
 
 const mockDispatch = jest.fn();
 
@@ -71,14 +70,14 @@ describe("SlotCard", () => {
 
     test("should dispatch delete action on delete confirmation click", () => {
       // mock implementation of `deleteSlot` used to mock implementation in component and for testing
-      const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+      const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
         type: "delete_slot",
         slotId,
       });
       // mock deleteSlot function
       jest
         .spyOn(slotOperations, "deleteSlot")
-        .mockImplementation(mockDelSlotImplementation);
+        .mockImplementation(mockDelSlotImplementation as any);
       // open delete dialog
       screen.getByTestId(__deleteButtonId__).click();
       // confirm delete dialog

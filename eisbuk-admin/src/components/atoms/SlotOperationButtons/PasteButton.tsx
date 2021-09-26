@@ -17,7 +17,7 @@ import {
   __noDatePaste,
 } from "@/lib/errorMessages";
 
-import { newPasteSlotDay, newPasteSlotWeek } from "@/store/actions/copyPaste";
+import { pasteSlotsDay, pasteSlotsWeek } from "@/store/actions/copyPaste";
 
 import { __pasteButtonId__ } from "@/__testData__/testIds";
 
@@ -61,7 +61,7 @@ export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
 
   // pick the right action creator with respect to `contextType`
   const pasteActionCreator =
-    contextType === ButtonContextType.Day ? newPasteSlotDay : newPasteSlotWeek;
+    contextType === ButtonContextType.Day ? pasteSlotsDay : pasteSlotsWeek;
   const handlePaste = () => dispatch(pasteActionCreator(date));
 
   // check if there are slots in clipboard for given `contextType`

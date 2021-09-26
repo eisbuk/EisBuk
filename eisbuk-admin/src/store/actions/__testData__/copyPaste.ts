@@ -20,15 +20,11 @@ export const testDay = {
 };
 
 /**
- * Wednessday of test week (for slots in the same week, different day)
+ * Wednesday of test week (for slots in the same week, different day)
  */
 const twoDaysFromNow = testDateLuxon.plus({ days: 2 });
 const newTimestamp = { seconds: twoDaysFromNow.toSeconds() } as Timestamp;
-/**
- * Slots belonging to test week (keyed only by slot id)
- */
-const testWeek = {
-  ...testDay,
+export const testWeekWednesday = {
   ["slot-2"]: {
     ...baseSlot,
     id: "slot-2",
@@ -44,6 +40,14 @@ const testWeek = {
     id: "slot-4",
     date: newTimestamp,
   },
+};
+export const wednesdaySlotIds = Object.keys(testWeekWednesday);
+/**
+ * Slots belonging to test week (keyed only by slot id)
+ */
+export const testWeek = {
+  ...testDay,
+  ...testWeekWednesday,
 };
 /**
  * Next week for test data, keyed only by slot id (should get filtered out)

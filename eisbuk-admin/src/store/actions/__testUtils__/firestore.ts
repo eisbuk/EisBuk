@@ -33,7 +33,7 @@ export const setupTestAttendance = async (
   const dispatch: Dispatch = (value: any) => value;
 
   // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ attendance });
+  const getState = () => createTestStore({ data: { attendance } });
 
   // set desired values to emulated db
   const attendanceColl = adminDb
@@ -57,16 +57,13 @@ export const setupTestAttendance = async (
  */
 export const setupTestSlots = async ({
   slots,
-  mockDispatch,
-  date,
+  dispatch = (value: any) => value,
+  date = testDateLuxon,
 }: {
   slots: Record<string, SlotInterface>;
-  mockDispatch?: Dispatch;
+  dispatch?: Dispatch;
   date?: DateTime;
 }): Promise<ThunkParams> => {
-  // we're not using dispatch so it's here just to comply with type structure
-  const dispatch: Dispatch = mockDispatch || ((value: any) => value);
-
   // transform slots to `slotsByDay` store entry struct:
   // get keys (month, day) from `slot.date` and organize accordingly
   const slotsByDay = Object.keys(slots).reduce((acc, slotId) => {
@@ -89,7 +86,7 @@ export const setupTestSlots = async ({
   }, {} as Record<string, SlotsByDay>);
 
   // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ slotsByDay }, date || testDateLuxon);
+  const getState = () => createTestStore({ data: { slotsByDay }, date });
 
   // set desired values to emulated db
   const slotsColl = adminDb
@@ -102,6 +99,28 @@ export const setupTestSlots = async ({
   );
 
   await Promise.all(updates);
+
+  return [dispatch, getState, { getFirebase }];
+};
+
+/**
+ * Set up `attendance` data in emulated store and create `getState()` returning redux store
+ * filled with `attendance` data as well
+ * @param attendance entry for firestore attendance we want to set
+ * @returns middleware args (dispatch, setState, { getFirebase } )
+ */
+export const setupCopyPaste = async ({
+  day = null,
+  week = null,
+  dispatch = (value: any) => value,
+}: {
+  day?: LocalStore["copyPaste"]["day"];
+  week?: LocalStore["copyPaste"]["week"];
+  dispatch?: Dispatch;
+}): Promise<ThunkParams> => {
+  const copyPaste = { day, week };
+  // create `getState` state to return store populated with desired values
+  const getState = () => createTestStore({ copyPaste });
 
   return [dispatch, getState, { getFirebase }];
 };

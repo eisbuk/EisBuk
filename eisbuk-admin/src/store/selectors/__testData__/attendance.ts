@@ -159,10 +159,10 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
 /**
  * Store populated with test data for attendance selector test
  */
-export const testStore = createTestStore(
-  { attendance, customers, slotsByDay },
-  testDateLuxon
-);
+export const testStore = createTestStore({
+  data: { attendance, customers, slotsByDay },
+  date: testDateLuxon,
+});
 
 /**
  * The struct we're expecting to receive for selector's test result (for test date)

@@ -46,7 +46,7 @@ beforeEach(async () => {
 });
 
 describe("Cloud functions -> Data triggers ->,", () => {
-  describe("createAttendanceForBooking", () => {
+  xdescribe("createAttendanceForBooking", () => {
     testWithEmulator(
       "should create attendance entry for booking and not overwrite existing data in slot",
       async () => {

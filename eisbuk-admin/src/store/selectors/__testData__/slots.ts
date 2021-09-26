@@ -135,7 +135,7 @@ const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
   ["2021-09"]: currentMonth,
 };
 
-export const testStore = createTestStore(
-  { slotsByDay },
-  DateTime.fromISO(currentWeekStartDate)
-);
+export const testStore = createTestStore({
+  data: { slotsByDay },
+  date: DateTime.fromISO(currentWeekStartDate),
+});

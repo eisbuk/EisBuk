@@ -1,11 +1,18 @@
 import { DateTime } from "luxon";
+import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
+import {
+  Collection,
+  OrgSubCollection,
+  SlotInterface,
+  SlotsById,
+} from "eisbuk-shared";
 
 import { Action } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 import { luxon2ISODate } from "@/utils/date";
+import { ORGANIZATION } from "@/config/envInfo";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -68,46 +75,11 @@ export const setSlotWeekToClipboard = (
 });
 
 // #region updatedActions
-/**
- * These action are updated versions of existing `copySlotDay` and `copySlotWeek` actions.
- * They're written is such a way that only the start date needs to be passed
- * and the slots data will be read from the store to reduce data needed for action calls.
- * @TODO These are just scaffolding for functions used to test those functions being called from new `SlotOperationButtons`,
- * should write and test these functions when working on new atmoic component integration to admin `slots` view
- * @TODO Upon integration rename to `copySlotDay` / `copySlotWeek` rather than `newCopySlotDay` / `newCopySlotWeek`
- * and delete the old versions of same functions
- */
-/**
- * Payload for each respective `BulkSlotsAction` action
- */
-interface CopySlotsPayload {
-  [Action.CopySlotDay]: SlotsById;
-  [Action.CopySlotWeek]: SlotsByDay;
-  [Action.PasteSlotDay]: SlotsById;
-  [Action.PasteSlotWeek]: SlotsByDay;
-}
-
-/**
- * Generic function interface used to type `copySlotDay` | `copySlotWeek` action creators
- */
-interface BulkSlotsAction<
-  A extends
-    | Action.CopySlotDay
-    | Action.CopySlotWeek
-    | Action.PasteSlotDay
-    | Action.PasteSlotWeek
-> {
-  (date: DateTime): {
-    type: A;
-    payload: CopySlotsPayload[A];
-  };
-}
 
 /**
  * Creates Redux action to add a complete day of slots to clipboard for copyPaste reducer
  * @returns Redux action object
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const copySlotsDay = (date: DateTime): FirestoreThunk => async (
   dispatch,
   getState
@@ -175,20 +147,75 @@ export const copySlotsWeek = (): FirestoreThunk => async (
  * Creates Redux action to paste the day of slots from clipboard to a new day
  * @returns Redux action object
  */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const newPasteSlotDay: BulkSlotsAction<Action.CopySlotDay> = (date) => ({
+export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
+  dispatch,
+  getState,
+  { getFirebase }
+) => {
+  const db = getFirebase().firestore();
+
+  // get slots day to copy from store
+  const slotsToCopy = getState().copyPaste.day;
+  // exit early if no slots in clipboard
+  if (!slotsToCopy) return;
+
+  // get timestamp date for new slots
+  /** @TEMP fix this when we slove Timestamp problem */
+  const date = { seconds: newDate.toSeconds() } as Timestamp;
+
+  // add updated slots to firestore
+  const slotsRef = db
+    .collection(Collection.Organizations)
+    .doc(ORGANIZATION)
+    .collection(OrgSubCollection.Slots);
+  const batch = db.batch();
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  type: Action.CopySlotDay,
-  payload: {} as any,
-});
+  Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
+    batch.set(slotsRef.doc(), { ...slotData, date });
+  });
+
+  await batch.commit();
+};
 
 /**
  * Creates Redux action to paste a week of slots from clipboard to new week (starting with provided date)
  * @returns Redux action object
  */
-export const newPasteSlotWeek: BulkSlotsAction<Action.CopySlotWeek> = () => ({
-  type: Action.CopySlotWeek,
-  payload: {} as any,
-});
+export const pasteSlotsWeek = (
+  newWeekStart: DateTime
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  const db = getFirebase().firestore();
+
+  const weekToPaste = getState().copyPaste.week;
+
+  // exit early if no week in clipboard
+  if (!weekToPaste) return;
+
+  // get slots day to copy from store
+  const { weekStart, slots } = weekToPaste;
+
+  // exit early if no slots or week start in clipboard
+  if (!slots || !weekStart) return;
+
+  // calculate week jump
+  const jump =
+    newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks! * 3600 * 24 * 7;
+
+  // update each slot with new date and set up for firestore dispatching
+  const slotsRef = db
+    .collection(Collection.Organizations)
+    .doc(ORGANIZATION)
+    .collection(OrgSubCollection.Slots);
+  const batch = db.batch();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  slots.forEach(({ id, date: oldDate, ...slotData }) => {
+    const date = { seconds: oldDate.seconds + jump };
+    batch.set(slotsRef.doc(), { ...slotData, date });
+  });
+
+  await batch.commit();
+};
 
 // #endregion updatedActions
