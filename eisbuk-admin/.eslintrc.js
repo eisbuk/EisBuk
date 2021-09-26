@@ -204,6 +204,6 @@ module.exports = {
 
     // even though Dan Abramov spreads this gospel, we're
     // carefully setting the deps to precisely what we want
-    "react-hooks/exhaustive-deps": "off",
+    "react-hooks/exhaustive-deps": "error",
   },
 };
