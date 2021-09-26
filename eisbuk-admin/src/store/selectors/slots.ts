@@ -1,88 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import _ from "lodash";
 import { DateTime } from "luxon";
 
-import {
-  SlotInterface,
-  SlotType,
-  SlotsByDay,
-  Category,
-  SlotsById,
-} from "eisbuk-shared";
-
-import { CustomerRoute } from "@/enums/routes";
+import { SlotsByDay, Category, SlotsById } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
-import { flatten } from "@/utils/helpers";
-
-// import { getCustomersRecord } from "./firestore";
-
 import { luxon2ISODate } from "@/utils/date";
 
-// const extractSlotDate = (slot: SlotInterface): number => slot.date.seconds;
-// const extractSlotId = (slot: SlotInterface): SlotInterface["id"] => slot.id;
-
-/**
- * Try to execute the passed function.
- * If it fails or it returns default value or empty object,
- * @param fn function to execute
- * @param defaultVal default value (optional)
- * @returns first one sucessful out of: fn(), defaultVal, {}
- */
-const getSafe = <F extends () => any>(
-  fn: F,
-  defaultVal?: ReturnType<F>
-): NonNullable<ReturnType<F>> | Record<string, any> => {
-  // if no default val provided, fall back to empty object
-  const def = defaultVal || {};
-
-  // try and execute the function
-  try {
-    const result = fn();
-    // if result undefined or null, return default value (or fallback)
-    return [null, undefined].includes(result) ? def : result;
-  } catch {
-    // if error, return default value or fallback
-    return def;
-  }
-};
-
-/**
- * Get all slots in a single record, keyed by (day) date
- * @param state Local Redux Store
- * @returns record of all slots, keyed by day, grouped together (regardless of month)
- */
-export const getAllSlotsByDay = (
-  state: LocalStore
-): Record<string, Record<string, SlotInterface>> =>
-  flatten(
-    Object.values(
-      state.firestore.data?.slotsByDay || ({} as Record<string, any>)
-    )
-  );
-
-/**
- * HOF that creates a selector for view-specific slots by view in a single record, keyed by (day) date
- * @param view tab viewed by customer (ice, off-ice)
- * @returns record of view-specific ice slots, keyed by day, grouped together (regardless of month)
- */
-export const getSlotsByView = (view: CustomerRoute) => (state: LocalStore) => {
-  const allSlots = flatten(
-    Object.values(getSafe(() => state.firestore.data?.slotsByDay))
-  );
-
-  if (view === CustomerRoute.Calendar) return allSlots;
-  return _.mapValues(allSlots, (daySlots) =>
-    _.pickBy(daySlots, (slot) => {
-      return view === CustomerRoute.BookIce
-        ? slot.type === SlotType.Ice
-        : slot.type !== SlotType.Ice;
-    })
-  );
-};
-
-// #region newSelectors
 /**
  * Get `slotsByDay` entry from store, filtered according to `timeframe`, `startDate` and `category`
  * @param category category of customer viewing the slots
@@ -142,7 +66,6 @@ export const getSlotsForCustomer = (
       return filteredDays;
   }
 };
-// #endregion newSelectors
 
 /**
  * A helper function we're using to filter out slots not within provided category.
