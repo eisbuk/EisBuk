@@ -63,9 +63,9 @@ const SlotsPage: React.FC = () => {
     selected: boolean;
   }) => () => {
     if (selected) {
-      dispatch(addSlotToClipboard(slot));
-    } else {
       dispatch(deleteSlotFromClipboard(slot.id));
+    } else {
+      dispatch(addSlotToClipboard(slot));
     }
   };
 
@@ -81,7 +81,9 @@ const SlotsPage: React.FC = () => {
               const additionalButtons = (
                 <SlotOperationButtons
                   contextType={ButtonContextType.Day}
-                  slotsToCopy={{ day: Boolean(dayToPaste) }}
+                  slotsToCopy={{
+                    day: Boolean(dayToPaste),
+                  }}
                   {...{ date }}
                 >
                   <NewSlotButton />

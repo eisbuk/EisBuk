@@ -161,7 +161,10 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
 
   // get timestamp date for new slots
   /** @TEMP fix this when we slove Timestamp problem */
-  const date = { seconds: newDate.toSeconds() } as Timestamp;
+  const date = {
+    // we're applying offset, as slot aggregation would put this a day ahead (due to time diff from UTC)
+    seconds: newDate.toSeconds() + newDate.offset * 60,
+  } as Timestamp;
 
   // add updated slots to firestore
   const slotsRef = db

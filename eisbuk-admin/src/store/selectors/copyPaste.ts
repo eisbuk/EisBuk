@@ -16,5 +16,5 @@ export const getWeekFromClipboard = (
  * @param state Local Redux State
  * @returns slot dat or empty object
  */
-export const getDayFromClipboard = (state: LocalStore): SlotsById =>
-  state.copyPaste.day || {};
+export const getDayFromClipboard = (state: LocalStore): SlotsById | null =>
+  state.copyPaste.day;
