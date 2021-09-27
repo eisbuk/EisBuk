@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { Timestamp } from "@google-cloud/firestore";
+import i18n from "i18next";
 
 import {
   Collection,
@@ -74,7 +75,7 @@ export const createNewSlot = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: NotificationMessage.SlotAdded,
+        message: i18n.t(NotificationMessage.SlotAdded),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -125,7 +126,7 @@ export const updateSlot = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: NotificationMessage.SlotDeleted,
+        message: i18n.t(NotificationMessage.SlotUpdated),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -159,7 +160,7 @@ export const deleteSlot = (
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: NotificationMessage.SlotDeleted,
+        message: i18n.t(NotificationMessage.SlotDeleted),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,

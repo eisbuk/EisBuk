@@ -4,7 +4,7 @@ export enum NotificationMessage {
 
   SlotAdded = "Notification.SlotAdded",
   SlotUpdated = "Notification.SlotUpdated",
-  SlotDeleted = "Notification.SlotUpdated",
+  SlotDeleted = "Notification.SlotRemoved",
 
   Error = "Notification.Error",
 }
