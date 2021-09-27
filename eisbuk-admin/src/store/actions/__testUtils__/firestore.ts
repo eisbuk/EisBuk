@@ -26,12 +26,13 @@ type ThunkParams = Parameters<FirestoreThunk>;
  * @param attendance entry for firestore attendance we want to set
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
-export const setupTestAttendance = async (
-  attendance: LocalStore["firestore"]["data"]["attendance"]
-): Promise<ThunkParams> => {
-  // we're not using dispatch so it's here just to comply with type structure
-  const dispatch: Dispatch = (value: any) => value;
-
+export const setupTestAttendance = async ({
+  attendance,
+  dispatch = (value: any) => value,
+}: {
+  attendance: LocalStore["firestore"]["data"]["attendance"];
+  dispatch?: Dispatch;
+}): Promise<ThunkParams> => {
   // create `getState` state to return store populated with desired values
   const getState = () => createTestStore({ data: { attendance } });
 

@@ -8,11 +8,14 @@ import {
   SlotsById,
 } from "eisbuk-shared";
 
+import { ORGANIZATION } from "@/config/envInfo";
+
 import { Action } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
+
 import { luxon2ISODate } from "@/utils/date";
-import { ORGANIZATION } from "@/config/envInfo";
+import { showErrSnackbar } from "./appActions";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -152,33 +155,37 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
   getState,
   { getFirebase }
 ) => {
-  const db = getFirebase().firestore();
+  try {
+    const db = getFirebase().firestore();
 
-  // get slots day to copy from store
-  const slotsToCopy = getState().copyPaste.day;
-  // exit early if no slots in clipboard
-  if (!slotsToCopy) return;
+    // get slots day to copy from store
+    const slotsToCopy = getState().copyPaste.day;
+    // exit early if no slots in clipboard
+    if (!slotsToCopy) return;
 
-  // get timestamp date for new slots
-  /** @TEMP fix this when we slove Timestamp problem */
-  const date = {
-    // we're applying offset, as slot aggregation would put this a day ahead (due to time diff from UTC)
-    seconds: newDate.toSeconds() + newDate.offset * 60,
-  } as Timestamp;
+    // get timestamp date for new slots
+    /** @TEMP fix this when we slove Timestamp problem */
+    const date = {
+      // we're applying offset, as slot aggregation would put this a day ahead (due to time diff from UTC)
+      seconds: newDate.toSeconds() + newDate.offset * 60,
+    } as Timestamp;
 
-  // add updated slots to firestore
-  const slotsRef = db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots);
-  const batch = db.batch();
+    // add updated slots to firestore
+    const slotsRef = db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Slots);
+    const batch = db.batch();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
-    batch.set(slotsRef.doc(), { ...slotData, date });
-  });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
+      batch.set(slotsRef.doc(), { ...slotData, date });
+    });
 
-  await batch.commit();
+    await batch.commit();
+  } catch {
+    showErrSnackbar();
+  }
 };
 
 /**
@@ -188,37 +195,41 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
 export const pasteSlotsWeek = (
   newWeekStart: DateTime
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
+  try {
+    const db = getFirebase().firestore();
 
-  const weekToPaste = getState().copyPaste.week;
+    const weekToPaste = getState().copyPaste.week;
 
-  // exit early if no week in clipboard
-  if (!weekToPaste) return;
+    // exit early if no week in clipboard
+    if (!weekToPaste) return;
 
-  // get slots day to copy from store
-  const { weekStart, slots } = weekToPaste;
+    // get slots day to copy from store
+    const { weekStart, slots } = weekToPaste;
 
-  // exit early if no slots or week start in clipboard
-  if (!slots || !weekStart) return;
+    // exit early if no slots or week start in clipboard
+    if (!slots || !weekStart) return;
 
-  // calculate week jump
-  const jump =
-    newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks! * 3600 * 24 * 7;
+    // calculate week jump
+    const jump =
+      newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks! * 3600 * 24 * 7;
 
-  // update each slot with new date and set up for firestore dispatching
-  const slotsRef = db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots);
-  const batch = db.batch();
+    // update each slot with new date and set up for firestore dispatching
+    const slotsRef = db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Slots);
+    const batch = db.batch();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  slots.forEach(({ id, date: oldDate, ...slotData }) => {
-    const date = { seconds: oldDate.seconds + jump };
-    batch.set(slotsRef.doc(), { ...slotData, date });
-  });
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    slots.forEach(({ id, date: oldDate, ...slotData }) => {
+      const date = { seconds: oldDate.seconds + jump };
+      batch.set(slotsRef.doc(), { ...slotData, date });
+    });
 
-  await batch.commit();
+    await batch.commit();
+  } catch {
+    showErrSnackbar();
+  }
 };
 
 // #endregion updatedActions

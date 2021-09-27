@@ -3,6 +3,7 @@ import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
+import * as appActions from "../appActions";
 
 import {
   createDocumentWithObservedAttendance,
@@ -10,7 +11,7 @@ import {
 } from "../__testData__/attendanceOperations";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestAttendance } from "../__testUtils__/firestore";
 
 // test data
@@ -21,7 +22,8 @@ const attendedInterval = "11:00-12:30";
 
 // path of attendance collection and test month document to make our lives easier
 // as we'll be using it throughout
-const attendanceMonth = getFirebase()
+const attendanceMonth = firestoreUtils
+  .getFirebase()
   .firestore()
   .collection(Collection.Organizations)
   .doc(ORGANIZATION)
@@ -38,7 +40,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -65,7 +67,7 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -85,6 +87,28 @@ describe("Attendance operations ->", () => {
         expect(resData).toEqual(expectedDoc);
       }
     );
+
+    testWithEmulator(
+      "should enqueue error snackbar if update not successful",
+      async () => {
+        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+        // cause synthetic error in execution
+        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        const initialDoc = createDocumentWithObservedAttendance({});
+        const thunkArgs = await setupTestAttendance({
+          attendance: { [slotId]: initialDoc },
+        });
+        const testThunk = markAttendance({
+          customerId,
+          slotId: observedSlotId,
+          attendedInterval,
+        });
+        await testThunk(...thunkArgs);
+        expect(errNotifSpy).toHaveBeenCalled();
+      }
+    );
   });
 
   describe("markAbsence ->", () => {
@@ -96,7 +120,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({
@@ -123,7 +147,7 @@ describe("Attendance operations ->", () => {
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({
@@ -138,6 +162,27 @@ describe("Attendance operations ->", () => {
         const resDoc = await attendanceMonth.get();
         const resData = resDoc.data();
         expect(resData).toEqual(expectedDoc);
+      }
+    );
+
+    testWithEmulator(
+      "should enqueue error snackbar if update not successful",
+      async () => {
+        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+        // cause synthetic error in execution
+        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        const initialDoc = createDocumentWithObservedAttendance({});
+        const thunkArgs = await setupTestAttendance({
+          attendance: { [slotId]: initialDoc },
+        });
+        const testThunk = markAbsence({
+          customerId,
+          slotId: observedSlotId,
+        });
+        await testThunk(...thunkArgs);
+        expect(errNotifSpy).toHaveBeenCalled();
       }
     );
   });

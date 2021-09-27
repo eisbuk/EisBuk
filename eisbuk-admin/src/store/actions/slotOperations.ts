@@ -8,11 +8,16 @@ import {
   SlotInterval,
 } from "eisbuk-shared";
 
+import { ORGANIZATION } from "@/config/envInfo";
+
 import { SlotFormValues } from "@/lib/data";
+import { NotificationMessage } from "@/lib/notifications";
+
+import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
@@ -44,25 +49,42 @@ export const createNewSlot = (
     ...slotData
   }: SlotFormValues & { date: DateTime }
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
+  try {
+    const db = getFirebase().firestore();
 
-  /** @TEMP until we figure out the Timestamp issue */
-  const date = { seconds: luxonDate.toSeconds() } as Timestamp;
-  const intervals = intervalsArr.reduce(
-    (acc, { startTime, endTime }) => ({
-      ...acc,
-      [`${startTime}-${endTime}`]: { startTime, endTime },
-    }),
-    {} as Record<string, SlotInterval>
-  );
+    /** @TEMP until we figure out the Timestamp issue */
+    const date = { seconds: luxonDate.toSeconds() } as Timestamp;
+    const intervals = intervalsArr.reduce(
+      (acc, { startTime, endTime }) => ({
+        ...acc,
+        [`${startTime}-${endTime}`]: { startTime, endTime },
+      }),
+      {} as Record<string, SlotInterval>
+    );
 
-  const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
-  await db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots)
-    .doc()
-    .set(newSlot);
+    const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
+    await db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Slots)
+      .doc()
+      .set(newSlot);
+
+    // show success notification
+    dispatch(
+      enqueueNotification({
+        key: new Date().getTime() + Math.random(),
+        message: NotificationMessage.SlotAdded,
+        closeButton: true,
+        options: {
+          variant: NotifVariant.Success,
+        },
+      })
+    );
+  } catch {
+    // show error notification if operation failed
+    showErrSnackbar();
+  }
 };
 
 /**
@@ -78,25 +100,42 @@ export const updateSlot = (
     ...slotData
   }: SlotFormValues & { date: DateTime; id: string }
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
+  try {
+    const db = getFirebase().firestore();
 
-  /** @TEMP until we figure out the Timestamp issue */
-  const date = { seconds: luxonDate.toSeconds() } as Timestamp;
-  const intervals = intervalsArr.reduce(
-    (acc, { startTime, endTime }) => ({
-      ...acc,
-      [`${startTime}-${endTime}`]: { startTime, endTime },
-    }),
-    {} as Record<string, SlotInterval>
-  );
-  const updatedSlot: SlotInterface = { ...slotData, date, intervals, id };
+    /** @TEMP until we figure out the Timestamp issue */
+    const date = { seconds: luxonDate.toSeconds() } as Timestamp;
+    const intervals = intervalsArr.reduce(
+      (acc, { startTime, endTime }) => ({
+        ...acc,
+        [`${startTime}-${endTime}`]: { startTime, endTime },
+      }),
+      {} as Record<string, SlotInterval>
+    );
+    const updatedSlot: SlotInterface = { ...slotData, date, intervals, id };
 
-  await db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots)
-    .doc(id)
-    .set(updatedSlot);
+    await db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Slots)
+      .doc(id)
+      .set(updatedSlot);
+
+    // show success notification
+    dispatch(
+      enqueueNotification({
+        key: new Date().getTime() + Math.random(),
+        message: NotificationMessage.SlotDeleted,
+        closeButton: true,
+        options: {
+          variant: NotifVariant.Success,
+        },
+      })
+    );
+  } catch {
+    // show error notification if operation failed
+    showErrSnackbar();
+  }
 };
 
 /**
@@ -106,13 +145,30 @@ export const updateSlot = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlot = (
   slotId: SlotInterface["id"]
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) =>
-  await getFirebase()
-    .firestore()
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots)
-    .doc(slotId)
-    .delete();
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  try {
+    await getFirebase()
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Slots)
+      .doc(slotId)
+      .delete();
 
+    // show success notification
+    dispatch(
+      enqueueNotification({
+        key: new Date().getTime() + Math.random(),
+        message: NotificationMessage.SlotDeleted,
+        closeButton: true,
+        options: {
+          variant: NotifVariant.Success,
+        },
+      })
+    );
+  } catch {
+    // show error notification if operation failed
+    showErrSnackbar();
+  }
+};
 // #endregion newOperations
