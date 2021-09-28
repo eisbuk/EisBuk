@@ -1,5 +1,5 @@
 import React from "react";
-import AttendanceSheet from "./AttendanceSheet";
+import AttendanceSheetSlot from "./AttendanceSheetSlot";
 import {
   baseProps,
   saul,
@@ -7,8 +7,8 @@ import {
   intervalStrings as intervals,
 } from "@/components/atoms/AttendanceCard/__testData__/dummyData";
 export default {
-  title: "AttendanceSheet",
-  component: AttendanceSheet,
+  title: "AttendanceSheetSlot",
+  component: AttendanceSheetSlot,
 };
 
 const saulBookings = {
@@ -26,6 +26,6 @@ const customers = [
   { ...walt, ...waltBookings },
 ];
 
-export const BareAppbar = (): JSX.Element => (
-  <AttendanceSheet {...{ ...baseProps, customers }} />
+export const Default = (): JSX.Element => (
+  <AttendanceSheetSlot {...{ ...baseProps, customers }} />
 );
