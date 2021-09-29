@@ -38,6 +38,9 @@ const BookingsCalendar: React.FC<Props> = ({ slots, bookedSlots }) => {
         <>
           <Grid className={classes.bookingsListContainer} container spacing={3}>
             {bookedSlotIds.map((slotId) => {
+              // exit early if slot not accessible
+              if (!slots[slotId]) return null;
+
               const { intervals, ...slotData } = slots[slotId];
               const bookedIntervalString = bookedSlots
                 ? bookedSlots[slotId].interval

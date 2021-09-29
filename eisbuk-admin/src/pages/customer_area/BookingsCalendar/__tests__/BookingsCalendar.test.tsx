@@ -16,6 +16,12 @@ jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
 jest.spyOn(reactRedux, "useSelector").mockImplementation(() => testDateLuxon);
 
 describe("BookingsCalendar", () => {
+  describe("Smoke test", () => {
+    test("should not crash if no bookedSlots passed", () => {
+      render(<BookingsCalendar {...{ bookedSlots: undefined, slots }} />);
+    });
+  });
+
   describe("Test pagination", () => {
     test("should paginate by week", () => {
       render(<BookingsCalendar {...{ bookedSlots, slots }} />);
