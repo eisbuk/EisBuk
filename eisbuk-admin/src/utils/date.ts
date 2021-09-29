@@ -1,9 +1,9 @@
-import firebase from "firebase/app";
+// import firebase from "firebase/app";
 import "firebase/firestore";
 import { DateTime } from "luxon";
 import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
 
-const Timestamp = firebase.firestore.Timestamp;
+// const Timestamp = firebase.firestore.Timestamp;
 
 /**
  * Convert Firebase Timestamp to luxon string (DateTime)
@@ -27,8 +27,12 @@ export const fromISO = (isoStr: string): DateTime => DateTime.fromISO(isoStr);
  * @param luxonTS
  * @returns
  */
+// export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
+//   Timestamp.fromDate(luxonTS.toJSDate());
+
+/** Very @TEMP until we sort out the Timestamp issue */
 export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
-  Timestamp.fromDate(luxonTS.toJSDate());
+  ({ seconds: luxonTS.toSeconds() + luxonTS.offset * 1000 } as FbTimestamp);
 
 /**
  * Converts the luxon DateTime to ISO date string format with only the day part (excluding time of day)

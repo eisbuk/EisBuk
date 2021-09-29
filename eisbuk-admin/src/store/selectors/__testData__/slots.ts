@@ -151,6 +151,6 @@ export const testStore = createTestStore({
  * Test store without slots entry, to test falling back to empty days
  */
 export const noSlotsStore = createTestStore({
-  data: {},
+  data: { slotsByDay: null },
   date: DateTime.fromISO(currentWeekStartDate),
 });

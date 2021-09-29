@@ -92,6 +92,7 @@ describe("CustomerSlots", () => {
         bookedInterval: testInterval,
         secretKey,
         slotId,
+        date: timestampDate,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
     });

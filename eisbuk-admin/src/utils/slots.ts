@@ -1,106 +1,108 @@
-import { fb2Luxon, fromISO, luxonToFB } from "./date";
-import { DateTime } from "luxon";
+// import { fb2Luxon, fromISO, luxonToFB } from "./date";
+// import { DateTime } from "luxon";
 
-import { SlotInterface } from "eisbuk-shared";
+// import { SlotInterface } from "eisbuk-shared";
 
-import { mode } from "./helpers";
+export { useCallback } from "react";
 
-// #region shiftSlotsDay
+// import { mode } from "./helpers";
 
-interface ShiftSlotsDay {
-  (slots: SlotInterface[], newDay: string): SlotInterface[];
-}
+// // #region shiftSlotsDay
 
-/**
- * Shifts date for all of the slots (keeping time of the day) to provided new day
- * @param slots array of slots
- * @param newDay ISO date string of the day to switch to
- * @returns array of updated slots
- */
-export const shiftSlotsDay: ShiftSlotsDay = (slots, newDay) =>
-  slots.map((slot) => {
-    const { hour, minute } = fb2Luxon(slot.date).toObject();
-    const baseDay = fromISO(newDay).toObject();
+// interface ShiftSlotsDay {
+//   (slots: SlotInterface[], newDay: string): SlotInterface[];
+// }
 
-    const newDate = DateTime.fromObject({
-      ...baseDay,
-      hour,
-      minute,
-    });
+// /**
+//  * Shifts date for all of the slots (keeping time of the day) to provided new day
+//  * @param slots array of slots
+//  * @param newDay ISO date string of the day to switch to
+//  * @returns array of updated slots
+//  */
+// export const shiftSlotsDay: ShiftSlotsDay = (slots, newDay) =>
+//   slots.map((slot) => {
+//     const { hour, minute } = fb2Luxon(slot.date).toObject();
+//     const baseDay = fromISO(newDay).toObject();
 
-    return { ...slot, date: luxonToFB(newDate) };
-  });
+//     const newDate = DateTime.fromObject({
+//       ...baseDay,
+//       hour,
+//       minute,
+//     });
 
-// #endregion shiftSlotsDay
+//     return { ...slot, date: luxonToFB(newDate) };
+//   });
 
-// #region shiftSlotsWeek
+// // #endregion shiftSlotsDay
 
-interface ShiftSlotsWeek {
-  (slots: SlotInterface[], newWeekStart: DateTime): SlotInterface[];
-}
+// // #region shiftSlotsWeek
 
-/**
- * Shifts date for the whole week of slots to new week (keeping day and time of day intact)
- * @param slots array of slots
- * @param newWeekStart ISO date string
- * @returns array of updated slots
- */
-export const shiftSlotsWeek: ShiftSlotsWeek = (slots, newWeekStart) => {
-  // get the old week start from the majority of slots belonging to it
-  // we're using majority as fault tolerence to filter out faulty slots without throwing an error
-  const slotWeekStartsISO = slots.map((slot) =>
-    fb2Luxon(slot.date).startOf("week").toISO()
-  );
-  // get mode of slot week start dates
-  const slotWeekStartsMode = mode(slotWeekStartsISO);
+// interface ShiftSlotsWeek {
+//   (slots: SlotInterface[], newWeekStart: DateTime): SlotInterface[];
+// }
 
-  // if slots are equally distributed across two different weeks
-  // there is no way to employ fault tolerence and the function call is definitely faulty
-  if (slotWeekStartsMode === null) {
-    throw new Error(
-      "There is an equal number of slots belonging to two separate weeks"
-    );
-  }
+// /**
+//  * Shifts date for the whole week of slots to new week (keeping day and time of day intact)
+//  * @param slots array of slots
+//  * @param newWeekStart ISO date string
+//  * @returns array of updated slots
+//  */
+// export const shiftSlotsWeek: ShiftSlotsWeek = (slots, newWeekStart) => {
+//   // get the old week start from the majority of slots belonging to it
+//   // we're using majority as fault tolerence to filter out faulty slots without throwing an error
+//   const slotWeekStartsISO = slots.map((slot) =>
+//     fb2Luxon(slot.date).startOf("week").toISO()
+//   );
+//   // get mode of slot week start dates
+//   const slotWeekStartsMode = mode(slotWeekStartsISO);
 
-  const oldWeekStart = DateTime.fromISO(slotWeekStartsMode);
+//   // if slots are equally distributed across two different weeks
+//   // there is no way to employ fault tolerence and the function call is definitely faulty
+//   if (slotWeekStartsMode === null) {
+//     throw new Error(
+//       "There is an equal number of slots belonging to two separate weeks"
+//     );
+//   }
 
-  // filter slots not belonging o the same week as the rest
-  const faultySlots: typeof slots = [] as typeof slots;
-  const filteredSlots = slots.filter((slot) => {
-    const slotWeekstart = fb2Luxon(slot.date).startOf("week");
+//   const oldWeekStart = DateTime.fromISO(slotWeekStartsMode);
 
-    // check if slot belongs to same week as the rest
-    const isFaulty = Boolean(oldWeekStart.diff(slotWeekstart, ["days"]).days);
+//   // filter slots not belonging o the same week as the rest
+//   const faultySlots: typeof slots = [] as typeof slots;
+//   const filteredSlots = slots.filter((slot) => {
+//     const slotWeekstart = fb2Luxon(slot.date).startOf("week");
 
-    // if slot is faulty (doesn't belong to same week)
-    // add to faulty slots for reporting
-    if (isFaulty) {
-      faultySlots.push(slot);
-      return false;
-    }
+//     // check if slot belongs to same week as the rest
+//     const isFaulty = Boolean(oldWeekStart.diff(slotWeekstart, ["days"]).days);
 
-    return true;
-  });
+//     // if slot is faulty (doesn't belong to same week)
+//     // add to faulty slots for reporting
+//     if (isFaulty) {
+//       faultySlots.push(slot);
+//       return false;
+//     }
 
-  // report faulty slots, if any (but don't throw)
-  if (faultySlots.length) {
-    console.log(
-      "Some slots don't belong to the same week and have been filtered out"
-    );
-    console.log("Faulty slots: ", faultySlots);
-  }
+//     return true;
+//   });
 
-  // if provided 'newWeekStart' is not a valid start of the week,
-  // fall back to start of the same week the provided 'newWeekStart' belongs to
-  const safeNewWeekStart = newWeekStart.startOf("week");
+//   // report faulty slots, if any (but don't throw)
+//   if (faultySlots.length) {
+//     console.log(
+//       "Some slots don't belong to the same week and have been filtered out"
+//     );
+//     console.log("Faulty slots: ", faultySlots);
+//   }
 
-  // apply difference to all of the slots and return
-  const difference = safeNewWeekStart.diff(oldWeekStart, ["days"]).days;
-  return filteredSlots.map((slot) => {
-    const oldDate = fb2Luxon(slot.date);
+//   // if provided 'newWeekStart' is not a valid start of the week,
+//   // fall back to start of the same week the provided 'newWeekStart' belongs to
+//   const safeNewWeekStart = newWeekStart.startOf("week");
 
-    return { ...slot, date: luxonToFB(oldDate.plus({ days: difference })) };
-  });
-};
+//   // apply difference to all of the slots and return
+//   const difference = safeNewWeekStart.diff(oldWeekStart, ["days"]).days;
+//   return filteredSlots.map((slot) => {
+//     const oldDate = fb2Luxon(slot.date);
+
+//     return { ...slot, date: luxonToFB(oldDate.plus({ days: difference })) };
+//   });
+// };
 
 // #endregion shiftSlotsWeek

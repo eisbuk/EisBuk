@@ -39,7 +39,7 @@ export interface FirestoreData {
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;
   };
-  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay | null };
+  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
 }
 

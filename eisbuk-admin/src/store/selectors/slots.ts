@@ -94,15 +94,17 @@ const filterSlotsByCategory = (
 export const getAdminSlots = (state: LocalStore): SlotsByDay => {
   const {
     firestore: {
-      // we're using empty object as a fallback for `slotsByDay`
-      // this way the empty object gets trickled down through `undefined` checks/fallbacks below
-      // and results in returning of empty days if no `slotsByDay` entry in store
-      // it also serves as a slight optimization as the dates are always iterated through only once
-      // (as opposed to creating fallback dates and filling them with slots later)
-      data: { slotsByDay: allSlotsInStore = {} },
+      data: { slotsByDay: allSlotsInStore },
     },
     app: { calendarDay },
   } = state;
+
+  // we're using empty object as a fallback for `slotsByDay`
+  // this way the empty object gets trickled down through `undefined` checks/fallbacks below
+  // and results in returning of empty days if no `slotsByDay` entry in store
+  // it also serves as a slight optimization as the dates are always iterated through only once
+  // (as opposed to creating fallback dates and filling them with slots later)
+  const slotsByDay = allSlotsInStore ?? {};
 
   // create all dates for a week
   return Array(7)
@@ -112,7 +114,7 @@ export const getAdminSlots = (state: LocalStore): SlotsByDay => {
       const dateISO = luxon2ISODate(date);
       const monthString = dateISO.substr(0, 7);
 
-      const monthSlots = allSlotsInStore[monthString] || {};
+      const monthSlots = slotsByDay[monthString] || {};
 
       return {
         ...acc,

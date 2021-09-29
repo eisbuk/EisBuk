@@ -53,6 +53,7 @@ const BookingCardGroup: React.FC<Props> = ({
           bookedInterval,
           slotId: slotData.id,
           secretKey,
+          date: slotData.date,
         })
       );
     } else {

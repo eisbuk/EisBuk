@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { Timestamp } from "@google-cloud/firestore";
 import i18n from "i18next";
 
 import {
@@ -19,6 +18,8 @@ import { NotifVariant } from "@/enums/store";
 import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification, showErrSnackbar } from "./appActions";
+
+import { luxonToFB } from "@/utils/date";
 
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
@@ -53,8 +54,7 @@ export const createNewSlot = (
   try {
     const db = getFirebase().firestore();
 
-    /** @TEMP until we figure out the Timestamp issue */
-    const date = { seconds: luxonDate.toSeconds() } as Timestamp;
+    const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
       (acc, { startTime, endTime }) => ({
         ...acc,
@@ -104,8 +104,7 @@ export const updateSlot = (
   try {
     const db = getFirebase().firestore();
 
-    /** @TEMP until we figure out the Timestamp issue */
-    const date = { seconds: luxonDate.toSeconds() } as Timestamp;
+    const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
       (acc, { startTime, endTime }) => ({
         ...acc,

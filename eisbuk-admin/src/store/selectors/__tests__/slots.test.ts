@@ -55,7 +55,7 @@ describe("Slot selectors > ", () => {
       expect(slotsForWeek).toEqual(expectedWeekAdmin);
     });
 
-    test("should return empty days if no slots in store", () => {
+    test("should return empty days if no slots in store ('slotsByDay' = null)", () => {
       const slotsForWeek = getAdminSlots(noSlotsStore);
       expect(slotsForWeek).toEqual(emptyWeek);
     });
