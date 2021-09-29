@@ -16,6 +16,8 @@ import {
 import {
   testStore,
   expectedWeek as expectedWeekAdmin,
+  noSlotsStore,
+  emptyWeek,
 } from "../__testData__/slots";
 
 describe("Slot selectors > ", () => {
@@ -51,6 +53,11 @@ describe("Slot selectors > ", () => {
     test("should get all slots for given week", () => {
       const slotsForWeek = getAdminSlots(testStore);
       expect(slotsForWeek).toEqual(expectedWeekAdmin);
+    });
+
+    test("should return empty days if no slots in store", () => {
+      const slotsForWeek = getAdminSlots(noSlotsStore);
+      expect(slotsForWeek).toEqual(emptyWeek);
     });
   });
 });

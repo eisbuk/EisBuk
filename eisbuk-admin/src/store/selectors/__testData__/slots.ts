@@ -112,17 +112,22 @@ const prevMonth = { ...prevWeek, ...currentWeekPrevMonth };
  */
 const currentMonth = { ...currentWeekThisMonth, ...nextWeek };
 /**
+ * Empty slot days we're expecting to be returned when `slotsByDay` is undefined.
+ * Also used as basis for existing slots (to fill out empty days)
+ */
+export const emptyWeek = Array(7)
+  .fill(currentWeekStartDate)
+  .map((date, i) => {
+    const luxonDate = DateTime.fromISO(date).plus({ days: i });
+    return luxon2ISODate(luxonDate);
+  })
+  .reduce((acc, date) => ({ ...acc, [date]: {} }), {});
+/**
  * Slots we're expecting when testing for `startDate: "2021-08-30"`
  */
 export const expectedWeek = {
   // fill week with empty days so that we have each day of the week regardless of it being empty or not
-  ...Array(7)
-    .fill(currentWeekStartDate)
-    .map((date, i) => {
-      const luxonDate = DateTime.fromISO(date).plus({ days: i });
-      return luxon2ISODate(luxonDate);
-    })
-    .reduce((acc, date) => ({ ...acc, [date]: {} }), {}),
+  ...emptyWeek,
   ...currentWeekPrevMonth,
   ...currentWeekThisMonth,
 };
@@ -135,7 +140,17 @@ const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
   ["2021-09"]: currentMonth,
 };
 
+/**
+ * Test store populated with slots we're using to test the selector
+ */
 export const testStore = createTestStore({
   data: { slotsByDay },
+  date: DateTime.fromISO(currentWeekStartDate),
+});
+/**
+ * Test store without slots entry, to test falling back to empty days
+ */
+export const noSlotsStore = createTestStore({
+  data: {},
   date: DateTime.fromISO(currentWeekStartDate),
 });
