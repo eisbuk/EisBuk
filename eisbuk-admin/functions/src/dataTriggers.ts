@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuidv4 } from "uuid";
@@ -13,6 +14,7 @@ import {
   OrgSubCollection,
   SlotAttendnace,
   SlotInterface,
+  SlotInterval,
 } from "eisbuk-shared";
 
 /**
@@ -128,14 +130,65 @@ export const aggregateSlots = functions
     let luxonDay: DateTime;
     let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
 
-    if (change.after.exists) {
-      const afterData = change.after.data()! as SlotInterface;
-      newSlot = { ...afterData, id };
-      luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
-    } else {
-      const beforeData = change.before.data()!;
-      luxonDay = DateTime.fromJSDate(new Date(beforeData.date.seconds * 1000));
-      newSlot = admin.firestore.FieldValue.delete();
+    const isCreate = !change.before.exists;
+    const isDelete = !change.after.exists;
+
+    const deleteSentinel = admin.firestore.FieldValue.delete();
+
+    switch (true) {
+      case isDelete:
+        // if deleting, we're just setting slot value as delete sentinel and getting the date from before
+        const beforeData = change.before.data() as SlotInterface;
+        luxonDay = DateTime.fromJSDate(
+          new Date(beforeData.date.seconds * 1000)
+        );
+        newSlot = deleteSentinel;
+        break;
+      case isCreate:
+        // if creating, we're only using the new (after data) and adding generated id
+        const afterData = change.after.data()! as Omit<SlotInterface, "id">;
+        newSlot = { ...afterData, id };
+        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
+        break;
+      default:
+        // if not change or create: is update
+        const {
+          intervals: newIntervals,
+          ...updatedData
+        } = change.after.data() as Omit<SlotInterface, "id">;
+        const { intervals: oldIntervals } = change.before.data() as Omit<
+          SlotInterface,
+          "id"
+        >;
+
+        // we're using {merge: true} flag for setting the document so
+        // we need to process intervals in order to make sure the old intervals get deleted
+        // and only the updated values remain (prevent merging of the old values with the new)
+        const deletedIntervals = Object.keys(oldIntervals).reduce(
+          (acc, intervalString) => ({
+            ...acc,
+            [intervalString]: deleteSentinel,
+          }),
+          {} as Record<string, typeof deleteSentinel>
+        );
+        const updatedIntervals = Object.keys(newIntervals).reduce(
+          (acc, intervalString) => ({
+            ...acc,
+            [intervalString]: newIntervals[intervalString],
+          }),
+          {} as Record<string, SlotInterval>
+        );
+
+        // we're merging old intervals as delete sentinels and new intervals as they are
+        // this way old intervals get deleted and in case some interval should stay (wasn't changed/deleted),
+        // the delete sentinel gets overwritten with the new value
+        const intervals = {
+          ...deletedIntervals,
+          ...updatedIntervals,
+        } as Record<string, SlotInterval>;
+
+        newSlot = { ...updatedData, intervals, id };
+        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
     }
 
     const monthStr = luxonDay.toISO().substring(0, 7);
@@ -147,7 +200,7 @@ export const aggregateSlots = functions
       .collection(OrgSubCollection.SlotsByDay)
       .doc(monthStr);
 
-    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } });
+    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
 
     return change.after;
   });
