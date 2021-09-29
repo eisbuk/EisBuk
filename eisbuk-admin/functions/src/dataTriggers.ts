@@ -147,7 +147,7 @@ export const aggregateSlots = functions
       .collection(OrgSubCollection.SlotsByDay)
       .doc(monthStr);
 
-    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
+    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } });
 
     return change.after;
   });

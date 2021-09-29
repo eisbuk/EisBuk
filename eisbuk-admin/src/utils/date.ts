@@ -10,10 +10,18 @@ import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
  * @param fbDatetime
  * @returns
  */
-export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime =>
-  DateTime.fromJSDate(
+// export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime =>
+//   DateTime.fromJSDate(
+//     new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
+//   );
+
+/** Very @TEMP while we solve Timestamp issue */
+export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime => {
+  return DateTime.fromJSDate(
     new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
-  );
+    /** @TEMP This is a very ugly fix and won't work in every case, fix ASAP */
+  ).startOf("day");
+};
 
 /**
  * Convert ISO Date string to luxon string (DateTime)
@@ -32,7 +40,7 @@ export const fromISO = (isoStr: string): DateTime => DateTime.fromISO(isoStr);
 
 /** Very @TEMP until we sort out the Timestamp issue */
 export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
-  ({ seconds: luxonTS.toSeconds() + luxonTS.offset * 1000 } as FbTimestamp);
+  ({ seconds: luxonTS.toSeconds() + luxonTS.offset * 60 } as FbTimestamp);
 
 /**
  * Converts the luxon DateTime to ISO date string format with only the day part (excluding time of day)

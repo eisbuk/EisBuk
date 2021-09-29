@@ -148,12 +148,6 @@ describe("SlotForm ->", () => {
       expect(intervalFields.length).toEqual(2);
     });
 
-    test("should create a new interval field on 'Add New' button click", () => {
-      screen.getByText(__addNewInterval__).click();
-      const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
-      expect(intervalFields.length).toEqual(2);
-    });
-
     test("should delete an interval field on 'Delete' button click", () => {
       screen.getByTestId(__deleteIntervalId__).click();
       const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
@@ -244,6 +238,33 @@ describe("SlotForm ->", () => {
           ...dummySlotFormValues,
           date: testDateLuxon,
           id: dummySlot.id,
+        });
+        await waitFor(() =>
+          expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
+        );
+      }
+    );
+
+    testWithMutationObserver(
+      "should update slot with deleted interval (if any)",
+      async () => {
+        render(
+          <SlotForm
+            {...baseProps}
+            onClose={mockOnClose}
+            slotToEdit={dummySlot}
+          />
+        );
+        // delete first interval
+        screen.getAllByTestId(__deleteIntervalId__)[0].click();
+        // trigger submit
+        screen.getByText(__editSlot__).click();
+        // create mock action for form submission
+        const mockUpdateAction = mockUpdateImplementation({
+          ...dummySlotFormValues,
+          date: testDateLuxon,
+          id: dummySlot.id,
+          intervals: [dummySlotFormValues.intervals[1]],
         });
         await waitFor(() =>
           expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
