@@ -5,4 +5,5 @@ export enum CloudFunction {
   CreateOrganization = "createOrganization",
   CreateTestSlots = "createTestSlots",
   MigrateToNewDataModel = "migrateToNewDataModel",
+  CreateStaleTestData = "createStaleTestData",
 }

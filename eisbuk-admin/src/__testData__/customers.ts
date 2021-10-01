@@ -19,7 +19,7 @@ export const saul: Customer = {
 };
 
 export const walt: Customer = {
-  id: "heisenberg",
+  id: "walt",
   name: "Walter",
   surname: "White",
   certificateExpiration: "2001-01-01",
