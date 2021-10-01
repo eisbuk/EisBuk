@@ -65,12 +65,6 @@ describe("Cloud functions -> Data triggers ->,", () => {
           condition: (data) => Boolean(data && data.attendances[customerId]),
         });
         expect(docRes).toEqual(attendanceWithTestCustomer);
-        // test booking delete and removal from attendance trigger
-        const res = await userBookingRef
-          .collection(BookingSubCollection.BookedSlots)
-          .doc(slotId)
-          .delete();
-        console.log(res);
         // test customer's attendnace being removed from slot's attendnace
         const docRes2 = await waitForCondition({
           documentPath: attendanceDocPath,

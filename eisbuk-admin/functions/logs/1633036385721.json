@@ -1,0 +1,12 @@
+{
+  "lineReached": 204,
+  "customers": [
+    {
+      "surname": "Doe",
+      "name": "Jane",
+      "id": "baz",
+      "category": "competitive",
+      "secretKey": "2cd311cc-e52f-4086-8098-36e2acb4c74a"
+    }
+  ]
+}

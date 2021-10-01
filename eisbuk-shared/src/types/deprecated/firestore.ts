@@ -1,3 +1,4 @@
+import { SlotInterface } from "../firestore";
 import { Customer } from "../firestore";
 
 /**
@@ -10,3 +11,10 @@ export type DeprecatedBookingsMeta = Pick<Customer, "name"> &
     // eslint-disable-next-line camelcase
     customer_id: string;
   };
+
+/**
+ * Deprecated slot interface belonging to the old data model (durations instead of intervals)
+ */
+export type DeprecatedSlotInterface = Omit<SlotInterface, "intervals"> & {
+  durations: string[];
+};

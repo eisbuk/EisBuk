@@ -1,0 +1,32 @@
+{
+  "lineReached": 204,
+  "customers": [
+    {
+      "birthday": "2001-01-01",
+      "covidCertificateSuspended": false,
+      "covidCertificateReleaseDate": "2021-10-01",
+      "certificateExpiration": "2001-01-01",
+      "secret_key": "000002",
+      "phone": "123456777",
+      "surname": "Fring",
+      "name": "Gustavo",
+      "id": "gus",
+      "category": "course",
+      "email": "gus@lospollos.me",
+      "secretKey": "daf9d0e3-cd0e-4af1-ad60-186c249955de"
+    },
+    {
+      "birthday": "2001-01-01",
+      "covidCertificateSuspended": false,
+      "covidCertificateReleaseDate": "2021-01-01",
+      "certificateExpiration": "2001-01-01",
+      "secret_key": "000001",
+      "phone": "123456777",
+      "surname": "White",
+      "name": "Walter",
+      "id": "walt",
+      "category": "competitive",
+      "email": "walt@im_the_one_who.knocks"
+    }
+  ]
+}

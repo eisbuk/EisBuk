@@ -83,6 +83,15 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
+          onClick={invokeFunction(CloudFunction.CreateStaleTestData)}
+          color="primary"
+          variant="contained"
+        >
+          Create old data model entries
+        </Button>
+      </Box>
+      <Box my={4} color="secondary.main">
+        <Button
           onClick={invokeFunction(CloudFunction.MigrateToNewDataModel)}
           color="primary"
           variant="contained"

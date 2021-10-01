@@ -6,3 +6,4 @@ export * from "./dataTriggers";
 export * from "./migrations";
 export * from "./testData";
 export * from "./testSlots";
+export * from "./staleTestData";

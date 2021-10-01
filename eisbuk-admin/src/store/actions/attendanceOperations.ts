@@ -60,7 +60,6 @@ export const markAttendance = ({
       { merge: true }
     );
   } catch {
-    console.log("Caught");
     showErrSnackbar();
   }
 };
