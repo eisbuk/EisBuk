@@ -33,7 +33,7 @@ interface Payload {
 /**
  * Creates entries belonging to deprecated data model, used to test migrations
  */
-export const createStaleTestData = functions
+export const createOldDataModelEntries = functions
   .region("europe-west6")
   .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
     await checkUser(organization, context.auth);
@@ -69,7 +69,7 @@ export const createStaleTestData = functions
       )
     );
 
-    await createStaleUsersAndBookings(numUsers, organization, dummySlots);
+    await createOldDMUsersAndBookings(numUsers, organization, dummySlots);
 
     return { success: true };
   });
@@ -79,7 +79,7 @@ export const createStaleTestData = functions
  * @param numUsers
  * @param organization
  */
-export const createStaleUsersAndBookings = async (
+export const createOldDMUsersAndBookings = async (
   numUsers: number,
   organization: string,
   slots: Record<string, DeprecatedSlotInterface>

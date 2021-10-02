@@ -24,7 +24,7 @@ export const migratedCustomers = { walt, gus };
 
 // #region slotMigrations
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const { intervals, ...coreSlot } = baseSlot;
+const { id: _unusedId, intervals, ...coreSlot } = baseSlot;
 
 // old interval structures (should get deleted in migration test)
 const oldSlot1 = { ...coreSlot, durations: [DeprecatedDuration["1.5h"]] };
@@ -35,9 +35,9 @@ const oldSlot2 = { ...coreSlot, durations: [DeprecatedDuration["1.5h"]] };
  * and new slots not being touched
  */
 export const mixedSlots = {
-  ["old-slot-0"]: { ...oldSlot1, id: "old-slot-0" },
-  ["old-slot-1"]: { ...oldSlot2, id: "old-slot-1" },
-  ["new-slot-0"]: { ...baseSlot, id: "new-slot-0" },
+  ["old-slot-0"]: oldSlot1,
+  ["old-slot-1"]: oldSlot2,
+  ["new-slot-0"]: baseSlot,
 };
 // #endregion slotMigrations
 

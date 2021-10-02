@@ -31,12 +31,6 @@ export const invokeFunction = (functionName: string) => (): Promise<any> =>
     organization: ORGANIZATION,
   });
 
-describe("smoke test", () => {
-  test("should pass", async () => {
-    await invokeFunction("test")();
-  });
-});
-
 /**
  * Document ref to test organization, to save excess typing
  */
@@ -57,8 +51,9 @@ describe("Migrations", () => {
       async () => {
         const slotsRef = orgRef.collection(OrgSubCollection.Slots);
         // set up test state
-        const initialSlots = Object.keys(mixedSlots).map((slotId) =>
-          slotsRef.doc(slotId).set(mixedSlots[slotId])
+        const initialSlots = Object.keys(mixedSlots).map(
+          (slotId) => slotsRef.doc(slotId).set(mixedSlots[slotId])
+          //
         );
         await Promise.all(initialSlots);
         // fire migration function
@@ -163,6 +158,13 @@ describe("Migrations", () => {
           );
         });
       }
+    );
+  });
+
+  describe("'deleteEmptySlotsByDay'", () => {
+    testWithEmulator(
+      "should delete all 'slotsByDay' entries not containing any slots",
+      () => {}
     );
   });
 });
