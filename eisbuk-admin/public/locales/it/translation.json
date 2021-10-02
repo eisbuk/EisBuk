@@ -165,5 +165,8 @@
   },
   "AttendanceCard": {
     "AddCustomersTitle": "Aggiungi clienti"
+  },
+  "AttendanceSheet": {
+    "Date": "Presenze per ({{date,EEEE d MMMM}})"
   }
 }

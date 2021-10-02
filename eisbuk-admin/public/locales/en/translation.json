@@ -166,5 +166,8 @@
   },
   "AttendanceCard": {
     "AddCustomersTitle": "Add customers"
+  },
+  "AttendanceSheet": {
+    "Date": "Attendance for ({{date,EEEE d MMMM}})"
   }
 }

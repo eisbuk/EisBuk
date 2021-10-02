@@ -1,14 +1,16 @@
 import React from "react";
-import AttendanceSheetSlot from "./AttendanceSheetSlot";
+import AttendanceSheet from "./AttendanceSheet";
+import { fb2Luxon } from "@/utils/date";
 import {
   baseProps,
   saul,
   walt,
   intervalStrings as intervals,
 } from "@/components/atoms/AttendanceCard/__testData__/dummyData";
+import AttendanceSheetSlot from "./AttendanceSheetSlot";
 export default {
-  title: "AttendanceSheetSlot",
-  component: AttendanceSheetSlot,
+  title: "Attendance Sheet",
+  component: AttendanceSheet,
 };
 
 const saulBookings = {
@@ -26,6 +28,16 @@ const customers = [
   { ...walt, ...waltBookings },
 ];
 
+const slots = [
+  { ...baseProps, customers },
+  { ...baseProps, customers },
+];
+const date = fb2Luxon(baseProps.date);
+
 export const Default = (): JSX.Element => (
-  <AttendanceSheetSlot {...{ ...baseProps, customers }} />
+  <AttendanceSheet date={date}>
+    {slots.map((slot) => (
+      <AttendanceSheetSlot {...slot} />
+    ))}
+  </AttendanceSheet>
 );
