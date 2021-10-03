@@ -91,3 +91,39 @@ export const testBookingsByDay = {
   },
 };
 // #endregion bookingsByDayMigrations
+
+// #region slotsByDay
+/**
+ * Month string we'll be using to test pruning
+ */
+export const pruningMonthString = "2020-03";
+/**
+ * Month string for empty month in tests
+ */
+export const emptyMonthString = "2020-04";
+/**
+ * Pruned month. We're expecting this as a result of pruning the `unprunedMonth`
+ */
+export const prunedMonth = {
+  ["2020-03-02"]: {
+    ["slot-0"]: { ...baseSlot, intervals },
+  },
+};
+/**
+ * Month we're passing as input to pruning migration, should get empty days filtered out
+ */
+export const unprunedMonth = {
+  ...prunedMonth,
+  ["2020-03-01"]: {},
+  ["2020-03-05"]: {},
+};
+/**
+ * Empty month we're using for tests, should get deleted
+ */
+export const emptyMonth = {
+  ["2020-04-01"]: {},
+  ["2020-04-05"]: {},
+  ["2020-04-10"]: {},
+};
+
+// #endregion slotsByDay

@@ -13,13 +13,18 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { getFirebase } from "@/__testUtils__/firestore";
 
 import {
+  emptyMonth,
+  emptyMonthString,
   migratedCustomers,
   mixedSlots,
   newCustomerBase,
   oldCustomerBase,
   oldCustomers,
+  prunedMonth,
+  pruningMonthString,
   testBookingData,
   testBookingsByDay,
+  unprunedMonth,
 } from "../__testData__/migrations";
 import { walt } from "@/__testData__/customers";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
@@ -161,10 +166,23 @@ describe("Migrations", () => {
     );
   });
 
-  describe("'deleteEmptySlotsByDay'", () => {
+  describe("'pruneSlotsByDay'", () => {
     testWithEmulator(
       "should delete all 'slotsByDay' entries not containing any slots",
-      () => {}
+      async () => {
+        const slotsByDayRef = orgRef.collection(OrgSubCollection.SlotsByDay);
+        // set up initial state
+        await slotsByDayRef.doc(pruningMonthString).set(unprunedMonth);
+        await slotsByDayRef.doc(emptyMonthString).set(emptyMonth);
+        // run the migration
+        await invokeFunction(CloudFunction.PruneSlotsByDay)();
+        // there should only be one month entry in 'slotsByDay' (an empty month should be deleted)
+        const slotsByDay = await slotsByDayRef.get();
+        expect(slotsByDay.docs.length).toEqual(1);
+        // check the non empty month being pruned accordingly
+        const pruningMonth = await slotsByDayRef.doc(pruningMonthString).get();
+        expect(pruningMonth.data()).toEqual(prunedMonth);
+      }
     );
   });
 });
