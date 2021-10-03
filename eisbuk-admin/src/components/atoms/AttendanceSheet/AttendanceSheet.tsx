@@ -14,7 +14,6 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
   const classes = useStyles();
   return (
     <>
-      {" "}
       <div className={classes.title}>{t("AttendanceSheet.Date", { date })}</div>
       <TableContainer component={Paper}>{children}</TableContainer>
     </>

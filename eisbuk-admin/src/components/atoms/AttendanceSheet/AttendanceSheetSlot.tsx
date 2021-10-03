@@ -44,29 +44,24 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 
   /** UI todos:
    * @TODO in page component render alternative background shades for slot table
-   * @TODO center each slot timestring
-   * @TODO justify spaces in rows with 2 columns (name cell is much bigger than signature cell)
-   *
+   * @TODO center each slot timestring (different width percentages for table cells doesn't work)
    */
   return (
     <Table aria-label="simple table">
-      <TableHead className={classes.timeString}>
-        <TableRow>
-          <TableCell>
-            {timeString} {type.toUpperCase()}
-            {notes}
+      <TableHead>
+        <TableRow className={classes.slotHeading}>
+          <TableCell className={classes.slotHeadingCell}>
+            <span>{timeString} </span>
+            <span className={classes.bold}> {type.toUpperCase()}</span>
+            <span>{notes}</span>
           </TableCell>
         </TableRow>
       </TableHead>
       <TableBody className={classes.tableRow}>
         {Object.keys(intervals).map((interval) => (
           <React.Fragment key={interval}>
-            <TableRow>
-              <TableCell
-                className={classes.intervalHead}
-                component="th"
-                scope="row"
-              >
+            <TableRow className={classes.tableRow}>
+              <TableCell className={classes.bold} component="th" scope="row">
                 {intervals[interval].startTime} - {intervals[interval].endTime}
               </TableCell>
             </TableRow>
@@ -77,7 +72,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
                     <TableCell className={classes.tableCell}>
                       {customer.name} {customer.surname}
                     </TableCell>
-                    <TableCell></TableCell>
+                    <TableCell />
                   </TableRow>
                 )
             )}
@@ -90,24 +85,19 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 
 // #region Styles//
 const useStyles = makeStyles(() => ({
-  timeString: {
-    "& .MuiTableRow-root": {
-      // outline: "auto",
-      border: "3px solid rgba(224, 224, 224, 1)",
-      // borderTop: "5px solid rgba(224, 224, 224, 1)",
-    },
+  slotHeading: {
+    border: "3px solid rgba(224, 224, 224, 1)",
   },
   tableRow: {
-    "& .MuiTableRow-root": {
-      // outline: "auto",
-      borderBottom: "1px solid rgba(224, 224, 224, 1)",
-    },
+    borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    paddingRight: 0,
   },
-  intervalHead: {
+  bold: {
     fontWeight: 600,
   },
   tableCell: {
     borderRight: "1px solid rgba(224, 224, 224, 1)",
+    width: "50%",
   },
 }));
 // #endregion Styles//
