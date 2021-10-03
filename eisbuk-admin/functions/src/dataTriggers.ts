@@ -16,6 +16,7 @@ import {
   SlotInterface,
   SlotInterval,
 } from "eisbuk-shared";
+import { fs2luxon } from "./utils";
 
 /**
  * Adds the secret_key to a user if it's missing.
@@ -139,16 +140,14 @@ export const aggregateSlots = functions
       case isDelete:
         // if deleting, we're just setting slot value as delete sentinel and getting the date from before
         const beforeData = change.before.data() as SlotInterface;
-        luxonDay = DateTime.fromJSDate(
-          new Date(beforeData.date.seconds * 1000)
-        );
+        luxonDay = fs2luxon(beforeData.date);
         newSlot = deleteSentinel;
         break;
       case isCreate:
         // if creating, we're only using the new (after data) and adding generated id
         const afterData = change.after.data()! as Omit<SlotInterface, "id">;
         newSlot = { ...afterData, id };
-        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
+        luxonDay = fs2luxon(newSlot.date);
         break;
       default:
         // if not change or create: is update
@@ -188,7 +187,7 @@ export const aggregateSlots = functions
         } as Record<string, SlotInterval>;
 
         newSlot = { ...updatedData, intervals, id };
-        luxonDay = DateTime.fromJSDate(new Date(newSlot.date.seconds * 1000));
+        luxonDay = fs2luxon(newSlot.date);
     }
 
     const monthStr = luxonDay.toISO().substring(0, 7);

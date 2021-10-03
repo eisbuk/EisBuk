@@ -14,7 +14,7 @@ import { Action } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
-import { luxon2ISODate } from "@/utils/date";
+import { luxon2ISODate, luxonToFB } from "@/utils/date";
 import { showErrSnackbar } from "./appActions";
 
 /**
@@ -164,11 +164,7 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
     if (!slotsToCopy) return;
 
     // get timestamp date for new slots
-    /** @TEMP fix this when we slove Timestamp problem */
-    const date = {
-      // we're applying offset, as slot aggregation would put this a day ahead (due to time diff from UTC)
-      seconds: newDate.toSeconds() + newDate.offset * 60,
-    } as Timestamp;
+    const date = luxonToFB(newDate);
 
     // add updated slots to firestore
     const slotsRef = db

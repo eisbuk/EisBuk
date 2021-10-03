@@ -17,7 +17,7 @@ import {
 } from "../copyPaste";
 import * as appActions from "@/store/actions/appActions";
 
-import { luxon2ISODate } from "@/utils/date";
+import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/tests/utils";
@@ -142,7 +142,7 @@ describe("Copy Paste actions", () => {
           expect(updatedSlotDay[slotId]).toEqual({
             ...baseSlot,
             id: slotId,
-            date: { seconds: newDate.toSeconds() + newDate.offset * 60 },
+            date: luxonToFB(newDate),
           });
         });
       }

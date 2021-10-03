@@ -1,27 +1,15 @@
-// import firebase from "firebase/app";
-import "firebase/firestore";
 import { DateTime } from "luxon";
-import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
-
-// const Timestamp = firebase.firestore.Timestamp;
+import { Timestamp } from "@google-cloud/firestore";
 
 /**
  * Convert Firebase Timestamp to luxon string (DateTime)
  * @param fbDatetime
  * @returns
  */
-// export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime =>
-//   DateTime.fromJSDate(
-//     new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
-//   );
-
-/** Very @TEMP while we solve Timestamp issue */
-export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime => {
-  return DateTime.fromJSDate(
+export const fb2Luxon = (fbDatetime?: Timestamp): DateTime =>
+  DateTime.fromJSDate(
     new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
-    /** @TEMP This is a very ugly fix and won't work in every case, fix ASAP */
-  ).startOf("day");
-};
+  );
 
 /**
  * Convert ISO Date string to luxon string (DateTime)
@@ -35,12 +23,12 @@ export const fromISO = (isoStr: string): DateTime => DateTime.fromISO(isoStr);
  * @param luxonTS
  * @returns
  */
-// export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
-//   Timestamp.fromDate(luxonTS.toJSDate());
-
-/** Very @TEMP until we sort out the Timestamp issue */
-export const luxonToFB = (luxonTS: DateTime): FbTimestamp =>
-  ({ seconds: luxonTS.toSeconds() + luxonTS.offset * 60 } as FbTimestamp);
+export const luxonToFB = (date: DateTime): Timestamp => {
+  // since DateTime uses system timezone, and Timestamp is an absolute time since the UNIX epoch
+  // here we're adding the offset to the `date` to simulate the same time in UTC (not to confuse the server aggregating slots by date)
+  const cleanDate = date.plus({ minutes: date.offset });
+  return Timestamp.fromMillis(cleanDate.toMillis());
+};
 
 /**
  * Converts the luxon DateTime to ISO date string format with only the day part (excluding time of day)
