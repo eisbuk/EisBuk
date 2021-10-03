@@ -40,10 +40,10 @@ const AttendanceSheetSlot: React.FC<Props> = ({
     <Table aria-label="simple table">
       <TableHead>
         <TableRow className={classes.slotHeading}>
-          <TableCell className={classes.slotHeadingCell}>
+          <TableCell className={classes.bold}>
             <span>{timeString} </span>
-            <span className={classes.bold}> {type.toUpperCase()}</span>
-            <span>{notes}</span>
+            <span> {type.toUpperCase()}</span>
+            {notes && <span> ({notes})</span>}
           </TableCell>
         </TableRow>
       </TableHead>
@@ -51,7 +51,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
         {Object.keys(intervals).map((interval) => (
           <React.Fragment key={interval}>
             <TableRow className={classes.tableRow}>
-              <TableCell className={classes.bold} component="th" scope="row">
+              <TableCell component="th" scope="row">
                 {intervals[interval].startTime} - {intervals[interval].endTime}
               </TableCell>
             </TableRow>
@@ -74,7 +74,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 };
 
 // #region Styles//
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   slotHeading: {
     border: "3px solid rgba(224, 224, 224, 1)",
   },
@@ -88,6 +88,7 @@ const useStyles = makeStyles(() => ({
   tableCell: {
     borderRight: "1px solid rgba(224, 224, 224, 1)",
     width: "50%",
+    color: theme.palette.grey[400],
   },
 }));
 // #endregion Styles//

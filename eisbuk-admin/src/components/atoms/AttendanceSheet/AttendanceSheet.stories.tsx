@@ -29,7 +29,7 @@ const customers = [
 ];
 
 const slots = [
-  { ...baseProps, customers },
+  { ...baseProps, customers, notes: "this slot is in rink 2" },
   { ...baseProps, customers },
 ];
 const date = fb2Luxon(baseProps.date);
