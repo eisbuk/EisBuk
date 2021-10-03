@@ -1,5 +1,3 @@
-import { Timestamp } from "@google-cloud/firestore";
-
 import { CustomerAttendance, SlotAttendnace } from "eisbuk-shared";
 
 import { timestampDate } from "@/__testData__/date";
@@ -40,7 +38,7 @@ interface VariableAttendance {
 export const createDocumentWithObservedAttendance = (
   variableAttendance: VariableAttendance
 ): SlotAttendnace => ({
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   attendances: {
     ["dummy-customer-0"]: dummyAttendance,
     ["dummy-customer-1"]: dummyAttendance,

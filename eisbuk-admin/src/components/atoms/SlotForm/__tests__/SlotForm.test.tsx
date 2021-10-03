@@ -6,7 +6,6 @@ import {
   waitFor,
   fireEvent,
 } from "@testing-library/react";
-import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
 import userEvent from "@testing-library/user-event";
 
@@ -34,7 +33,7 @@ import SlotForm from "../SlotForm";
 
 import * as slotOperations from "@/store/actions/slotOperations";
 
-import { luxon2ISODate } from "@/utils/date";
+import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
@@ -112,9 +111,7 @@ describe("SlotForm ->", () => {
     // we're imlicitly testing that the `slotToEdit.date` will take presedence over `date` prop
     // and serve as assurance that the edit form will always have a date present
     const differentDateISO = "2020-01-01";
-    const differentDate = {
-      seconds: DateTime.fromISO(differentDateISO).toSeconds(),
-    } as Timestamp;
+    const differentDate = luxonToFB(DateTime.fromISO(differentDateISO));
 
     beforeEach(() => {
       render(

@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { Timestamp } from "@google-cloud/firestore";
 
 type Primitive = string | number | boolean;
 
@@ -95,16 +94,6 @@ export const mode = <T extends Primitive>(arr: T[]): T | null => {
   return twoEqual ? null : highestOccurrence;
 };
 // ***** End Region Simple Helpers ***** //
-
-/**
- * Convert a firestore date to a luxon date
- * currently ignores microseconds since seconds are already
- * more than enough for our use case
- * @param fsdate
- * @returns
- */
-export const fs2luxon = (fsdate: Timestamp): DateTime =>
-  DateTime.fromMillis(fsdate.seconds * 1000);
 
 // ***** Region To Flatten ***** //
 interface ToFlatten {

@@ -1,5 +1,3 @@
-import firebase from "firebase";
-
 import { Category, SlotType } from "eisbuk-shared";
 
 import { CustomerWithAttendance } from "@/types/components";
@@ -8,8 +6,6 @@ import { Props as AttendanceCardProps } from "../AttendanceCard";
 
 import { timestampDate } from "@/__testData__/date";
 import { gus, walt, saul, jian } from "@/__testData__/customers";
-
-type Timestamp = firebase.firestore.Timestamp;
 
 export const allCustomers = [gus, walt, saul, jian];
 
@@ -23,7 +19,7 @@ export const intervalStrings = Object.keys(intervals);
 
 export const baseProps: AttendanceCardProps = {
   id: "123",
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   type: SlotType.Ice,
   intervals,
   categories: [Category.Competitive],

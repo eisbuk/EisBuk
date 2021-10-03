@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { Timestamp } from "@google-cloud/firestore";
 
 import {
   Collection,

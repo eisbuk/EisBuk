@@ -1,5 +1,3 @@
-import { Timestamp } from "@google-cloud/firestore";
-
 import {
   CustomerAttendance,
   CustomerBookingEntry,
@@ -33,7 +31,7 @@ export const slotId = "slot-0";
  * listening to write/update/delete document in slots collection.
  */
 export const slot: Omit<SlotInterface, "id"> = {
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   categories: [Category.Course],
   intervals: {
     ["11:30-12:30"]: {
@@ -72,7 +70,7 @@ const bookedInterval = "09:00-11:00";
  * Booking we're marking for our customer in order to test attendance trigger
  */
 export const testBooking: CustomerBookingEntry = {
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   interval: bookedInterval,
 };
 /**
@@ -88,7 +86,7 @@ export const dummyAttendance: Record<string, CustomerAttendance> = {
  * Empty attendance entry for slot. Should be created when the slot is created.
  */
 export const emptyAttendance: SlotAttendnace = {
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   attendances: {},
 };
 /**
@@ -105,7 +103,7 @@ export const baseAttendance: SlotAttendnace = {
  * We're using this to test adding booked attendance when customer books a slot.
  */
 export const attendanceWithTestCustomer: SlotAttendnace = {
-  date: timestampDate as Timestamp,
+  date: timestampDate,
   attendances: {
     ...dummyAttendance,
     [customerId]: {

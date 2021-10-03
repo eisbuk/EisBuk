@@ -1,6 +1,6 @@
-import { Timestamp } from "@google-cloud/firestore";
-
 import { SlotsById } from "eisbuk-shared";
+
+import { luxonToFB } from "@/utils/date";
 
 import { testDateLuxon } from "@/__testData__/date";
 import { baseSlot } from "@/__testData__/dummyData";
@@ -23,7 +23,7 @@ export const testDay = {
  * Wednesday of test week (for slots in the same week, different day)
  */
 const twoDaysFromNow = testDateLuxon.plus({ days: 2 });
-const newTimestamp = { seconds: twoDaysFromNow.toSeconds() } as Timestamp;
+const newTimestamp = luxonToFB(twoDaysFromNow);
 export const testWeekWednesday = {
   ["slot-2"]: {
     ...baseSlot,
@@ -57,7 +57,7 @@ const nextWeek = Array(3)
   .reduce((acc, baseDate, i) => {
     const slotId = `dummy-slot-${i}`;
     const luxonDay = baseDate.plus({ weeks: 1, days: i * 2 });
-    const timestamp = { seconds: luxonDay.toSeconds() } as Timestamp;
+    const timestamp = luxonToFB(luxonDay);
 
     return {
       ...acc,

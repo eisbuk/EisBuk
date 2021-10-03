@@ -1,4 +1,3 @@
-import { Timestamp } from "@google-cloud/firestore";
 import { DateTime } from "luxon";
 
 import { __storybookDate__ } from "@/lib/constants";
@@ -16,4 +15,4 @@ export const testDateLuxon = DateTime.fromISO(__storybookDate__);
 /**
  * Test date in firestore Timestamp format
  */
-export const timestampDate: Timestamp = luxonToFB(testDateLuxon);
+export const timestampDate = luxonToFB(testDateLuxon);
