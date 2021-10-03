@@ -1,15 +1,16 @@
 import React from "react";
+
 import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
-import {
-  CustomerWithAttendance,
-  SlotInterface,
-  SlotInterval,
-} from "@/types/temp";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { CustomerWithAttendance, SlotInterface } from "@/types/temp";
+
+import { getSlotTimespan } from "@/utils/helpers";
 
 /** @TODO remove this and import same type when it's merged*/
 export interface Props extends SlotInterface {
@@ -21,17 +22,6 @@ export interface Props extends SlotInterface {
   customers: CustomerWithAttendance[];
 }
 
-/**
- * function that calculates start and end time for slot
- * @param intervals - slot intervals array
- * @returns overallInterval - { firstStartTime, lastEndTime}
- */
-const getTimeString = (intervals: SlotInterval[]): string => {
-  return `${intervals[0].startTime} - ${
-    intervals[intervals.length - 1].endTime
-  }`;
-};
-
 const AttendanceSheetSlot: React.FC<Props> = ({
   customers,
   intervals,
@@ -40,7 +30,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
 
-  const timeString = getTimeString(Object.values(intervals));
+  const timeString = getSlotTimespan(intervals);
 
   /** UI todos:
    * @TODO in page component render alternative background shades for slot table
