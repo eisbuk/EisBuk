@@ -21,21 +21,17 @@ export interface Props extends SlotInterface {
   customers: CustomerWithAttendance[];
 }
 
-/** function that calculates start and end time for slot
+/**
+ * function that calculates start and end time for slot
  * @param intervals - slot intervals array
  * @returns overallInterval - { firstStartTime, lastEndTime}
  */
-const getOverallInterval = (
-  intervals: SlotInterval[]
-): {
-  overallStartTime: string;
-  overallEndTime: string;
-} => {
-  return {
-    overallStartTime: intervals[0].startTime,
-    overallEndTime: intervals[intervals.length - 1].endTime,
-  };
+const getTimeString = (intervals: SlotInterval[]): string => {
+  return `${intervals[0].startTime} - ${
+    intervals[intervals.length - 1].endTime
+  }`;
 };
+
 const AttendanceSheetSlot: React.FC<Props> = ({
   customers,
   intervals,
@@ -44,34 +40,44 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
 
-  const overallInterval = getOverallInterval(Object.values(intervals));
+  const timeString = getTimeString(Object.values(intervals));
 
+  /** UI todos:
+   * @TODO in page component render alternative background shades for slot table
+   * @TODO center each slot timestring
+   * @TODO justify spaces in rows with 2 columns (name cell is much bigger than signature cell)
+   *
+   */
   return (
     <Table aria-label="simple table">
-      <TableHead>
-        <TableRow className={classes.root}>
+      <TableHead className={classes.timeString}>
+        <TableRow>
           <TableCell>
-            {overallInterval.overallStartTime} -{" "}
-            {overallInterval.overallEndTime} {type.toUpperCase()}
+            {timeString} {type.toUpperCase()}
             {notes}
           </TableCell>
         </TableRow>
       </TableHead>
-      <TableBody>
+      <TableBody className={classes.tableRow}>
         {Object.keys(intervals).map((interval) => (
           <React.Fragment key={interval}>
             <TableRow>
-              <TableCell component="th" scope="row">
-                {interval}
+              <TableCell
+                className={classes.intervalHead}
+                component="th"
+                scope="row"
+              >
+                {intervals[interval].startTime} - {intervals[interval].endTime}
               </TableCell>
             </TableRow>
             {customers.map(
               (customer) =>
                 customer.attendedInterval === interval && (
                   <TableRow key={customer.id}>
-                    <TableCell>
+                    <TableCell className={classes.tableCell}>
                       {customer.name} {customer.surname}
                     </TableCell>
+                    <TableCell></TableCell>
                   </TableRow>
                 )
             )}
@@ -83,11 +89,25 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 };
 
 // #region Styles//
-const useStyles = makeStyles((theme) => ({
-  root: {
+const useStyles = makeStyles(() => ({
+  timeString: {
     "& .MuiTableRow-root": {
-      borderWidth: "20px",
+      // outline: "auto",
+      border: "3px solid rgba(224, 224, 224, 1)",
+      // borderTop: "5px solid rgba(224, 224, 224, 1)",
     },
+  },
+  tableRow: {
+    "& .MuiTableRow-root": {
+      // outline: "auto",
+      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+    },
+  },
+  intervalHead: {
+    fontWeight: 600,
+  },
+  tableCell: {
+    borderRight: "1px solid rgba(224, 224, 224, 1)",
   },
 }));
 // #endregion Styles//
