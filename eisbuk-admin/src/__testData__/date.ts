@@ -13,8 +13,6 @@ export const testDate = __storybookDate__;
  */
 export const testDateLuxon = DateTime.fromISO(__storybookDate__);
 /**
- * Test date in milliseconds (placeholder until @TODO we've solve the issue with Timestamp)
+ * Test date in firestore Timestamp format
  */
-export const timestampDate = {
-  seconds: luxonToFB(testDateLuxon).seconds,
-};
+export const timestampDate = luxonToFB(testDateLuxon);

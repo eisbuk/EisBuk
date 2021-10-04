@@ -1,6 +1,4 @@
-import { SlotInterface, SlotInterval } from "@/types/temp";
-
-import { SlotType } from "eisbuk-shared";
+import { SlotType, SlotInterface, SlotInterval } from "eisbuk-shared";
 
 // #region SlotForm
 export const defaultInterval = {

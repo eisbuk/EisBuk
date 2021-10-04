@@ -3,6 +3,7 @@ import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
+import * as appActions from "../appActions";
 
 import {
   createDocumentWithObservedAttendance,
@@ -10,7 +11,7 @@ import {
 } from "../__testData__/attendanceOperations";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestAttendance } from "../__testUtils__/firestore";
 
 // test data
@@ -21,7 +22,8 @@ const attendedInterval = "11:00-12:30";
 
 // path of attendance collection and test month document to make our lives easier
 // as we'll be using it throughout
-const attendanceMonth = getFirebase()
+const attendanceMonth = firestoreUtils
+  .getFirebase()
   .firestore()
   .collection(Collection.Organizations)
   .doc(ORGANIZATION)
@@ -34,11 +36,11 @@ describe("Attendance operations ->", () => {
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: null, booked: bookedInterval },
+          [customerId]: { attendedInterval: null, bookedInterval },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -49,7 +51,7 @@ describe("Attendance operations ->", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: bookedInterval },
+          [customerId]: { attendedInterval, bookedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
@@ -65,7 +67,7 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAttendance({
@@ -77,12 +79,34 @@ describe("Attendance operations ->", () => {
         await testThunk(...thunkArgs);
         // booked should be null (since customer didn't book beforehand, but did attend)
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { booked: null, attended: attendedInterval },
+          [customerId]: { bookedInterval: null, attendedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
         const resData = resDoc.data();
         expect(resData).toEqual(expectedDoc);
+      }
+    );
+
+    testWithEmulator(
+      "should enqueue error snackbar if update not successful",
+      async () => {
+        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+        // cause synthetic error in execution
+        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        const initialDoc = createDocumentWithObservedAttendance({});
+        const thunkArgs = await setupTestAttendance({
+          attendance: { [slotId]: initialDoc },
+        });
+        const testThunk = markAttendance({
+          customerId,
+          slotId: observedSlotId,
+          attendedInterval,
+        });
+        await testThunk(...thunkArgs);
+        expect(errNotifSpy).toHaveBeenCalled();
       }
     );
   });
@@ -92,11 +116,11 @@ describe("Attendance operations ->", () => {
       "should mark customers attended interval as 'null' if customer booked beforehand (and not overwrite the rest of the data for given document in the process)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: bookedInterval },
+          [customerId]: { attendedInterval, bookedInterval },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({
@@ -106,7 +130,7 @@ describe("Attendance operations ->", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: null, booked: bookedInterval },
+          [customerId]: { attendedInterval: null, bookedInterval },
         });
         // check updated db
         const resDoc = await attendanceMonth.get();
@@ -119,11 +143,11 @@ describe("Attendance operations ->", () => {
       "should remove customer from attendance record for slot if customer didn't book (and is marked absent)",
       async () => {
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attended: attendedInterval, booked: null },
+          [customerId]: { attendedInterval, bookedInterval: null },
         });
         // set up initial state
         const thunkArgs = await setupTestAttendance({
-          [slotId]: initialDoc,
+          attendance: { [slotId]: initialDoc },
         });
         // create a thunk curried with test input values
         const testThunk = markAbsence({
@@ -138,6 +162,27 @@ describe("Attendance operations ->", () => {
         const resDoc = await attendanceMonth.get();
         const resData = resDoc.data();
         expect(resData).toEqual(expectedDoc);
+      }
+    );
+
+    testWithEmulator(
+      "should enqueue error snackbar if update not successful",
+      async () => {
+        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+        // cause synthetic error in execution
+        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        const initialDoc = createDocumentWithObservedAttendance({});
+        const thunkArgs = await setupTestAttendance({
+          attendance: { [slotId]: initialDoc },
+        });
+        const testThunk = markAbsence({
+          customerId,
+          slotId: observedSlotId,
+        });
+        await testThunk(...thunkArgs);
+        expect(errNotifSpy).toHaveBeenCalled();
       }
     );
   });

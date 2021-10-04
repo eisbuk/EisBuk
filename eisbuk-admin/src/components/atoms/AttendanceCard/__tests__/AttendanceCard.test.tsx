@@ -3,9 +3,9 @@ import i18n from "i18next";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { Customer, Slot } from "eisbuk-shared";
+import { Customer, SlotInterface } from "eisbuk-shared";
 
-import { CustomerWithAttendance } from "@/types/temp";
+import { CustomerWithAttendance } from "@/types/components";
 
 import { categoryLabel, slotTypeLabel } from "@/lib/labels";
 
@@ -13,7 +13,8 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { saul, baseProps, intervals } from "../__testData__/dummyData";
+import { baseProps, intervals } from "../__testData__/dummyData";
+import { saul } from "@/__testData__/customers";
 import {
   __attendanceButton__,
   __nextIntervalButtonId__,
@@ -35,7 +36,7 @@ jest.mock("react-redux", () => ({
  * @returns
  */
 const mockMarkAttImplementation = (payload: {
-  slotId: Slot<"id">["id"];
+  slotId: SlotInterface["id"];
   customerId: Customer["id"];
   attendedInterval: string;
 }) => ({
@@ -50,7 +51,7 @@ const mockMarkAttImplementation = (payload: {
  * @returns payload
  */
 const mockMarkAbsImplementation = (payload: {
-  slotId: Slot<"id">["id"];
+  slotId: SlotInterface["id"];
   customerId: Customer["id"];
 }) => ({
   payload,

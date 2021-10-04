@@ -2,11 +2,12 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { DateTime } from "luxon";
 
-import { ButtonContextType, SlotView } from "@/enums/components";
+import { ButtonContextType } from "@/enums/components";
 
 import { __storybookDate__ } from "@/lib/constants";
 
 import SlotsDayContainer from "./SlotsDayContainer";
+import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 import SlotCard from "@/components/atoms/SlotCard";
 import SlotOperationButtons, {
   NewSlotButton,
@@ -30,19 +31,17 @@ const baseProps = {
 
 export const Empty = (): JSX.Element => <SlotsDayContainer {...baseProps} />;
 
-export const CustomerViewWithSlots = (): JSX.Element => (
-  <SlotsDayContainer {...baseProps} view={SlotView.Customer}>
-    {collectionOfSlots.map((slot) => (
-      <SlotCard {...slot} key={slot.id} />
-    ))}
-  </SlotsDayContainer>
-);
-
-export const AdminViewWithSlots = (): JSX.Element => (
+export const AdminWithSlots = (): JSX.Element => (
   <SlotsDayContainer {...baseProps}>
-    {collectionOfSlots.map((slot) => (
-      <SlotCard key={slot.id} {...slot} view={SlotView.Admin} />
-    ))}
+    {({ WrapElement }) => (
+      <>
+        {collectionOfSlots.map((slot) => (
+          <WrapElement key={slot.id}>
+            <SlotCard {...slot} />
+          </WrapElement>
+        ))}
+      </>
+    )}
   </SlotsDayContainer>
 );
 
@@ -70,8 +69,26 @@ export const AdminViewWithAdditionalButtons = (): JSX.Element => (
     {...{ additionalButtons }}
     showAdditionalButtons
   >
-    {collectionOfSlots.map((slot) => (
-      <SlotCard key={slot.id} {...slot} view={SlotView.Admin} />
-    ))}
+    {({ WrapElement }) => (
+      <>
+        {collectionOfSlots.map((slot) => (
+          <WrapElement key={slot.id}>
+            <SlotCard {...slot} />
+          </WrapElement>
+        ))}
+      </>
+    )}
+  </SlotsDayContainer>
+);
+
+export const CustomerViewWithBookings = (): JSX.Element => (
+  <SlotsDayContainer {...baseProps} {...{ additionalButtons }}>
+    {({ WrapElement }) => (
+      <>
+        {collectionOfSlots.map((slot) => (
+          <BookingCardGroup key={slot.id} {...{ ...slot, WrapElement }} />
+        ))}
+      </>
+    )}
   </SlotsDayContainer>
 );

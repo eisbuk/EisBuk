@@ -7,20 +7,18 @@ import { DateTime } from "luxon";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
-import CardActions from "@material-ui/core/CardActions";
 import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Duration, Slot as SlotInterface } from "eisbuk-shared";
+import { SlotInterface, SlotInterval } from "eisbuk-shared";
 
-import { ButtonContextType, SlotView } from "@/enums/components";
+import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons, {
   EditSlotButton,
   DeleteButton,
 } from "@/components/atoms/SlotOperationButtons";
-import DurationsSection from "./DurationsSection";
 import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
@@ -28,19 +26,11 @@ import { fb2Luxon } from "@/utils/date";
 
 import { __slotId__ } from "./__testData__/testIds";
 
-export interface SlotCardProps extends SlotInterface<"id"> {
+export interface SlotCardProps extends SlotInterface {
   /**
    * Controls slot displaying different color when being selected
    */
   selected?: boolean;
-  /**
-   * Duration, on this particular slot, for which the user has subscribed
-   */
-  subscribedDuration?: Duration;
-  /**
-   * Display different parts and enable different actions with respect to the view ("admin"/"customer")
-   */
-  view?: SlotView;
   /**
    * Enable edit/delete of the slot in admin view
    */
@@ -59,8 +49,6 @@ export interface SlotCardProps extends SlotInterface<"id"> {
  */
 const SlotCard: React.FC<SlotCardProps> = ({
   selected,
-  subscribedDuration,
-  view = SlotView.Customer,
   enableEdit,
   onClick,
   ...slotData
@@ -70,9 +58,24 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   const date = fb2Luxon(slotData.date);
 
-  const isSubscribed = Boolean(subscribedDuration);
-
   const canClick = Boolean(onClick);
+
+  const intervalStrings = Object.keys(slotData.intervals || {});
+
+  // calculate start time of first interval and end time of last interval
+  // for title string rendering
+  const intervalValues = Object.values(slotData.intervals || {});
+  const { startTime, endTime }: SlotInterval = intervalStrings.reduce(
+    (acc, intKey) => {
+      const { startTime, endTime } = slotData.intervals[intKey];
+
+      return {
+        startTime: startTime < acc.startTime ? startTime : acc.startTime,
+        endTime: endTime > acc.endTime ? endTime : acc.endTime,
+      };
+    },
+    intervalValues[0] || { startTime: "00:00", endTime: "00:00" }
+  );
 
   return (
     <>
@@ -81,57 +84,60 @@ const SlotCard: React.FC<SlotCardProps> = ({
           [classes.selected]: selected,
           [classes.cursorPointer]: canClick,
         })}
-        raised={isSubscribed}
         variant="outlined"
         data-testid={__slotId__}
         onClick={onClick}
       >
         <CardContent className={classes.wrapper}>
-          <SlotTime startTime={date} subscribedDuration={subscribedDuration} />
+          <SlotTime {...{ startTime, endTime }} />
           <Box
             display="flex"
             flexGrow={1}
             justifyContent="space-between"
             flexDirection="column"
           >
-            {view === SlotView.Admin && (
-              <Box className={classes.categories} display="flex">
-                {slotData.categories.map((category) => (
-                  <Typography
-                    className={classes.category}
-                    color="textSecondary"
-                    key={category}
-                  >
-                    {t(`Categories.${category}`)}
-                  </Typography>
-                ))}
-              </Box>
-            )}
+            <Box className={classes.categories} display="flex">
+              {slotData.categories.map((category) => (
+                <Typography
+                  className={classes.category}
+                  color="textSecondary"
+                  key={category}
+                >
+                  {t(`Categories.${category}`)}
+                </Typography>
+              ))}
+            </Box>
             <Box pl={1} pb={1} className={classes.notes}>
               {slotData.notes}
             </Box>
           </Box>
         </CardContent>
-        <CardActions className={classes.actionsContainer} disableSpacing={true}>
-          <Box display="flex" flexGrow={1}>
-            <DurationsSection
-              {...slotData}
-              enableSubscription={view === SlotView.Customer}
-              subscribedDuration={subscribedDuration}
-            />
-            <SlotTypeLabel slotType={slotData.type} />
-            {view === SlotView.Admin && enableEdit && (
-              <SlotOperationButtons
-                contextType={ButtonContextType.Slot}
-                slot={slotData}
-                iconSize="small"
+        <Box className={classes.actionsContainer} flexGrow={1}>
+          <SlotTypeLabel slotType={slotData.type} />
+          <Box display="flex" justifyContent="space-evenly">
+            {intervalStrings.map((interval) => (
+              <Typography
+                key={interval}
+                component="span"
+                variant="body2"
+                className={classes.intervalTag}
               >
-                <EditSlotButton />
-                <DeleteButton confirmDialog={createDeleteConfirmDialog(date)} />
-              </SlotOperationButtons>
-            )}
+                {interval.split("-").join(" - ")}
+              </Typography>
+            ))}
           </Box>
-        </CardActions>
+          {enableEdit && (
+            <SlotOperationButtons
+              contextType={ButtonContextType.Slot}
+              slot={slotData}
+              iconSize="small"
+              className={classes.buttons}
+            >
+              <EditSlotButton />
+              <DeleteButton confirmDialog={createDeleteConfirmDialog(date)} />
+            </SlotOperationButtons>
+          )}
+        </Box>
       </Card>
     </>
   );
@@ -181,7 +187,7 @@ const useStyles = makeStyles((theme) => ({
     "&.MuiPaper-elevation8": {
       borderWidth: 1,
       borderStyle: "solid",
-      borderColor: theme.palette.primary.main,
+      borderColor: theme.palette.primary.light,
     },
   },
   wrapper: {
@@ -203,13 +209,27 @@ const useStyles = makeStyles((theme) => ({
   },
   notes: { fontWeight: theme.typography.fontWeightLight },
   actionsContainer: {
+    display: "flex",
+    justifyContent: "start",
+    alignItems: "center",
+    height: "2.25rem",
     borderTopWidth: 1,
     borderTopStyle: "solid",
     borderTopColor: theme.palette.divider,
-    padding: 0,
+    padding: "0 0.5rem",
   },
-  "&.MuiPaper-elevation8": {
-    border: "2px solid red",
+  intervalTag: {
+    margin: "0.25rem",
+    background: theme.palette.primary.main,
+    padding: "0.25rem 0.5rem",
+    borderRadius: "0.5rem",
+    overflow: "hidden",
+    color: theme.palette.primary.contrastText,
+    fontWeight: "bold",
+    fontSize: "0.75rem",
+  },
+  buttons: {
+    marginLeft: "auto",
   },
   selected: {
     backgroundColor: theme.palette.warning.light,

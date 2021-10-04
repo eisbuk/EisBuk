@@ -1,5 +1,3 @@
-import BookingCard, { Props } from "./BookingCard";
-
-export type BookingCardProps = Props;
+import BookingCard from "./BookingCard";
 
 export default BookingCard;

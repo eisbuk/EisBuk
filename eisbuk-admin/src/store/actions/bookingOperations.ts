@@ -1,47 +1,56 @@
 import i18n from "i18next";
 
-import { Customer, Slot, BookingInfo } from "eisbuk-shared";
+import {
+  BookingSubCollection,
+  Collection,
+  Customer,
+  OrgSubCollection,
+  SlotInterface,
+} from "eisbuk-shared";
+
+import { ORGANIZATION } from "@/config/envInfo";
+
+import { NotificationMessage } from "@/lib/notifications";
 
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { ORGANIZATION } from "@/config/envInfo";
-
-import {
-  enqueueNotification,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
+import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 /**
- * Creates firestore async thunk:
- * - dispatches subscribe to slot (used to slot for current athlete)
- * - enqueues success/error snackbar depending on the outcome of firestore operation
- * @param bookingId athletes secret key (bookings are grouped that way)
- * @param slot slot which to subscribe to, extended with duration the athlete is subscribing for
- * @returns async thunk
+ * Dispatches booked interval to firestore.
+ * Additionally, it cancels booked interval for the same slot if one is already booked.
  */
-export const subscribeToSlot = (
-  bookingId: string,
-  slot: BookingInfo
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const firebase = getFirebase();
-
+export const bookInterval = ({
+  slotId,
+  secretKey,
+  bookedInterval,
+  date,
+}: {
+  slotId: SlotInterface["id"];
+  secretKey: Customer["secretKey"];
+  bookedInterval: string;
+  date: SlotInterface["date"];
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   try {
-    await firebase
-      .firestore()
-      .collection("organizations")
-      .doc(ORGANIZATION)
-      .collection("bookings")
-      .doc(bookingId)
-      .collection("data")
-      .doc(slot.id)
-      .set(slot);
+    const db = getFirebase().firestore();
 
+    // update booked interval to firestore
+    await db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Bookings)
+      .doc(secretKey)
+      .collection(BookingSubCollection.BookedSlots)
+      .doc(slotId)
+      .set({ interval: bookedInterval, date });
+
+    // show success message
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
-        message: i18n.t("Notification.BookingSuccess"),
+        message: i18n.t(NotificationMessage.BookingSuccess),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
@@ -54,86 +63,39 @@ export const subscribeToSlot = (
 };
 
 /**
- * Creates firestore async thunk:
- * - unsubscribes the current athlete from given slot in firestore
- * - enqueues success/error snackbar depending on the outcome of firestore operation
- * @param bookingId athletes secret key (bookings are grouped that way)
- * @param slot slot which to subscribe to, extended with duration the athlete is subscribing for
+ * Cancels booked inteval of the provided slot for provided customer.
  */
-export const unsubscribeFromSlot = (
-  bookingId: string,
-  slotId: Slot<"id">["id"]
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const firebase = getFirebase();
-
+export const cancelBooking = ({
+  slotId,
+  secretKey,
+}: {
+  slotId: SlotInterface["id"];
+  secretKey: Customer["secretKey"];
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   try {
-    await firebase
-      .firestore()
-      .collection("organizations")
+    const db = getFirebase().firestore();
+
+    // remove the booking from firestore
+    await db
+      .collection(Collection.Organizations)
       .doc(ORGANIZATION)
-      .collection("bookings")
-      .doc(bookingId)
-      .collection("data")
+      .collection(OrgSubCollection.Bookings)
+      .doc(secretKey)
+      .collection(BookingSubCollection.BookedSlots)
       .doc(slotId)
       .delete();
 
+    // show success message
     dispatch(
       enqueueNotification({
-        message: i18n.t("Notification.BookingCancelled"),
+        key: new Date().getTime() + Math.random(),
+        message: i18n.t(NotificationMessage.BookingCanceled),
         closeButton: true,
         options: {
           variant: NotifVariant.Success,
         },
       })
     );
-  } catch (err) {
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t("Notification.BookingCancelledError"),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Error,
-        },
-      })
-    );
-  }
-};
-
-interface MarkAbsenteePayload {
-  slotId: Slot<"id">["id"];
-  userId: Customer["id"];
-  isAbsent: boolean;
-}
-
-/**
- * Creates firestore async thunk:
- * - updates the attendance for given athlete for given slot in firestore (updated back using real time DB)
- * - in case of failure enqueues error snackbar
- * @param slot in which the athlete's attendance is being marked
- * @param user athlete
- * @param isAbsent boolean
- * @returns async thunk
- */
-export const markAbsentee = ({
-  slotId,
-  userId,
-  isAbsent,
-}: MarkAbsenteePayload): FirestoreThunk => async (
-  dispatch,
-  getState,
-  { getFirebase }
-) => {
-  const firebase = getFirebase();
-
-  try {
-    await firebase
-      .firestore()
-      .collection("organizations")
-      .doc(ORGANIZATION)
-      .collection("slots")
-      .doc(slotId)
-      .set({ absentees: { [userId]: isAbsent } }, { merge: true });
   } catch {
     showErrSnackbar();
   }

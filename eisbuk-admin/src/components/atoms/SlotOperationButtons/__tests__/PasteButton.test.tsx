@@ -56,7 +56,7 @@ describe("SlotOperationButtons", () => {
         ({ type: "paste_day", date } as any);
       // mock implementation of `newPasteSlotDay` within the component
       jest
-        .spyOn(copyPasteActions, "newPasteSlotDay")
+        .spyOn(copyPasteActions, "pasteSlotsDay")
         .mockImplementation(mockPasteDayImplementation);
       render(
         <SlotOperationButtons
@@ -82,7 +82,7 @@ describe("SlotOperationButtons", () => {
         ({ type: "paste_week", date } as any);
       // mock implementation of `newPasteSlotWeek` within the component
       jest
-        .spyOn(copyPasteActions, "newPasteSlotWeek")
+        .spyOn(copyPasteActions, "pasteSlotsWeek")
         .mockImplementation(mockPasteWeekImplementation);
       render(
         <SlotOperationButtons

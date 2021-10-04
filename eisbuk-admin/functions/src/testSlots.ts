@@ -2,9 +2,9 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, SlotType, SlotInterface } from "eisbuk-shared";
 
-import { checkUser, roundTo } from "./utils";
+import { checkUser, fs2luxon, roundTo } from "./utils";
 
 const CATEGORIES = Object.values(Category);
 const NOTES = ["", "Pista 1", "Pista 2"];
@@ -39,37 +39,47 @@ const fillDay = async (day: number, organization: string): Promise<void> => {
   const slotsColl = org.collection("slots");
   const Timestamp = admin.firestore.Timestamp;
 
-  // create new slots
-  const toCreate = [
-    slotsColl.add({
-      date: new Timestamp(day + 9 * 3600, 0),
-      type: _.sample(TYPES),
-      durations: ["60"],
-      categories: _.sampleSize(CATEGORIES, _.random(CATEGORIES.length - 1) + 1),
-      notes: _.sample(NOTES),
-    }),
-    slotsColl.add({
-      date: new Timestamp(day + 10 * 3600, 0),
-      type: _.sample(TYPES),
-      durations: ["60"],
-      categories: _.sampleSize(CATEGORIES, _.random(CATEGORIES.length - 1) + 1),
-      notes: _.sample(NOTES),
-    }),
-    slotsColl.add({
-      date: new Timestamp(day + 15 * 3600, 0),
-      type: _.sample(TYPES),
-      durations: ["60", "90", "120"],
-      categories: _.sampleSize(CATEGORIES, _.random(CATEGORIES.length - 1) + 1),
-      notes: _.sample(NOTES),
-    }),
-    slotsColl.add({
-      date: new Timestamp(day + 17.5 * 3600, 0),
-      type: _.sample(TYPES),
-      durations: ["60", "90", "120"],
-      categories: _.sampleSize(CATEGORIES, _.random(CATEGORIES.length - 1) + 1),
-      notes: _.sample(NOTES),
-    }),
-  ];
+  // we're creating four slots per day with these starting hours
+  const startHours = [9, 10, 15, 17.5];
+  // create an array of firestore.add() promises for four slots
+  const toCreate = startHours.map((startHour, i) => {
+    const date = new Timestamp(day, 0);
+    const luxonDate = fs2luxon(date);
+
+    // for diversity, we're creating two slots with one interval and two with three
+    const durations = [60, ...(i > 1 ? [90, 120] : [])];
+
+    // create intervals from provided durations (and start hour)
+    const intervals = durations.reduce((acc, duration) => {
+      const startTime = luxonDate
+        .plus({ hours: startHour })
+        .toISOTime()
+        .substr(0, 5);
+      const endTime = luxonDate
+        .plus({ hours: startHour, minutes: duration })
+        .toISOTime()
+        .substr(0, 5);
+
+      const key = `${startTime}-${endTime}`;
+
+      return { ...acc, [key]: { startTime, endTime } };
+    }, {} as SlotInterface["intervals"]);
+
+    // populate slot with data
+    const slotToCreate: SlotInterface = {
+      id: `${day}-${startHour}`,
+      date,
+      intervals,
+      categories: _.sampleSize(
+        CATEGORIES,
+        _.random(CATEGORIES.length - 1) + 1
+      )!,
+      notes: _.sample(NOTES)!,
+      type: _.sample(TYPES)!,
+    };
+
+    return slotsColl.add(slotToCreate);
+  });
 
   await Promise.all(toCreate);
 

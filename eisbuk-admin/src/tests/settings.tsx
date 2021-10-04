@@ -19,17 +19,18 @@ export const adminDb = new Firestore({
   },
 });
 
-firebase.initializeApp({
-  projectId: projectId,
-  apiKey: "aaa",
-});
-firebase.auth().useEmulator("http://localhost:9098/");
-firebase.functions().useEmulator("localhost", 5002);
-firebase.app().functions(functionsZone).useEmulator("localhost", 5002);
+if (!firebase.apps.length) {
+  firebase.initializeApp({
+    projectId: projectId,
+    apiKey: "aaa",
+  });
+  firebase.auth().useEmulator("http://localhost:9098/");
+  firebase.functions().useEmulator("localhost", 5002);
+  firebase.app().functions(functionsZone).useEmulator("localhost", 5002);
+  firebase.firestore().settings({
+    host: "localhost:8081",
+    ssl: false,
+  });
+}
 
 export const db = firebase.firestore();
-
-db.settings({
-  host: "localhost:8081",
-  ssl: false,
-});

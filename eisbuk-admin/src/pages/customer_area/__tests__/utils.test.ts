@@ -9,7 +9,9 @@ import {
 describe("'/customers' page", () => {
   describe("Test utils: 'splitSlotsByCustomerRoute'", () => {
     test("should return record of slotsByDay for `book_ice` and `book_off_ice` type", () => {
-      const groupedSlots = splitSlotsByCustomerRoute(dummySlotsFromStore);
+      const groupedSlots = splitSlotsByCustomerRoute(
+        dummySlotsFromStore as any
+      );
       expect(groupedSlots).toEqual(dummySlotsSplitByRoute);
     });
 

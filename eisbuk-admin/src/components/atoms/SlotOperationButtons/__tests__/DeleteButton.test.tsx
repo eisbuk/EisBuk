@@ -12,7 +12,7 @@ import { DateTime } from "luxon";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import SlotOperationButtons from "../SlotOperationButtons";
 import DeleteButton from "../DeleteButton";
@@ -32,7 +32,7 @@ import {
   __confirmDialogNoId__,
   __confirmDialogYesId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 
@@ -55,7 +55,7 @@ jest.mock("i18next", () => ({
  * @param slotId of slot to delete (just like in the original function)
  * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
  */
-const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
   type: "delete_slot",
   slotId,
 });
@@ -106,7 +106,7 @@ describe("SlotOperationButtons", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
-          slot={dummySlot}
+          slot={baseSlot}
         >
           <DeleteButton />
         </SlotOperationButtons>
@@ -114,7 +114,7 @@ describe("SlotOperationButtons", () => {
       // initiate delete
       screen.getByTestId(__deleteButtonId__).click();
       // create a dummy delete slots day action object with proper values
-      const mockSlotDelAction = mockDelSlotImplementation(dummySlot.id);
+      const mockSlotDelAction = mockDelSlotImplementation(baseSlot.id);
       // test (using mocking tactics explained above) if `deleteSlot`
       // has been dispatched to the store with proper slot data
       expect(mockDispatch).toHaveBeenCalledWith(mockSlotDelAction);

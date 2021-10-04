@@ -30,7 +30,7 @@ module.exports = {
     // on our cloud functions container image
     nodeExternals({
       // we're adding exception to ignored modules to include symlinked 'eisbuk-shared' in the bundle
-      allowlist: ["eisbuk-shared"],
+      allowlist: ["eisbuk-shared", "eisbuk-shared/dist/deprecated"],
     }),
   ],
   // create source map for bundle to allow for inspection of bundled deps

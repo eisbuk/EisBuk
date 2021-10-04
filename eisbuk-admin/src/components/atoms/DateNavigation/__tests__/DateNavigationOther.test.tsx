@@ -6,12 +6,21 @@ import React from "react";
 import { screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import Button from "@material-ui/core/Button";
+import { DateTime } from "luxon";
+import * as reactRedux from "react-redux";
+
+import { __storybookDate__ } from "@/lib/constants";
 
 import DateNavigation from "../DateNavigation";
 
 import { __toggleId__ } from "../__testData__/testData";
 
 import { renderWithRouter } from "@/__testUtils__/wrappers";
+
+const mockDispatch = jest.fn();
+jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
+const mockSelector = jest.spyOn(reactRedux, "useSelector");
+mockSelector.mockImplementation(() => DateTime.fromISO(__storybookDate__));
 
 describe("Date Navigation", () => {
   describe("Test toggle button functionality", () => {

@@ -1,11 +1,12 @@
 import _ from "lodash";
 
-import { SlotType, Duration, Category } from "eisbuk-shared";
+import { SlotType, Category } from "eisbuk-shared";
+import { DeprecatedDuration } from "eisbuk-shared/dist/enums/deprecated/firestore";
 
 import { ProjectIcons } from "@/enums/components";
 
 interface DurationEntry {
-  id: Duration;
+  id: DeprecatedDuration;
   label: string;
   minutes: number;
 }
@@ -33,9 +34,9 @@ export interface SlotsLabelList {
 /** @TODO rewrite these to use map or string enums (if possible) */
 export const slotsLabelsLists: SlotsLabelList = {
   durations: [
-    { id: Duration["1h"], label: "1H", minutes: 50 },
-    { id: Duration["1.5h"], label: "1H½", minutes: 80 },
-    { id: Duration["2h"], label: "2H", minutes: 110 },
+    { id: DeprecatedDuration["1h"], label: "1H", minutes: 50 },
+    { id: DeprecatedDuration["1.5h"], label: "1H½", minutes: 80 },
+    { id: DeprecatedDuration["2h"], label: "2H", minutes: 110 },
   ],
   categories: [
     { id: Category.Course, label: Category.Course },

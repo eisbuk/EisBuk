@@ -23,3 +23,7 @@ export const __deleteButtonId__ = "delete-button";
 export const __dateNavNextId__ = "date-navigation-next-page";
 export const __dateNavPrevId__ = "date-navigation-previous-page";
 // #endregion DateNavigation
+
+// #region BookingCard
+export const __bookingCardId__ = "booking-interval-card";
+// #endregion BookingCard

@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import { Duration } from "eisbuk-shared";
-
-import { SlotView } from "@/enums/components";
+import { SlotInterface } from "eisbuk-shared";
 
 import SlotCard from "./SlotCard";
 
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 /**
  * Decorator used to prevent slots diaplayed from stratching to full width
@@ -26,12 +24,13 @@ export default {
   decorators,
 } as ComponentMeta<typeof SlotCard>;
 
-const baseProps = {
-  ...dummySlot,
-  view: SlotView.Admin,
+const baseProps: SlotInterface = {
+  ...baseSlot,
 };
 
-export const AdminView = (): JSX.Element => <SlotCard {...baseProps} />;
+export const Default = (): JSX.Element => (
+  <SlotCard {...baseProps} notes="Pista 1" />
+);
 
 const adminViewWithActionButtonsProps = { enableEdit: true };
 export const AdminViewWithActionButtons = (): JSX.Element => (
@@ -50,16 +49,3 @@ export const Selected = (): JSX.Element => {
     />
   );
 };
-
-const customerViewProps = { view: SlotView.Customer };
-export const CustomerView = (): JSX.Element => (
-  <SlotCard {...baseProps} {...customerViewProps} />
-);
-
-const customerViewWithBookedDurationProps = {
-  view: SlotView.Customer,
-  subscribedDuration: Duration["1.5h"],
-};
-export const CustomerViewWithBookedDuration = (): JSX.Element => (
-  <SlotCard {...baseProps} {...customerViewWithBookedDurationProps} />
-);

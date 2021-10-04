@@ -94,14 +94,14 @@ const CustomerList: React.FC<Props> = ({
                   <EditIcon />
                 </IconButton>
               );
-              const bookingsButton = customer.secret_key && (
+              const bookingsButton = customer.secretKey && (
                 <IconButton
                   color="primary"
-                  href={`${Routes.CustomerArea}/${customer.secret_key}`}
+                  href={`${Routes.CustomerArea}/${customer.secretKey}`}
                   onClick={(e) => {
                     e.preventDefault();
                     history.push(
-                      `${Routes.CustomerArea}/${customer.secret_key}`
+                      `${Routes.CustomerArea}/${customer.secretKey}`
                     );
                   }}
                 >
