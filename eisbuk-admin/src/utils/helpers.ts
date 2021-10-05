@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { SlotInterface, SlotInterval } from "@/types/temp";
+import { SlotInterface, SlotInterval } from "eisbuk-shared";
 
 type Primitive = string | number | boolean;
 

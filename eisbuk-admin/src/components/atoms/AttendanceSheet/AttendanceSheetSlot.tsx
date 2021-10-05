@@ -8,7 +8,8 @@ import TableHead from "@material-ui/core/TableHead";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { CustomerWithAttendance, SlotInterface } from "@/types/temp";
+import { SlotInterface } from "eisbuk-shared";
+import { CustomerWithAttendance } from "@/types/components";
 
 import { getSlotTimespan } from "@/utils/helpers";
 

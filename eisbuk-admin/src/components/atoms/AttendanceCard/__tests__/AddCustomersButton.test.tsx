@@ -15,9 +15,9 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import {
-  baseProps,
+  baseAttendanceCard,
   intervalStrings as intervals,
-} from "../__testData__/dummyData";
+} from "@/__testData__/attendance";
 import { saul, walt } from "@/__testData__/customers";
 import {
   __addCustomersButtonId__,
@@ -54,7 +54,7 @@ jest
   .mockImplementation(mockMarkAttImplementation as any);
 
 // test data
-const { id: slotId } = baseProps;
+const { id: slotId } = baseAttendanceCard;
 
 describe("AttendanceCard ->", () => {
   afterEach(() => {
@@ -73,7 +73,7 @@ describe("AttendanceCard ->", () => {
     testWithMutationObserver(
       'should open customers list on add customers button click and close on "x" button click',
       async () => {
-        render(<AttendnaceCard {...baseProps} />);
+        render(<AttendnaceCard {...baseAttendanceCard} />);
         const customerList = screen.queryByTestId(__customersListId__);
         expect(customerList).toBeNull();
         screen.getByTestId(__addCustomersButtonId__).click();
@@ -87,7 +87,10 @@ describe("AttendanceCard ->", () => {
 
     test("should render all customers for slot's category who haven't booked already (when open)", () => {
       render(
-        <AttendnaceCard {...baseProps} customers={[saulWithAttendance]} />
+        <AttendnaceCard
+          {...baseAttendanceCard}
+          customers={[saulWithAttendance]}
+        />
       );
       screen.getByTestId(__addCustomersButtonId__).click();
       const waltRegex = new RegExp(walt.name);
@@ -99,7 +102,7 @@ describe("AttendanceCard ->", () => {
     });
 
     test("should remove customer from list and add to attended customers on click", () => {
-      render(<AttendnaceCard {...baseProps} />);
+      render(<AttendnaceCard {...baseAttendanceCard} />);
       screen.getByTestId(__addCustomersButtonId__).click();
       const customerList = screen.getByTestId(__customersListId__);
       // should have two customers: walt and saul (both `course`, none attended)
@@ -111,7 +114,7 @@ describe("AttendanceCard ->", () => {
     });
 
     test("should dispatch update to firestore with default interval as attended interval on adding customer", () => {
-      render(<AttendnaceCard {...baseProps} />);
+      render(<AttendnaceCard {...baseAttendanceCard} />);
       screen.getByTestId(__addCustomersButtonId__).click();
       const waltRegex = new RegExp(walt.name);
       screen.getByText(waltRegex).click();

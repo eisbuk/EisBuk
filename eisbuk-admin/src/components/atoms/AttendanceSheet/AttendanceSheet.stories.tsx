@@ -1,13 +1,17 @@
 import React from "react";
+
 import AttendanceSheet from "./AttendanceSheet";
-import { fb2Luxon } from "@/utils/date";
-import {
-  baseProps,
-  saul,
-  walt,
-  intervalStrings as intervals,
-} from "@/components/atoms/AttendanceCard/__testData__/dummyData";
 import AttendanceSheetSlot from "./AttendanceSheetSlot";
+
+import { fb2Luxon } from "@/utils/date";
+
+import {
+  baseAttendanceCard,
+  intervalStrings as intervals,
+} from "@/__testData__/attendance";
+
+import { saul, walt } from "@/__testData__/customers";
+
 export default {
   title: "Attendance Sheet",
   component: AttendanceSheet,
@@ -29,10 +33,10 @@ const customers = [
 ];
 
 const slots = [
-  { ...baseProps, customers, notes: "this slot is in rink 2" },
-  { ...baseProps, customers },
+  { ...baseAttendanceCard, customers, notes: "this slot is in rink 2" },
+  { ...baseAttendanceCard, customers },
 ];
-const date = fb2Luxon(baseProps.date);
+const date = fb2Luxon(baseAttendanceCard.date);
 
 export const Default = (): JSX.Element => (
   <AttendanceSheet date={date}>
