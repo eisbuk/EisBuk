@@ -7,7 +7,7 @@ type TestClosure = (
 /**
  * A test util which serves as a wrapper around test closure.
  * Runs test provided if `MutationObserver` exists in global object
- * and skips test provided (runs `xtext`) if no `MutationObserver` found
+ * and skips test provided (runs `xtest`) if no `MutationObserver` found
  * @param testArgs paramaters of `test` function
  */
 export const testWithMutationObserver: TestClosure = (...args) => {
@@ -21,7 +21,7 @@ export const testWithMutationObserver: TestClosure = (...args) => {
 /**
  * A test util which serves as a wrapper around test closure.
  * Runs test provided if firestore emulator fired up.
- * Akips test provided (runs `xtext`) if no firestore emulator found
+ * Skips test provided (runs `xtest`) if no firestore emulator found
  * @param testArgs paramaters of `test` function
  */
 export const testWithEmulator: TestClosure = (...args) => {

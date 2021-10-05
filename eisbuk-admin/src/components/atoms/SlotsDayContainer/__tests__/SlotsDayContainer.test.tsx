@@ -12,7 +12,9 @@ describe("SlotsDayContainer", () => {
     test("should render children", () => {
       const testString = "test-string";
       render(
-        <SlotsDayContainer date={testDate}>{testString}</SlotsDayContainer>
+        <SlotsDayContainer date={testDate}>
+          {() => <>{testString}</>}
+        </SlotsDayContainer>
       );
       screen.getByText(testString);
     });

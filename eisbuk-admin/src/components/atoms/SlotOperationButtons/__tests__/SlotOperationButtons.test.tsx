@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { Slot } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
 import * as testIds from "@/__testData__/testIds";
 
@@ -21,7 +21,7 @@ import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
 import { luxon2ISODate } from "@/utils/date";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update slot form to be more atomic  */
@@ -46,7 +46,7 @@ describe("SlotOperationButtons", () => {
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
           date={dummyDate}
-          slot={dummySlot}
+          slot={baseSlot}
         >
           <EditSlotButton />
           <DeleteButton />
@@ -115,7 +115,7 @@ describe("SlotOperationButtons", () => {
     test("should provide children with the context of 'slot' if provided as props", () => {
       const testSlot = {
         id: "test_slot_id",
-      } as Slot<"id">;
+      } as SlotInterface;
       render(
         <SlotOperationButtons slot={testSlot}>
           <ContextTest />

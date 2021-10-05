@@ -1,42 +1,34 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import { Slot, Duration } from "eisbuk-shared";
+import { SlotInterface } from "eisbuk-shared";
 
-import { SlotView } from "@/enums/components";
 import { CustomerRoute } from "@/enums/routes";
 
 import DateNavigation from "@/components/atoms/DateNavigation";
-import SlotCard from "@/components/atoms/SlotCard";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 
 import { orderByWeekDay } from "./utils";
+import { LocalStore } from "@/types/store";
+import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 interface SlotsByDay {
   [dayISO: string]: {
-    [slotId: string]: Slot<"id">;
+    [slotId: string]: SlotInterface;
   };
-}
-
-interface SubscribedSlots {
-  [slotId: string]: Duration;
 }
 
 interface Props {
   /**
    * Record of slots grouped by day's ISO date (day),
    * keyed by slotId within each day.
-   *
-   * Should be only slots with `SlotType.Ice`,
-   * but we'll @TODO add fault tolerance here in case some
-   * non ice slots slip in
    */
   slots: SlotsByDay;
   /**
    * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
    * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
    */
-  subscribedSlots?: SubscribedSlots;
+  bookedSlots?: LocalStore["firestore"]["data"]["bookedSlots"];
   /**
    * Controls view of slots with respect to view:
    * - if `book_ice` show month and group slots by day of the week
@@ -48,13 +40,13 @@ interface Props {
 /**
  * A component used by `customers` page to render the slots available for booking.
  * - `book_ice` - would be passed slots of type `"ice"`, shows a month and orders days to show all Mondays first, then all Tuesdays, and so on
- * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "Off_ice_gym"`, shows a week and orders days in regular weekly order
+ * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "off_ice_gym"`, shows a week and orders days in regular weekly order
  *
  * **note: slots passed are controlled outside the component, only the displaying/pagination is controlled within the component**
  */
 const CustomerSlots: React.FC<Props> = ({
   slots,
-  subscribedSlots,
+  bookedSlots,
   view = CustomerRoute.BookIce,
 }) => {
   const slotDates = Object.keys(slots);
@@ -67,7 +59,7 @@ const CustomerSlots: React.FC<Props> = ({
   const paginateBy = view === CustomerRoute.BookIce ? "month" : "week";
 
   return (
-    <DateNavigation jump={paginateBy} withRouter>
+    <DateNavigation jump={paginateBy}>
       {() => (
         <>
           {orderedDates?.map((date) => {
@@ -76,25 +68,27 @@ const CustomerSlots: React.FC<Props> = ({
             const slotsArray = Object.values(slostForDay);
 
             return (
-              <SlotsDayContainer
-                key={date}
-                date={luxonDay}
-                view={SlotView.Customer}
-              >
-                {slotsArray.map((slot) => {
-                  // check if slot is subscribed to
-                  const subscribedDuration = subscribedSlots
-                    ? subscribedSlots[slot.id]
-                    : undefined;
-                  return (
-                    <SlotCard
-                      key={slot.id}
-                      {...slot}
-                      view={SlotView.Customer}
-                      {...{ subscribedDuration }}
-                    />
-                  );
-                })}
+              <SlotsDayContainer key={date} date={luxonDay}>
+                {({ WrapElement }) => (
+                  <>
+                    {slotsArray.map((slot) => {
+                      const bookedInterval = bookedSlots
+                        ? bookedSlots[slot.id]?.interval
+                        : undefined;
+
+                      return (
+                        <BookingCardGroup
+                          key={slot.id}
+                          {...{
+                            ...slot,
+                            bookedInterval,
+                            WrapElement,
+                          }}
+                        />
+                      );
+                    })}
+                  </>
+                )}
               </SlotsDayContainer>
             );
           })}

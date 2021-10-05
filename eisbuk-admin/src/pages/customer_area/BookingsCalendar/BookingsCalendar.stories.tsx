@@ -3,7 +3,7 @@ import { ComponentMeta } from "@storybook/react";
 
 import BookingsCalendar from "./BookingsCalendar";
 
-import { bookedSlots } from "./__testData__/dummyData";
+import { bookedSlots, slots } from "./__testData__/dummyData";
 
 export default {
   title: "Bookings Calendar",
@@ -11,5 +11,5 @@ export default {
 } as ComponentMeta<typeof BookingsCalendar>;
 
 export const Default = (): JSX.Element => (
-  <BookingsCalendar bookings={bookedSlots} />
+  <BookingsCalendar {...{ bookedSlots, slots }} />
 );

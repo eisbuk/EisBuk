@@ -6,9 +6,7 @@ import {
   cleanup,
 } from "@testing-library/react";
 
-import { Customer } from "eisbuk-shared";
-
-import { SlotInterface } from "@/types/temp";
+import { Customer, SlotInterface } from "eisbuk-shared";
 
 import AttendnaceCard from "../AttendanceCard";
 
@@ -18,10 +16,9 @@ import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import {
   baseProps,
-  saul,
   intervalStrings as intervals,
-  walt,
 } from "../__testData__/dummyData";
+import { saul, walt } from "@/__testData__/customers";
 import {
   __addCustomersButtonId__,
   __closeCustomersListId__,

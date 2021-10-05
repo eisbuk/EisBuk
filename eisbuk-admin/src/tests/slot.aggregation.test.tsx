@@ -1,111 +1,93 @@
-import firebase from "firebase";
+import {
+  // Category,
+  Collection,
+  OrgSubCollection,
+  // SlotInterface,
+  // SlotType,
+  // SlotsById,
+} from "eisbuk-shared";
 
-import { db, adminDb } from "./settings";
+import { adminDb } from "./settings";
+
 import {
   deleteAll,
   deleteAllCollections,
-  loginDefaultUser,
-  createDefaultOrg,
+  // loginDefaultUser,
+  // createDefaultOrg,
 } from "./utils";
 
-import pRetry from "p-retry";
-type DocumentReference = firebase.firestore.DocumentReference;
-type DocumentData = firebase.firestore.DocumentData;
+// import { baseSlot } from "@/__testData__/dummyData";
+// import { testDate, testDateLuxon } from "@/__testData__/date";
+// import { luxon2ISODate } from "@/utils/date";
+// import { ORGANIZATION } from "@/config/envInfo";
+// import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
 
 beforeEach(async () => {
-  await deleteAll(["slots", "slotsByDay"]);
-  await deleteAllCollections(adminDb, ["organizations"]);
+  await deleteAll([OrgSubCollection.Slots, OrgSubCollection.SlotsByDay]);
+  await deleteAllCollections(adminDb, [Collection.Organizations]);
 });
 
 const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
   ? describe
   : xdescribe;
 
+// const monthString = testDate.substr(0, 7);
+
+// const slotsPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
+// const slotsByDayPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
+
 maybeDescribe("Slot triggers", () => {
   it("update the slots summary on slot creation", async () => {
-    await Promise.all([createDefaultOrg(), loginDefaultUser()]);
-    const org = db.collection("organizations").doc("default");
-    // 1611964800 → Saturday, January 30, 2021 0:00:00 GMT
-    const day = 1611964800;
-
-    // Create a slot
-    const slot = org.collection("slots").doc("testSlot");
-    await slot.set({
-      date: { seconds: day + 15 * 3600 },
-      type: "ice",
-      durations: [60, 90, 120],
-      categories: ["agonismo", "preagonismo"],
-    });
-    // Now check that the aggregate collection has been updated
-    const aggregateSlotsQuery = org.collection("slotsByDay").doc("2021-01");
-    let aggregateSlot = await waitForRecord({
-      record: aggregateSlotsQuery,
-      numKeys: 1,
-    });
-    expect(aggregateSlot["2021-01-30"].testSlot.type).toStrictEqual("ice");
-
-    // Create another slot on the previous day
-    const anotherSlot = org.collection("slots").doc("anotherSlot");
-    await anotherSlot.set({
-      date: { seconds: day - 15 * 3600 },
-      type: "ice",
-      durations: [60, 90, 120],
-      categories: ["agonismo", "preagonismo"],
-    });
-    aggregateSlot = await waitForRecord({
-      record: aggregateSlotsQuery,
-      numKeys: 2,
-    });
-    expect(aggregateSlot["2021-01-29"].anotherSlot.type).toStrictEqual("ice");
-    expect(aggregateSlot["2021-01-29"].anotherSlot.id).toStrictEqual(
-      "anotherSlot"
-    );
-    expect(Object.keys(aggregateSlot["2021-01-29"]).length).toStrictEqual(1);
-    expect(Object.keys(aggregateSlot["2021-01-30"]).length).toStrictEqual(1);
-
-    // Remove one slot and make sure it's no longer in the aggregated record
-    await anotherSlot.delete();
-    // Create a third slot in a different day
-    const thirdSlot = org.collection("slots").doc("thirdSlot");
-    await thirdSlot.set({
-      date: { seconds: day - 72 * 3600 },
-      type: "ice",
-      durations: [60, 90, 120],
-      categories: ["agonismo", "preagonismo"],
-    });
-
-    aggregateSlot = await waitForRecord({
-      record: aggregateSlotsQuery,
-      numKeys: 3,
-    });
+    // await Promise.all([createDefaultOrg(), loginDefaultUser()]);
+    // // Create a slot
+    // const slot = getDocumentRef(adminDb, `${slotsPath}/testSlot`);
+    // await slot.set({ ...baseSlot, id: "testSlot" });
+    // // Now check that the aggregate collection has been updated
+    // let aggregateSlot = (await waitForCondition({
+    //   documentPath: `${slotsByDayPath}/${monthString}`,
+    //   condition: (data) =>
+    //     Boolean(data) && Object.keys(data as Record<string, any>).length === 1,
+    // })) as SlotsById;
+    // expect(aggregateSlot[testDate].testSlot.type).toStrictEqual(SlotType.Ice);
+    // // Create another slot on the previous day
+    // const nextDay = testDateLuxon.plus({ days: 1 });
+    // const nextDayTimestamp = { seconds: nextDay.toObject().second };
+    // const nextDayISO = luxon2ISODate(nextDay);
+    // const anotherSlot = getDocumentRef(adminDb, `${slotsPath}/anotherSlot`);
+    // await anotherSlot.set({
+    //   ...baseSlot,
+    //   date: nextDayTimestamp,
+    //   id: "anotherSlot",
+    // } as SlotInterface);
+    // aggregateSlot = await waitForCondition({
+    //   documentPath: `${slotsByDayPath}/${monthString}`,
+    //   condition: (data) => Boolean(data) && Object.keys(data).length === 2,
+    // });
+    // expect(aggregateSlot[nextDayISO].anotherSlot.type).toStrictEqual(
+    //   SlotType.Ice
+    // );
+    // expect(aggregateSlot[nextDayISO].anotherSlot.id).toStrictEqual(
+    //   "anotherSlot"
+    // );
+    // expect(Object.keys(aggregateSlot[testDate]).length).toStrictEqual(1);
+    // expect(Object.keys(aggregateSlot[nextDayISO]).length).toStrictEqual(1);
+    // // Remove one slot and make sure it's no longer in the aggregated record
+    // await anotherSlot.delete();
+    // // Create a third slot in a different day
+    // const thirdSlot = org.collection(OrgSubCollection.Slots).doc("thirdSlot");
+    // const thirdDay = testDateLuxon.plus({ days: 2 });
+    // const thirdDayTimestamp = { seconds: thirdDay.toObject().second };
+    // const thirdDayISO = luxon2ISODate(thirdDay);
+    // await thirdSlot.set({
+    //   ...baseSlot,
+    //   date: thirdDayTimestamp,
+    //   type: SlotType.Ice,
+    //   categories: [Category.Competitive, Category.PreCompetitive],
+    // });
+    // await waitForRecord({
+    //   record: aggregateSlotsQuery as any,
+    //   numKeys: 3,
+    // });
+    // done();
   });
 });
-
-interface WaitForRecord {
-  (params: {
-    record: DocumentReference;
-    numKeys: number;
-  }): Promise<DocumentData>;
-}
-
-/**
- * Retry to get the given record until it contains the expected number of keys,
- * limit retries to 10
- */
-const waitForRecord: WaitForRecord = ({ record, numKeys }) =>
-  pRetry(
-    // Try to fetch the aggregate slots for the day until
-    // we find the newly added one
-    async () => {
-      const aggregateSlot = (await record.get()).data();
-      if (!aggregateSlot || Object.keys(aggregateSlot).length !== numKeys) {
-        return Promise.reject(
-          new Error(`The aggregated slot with ${numKeys} keys was not found`)
-        );
-      }
-      return aggregateSlot;
-    },
-    // Try the above up to 10 times
-    // pause 400 ms between tries
-    { retries: 10, minTimeout: 400, maxTimeout: 400 }
-  );

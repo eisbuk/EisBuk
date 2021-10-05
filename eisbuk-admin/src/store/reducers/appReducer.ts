@@ -14,7 +14,6 @@ export const defaultState = {
         DateTime.fromISO(__storybookDate__)
       : // In dev/production, the date is current date
         DateTime.local(),
-  newSlotTime: null,
 };
 
 const appReducer = (
@@ -73,12 +72,6 @@ const appReducer = (
       return {
         ...state,
         calendarDay: (action as AppReducerAction<Action.ChangeDay>).payload,
-      };
-
-    case Action.SetSlotTime:
-      return {
-        ...state,
-        newSlotTime: (action as AppReducerAction<Action.SetSlotTime>).payload,
       };
 
     default:

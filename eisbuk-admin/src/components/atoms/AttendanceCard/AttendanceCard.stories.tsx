@@ -7,10 +7,9 @@ import AttendanceCard from "./AttendanceCard";
 
 import {
   baseProps,
-  saul,
-  walt,
   intervalStrings as intervals,
 } from "./__testData__/dummyData";
+import { saul, walt } from "@/__testData__/customers";
 
 export default {
   title: "Attendance Card",

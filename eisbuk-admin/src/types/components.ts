@@ -1,7 +1,10 @@
 import { SvgIconTypeMap } from "@material-ui/core/SvgIcon";
 import { OverridableComponent } from "@material-ui/core/OverridableComponent";
 
+import { Customer, SlotInterface } from "eisbuk-shared";
+
 // #region svg
+
 /**
  * Type alias for props of MUI SVG-as-JSX component
  */
@@ -13,9 +16,11 @@ export type SvgProps = Parameters<
  * Type alias for MUI SVG-as-JSX component
  */
 export type SvgComponent = OverridableComponent<SvgIconTypeMap<unknown, "svg">>;
+
 // #endregion svg
 
 // #region SlotOperationButtons
+
 export interface SlotButtonProps {
   /**
    * Material-UI size prop.
@@ -25,4 +30,18 @@ export interface SlotButtonProps {
    */
   size?: "small" | "medium";
 }
+
 // #endregion SlotOperationButtons
+
+// #region attendanceCard
+export interface CustomerWithAttendance extends Customer {
+  bookedInterval: string | null;
+  attendedInterval: string | null;
+}
+// #endregion attendanceCard
+
+// #region bookingCard
+export interface SlotWithBookedInterval extends SlotInterface {
+  bookedInterval?: string | null;
+}
+// #endregion bookingCard

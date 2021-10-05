@@ -8,12 +8,11 @@ export enum OrgSubCollection {
   SlotsByDay = "slotsByDay",
   Customers = "customers",
   Bookings = "bookings",
-  BookingsByDay = "bookingsByDay",
   Attendance = "attendance",
 }
 
 export enum BookingSubCollection {
-  SubscribedSlots = "subscribedSlots",
+  BookedSlots = "bookedSlots",
 }
 // endregion
 
@@ -31,9 +30,4 @@ export enum Category {
   Adults = "adults",
 }
 
-export enum Duration {
-  "1h" = "60",
-  "1.5h" = "90",
-  "2h" = "120",
-}
 // endregion

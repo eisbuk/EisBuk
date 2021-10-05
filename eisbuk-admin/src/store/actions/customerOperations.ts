@@ -1,8 +1,10 @@
 import i18n from "i18next";
 
+import { Customer } from "eisbuk-shared";
+
 import { NotifVariant } from "@/enums/store";
 
-import { CustomerInStore, FirestoreThunk } from "@/types/store";
+import { FirestoreThunk } from "@/types/store";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -18,9 +20,11 @@ import {
  * @param customer to update in firestore
  * @returns async thunk
  */
-export const updateCustomer = (
-  customer: CustomerInStore
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+export const updateCustomer = (customer: Customer): FirestoreThunk => async (
+  dispatch,
+  getState,
+  { getFirebase }
+) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...updatedData } = customer;
 
@@ -55,9 +59,11 @@ export const updateCustomer = (
  * @param customer to delete from firestore
  * @returns async thunk
  */
-export const deleteCustomer = (
-  customer: CustomerInStore
-): FirestoreThunk => async (dispatch, _, { getFirebase }) => {
+export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
+  dispatch,
+  _,
+  { getFirebase }
+) => {
   const firebase = getFirebase();
 
   try {

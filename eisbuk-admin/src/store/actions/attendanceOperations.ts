@@ -1,13 +1,17 @@
-import { Collection, Customer, OrgSubCollection } from "eisbuk-shared";
-
 import {
+  Collection,
+  Customer,
+  OrgSubCollection,
   CustomerAttendance,
-  NewFirestoreThunk,
   SlotAttendnace,
   SlotInterface,
-} from "@/types/temp";
+} from "eisbuk-shared";
 
 import { ORGANIZATION } from "@/config/envInfo";
+
+import { FirestoreThunk } from "@/types/store";
+
+import { showErrSnackbar } from "./appActions";
 
 /**
  * Function called to mark attendance (with apropriate interval) for customer on given slot:
@@ -27,32 +31,37 @@ export const markAttendance = ({
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
   attendedInterval: string;
-}): NewFirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  try {
+    const db = getFirebase().firestore();
 
-  const localState = getState();
+    const localState = getState();
 
-  // get month document ref from attendance collection
-  const slotToUpdate = db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Attendance)
-    .doc(slotId);
+    // get month document ref from attendance collection
+    const slotToUpdate = db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Attendance)
+      .doc(slotId);
 
-  // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-  const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
+    // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
+    const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
 
-  // update customer attendance from local store with new values
-  const updatedCustomerAttendance: CustomerAttendance = {
-    booked: localAttendnaceEntry.attendances[customerId]?.booked || null,
-    attended: attendedInterval,
-  };
+    // update customer attendance from local store with new values
+    const updatedCustomerAttendance: CustomerAttendance = {
+      bookedInterval:
+        localAttendnaceEntry.attendances[customerId]?.bookedInterval || null,
+      attendedInterval: attendedInterval,
+    };
 
-  // update month document with new values
-  await slotToUpdate.set(
-    { attendances: { [customerId]: updatedCustomerAttendance } },
-    { merge: true }
-  );
+    // update month document with new values
+    await slotToUpdate.set(
+      { attendances: { [customerId]: updatedCustomerAttendance } },
+      { merge: true }
+    );
+  } catch {
+    showErrSnackbar();
+  }
 };
 
 /**
@@ -71,48 +80,52 @@ export const markAbsence = ({
 }: {
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
-}): NewFirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
+}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+  try {
+    const db = getFirebase().firestore();
 
-  const localState = getState();
+    const localState = getState();
 
-  // get month document ref from attendance collection
-  const slotToUpdate = db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Attendance)
-    .doc(slotId);
+    // get month document ref from attendance collection
+    const slotToUpdate = db
+      .collection(Collection.Organizations)
+      .doc(ORGANIZATION)
+      .collection(OrgSubCollection.Attendance)
+      .doc(slotId);
 
-  // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-  const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
+    // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
+    const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
 
-  // extract customer entry from slot's attendance
-  const {
-    [customerId]: customerEntry,
-    ...attendanceForSlot
-  } = localAttendnaceEntry.attendances;
+    // extract customer entry from slot's attendance
+    const {
+      [customerId]: customerEntry,
+      ...attendanceForSlot
+    } = localAttendnaceEntry.attendances;
 
-  // if booked not null, customer should stay in db (only mark absence)
-  const { booked } = customerEntry || {};
-  const updatedCustomerAttendance = booked
-    ? {
-        [customerId]: {
-          booked,
-          attended: null,
-        },
-      }
-    : // if not booked and not attended, omit customer from updated document
-      {};
+    // if booked not null, customer should stay in db (only mark absence)
+    const { bookedInterval } = customerEntry || {};
+    const updatedCustomerAttendance = bookedInterval
+      ? {
+          [customerId]: {
+            bookedInterval,
+            attendedInterval: null,
+          },
+        }
+      : // if not booked and not attended, omit customer from updated document
+        {};
 
-  // create proper structure for attendance entry
-  const attendanceEntry: SlotAttendnace = {
-    ...localAttendnaceEntry,
-    attendances: {
-      ...attendanceForSlot,
-      ...updatedCustomerAttendance,
-    },
-  };
+    // create proper structure for attendance entry
+    const attendanceEntry: SlotAttendnace = {
+      ...localAttendnaceEntry,
+      attendances: {
+        ...attendanceForSlot,
+        ...updatedCustomerAttendance,
+      },
+    };
 
-  // update month document with new values
-  await slotToUpdate.set(attendanceEntry);
+    // update month document with new values
+    await slotToUpdate.set(attendanceEntry);
+  } catch {
+    showErrSnackbar();
+  }
 };

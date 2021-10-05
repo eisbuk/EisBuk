@@ -18,8 +18,8 @@ import { functionsZone, ORGANIZATION } from "@/config/envInfo";
  * @param functionName function to run
  * @returns function that calls firebase with provided functionName param
  */
-const invokeFunction = (functionName: CloudFunction) => {
-  return async () => {
+export const invokeFunction = (functionName: CloudFunction) => {
+  return async (): Promise<void> => {
     const res = await firebase
       .app()
       .functions(functionsZone)
@@ -79,6 +79,24 @@ const DebugPage: React.FC = () => {
           variant="contained"
         >
           Migrate slots to plural categories
+        </Button>
+      </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={invokeFunction(CloudFunction.CreateStaleTestData)}
+          color="primary"
+          variant="contained"
+        >
+          Create old data model entries
+        </Button>
+      </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={invokeFunction(CloudFunction.MigrateToNewDataModel)}
+          color="primary"
+          variant="contained"
+        >
+          Migrate to new data model
         </Button>
       </Box>
     </Container>

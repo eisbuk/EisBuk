@@ -27,7 +27,7 @@ import {
   __slotFormId__,
   __cancelFormId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update SlotForm to be more atomic  */
@@ -52,7 +52,7 @@ describe("SlotOperationButtons", () => {
     beforeEach(() => {
       render(
         <SlotOperationButtons
-          slot={{ ...dummySlot, notes }}
+          slot={{ ...baseSlot, notes }}
           contextType={ButtonContextType.Slot}
         >
           <EditSlotButton />
@@ -110,7 +110,7 @@ describe("SlotOperationButtons", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Week}
-          slot={dummySlot}
+          slot={baseSlot}
         >
           <EditSlotButton />
         </SlotOperationButtons>

@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import { useDispatch } from "react-redux";
 
 import IconButton from "@material-ui/core/IconButton";
 
@@ -8,12 +7,9 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotButtonProps } from "@/types/components";
-import { SlotOperation } from "@/types/slotOperations";
 
-import SlotForm from "@/components/slots/SlotForm";
+import SlotForm from "@/components/atoms/SlotForm";
 import { ButtonGroupContext } from "./SlotOperationButtons";
-
-import { createSlots } from "@/store/actions/slotOperations";
 
 import {
   __slotButtonNoContextError,
@@ -38,13 +34,6 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
 
   const showForm = () => setOpenForm(true);
   const closeForm = () => setOpenForm(false);
-
-  /** @TEMP This should be handled within the `SlotForm` component */
-  const dispatch = useDispatch();
-  const onCreateSlot: SlotOperation<"create"> = (slot) => {
-    dispatch(createSlots([slot]));
-  };
-  /** @TEMP */
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOpeartionButtons` context
@@ -80,7 +69,11 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
       >
         <AddCircleOutlineIcon />
       </IconButton>
-      <SlotForm open={openForm} onClose={closeForm} createSlot={onCreateSlot} />
+      <SlotForm
+        open={openForm}
+        onClose={closeForm}
+        date={buttonGroupContext.date!}
+      />
     </>
   );
 };

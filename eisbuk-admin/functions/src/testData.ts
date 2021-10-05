@@ -71,7 +71,7 @@ const createUsers = async (
   _.range(numUsers).map(async () => {
     const name = _.sample(FIRST_NAMES)!;
     const surname = _.sample(LAST_NAMES)!;
-    const customer: Omit<Customer, "secret_key"> = {
+    const customer: Omit<Customer, "secretKey"> = {
       id: uuidv4(),
       birthday: "2000-01-01",
       name,

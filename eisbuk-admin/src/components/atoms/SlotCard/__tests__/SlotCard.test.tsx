@@ -4,15 +4,10 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import { Slot } from "eisbuk-shared";
-
-import { slotsLabels } from "@/config/appConfig";
-
-import { SlotView } from "@/enums/components";
+import { SlotInterface } from "eisbuk-shared";
 
 import SlotCard from "../SlotCard";
 
-import * as bookingActions from "@/store/actions/bookingOperations";
 import * as slotOperations from "@/store/actions/slotOperations";
 
 import { __slotId__ } from "../__testData__/testIds";
@@ -22,7 +17,7 @@ import {
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
-import { dummySlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/dummyData";
 
 const mockDispatch = jest.fn();
 
@@ -53,73 +48,38 @@ describe("SlotCard", () => {
 
   describe("Smoke test", () => {
     test("should render properly", () => {
-      render(<SlotCard {...dummySlot} />);
+      render(<SlotCard {...baseSlot} />);
     });
-  });
 
-  describe("DurationsSection functionality", () => {
-    const mockSubscribe = jest.spyOn(bookingActions, "subscribeToSlot");
-    const mockUnsubscribe = jest.spyOn(bookingActions, "unsubscribeFromSlot");
-
-    // we're mocking booking operations to return payload they've been called with rather than thunk
-    // any assertion comes to explicitly say we're ok with returning a Record instead of async thunk
-    mockSubscribe.mockImplementationOnce(
-      (bookingId, bookingInfo) =>
-        ({ action: "subscribe", bookingId, bookingInfo } as any)
-    );
-    mockUnsubscribe.mockImplementation(
-      (bookingId, slotId) =>
-        ({ action: "unsubscribe", bookingId, slotId } as any)
-    );
-
-    test("if clicked duration is not subscribed to, should subscribe to said duration and unsubscribe from any other duration", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      const subscribedDuration = dummySlot.durations[0];
-      render(
-        <SlotCard {...dummySlot} subscribedDuration={subscribedDuration} />
-      );
-      const notSubscribedDuration = dummySlot.durations[1];
-      const notSubscribedDurationLabel =
-        slotsLabels.durations[notSubscribedDuration].label;
-      screen.getByText(notSubscribedDurationLabel).click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        action: "subscribe",
-        bookingId: "secret_key",
-        bookingInfo: { ...dummySlot, duration: notSubscribedDuration },
+    test("should render intervals", () => {
+      render(<SlotCard {...baseSlot} />);
+      Object.keys(baseSlot.intervals).forEach((intervalKey) => {
+        // we're using `getAllByText` because the longest test interval is in fact start-finish
+        // so it appears as both interval and slot time span (title)
+        screen.getAllByText(intervalKey.split("-").join(" - "));
       });
     });
 
-    test("if clicked duration is subscribed to, should unsubscribe from said duration", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      const subscribedDuration = dummySlot.durations[0];
-      render(
-        <SlotCard {...dummySlot} subscribedDuration={subscribedDuration} />
-      );
-      const subscribedDurationLabel =
-        slotsLabels.durations[subscribedDuration].label;
-      screen.getByText(subscribedDurationLabel).click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        action: "unsubscribe",
-        bookingId: "secret_key",
-        slotId: dummySlot.id,
-      });
-    });
-
-    test("if admin view, clicking on durations won't have any effect", () => {
-      // we're simulating a case where the customer is subscribed to first duration of the dummy slot
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} />);
-      // click all of the buttons
-      dummySlot.durations.forEach((duration) => {
-        const durationLabel = slotsLabels.durations[duration].label;
-        screen.getByText(durationLabel).click();
-      });
-      expect(mockDispatch).toHaveBeenCalledTimes(0);
+    test("should render startTime-endTime string", () => {
+      // explicitly set intervals for straightforward testing
+      const intervals = {
+        ["09:00-10:00"]: {
+          startTime: "09:00",
+          endTime: "10:00",
+        },
+        ["15:00-18:00"]: {
+          startTime: "15:00",
+          endTime: "18:00",
+        },
+      };
+      render(<SlotCard {...{ ...baseSlot, intervals }} />);
+      screen.getByText("09:00 - 18:00");
     });
   });
 
   describe("SlotOperationButtons functionality", () => {
     beforeEach(() => {
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      render(<SlotCard {...baseSlot} enableEdit />);
     });
 
     test("should open slot form on edit slot click", () => {
@@ -129,19 +89,19 @@ describe("SlotCard", () => {
 
     test("should dispatch delete action on delete confirmation click", () => {
       // mock implementation of `deleteSlot` used to mock implementation in component and for testing
-      const mockDelSlotImplementation = (slotId: Slot<"id">["id"]) => ({
+      const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
         type: "delete_slot",
         slotId,
       });
       // mock deleteSlot function
       jest
         .spyOn(slotOperations, "deleteSlot")
-        .mockImplementation(mockDelSlotImplementation);
+        .mockImplementation(mockDelSlotImplementation as any);
       // open delete dialog
       screen.getByTestId(__deleteButtonId__).click();
       // confirm delete dialog
       screen.getByTestId(__confirmDialogYesId__).click();
-      const mockDeleteAction = mockDelSlotImplementation(dummySlot.id);
+      const mockDeleteAction = mockDelSlotImplementation(baseSlot.id);
       expect(mockDispatch).toHaveBeenCalledWith(mockDeleteAction);
     });
   });
@@ -150,20 +110,13 @@ describe("SlotCard", () => {
     const mockOnClick = jest.fn();
 
     test("should fire 'onClick' function if provided", () => {
-      render(
-        <SlotCard
-          {...dummySlot}
-          view={SlotView.Admin}
-          enableEdit
-          onClick={mockOnClick}
-        />
-      );
+      render(<SlotCard {...baseSlot} enableEdit onClick={mockOnClick} />);
       screen.getByTestId(__slotId__).click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
     test("should not explode on click if no 'onClick' handler has been provided", () => {
-      render(<SlotCard {...dummySlot} view={SlotView.Admin} enableEdit />);
+      render(<SlotCard {...baseSlot} enableEdit />);
       screen.getByTestId(__slotId__).click();
     });
   });

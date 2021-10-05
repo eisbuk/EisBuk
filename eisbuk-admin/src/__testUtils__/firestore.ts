@@ -1,12 +1,13 @@
 import { ExtendedFirebaseInstance } from "react-redux-firebase";
+import { DateTime } from "luxon";
 
-import { TempStore } from "@/types/temp";
+import { adminDb } from "@/tests/settings";
+
+import { LocalStore } from "@/types/store";
 
 import { defaultState as app } from "@/store/reducers/appReducer";
 import { defaultState as copyPaste } from "@/store/reducers/copyPasteReducer";
 import { defaultState as authInfoEisbuk } from "@/store/reducers/authReducer";
-
-import { adminDb } from "@/tests/settings";
 
 /**
  * Function we're using to simulate `getFirebase` function passed to Redux middleware.
@@ -30,7 +31,7 @@ const fbData = {
   queries: {},
 };
 
-const testStoreDefaultState: TempStore = {
+const testStoreDefaultState: LocalStore = {
   firebase: {
     ...fbData,
     ...fbStatus,
@@ -54,11 +55,26 @@ const testStoreDefaultState: TempStore = {
  * Function we're using to create a store state with the same structure as in production
  * only with (simulated) `firestore` data provided by `data` param
  */
-export const createTestStore = (
-  data: TempStore["firestore"]["data"]
-): TempStore => {
+export const createTestStore = ({
+  data = {},
+  date,
+  copyPaste = { day: null, week: null },
+}: {
+  data?: LocalStore["firestore"]["data"];
+  date?: DateTime;
+  copyPaste?: LocalStore["copyPaste"];
+}): LocalStore => {
   return {
     ...testStoreDefaultState,
-    firestore: { data } as TempStore["firestore"],
+    firestore: { data } as LocalStore["firestore"],
+    ...(date
+      ? {
+          app: {
+            ...testStoreDefaultState.app,
+            calendarDay: date,
+          },
+        }
+      : {}),
+    copyPaste,
   };
 };

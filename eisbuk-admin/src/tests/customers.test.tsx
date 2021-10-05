@@ -1,141 +1,113 @@
 import firebase from "firebase";
 
+import {
+  Category,
+  Collection,
+  Customer,
+  OrgSubCollection,
+} from "eisbuk-shared";
+
 import { adminDb } from "./settings";
+import { ORGANIZATION } from "@/config/envInfo";
+
 import { deleteAll } from "./utils";
-import pRetry from "p-retry";
+import { waitForCondition, getDocumentRef } from "@/__testUtils__/helpers";
+import { testWithEmulator } from "@/__testUtils__/envUtils";
+
 type DocumentData = firebase.firestore.DocumentData;
 
 beforeEach(async () => {
-  await deleteAll(["customers", "bookings"]);
+  await deleteAll([OrgSubCollection.Customers, OrgSubCollection.Bookings]);
 });
 
-const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
-  ? describe
-  : xdescribe;
+// string path to `customers` collection
+const customersPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}`;
 
-maybeDescribe("Customer triggers", () => {
-  it("apply secret_key when a customer record is added and keeps customer data up to date", async (done) => {
-    const coll = adminDb
-      .collection("organizations")
-      .doc("default")
-      .collection("customers");
-    const testCustomers = [
-      {
-        name: "John",
-        id: "foo",
-      },
-      {
+describe("Customer triggers", () => {
+  testWithEmulator(
+    "apply secretKey when a customer record is added and keeps customer data up to date",
+    async () => {
+      const testCustomers: (Pick<Customer, "id"> & Pick<Customer, "name">)[] = [
+        {
+          name: "John",
+          id: "foo",
+        },
+        {
+          name: "Jane",
+          id: "bar",
+        },
+      ];
+      await Promise.all(
+        testCustomers.map((customer) =>
+          getDocumentRef(adminDb, `${customersPath}/${customer.id!}`).set(
+            customer
+          )
+        )
+      );
+
+      const [fooFromDB, barFromDB] = await Promise.all(
+        testCustomers.map(({ id }) =>
+          waitForCondition({
+            documentPath: `${customersPath}/${id}`,
+            condition: hasSecretKey,
+          })
+        ) as Promise<Customer>[]
+      );
+
+      expect(fooFromDB.name).toBe("John");
+      expect(Boolean(fooFromDB.secretKey)).toBe(true);
+
+      expect(barFromDB.name).toBe("Jane");
+      expect(Boolean(barFromDB.secretKey)).toBe(true);
+    }
+  );
+
+  testWithEmulator(
+    "populate bookings when a customer record is added or changed",
+    async (done) => {
+      const testCustomer = {
         name: "Jane",
-        id: "bar",
-      },
-    ];
-    await Promise.all(
-      testCustomers.map((customer) => coll.doc(customer.id).set(customer))
-    );
+        surname: "Doe",
+        id: "baz",
+        category: Category.Course,
+      };
+      await getDocumentRef(adminDb, `${customersPath}/${testCustomer.id}`).set(
+        testCustomer
+      );
 
-    const fromDbFoo = await waitForCondition({
-      collection: "customers",
-      id: "foo",
-      condition: hasSecretKey,
-    });
-    expect(fromDbFoo?.name).toBe("John");
-    expect(Boolean(fromDbFoo?.secret_key)).toBe(true);
+      const fromDbBaz = (await waitForCondition({
+        documentPath: `${customersPath}/baz`,
+        condition: hasSecretKey,
+      })) as Customer;
+      const bookingsInfo = await waitForCondition({
+        documentPath: `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}/${fromDbBaz.secretKey}`,
+        condition: (data) => Boolean(data),
+      });
 
-    const fromDbBar = await waitForCondition({
-      collection: "customers",
-      id: "bar",
-      condition: hasSecretKey,
-    });
-    expect(fromDbBar?.name).toBe("Jane");
-    expect(Boolean(fromDbBar?.secret_key)).toBe(true);
-    done();
-  });
+      expect(bookingsInfo?.name).toEqual("Jane");
+      expect(bookingsInfo?.surname).toEqual("Doe");
+      expect(bookingsInfo?.category).toEqual(Category.Course);
 
-  it("populate bookings when a customer record is added or changed", async (done) => {
-    const orgsColl = adminDb.collection("organizations").doc("default");
-    const customersColl = orgsColl.collection("customers");
-    const testCustomer = {
-      name: "Jane",
-      surname: "Doe",
-      id: "baz",
-      category: "corso",
-    };
-    await customersColl.doc(testCustomer.id).set(testCustomer);
-
-    const fromDbBaz = await waitForCondition({
-      collection: "customers",
-      id: "baz",
-      condition: hasSecretKey,
-    });
-    const bookingsInfo = (
-      await orgsColl.collection("bookings").doc(fromDbBaz?.secret_key).get()
-    ).data();
-    expect(bookingsInfo?.name).toEqual("Jane");
-    expect(bookingsInfo?.surname).toEqual("Doe");
-    expect(bookingsInfo?.category).toEqual("corso");
-
-    await customersColl
-      .doc("baz")
-      .set({ ...testCustomer, category: "agonismo" });
-    await waitForCondition({
-      collection: "customers",
-      id: "baz",
-      condition: (data) => data?.category === "agonismo",
-    });
-    done();
-  });
+      await getDocumentRef(adminDb, `${customersPath}/baz`).set({
+        ...testCustomer,
+        category: Category.Competitive,
+      });
+      await waitForCondition({
+        documentPath: `${customersPath}/baz`,
+        condition: (data) => data?.category === Category.Competitive,
+      });
+      done();
+    }
+  );
 });
 
 /**
- * Check for secret_key in provided document.
+ * Check for secretKey in provided document.
  * Used to test `addMissingSecretKey` function for
  * customer registration
  * @param data document data
  * @returns whether secret key exists
  */
 const hasSecretKey = (data: DocumentData | undefined) => {
-  return data && data.secret_key;
-};
-
-interface WaitForCondition {
-  (params: {
-    collection: string;
-    id: string;
-    condition: (data: DocumentData | undefined) => boolean;
-    attempts?: number;
-    sleep?: number;
-  }): Promise<DocumentData | undefined>;
-}
-
-/**
- * Retries to fetch item until condition is true or the max number of attempts exceeded
- * @param param0
- * @returns
- */
-const waitForCondition: WaitForCondition = async ({
-  collection,
-  id,
-  condition,
-  attempts = 10,
-  sleep = 400,
-}) => {
-  let doc: DocumentData | undefined;
-  const coll = adminDb
-    .collection("organizations")
-    .doc("default")
-    .collection(collection);
-
-  await pRetry(
-    // Try to fetch the document with provided id in the provided collection
-    // until the condition has been met
-    async () => {
-      doc = (await coll.doc(id).get()).data();
-      return condition(doc)
-        ? Promise.resolve()
-        : Promise.reject(new Error(`${id} was not updated successfully`));
-    },
-    { retries: attempts, minTimeout: sleep, maxTimeout: sleep }
-  );
-
-  return doc;
+  return data && data.secretKey;
 };

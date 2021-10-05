@@ -1,7 +1,8 @@
 import { DateTime } from "luxon";
-import { Timestamp } from "@google-cloud/firestore";
 import { SnackbarKey } from "notistack";
 import i18n from "i18next";
+
+import { NotificationMessage } from "@/lib/notifications";
 
 import { Action, NotifVariant } from "@/enums/store";
 
@@ -9,7 +10,6 @@ import { AppReducerAction, Notification } from "@/types/store";
 
 import { store } from "@/store/index";
 
-// ***** Region Notifications ***** //
 /**
  * Notification interface with optional key (as new key will be created in absence of provided one)
  */
@@ -67,16 +67,14 @@ export const removeSnackbar = (
 export const showErrSnackbar = (): void => {
   store.dispatch(
     enqueueNotification({
-      message: i18n.t("Notification.Error"),
+      message: i18n.t(NotificationMessage.Error),
       options: {
         variant: NotifVariant.Error,
       },
     })
   );
 };
-// ***** End Region Notifications ***** //
 
-// ***** Region Date and Time ***** //
 /**
  * Creates Redux action for appReducer to update calendar date
  * @param date calendar date to set
@@ -88,16 +86,3 @@ export const changeCalendarDate = (
   type: Action.ChangeDay,
   payload: date,
 });
-
-/**
- * Creates Redux action for appReducer to update new slot time
- * @param time to set as new slot time
- * @returns Redux action object
- */
-export const setNewSlotTime = (
-  time: Timestamp
-): AppReducerAction<Action.SetSlotTime> => ({
-  type: Action.SetSlotTime,
-  payload: time,
-});
-// ***** End Region Date and Time ***** //
