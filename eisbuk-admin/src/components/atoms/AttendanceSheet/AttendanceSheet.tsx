@@ -25,6 +25,7 @@ const useStyles = makeStyles((theme) => ({
     padding: 20,
     background: theme.palette.primary.main,
     fontFamily: theme.typography.fontFamily,
+    color: theme.palette.primary.contrastText,
   },
 }));
 // #endregion Styles//
