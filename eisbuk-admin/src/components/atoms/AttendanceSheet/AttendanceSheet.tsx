@@ -9,6 +9,7 @@ export interface Props {
   date: DateTime;
 }
 
+
 const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
   const { t } = useTranslation();
   const classes = useStyles();

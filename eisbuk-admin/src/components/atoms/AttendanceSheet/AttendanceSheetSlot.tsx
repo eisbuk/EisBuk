@@ -53,16 +53,11 @@ const AttendanceSheetSlot: React.FC<Props> = ({
       <TableHead>
         <TableRow className={classes.slotHeading}>
           <TableCell className={classes.bold}>
-
             <span className={classes.margins}>{timeString} </span>
-
           </TableCell>
           <TableCell>
             <Box
-              className={[
-                classes.flexCenter,
-                classes.typeLabel,
-              ].join(" ")}
+              className={[classes.flexCenter, classes.typeLabel].join(" ")}
               flexGrow={1}
               pl={1}
               pr={1}
@@ -81,7 +76,6 @@ const AttendanceSheetSlot: React.FC<Props> = ({
               </Typography>
             </Box>
             {notes && <span className={classes.flexCenter}> ({notes})</span>}
-
           </TableCell>
         </TableRow>
       </TableHead>

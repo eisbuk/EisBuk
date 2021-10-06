@@ -17,18 +17,20 @@ const DashboardPage: React.FC = () => {
 
     const date = useSelector(getCalendarDay)
     return (
-        <>
-            <AppbarAdmin />
-            <DateNavigation jump="day">
-                {() => (
-                    <Container maxWidth="sm">
-                        <AttendanceSheet date={date}>
-                            {attendanceSlots.map((slot) => <AttendanceSheetSlot {...slot} />)}
-                        </AttendanceSheet>
-                    </Container>
-                )}
-            </DateNavigation>
-        </>
+      <>
+        <AppbarAdmin />
+        <DateNavigation jump="day">
+          {() => (
+            <Container maxWidth="sm">
+              <AttendanceSheet date={date}>
+                {attendanceSlots.map((slot) => (
+                  <AttendanceSheetSlot {...slot} />
+                ))}
+              </AttendanceSheet>
+            </Container>
+          )}
+        </DateNavigation>
+      </>
     );
 };
 
