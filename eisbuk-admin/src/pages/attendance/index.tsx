@@ -12,28 +12,25 @@ import AttendanceSheetSlot from "@/components/atoms/AttendanceSheet/AttendanceSh
 import { getCalendarDay } from "@/store/selectors/app";
 
 const DashboardPage: React.FC = () => {
+  const attendanceSlots = useSelector(getSlotsWithAttendance);
 
-    const attendanceSlots = useSelector(getSlotsWithAttendance);
-
-    const date = useSelector(getCalendarDay)
-    return (
-      <>
-        <AppbarAdmin />
-        <DateNavigation jump="day">
-          {() => (
-            <Container maxWidth="sm">
-              <AttendanceSheet date={date}>
-                {attendanceSlots.map((slot) => (
-                  <AttendanceSheetSlot {...slot} />
-                ))}
-              </AttendanceSheet>
-            </Container>
-          )}
-        </DateNavigation>
-      </>
-    );
+  const date = useSelector(getCalendarDay);
+  return (
+    <>
+      <AppbarAdmin />
+      <DateNavigation jump="day">
+        {() => (
+          <Container maxWidth="sm">
+            <AttendanceSheet date={date}>
+              {attendanceSlots.map((slot) => (
+                <AttendanceSheetSlot {...slot} />
+              ))}
+            </AttendanceSheet>
+          </Container>
+        )}
+      </DateNavigation>
+    </>
+  );
 };
-
-
 
 export default DashboardPage;

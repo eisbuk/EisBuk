@@ -9,14 +9,17 @@ export interface Props {
   date: DateTime;
 }
 
-
 const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
   const { t } = useTranslation();
   const classes = useStyles();
   return (
     <>
-      <div className={classes.title}><span >{t("AttendanceSheet.Attendance")}</span>
-        <span className={classes.date}>{t("AttendanceSheet.Date", { date })}</span></div>
+      <div className={classes.title}>
+        <span>{t("AttendanceSheet.Attendance")}</span>
+        <span className={classes.date}>
+          {t("AttendanceSheet.Date", { date })}
+        </span>
+      </div>
 
       <TableContainer component={Paper}>{children}</TableContainer>
     </>
@@ -34,7 +37,7 @@ const useStyles = makeStyles((theme) => ({
   date: {
     position: "absolute",
     right: "2rem",
-  }
+  },
 }));
 // #endregion Styles//
 export default AttendanceSheet;

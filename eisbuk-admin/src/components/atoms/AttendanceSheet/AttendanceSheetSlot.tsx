@@ -18,9 +18,7 @@ import ProjectIcon from "@/components/global/ProjectIcons";
 import Typography from "@material-ui/core/Typography";
 
 import { slotsLabels } from "@/config/appConfig";
-import {
-  slotTypeLabel,
-} from "@/lib/labels";
+import { slotTypeLabel } from "@/lib/labels";
 /** @TODO remove this and import same type when it's merged*/
 export interface Props extends SlotInterface {
   /**
@@ -123,7 +121,7 @@ const useStyles = makeStyles((theme) => ({
     color: theme.palette.grey[600],
   },
   margins: {
-    margin: 10
+    margin: 10,
   },
   typeIcon: {
     opacity: 0.5,
