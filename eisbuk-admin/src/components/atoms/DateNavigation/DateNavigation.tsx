@@ -174,7 +174,9 @@ const DateNavigation: React.FC<Props> = ({
           {showToggle && toggleButton}
         </Toolbar>
       </AppBar>
-      {children ? children({ toggleState }) : null}
+      <div className={classes.childrenContainer}>
+        {children ? children({ toggleState }) : null}
+      </div>
     </>
   );
 };
@@ -195,6 +197,9 @@ const useStyles = makeStyles((theme) => ({
   },
   "& .MuiAppBar-positionSticky": {
     top: theme.mixins.toolbar.top,
+  },
+  childrenContainer: {
+    paddingBottom: "2rem",
   },
 }));
 
