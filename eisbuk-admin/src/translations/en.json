@@ -172,6 +172,7 @@
     "CancelBooking": "Cancel"
   },
   "AttendanceSheet": {
-    "Date": "Attendance for ({{date, EEEE d MMMM}})"
+    "Attendance": "Attendance",
+    "Date":  "{{date, EEEE d MMMM}}"
   }
 }

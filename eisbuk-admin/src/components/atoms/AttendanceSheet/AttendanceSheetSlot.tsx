@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import TableBody from "@material-ui/core/TableBody";
 import TableRow from "@material-ui/core/TableRow";
@@ -12,7 +13,14 @@ import { SlotInterface } from "eisbuk-shared";
 import { CustomerWithAttendance } from "@/types/components";
 
 import { getSlotTimespan } from "@/utils/helpers";
+import Box from "@material-ui/core/Box";
+import ProjectIcon from "@/components/global/ProjectIcons";
+import Typography from "@material-ui/core/Typography";
 
+import { slotsLabels } from "@/config/appConfig";
+import {
+  slotTypeLabel,
+} from "@/lib/labels";
 /** @TODO remove this and import same type when it's merged*/
 export interface Props extends SlotInterface {
   /**
@@ -30,6 +38,9 @@ const AttendanceSheetSlot: React.FC<Props> = ({
   notes,
 }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
+  const slotLabel = slotsLabels.types[type];
 
   const timeString = getSlotTimespan(intervals);
 
@@ -42,9 +53,35 @@ const AttendanceSheetSlot: React.FC<Props> = ({
       <TableHead>
         <TableRow className={classes.slotHeading}>
           <TableCell className={classes.bold}>
-            <span>{timeString} </span>
-            <span> {type.toUpperCase()}</span>
-            {notes && <span> ({notes})</span>}
+
+            <span className={classes.margins}>{timeString} </span>
+
+          </TableCell>
+          <TableCell>
+            <Box
+              className={[
+                classes.flexCenter,
+                classes.typeLabel,
+              ].join(" ")}
+              flexGrow={1}
+              pl={1}
+              pr={1}
+            >
+              <ProjectIcon
+                className={classes.typeIcon}
+                icon={slotLabel.icon}
+                fontSize="small"
+              />
+              <Typography
+                className={classes.type}
+                key="type"
+                color={slotLabel.color}
+              >
+                {t(slotTypeLabel[type])}
+              </Typography>
+            </Box>
+            {notes && <span className={classes.flexCenter}> ({notes})</span>}
+
           </TableCell>
         </TableRow>
       </TableHead>
@@ -89,7 +126,34 @@ const useStyles = makeStyles((theme) => ({
   tableCell: {
     borderRight: "1px solid rgba(224, 224, 224, 1)",
     width: "50%",
-    color: theme.palette.grey[400],
+    color: theme.palette.grey[600],
+  },
+  margins: {
+    margin: 10
+  },
+  typeIcon: {
+    opacity: 0.5,
+  },
+  type: {
+    textTransform: "uppercase",
+    fontWeight: theme.typography.fontWeightBold,
+    fontSize: theme.typography.pxToRem(10),
+  },
+  flexCenter: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  typeLabel: {
+    height: "100%",
+  },
+  boxCenter: {
+    width: "100%",
+  },
+  boxLeft: {
+    boxSizing: "border-box",
+    width: "50%",
+    marginRight: "auto",
   },
 }));
 // #endregion Styles//

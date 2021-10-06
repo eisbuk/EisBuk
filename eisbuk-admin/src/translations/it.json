@@ -171,6 +171,8 @@
     "CancelBooking": "Annulla"
   },
   "AttendanceSheet": {
-    "Date": "Presenze per ({{date, EEEE d MMMM}})"
+    "Attendance": "Presenze",
+    "Date":  "{{date, EEEE d MMMM}}"
   }
+  
 }
