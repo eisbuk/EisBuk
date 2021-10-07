@@ -93,7 +93,10 @@ export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
     admins: ["test@example.com"],
   };
 
-  return adminDb.collection("organizations").doc("default").set(orgDefinition);
+  return adminDb
+    .collection(Collection.Organizations)
+    .doc("default")
+    .set(orgDefinition);
 };
 
 /**
@@ -101,12 +104,12 @@ export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
  * @param collections to delete
  * @returns
  */
-export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
-  const org = adminDb
-    .collection(Collection.Organizations)
-    .doc(__organization__);
+export const deleteAll = async (
+  collections: string[]
+): Promise<FirebaseFirestore.WriteResult[]> => {
+  const org = adminDb.collection("organizations").doc(__organization__);
 
-  return deleteAllCollections(org, Object.values(OrgSubCollection));
+  return deleteAllCollections(org, collections);
 };
 
 /**

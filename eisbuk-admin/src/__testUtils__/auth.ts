@@ -1,5 +1,27 @@
-import firebase from "firebase/app";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  UserCredential,
+} from "@firebase/auth";
 import axios from "axios";
+
+import { auth } from "@/__testSettings__";
+
+/**
+ * @TODO check this as it seems unnecessary
+ * Test util: creates default organization ("default") in emulated firestore db
+ * and adds admin ("test@example.com")
+ * @returns
+ */
+//  export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
+//   const orgDefinition = {
+//     admins: ["test@example.com"],
+//   };
+
+//   return adminDb.collection("organizations").doc("default").set(orgDefinition);
+// };
 
 /**
  * Test util: loggs in with default user's email ("test@example.com")
@@ -14,9 +36,9 @@ export const loginDefaultUser = (): Promise<void> => {
  */
 export const loginWithEmail = async (email: string): Promise<void> => {
   try {
-    await firebase.auth().createUserWithEmailAndPassword(email, "secret");
+    await createUserWithEmailAndPassword(auth, email, "secret");
   } catch (e) {
-    await firebase.auth().signInWithEmailAndPassword(email, "secret");
+    await signInWithEmailAndPassword(auth, email, "secret");
   }
 };
 
@@ -27,19 +49,23 @@ export const loginWithEmail = async (email: string): Promise<void> => {
  */
 export const loginWithPhone = async (
   phoneNumber: string
-): Promise<firebase.auth.UserCredential> => {
+): Promise<UserCredential> => {
   // Turn off phone auth app verification.
-  firebase.auth().settings.appVerificationDisabledForTesting = true;
+  auth.settings.appVerificationDisabledForTesting = true;
 
-  const verifier = new firebase.auth.RecaptchaVerifier(
-    document.createElement("div")
+  const verifier = new RecaptchaVerifier(
+    document.createElement("div"),
+    {},
+    auth
   );
   jest
     .spyOn(verifier, "verify")
     .mockImplementation(() => Promise.resolve("foo"));
-  const confirmationResult = await firebase
-    .auth()
-    .signInWithPhoneNumber(phoneNumber, verifier);
+  const confirmationResult = await signInWithPhoneNumber(
+    auth,
+    phoneNumber,
+    verifier
+  );
   const response = await axios.get(
     "http://localhost:9098/emulator/v1/projects/eisbuk/verificationCodes"
   );

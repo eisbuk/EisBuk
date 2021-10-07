@@ -50,7 +50,12 @@ const slotAttendanceRef = getDocumentRef(adminDb, attendanceDocPath);
 beforeEach(async () => {
   const clearAll = [
     deleteAllCollections(userBookingRef, [BookingSubCollection.BookedSlots]),
-    deleteAll(),
+    deleteAll([
+      OrgSubCollection.Slots,
+      OrgSubCollection.Attendance,
+      OrgSubCollection.SlotsByDay,
+      OrgSubCollection.Bookings,
+    ]),
   ];
   await Promise.all(clearAll);
 });

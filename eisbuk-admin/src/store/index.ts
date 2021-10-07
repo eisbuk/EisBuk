@@ -1,14 +1,16 @@
 /* eslint-disable import/no-duplicates */
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/functions";
-
-import firebase from "firebase";
 import { createStore, applyMiddleware } from "redux";
-import { getFirebase } from "react-redux-firebase";
-import { createFirestoreInstance } from "redux-firestore";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
+
+import { initializeApp, getApp } from "firebase/app";
+import { useDeviceLanguage, getAuth, connectAuthEmulator } from "firebase/auth";
+import {
+  connectFirestoreEmulator,
+  getFirestore,
+  enableIndexedDbPersistence,
+} from "firebase/firestore";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 
 import {
   __isDev__,
@@ -20,10 +22,11 @@ import {
   __authDomain__,
   __storageBucket__,
   __measurementId__,
-  __functionsZone__,
 } from "@/lib/constants";
 
 import rootReducer from "./reducers/rootReducer";
+
+const auth = getAuth();
 
 const fbConfig = {
   // common config data
@@ -53,22 +56,21 @@ const rrfConfig = {
 };
 
 // Initialize Firebase, Firestore and Functions instances
-firebase.initializeApp(fbConfig);
-firebase.auth().useDeviceLanguage();
-const db = firebase.firestore();
+initializeApp(fbConfig);
+// eslint-disable-next-line react-hooks/rules-of-hooks
+useDeviceLanguage(auth);
+const db = getFirestore();
 
-const functions = firebase.functions();
+const functions = getFunctions();
 
 if (__isDev__) {
-  db.settings({ experimentalAutoDetectLongPolling: true });
-  db.useEmulator("localhost", 8080);
-  firebase.auth().useEmulator("http://localhost:9099/");
-  functions.useEmulator("localhost", 5001);
-  firebase.app().functions(__functionsZone__).useEmulator("localhost", 5001);
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectAuthEmulator(auth, "http://localhost:9099/");
+  connectFunctionsEmulator(functions, "localhost", 5001);
   console.warn("Using emulator for functions and authentication");
-  window.firebase = firebase as any;
+  // window.firebase = firebase as any;
 } else {
-  db.enablePersistence().catch((err) => {
+  enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === "failed-precondition") {
       console.warn(
         "Multiple tabs open, persistence can only be enabled in one tab at a a time."
@@ -89,8 +91,8 @@ export const store = createStore(
   composeWithDevTools(applyMiddleware(...middlewares))
 );
 
-export const rrfProps = {
-  firebase,
+export const rrfProps: ReactReduxFirebaseProviderProps = {
+  firebase: getApp(),
   config: rrfConfig,
   dispatch: store.dispatch,
   createFirestoreInstance,

@@ -33,6 +33,10 @@ const attendanceMonth = firestoreUtils
 const mockDispatch = jest.fn();
 
 describe("Attendance operations ->", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("markAttendance ->", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",

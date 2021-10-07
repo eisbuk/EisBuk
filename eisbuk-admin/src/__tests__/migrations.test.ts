@@ -1,9 +1,15 @@
-import firebase from "firebase/app";
+import { httpsCallable } from "@firebase/functions";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
+<<<<<<< HEAD
 import { __functionsZone__ } from "@/lib/constants";
+=======
+import { __organization__ } from "@/lib/constants";
+
+import { functions } from "@/__testSettings__";
+>>>>>>> Upgrade to Firebase@9.1.1, sill fixing some errors
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -30,8 +36,16 @@ import { getOrganization } from "@/lib/getters";
 const db = getFirebase().firestore();
 const organization = getOrganization();
 export const invokeFunction = (functionName: string) => (): Promise<any> =>
+<<<<<<< HEAD
   firebase.app().functions(__functionsZone__).httpsCallable(functionName)({
     organization,
+=======
+  httpsCallable(
+    functions,
+    functionName
+  )({
+    organization: __organization__,
+>>>>>>> Upgrade to Firebase@9.1.1, sill fixing some errors
   });
 
 /**
@@ -41,7 +55,12 @@ const orgRef = db.collection(Collection.Organizations).doc(organization);
 
 describe("Migrations", () => {
   afterEach(async () => {
-    await deleteAll();
+    await deleteAll([
+      OrgSubCollection.Slots,
+      OrgSubCollection.Bookings,
+      DeprecatedOrgSubCollection.BookingsByDay,
+      OrgSubCollection.SlotsByDay,
+    ]);
   });
 
   describe("'migrateToNewDataModel'", () => {
