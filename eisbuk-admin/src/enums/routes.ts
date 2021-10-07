@@ -3,6 +3,7 @@ export enum Routes {
   Unauthorized = "/unautorized",
   Debug = "/debug",
   CustomerArea = "/customer_area",
+  AttendancePrintable = "/attendance_printable",
 }
 
 export enum CustomerRoute {

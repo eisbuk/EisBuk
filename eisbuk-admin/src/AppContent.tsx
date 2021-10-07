@@ -21,6 +21,7 @@ import CustomerAreaPage from "@/pages/customer_area";
 import useFirestoreSubscribe from "@/hooks/useFirestoreSubscribe";
 
 import { queryOrganizationStatus } from "@/store/actions/authOperations";
+import AttendanceSheet from "./components/atoms/AttendanceSheet/AttendanceSheet";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -50,12 +51,14 @@ const AppContent: React.FC = () => {
       <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
       <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+
       <Route
         path={`${Routes.CustomerArea}/:secretKey/:customerRoute?`}
         component={CustomerAreaPage}
       />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
       <Route path={Routes.Debug} children={<DebugPage />} />
+      <Route path={Routes.AttendancePrintable} component={AttendanceSheet} />
     </Switch>
   );
 };
