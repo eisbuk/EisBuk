@@ -20,6 +20,16 @@ const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
+// mocked return value for `enqueueErrSnackbar`.
+// the actual return value is the thunk, but we're using this to easily test dispatching
+const errNotifAction = { type: "err_spy" };
+jest
+  .spyOn(appActions, "showErrSnackbar")
+  .mockImplementation(() => errNotifAction as any);
+
+// a jest mock function we're using to pass as dispatch at certain points
+const mockDispatch = jest.fn();
+
 // path of attendance collection and test month document to make our lives easier
 // as we'll be using it throughout
 const attendanceMonth = firestoreUtils
@@ -31,6 +41,10 @@ const attendanceMonth = firestoreUtils
   .doc(slotId);
 
 describe("Attendance operations ->", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("markAttendance ->", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",
@@ -91,7 +105,6 @@ describe("Attendance operations ->", () => {
     testWithEmulator(
       "should enqueue error snackbar if update not successful",
       async () => {
-        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
         // cause synthetic error in execution
         jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
           throw new Error();
@@ -99,6 +112,7 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         const thunkArgs = await setupTestAttendance({
           attendance: { [slotId]: initialDoc },
+          dispatch: mockDispatch,
         });
         const testThunk = markAttendance({
           customerId,
@@ -106,7 +120,7 @@ describe("Attendance operations ->", () => {
           attendedInterval,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });
@@ -168,7 +182,6 @@ describe("Attendance operations ->", () => {
     testWithEmulator(
       "should enqueue error snackbar if update not successful",
       async () => {
-        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
         // cause synthetic error in execution
         jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
           throw new Error();
@@ -176,13 +189,14 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         const thunkArgs = await setupTestAttendance({
           attendance: { [slotId]: initialDoc },
+          dispatch: mockDispatch,
         });
         const testThunk = markAbsence({
           customerId,
           slotId: observedSlotId,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });

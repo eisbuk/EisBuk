@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import firebase from "firebase/app";
+
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
@@ -7,7 +8,9 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import BugReportIcon from "@material-ui/icons/BugReport";
 
-import { functionsZone, ORGANIZATION } from "@/config/envInfo";
+import { ORGANIZATION } from "@/config/envInfo";
+
+const functions = getFunctions();
 
 const DebugMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -21,10 +24,10 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(null);
     if (functionName) {
       try {
-        const res = await firebase
-          .app()
-          .functions(functionsZone)
-          .httpsCallable(functionName)({
+        const res = await httpsCallable(
+          functions,
+          functionName
+        )({
           ...params,
           organization: ORGANIZATION,
         });

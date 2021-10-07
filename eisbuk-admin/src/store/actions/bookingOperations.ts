@@ -58,7 +58,7 @@ export const bookInterval = ({
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar());
   }
 };
 
@@ -97,6 +97,6 @@ export const cancelBooking = ({
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar());
   }
 };

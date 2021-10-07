@@ -54,10 +54,12 @@ jest
   .spyOn(appActions, "enqueueNotification")
   .mockImplementation(mockEnqueueSnackbar as any);
 
-/**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+// mocked return value for `enqueueErrSnackbar`.
+// the actual return value is the thunk, but we're using this to easily test dispatching
+const errNotifAction = { type: "err_spy" };
+jest
+  .spyOn(appActions, "showErrSnackbar")
+  .mockImplementation(() => errNotifAction as any);
 
 /**
  * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
@@ -138,6 +140,7 @@ describe("Booking Notifications", () => {
         const thunkArgs = await setupTestBookings({
           bookedSlots,
           secretKey,
+          dispatch: mockDispatch,
         });
         const testThunk = bookInterval({
           secretKey,
@@ -146,7 +149,7 @@ describe("Booking Notifications", () => {
           date: testBooking.date,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });
@@ -198,13 +201,14 @@ describe("Booking Notifications", () => {
         const thunkArgs = await setupTestBookings({
           bookedSlots,
           secretKey,
+          dispatch: mockDispatch,
         });
         const testThunk = cancelBooking({
           secretKey,
           slotId: bookingId,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });

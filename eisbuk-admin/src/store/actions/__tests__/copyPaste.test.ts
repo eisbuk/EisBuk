@@ -44,10 +44,12 @@ const mockDispatch = jest.fn();
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
-/**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
+// mocked return value for `enqueueErrSnackbar`.
+// the actual return value is the thunk, but we're using this to easily test dispatching
+const errNotifAction = { type: "err_spy" };
+jest
+  .spyOn(appActions, "showErrSnackbar")
+  .mockImplementation(() => errNotifAction as any);
 
 describe("Copy Paste actions", () => {
   afterEach(async () => {
@@ -156,11 +158,12 @@ describe("Copy Paste actions", () => {
       // run the thunk
       const thunkArgs = await setupCopyPaste({
         day: testDay,
+        dispatch: mockDispatch,
       });
       const pasteThunk = pasteSlotsDay(testDateLuxon);
       await pasteThunk(...thunkArgs);
       // check the error message being enqueued
-      expect(errNotifSpy).toHaveBeenCalled();
+      expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
     });
   });
 
@@ -205,11 +208,12 @@ describe("Copy Paste actions", () => {
         // run the thunk
         const thunkArgs = await setupCopyPaste({
           week: { slots: Object.values(testWeek), weekStart: testDateLuxon },
+          dispatch: mockDispatch,
         });
         const testThunk = pasteSlotsWeek(testDateLuxon);
         await testThunk(...thunkArgs);
         // check the error message being enqueued
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });

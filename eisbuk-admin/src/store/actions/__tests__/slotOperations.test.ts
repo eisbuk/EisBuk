@@ -28,6 +28,16 @@ import {
 
 const db = firestoreUtils.getFirebase().firestore();
 
+// mocked return value for `enqueueErrSnackbar`.
+// the actual return value is the thunk, but we're using this to easily test dispatching
+const errNotifAction = { type: "err_spy" };
+jest
+  .spyOn(appActions, "showErrSnackbar")
+  .mockImplementation(() => errNotifAction as any);
+
+// a jest mock function we're using to pass as dispatch at certain points
+const mockDispatch = jest.fn();
+
 // path of attendance collection and test month document to make our lives easier
 // as we'll be using it throughout
 const slotsRef = db
@@ -56,16 +66,6 @@ const mockEnqueueSnackbar = ({
 jest
   .spyOn(appActions, "enqueueNotification")
   .mockImplementation(mockEnqueueSnackbar as any);
-
-/**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
-
-/**
- * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
- */
-const mockDispatch = jest.fn();
 
 /**
  * A spy of `getFirebase` function which we're occasionally mocking to throw error
@@ -131,11 +131,12 @@ describe("Slot operations ->", () => {
         // run thunk
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         const testThunk = createNewSlot(testFromValues);
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });
@@ -204,6 +205,7 @@ describe("Slot operations ->", () => {
         // run thunk
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         const testThunk = updateSlot({
           ...testFromValues,
@@ -211,7 +213,7 @@ describe("Slot operations ->", () => {
         });
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });
@@ -259,12 +261,13 @@ describe("Slot operations ->", () => {
         // set up initial state
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         // create a thunk curried with slot id
         const testThunk = deleteSlot("id");
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(errNotifAction);
       }
     );
   });

@@ -1,11 +1,9 @@
-/* eslint-disable import/no-duplicates */
-import firebase from "firebase/app";
-import "firebase/auth";
-import "firebase/functions";
-import "firebase/firestore";
+import { initializeApp, getApp } from "firebase/app";
+import { getAuth, connectAuthEmulator } from "firebase/auth";
+import { getFirestore, connectFirestoreEmulator } from "firebase/firestore";
 import { Firestore } from "@google-cloud/firestore";
 import { credentials } from "@grpc/grpc-js";
-import { functionsZone } from "@/config/envInfo";
+import { connectFunctionsEmulator, getFunctions } from "firebase/functions";
 
 const projectId = "eisbuk";
 
@@ -19,18 +17,18 @@ export const adminDb = new Firestore({
   },
 });
 
-if (!firebase.apps.length) {
-  firebase.initializeApp({
-    projectId: projectId,
-    apiKey: "aaa",
-  });
-  firebase.auth().useEmulator("http://localhost:9098/");
-  firebase.functions().useEmulator("localhost", 5002);
-  firebase.app().functions(functionsZone).useEmulator("localhost", 5002);
-  firebase.firestore().settings({
-    host: "localhost:8081",
-    ssl: false,
-  });
-}
+// if (!getApp()) {
+initializeApp({
+  projectId: projectId,
+  apiKey: "aaa",
+});
+// }
 
-export const db = firebase.firestore();
+export const auth = getAuth();
+connectAuthEmulator(auth, "http://localhost:9098");
+
+export const db = getFirestore();
+connectFirestoreEmulator(db, "localhost", 8081);
+
+export const functions = getFunctions(getApp());
+connectFunctionsEmulator(functions, "localhost", 5002);

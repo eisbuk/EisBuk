@@ -1,7 +1,14 @@
-import firebase from "firebase/app";
 import axios from "axios";
-import { adminDb } from "./settings";
-import "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  RecaptchaVerifier,
+  signInWithEmailAndPassword,
+  signInWithPhoneNumber,
+  UserCredential,
+} from "firebase/auth";
+
+import { adminDb, auth } from "./settings";
+
 import { ORGANIZATION } from "@/config/envInfo";
 
 /**
@@ -9,9 +16,9 @@ import { ORGANIZATION } from "@/config/envInfo";
  */
 export const loginWithUser = async (email: string): Promise<void> => {
   try {
-    await firebase.auth().createUserWithEmailAndPassword(email, "secret");
+    await createUserWithEmailAndPassword(auth, email, "secret");
   } catch (e) {
-    await firebase.auth().signInWithEmailAndPassword(email, "secret");
+    await signInWithEmailAndPassword(auth, email, "secret");
   }
 };
 
@@ -81,19 +88,23 @@ export const deleteAllCollections = async (
  */
 export const loginWithPhone = async (
   phoneNumber: string
-): Promise<firebase.auth.UserCredential> => {
+): Promise<UserCredential> => {
   // Turn off phone auth app verification.
-  firebase.auth().settings.appVerificationDisabledForTesting = true;
+  auth.settings.appVerificationDisabledForTesting = true;
 
-  const verifier = new firebase.auth.RecaptchaVerifier(
-    document.createElement("div")
+  const verifier = new RecaptchaVerifier(
+    document.createElement("div"),
+    {},
+    auth
   );
   jest
     .spyOn(verifier, "verify")
     .mockImplementation(() => Promise.resolve("foo"));
-  const confirmationResult = await firebase
-    .auth()
-    .signInWithPhoneNumber(phoneNumber, verifier);
+  const confirmationResult = await signInWithPhoneNumber(
+    auth,
+    phoneNumber,
+    verifier
+  );
   const response = await axios.get(
     "http://localhost:9098/emulator/v1/projects/eisbuk/verificationCodes"
   );

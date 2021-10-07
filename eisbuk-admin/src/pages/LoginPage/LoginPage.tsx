@@ -1,7 +1,13 @@
 import React from "react";
 import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import firebase from "firebase/app";
 import _ from "lodash";
+
+import {
+  getAuth,
+  PhoneAuthProvider,
+  GoogleAuthProvider,
+  EmailAuthProvider,
+} from "firebase/auth";
 
 import Avatar from "@material-ui/core/Avatar";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -28,6 +34,56 @@ const loginBackgrounds = [
   girlIceSkating,
   iceSkatingSilhouette,
 ];
+
+const auth = getAuth();
+
+const SignInSide: React.FC = () => {
+  const classes = useStyles();
+
+  const loginImageStyle = {
+    backgroundImage: `url(${_.sample(loginBackgrounds)})`,
+  };
+  const uiConfig = {
+    signInOptions: [
+      {
+        provider: PhoneAuthProvider.PROVIDER_ID,
+        // The default selected country.
+        defaultCountry: "IT",
+        recaptchaParameters: {
+          type: "image", // 'audio'
+          size: "invisible", // 'invisible' or 'compact'
+          badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
+        },
+      },
+      GoogleAuthProvider.PROVIDER_ID,
+      EmailAuthProvider.PROVIDER_ID,
+    ],
+  };
+  return (
+    <Grid container component="main" className={classes.root}>
+      <CssBaseline />
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={7}
+        className={classes.image}
+        style={loginImageStyle}
+      />
+      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <div className={classes.paper}>
+          <Avatar className={classes.avatar}>
+            <LockOutlinedIcon />
+          </Avatar>
+          <Typography component="h1" variant="h5">
+            {organizationInfo.name}
+          </Typography>
+          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
+        </div>
+      </Grid>
+    </Grid>
+  );
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -60,56 +116,5 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
-
-const SignInSide: React.FC = () => {
-  const classes = useStyles();
-
-  const loginImageStyle = {
-    backgroundImage: `url(${_.sample(loginBackgrounds)})`,
-  };
-  const uiConfig = {
-    signInOptions: [
-      {
-        provider: firebase.auth.PhoneAuthProvider.PROVIDER_ID,
-        // The default selected country.
-        defaultCountry: "IT",
-        recaptchaParameters: {
-          type: "image", // 'audio'
-          size: "invisible", // 'invisible' or 'compact'
-          badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-        },
-      },
-      firebase.auth.GoogleAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID,
-    ],
-  };
-  return (
-    <Grid container component="main" className={classes.root}>
-      <CssBaseline />
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        className={classes.image}
-        style={loginImageStyle}
-      />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            {organizationInfo.name}
-          </Typography>
-          <StyledFirebaseAuth
-            uiConfig={uiConfig}
-            firebaseAuth={firebase.auth()}
-          />
-        </div>
-      </Grid>
-    </Grid>
-  );
-};
 
 export default SignInSide;

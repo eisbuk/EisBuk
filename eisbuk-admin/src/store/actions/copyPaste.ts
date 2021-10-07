@@ -13,8 +13,9 @@ import { Action } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
-import { luxon2ISODate, luxonToFB } from "@/utils/date";
 import { showErrSnackbar } from "./appActions";
+
+import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -179,7 +180,7 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
 
     await batch.commit();
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar());
   }
 };
 
@@ -223,7 +224,7 @@ export const pasteSlotsWeek = (
 
     await batch.commit();
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar());
   }
 };
 

@@ -1,9 +1,9 @@
-import firebase from "firebase/app";
-import "@/tests/settings";
-
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { functionsZone, ORGANIZATION } from "@/config/envInfo";
+import { httpsCallable } from "firebase/functions";
+
+import { functions } from "@/tests/settings";
+import { ORGANIZATION } from "@/config/envInfo";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -32,7 +32,10 @@ import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 const db = getFirebase().firestore();
 
 export const invokeFunction = (functionName: string) => (): Promise<any> =>
-  firebase.app().functions(functionsZone).httpsCallable(functionName)({
+  httpsCallable(
+    functions,
+    functionName
+  )({
     organization: ORGANIZATION,
   });
 

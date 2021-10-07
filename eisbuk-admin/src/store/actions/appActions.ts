@@ -6,9 +6,7 @@ import { NotificationMessage } from "@/lib/notifications";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { AppReducerAction, Notification } from "@/types/store";
-
-import { store } from "@/store/index";
+import { AppReducerAction, FirestoreThunk, Notification } from "@/types/store";
 
 /**
  * Notification interface with optional key (as new key will be created in absence of provided one)
@@ -64,8 +62,8 @@ export const removeSnackbar = (
 /**
  * Helper function: dispatches Redux action to enqueue error notification
  */
-export const showErrSnackbar = (): void => {
-  store.dispatch(
+export const showErrSnackbar = (): FirestoreThunk => async (dispatch) => {
+  dispatch(
     enqueueNotification({
       message: i18n.t(NotificationMessage.Error),
       options: {

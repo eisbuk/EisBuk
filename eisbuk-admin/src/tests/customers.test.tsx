@@ -1,4 +1,4 @@
-import firebase from "firebase";
+import { DocumentData } from "firebase/firestore";
 
 import {
   Category,
@@ -13,8 +13,6 @@ import { ORGANIZATION } from "@/config/envInfo";
 import { deleteAll } from "./utils";
 import { waitForCondition, getDocumentRef } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-
-type DocumentData = firebase.firestore.DocumentData;
 
 beforeEach(async () => {
   await deleteAll([OrgSubCollection.Customers, OrgSubCollection.Bookings]);
