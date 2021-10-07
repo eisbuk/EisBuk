@@ -46,8 +46,8 @@ module.exports = {
     "config-overrides.js",
     "react-app-env.d.ts",
     "plopfile.js",
-    // inspect below, I believe it caused no-unresolved problem with es-lint due to js-dom hack
     "setupTests.js",
+    "coverage",
   ],
   rules: {
     // Remove rule for props to require quotes
