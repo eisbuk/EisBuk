@@ -1,16 +1,18 @@
 import { DateTime } from "luxon";
-import { Timestamp as TimestampType } from "@google-cloud/firestore";
+import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
 
 import firebase from "firebase/app";
 
-const Timestamp = firebase.firestore.Timestamp;
+/** @TODO This is a temp fix since the tests accept one type and all other evnironments accept the other...this needs to be fixed with the Timestamp issue ticket */
+const Timestamp =
+  process.env.NODE_ENV === "test" ? FbTimestamp : firebase.firestore.Timestamp;
 
 /**
  * Convert Firebase Timestamp to luxon string (DateTime)
  * @param fbDatetime
  * @returns
  */
-export const fb2Luxon = (fbDatetime?: TimestampType): DateTime =>
+export const fb2Luxon = (fbDatetime?: FbTimestamp): DateTime =>
   DateTime.fromJSDate(
     new Date(fbDatetime ? fbDatetime.seconds * 1000 : Date.now())
   );
@@ -27,7 +29,7 @@ export const fromISO = (isoStr: string): DateTime => DateTime.fromISO(isoStr);
  * @param luxonTS
  * @returns
  */
-export const luxonToFB = (date: DateTime): TimestampType => {
+export const luxonToFB = (date: DateTime): FbTimestamp => {
   // since DateTime uses system timezone, and Timestamp is an absolute time since the UNIX epoch
   // here we're adding the offset to the `date` to simulate the same time in UTC (not to confuse the server aggregating slots by date)
   const cleanDate = date.plus({ minutes: date.offset });
