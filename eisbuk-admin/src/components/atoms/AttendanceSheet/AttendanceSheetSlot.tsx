@@ -6,26 +6,24 @@ import TableRow from "@material-ui/core/TableRow";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import TableHead from "@material-ui/core/TableHead";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface } from "eisbuk-shared";
-import { CustomerWithAttendance } from "@/types/components";
-
-import { getSlotTimespan } from "@/utils/helpers";
-import Box from "@material-ui/core/Box";
-import ProjectIcon from "@/components/global/ProjectIcons";
-import Typography from "@material-ui/core/Typography";
 
 import { slotsLabels } from "@/config/appConfig";
+
 import { slotTypeLabel } from "@/lib/labels";
-/** @TODO remove this and import same type when it's merged*/
-export interface Props extends SlotInterface {
-  /**
-   * Record of customers who have booked (or are manually as attended),
-   * keyed by `customerId` and having all of the data for the customer plus
-   * values for `bookedInterval` and `attendedInterval`.
-   */
+
+import { CustomerWithAttendance } from "@/types/components";
+
+import ProjectIcon from "@/components/global/ProjectIcons";
+
+import { getSlotTimespan } from "@/utils/helpers";
+
+interface Props extends SlotInterface {
   customers: CustomerWithAttendance[];
 }
 
@@ -42,32 +40,36 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 
   const timeString = getSlotTimespan(intervals);
 
-  /** UI todos:
-   * @TODO in page component render alternative background shades for slot table
-   * @TODO center each slot timestring (different width percentages for table cells doesn't work)
-   */
   return (
     <Table aria-label="simple table">
       <TableHead>
-        <TableCell className={classes.spaceBetween}>
-          <Typography>{timeString} </Typography>
-
-          <div>
-            <ProjectIcon
-              className={classes.typeIcon}
-              icon={slotLabel.icon}
-              fontSize="small"
-            />
-            <Typography
-              className={classes.type}
-              key="type"
-              color={slotLabel.color}
+        <TableRow className={classes.heading}>
+          <TableCell className={[classes.bold, classes.tableCell].join(" ")}>
+            {timeString}
+          </TableCell>
+          <TableCell className={classes.tableCell}>
+            <Box
+              className={[classes.flexCenter, classes.typeLabel].join(" ")}
+              flexGrow={1}
+              pl={1}
+              pr={1}
             >
-              {t(slotTypeLabel[type])}
-            </Typography>
-            {notes && <div> ({notes})</div>}
-          </div>
-        </TableCell>
+              <ProjectIcon
+                className={classes.typeIcon}
+                icon={slotLabel.icon}
+                fontSize="small"
+              />
+              <Typography
+                className={classes.type}
+                key="type"
+                color={slotLabel.color}
+              >
+                {t(slotTypeLabel[type])}
+              </Typography>
+            </Box>
+            {notes && <span className={classes.flexCenter}> ({notes})</span>}
+          </TableCell>
+        </TableRow>
       </TableHead>
       <TableBody className={classes.tableRow}>
         {Object.keys(intervals).map((interval) => (
@@ -81,7 +83,11 @@ const AttendanceSheetSlot: React.FC<Props> = ({
               (customer) =>
                 customer.attendedInterval === interval && (
                   <TableRow key={customer.id}>
-                    <TableCell className={classes.tableCell}>
+                    <TableCell
+                      className={[classes.tableCell, classes.customerName].join(
+                        " "
+                      )}
+                    >
                       {customer.name} {customer.surname}
                     </TableCell>
                     <TableCell />
@@ -95,55 +101,47 @@ const AttendanceSheetSlot: React.FC<Props> = ({
   );
 };
 
-// #region Styles//
+// #region styles
 const useStyles = makeStyles((theme) => ({
-  slotHeading: {
-    // border: "3px solid rgba(224, 224, 224, 1)",
-  },
-  spaceBetween: {
-    width: "100%",
-    display: "flex",
-    justifyContent: "space-between",
+  // general
+  tableRow: {
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
     paddingRight: 0,
-    // border: "3px solid rgba(224, 224, 224, 1)",
   },
-  tableRow: {},
   bold: {
     fontWeight: 600,
+    color: "black",
+  },
+  flexCenter: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
   },
   tableCell: {
-    // borderRight: "1px solid rgba(224, 224, 224, 1)",
-    // width: "50%",
-    color: theme.palette.grey[600],
+    width: "50%",
   },
-  margins: {
-    // margin: 10,
-  },
-  typeIcon: {
-    opacity: 0.5,
+  // heading
+  heading: {
+    border: "3px solid rgba(224, 224, 224, 1)",
   },
   type: {
     textTransform: "uppercase",
     fontWeight: theme.typography.fontWeightBold,
     fontSize: theme.typography.pxToRem(10),
   },
-  flexCenter: {
-    // display: "flex",
-    // justifyContent: "center",
-    // alignItems: "center",
-  },
   typeLabel: {
-    // height: "100%",
+    height: "100%",
   },
-  boxCenter: {
-    // width: "100%",
+  typeIcon: {
+    opacity: 0.5,
   },
-  boxLeft: {
-    // boxSizing: "border-box",
-    // width: "50%",
-    // marginRight: "auto",
+  // table body
+  customerName: {
+    borderRight: "1px solid rgba(224, 224, 224, 1)",
+    color: theme.palette.grey[600],
   },
 }));
-// #endregion Styles//
+
+// #endregion styles
+
 export default AttendanceSheetSlot;

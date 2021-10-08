@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { DateTime } from "luxon";
+
 import TableContainer from "@material-ui/core/TableContainer";
 import Paper from "@material-ui/core/Paper";
-import { DateTime } from "luxon";
-import { useTranslation } from "react-i18next";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 export interface Props {
@@ -25,9 +27,10 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
     </>
   );
 };
-// #region Styles//
+
 const useStyles = makeStyles((theme) => ({
   title: {
+    position: "relative",
     fontWeight: 600,
     padding: 20,
     background: theme.palette.primary.main,
@@ -39,5 +42,5 @@ const useStyles = makeStyles((theme) => ({
     right: "2rem",
   },
 }));
-// #endregion Styles//
+
 export default AttendanceSheet;

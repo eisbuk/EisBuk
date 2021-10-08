@@ -5,16 +5,17 @@ import Container from "@material-ui/core/Container";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
-
-import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import AttendanceSheet from "@/components/atoms/AttendanceSheet/AttendanceSheet";
 import AttendanceSheetSlot from "@/components/atoms/AttendanceSheet/AttendanceSheetSlot";
+
 import { getCalendarDay } from "@/store/selectors/app";
+import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 
 const DashboardPage: React.FC = () => {
   const attendanceSlots = useSelector(getSlotsWithAttendance);
 
   const date = useSelector(getCalendarDay);
+
   return (
     <>
       <AppbarAdmin />

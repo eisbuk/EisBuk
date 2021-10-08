@@ -1,5 +1,3 @@
-import AttendanceSheet, { Props } from "./AttendanceSheet";
-
-export type AttendanceSheetProps = Props;
+import AttendanceSheet from "./AttendanceSheet";
 
 export default AttendanceSheet;
