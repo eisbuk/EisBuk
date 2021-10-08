@@ -49,33 +49,25 @@ const AttendanceSheetSlot: React.FC<Props> = ({
   return (
     <Table aria-label="simple table">
       <TableHead>
-        <TableRow className={classes.slotHeading}>
-          <TableCell className={classes.bold}>
-            <span className={classes.margins}>{timeString} </span>
-          </TableCell>
-          <TableCell>
-            <Box
-              className={[classes.flexCenter, classes.typeLabel].join(" ")}
-              flexGrow={1}
-              pl={1}
-              pr={1}
+        <TableCell className={classes.spaceBetween}>
+          <Typography>{timeString} </Typography>
+
+          <div>
+            <ProjectIcon
+              className={classes.typeIcon}
+              icon={slotLabel.icon}
+              fontSize="small"
+            />
+            <Typography
+              className={classes.type}
+              key="type"
+              color={slotLabel.color}
             >
-              <ProjectIcon
-                className={classes.typeIcon}
-                icon={slotLabel.icon}
-                fontSize="small"
-              />
-              <Typography
-                className={classes.type}
-                key="type"
-                color={slotLabel.color}
-              >
-                {t(slotTypeLabel[type])}
-              </Typography>
-            </Box>
-            {notes && <span className={classes.flexCenter}> ({notes})</span>}
-          </TableCell>
-        </TableRow>
+              {t(slotTypeLabel[type])}
+            </Typography>
+            {notes && <div> ({notes})</div>}
+          </div>
+        </TableCell>
       </TableHead>
       <TableBody className={classes.tableRow}>
         {Object.keys(intervals).map((interval) => (
@@ -106,22 +98,27 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 // #region Styles//
 const useStyles = makeStyles((theme) => ({
   slotHeading: {
-    border: "3px solid rgba(224, 224, 224, 1)",
+    // border: "3px solid rgba(224, 224, 224, 1)",
   },
-  tableRow: {
+  spaceBetween: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
     borderBottom: "1px solid rgba(224, 224, 224, 1)",
     paddingRight: 0,
+    // border: "3px solid rgba(224, 224, 224, 1)",
   },
+  tableRow: {},
   bold: {
     fontWeight: 600,
   },
   tableCell: {
-    borderRight: "1px solid rgba(224, 224, 224, 1)",
-    width: "50%",
+    // borderRight: "1px solid rgba(224, 224, 224, 1)",
+    // width: "50%",
     color: theme.palette.grey[600],
   },
   margins: {
-    margin: 10,
+    // margin: 10,
   },
   typeIcon: {
     opacity: 0.5,
@@ -132,20 +129,20 @@ const useStyles = makeStyles((theme) => ({
     fontSize: theme.typography.pxToRem(10),
   },
   flexCenter: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    // display: "flex",
+    // justifyContent: "center",
+    // alignItems: "center",
   },
   typeLabel: {
-    height: "100%",
+    // height: "100%",
   },
   boxCenter: {
-    width: "100%",
+    // width: "100%",
   },
   boxLeft: {
-    boxSizing: "border-box",
-    width: "50%",
-    marginRight: "auto",
+    // boxSizing: "border-box",
+    // width: "50%",
+    // marginRight: "auto",
   },
 }));
 // #endregion Styles//
