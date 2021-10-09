@@ -18,6 +18,7 @@ import SlotOperationButtons, {
 } from "@/components/atoms/SlotOperationButtons";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import SlotCard from "@/components/atoms/SlotCard";
+import { PrintButton } from "@/components/atoms/AttendanceSheet/PrintButton";
 
 import { getAdminSlots } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -51,6 +52,7 @@ const SlotsPage: React.FC = () => {
       {/* <DeleteButton /> */}
       <CopyButton />
       <PasteButton />
+      <PrintButton />
     </SlotOperationButtons>
   );
 
@@ -79,17 +81,20 @@ const SlotsPage: React.FC = () => {
               const date = DateTime.fromISO(dateISO);
 
               const additionalButtons = (
-                <SlotOperationButtons
-                  contextType={ButtonContextType.Day}
-                  slotsToCopy={{
-                    day: Boolean(dayToPaste),
-                  }}
-                  {...{ date }}
-                >
-                  <NewSlotButton />
-                  <CopyButton />
-                  <PasteButton />
-                </SlotOperationButtons>
+                <>
+                  <SlotOperationButtons
+                    contextType={ButtonContextType.Day}
+                    slotsToCopy={{
+                      day: Boolean(dayToPaste),
+                    }}
+                    {...{ date }}
+                  >
+                    <NewSlotButton />
+                    <CopyButton />
+                    <PasteButton />
+                  </SlotOperationButtons>
+                  <PrintButton />
+                </>
               );
 
               const slotsForDay = Object.values(slotsToShow[dateISO]);

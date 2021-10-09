@@ -22,12 +22,10 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
           {t("AttendanceSheet.Date", { date })}
         </span>
       </div>
-
       <TableContainer component={Paper}>{children}</TableContainer>
     </>
   );
 };
-
 const useStyles = makeStyles((theme) => ({
   title: {
     position: "relative",
@@ -42,5 +40,4 @@ const useStyles = makeStyles((theme) => ({
     right: "2rem",
   },
 }));
-
 export default AttendanceSheet;
