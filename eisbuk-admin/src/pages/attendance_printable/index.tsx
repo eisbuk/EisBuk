@@ -5,11 +5,12 @@ import Container from "@material-ui/core/Container";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
-import AttendanceSheet from "@/components/atoms/AttendanceSheet/AttendanceSheet";
-import AttendanceSheetSlot from "@/components/atoms/AttendanceSheet/AttendanceSheetSlot";
+import AttendanceSheet from "@/components/atoms/AttendanceSheet";
+import { AttendanceSheetSlot } from "@/components/atoms/AttendanceSheet";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import { PrintButton } from "@/components/atoms/AttendanceSheet/PrintButton";
 
 const DashboardPage: React.FC = () => {
   const attendanceSlots = useSelector(getSlotsWithAttendance);
@@ -19,7 +20,7 @@ const DashboardPage: React.FC = () => {
   return (
     <>
       <AppbarAdmin />
-      <DateNavigation jump="day">
+      <DateNavigation jump="day" extraButtons={<PrintButton />}>
         {() => (
           <Container maxWidth="sm">
             <AttendanceSheet date={date}>
