@@ -17,11 +17,11 @@ import AthletesPage from "@/pages/CustomersPage";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/LoginPage";
 import CustomerAreaPage from "@/pages/customer_area";
+import AttendancePrintable from "@/pages/attendance_printable";
 
 import useFirestoreSubscribe from "@/hooks/useFirestoreSubscribe";
 
 import { queryOrganizationStatus } from "@/store/actions/authOperations";
-import AttendanceSheet from "./components/atoms/AttendanceSheet/AttendanceSheet";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -51,6 +51,10 @@ const AppContent: React.FC = () => {
       <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
       <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+      <PrivateRoute
+        path={Routes.AttendancePrintable}
+        component={AttendancePrintable}
+      />
 
       <Route
         path={`${Routes.CustomerArea}/:secretKey/:customerRoute?`}
@@ -58,7 +62,6 @@ const AppContent: React.FC = () => {
       />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
       <Route path={Routes.Debug} children={<DebugPage />} />
-      <Route path={Routes.AttendancePrintable} component={AttendanceSheet} />
     </Switch>
   );
 };
