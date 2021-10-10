@@ -1,120 +1,79 @@
-import React from "react";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
-import _ from "lodash";
+import React, { useState } from "react";
 
 import {
   getAuth,
-  PhoneAuthProvider,
-  GoogleAuthProvider,
-  EmailAuthProvider,
+  fetchSignInMethodsForEmail,
+  signInWithEmailAndPassword,
 } from "firebase/auth";
-
-import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
-
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-
-import makeStyles from "@material-ui/core/styles/makeStyles";
-
-import { organizationInfo } from "@/themes";
-
-import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
-import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
-import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhouette.svg";
-import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
-import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
-
-const loginBackgrounds = [
-  figureSkatingSilhouetteCouple,
-  figureSkatingSilhouetteSkirt,
-  figureSkatingSilhouette,
-  girlIceSkating,
-  iceSkatingSilhouette,
-];
 
 const auth = getAuth();
 
 const SignInSide: React.FC = () => {
-  const classes = useStyles();
+  const style = {
+    position: "absolute",
+    width: "0.5vw",
+    height: "0.5vh",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+  } as React.CSSProperties;
 
-  const loginImageStyle = {
-    backgroundImage: `url(${_.sample(loginBackgrounds)})`,
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const getLoginMethods = async () => {
+    const res = await fetchSignInMethodsForEmail(auth, email);
+    console.log(res);
   };
-  const uiConfig = {
-    signInOptions: [
-      {
-        provider: PhoneAuthProvider.PROVIDER_ID,
-        // The default selected country.
-        defaultCountry: "IT",
-        recaptchaParameters: {
-          type: "image", // 'audio'
-          size: "invisible", // 'invisible' or 'compact'
-          badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-        },
-      },
-      GoogleAuthProvider.PROVIDER_ID,
-      EmailAuthProvider.PROVIDER_ID,
-    ],
+
+  const login = async () => {
+    try {
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      console.log("Login successful");
+      console.log(res);
+    } catch (err) {
+      const { code, message } = err as Record<string, string>;
+      console.log("Error, code > ", code);
+      console.log("Error, message > ", message);
+    }
   };
+
+  // const signup = async () => {
+  //   try {
+  //     const res = await create(auth, email, password);
+  //     console.log("Login successful");
+  //     console.log(res);
+  //   } catch (err) {
+  //     const { code, message } = err as Record<string, string>;
+  //     console.log("Error, code > ", code);
+  //     console.log("Error, message > ", message);
+  //   }
+
+  // }
+
   return (
-    <Grid container component="main" className={classes.root}>
-      <CssBaseline />
-      <Grid
-        item
-        xs={false}
-        sm={4}
-        md={7}
-        className={classes.image}
-        style={loginImageStyle}
+    <div {...{ style }}>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => setName(e.target.value)}
       />
-      <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
-        <div className={classes.paper}>
-          <Avatar className={classes.avatar}>
-            <LockOutlinedIcon />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            {organizationInfo.name}
-          </Typography>
-          <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
-        </div>
-      </Grid>
-    </Grid>
+      <input
+        type="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+      />
+      <input
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+      />
+      <button onClick={getLoginMethods}>Fetch login methods</button>
+      <button onClick={login}>Login</button>
+      {/* <button onClick={signup}>Signup</button> */}
+    </div>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  root: {
-    height: "100vh",
-  },
-  image: {
-    backgroundRepeat: "no-repeat",
-    backgroundColor:
-      theme.palette.type === "light"
-        ? theme.palette.grey[50]
-        : theme.palette.grey[900],
-    backgroundSize: "contain",
-    backgroundPosition: "center",
-  },
-  paper: {
-    margin: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
-  },
-}));
 
 export default SignInSide;

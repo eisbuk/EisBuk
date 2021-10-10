@@ -31,8 +31,6 @@ import {
 
 import rootReducer from "./reducers/rootReducer";
 
-const auth = getAuth();
-
 const fbConfig = {
   // common config data
   // loaded from .env variables according to environment
@@ -62,6 +60,8 @@ const rrfConfig = {
 
 // Initialize Firebase, Firestore and Functions instances
 initializeApp(fbConfig);
+
+const auth = getAuth();
 // eslint-disable-next-line react-hooks/rules-of-hooks
 useDeviceLanguage(auth);
 const db = getFirestore();

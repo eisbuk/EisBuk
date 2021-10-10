@@ -25,6 +25,7 @@ export const categoryLabel = {
 
 // #region actionButtons
 export const __cancel__ = "Action.Cancel";
+export const __next__ = "Action.Next";
 export const __createSlot__ = "Action.CreateSlot";
 export const __editSlot__ = "Action.EditSlot";
 // #endregion actionButtons

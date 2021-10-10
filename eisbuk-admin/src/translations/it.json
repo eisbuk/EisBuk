@@ -155,7 +155,8 @@
   "Action": {
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
-    "Cancel": "Annulla"
+    "Cancel": "Annulla",
+    "Next": "Seguente"
   },
   "Form": {
     "RequiredEntry": "è richiesto almeno un valore",
