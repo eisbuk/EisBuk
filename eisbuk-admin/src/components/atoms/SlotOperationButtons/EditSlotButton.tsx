@@ -72,7 +72,7 @@ export const EditSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
         open={openForm}
         slotToEdit={buttonGroupContext.slot}
         onClose={closeForm}
-        date={buttonGroupContext.date!}
+        date={slot.date}
       />
     </>
   );

@@ -2,7 +2,6 @@ import React from "react";
 import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
-import { DateTime } from "luxon";
 
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
@@ -11,7 +10,7 @@ import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface, SlotInterval } from "eisbuk-shared";
+import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -21,8 +20,6 @@ import SlotOperationButtons, {
 } from "@/components/atoms/SlotOperationButtons";
 import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
-
-import { fb2Luxon } from "@/utils/date";
 
 import { __slotId__ } from "./__testData__/testIds";
 
@@ -55,8 +52,6 @@ const SlotCard: React.FC<SlotCardProps> = ({
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
-  const date = fb2Luxon(slotData.date);
 
   const canClick = Boolean(onClick);
 
@@ -134,7 +129,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
               className={classes.buttons}
             >
               <EditSlotButton />
-              <DeleteButton confirmDialog={createDeleteConfirmDialog(date)} />
+              <DeleteButton
+                confirmDialog={createDeleteConfirmDialog(slotData.date)}
+              />
             </SlotOperationButtons>
           )}
         </Box>
@@ -152,7 +149,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
  * @param date date of slot to delete
  * @returns `confirmDialog` object for `DeleteButton`
  */
-const createDeleteConfirmDialog = (date: DateTime) => {
+const createDeleteConfirmDialog = (dateString: SlotInterface["date"]) => {
+  // get luxon date (for i18n function)
+  const date = fromISO(dateString);
   // get delete prompt translation
   const deletePrompt = i18n.t("Slots.DeleteConfirmation");
   // get date localization

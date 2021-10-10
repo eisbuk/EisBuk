@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 
-import { orderByWeekDay } from "../utils";
+import { luxon2ISODate } from "eisbuk-shared";
 
-import { luxon2ISODate } from "@/utils/date";
+import { orderByWeekDay } from "../utils";
 
 import { slotsMonth } from "@/__testData__/dummyData";
 

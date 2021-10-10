@@ -2,7 +2,6 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuidv4 } from "uuid";
-import { DateTime } from "luxon";
 
 import {
   BookingSubCollection,
@@ -16,7 +15,6 @@ import {
   SlotInterface,
   SlotInterval,
 } from "eisbuk-shared";
-import { fs2luxon } from "./utils";
 
 /**
  * Adds the secret_key to a user if it's missing.
@@ -128,7 +126,7 @@ export const aggregateSlots = functions
 
     const db = admin.firestore();
 
-    let luxonDay: DateTime;
+    let date: string;
     let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
 
     const isCreate = !change.before.exists;
@@ -140,14 +138,14 @@ export const aggregateSlots = functions
       case isDelete:
         // if deleting, we're just setting slot value as delete sentinel and getting the date from before
         const beforeData = change.before.data() as SlotInterface;
-        luxonDay = fs2luxon(beforeData.date);
+        date = beforeData.date;
         newSlot = deleteSentinel;
         break;
       case isCreate:
         // if creating, we're only using the new (after data) and adding generated id
         const afterData = change.after.data()! as Omit<SlotInterface, "id">;
         newSlot = { ...afterData, id };
-        luxonDay = fs2luxon(newSlot.date);
+        date = newSlot.date;
         break;
       default:
         // if not change or create: is update
@@ -187,11 +185,10 @@ export const aggregateSlots = functions
         } as Record<string, SlotInterval>;
 
         newSlot = { ...updatedData, intervals, id };
-        luxonDay = fs2luxon(newSlot.date);
+        date = newSlot.date;
     }
 
-    const monthStr = luxonDay.toISO().substring(0, 7);
-    const dayStr = luxonDay.toISO().substring(0, 10);
+    const monthStr = date.substring(0, 7);
 
     const monthSlotsRef = db
       .collection(Collection.Organizations)
@@ -199,7 +196,7 @@ export const aggregateSlots = functions
       .collection(OrgSubCollection.SlotsByDay)
       .doc(monthStr);
 
-    await monthSlotsRef.set({ [dayStr]: { [id]: newSlot } }, { merge: true });
+    await monthSlotsRef.set({ [date]: { [id]: newSlot } }, { merge: true });
 
     return change.after;
   });

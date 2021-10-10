@@ -8,7 +8,7 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 /**
  * Customer id we're using across tests
@@ -31,7 +31,7 @@ export const slotId = "slot-0";
  * listening to write/update/delete document in slots collection.
  */
 export const slot: Omit<SlotInterface, "id"> = {
-  date: timestampDate,
+  date: testDate,
   categories: [Category.Course],
   intervals: {
     ["11:30-12:30"]: {
@@ -70,7 +70,7 @@ const bookedInterval = "09:00-11:00";
  * Booking we're marking for our customer in order to test attendance trigger
  */
 export const testBooking: CustomerBookingEntry = {
-  date: timestampDate,
+  date: testDate,
   interval: bookedInterval,
 };
 /**
@@ -86,7 +86,7 @@ export const dummyAttendance: Record<string, CustomerAttendance> = {
  * Empty attendance entry for slot. Should be created when the slot is created.
  */
 export const emptyAttendance: SlotAttendnace = {
-  date: timestampDate,
+  date: testDate,
   attendances: {},
 };
 /**
@@ -103,7 +103,7 @@ export const baseAttendance: SlotAttendnace = {
  * We're using this to test adding booked attendance when customer books a slot.
  */
 export const attendanceWithTestCustomer: SlotAttendnace = {
-  date: timestampDate,
+  date: testDate,
   attendances: {
     ...dummyAttendance,
     [customerId]: {

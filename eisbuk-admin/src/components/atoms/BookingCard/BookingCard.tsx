@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface, SlotInterval } from "eisbuk-shared";
+import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
 import {
   __bookInterval__,
@@ -23,7 +23,6 @@ import { BookingCardVariant } from "@/enums/components";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
-import { fb2Luxon } from "@/utils/date";
 import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export type Props = Pick<SlotInterface, "type"> &
@@ -63,7 +62,7 @@ export type Props = Pick<SlotInterface, "type"> &
 
 const BookingCard: React.FC<Props> = ({
   type,
-  date: timestamp,
+  date: dateISO,
   notes,
   interval,
   bookInterval = () => {},
@@ -77,7 +76,7 @@ const BookingCard: React.FC<Props> = ({
 
   const { t } = useTranslation();
   const slotLabel = slotsLabels.types[type];
-  const date = fb2Luxon(timestamp);
+  const date = fromISO(dateISO);
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
 

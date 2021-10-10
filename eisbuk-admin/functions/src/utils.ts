@@ -1,8 +1,6 @@
 import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import admin from "firebase-admin";
-import { Timestamp } from "@google-cloud/firestore";
-import { DateTime } from "luxon";
 
 type Auth = CallableContext["auth"];
 
@@ -76,14 +74,4 @@ const throwUnauth = (): never => {
     "unauthorized",
     "The function must be called while authenticated with a user that is an admin of the given organization."
   );
-};
-/**
- * Convert a firestore date to a luxon date
- * currently ignores microseconds since seconds are already
- * more than enough for our use case
- * @param fsdate date object in firebase form
- */
-export const fs2luxon = (fsdate: Timestamp): DateTime => {
-  /** @TODO check fs date interface */
-  return DateTime.fromMillis(fsdate.seconds * 1000);
 };

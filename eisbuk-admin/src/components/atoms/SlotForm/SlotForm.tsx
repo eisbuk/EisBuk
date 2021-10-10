@@ -1,5 +1,4 @@
 import React from "react";
-import { DateTime } from "luxon";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Formik, Field, Form } from "formik";
@@ -15,7 +14,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface, SlotInterval } from "eisbuk-shared";
+import { fromISO, SlotInterface, SlotInterval } from "eisbuk-shared";
 
 import {
   __cancel__,
@@ -80,9 +79,9 @@ const validationSchema = yup.object().shape({
 
 interface Props {
   /**
-   * Date of slot we're creating (should be day, without the time of day).
+   * ISO date of the slot we're creating (only the day, without the time of day and timezone).
    */
-  date: DateTime;
+  date: string;
   /**
    * Slot to edit. The presence of this prop automatically
    * uses the edit mode rather than create-new.
@@ -135,7 +134,7 @@ const SlotForm: React.FC<Props> = ({
 
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
-      <DialogTitle>{t(title, { date })}</DialogTitle>
+      <DialogTitle>{t(title, { date: fromISO(date) })}</DialogTitle>
       <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
         {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>

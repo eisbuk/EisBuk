@@ -1,4 +1,4 @@
-import { DateTime, DurationObjectUnits } from "luxon";
+import { DateTime, DateTimeUnit } from "luxon";
 import i18n from "i18next";
 
 /**
@@ -9,7 +9,7 @@ import i18n from "i18next";
  */
 export const createDateTitle = (
   startDate: DateTime,
-  jump: keyof DurationObjectUnits
+  jump: DateTimeUnit
 ): string => {
   switch (jump) {
     // for monthly view we're using the full month string

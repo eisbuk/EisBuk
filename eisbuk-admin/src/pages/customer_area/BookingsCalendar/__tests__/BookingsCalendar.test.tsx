@@ -27,7 +27,7 @@ describe("BookingsCalendar", () => {
       render(<BookingsCalendar {...{ bookedSlots, slots }} />);
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
-      const expectedDate = testDateLuxon.plus({ week: 1 });
+      const expectedDate = testDateLuxon.plus({ weeks: 1 });
       expect(mockDispatch).toHaveBeenCalledWith(
         changeCalendarDate(expectedDate)
       );

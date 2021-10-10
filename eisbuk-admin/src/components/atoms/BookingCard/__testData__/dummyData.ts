@@ -1,16 +1,11 @@
 import { SlotType } from "eisbuk-shared";
-import { DateTime } from "luxon";
-
-import { __storybookDate__ } from "@/lib/constants";
 
 import { Props } from "../BookingCard";
 
-import { luxonToFB } from "@/utils/date";
-
-const date = luxonToFB(DateTime.fromISO(__storybookDate__));
+import { testDate } from "@/__testData__/date";
 
 export const baseProps: Props = {
-  date,
+  date: testDate,
   type: SlotType.Ice,
   interval: {
     startTime: "09:00",

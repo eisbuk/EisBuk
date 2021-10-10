@@ -4,6 +4,8 @@ import IconButton from "@material-ui/core/IconButton";
 
 import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 
+import { luxon2ISODate } from "eisbuk-shared";
+
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotButtonProps } from "@/types/components";
@@ -42,7 +44,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { contextType, date, iconSize } = buttonGroupContext;
+  const { contextType, date: luxonDate, iconSize } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
@@ -55,10 +57,13 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
 
   // prevent component from rendering and log error to console (but don't throw)
   // if no `date` param provided within the context
-  if (!date) {
+  if (!luxonDate) {
     console.error(__noDateProvidedError);
     return null;
   }
+
+  // luxon day processed to ISO string (for form's input)
+  const date = luxon2ISODate(luxonDate);
 
   return (
     <>
@@ -69,11 +74,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
       >
         <AddCircleOutlineIcon />
       </IconButton>
-      <SlotForm
-        open={openForm}
-        onClose={closeForm}
-        date={buttonGroupContext.date!}
-      />
+      <SlotForm open={openForm} onClose={closeForm} date={date} />
     </>
   );
 };
