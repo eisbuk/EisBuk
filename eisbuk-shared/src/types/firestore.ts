@@ -1,5 +1,5 @@
 /* eslint-disable camelcase */
-import { Timestamp } from "@google-cloud/firestore";
+import { Timestamp } from "firebase/firestore";
 
 import {
   Category,
