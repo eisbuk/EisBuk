@@ -3,8 +3,9 @@ import { createStore, applyMiddleware } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
 
-import { initializeApp, getApp } from "firebase/app";
+import { initializeApp } from "firebase/app";
 import { useDeviceLanguage, getAuth, connectAuthEmulator } from "firebase/auth";
+import { initializeFirestore } from "firebase/firestore";
 import {
   connectFirestoreEmulator,
   getFirestore,
@@ -54,7 +55,8 @@ const rrfConfig = {
 };
 
 // Initialize Firebase, Firestore and Functions instances
-initializeApp(fbConfig);
+const firebase = initializeApp(fbConfig);
+initializeFirestore(firebase, {});
 
 const auth = getAuth();
 // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -92,7 +94,7 @@ export const store = createStore(
 );
 
 export const rrfProps: ReactReduxFirebaseProviderProps = {
-  firebase: getApp(),
+  firebase: { firestore: getFirestore },
   config: rrfConfig,
   dispatch: store.dispatch,
   createFirestoreInstance,
