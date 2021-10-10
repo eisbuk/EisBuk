@@ -1,5 +1,5 @@
 import { useSelector } from "react-redux";
-import { useFirestoreConnect, useFirestore } from "react-redux-firebase";
+import { useFirestoreConnect } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
@@ -18,7 +18,6 @@ import { wrapOrganization } from "@/utils/firestore";
  */
 const useFirestoreSubscribe = (): void => {
   const currentDate = useSelector(getCalendarDay);
-  const firestore = useFirestore();
 
   const monthsToQuery = [
     getMonthStr(currentDate, -1),
@@ -36,8 +35,7 @@ const useFirestoreSubscribe = (): void => {
     },
     wrapOrganization({
       collection: OrgSubCollection.SlotsByDay,
-      /** @TEMP below, investigate this later */
-      where: [(firestore.FieldPath as any).documentId(), "in", monthsToQuery],
+      where: ["month", "in", monthsToQuery],
     }),
   ];
 
@@ -56,7 +54,6 @@ const useFirestoreSubscribe = (): void => {
         }),
         wrapOrganization({
           collection: OrgSubCollection.Attendance,
-          /** @TEMP below, investigate this later */
           where: [
             ["date", ">", currentDate.minus({ month: 1 }).toJSDate()],
             ["date", "<", currentDate.plus({ month: 1 }).toJSDate()],

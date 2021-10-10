@@ -69,6 +69,35 @@ export const addMissingSecretKey = functions
   });
 
 /**
+ * Adds the `month` string to a `slotsByDay` document (a month entry),
+ * this `month` string is the same one used to index the document. This is merely for
+ * easier querying.
+ */
+export const addMonthIndex = functions
+  .region("europe-west6")
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.SlotsByDay}/{month}`
+  )
+  .onWrite(async (change, context) => {
+    const db = admin.firestore();
+
+    const { organization, month } = context.params as Record<string, string>;
+
+    // we're running this function only on create, not on update or delete
+    // we're assuming that the month string already exists if the document has already been created
+    const isCreate = change.after.exists && !change.before.exists;
+
+    if (isCreate) {
+      await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(month)
+        .set({ month }, { merge: true });
+    }
+  });
+
+/**
  * Data trigger listening to create/delete slot document and creates/deletes attendance entry for given slot.
  * Doesn't run if slot is only updated.
  */
