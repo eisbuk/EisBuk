@@ -173,6 +173,6 @@
   },
   "AttendanceSheet": {
     "Attendance": "Attendance",
-    "Date":  "{{date, EEEE d MMMM}}"
+    "Date": "{{date, EEEE d MMMM}}"
   }
 }
