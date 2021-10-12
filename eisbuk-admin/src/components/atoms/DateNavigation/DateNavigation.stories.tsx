@@ -11,7 +11,6 @@ import SlotOperationButtons, {
   PasteButton,
   DeleteButton,
 } from "@/components/atoms/SlotOperationButtons";
-import { PrintButton } from "../AttendanceSheet/PrintButton";
 
 export default {
   title: "Date Navigation",
@@ -78,8 +77,6 @@ const extraButtons = (
   </SlotOperationButtons>
 );
 
-const printButton = <PrintButton />;
-
 export const WithToggleButton = (): JSX.Element => (
   <DateNavigation showToggle>
     {({ toggleState }) => (
@@ -96,8 +93,5 @@ export const WithCopyPaste = (): JSX.Element => (
 
 export const WithCopyPasteAndToggle = (): JSX.Element => (
   <DateNavigation {...{ extraButtons }} showToggle />
-);
-export const WithPrintButton = (): JSX.Element => (
-  <DateNavigation {...{ extraButtons: printButton }} />
 );
 // #endregion otherOptions
