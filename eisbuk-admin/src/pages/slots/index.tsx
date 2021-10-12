@@ -18,7 +18,6 @@ import SlotOperationButtons, {
 } from "@/components/atoms/SlotOperationButtons";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import SlotCard from "@/components/atoms/SlotCard";
-import { PrintButton } from "@/components/atoms/AttendanceSheet/PrintButton";
 
 import { getAdminSlots } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -52,7 +51,6 @@ const SlotsPage: React.FC = () => {
       {/* <DeleteButton /> */}
       <CopyButton />
       <PasteButton />
-      <PrintButton />
     </SlotOperationButtons>
   );
 
@@ -93,7 +91,6 @@ const SlotsPage: React.FC = () => {
                     <CopyButton />
                     <PasteButton />
                   </SlotOperationButtons>
-                  <PrintButton />
                 </>
               );
 
