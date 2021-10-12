@@ -9,7 +9,7 @@ import { deleteAll } from "@/tests/utils";
 
 import { baseSlot } from "@/__testData__/dummyData";
 
-describe("Firestore data validations", () => {
+xdescribe("Firestore data validations", () => {
   afterEach(async () => {
     await deleteAll([OrgSubCollection.Slots]);
   });
