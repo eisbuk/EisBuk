@@ -20,19 +20,60 @@ service cloud.firestore {
       let org = get(/databases/$(database)/documents/organizations/$(organization));
       return request.auth != null && (isAdminByEmail(request, org) || isAdminByPhone(request, org));
     }
-    match /organizations/{organization}/{document=**} {
-      // Administrators can read and write any object in the organization
-      allow read, write: if isAdmin(organization);
+    function checkValidDate(date) {
+      return (
+        date is string && 
+        date.matches('20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+      );
     }
-    match /organizations/{organization}/bookings/{secret_key}/{document=**} {
-      // Users who now a secret bookings key have read/write access to that booking
-      allow read, write: if true;
-    }
-    match /organizations/{organization}/slotsByDay/{document=**} {
-      // Everyone has access to all available slots.
-      // Security-wise this is equivalent to showing a form that lets unauthenticated
-      // users book their slots, as is the current solution.
-      allow read: if true;
+    match /organizations/{organization} {
+      match /{document=**} {
+        // Administrators can read and delete any object in the organization
+        // for complete write (create/update) we're checking the validity of data at document level
+        allow read, delete: if isAdmin(organization);
+      }
+      // match /{document} {
+      //   // Administrators can read and delete any object in the organization
+      //   // for complete write (create/update) we're checking the validity of data at document level
+      //   allow read, write: if isAdmin(organization);
+      // }
+      match /bookings/{secretKey}/bookedSlots/{slotId} {
+        // Anyone with a 'secretKey' can write to 'bookedSlots' for given customer (secretKey)
+        // Here we're checking for valid date when writing to 'bookedSlots' document 
+        allow read, delete: if true;
+        allow create, update: if checkValidDate(request.resource.data.date);
+      }
+      match /slotsByDay/{document=**} {
+        // Everyone has access to all available slots.
+        // Security-wise this is equivalent to showing a form that lets unauthenticated
+        // users book their slots, as is the current solution.
+        allow read: if true;
+      }
+      match /attendance/{document=**} {
+        // Only admin can access attendance
+        // No need for date validation as date gets set by data triggers
+        allow read, write: if isAdmin(organization);
+      }
+      // match /attendance/{slotId} {
+      //   allow create, update: if isAdmin(organization) &&
+      //     checkValidDate(request.resource.data.date) 
+      // }
+      match /customers/{customerId} {
+        // By recursive rule, admins can read/write to any document
+        // Here we're providing an extra level of safaty by validating 
+        // the dates (birthday, certificateExpiration, covidCertificateReleaseDate) 
+        // as valid ISO strings
+        allow create, update: if isAdmin(organization) &&
+          checkValidDate(request.resource.data.birthday) &&
+          checkValidDate(request.resource.data.certificateExpiration) &&
+          checkValidDate(request.resource.data.covidCertificateReleaseDate)
+      }
+      match /slots/{slotId} {
+        // By recursive rule, admins can read/write to any document
+        // Here we're providing an extra level of safaty by validating the date as valid ISO string
+        allow create, update: if isAdmin(organization) && 
+          checkValidDate(request.resource.data.date);
+      }
     }
   }
 }

@@ -1,8 +1,9 @@
 export enum Routes {
   Login = "/login",
   Unauthorized = "/unautorized",
-  Debug = "/debug",
   CustomerArea = "/customer_area",
+  Debug = "/debug",
+  FirestoreDebug = "/firestore_debug",
 }
 
 export enum CustomerRoute {
