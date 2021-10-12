@@ -75,7 +75,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
         {Object.keys(intervals).map((interval) => (
           <React.Fragment key={interval}>
             <TableRow className={classes.tableRow}>
-              <TableCell component="th" scope="row">
+              <TableCell component="th" scope="row" colSpan={2}>
                 {intervals[interval].startTime} - {intervals[interval].endTime}
               </TableCell>
             </TableRow>
