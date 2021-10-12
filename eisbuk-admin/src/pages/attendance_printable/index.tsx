@@ -2,6 +2,9 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 import Container from "@material-ui/core/Container";
+import IconButton from "@material-ui/core/IconButton";
+
+import PrintIcon from "@material-ui/icons/Print";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
@@ -17,10 +20,16 @@ const DashboardPage: React.FC = () => {
 
   const date = useSelector(getCalendarDay);
 
+  const printButton = (
+    <IconButton onClick={() => window.print()}>
+      <PrintIcon />
+    </IconButton>
+  );
+
   return (
     <>
       <AppbarAdmin />
-      <DateNavigation jump="day">
+      <DateNavigation jump="day" extraButtons={printButton}>
         {() => (
           <Container maxWidth="sm">
             <AttendanceSheet date={date}>

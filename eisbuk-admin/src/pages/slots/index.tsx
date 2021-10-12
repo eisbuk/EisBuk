@@ -79,19 +79,17 @@ const SlotsPage: React.FC = () => {
               const date = DateTime.fromISO(dateISO);
 
               const additionalButtons = (
-                <>
-                  <SlotOperationButtons
-                    contextType={ButtonContextType.Day}
-                    slotsToCopy={{
-                      day: Boolean(dayToPaste),
-                    }}
-                    {...{ date }}
-                  >
-                    <NewSlotButton />
-                    <CopyButton />
-                    <PasteButton />
-                  </SlotOperationButtons>
-                </>
+                <SlotOperationButtons
+                  contextType={ButtonContextType.Day}
+                  slotsToCopy={{
+                    day: Boolean(dayToPaste),
+                  }}
+                  {...{ date }}
+                >
+                  <NewSlotButton />
+                  <CopyButton />
+                  <PasteButton />
+                </SlotOperationButtons>
               );
 
               const slotsForDay = Object.values(slotsToShow[dateISO]);

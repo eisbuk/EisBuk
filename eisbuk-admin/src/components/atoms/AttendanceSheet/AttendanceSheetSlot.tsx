@@ -81,7 +81,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
             </TableRow>
             {customers.map(
               (customer) =>
-                customer.attendedInterval === interval && (
+                customer.bookedInterval === interval && (
                   <TableRow key={customer.id}>
                     <TableCell
                       className={[classes.tableCell, classes.customerName].join(

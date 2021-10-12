@@ -21,15 +21,16 @@ const DashboardPage: React.FC = () => {
   const attendanceCards = useSelector(getSlotsWithAttendance);
   const allCustomers = useSelector(getOrderedCustomers);
 
-  const PrintButton = (
+  const printButton = (
     <IconButton component={Link} to="/attendance_printable">
       <PrintIcon />
     </IconButton>
   );
+
   return (
     <>
       <AppbarAdmin />
-      <DateNavigation extraButtons={PrintButton} jump="day">
+      <DateNavigation extraButtons={printButton} jump="day">
         {() => (
           <Container maxWidth="sm">
             <List className={classes.root}>
