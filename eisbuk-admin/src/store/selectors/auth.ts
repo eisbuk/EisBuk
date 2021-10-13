@@ -7,15 +7,15 @@ import { LocalStore } from "@/types/store";
  */
 export const getFirebaseAuth = (
   state: LocalStore
-): LocalStore["firebase"]["auth"] => state.firebase.auth;
+): LocalStore["auth"]["firebase"] => state.auth.firebase;
 
 /**
  * Get local auth object
  * @param state Local Redux Store
  * @returns local auth object (authInfoEisbuk)
  */
-export const getLocalAuth = (state: LocalStore): LocalStore["authInfoEisbuk"] =>
-  state.authInfoEisbuk;
+export const getLocalAuth = (state: LocalStore): LocalStore["auth"]["info"] =>
+  state.auth.info;
 
 /**
  * Get boolean representing if currently logged in user is administrator
@@ -28,4 +28,4 @@ export const getLocalAuth = (state: LocalStore): LocalStore["authInfoEisbuk"] =>
  * For this reason we only check that the admins array is non-empty here.
  */
 export const getAmIAdmin = (state: LocalStore): boolean =>
-  state.authInfoEisbuk.admins.length > 0;
+  state.auth.info.admins.length > 0;

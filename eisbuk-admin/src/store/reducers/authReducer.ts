@@ -1,19 +1,20 @@
-import { constants } from "react-redux-firebase";
-
 import { Action } from "@/enums/store";
 
-import { AuthInfoEisbuk, AuthReducerAction, AuthAction } from "@/types/store";
+import { AuthState, AuthReducerAction, AuthAction } from "@/types/store";
 
 export const defaultState = {
-  admins: [],
-  myUserId: null,
-  uid: null,
+  firebase: {},
+  info: {
+    admins: [],
+    myUserId: null,
+    uid: null,
+  },
 };
 
 export const authReducer = (
-  state: AuthInfoEisbuk = defaultState,
+  state: AuthState = defaultState,
   action: AuthReducerAction<AuthAction>
-): AuthInfoEisbuk => {
+): AuthState => {
   switch (action.type) {
     case Action.IsOrganizationStatusReceived:
       // get currectly typed payload
@@ -24,13 +25,16 @@ export const authReducer = (
       // update state with newly received auth object
       return {
         ...state,
-        ...payload,
-        myUserId: payload?.uid || null,
+        info: {
+          ...state.info,
+          ...payload,
+          myUserId: payload?.uid || null,
+        },
       };
 
-    case constants.actionTypes.LOGOUT:
-      // Reset state on logout
-      return defaultState;
+    // case constants.actionTypes.LOGOUT:
+    //   // Reset state on logout
+    //   return defaultState;
 
     default:
       return state;

@@ -1,12 +1,4 @@
 /* eslint-disable import/no-duplicates */
-import { createStore, applyMiddleware } from "redux";
-import {
-  getFirebase,
-  ReactReduxFirebaseProviderProps,
-} from "react-redux-firebase";
-import { createFirestoreInstance } from "redux-firestore";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
 
 import { initializeApp } from "firebase/app";
 import { useDeviceLanguage, getAuth, connectAuthEmulator } from "firebase/auth";
@@ -30,8 +22,6 @@ import {
   __measurementId__,
 } from "@/lib/constants";
 
-import rootReducer from "./reducers/rootReducer";
-
 const fbConfig = {
   // common config data
   // loaded from .env variables according to environment
@@ -51,13 +41,6 @@ const fbConfig = {
 if (__isDev__) {
   console.warn("Using local emulated Database : " + fbConfig.databaseURL);
 }
-
-// react-redux-firebase Configuration
-const rrfConfig = {
-  // userProfile: 'users'
-  useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
-  // enableClaims: true // Get custom claims along with the profile
-};
 
 // Initialize Firebase, Firestore and Functions instances
 const firebase = initializeApp(fbConfig);
@@ -90,23 +73,4 @@ if (__isDev__) {
   });
 }
 
-// Create Redux Store with Reducers and Initial state
-const middlewares = [thunk.withExtraArgument({ getFirebase })];
-export const store = createStore(
-  rootReducer,
-  {},
-  composeWithDevTools(applyMiddleware(...middlewares))
-);
-
-export const rrfProps: ReactReduxFirebaseProviderProps = {
-  firebase: { firestore: getFirestore },
-  config: rrfConfig,
-  dispatch: store.dispatch,
-  createFirestoreInstance,
-};
-
-// Export Redux Store and react-redux-firebase props
-export default {
-  store,
-  rrfProps,
-};
+export * from "./store";
