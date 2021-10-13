@@ -22,7 +22,7 @@ service cloud.firestore {
     }
     function checkValidDate(date) {
       return (
-        date is string && 
+        date is string &&
         date.matches('20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
       );
     }
@@ -39,7 +39,7 @@ service cloud.firestore {
       // }
       match /bookings/{secretKey}/bookedSlots/{slotId} {
         // Anyone with a 'secretKey' can write to 'bookedSlots' for given customer (secretKey)
-        // Here we're checking for valid date when writing to 'bookedSlots' document 
+        // Here we're checking for valid date when writing to 'bookedSlots' document
         allow read, delete: if true;
         allow create, update: if checkValidDate(request.resource.data.date);
       }
@@ -56,12 +56,12 @@ service cloud.firestore {
       }
       // match /attendance/{slotId} {
       //   allow create, update: if isAdmin(organization) &&
-      //     checkValidDate(request.resource.data.date) 
+      //     checkValidDate(request.resource.data.date)
       // }
       match /customers/{customerId} {
         // By recursive rule, admins can read/write to any document
-        // Here we're providing an extra level of safaty by validating 
-        // the dates (birthday, certificateExpiration, covidCertificateReleaseDate) 
+        // Here we're providing an extra level of safaty by validating
+        // the dates (birthday, certificateExpiration, covidCertificateReleaseDate)
         // as valid ISO strings
         allow create, update: if isAdmin(organization) &&
           checkValidDate(request.resource.data.birthday) &&
@@ -71,7 +71,7 @@ service cloud.firestore {
       match /slots/{slotId} {
         // By recursive rule, admins can read/write to any document
         // Here we're providing an extra level of safaty by validating the date as valid ISO string
-        allow create, update: if isAdmin(organization) && 
+        allow create, update: if isAdmin(organization) &&
           checkValidDate(request.resource.data.date);
       }
     }
