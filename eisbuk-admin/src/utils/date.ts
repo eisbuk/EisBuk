@@ -43,3 +43,10 @@ export const luxonToFB = (date: DateTime): FbTimestamp => {
  */
 export const luxon2ISODate = (luxonDate: DateTime): string =>
   luxonDate.toISO().substr(0, 10);
+
+/**
+ * A helper function checks if passed string is a valid ISO date string
+ * @param string to check for ISO validity
+ * @returns boolean
+ */
+export const isISO = (string: string) => DateTime.fromISO(string).isValid;
