@@ -18,8 +18,11 @@ export enum Action {
   AddSlotToClipboard = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD",
 
   IsOrganizationStatusReceived = "@@Eisbuk/IS_ORGANIZATION_STATUS_RECEIVED",
-}
 
+  UpdateFirestoreListener = "@@Eisbuk/UPDATE_FIRESTORE_LISTENER",
+  UpdateLocalCollection = "@@Eisbuk/UPDATE_LOCAL_COLLECTION",
+  DeleteFirestoreListener = "@@Eisbuk/DELETE_FIRESTORE_LISTENER",
+}
 /**
  * Notification variants (success/error)
  */

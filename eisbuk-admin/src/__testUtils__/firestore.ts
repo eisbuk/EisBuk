@@ -1,6 +1,6 @@
-import "firebase/auth";
-import { ExtendedFirebaseInstance } from "react-redux-firebase";
 import { DateTime } from "luxon";
+import { Firestore } from "@google-cloud/firestore";
+import { cloneDeep } from "lodash";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
@@ -19,36 +19,14 @@ import { defaultState as authInfoEisbuk } from "@/store/reducers/authReducer";
  * same way `getFirebase` would return firestore inside of Redux middleware.
  * @returns firestore instance
  */
-export const getFirebase = (): ExtendedFirebaseInstance =>
-  (({
-    firestore: () => adminDb,
-  } as unknown) as ExtendedFirebaseInstance);
-
-/**
- * Empty store state we're using to provide type compliant baseline for test store state
- */
-const fbStatus = { requested: {}, requesting: {}, timestamps: {} };
-const fbData = {
-  data: {},
-  ordered: {},
-  listeners: { byId: {}, allIds: [] as [] },
-  queries: {},
-};
+export const getFirebase = (): { firestore: () => Firestore } => ({
+  firestore: () => adminDb,
+});
 
 const testStoreDefaultState: LocalStore = {
-  firebase: {
-    ...fbData,
-    ...fbStatus,
-    auth: {} as any,
-    profile: {} as any,
-    isInitializing: false,
-    authError: null,
-    errors: [],
-  },
   firestore: {
-    ...fbData,
-    status: fbStatus,
-    errors: { byQuery: {}, allIds: [] as [] },
+    data: {},
+    listeners: {},
   },
   app,
   copyPaste,
@@ -61,16 +39,18 @@ const testStoreDefaultState: LocalStore = {
  */
 export const createTestStore = ({
   data = {},
+  listeners = {},
   date,
   copyPaste = { day: null, week: null },
 }: {
   data?: LocalStore["firestore"]["data"];
+  listeners?: LocalStore["firestore"]["listeners"];
   date?: DateTime;
   copyPaste?: LocalStore["copyPaste"];
 }): LocalStore => {
-  return {
+  return cloneDeep({
     ...testStoreDefaultState,
-    firestore: { data } as LocalStore["firestore"],
+    firestore: { data, listeners },
     ...(date
       ? {
           app: {
@@ -80,7 +60,7 @@ export const createTestStore = ({
         }
       : {}),
     copyPaste,
-  };
+  });
 };
 
 /**
