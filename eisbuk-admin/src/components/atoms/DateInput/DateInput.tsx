@@ -2,13 +2,19 @@ import React from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
+import TextField from "@material-ui/core/TextField";
+import InputAdornment from "@material-ui/core/InputAdornment";
+
+import { SvgComponent } from "@/types/components";
+
 import { isISO } from "@/utils/date";
 
 interface Props {
   name: string;
+  Icon?: SvgComponent;
 }
 
-const DateInput: React.FC<Props> = ({ name }) => {
+const DateInput: React.FC<Props> = ({ name, Icon }) => {
   const { t } = useTranslation();
 
   const [{ value = "" }, { error = "" }, { setValue }] = useField<
@@ -20,9 +26,26 @@ const DateInput: React.FC<Props> = ({ name }) => {
     setValue(isoDate);
   };
 
+  const InputProps = Icon
+    ? {
+        startAdornment: (
+          <InputAdornment position="start">
+            <Icon color="disabled" />
+          </InputAdornment>
+        ),
+      }
+    : {};
+
   return (
     <>
-      <input value={isoToDate(value)} onChange={handleChange} type="text" />
+      <TextField
+        {...{ InputProps }}
+        variant="outlined"
+        value={isoToDate(value)}
+        onChange={handleChange}
+        type="text"
+        placeholder="dd/mm/yyyy"
+      />
       <div>{t(error)}</div>
     </>
   );

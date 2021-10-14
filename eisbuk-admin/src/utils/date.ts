@@ -4,8 +4,7 @@ import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
 import firebase from "firebase/app";
 
 /** @TODO This is a temp fix since the tests accept one type and all other evnironments accept the other...this needs to be fixed with the Timestamp issue ticket */
-const Timestamp =
-  process.env.NODE_ENV === "test" ? FbTimestamp : firebase.firestore.Timestamp;
+const Timestamp = firebase.firestore.Timestamp;
 
 /**
  * Convert Firebase Timestamp to luxon string (DateTime)
