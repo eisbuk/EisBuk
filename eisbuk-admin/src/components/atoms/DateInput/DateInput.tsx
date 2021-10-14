@@ -1,18 +1,31 @@
 import React from "react";
+import { useField } from "formik";
+import { useTranslation } from "react-i18next";
 
 import { isISO } from "@/utils/date";
 
 interface Props {
-  onChange?: (value: string) => void;
-  value?: string;
+  name: string;
 }
 
-const DateInput: React.FC<Props> = ({ onChange = () => {}, value = "" }) => {
+const DateInput: React.FC<Props> = ({ name }) => {
+  const { t } = useTranslation();
+
+  const [{ value = "" }, { error = "" }, { setValue }] = useField<
+    string | undefined
+  >(name);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const isoDate = dateToISO(e.target.value);
-    onChange(isoDate);
+    setValue(isoDate);
   };
-  return <input value={isoToDate(value)} onChange={handleChange} type="text" />;
+
+  return (
+    <>
+      <input value={isoToDate(value)} onChange={handleChange} type="text" />
+      <div>{t(error)}</div>
+    </>
+  );
 };
 
 /**
