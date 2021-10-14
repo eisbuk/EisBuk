@@ -7,7 +7,7 @@ import InputAdornment from "@material-ui/core/InputAdornment";
 
 import { SvgComponent } from "@/types/components";
 
-import { isISO } from "@/utils/date";
+import { isISODay } from "@/utils/date";
 
 interface Props {
   name: string;
@@ -61,7 +61,7 @@ const DateInput: React.FC<Props> = ({ name, Icon }) => {
  */
 const isoToDate = (input: string): string => {
   const [year, month, day] = input.split(/[\-]/);
-  return isISO(input) ? `${day}/${month}/${year}` : input;
+  return isISODay(input) ? `${day}/${month}/${year}` : input;
 };
 
 /**
@@ -75,7 +75,7 @@ const isoToDate = (input: string): string => {
 const dateToISO = (input: string): string => {
   const [day, month, year] = input.split(/[\/\-\.]/);
   const isoString = `${year}-${month}-${day}`;
-  return isISO(isoString) ? isoString : input;
+  return isISODay(isoString) ? isoString : input;
 };
 
 export default DateInput;

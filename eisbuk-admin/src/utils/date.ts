@@ -4,6 +4,8 @@ import { Timestamp as FbTimestamp } from "@google-cloud/firestore";
 import firebase from "firebase/app";
 
 /** @TODO This is a temp fix since the tests accept one type and all other evnironments accept the other...this needs to be fixed with the Timestamp issue ticket */
+// const Timestamp =
+//   process.env.NODE_ENV === "test" ? FbTimestamp : firebase.firestore.Timestamp;
 const Timestamp = firebase.firestore.Timestamp;
 
 /**
@@ -45,7 +47,12 @@ export const luxon2ISODate = (luxonDate: DateTime): string =>
 
 /**
  * A helper function checks if passed string is a valid ISO date string
+ * in a day format (yyyy-mm-dd)
+ *
+ * _will return false even if a string is a valid ISO date, but doesn't conform to `yyyy-mm-dd`,
+ * i.e. includes time of day, is just a month string, etc._
  * @param string to check for ISO validity
  * @returns boolean
  */
-export const isISO = (string: string) => DateTime.fromISO(string).isValid;
+export const isISODay = (string: string) =>
+  string.length == 10 && DateTime.fromISO(string).isValid;
