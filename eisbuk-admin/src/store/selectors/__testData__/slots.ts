@@ -1,10 +1,8 @@
 import { DateTime } from "luxon";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, SlotType, luxon2ISODate } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
-
-import { luxon2ISODate } from "@/utils/date";
 
 import { createTestStore } from "@/__testUtils__/firestore";
 

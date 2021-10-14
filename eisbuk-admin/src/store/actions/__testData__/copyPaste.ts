@@ -1,6 +1,4 @@
-import { SlotsById } from "eisbuk-shared";
-
-import { luxonToFB } from "@/utils/date";
+import { SlotsById, luxon2ISODate } from "eisbuk-shared";
 
 import { testDateLuxon } from "@/__testData__/date";
 import { baseSlot } from "@/__testData__/dummyData";
@@ -23,22 +21,22 @@ export const testDay = {
  * Wednesday of test week (for slots in the same week, different day)
  */
 const twoDaysFromNow = testDateLuxon.plus({ days: 2 });
-const newTimestamp = luxonToFB(twoDaysFromNow);
+const newDateISO = luxon2ISODate(twoDaysFromNow);
 export const testWeekWednesday = {
   ["slot-2"]: {
     ...baseSlot,
     id: "slot-2",
-    date: newTimestamp,
+    date: newDateISO,
   },
   ["slot-3"]: {
     ...baseSlot,
     id: "slot-3",
-    date: newTimestamp,
+    date: newDateISO,
   },
   ["slot-4"]: {
     ...baseSlot,
     id: "slot-4",
-    date: newTimestamp,
+    date: newDateISO,
   },
 };
 export const wednesdaySlotIds = Object.keys(testWeekWednesday);
@@ -57,11 +55,11 @@ const nextWeek = Array(3)
   .reduce((acc, baseDate, i) => {
     const slotId = `dummy-slot-${i}`;
     const luxonDay = baseDate.plus({ weeks: 1, days: i * 2 });
-    const timestamp = luxonToFB(luxonDay);
+    const date = luxon2ISODate(luxonDay);
 
     return {
       ...acc,
-      [slotId]: { ...baseSlot, date: timestamp, id: slotId },
+      [slotId]: { ...baseSlot, date, id: slotId },
     };
   }, {} as SlotsById);
 /**

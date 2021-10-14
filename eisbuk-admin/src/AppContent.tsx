@@ -18,6 +18,7 @@ import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/LoginPage";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
+import FirestoreDebug from "@/pages/firestore_debug";
 
 import useFirestoreSubscribe from "@/hooks/useFirestoreSubscribe";
 
@@ -61,7 +62,8 @@ const AppContent: React.FC = () => {
         component={CustomerAreaPage}
       />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
-      <Route path={Routes.Debug} children={<DebugPage />} />
+      <Route path={Routes.Debug} component={DebugPage} />
+      <Route path={Routes.FirestoreDebug} component={FirestoreDebug} />
     </Switch>
   );
 };

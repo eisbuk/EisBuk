@@ -1,4 +1,4 @@
-import { testDate, testDateLuxon } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 import {
   baseSlot as baseSlotWithId,
   createIntervals,
@@ -36,6 +36,5 @@ export const testSlot = {
  */
 export const testFromValues = {
   ...baseSlot,
-  date: testDateLuxon,
   intervals: Object.values(createIntervals(15)),
 };

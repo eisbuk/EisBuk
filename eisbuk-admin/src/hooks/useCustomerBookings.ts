@@ -33,7 +33,7 @@ const useFirestoreBookings = (secretKey: Customer["secretKey"]): void => {
           collection: BookingSubCollection.BookedSlots,
           where: [
             ["date", ">=", currentDate.toJSDate()],
-            ["date", "<", currentDate.plus({ month: 1 }).toJSDate()],
+            ["date", "<", currentDate.plus({ months: 1 }).toJSDate()],
           ],
         },
       ],

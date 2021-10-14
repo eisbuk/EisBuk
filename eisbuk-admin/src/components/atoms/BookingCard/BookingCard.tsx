@@ -9,12 +9,13 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface, SlotInterval } from "eisbuk-shared";
+import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
 import {
   __bookInterval__,
   __cancelBooking__,
   slotTypeLabel,
+  DateFormat,
 } from "@/lib/labels";
 
 import { slotsLabels } from "@/config/appConfig";
@@ -23,7 +24,6 @@ import { BookingCardVariant } from "@/enums/components";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
-import { fb2Luxon } from "@/utils/date";
 import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export type Props = Pick<SlotInterface, "type"> &
@@ -63,7 +63,7 @@ export type Props = Pick<SlotInterface, "type"> &
 
 const BookingCard: React.FC<Props> = ({
   type,
-  date: timestamp,
+  date: dateISO,
   notes,
   interval,
   bookInterval = () => {},
@@ -77,9 +77,14 @@ const BookingCard: React.FC<Props> = ({
 
   const { t } = useTranslation();
   const slotLabel = slotsLabels.types[type];
-  const date = fb2Luxon(timestamp);
+  const date = fromISO(dateISO);
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
+
+  console.log("ISO date > ", dateISO);
+  console.log("Weekday > ", date.toFormat("EEE"));
+  console.log("Day > ", date.toFormat("d"));
+  console.log("Month > ", date.toFormat("MMMM"));
 
   /**
    * Date box is shown in `calendar` variant, but hidden in `booking` variant
@@ -88,13 +93,13 @@ const BookingCard: React.FC<Props> = ({
   const dateBox = (
     <Box className={classes.date} textAlign="center">
       <Typography variant="h5" className={classes.weekday}>
-        {t("CustomerAreaBookingCard.Weekday", { date })}
+        {t(DateFormat.Weekday, { date })}
       </Typography>
       <Typography className={classes.day}>
-        {t("CustomerAreaBookingCard.Day", { date })}
+        {t(DateFormat.Day, { date })}
       </Typography>
       <Typography className={classes.month}>
-        {t("CustomerAreaBookingCard.Month", { date })}
+        {t(DateFormat.Month, { date })}
       </Typography>
     </Box>
   );

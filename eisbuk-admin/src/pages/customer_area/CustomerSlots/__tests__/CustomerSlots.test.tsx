@@ -13,7 +13,7 @@ import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { __dateNavNextId__ } from "@/__testData__/testIds";
 import { slotsMonth } from "@/__testData__/dummyData";
-import { testDateLuxon, timestampDate } from "@/__testData__/date";
+import { testDateLuxon, testDate } from "@/__testData__/date";
 
 /**
  * Mock function we'll be using to test dispatching to the store
@@ -38,7 +38,7 @@ describe("CustomerSlots", () => {
       render(<CustomerSlots slots={slotsMonth} view={CustomerRoute.BookIce} />);
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
-      const expectedDate = testDateLuxon.plus({ month: 1 });
+      const expectedDate = testDateLuxon.plus({ months: 1 });
       expect(mockDispatch).toHaveBeenCalledWith(
         changeCalendarDate(expectedDate)
       );
@@ -50,7 +50,7 @@ describe("CustomerSlots", () => {
       );
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
-      const expectedDate = testDateLuxon.plus({ week: 1 });
+      const expectedDate = testDateLuxon.plus({ weeks: 1 });
       expect(mockDispatch).toHaveBeenCalledWith(
         changeCalendarDate(expectedDate)
       );
@@ -92,7 +92,7 @@ describe("CustomerSlots", () => {
         bookedInterval: testInterval,
         secretKey,
         slotId,
-        date: timestampDate,
+        date: testDate,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
     });
@@ -101,7 +101,7 @@ describe("CustomerSlots", () => {
       // we'll be using the first interval from test slot as booked interval
       const bookedInterval = Object.keys(testSlot.intervals)[0];
       const bookedSlots = {
-        [slotId]: { date: timestampDate, interval: bookedInterval },
+        [slotId]: { date: testDate, interval: bookedInterval },
       };
       render(
         <CustomerSlots slots={slotsMonth} {...{ bookedSlots, customerId }} />

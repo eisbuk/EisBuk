@@ -7,6 +7,8 @@ import Paper from "@material-ui/core/Paper";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import { DateFormat } from "@/lib/labels";
+
 export interface Props {
   date: DateTime;
 }
@@ -18,9 +20,7 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
     <>
       <div className={classes.title}>
         <span>{t("AttendanceSheet.Attendance")}</span>
-        <span className={classes.date}>
-          {t("AttendanceSheet.Date", { date })}
-        </span>
+        <span className={classes.date}>{t(DateFormat.Full, { date })}</span>
       </div>
       <TableContainer component={Paper}>{children}</TableContainer>
     </>

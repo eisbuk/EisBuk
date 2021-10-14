@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { DateTime, DurationObjectUnits } from "luxon";
+import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
@@ -53,7 +53,7 @@ interface Props extends AppBarProps {
   /**
    * Value for next/prev timeframe start time calculation
    */
-  jump?: keyof DurationObjectUnits;
+  jump?: DateTimeUnit;
   /**
    * A flag used to trigger syncing local date with the router (both read and push)
    */

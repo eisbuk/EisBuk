@@ -2,6 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
+import { luxon2ISODate } from "eisbuk-shared";
+
 import Container from "@material-ui/core/Container";
 import IconButton from "@material-ui/core/IconButton";
 
@@ -19,8 +21,6 @@ import useTitle from "@/hooks/useTitle";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-
-import { luxon2ISODate } from "@/utils/date";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();

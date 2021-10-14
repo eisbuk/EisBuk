@@ -1,3 +1,5 @@
+import { Timestamp } from "@google-cloud/firestore";
+
 import { SlotInterface } from "../firestore";
 import { Customer } from "../firestore";
 
@@ -15,6 +17,10 @@ export type DeprecatedBookingsMeta = Pick<Customer, "name"> &
 /**
  * Deprecated slot interface belonging to the old data model (durations instead of intervals)
  */
-export type DeprecatedSlotInterface = Omit<SlotInterface, "intervals"> & {
+export type DeprecatedSlotInterface = Omit<
+  Omit<SlotInterface, "intervals">,
+  "date"
+> & {
   durations: string[];
+  date: Timestamp;
 };

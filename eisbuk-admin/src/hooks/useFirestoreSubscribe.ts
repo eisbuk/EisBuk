@@ -58,8 +58,8 @@ const useFirestoreSubscribe = (): void => {
           collection: OrgSubCollection.Attendance,
           /** @TEMP below, investigate this later */
           where: [
-            ["date", ">", currentDate.minus({ month: 1 }).toJSDate()],
-            ["date", "<", currentDate.plus({ month: 1 }).toJSDate()],
+            ["date", ">", currentDate.minus({ months: 1 }).toJSDate()],
+            ["date", "<", currentDate.plus({ months: 1 }).toJSDate()],
           ],
         }),
       ]

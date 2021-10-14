@@ -3,7 +3,7 @@ import React from "react";
 import AttendanceSheet from "./AttendanceSheet";
 import AttendanceSheetSlot from "./AttendanceSheetSlot";
 
-import { fb2Luxon } from "@/utils/date";
+import { fromISO } from "eisbuk-shared";
 
 import {
   baseAttendanceCard,
@@ -36,7 +36,7 @@ const slots = [
   { ...baseAttendanceCard, customers, notes: "this slot is in rink 2" },
   { ...baseAttendanceCard, customers },
 ];
-const date = fb2Luxon(baseAttendanceCard.date);
+const date = fromISO(baseAttendanceCard.date);
 
 export const Default = (): JSX.Element => (
   <AttendanceSheet date={date}>

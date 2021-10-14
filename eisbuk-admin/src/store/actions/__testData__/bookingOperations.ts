@@ -1,9 +1,9 @@
 import { CustomerBookings } from "eisbuk-shared";
 
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 const baseBooking = {
-  date: timestampDate,
+  date: testDate,
   interval: "09:00-10:00",
 };
 /**
@@ -21,7 +21,7 @@ export const bookingId = "booked-slot-0";
  * Booking entry we're using to test adding/canceling, etc.
  */
 export const testBooking = {
-  date: timestampDate,
+  date: testDate,
   interval: "09:00-11:00",
 };
 /**
