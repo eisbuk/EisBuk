@@ -17,6 +17,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { fromISO, SlotInterface, SlotInterval } from "eisbuk-shared";
 
 import {
+  DateFormat,
   __cancel__,
   __createSlot__,
   __editSlotTitle__,
@@ -130,11 +131,13 @@ const SlotForm: React.FC<Props> = ({
   };
 
   // get title based on mode (new-slot/edit)
-  const title = slotToEdit ? __editSlotTitle__ : __newSlotTitle__;
+  const titleString = slotToEdit ? __editSlotTitle__ : __newSlotTitle__;
+  const titleDate = t(DateFormat.DayMonth, { date: fromISO(date) });
+  const title = `${t(titleString)} ( ${titleDate} )`;
 
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
-      <DialogTitle>{t(title, { date: fromISO(date) })}</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
         {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>

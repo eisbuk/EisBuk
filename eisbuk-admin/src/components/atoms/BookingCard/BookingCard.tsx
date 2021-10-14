@@ -15,6 +15,7 @@ import {
   __bookInterval__,
   __cancelBooking__,
   slotTypeLabel,
+  DateFormat,
 } from "@/lib/labels";
 
 import { slotsLabels } from "@/config/appConfig";
@@ -80,6 +81,11 @@ const BookingCard: React.FC<Props> = ({
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
 
+  console.log("ISO date > ", dateISO);
+  console.log("Weekday > ", date.toFormat("EEE"));
+  console.log("Day > ", date.toFormat("d"));
+  console.log("Month > ", date.toFormat("MMMM"));
+
   /**
    * Date box is shown in `calendar` variant, but hidden in `booking` variant
    * as cards in `booking` view will already be inside date container.
@@ -87,13 +93,13 @@ const BookingCard: React.FC<Props> = ({
   const dateBox = (
     <Box className={classes.date} textAlign="center">
       <Typography variant="h5" className={classes.weekday}>
-        {t("CustomerAreaBookingCard.Weekday", { date })}
+        {t(DateFormat.Weekday, { date })}
       </Typography>
       <Typography className={classes.day}>
-        {t("CustomerAreaBookingCard.Day", { date })}
+        {t(DateFormat.Day, { date })}
       </Typography>
       <Typography className={classes.month}>
-        {t("CustomerAreaBookingCard.Month", { date })}
+        {t(DateFormat.Month, { date })}
       </Typography>
     </Box>
   );

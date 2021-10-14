@@ -22,6 +22,7 @@ import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
 import { __slotId__ } from "./__testData__/testIds";
+import { DateFormat } from "@/lib/labels";
 
 export interface SlotCardProps extends SlotInterface {
   /**
@@ -155,11 +156,11 @@ const createDeleteConfirmDialog = (dateString: SlotInterface["date"]) => {
   // get delete prompt translation
   const deletePrompt = i18n.t("Slots.DeleteConfirmation");
   // get date localization
-  const confirmDialogDate = i18n.t("Slots.ConfirmDialogDate", {
+  const confirmDialogDate = i18n.t(DateFormat.DayMonth, {
     date,
   });
   // get time-of-day localization
-  const confirmDialogTime = i18n.t("Slots.ConfirmDialogTime", { date });
+  const confirmDialogTime = i18n.t(DateFormat.Time, { date });
   // get translation for word "slot"
   const slotTranslation = i18n.t("Slots.Slot");
 
