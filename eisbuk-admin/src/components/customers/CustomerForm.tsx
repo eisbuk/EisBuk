@@ -34,6 +34,7 @@ import { slotsLabelsLists } from "@/config/appConfig";
 import CustomCheckbox from "./CustomCheckbox";
 
 import { capitalizeFirst } from "@/utils/helpers";
+import DateInput from "../atoms/DateInput";
 
 // ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
@@ -41,7 +42,10 @@ const CustomerValidation = Yup.object().shape({
   surname: Yup.string().required(i18n.t("CustomerValidations.Required")),
   email: Yup.string().email(i18n.t("CustomerValidations.Email")),
   phone: Yup.string(),
-  birth: Yup.mixed(),
+  birthday: Yup.string()
+    .matches(/^[0-9\/\-\.]+$/, "CustomerValidations.Birthday")
+    .min(10)
+    .max(10),
   certificateExpiration: Yup.mixed(),
   covidCertificateReleaseDate: Yup.mixed(),
   covidCertificateSuspended: Yup.boolean(),
@@ -126,12 +130,18 @@ const CustomerForm: React.FC<Props> = ({
                 className={classes.field}
                 Icon={Phone}
               />
-              <MyField
+              {/* <MyField
                 name="birthday"
                 type="date"
                 label={t("CustomerForm.DateOfBirth")}
                 views={["year", "month", "date"]}
                 className={classes.field}
+                Icon={Cake}
+              /> */}
+              <DateInput
+                name="birthday"
+                className={classes.field}
+                label={t("CustomerForm.DateOfBirth")}
                 Icon={Cake}
               />
 
@@ -253,6 +263,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   field: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+    width: "100%",
   },
   radioGroup: {
     justifyContent: "space-evenly",
