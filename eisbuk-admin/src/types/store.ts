@@ -5,7 +5,6 @@ import {
 } from "react-redux-firebase";
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
-import { Timestamp } from "@google-cloud/firestore";
 
 import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
 
@@ -42,8 +41,7 @@ export type AppAction =
   | Action.EnqueueNotification
   | Action.RemoveNotification
   | Action.CloseSnackbar
-  | Action.ChangeDay
-  | Action.SetSlotTime;
+  | Action.ChangeDay;
 
 /**
  * Record of payloads for each of the app reducer actions
@@ -53,7 +51,6 @@ interface AppActionPayload {
   [Action.RemoveNotification]: SnackbarKey;
   [Action.CloseSnackbar]?: SnackbarKey;
   [Action.ChangeDay]: DateTime;
-  [Action.SetSlotTime]: Timestamp;
 }
 
 /**

@@ -5,6 +5,8 @@ import {
   OrgSubCollection,
   SlotInterface,
   SlotsById,
+  fromISO,
+  luxon2ISODate,
 } from "eisbuk-shared";
 
 import { ORGANIZATION } from "@/config/envInfo";
@@ -13,7 +15,6 @@ import { Action } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
-import { luxon2ISODate, luxonToFB } from "@/utils/date";
 import { showErrSnackbar } from "./appActions";
 
 /**
@@ -162,8 +163,8 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
     // exit early if no slots in clipboard
     if (!slotsToCopy) return;
 
-    // get timestamp date for new slots
-    const date = luxonToFB(newDate);
+    // get iso date for new slots
+    const date = luxon2ISODate(newDate);
 
     // add updated slots to firestore
     const slotsRef = db
@@ -204,9 +205,8 @@ export const pasteSlotsWeek = (
     // exit early if no slots or week start in clipboard
     if (!slots || !weekStart) return;
 
-    // calculate week jump
-    const jump =
-      newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks! * 3600 * 24 * 7;
+    // calculate jump in weeks
+    const jump = newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks!;
 
     // update each slot with new date and set up for firestore dispatching
     const slotsRef = db
@@ -217,7 +217,9 @@ export const pasteSlotsWeek = (
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     slots.forEach(({ id, date: oldDate, ...slotData }) => {
-      const date = { seconds: oldDate.seconds + jump };
+      const luxonDay = fromISO(oldDate).plus({ weeks: jump });
+      const date = luxon2ISODate(luxonDay);
+
       batch.set(slotsRef.doc(), { ...slotData, date });
     });
 

@@ -25,14 +25,6 @@ maybeDescribe("Organization permissions", () => {
     await loginWithUser("test@example.com");
     const org = (await defaultOrgDoc.get()).data();
     expect(org).toStrictEqual(orgDefinition);
-    const subdoc = db
-      .collection("organizations")
-      .doc("default")
-      .collection("any_collection")
-      .doc("testdoc");
-    await subdoc.set({ "I am": "deep" });
-    const retrievedDoc = (await subdoc.get()).data();
-    expect(retrievedDoc).toStrictEqual({ "I am": "deep" });
   });
 
   it("let admin access an organization data (by phone)", async () => {
@@ -50,13 +42,5 @@ maybeDescribe("Organization permissions", () => {
       await db.collection("organizations").doc("withPhone").get()
     ).data();
     expect(org).toStrictEqual(orgDefinition);
-    const subdoc = db
-      .collection("organizations")
-      .doc("withPhone")
-      .collection("any_collection")
-      .doc("testdoc");
-    await subdoc.set({ "I am": "deep" });
-    const retrievedDoc = (await subdoc.get()).data();
-    expect(retrievedDoc).toStrictEqual({ "I am": "deep" });
   });
 });

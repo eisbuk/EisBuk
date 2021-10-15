@@ -1,10 +1,17 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import _ from "lodash";
+import { DateTime } from "luxon";
 
-import { Category, SlotType, SlotInterface } from "eisbuk-shared";
+import {
+  Category,
+  SlotType,
+  SlotInterface,
+  Collection,
+  fromISO,
+} from "eisbuk-shared";
 
-import { checkUser, fs2luxon, roundTo } from "./utils";
+import { checkUser } from "./utils";
 
 const CATEGORIES = Object.values(Category);
 const NOTES = ["", "Pista 1", "Pista 2"];
@@ -16,15 +23,16 @@ const TYPES = Object.values(SlotType);
  * @param organization
  * @returns
  */
-const fillDay = async (day: number, organization: string): Promise<void> => {
-  const start = new admin.firestore.Timestamp(day, 0);
-  const end = new admin.firestore.Timestamp(day + 86400, 0);
-  const org = admin.firestore().collection("organizations").doc(organization);
+const fillDay = async (day: DateTime, organization: string): Promise<void> => {
+  const date = day.toISO().substr(0, 10);
+  const org = admin
+    .firestore()
+    .collection(Collection.Organizations)
+    .doc(organization);
 
   const existing = await org
     .collection("slots")
-    .where("date", ">=", start)
-    .where("date", "<=", end)
+    .where("date", "==", date)
     .get();
 
   // delete existing data
@@ -37,14 +45,12 @@ const fillDay = async (day: number, organization: string): Promise<void> => {
   await Promise.all(toDelete);
 
   const slotsColl = org.collection("slots");
-  const Timestamp = admin.firestore.Timestamp;
 
   // we're creating four slots per day with these starting hours
   const startHours = [9, 10, 15, 17.5];
   // create an array of firestore.add() promises for four slots
   const toCreate = startHours.map((startHour, i) => {
-    const date = new Timestamp(day, 0);
-    const luxonDate = fs2luxon(date);
+    const luxonDate = fromISO(date);
 
     // for diversity, we're creating two slots with one interval and two with three
     const durations = [60, ...(i > 1 ? [90, 120] : [])];
@@ -96,11 +102,11 @@ export const createTestSlots = functions
 
     functions.logger.info("Creating test slots...");
 
-    const today = roundTo(admin.firestore.Timestamp.now().seconds, 86400);
+    const today = DateTime.now().startOf("day");
     const daysToFill: Promise<void>[] = [];
 
     for (let i = -14; i < 15; i++) {
-      const day = today + i * 86400;
+      const day = today.plus({ days: i });
       daysToFill.push(fillDay(day, organization));
     }
 

@@ -1,7 +1,8 @@
 import { DateTime } from "luxon";
 
+import { luxon2ISODate } from "eisbuk-shared";
+
 import { capitalizeFirst, mode } from "@/utils/helpers";
-import { luxon2ISODate } from "@/utils/date";
 
 describe("Helpers", () => {
   describe("`capitalizeFirst` function", () => {

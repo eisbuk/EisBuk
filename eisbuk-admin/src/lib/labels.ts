@@ -37,3 +37,15 @@ export const __addCustomersTitle__ = "AttendanceCard.AddCustomersTitle";
 export const __bookInterval__ = "BookingCard.BookInterval";
 export const __cancelBooking__ = "BookingCard.CancelBooking";
 // #endregion intervals
+
+// #region date
+export enum DateFormat {
+  Weekday = "Date.Weekday",
+  Day = "Date.Day",
+  Month = "Date.Month",
+  Full = "Date.Full",
+  DayMonth = "Date.DayMonth",
+  MonthYear = "Date.MonthYear",
+  Time = "Date.Time",
+}
+// #endregion date

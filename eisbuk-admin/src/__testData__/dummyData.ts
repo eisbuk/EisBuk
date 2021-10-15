@@ -1,10 +1,13 @@
 import { DateTime } from "luxon";
 
-import { SlotType, Category, SlotInterface } from "eisbuk-shared";
+import {
+  SlotType,
+  Category,
+  SlotInterface,
+  luxon2ISODate,
+} from "eisbuk-shared";
 
-import { luxon2ISODate, luxonToFB } from "@/utils/date";
-
-import { testDateLuxon, timestampDate } from "./date";
+import { testDate, testDateLuxon } from "./date";
 
 // #region slot
 /**
@@ -50,7 +53,7 @@ export const createIntervals = (
 export const intervals = createIntervals(9);
 
 export const baseSlot: SlotInterface = {
-  date: timestampDate,
+  date: testDate,
   id: "id",
   type: SlotType.Ice,
   categories: [Category.Competitive],
@@ -83,14 +86,13 @@ export const slotsMonth = Array(8)
     return luxon2ISODate(resultDate);
   })
   // create a record keyed by iso dates (from last step)
-  .reduce((acc, isoDate, i) => {
+  .reduce((acc, date, i) => {
     // create a simple slot id from current index of the array
     const slotId = `slot-${i}`;
 
-    const date = luxonToFB(DateTime.fromISO(isoDate));
     return {
       ...acc,
-      [isoDate]: {
+      [date]: {
         [slotId]: {
           ...baseSlot,
           id: slotId,
@@ -114,15 +116,13 @@ export const slotsWeek = Array(7)
   .map((baseDate, i) => baseDate.plus({ days: i }))
   // create a record keyed by iso dates (from last step)
   .reduce((acc, luxonDate, i) => {
-    // a fb Timestamp date calculated from key (ISO string)
-    const date = luxonToFB(luxonDate);
     // create iso date for keys
-    const isoDate = luxon2ISODate(luxonDate);
+    const date = luxon2ISODate(luxonDate);
     // create a simple slot id from current index of the array
     const slotId = `slot-${i}`;
     return {
       ...acc,
-      [isoDate]: {
+      [date]: {
         [slotId]: { ...baseSlot, id: slotId, date },
       },
     };

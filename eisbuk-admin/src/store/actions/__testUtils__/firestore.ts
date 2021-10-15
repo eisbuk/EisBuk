@@ -16,8 +16,6 @@ import { LocalStore, FirestoreThunk } from "@/types/store";
 import { ORGANIZATION } from "@/config/envInfo";
 import { adminDb } from "@/tests/settings";
 
-import { fb2Luxon, luxon2ISODate } from "@/utils/date";
-
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
 
 import { testDateLuxon } from "@/__testData__/date";
@@ -156,19 +154,18 @@ export const setupTestBookings = async ({
 const aggregateSlots = (slots: Record<string, SlotInterface>) =>
   Object.keys(slots).reduce((acc, slotId) => {
     const slot = slots[slotId];
-    const luxonDate = fb2Luxon(slot.date);
 
-    const isoDate = luxon2ISODate(luxonDate);
-    const monthStr = isoDate.substr(0, 7);
+    const { date } = slot;
+    const monthStr = date.substr(0, 7);
 
     const slotsForMonth = acc[monthStr] || {};
-    const slotsForDay = slotsForMonth[isoDate] || {};
+    const slotsForDay = slotsForMonth[date] || {};
 
     return {
       ...acc,
       [monthStr]: {
         ...slotsForMonth,
-        [isoDate]: { ...slotsForDay, [slotId]: slot },
+        [date]: { ...slotsForDay, [slotId]: slot },
       },
     };
   }, {} as Record<string, SlotsByDay>);

@@ -3,6 +3,8 @@ import {
   OrgSubCollection,
   SlotsByDay,
   SlotsById,
+  fromISO,
+  luxon2ISODate,
 } from "eisbuk-shared";
 
 import { ORGANIZATION } from "@/config/envInfo";
@@ -16,8 +18,6 @@ import {
   setSlotWeekToClipboard,
 } from "../copyPaste";
 import * as appActions from "@/store/actions/appActions";
-
-import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/tests/utils";
@@ -142,7 +142,7 @@ describe("Copy Paste actions", () => {
           expect(updatedSlotDay[slotId]).toEqual({
             ...baseSlot,
             id: slotId,
-            date: luxonToFB(newDate),
+            date: newDateISO,
           });
         });
       }
@@ -183,13 +183,13 @@ describe("Copy Paste actions", () => {
         // process dates for comparison
         const updatedDates = updatedSlots.docs
           .map((doc) => doc.data().date)
-          .sort((a, b) => a.seconds - b.seconds);
+          .sort((a, b) => (a < b ? -1 : 1));
         const slotsDates = Object.values(testWeek)
-          .map(({ date: { seconds } }) => ({
-            // we're moving each date up one week before sorting (to test slots being moved one week up)
-            seconds: seconds + 3600 * 24 * 7,
-          }))
-          .sort((a, b) => a.seconds - b.seconds);
+          .map(({ date }) => {
+            const newDate = fromISO(date).plus({ weeks: 1 });
+            return luxon2ISODate(newDate);
+          })
+          .sort((a, b) => (a < b ? -1 : 1));
         // if sorted dates match, the update was successful
         expect(updatedDates).toEqual(slotsDates);
       }

@@ -34,10 +34,12 @@ export const invokeFunction = (functionName: CloudFunction) => {
  * and populates it with two dummy (admin) users
  * @returns
  */
-const createAdminTestUsers = () => {
-  invokeFunction(CloudFunction.CreateOrganization)();
+export const createAdminTestUsers = async (): Promise<void> => {
+  await invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
-  firebase.auth().createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+  await firebase
+    .auth()
+    .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
 };
 
 const DebugPage: React.FC = () => {

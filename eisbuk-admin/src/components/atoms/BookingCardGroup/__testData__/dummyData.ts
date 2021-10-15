@@ -1,6 +1,6 @@
 import { Category, SlotType, SlotInterface } from "eisbuk-shared";
 
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 export const customerId = "test-customer";
 
@@ -21,7 +21,7 @@ export const intervals = {
 
 export const slot: SlotInterface = {
   id: "test-slot",
-  date: timestampDate,
+  date: testDate,
   intervals,
   categories: [Category.Course],
   type: SlotType.Ice,

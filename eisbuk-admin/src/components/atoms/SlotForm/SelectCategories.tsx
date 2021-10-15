@@ -11,6 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { SlotType, Category } from "eisbuk-shared";
 
 import { categoryLabel } from "@/lib/labels";
+
 // #region main
 
 /**

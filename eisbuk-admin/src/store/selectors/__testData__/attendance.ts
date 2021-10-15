@@ -1,11 +1,12 @@
-import { LocalStore } from "@/types/store";
-import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
+import { luxon2ISODate } from "eisbuk-shared";
 
-import { luxon2ISODate } from "@/utils/date";
+import { LocalStore } from "@/types/store";
+
+import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
 import { createTestStore } from "@/__testUtils__/firestore";
 
-import { testDate, testDateLuxon, timestampDate } from "@/__testData__/date";
+import { testDate, testDateLuxon } from "@/__testData__/date";
 import { baseSlot, createIntervals } from "@/__testData__/dummyData";
 import { walt, jian, saul } from "@/__testData__/customers";
 
@@ -69,7 +70,7 @@ const slotsByDay = {
  */
 const attendance: LocalStore["firestore"]["data"]["attendance"] = {
   ["slot-0"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [walt.id]: {
         bookedInterval: null,
@@ -86,7 +87,7 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
   ["slot-1"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [jian.id]: {
         bookedInterval: intervals12Keys[1],
@@ -95,7 +96,7 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
   ["slot-2"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [walt.id]: {
         bookedInterval: intervals15Keys[2],
@@ -104,7 +105,7 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
   ["slot-3"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [walt.id]: {
         bookedInterval: null,
@@ -121,7 +122,7 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
   ["slot-4"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [walt.id]: {
         bookedInterval: null,
@@ -138,7 +139,7 @@ const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
   ["slot-5"]: {
-    date: timestampDate,
+    date: testDate,
     attendances: {
       [walt.id]: {
         bookedInterval: null,

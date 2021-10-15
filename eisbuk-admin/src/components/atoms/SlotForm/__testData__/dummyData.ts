@@ -2,14 +2,14 @@ import { Category, SlotType, SlotInterface } from "eisbuk-shared";
 
 import { slotToFormValues } from "../utils";
 
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 /**
  * A generic, dummy slot we're using for tests as well as stories
  */
 export const dummySlot: SlotInterface = {
   id: "some-random-slot",
-  date: timestampDate,
+  date: testDate,
   type: SlotType.Ice,
   categories: Object.values(Category),
   intervals: {

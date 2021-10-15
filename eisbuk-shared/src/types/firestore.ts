@@ -1,6 +1,3 @@
-/* eslint-disable camelcase */
-import { Timestamp } from "@google-cloud/firestore";
-
 import {
   Category,
   SlotType,
@@ -48,10 +45,10 @@ export interface SlotInterface {
    */
   id: string;
   /**
-   * Date of the slot. Should be a day, without time of day.
-   * Time of day will be calculated for each interval.
+   * Date of the slot in ISO format, only a day, without the time of day
+   * and timezone
    */
-  date: Timestamp;
+  date: string;
   /**
    * Type of activity this slot is for: `"ice" | "off_ice_dancing" | "off_ice_gym"`
    */
@@ -133,9 +130,9 @@ export interface Customer extends CustomerBase {
  */
 export interface CustomerBookingEntry {
   /**
-   * Date of booked slot (used for easier querying from store)
+   * ISO date of the booked slot (used for easier querying from store)
    */
-  date: Timestamp;
+  date: string;
   /**
    * Booked interval for particular slot
    */
@@ -178,9 +175,9 @@ export interface CustomerAttendance {
  */
 export type SlotAttendnace = {
   /**
-   * Date of the slot for easier querying
+   * ISO date of the slot for easier querying
    */
-  date: Timestamp;
+  date: string;
   /**
    * Attendances for slot keyed by customer
    */

@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { SlotInterface } from "eisbuk-shared";
+import { SlotInterface, luxon2ISODate } from "eisbuk-shared";
 
 import * as testIds from "@/__testData__/testIds";
 
@@ -20,7 +20,6 @@ import CopyButton from "../CopyButton";
 import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
-import { luxon2ISODate } from "@/utils/date";
 import { baseSlot } from "@/__testData__/dummyData";
 
 jest.mock("react-redux", () => ({
