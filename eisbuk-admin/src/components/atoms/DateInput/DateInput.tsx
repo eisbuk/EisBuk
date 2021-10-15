@@ -12,9 +12,11 @@ import { isISODay } from "@/utils/date";
 interface Props {
   name: string;
   Icon?: SvgComponent;
+  label?: string;
+  className?: string;
 }
 
-const DateInput: React.FC<Props> = ({ name, Icon }) => {
+const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
   const { t } = useTranslation();
 
   const [{ value = "" }, { error = "" }, { setValue }] = useField<
@@ -40,6 +42,8 @@ const DateInput: React.FC<Props> = ({ name, Icon }) => {
     <>
       <TextField
         {...{ InputProps }}
+        label={label}
+        className={className}
         variant="outlined"
         value={isoToDate(value)}
         onChange={handleChange}
