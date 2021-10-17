@@ -1,14 +1,12 @@
 import React from "react";
 import { useField } from "formik";
-import { useTranslation } from "react-i18next";
 
-import { makeStyles } from "@material-ui/styles";
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
 
 import { SvgComponent } from "@/types/components";
 
-import { currentTheme } from "@/themes";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 import { isISODay } from "@/utils/date";
 
@@ -19,11 +17,7 @@ interface Props {
   className?: string;
 }
 
-
 const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
-  const { t } = useTranslation();
-  const classes = useStyles();
-
   const [{ value = "" }, { error = "" }, { setValue }] = useField<
     string | undefined
   >(name);
@@ -56,7 +50,7 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
         placeholder="dd/mm/yyyy"
         error={Boolean(error)}
       />
-      <div className={classes.error}>{t(error)}</div>
+      <ErrorMessage>{error}</ErrorMessage>
     </>
   );
 };
@@ -70,7 +64,7 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
  * @returns string
  */
 const isoToDate = (input: string): string => {
-  const [year, month, day] = input.split(/[\-]/);
+  const [year, month, day] = input.split("-");
   return isISODay(input) ? `${day}/${month}/${year}` : input;
 };
 
@@ -83,30 +77,9 @@ const isoToDate = (input: string): string => {
  * @returns string
  */
 const dateToISO = (input: string): string => {
-  const [day, month, year] = input.split(/[\/\-\.]/);
+  const [day, month, year] = input.split(/[/\-.]/);
   const isoString = `${year}-${month}-${day}`;
   return isISODay(isoString) ? isoString : input;
 };
-
-
-// ***** Region Styles ***** //
-type Theme = typeof currentTheme;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  error: {
-    margin: 0,
-    fontSize: "0.75rem",
-    marginTop: 3,
-    textAlign: "left",
-    fontFamily: theme.typography.fontFamily,
-    fontWeight: 400,
-    lineHeight: 1.66,
-    letterSpacing: "0.03333em",
-    marginLeft: 14,
-    marginRight: 14,
-    color: "#f44336"
-  }
-}));
-// ***** End Region Styles ***** //
 
 export default DateInput;

@@ -9,6 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import TimePickerField from "./TimePickerField";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 import {
   __startTimeInputId__,
@@ -66,9 +67,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         <DeleteIcon />
       </IconButton>
 
-      <div className={classes.error}>
-        {typeof error === "string" && t(error)}
-      </div>
+      <ErrorMessage>{error}</ErrorMessage>
     </div>
   );
 };

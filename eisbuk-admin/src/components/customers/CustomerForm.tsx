@@ -38,6 +38,7 @@ import CustomCheckbox from "./CustomCheckbox";
 
 import { capitalizeFirst } from "@/utils/helpers";
 import { isISODay } from "@/utils/date";
+import { InputProps } from "@material-ui/core";
 
 // #region validations
 const CustomerValidation = Yup.object().shape({
@@ -210,35 +211,26 @@ const CustomerForm: React.FC<Props> = ({
 // #region MyField
 interface MyFieldProps extends FieldConfig<string> {
   Icon?: SvgComponent;
-  row?: unknown /** @TODO clear this up */;
+  row?: boolean;
   label?: string;
   className?: string;
   views?: string[] /** @TODO look this up */;
 }
 
 const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
-  /** These typings are @TEMP until this is clarified */
-  let InputProps: {
-    InputProps?: {
-      startAdornment: JSX.Element;
-    };
-    fullWidth?: boolean;
-  } = {};
+  let InputProps: InputProps = {};
 
   if (typeof Icon !== "undefined") {
-    /** @TODO This is very weird */
     InputProps = {
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <Icon color="disabled" />
-          </InputAdornment>
-        ),
-      },
+      startAdornment: (
+        <InputAdornment position="start">
+          <Icon color="disabled" />
+        </InputAdornment>
+      ),
     };
   }
 
-  InputProps.fullWidth = Boolean(!props.row);
+  InputProps.fullWidth = !props.row;
 
   return (
     <FastField
@@ -246,7 +238,7 @@ const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
       {...{
         component: TextField,
         variant: "outlined",
-        ...InputProps,
+        InputProps,
         ...props,
       }}
     />

@@ -12,6 +12,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { slotTypeLabel } from "@/lib/labels";
 
+import ErrorMessage from "@/components/atoms/ErrorMessage";
+
 import { __selectTypeId__ } from "./__testData__/testIds";
 
 /**
@@ -43,9 +45,7 @@ const SelectType: React.FC = () => {
           control={<Radio />}
         />
       ))}
-      <div className={classes.error}>
-        {typeof error === "string" && t(error)}
-      </div>
+      <ErrorMessage>{error}</ErrorMessage>
     </Field>
   );
 };
