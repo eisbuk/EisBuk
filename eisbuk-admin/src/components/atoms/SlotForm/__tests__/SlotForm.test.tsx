@@ -21,13 +21,8 @@ import {
   __createSlot__,
   __cancel__,
   __editSlot__,
+  ValidationMessage,
 } from "@/lib/labels";
-import {
-  __invalidTime,
-  __requiredEntry,
-  __requiredField,
-  __timeMismatch,
-} from "@/lib/errorMessages";
 
 import SlotForm from "../SlotForm";
 
@@ -279,7 +274,7 @@ describe("SlotForm ->", () => {
       "should show error if no categories are selected",
       async () => {
         screen.getByText(__createSlot__).click();
-        await screen.findByText(__requiredEntry);
+        await screen.findByText(ValidationMessage.RequiredEntry);
       }
     );
 
@@ -288,7 +283,7 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         fireEvent.change(startTime, { target: { value: "" } });
-        await screen.findByText(__requiredField);
+        await screen.findByText(ValidationMessage.RequiredField);
       }
     );
 
@@ -297,7 +292,7 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "not_time_string");
-        await screen.findByText(__invalidTime);
+        await screen.findByText(ValidationMessage.InvalidTime);
       }
     );
 
@@ -307,7 +302,7 @@ describe("SlotForm ->", () => {
         const [startTime, endTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "15:00");
         userEvent.type(endTime, "07:00");
-        await screen.findByText(__timeMismatch);
+        await screen.findByText(ValidationMessage.TimeMismatch);
       }
     );
   });

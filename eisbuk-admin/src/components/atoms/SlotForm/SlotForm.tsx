@@ -15,7 +15,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { SlotInterface, SlotInterval } from "eisbuk-shared";
+import { SlotInterface, SlotInterval, SlotType } from "eisbuk-shared";
 
 import {
   __cancel__,
@@ -27,7 +27,7 @@ import {
 } from "@/lib/labels";
 import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
 
-import SelectType from "./SelectType";
+import RadioSelection from "@/components/atoms/RadioSelection";
 import SelectCategories from "./SelectCategories";
 import SlotIntervals from "./SlotIntervals";
 
@@ -128,6 +128,12 @@ const SlotForm: React.FC<Props> = ({
   // get title based on mode (new-slot/edit)
   const title = slotToEdit ? __editSlotTitle__ : __newSlotTitle__;
 
+  // options for type selection radio group
+  const typeOptions = Object.keys(SlotType).map((typeKey) => ({
+    value: SlotType[typeKey],
+    label: t(`SlotType.${typeKey}`),
+  }));
+
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
       <DialogTitle>{t(title, { date })}</DialogTitle>
@@ -140,7 +146,7 @@ const SlotForm: React.FC<Props> = ({
           <Form data-testid={__slotFormId__}>
             <DialogContent>
               <FormControl component="fieldset">
-                <SelectType />
+                <RadioSelection options={typeOptions} name="type" />
                 <SelectCategories />
                 <SlotIntervals />
                 <Field

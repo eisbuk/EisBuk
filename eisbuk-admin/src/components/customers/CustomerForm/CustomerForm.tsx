@@ -4,17 +4,15 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { Formik, Form, FastField, FieldConfig } from "formik";
-import { RadioGroup, TextField } from "formik-material-ui";
+import { TextField } from "formik-material-ui";
 
+import { InputProps } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Radio from "@material-ui/core/Radio";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Email from "@material-ui/icons/Email";
@@ -23,7 +21,7 @@ import Cake from "@material-ui/icons/Cake";
 import LocalHospital from "@material-ui/icons/LocalHospital";
 import Payment from "@material-ui/icons/Payment";
 
-import { Customer } from "eisbuk-shared";
+import { Category, Customer } from "eisbuk-shared";
 
 import { ValidationMessage } from "@/lib/labels";
 
@@ -35,10 +33,9 @@ import { slotsLabelsLists } from "@/config/appConfig";
 
 import DateInput from "@/components/atoms/DateInput";
 import CustomCheckbox from "./CustomCheckbox";
+import RadioSelection from "@/components/atoms/RadioSelection";
 
-import { capitalizeFirst } from "@/utils/helpers";
 import { isISODay } from "@/utils/date";
-import { InputProps } from "@material-ui/core";
 
 // #region validations
 const CustomerValidation = Yup.object().shape({
@@ -80,6 +77,12 @@ const CustomerForm: React.FC<Props> = ({
   const classes = useStyles();
 
   const { t } = useTranslation();
+
+  const categoryOptions = Object.keys(Category).map((categoryKey) => ({
+    value: Category[categoryKey],
+    label: t(`Category.${categoryKey}`),
+  }));
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="form-dialog-title">
@@ -107,7 +110,7 @@ const CustomerForm: React.FC<Props> = ({
           handleClose();
         }}
       >
-        {({ isSubmitting, errors }) => (
+        {({ isSubmitting }) => (
           <Form autoComplete="off">
             <DialogContent>
               <input
@@ -146,23 +149,7 @@ const CustomerForm: React.FC<Props> = ({
                 Icon={Cake}
               />
 
-              <MyField
-                component={RadioGroup}
-                name="category"
-                label={t("CustomerForm.Category")}
-                row
-                className={classes.radioGroup}
-              >
-                {slotsLabelsLists.categories.map((level) => (
-                  <FormControlLabel
-                    key={level.id}
-                    value={level.id}
-                    label={capitalizeFirst(t(`Categories.${level.label}`))}
-                    control={<Radio />}
-                  />
-                ))}
-              </MyField>
-              <FormHelperText>{errors.category}</FormHelperText>
+              <RadioSelection options={categoryOptions} name="category" />
 
               <DateInput
                 name="certificateExpiration"
