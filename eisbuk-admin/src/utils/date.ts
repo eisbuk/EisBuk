@@ -54,5 +54,5 @@ export const luxon2ISODate = (luxonDate: DateTime): string =>
  * @param string to check for ISO validity
  * @returns boolean
  */
-export const isISODay = (string: string) =>
-  string.length == 10 && DateTime.fromISO(string).isValid;
+export const isISODay = (string?: string): boolean =>
+  string ? string.length === 10 && DateTime.fromISO(string).isValid : false;

@@ -136,7 +136,11 @@ const SlotForm: React.FC<Props> = ({
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
       <DialogTitle>{t(title, { date })}</DialogTitle>
-      <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
+      <Formik
+        {...{ initialValues, validationSchema }}
+        onSubmit={handleSubmit}
+        validateOnChange={false}
+      >
         {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>
             <DialogContent>

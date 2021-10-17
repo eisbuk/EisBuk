@@ -35,6 +35,7 @@ import CustomCheckbox from "./CustomCheckbox";
 
 import { capitalizeFirst } from "@/utils/helpers";
 import DateInput from "../atoms/DateInput";
+import { isISODay } from "@/utils/date";
 
 // ***** Region Yup Validation ***** //
 const CustomerValidation = Yup.object().shape({
@@ -43,11 +44,16 @@ const CustomerValidation = Yup.object().shape({
   email: Yup.string().email(i18n.t("CustomerValidations.Email")),
   phone: Yup.string(),
   birthday: Yup.string()
-    .matches(/^[0-9\/\-\.]+$/, "CustomerValidations.Birthday")
-    .min(10)
-    .max(10),
-  certificateExpiration: Yup.mixed(),
-  covidCertificateReleaseDate: Yup.mixed(),
+    .required()
+    .test({ test: isISODay, message: "Invalid date" }),
+  certificateExpiration: Yup.string().test({
+    test: isISODay,
+    message: "Invalid date",
+  }),
+  covidCertificateReleaseDate: Yup.string().test({
+    test: isISODay,
+    message: "Invalid date",
+  }),
   covidCertificateSuspended: Yup.boolean(),
   category: Yup.string().required(i18n.t("CustomerValidations.Category")),
   subscriptionNumber: Yup.number(),
@@ -78,6 +84,7 @@ const CustomerForm: React.FC<Props> = ({
         {t("CustomerForm.NewAthlete")}
       </DialogTitle>
       <Formik
+        validateOnChange={false}
         initialValues={{
           name: "",
           surname: "",
@@ -130,14 +137,6 @@ const CustomerForm: React.FC<Props> = ({
                 className={classes.field}
                 Icon={Phone}
               />
-              {/* <MyField
-                name="birthday"
-                type="date"
-                label={t("CustomerForm.DateOfBirth")}
-                views={["year", "month", "date"]}
-                className={classes.field}
-                Icon={Cake}
-              /> */}
               <DateInput
                 name="birthday"
                 className={classes.field}
