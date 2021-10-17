@@ -138,7 +138,7 @@ const SlotForm: React.FC<Props> = ({
 
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
-      <DialogTitle>{t(title, { date })}</DialogTitle>
+      <DialogTitle>{title}</DialogTitle>
       <Formik
         {...{ initialValues, validationSchema }}
         onSubmit={handleSubmit}

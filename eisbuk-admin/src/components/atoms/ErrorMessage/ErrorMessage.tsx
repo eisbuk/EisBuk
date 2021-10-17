@@ -10,6 +10,14 @@ interface Props extends Omit<React.HTMLAttributes<HTMLElement>, "translate"> {
   overrideFontStyles?: boolean;
 }
 
+/**
+ * A custom error message component used to ensure consistent styles (reduce redundant code)
+ * for all error displaying.
+ *
+ * _Additionally: translates passed error messages and performs checks (in case error is not a string)_
+ * @param param0
+ * @returns
+ */
 const ErrorMessage: React.FC<Props> = ({
   children,
   as = "span",

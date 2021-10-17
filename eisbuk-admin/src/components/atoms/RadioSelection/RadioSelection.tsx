@@ -13,6 +13,15 @@ type Props = Omit<FieldAttributes<any>, "options"> & {
   options: { value: string; label: string }[];
 };
 
+/**
+ * A generalized radio selection component ,
+ * used for all single selection, multiple option inputs.
+ *
+ * Features styled (and standardized) `ErrorMessage` component
+ * for consistent erorr displays.
+ * @param param0
+ * @returns
+ */
 const RadioSelection: React.FC<Props> = ({ options, ...props }) => {
   const classes = useStyles();
 
