@@ -23,14 +23,9 @@ import {
   __editSlotTitle__,
   __editSlot__,
   __newSlotTitle__,
+  ValidationMessage,
 } from "@/lib/labels";
 import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
-import {
-  __invalidTime,
-  __requiredEntry,
-  __requiredField,
-  __timeMismatch,
-} from "@/lib/errorMessages";
 
 import SelectType from "./SelectType";
 import SelectCategories from "./SelectCategories";
@@ -43,30 +38,30 @@ import { slotToFormValues } from "./utils";
 import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
+const timeFieldValidation = yup
+  .string()
+  .required(ValidationMessage.RequiredField)
+  .test({
+    message: ValidationMessage.InvalidTime,
+    test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
+  });
+
 const validationSchema = yup.object().shape({
-  categories: yup.array().required().min(1, __requiredEntry).of(yup.string()),
+  categories: yup
+    .array()
+    .required()
+    .min(1, ValidationMessage.RequiredEntry)
+    .of(yup.string()),
   intervals: yup.array().of(
     yup
       .object()
       .shape({
-        startTime: yup
-          .string()
-          .required(__requiredField)
-          .test({
-            message: __invalidTime,
-            test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
-          }),
-        endTime: yup
-          .string()
-          .required(__requiredField)
-          .test({
-            message: __invalidTime,
-            test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
-          }),
+        startTime: timeFieldValidation,
+        endTime: timeFieldValidation,
       })
       .required()
       .test({
-        message: __timeMismatch,
+        message: ValidationMessage.TimeMismatch,
         test: (interval: SlotInterval) =>
           interval &&
           interval.startTime &&
@@ -74,7 +69,7 @@ const validationSchema = yup.object().shape({
           interval.startTime < interval.endTime,
       })
   ),
-  type: yup.string().required(__requiredField),
+  type: yup.string().required(ValidationMessage.RequiredField),
 });
 // #endregion validation
 

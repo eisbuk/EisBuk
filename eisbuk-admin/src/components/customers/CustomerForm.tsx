@@ -25,6 +25,8 @@ import Payment from "@material-ui/icons/Payment";
 
 import { Customer } from "eisbuk-shared";
 
+import { ValidationMessage } from "@/lib/labels";
+
 import { SvgComponent } from "@/types/components";
 
 import { currentTheme } from "@/themes";
@@ -37,31 +39,30 @@ import { capitalizeFirst } from "@/utils/helpers";
 import DateInput from "../atoms/DateInput";
 import { isISODay } from "@/utils/date";
 
-// ***** Region Yup Validation ***** //
+// #region validations
 const CustomerValidation = Yup.object().shape({
-  name: Yup.string().required(i18n.t("CustomerValidations.Required")),
-  surname: Yup.string().required(i18n.t("CustomerValidations.Required")),
-  email: Yup.string().email(i18n.t("CustomerValidations.Email")),
+  name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  email: Yup.string().email(i18n.t(ValidationMessage.Email)),
   phone: Yup.string(),
   birthday: Yup.string()
-    .required()
-    .test({ test: isISODay, message: "Invalid date" }),
+    .required(ValidationMessage.RequiredField)
+    .test({ test: isISODay, message: ValidationMessage.InvalidDate }),
   certificateExpiration: Yup.string().test({
-    test: isISODay,
-    message: "Invalid date",
+    test: (input) => !input || isISODay(input),
+    message: ValidationMessage.InvalidDate,
   }),
   covidCertificateReleaseDate: Yup.string().test({
-    test: isISODay,
-    message: "Invalid date",
+    test: (input) => !input || isISODay(input),
+    message: ValidationMessage.InvalidDate,
   }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t("CustomerValidations.Category")),
+  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   subscriptionNumber: Yup.number(),
 });
+// #endregion validations
 
-// ***** End Region Yup Validation ***** //
-
-// ***** Reigion Main Component ***** //
+// #region mainComponent
 interface Props {
   open: boolean;
   handleClose?: () => void;
@@ -206,9 +207,9 @@ const CustomerForm: React.FC<Props> = ({
     </Dialog>
   );
 };
-// ***** End Reigion Main Component ***** //
+// #endregion mainComponent
 
-// ***** Region Custom Field ***** //
+// #region MyField
 interface MyFieldProps extends FieldConfig<string> {
   Icon?: SvgComponent;
   row?: unknown /** @TODO clear this up */;
@@ -253,9 +254,9 @@ const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
     />
   );
 };
-// ***** End Region Custom Field ***** //
+// #endregion MyField
 
-// ***** Region Styles ***** //
+// #region styles
 type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -270,6 +271,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(1.5),
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion styles
 
 export default CustomerForm;
