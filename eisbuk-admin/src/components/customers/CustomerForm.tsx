@@ -33,10 +33,10 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
 
+import DateInput from "@/components/atoms/DateInput";
 import CustomCheckbox from "./CustomCheckbox";
 
 import { capitalizeFirst } from "@/utils/helpers";
-import DateInput from "../atoms/DateInput";
 import { isISODay } from "@/utils/date";
 
 // #region validations
@@ -163,15 +163,13 @@ const CustomerForm: React.FC<Props> = ({
               </MyField>
               <FormHelperText>{errors.category}</FormHelperText>
 
-              <MyField
-                type="date"
+              <DateInput
                 name="certificateExpiration"
                 label={t("CustomerForm.MedicalCertificate")}
                 className={classes.field}
                 Icon={LocalHospital}
               />
-              <MyField
-                type="date"
+              <DateInput
                 name="covidCertificateReleaseDate"
                 label={t("CustomerForm.CovidCertificateReleaseDate")}
                 className={classes.field}
