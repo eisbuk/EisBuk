@@ -1,6 +1,4 @@
-import { CustomerBookingEntry, SlotsById } from "eisbuk-shared";
-
-import { luxonToFB } from "@/utils/date";
+import { CustomerBookingEntry, SlotsById, luxon2ISODate } from "eisbuk-shared";
 
 import { baseSlot, intervals } from "@/__testData__/dummyData";
 import { testDateLuxon } from "@/__testData__/date";
@@ -14,7 +12,7 @@ export const [slots, bookedSlots]: SlotsBookingsTuple = Array(7)
   .reduce(
     (acc, dateLuxon, i) => {
       const luxonDay = dateLuxon.plus({ days: i });
-      const date = luxonToFB(luxonDay);
+      const date = luxon2ISODate(luxonDay);
 
       const slotId = `slot-${i}`;
 

@@ -1,10 +1,8 @@
-import { Category, SlotType } from "eisbuk-shared";
-
 import { CustomerWithAttendance } from "@/types/components";
 
-import { Props as AttendanceCardProps } from "../AttendanceCard";
+import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import { timestampDate } from "@/__testData__/date";
+import { baseSlot } from "@/__testData__/dummyData";
 import { gus, walt, saul, jian } from "@/__testData__/customers";
 
 export const allCustomers = [gus, walt, saul, jian];
@@ -17,13 +15,9 @@ export const intervals = {
 
 export const intervalStrings = Object.keys(intervals);
 
-export const baseProps: AttendanceCardProps = {
-  id: "123",
-  date: timestampDate,
-  type: SlotType.Ice,
+export const baseAttendanceCard: AttendanceCardProps = {
+  ...baseSlot,
   intervals,
-  categories: [Category.Competitive],
-  notes: "",
   customers: [] as CustomerWithAttendance[],
   allCustomers,
 };

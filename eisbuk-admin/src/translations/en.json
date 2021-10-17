@@ -11,20 +11,16 @@
     "NonReversible": "This action is non-reversible",
     "Slot": "slot",
     "Book": "Book",
-    "Booked": "Booked",
-    "ConfirmDialogDate": "{{date, d MMMM}}",
-    "ConfirmDialogTime": "{{date, HH:mm}}"
+    "Booked": "Booked"
   },
   "SlotForm": {
     "Type": "Type",
     "EditSlot": "Edit Slot",
     "CreateSlot": "Create Slot",
     "Cancel": "Cancel",
-    "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}",
 
-    "NewSlotTitle": "New Slot ( {{ date, d MMMM }} )",
-    "EditSlotTitle": "Edit Slot ( {{ date, d MMMM }} )",
+    "NewSlotTitle": "New Slot",
+    "EditSlotTitle": "Edit Slot",
     "Intervals": "Intervals",
     "AddInterval": "Add Interval",
     "StartTime": "Start Time",
@@ -72,8 +68,7 @@
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Are you sure you want to remove all slots",
     "OfTheWeek": "of the week",
-    "NonReversible": "This action is non-reversible",
-    "CurrentDate": "{{date, d MMMM}}"
+    "NonReversible": "This action is non-reversible"
   },
 
   "CustomerList": {
@@ -95,25 +90,6 @@
     "ice": "ice",
     "off-ice-gym": "off-ice-gym"
   },
-  "DateNavigationBar": {
-    "Week": "{{date, d MMMM}}",
-    "Day": "{{date, EEEE d MMMM}}",
-    "Month": "{{date, MMMM yyyy}}"
-  },
-  "CustomerAreaBookingCard": {
-    "Weekday": "{{date, EEE}}",
-    "Day": "{{date, d}}",
-    "Month": "{{date, MMMM}}"
-  },
-  "SlotsDay": {
-    "Date": "{{date,EEEE d MMMM}}"
-  },
-  "SlotCalendarDate": {
-    "Weekday": "{{date, EEEE}}",
-    "Day": "{{date, dd}}",
-    "Month": "{{date,MMMM}}",
-    "Year": "{{date,yyyy}}"
-  },
   "Notification": {
     "Error": "Error",
     "LogoutSuccess": "Logout Successful",
@@ -126,6 +102,9 @@
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"
+  },
+  "AttendanceSheet": {
+    "Attendance": "Attendance"
   },
 
   "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
@@ -160,5 +139,14 @@
     "InvalidTime": "Invalid time format (\"HH:mm\")",
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
     "TimeMismatch": "Start time is greater than end time"
+  },
+  "Date": {
+    "Weekday": "{{ date, EEE }}",
+    "Day": "{{ date, d }}",
+    "Month": "{{ date, MMMM }}",
+    "Full": "{{ date, EEEE d MMMM }}",
+    "DayMonth": "{{ date, d MMMM }}",
+    "MonthYear": "{{ date, MMMM yyyy }}",
+    "Time": "{{date, HH:mm}}"
   }
 }

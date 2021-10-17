@@ -32,7 +32,7 @@ i18n
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
       format: (value, format, lng) => {
-        if (value instanceof DateTime) {
+        if (DateTime.isDateTime(value)) {
           return value.setLocale(lng || "en").toFormat(format!);
         }
         return value;

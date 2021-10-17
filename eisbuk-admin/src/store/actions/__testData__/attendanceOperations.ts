@@ -1,6 +1,6 @@
 import { CustomerAttendance, SlotAttendnace } from "eisbuk-shared";
 
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 // #region testData
 /**
@@ -38,7 +38,7 @@ interface VariableAttendance {
 export const createDocumentWithObservedAttendance = (
   variableAttendance: VariableAttendance
 ): SlotAttendnace => ({
-  date: timestampDate,
+  date: testDate,
   attendances: {
     ["dummy-customer-0"]: dummyAttendance,
     ["dummy-customer-1"]: dummyAttendance,

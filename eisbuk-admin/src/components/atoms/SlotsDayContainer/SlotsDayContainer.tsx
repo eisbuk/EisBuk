@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
+import { DateFormat } from "@/lib/labels";
+
 /**
  * Wrapper function we're using to wrap each child element (for styling).
  * We're using this in case some of the children components render an array of elements
@@ -70,7 +72,7 @@ const SlotsDayContainer: React.FC<Props> = ({
     <>
       <ListSubheader className={classes.listSubheader}>
         <Typography display="inline" variant="h4" className={classes.date}>
-          {t("SlotsDay.Date", { date })}
+          {t(DateFormat.Full, { date })}
         </Typography>
         {showAdditionalButtons && additionalButtons}
       </ListSubheader>

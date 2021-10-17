@@ -19,8 +19,6 @@ import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification, showErrSnackbar } from "./appActions";
 
-import { luxonToFB } from "@/utils/date";
-
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
  * @param date of the slots day to delete
@@ -46,15 +44,14 @@ export const deleteSlotsWeek = (date: DateTime): void => {
 export const createNewSlot = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   {
-    date: luxonDate,
+    date,
     intervals: intervalsArr,
     ...slotData
-  }: SlotFormValues & { date: DateTime }
+  }: SlotFormValues & { date: string }
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   try {
     const db = getFirebase().firestore();
 
-    const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
       (acc, { startTime, endTime }) => ({
         ...acc,
@@ -95,16 +92,15 @@ export const createNewSlot = (
 export const updateSlot = (
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   {
-    date: luxonDate,
+    date,
     intervals: intervalsArr,
     id,
     ...slotData
-  }: SlotFormValues & { date: DateTime; id: string }
+  }: SlotFormValues & { date: string; id: string }
 ): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   try {
     const db = getFirebase().firestore();
 
-    const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
       (acc, { startTime, endTime }) => ({
         ...acc,

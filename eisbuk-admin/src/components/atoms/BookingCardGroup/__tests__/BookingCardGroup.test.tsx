@@ -8,7 +8,7 @@ import BookingCardGroup from "../BookingCardGroup";
 import * as bookingOperations from "@/store/actions/bookingOperations";
 
 import { intervals, slot } from "../__testData__/dummyData";
-import { timestampDate } from "@/__testData__/date";
+import { testDate } from "@/__testData__/date";
 
 const secretKey = "secret-key";
 
@@ -76,7 +76,7 @@ describe("Booking Card Group ->", () => {
         slotId,
         secretKey,
         bookedInterval: intervalKeys[1],
-        date: timestampDate,
+        date: testDate,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockBookAction);
     });

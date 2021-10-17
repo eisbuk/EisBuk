@@ -5,7 +5,7 @@ import { Category } from "eisbuk-shared";
 
 import AddCustomersList from "./AddCustomers";
 
-import { allCustomers } from "./__testData__/dummyData";
+import { allCustomers } from "@/__testData__/attendance";
 
 export default {
   title: "Attendance: Add Customers List",

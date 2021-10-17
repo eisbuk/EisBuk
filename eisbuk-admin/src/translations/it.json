@@ -11,9 +11,7 @@
     "NonReversible": "Questa azione non è reversibile",
     "Slot": "",
     "Book": "Prenota",
-    "Booked": "Prenotato",
-    "ConfirmDialogDate": "{{date, d MMMM}}",
-    "ConfirmDialogTime": "{{date, HH:mm}}"
+    "Booked": "Prenotato"
   },
   "SlotValidations": {
     "Time": "Manca l'ora",
@@ -27,11 +25,9 @@
     "EditSlot": "Modifica Slot",
     "CreateSlot": "Crea Slot",
     "Cancel": "Annulla",
-    "parsedSlotEditDate": "{{date, EEEE d MMMM - HH:mm}}",
-    "parsedDate": "{{date, EEEE d MMMM}}",
 
-    "NewSlotTitle": "Crea Slot ( {{ date, d MMMM }} )",
-    "EditSlotTitle": "Modifica Slot ( {{ date, d MMMM }} )",
+    "NewSlotTitle": "Crea Slot",
+    "EditSlotTitle": "Modifica Slot",
     "Intervals": "Intervalli",
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
@@ -65,9 +61,9 @@
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
     "OfTheWeek": "della settimana del ",
-    "NonReversible": "Questa azione non è reversibile",
-    "CurrentDate": "{{date, d MMMM}}"
+    "NonReversible": "Questa azione non è reversibile"
   },
+
   "CustomerList": {
     "Name": "Nome",
     "Surname": "Cognome",
@@ -87,25 +83,6 @@
     "ice": "ice",
     "off-ice-gym": "off-ice-gym"
   },
-  "DateNavigationBar": {
-    "Week": "{{date, d MMMM}}",
-    "Day": "{{date, EEEE d MMMM}}",
-    "Month": "{{date, MMMM yyyy}}"
-  },
-  "CustomerAreaBookingCard": {
-    "Weekday": "{{date, EEE}}",
-    "Day": "{{date, d}}",
-    "Month": "{{date, MMMM}}"
-  },
-  "SlotsDay": {
-    "Date": "{{date,EEEE d MMMM}}"
-  },
-  "SlotCalendarDate": {
-    "Weekday": "{{date, EEEE}}",
-    "Day": "{{date, dd}}",
-    "Month": "{{date,MMMM}}",
-    "Year": "{{date,yyyy}}"
-  },
   "Notification": {
     "Error": "Errore",
     "LogoutSuccess": "Hai effettuato il logout",
@@ -118,6 +95,9 @@
     "SlotAdded": "Slot Aggiunto",
     "SlotRemoved": "Slot Eliminato",
     "SlotUpdated": "Slot Aggiornato"
+  },
+  "AttendanceSheet": {
+    "Attendance": "Presenze"
   },
 
   "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
@@ -152,5 +132,14 @@
     "InvalidTime": "Formato dell'ora non valido (\"HH:mm\")",
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
+  },
+  "Date": {
+    "Weekday": "{{ date, EEE }}",
+    "Day": "{{ date, d }}",
+    "Month": "{{ date, MMMM }}",
+    "Full": "{{ date, EEEE d MMMM }}",
+    "DayMonth": "{{ date, d MMMM }}",
+    "MonthYear": "{{ date, MMMM yyyy }}",
+    "Time": "{{date, HH:mm}}"
   }
 }

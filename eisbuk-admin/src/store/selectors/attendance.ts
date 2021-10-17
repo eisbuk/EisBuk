@@ -1,7 +1,8 @@
-import { LocalStore } from "@/types/store";
-import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
+import { luxon2ISODate } from "eisbuk-shared";
 
-import { luxon2ISODate } from "@/utils/date";
+import { LocalStore } from "@/types/store";
+
+import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
 export const getSlotsWithAttendance = (
   state: LocalStore

@@ -48,3 +48,15 @@ export enum ValidationMessage {
   TimeMismatch = "Validations.TimeMismatch",
 }
 // #endregion validationMessages
+
+// #region date
+export enum DateFormat {
+  Weekday = "Date.Weekday",
+  Day = "Date.Day",
+  Month = "Date.Month",
+  Full = "Date.Full",
+  DayMonth = "Date.DayMonth",
+  MonthYear = "Date.MonthYear",
+  Time = "Date.Time",
+}
+// #endregion date

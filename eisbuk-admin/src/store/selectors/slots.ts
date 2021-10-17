@@ -1,11 +1,9 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { DateTime } from "luxon";
 
-import { SlotsByDay, Category, SlotsById } from "eisbuk-shared";
+import { SlotsByDay, Category, SlotsById, luxon2ISODate } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
-
-import { luxon2ISODate } from "@/utils/date";
 
 /**
  * Get `slotsByDay` entry from store, filtered according to `timeframe`, `startDate` and `category`

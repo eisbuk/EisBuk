@@ -1,8 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Category, Customer } from "eisbuk-shared";
-
-import { luxon2ISODate } from "@/utils/date";
+import { Category, Customer, luxon2ISODate } from "eisbuk-shared";
 
 export const saul: Customer = {
   name: "Saul",
