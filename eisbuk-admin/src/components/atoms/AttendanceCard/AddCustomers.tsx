@@ -69,7 +69,7 @@ const AddCustomersList: React.FC<Props> = ({
   );
 
   return (
-    <Dialog {...dialogProps}>
+    <Dialog onClose={() => onClose()} {...dialogProps}>
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(__addCustomersTitle__)}
