@@ -17,6 +17,7 @@ import AthletesPage from "@/pages/CustomersPage";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/LoginPage";
 import CustomerAreaPage from "@/pages/customer_area";
+import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
 
 import useFirestoreSubscribe from "@/hooks/useFirestoreSubscribe";
@@ -51,6 +52,11 @@ const AppContent: React.FC = () => {
       <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
       <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+      <PrivateRoute
+        path={Routes.AttendancePrintable}
+        component={AttendancePrintable}
+      />
+
       <Route
         path={`${Routes.CustomerArea}/:secretKey/:customerRoute?`}
         component={CustomerAreaPage}

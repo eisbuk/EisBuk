@@ -13,7 +13,7 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { baseProps, intervals } from "../__testData__/dummyData";
+import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { saul } from "@/__testData__/customers";
 import {
   __attendanceButton__,
@@ -78,7 +78,7 @@ const thumbsUp = "👍";
 const thumbsDown = "👎";
 
 const customerId = saul.id;
-const slotId = baseProps.id;
+const slotId = baseAttendanceCard.id;
 
 // interval values we're using across tests
 const intervalKeys = Object.keys(intervals);
@@ -96,15 +96,17 @@ describe("AttendanceCard", () => {
     test("should render proper values passed from props", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[saul as CustomerWithAttendance]}
         />
       );
       screen.getByText("13:00 - 14:15");
       screen.getByText(saul.name);
       // create regex for type and category as they're part of the same string in the UI
-      const categoryRegex = new RegExp(categoryLabel[baseProps.categories[0]]);
-      const typeRegex = new RegExp(slotTypeLabel[baseProps.type]);
+      const categoryRegex = new RegExp(
+        categoryLabel[baseAttendanceCard.categories[0]]
+      );
+      const typeRegex = new RegExp(slotTypeLabel[baseAttendanceCard.type]);
       screen.getByText(categoryRegex);
       screen.getByText(typeRegex);
     });
@@ -114,7 +116,7 @@ describe("AttendanceCard", () => {
     test("should update local state immediately on button click", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
         />
       );
@@ -126,7 +128,7 @@ describe("AttendanceCard", () => {
     test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
         />
       );
@@ -143,7 +145,7 @@ describe("AttendanceCard", () => {
     test("should dispatch 'markAbsence' on attendance button click if `attended != null`", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
         />
       );
@@ -159,7 +161,7 @@ describe("AttendanceCard", () => {
     test("should disable attendance button while there's a discrepency between local attended and attended from firestore (boolean)", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
         />
       );
@@ -174,7 +176,7 @@ describe("AttendanceCard", () => {
     test("should disable attendance button while picking new interval - 'attendedInterval != selectedInterval' (this doesn't apply when 'attendedInterval = null'", () => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
         />
       );
@@ -191,7 +193,7 @@ describe("AttendanceCard", () => {
     beforeEach(() => {
       render(
         <AttendanceCard
-          {...baseProps}
+          {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
         />
       );
@@ -250,7 +252,7 @@ describe("AttendanceCard", () => {
       async () => {
         render(
           <AttendanceCard
-            {...baseProps}
+            {...baseAttendanceCard}
             customers={[
               { ...saul, bookedInterval, attendedInterval: bookedInterval },
             ]}

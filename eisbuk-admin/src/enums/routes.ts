@@ -2,6 +2,7 @@ export enum Routes {
   Login = "/login",
   Unauthorized = "/unautorized",
   CustomerArea = "/customer_area",
+  AttendancePrintable = "/attendance_printable",
   Debug = "/debug",
   FirestoreDebug = "/firestore_debug",
 }

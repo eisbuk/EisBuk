@@ -10,17 +10,11 @@ import AddNew from "@material-ui/icons/AddCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import {
-  Category,
-  SlotType,
-  Customer,
-  SlotInterface,
-  SlotInterval,
-} from "eisbuk-shared";
-
-import { CustomerWithAttendance } from "@/types/components";
+import { Category, SlotType, Customer, SlotInterface } from "eisbuk-shared";
 
 import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+
+import { CustomerWithAttendance } from "@/types/components";
 
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
 import AddCustomersList from "./AddCustomers";
@@ -29,6 +23,8 @@ import {
   markAbsence,
   markAttendance,
 } from "@/store/actions/attendanceOperations";
+
+import { getSlotTimespan } from "@/utils/helpers";
 
 import { ETheme } from "@/themes";
 
@@ -66,7 +62,7 @@ const AttendanceCard: React.FC<Props> = ({
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const timeString = getTimeString(intervals);
+  const timeString = getSlotTimespan(intervals);
 
   /**
    * We don't need the interval record, but rather a sorted array of interval keys.
@@ -165,32 +161,6 @@ const AttendanceCard: React.FC<Props> = ({
 };
 
 // #region localUtils
-/**
- * Calculates earliest startTime and latest endTime out of intervals. And returns `"${startTime} - ${endTime}""` string
- * @param intervals all intervals for the slot
- * @returns time string
- */
-const getTimeString = (intervals: Props["intervals"]): string => {
-  // calculate single { startTime, endTime } object
-  const { startTime, endTime } = Object.values(intervals).reduce(
-    (acc, interval) => {
-      const startTime =
-        !acc.startTime || acc.startTime > interval.startTime
-          ? interval.startTime
-          : acc.startTime;
-      const endTime =
-        !acc.endTime || acc.endTime < interval.endTime
-          ? interval.endTime
-          : acc.endTime;
-
-      return { startTime, endTime };
-    },
-    {} as SlotInterval
-  );
-  // return time string
-  return `${startTime} - ${endTime}`;
-};
-
 const translateAndJoinTags = (categories: Category[], type: SlotType) => {
   const translatedCategories = categories.map((category) =>
     i18n.t(categoryLabel[category])

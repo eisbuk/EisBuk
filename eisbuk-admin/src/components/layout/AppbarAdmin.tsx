@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 
-import AppBar from "@material-ui/core/AppBar";
+import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import Hidden from "@material-ui/core/Hidden";
@@ -34,7 +34,7 @@ import { signOut } from "@/store/actions/authOperations";
 
 import { getFirebaseAuth } from "@/store/selectors/auth";
 
-const AppbarAdmin: React.FC = () => {
+const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
   const location = useLocation();
 
@@ -64,7 +64,7 @@ const AppbarAdmin: React.FC = () => {
 
   return (
     <>
-      <AppBar position="static">
+      <AppBar {...props} position="static">
         <Toolbar>
           <Typography
             variant="h6"

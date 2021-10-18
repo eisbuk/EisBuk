@@ -6,9 +6,9 @@ import List from "@material-ui/core/List";
 import AttendanceCard from "./AttendanceCard";
 
 import {
-  baseProps,
+  baseAttendanceCard,
   intervalStrings as intervals,
-} from "./__testData__/dummyData";
+} from "@/__testData__/attendance";
 import { saul, walt } from "@/__testData__/customers";
 
 export default {
@@ -23,7 +23,9 @@ export default {
   ],
 } as ComponentMeta<typeof AttendanceCard>;
 
-export const Default = (): JSX.Element => <AttendanceCard {...baseProps} />;
+export const Default = (): JSX.Element => (
+  <AttendanceCard {...baseAttendanceCard} />
+);
 
 const saulBookings = {
   bookedInterval: intervals[0],
@@ -42,7 +44,7 @@ const customers = [
 
 export const MultipleWithCustomers = (): JSX.Element => (
   <>
-    <AttendanceCard {...{ ...baseProps, customers }} />
-    <AttendanceCard {...{ ...baseProps, customers: [customers[0]] }} />
+    <AttendanceCard {...{ ...baseAttendanceCard, customers }} />
+    <AttendanceCard {...{ ...baseAttendanceCard, customers: [customers[0]] }} />
   </>
 );

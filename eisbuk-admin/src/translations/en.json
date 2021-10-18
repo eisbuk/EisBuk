@@ -115,6 +115,9 @@
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"
   },
+  "AttendanceSheet": {
+    "Attendance": "Attendance"
+  },
 
   "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
 

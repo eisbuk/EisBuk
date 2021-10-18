@@ -4,7 +4,7 @@ import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
 import Toolbar from "@material-ui/core/Toolbar";
-import AppBar from "@material-ui/core/AppBar";
+import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
 import IconButton from "@material-ui/core/IconButton";
 import Typography from "@material-ui/core/Typography";
 import Switch from "@material-ui/core/Switch";
@@ -37,7 +37,7 @@ interface RenderFunction {
   }): JSX.Element | null | string;
 }
 
-interface Props {
+interface Props extends AppBarProps {
   /**
    * Render function passed as children for readability
    */
@@ -69,6 +69,7 @@ const DateNavigation: React.FC<Props> = ({
   defaultDate,
   jump = "week",
   extraButtons = null,
+  ...props
 }) => {
   const classes = useStyles();
 
@@ -141,7 +142,7 @@ const DateNavigation: React.FC<Props> = ({
 
   return (
     <>
-      <AppBar position="sticky">
+      <AppBar {...props} position="sticky">
         <Toolbar variant="dense">
           <IconButton
             edge="start"
@@ -174,7 +175,9 @@ const DateNavigation: React.FC<Props> = ({
           {showToggle && toggleButton}
         </Toolbar>
       </AppBar>
-      {children ? children({ toggleState }) : null}
+      <div className={classes.childrenContainer}>
+        {children ? children({ toggleState }) : null}
+      </div>
     </>
   );
 };
@@ -195,6 +198,9 @@ const useStyles = makeStyles((theme) => ({
   },
   "& .MuiAppBar-positionSticky": {
     top: theme.mixins.toolbar.top,
+  },
+  childrenContainer: {
+    paddingBottom: "2rem",
   },
 }));
 
