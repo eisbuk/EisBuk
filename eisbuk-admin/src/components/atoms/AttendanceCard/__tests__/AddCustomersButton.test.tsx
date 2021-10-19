@@ -4,6 +4,7 @@ import {
   render,
   waitForElementToBeRemoved,
   cleanup,
+  fireEvent,
 } from "@testing-library/react";
 
 import { Customer, SlotInterface } from "eisbuk-shared";
@@ -79,6 +80,41 @@ describe("AttendanceCard ->", () => {
         screen.getByTestId(__addCustomersButtonId__).click();
         screen.getByTestId(__customersListId__);
         screen.getByTestId(__closeCustomersListId__).click();
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+    testWithMutationObserver(
+      "should open customers list on add customers button click and close on esc button click",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        const customerList = screen.queryByTestId(__customersListId__);
+        expect(customerList).toBeNull();
+        screen.getByTestId(__addCustomersButtonId__).click();
+        screen.getByTestId(__customersListId__);
+        fireEvent.keyDown(screen.getByTestId(__customersListId__), {
+          key: "Escape",
+          code: "Escape",
+          keyCode: 27,
+          charCode: 27,
+        });
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+    testWithMutationObserver(
+      "should open customers list on add customers button click and close on clicking outside modal",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        const customerList = screen.queryByTestId(__customersListId__);
+        expect(customerList).toBeNull();
+        screen.getByTestId(__addCustomersButtonId__).click();
+        screen.getByTestId(__customersListId__);
+        const dialogContainer = screen.getByRole("presentation");
+        fireEvent.click(dialogContainer.children[0]);
+
         await waitForElementToBeRemoved(() =>
           screen.getByTestId(__customersListId__)
         );
