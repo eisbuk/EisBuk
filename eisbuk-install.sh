@@ -1,7 +1,12 @@
 #!/bin/sh
 
+# If we're in a codespace disable IPV6
+# see https://github.com/firebase/firebase-tools/issues/3843
+[ -d /home/codespace/ ] && ./disable-ipv6.sh
+
 # make the process a bit more verbose on each step
 set -ex
+
 
 # install and build shared files package
 cd eisbuk-shared
