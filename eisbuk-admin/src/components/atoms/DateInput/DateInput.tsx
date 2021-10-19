@@ -77,7 +77,7 @@ const isoToDate = (input: string): string => {
  * @returns string
  */
 const dateToISO = (input: string): string => {
-  const [day, month, year] = input.split(/[/\-.]/).map(_twodigits);
+  const [day, month, year] = input.split(/[-/.]/).map(_twodigits);
   const isoString = `${year}-${month}-${day}`;
   return isISODay(isoString) ? isoString : input;
 };
