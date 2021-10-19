@@ -141,5 +141,8 @@
     "DayMonth": "{{ date, d MMMM }}",
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}"
+  },
+  "DateInput": {
+    "placeholder": "gg/mm/aaaa"
   }
 }

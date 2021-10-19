@@ -1,5 +1,6 @@
 import React from "react";
 import { useField } from "formik";
+import i18n from "i18next";
 
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
@@ -47,7 +48,7 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
         value={isoToDate(value)}
         onChange={handleChange}
         type="text"
-        placeholder="dd/mm/yyyy"
+        placeholder={i18n.t("DateInput.placeholder")}
         error={Boolean(error)}
       />
       <ErrorMessage>{error}</ErrorMessage>
