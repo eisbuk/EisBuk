@@ -80,6 +80,20 @@ describe("Date Input", () => {
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
     });
+
+    test("should parse european date with single digits into ISOString with . or -", () => {
+      const dashInput = "1-12-2021";
+      const dotInput = "1.12.2021";
+      const isoDate = "2021-12-01";
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: dashInput },
+      });
+      expect(mockSetValue).toHaveBeenCalledWith(isoDate);
+      fireEvent.change(screen.getByRole("textbox"), {
+        target: { value: dotInput },
+      });
+      expect(mockSetValue).toHaveBeenCalledWith(isoDate);
+    });
   });
 
   describe("Test processing of received value", () => {
