@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { fromISO, SlotInterface, SlotInterval } from "eisbuk-shared";
+import { SlotInterface, SlotInterval, SlotType, fromISO } from "eisbuk-shared";
 
 import {
   DateFormat,
@@ -23,16 +23,11 @@ import {
   __editSlotTitle__,
   __editSlot__,
   __newSlotTitle__,
+  ValidationMessage,
 } from "@/lib/labels";
 import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
-import {
-  __invalidTime,
-  __requiredEntry,
-  __requiredField,
-  __timeMismatch,
-} from "@/lib/errorMessages";
 
-import SelectType from "./SelectType";
+import RadioSelection from "@/components/atoms/RadioSelection";
 import SelectCategories from "./SelectCategories";
 import SlotIntervals from "./SlotIntervals";
 
@@ -43,30 +38,30 @@ import { slotToFormValues } from "./utils";
 import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
+const timeFieldValidation = yup
+  .string()
+  .required(ValidationMessage.RequiredField)
+  .test({
+    message: ValidationMessage.InvalidTime,
+    test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
+  });
+
 const validationSchema = yup.object().shape({
-  categories: yup.array().required().min(1, __requiredEntry).of(yup.string()),
+  categories: yup
+    .array()
+    .required()
+    .min(1, ValidationMessage.RequiredEntry)
+    .of(yup.string()),
   intervals: yup.array().of(
     yup
       .object()
       .shape({
-        startTime: yup
-          .string()
-          .required(__requiredField)
-          .test({
-            message: __invalidTime,
-            test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
-          }),
-        endTime: yup
-          .string()
-          .required(__requiredField)
-          .test({
-            message: __invalidTime,
-            test: (time) => /^[0-9]?[0-9]:[0-9][0-9]$/.test(time || ""),
-          }),
+        startTime: timeFieldValidation,
+        endTime: timeFieldValidation,
       })
       .required()
       .test({
-        message: __timeMismatch,
+        message: ValidationMessage.TimeMismatch,
         test: (interval: SlotInterval) =>
           interval &&
           interval.startTime &&
@@ -74,7 +69,7 @@ const validationSchema = yup.object().shape({
           interval.startTime < interval.endTime,
       })
   ),
-  type: yup.string().required(__requiredField),
+  type: yup.string().required(ValidationMessage.RequiredField),
 });
 // #endregion validation
 
@@ -135,15 +130,25 @@ const SlotForm: React.FC<Props> = ({
   const titleDate = t(DateFormat.DayMonth, { date: fromISO(date) });
   const title = `${t(titleString)} ( ${titleDate} )`;
 
+  // options for type selection radio group
+  const typeOptions = Object.keys(SlotType).map((typeKey) => ({
+    value: SlotType[typeKey],
+    label: t(`SlotType.${typeKey}`),
+  }));
+
   return (
     <Dialog open={Boolean(open)} onClose={onClose}>
       <DialogTitle>{title}</DialogTitle>
-      <Formik {...{ initialValues, onSubmit: handleSubmit, validationSchema }}>
+      <Formik
+        {...{ initialValues, validationSchema }}
+        onSubmit={handleSubmit}
+        validateOnChange={false}
+      >
         {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>
             <DialogContent>
               <FormControl component="fieldset">
-                <SelectType />
+                <RadioSelection options={typeOptions} name="type" />
                 <SelectCategories />
                 <SlotIntervals />
                 <Field

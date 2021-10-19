@@ -33,25 +33,6 @@
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
   },
-  "CustomerForm": {
-    "Name": "Nome",
-    "Surname": "Cognome",
-    "Phone": "Telefono",
-    "DateOfBirth": "Data di nascita",
-    "Category": "Categoria",
-    "MedicalCertificate": "Scadenza Cert. Medico",
-    "CardNumber": "Numero Tessera",
-    "Cancel": "Annulla",
-    "Save": "Salva",
-    "NewAthlete": "Nuovo atleta",
-    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
-    "CovidCertificateSuspended": "Certificazione verde sospesa"
-  },
-  "CustomerValidations": {
-    "Email": "Inserisci una email valida",
-    "Category": "Scegli la categoria",
-    "Required": "Richiesto"
-  },
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
@@ -137,18 +118,20 @@
     "EditSlot": "Modifica Slot",
     "Cancel": "Annulla"
   },
-  "Form": {
-    "RequiredEntry": "è richiesto almeno un valore",
-    "RequiredField": "Questo campo è obbligatorio",
-    "InvalidTime": "formato dell'ora non valido (\"HH:mm\")",
-    "TimeMismatch": "l'ora di inizio è maggiore dell'ora di fine"
-  },
   "AttendanceCard": {
     "AddCustomersTitle": "Aggiungi clienti"
   },
   "BookingCard": {
     "BookInterval": "Prenota",
     "CancelBooking": "Annulla"
+  },
+  "Validations": {
+    "Email": "Inserisci una email valida",
+    "RequiredEntry": "È richiesto almeno un valore",
+    "RequiredField": "Questo campo è obbligatorio",
+    "InvalidTime": "Formato dell'ora non valido (\"HH:mm\")",
+    "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
+    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
   },
   "Date": {
     "Weekday": "{{ date, EEE }}",
@@ -158,5 +141,8 @@
     "DayMonth": "{{ date, d MMMM }}",
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}"
+  },
+  "DateInput": {
+    "placeholder": "gg/mm/aaaa"
   }
 }

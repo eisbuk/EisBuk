@@ -6,10 +6,9 @@ import {
   waitFor,
   fireEvent,
 } from "@testing-library/react";
-import { DateTime } from "luxon";
 import userEvent from "@testing-library/user-event";
 
-import { Category, SlotType, luxon2ISODate } from "eisbuk-shared";
+import { Category, SlotType } from "eisbuk-shared";
 
 import { defaultInterval, defaultSlotFormValues } from "@/lib/data";
 import {
@@ -21,13 +20,8 @@ import {
   __createSlot__,
   __cancel__,
   __editSlot__,
+  ValidationMessage,
 } from "@/lib/labels";
-import {
-  __invalidTime,
-  __requiredEntry,
-  __requiredField,
-  __timeMismatch,
-} from "@/lib/errorMessages";
 
 import SlotForm from "../SlotForm";
 
@@ -50,10 +44,7 @@ const mockT = jest.fn();
 jest.mock("react-i18next", () => ({
   useTranslation: () => ({ t: mockT }),
 }));
-mockT.mockImplementation((string: string, options?: { date?: DateTime }) => {
-  const isoDay = options?.date ? luxon2ISODate(options.date) : undefined;
-  return isoDay ? `${string} ${isoDay}` : string;
-});
+mockT.mockImplementation((label: string) => label);
 
 /**
  * We need slot create and update actions to be dispatched as thunks,
@@ -277,7 +268,7 @@ describe("SlotForm ->", () => {
       "should show error if no categories are selected",
       async () => {
         screen.getByText(__createSlot__).click();
-        await screen.findByText(__requiredEntry);
+        await screen.findByText(ValidationMessage.RequiredEntry);
       }
     );
 
@@ -286,7 +277,8 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         fireEvent.change(startTime, { target: { value: "" } });
-        await screen.findByText(__requiredField);
+        screen.getByText(__createSlot__).click();
+        await screen.findByText(ValidationMessage.RequiredField);
       }
     );
 
@@ -295,7 +287,8 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "not_time_string");
-        await screen.findByText(__invalidTime);
+        screen.getByText(__createSlot__).click();
+        await screen.findByText(ValidationMessage.InvalidTime);
       }
     );
 
@@ -305,7 +298,8 @@ describe("SlotForm ->", () => {
         const [startTime, endTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "15:00");
         userEvent.type(endTime, "07:00");
-        await screen.findByText(__timeMismatch);
+        screen.getByText(__createSlot__).click();
+        await screen.findByText(ValidationMessage.TimeMismatch);
       }
     );
   });

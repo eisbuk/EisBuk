@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { luxon2ISODate } from "eisbuk-shared";
 
 import { capitalizeFirst, mode } from "@/utils/helpers";
+import { isISODay } from "@/utils/date";
 
 describe("Helpers", () => {
   describe("`capitalizeFirst` function", () => {
@@ -41,6 +42,15 @@ describe("Date utils", () => {
       // result should be equal to `testISO` (without the added time of day)
       const resDate = luxon2ISODate(testLuxonDate);
       expect(resDate).toEqual(testISO);
+    });
+  });
+
+  describe("'isISO' function", () => {
+    test("should return 'true' if passed sring is a valid ISO date (yyyy-mm-dd) and 'false' otherwise", () => {
+      expect(isISODay("2021-01-01")).toEqual(true);
+      expect(isISODay("no-an-iso")).toEqual(false);
+      // we want a valid ISO day (yyyy-mm-dd), while this is a valid ISO date, it should return `false`
+      expect(isISODay("2021-01")).toEqual(false);
     });
   });
 });

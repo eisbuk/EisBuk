@@ -4,17 +4,15 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { Formik, Form, FastField, FieldConfig } from "formik";
-import { RadioGroup, TextField } from "formik-material-ui";
+import { TextField } from "formik-material-ui";
 
+import { InputProps } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import FormHelperText from "@material-ui/core/FormHelperText";
 import InputAdornment from "@material-ui/core/InputAdornment";
-import Radio from "@material-ui/core/Radio";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Email from "@material-ui/icons/Email";
@@ -23,7 +21,9 @@ import Cake from "@material-ui/icons/Cake";
 import LocalHospital from "@material-ui/icons/LocalHospital";
 import Payment from "@material-ui/icons/Payment";
 
-import { Customer } from "eisbuk-shared";
+import { Category, Customer } from "eisbuk-shared";
+
+import { ValidationMessage } from "@/lib/labels";
 
 import { SvgComponent } from "@/types/components";
 
@@ -31,27 +31,36 @@ import { currentTheme } from "@/themes";
 
 import { slotsLabelsLists } from "@/config/appConfig";
 
+import DateInput from "@/components/atoms/DateInput";
 import CustomCheckbox from "./CustomCheckbox";
+import RadioSelection from "@/components/atoms/RadioSelection";
 
-import { capitalizeFirst } from "@/utils/helpers";
+import { isISODay } from "@/utils/date";
 
-// ***** Region Yup Validation ***** //
+// #region validations
 const CustomerValidation = Yup.object().shape({
-  name: Yup.string().required(i18n.t("CustomerValidations.Required")),
-  surname: Yup.string().required(i18n.t("CustomerValidations.Required")),
-  email: Yup.string().email(i18n.t("CustomerValidations.Email")),
+  name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  email: Yup.string().email(i18n.t(ValidationMessage.Email)),
   phone: Yup.string(),
-  birth: Yup.mixed(),
-  certificateExpiration: Yup.mixed(),
-  covidCertificateReleaseDate: Yup.mixed(),
+  birthday: Yup.string()
+    .required(ValidationMessage.RequiredField)
+    .test({ test: isISODay, message: ValidationMessage.InvalidDate }),
+  certificateExpiration: Yup.string().test({
+    test: (input) => !input || isISODay(input),
+    message: ValidationMessage.InvalidDate,
+  }),
+  covidCertificateReleaseDate: Yup.string().test({
+    test: (input) => !input || isISODay(input),
+    message: ValidationMessage.InvalidDate,
+  }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t("CustomerValidations.Category")),
+  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   subscriptionNumber: Yup.number(),
 });
+// #endregion validations
 
-// ***** End Region Yup Validation ***** //
-
-// ***** Reigion Main Component ***** //
+// #region mainComponent
 interface Props {
   open: boolean;
   handleClose?: () => void;
@@ -68,12 +77,19 @@ const CustomerForm: React.FC<Props> = ({
   const classes = useStyles();
 
   const { t } = useTranslation();
+
+  const categoryOptions = Object.keys(Category).map((categoryKey) => ({
+    value: Category[categoryKey],
+    label: t(`Category.${categoryKey}`),
+  }));
+
   return (
     <Dialog open={open} onClose={handleClose}>
       <DialogTitle id="form-dialog-title">
         {t("CustomerForm.NewAthlete")}
       </DialogTitle>
       <Formik
+        validateOnChange={false}
         initialValues={{
           name: "",
           surname: "",
@@ -94,7 +110,7 @@ const CustomerForm: React.FC<Props> = ({
           handleClose();
         }}
       >
-        {({ isSubmitting, errors }) => (
+        {({ isSubmitting }) => (
           <Form autoComplete="off">
             <DialogContent>
               <input
@@ -126,42 +142,22 @@ const CustomerForm: React.FC<Props> = ({
                 className={classes.field}
                 Icon={Phone}
               />
-              <MyField
+              <DateInput
                 name="birthday"
-                type="date"
-                label={t("CustomerForm.DateOfBirth")}
-                views={["year", "month", "date"]}
                 className={classes.field}
+                label={t("CustomerForm.DateOfBirth")}
                 Icon={Cake}
               />
 
-              <MyField
-                component={RadioGroup}
-                name="category"
-                label={t("CustomerForm.Category")}
-                row
-                className={classes.radioGroup}
-              >
-                {slotsLabelsLists.categories.map((level) => (
-                  <FormControlLabel
-                    key={level.id}
-                    value={level.id}
-                    label={capitalizeFirst(t(`Categories.${level.label}`))}
-                    control={<Radio />}
-                  />
-                ))}
-              </MyField>
-              <FormHelperText>{errors.category}</FormHelperText>
+              <RadioSelection options={categoryOptions} name="category" />
 
-              <MyField
-                type="date"
+              <DateInput
                 name="certificateExpiration"
                 label={t("CustomerForm.MedicalCertificate")}
                 className={classes.field}
                 Icon={LocalHospital}
               />
-              <MyField
-                type="date"
+              <DateInput
                 name="covidCertificateReleaseDate"
                 label={t("CustomerForm.CovidCertificateReleaseDate")}
                 className={classes.field}
@@ -197,40 +193,31 @@ const CustomerForm: React.FC<Props> = ({
     </Dialog>
   );
 };
-// ***** End Reigion Main Component ***** //
+// #endregion mainComponent
 
-// ***** Region Custom Field ***** //
+// #region MyField
 interface MyFieldProps extends FieldConfig<string> {
   Icon?: SvgComponent;
-  row?: unknown /** @TODO clear this up */;
+  row?: boolean;
   label?: string;
   className?: string;
   views?: string[] /** @TODO look this up */;
 }
 
 const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
-  /** These typings are @TEMP until this is clarified */
-  let InputProps: {
-    InputProps?: {
-      startAdornment: JSX.Element;
-    };
-    fullWidth?: boolean;
-  } = {};
+  let InputProps: InputProps = {};
 
   if (typeof Icon !== "undefined") {
-    /** @TODO This is very weird */
     InputProps = {
-      InputProps: {
-        startAdornment: (
-          <InputAdornment position="start">
-            <Icon color="disabled" />
-          </InputAdornment>
-        ),
-      },
+      startAdornment: (
+        <InputAdornment position="start">
+          <Icon color="disabled" />
+        </InputAdornment>
+      ),
     };
   }
 
-  InputProps.fullWidth = Boolean(!props.row);
+  InputProps.fullWidth = !props.row;
 
   return (
     <FastField
@@ -238,21 +225,22 @@ const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
       {...{
         component: TextField,
         variant: "outlined",
-        ...InputProps,
+        InputProps,
         ...props,
       }}
     />
   );
 };
-// ***** End Region Custom Field ***** //
+// #endregion MyField
 
-// ***** Region Styles ***** //
+// #region styles
 type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
   field: {
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(1),
+    width: "100%",
   },
   radioGroup: {
     justifyContent: "space-evenly",
@@ -260,6 +248,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginBottom: theme.spacing(1.5),
   },
 }));
-// ***** End Region Styles ***** //
+// #endregion styles
 
 export default CustomerForm;
