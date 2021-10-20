@@ -52,7 +52,7 @@ describe("Date Input", () => {
 
     test("should call 'onChange' on user input", () => {
       const testInput = "test";
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: testInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(testInput);
@@ -61,7 +61,7 @@ describe("Date Input", () => {
     test("should parse european date into ISOString", () => {
       const testInput = "01/12/2021";
       const isoDate = "2021-12-01";
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: testInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
@@ -71,11 +71,11 @@ describe("Date Input", () => {
       const dashInput = "01-12-2021";
       const dotInput = "01.12.2021";
       const isoDate = "2021-12-01";
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dashInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dotInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
@@ -85,11 +85,11 @@ describe("Date Input", () => {
       const dashInput = "1-12-2021";
       const dotInput = "1.12.2021";
       const isoDate = "2021-12-01";
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dashInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
-      fireEvent.change(screen.getByRole("textbox"), {
+      fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dotInput },
       });
       expect(mockSetValue).toHaveBeenCalledWith(isoDate);
