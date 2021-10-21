@@ -29,6 +29,7 @@ import { getSlotTimespan } from "@/utils/helpers";
 import { ETheme } from "@/themes";
 
 import { __addCustomersButtonId__ } from "./__testData__/testIds";
+import Divider from "@material-ui/core/Divider";
 
 export interface Props extends SlotInterface {
   /**
@@ -119,30 +120,61 @@ const AttendanceCard: React.FC<Props> = ({
           secondary={translateAndJoinTags(categories, type)}
         />
       </ListItem>
-      {customers.map((customer) => (
-        <UserAttendance
-          {...customer}
-          key={customer.id}
-          intervals={orderedIntervals}
-          markAttendance={({ attendedInterval }) =>
-            dispatch(
-              markAttendance({
-                attendedInterval,
-                slotId,
-                customerId: customer.id,
-              })
-            )
-          }
-          markAbsence={() =>
-            dispatch(
-              markAbsence({
-                slotId,
-                customerId: customer.id,
-              })
-            )
-          }
-        />
-      ))}
+      {customers.map(
+        (customer) =>
+          customer.attendedInterval === customer.bookedInterval && (
+            <UserAttendance
+              {...customer}
+              key={customer.id}
+              intervals={orderedIntervals}
+              markAttendance={({ attendedInterval }) =>
+                dispatch(
+                  markAttendance({
+                    attendedInterval,
+                    slotId,
+                    customerId: customer.id,
+                  })
+                )
+              }
+              markAbsence={() =>
+                dispatch(
+                  markAbsence({
+                    slotId,
+                    customerId: customer.id,
+                  })
+                )
+              }
+            />
+          )
+      )}
+      <Divider className={classes.thickerDivider} />
+      {customers.map(
+        (customer) =>
+          customer.attendedInterval !== customer.bookedInterval && (
+            <UserAttendance
+              {...customer}
+              key={customer.id}
+              intervals={orderedIntervals}
+              markAttendance={({ attendedInterval }) =>
+                dispatch(
+                  markAttendance({
+                    attendedInterval,
+                    slotId,
+                    customerId: customer.id,
+                  })
+                )
+              }
+              markAbsence={() =>
+                dispatch(
+                  markAbsence({
+                    slotId,
+                    customerId: customer.id,
+                  })
+                )
+              }
+            />
+          )
+      )}
       <IconButton
         className={classes.addCustomersButton}
         onClick={() => setAddCustomers(true)}
@@ -188,6 +220,11 @@ const useStyles = makeStyles((theme: ETheme) => ({
     width: "100%",
     height: "3rem",
     borderRadius: 0,
+  },
+  thickerDivider: {
+    height: 1,
+    backgroundColor: theme.palette.primary.dark,
+    marginBottom: 5,
   },
 }));
 // #endregion Styles
