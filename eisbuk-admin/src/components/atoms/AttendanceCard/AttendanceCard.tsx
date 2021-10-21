@@ -122,7 +122,7 @@ const AttendanceCard: React.FC<Props> = ({
       </ListItem>
       {customers.map(
         (customer) =>
-          customer.attendedInterval === customer.bookedInterval && (
+          customer.bookedInterval && (
             <UserAttendance
               {...customer}
               key={customer.id}
@@ -150,7 +150,7 @@ const AttendanceCard: React.FC<Props> = ({
       <Divider className={classes.thickerDivider} />
       {customers.map(
         (customer) =>
-          customer.attendedInterval !== customer.bookedInterval && (
+          customer.bookedInterval === null && (
             <UserAttendance
               {...customer}
               key={customer.id}
