@@ -150,7 +150,7 @@ const AttendanceCard: React.FC<Props> = ({
       <Divider className={classes.thickerDivider} />
       {customers.map(
         (customer) =>
-          customer.bookedInterval === null && (
+          !customer.bookedInterval && (
             <UserAttendance
               {...customer}
               key={customer.id}
