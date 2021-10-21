@@ -76,6 +76,7 @@ jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
 // aliases for thumbs button for easier access
 const thumbsUp = "👍";
 const thumbsDown = "👎";
+const trashCan = "🗑️";
 
 const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
@@ -123,6 +124,22 @@ describe("AttendanceCard", () => {
       screen.getByText(thumbsDown).click();
       expect(screen.queryByText(thumbsDown)).toBeNull();
       screen.getByText(thumbsUp);
+    });
+    test("should display a trash can icon when marking a non-booked athlete as absent", () => {
+      render(
+        <AttendanceCard
+          {...baseAttendanceCard}
+          customers={[
+            {
+              ...saul,
+              bookedInterval: null,
+              attendedInterval: intervalKeys[2],
+            },
+          ]}
+        />
+      );
+      screen.getByText(thumbsUp).click();
+      screen.getByText(trashCan);
     });
 
     test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
