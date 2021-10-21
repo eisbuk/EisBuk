@@ -20,11 +20,21 @@ service cloud.firestore {
       let org = get(/databases/$(database)/documents/organizations/$(organization));
       return request.auth != null && (isAdminByEmail(request, org) || isAdminByPhone(request, org));
     }
+    // we're using this func to check if the required date is a valid ISO string
     function checkValidDate(date) {
       return (
         date is string &&
-        date.matches('20[0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+        date.matches('[12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
       );
+    }
+    // we're using this func to check if the optional date is a valid ISO string
+    function checkOptionalValidDate(date) {
+      // if the field is an empty string, we bypass the check
+      return (date == "") 
+        || (
+          date is string 
+          && date.matches('[12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+        );
     }
     match /organizations/{organization} {
       match /{document=**} {
@@ -63,10 +73,18 @@ service cloud.firestore {
         // Here we're providing an extra level of safaty by validating
         // the dates (birthday, certificateExpiration, covidCertificateReleaseDate)
         // as valid ISO strings
-        allow create, update: if isAdmin(organization) &&
-          checkValidDate(request.resource.data.birthday) &&
-          checkValidDate(request.resource.data.certificateExpiration) &&
-          checkValidDate(request.resource.data.covidCertificateReleaseDate)
+        allow create, update: if isAdmin(organization) 
+          && checkValidDate(request.resource.data.birthday) 
+          // the following fields are optional
+          // we're checking for date validity only if the field is defined
+          && (
+            !("certificateExpiration" in request.resource.data) 
+            || checkOptionalValidDate(request.resource.data.certificateExpiration)
+          ) 
+          && (
+            !("covidCertificateReleaseDate" in request.resource.data) 
+            || checkOptionalValidDate(request.resource.data.covidCertificateReleaseDate)
+          )
       }
       match /slots/{slotId} {
         // By recursive rule, admins can read/write to any document
