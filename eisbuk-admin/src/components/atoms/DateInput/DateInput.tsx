@@ -24,6 +24,10 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
   >(name);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const isoDate = dateToISO(e.target.value);
     setValue(isoDate);
   };
@@ -46,6 +50,7 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
         className={className}
         variant="outlined"
         value={isoToDate(value)}
+        onBlur={handleBlur}
         onChange={handleChange}
         type="text"
         placeholder={i18n.t("DateInput.placeholder")}
@@ -78,12 +83,12 @@ const isoToDate = (input: string): string => {
  * @returns string
  */
 const dateToISO = (input: string): string => {
-  const [day, month, year] = input.split(/[-/.]/).map(_twodigits);
+  const [day, month, year] = input.split(/[-/.]/).map(twoDigits);
   const isoString = `${year}-${month}-${day}`;
   return isISODay(isoString) ? isoString : input;
 };
 
-const _twodigits = (value: string) =>
+const twoDigits = (value: string) =>
   Number(value).toLocaleString("en-US", {
     minimumIntegerDigits: 2,
     useGrouping: false,
