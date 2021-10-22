@@ -30,9 +30,9 @@ service cloud.firestore {
     // we're using this func to check if the optional date is a valid ISO string
     function checkOptionalValidDate(date) {
       // if the field is an empty string, we bypass the check
-      return (date == "") 
+      return (date == "")
         || (
-          date is string 
+          date is string
           && date.matches('[12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
         );
     }
@@ -73,16 +73,16 @@ service cloud.firestore {
         // Here we're providing an extra level of safaty by validating
         // the dates (birthday, certificateExpiration, covidCertificateReleaseDate)
         // as valid ISO strings
-        allow create, update: if isAdmin(organization) 
-          && checkValidDate(request.resource.data.birthday) 
+        allow create, update: if isAdmin(organization)
+          && checkValidDate(request.resource.data.birthday)
           // the following fields are optional
           // we're checking for date validity only if the field is defined
           && (
-            !("certificateExpiration" in request.resource.data) 
+            !("certificateExpiration" in request.resource.data)
             || checkOptionalValidDate(request.resource.data.certificateExpiration)
-          ) 
+          )
           && (
-            !("covidCertificateReleaseDate" in request.resource.data) 
+            !("covidCertificateReleaseDate" in request.resource.data)
             || checkOptionalValidDate(request.resource.data.covidCertificateReleaseDate)
           )
       }

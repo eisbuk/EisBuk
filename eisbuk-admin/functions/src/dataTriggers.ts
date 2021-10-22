@@ -1,7 +1,7 @@
 /* eslint-disable no-case-declarations */
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuid } from "uuid";
 
 import {
   BookingSubCollection,
@@ -17,53 +17,66 @@ import {
 } from "eisbuk-shared";
 
 /**
- * Adds the secret_key to a user if it's missing.
- * Updates a copy of a subset of user data in user's bookings doc, accessible by
- * anonymous users who have access to `secret_key`.
+ * A type alias for Customer with `secretKey` and `id` optional
  */
-export const addMissingSecretKey = functions
+type CustomerWithOptionalIDs = Omit<Omit<Customer, "id">, "secretKey"> &
+  Partial<{ secretKey: string; id: string }>;
+
+/**
+ * Adds server generated `id` and a `secretKey` to a customer on create.
+ * Updates a copy of a subset of customer's data in customer's bookings doc, accessible by
+ * anonymous users who have access to `secretKey`.
+ */
+export const addIdAndSecretKey = functions
   .region("europe-west6")
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
   )
   .onWrite(async (change, context) => {
     const db = admin.firestore();
+    const batch = db.batch();
+
+    // this trigger should run only on create
+    const isCreate = change.after.exists && !change.before.exists;
+    const isDelete = !change.after.exists;
+
+    // exit early on delete
+    if (isDelete) {
+      return;
+    }
 
     const { organization, customerId } = context.params as Record<
       string,
       string
     >;
+    const customerData = change.after.data() as CustomerWithOptionalIDs;
+    const secretKey = customerData.secretKey || uuid();
 
-    const after = change.after.data() as
-      | (Omit<Customer, "secretKey"> & { secretKey?: string })
-      | undefined;
+    const orgRef = db.collection(Collection.Organizations).doc(organization);
 
-    if (after) {
-      const secretKey = after.secretKey || uuidv4();
-
-      // Create a record in /bookings with this secret key as id
-      // and the customer name
-      const bookingsRoot: CustomerBase = {
-        // // eslint-disable-next-line @typescript-eslint/camelcase
-        id: customerId,
-        name: after.name || "",
-        surname: after.surname || "",
-        category: after.category || "",
-      };
-
-      await db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.Bookings)
-        .doc(secretKey)
-        .set(bookingsRoot);
-
-      return after.secretKey
-        ? null
-        : // // eslint-disable-next-line @typescript-eslint/camelcase
-          change.after.ref.update({ secretKey } as Pick<Customer, "secretKey">);
+    // update customer entry with `id` and `secretKey` only on create
+    if (isCreate) {
+      batch.set(
+        orgRef.collection(OrgSubCollection.Customers).doc(customerId),
+        {
+          id: customerId,
+          secretKey,
+        } as Pick<Customer, "id"> & Pick<Customer, "secretKey">,
+        { merge: true }
+      );
     }
-    return change.after;
+
+    const { name, surname, category }: Omit<CustomerBase, "id"> = customerData;
+
+    // create/update booking entry
+    batch.set(orgRef.collection(OrgSubCollection.Bookings).doc(secretKey), {
+      name,
+      surname,
+      category,
+      id: customerId,
+    } as CustomerBase);
+
+    await batch.commit();
   });
 
 /**
