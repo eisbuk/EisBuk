@@ -119,6 +119,7 @@ export interface Customer extends CustomerBase {
   certificateExpiration?: string;
   covidCertificateReleaseDate?: string;
   covidCertificateSuspended?: boolean;
+  deleted?: boolean;
 }
 
 // #endregion customers

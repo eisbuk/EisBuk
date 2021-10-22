@@ -1,6 +1,6 @@
 import i18n from "i18next";
 
-import { Customer } from "eisbuk-shared";
+import { Customer, Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -33,9 +33,9 @@ export const updateCustomer = (customer: Customer): FirestoreThunk => async (
   try {
     await firebase
       .firestore()
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(ORGANIZATION)
-      .collection("customers")
+      .collection(OrgSubCollection.Customers)
       .doc(id)
       .set(updatedData);
     dispatch(
@@ -69,11 +69,11 @@ export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
   try {
     await firebase
       .firestore()
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(ORGANIZATION)
-      .collection("customers")
+      .collection(OrgSubCollection.Customers)
       .doc(customer.id)
-      .delete();
+      .set({ deleted: true }, { merge: true });
 
     dispatch(
       enqueueNotification({
