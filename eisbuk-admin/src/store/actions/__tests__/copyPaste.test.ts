@@ -17,7 +17,7 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "../copyPaste";
-import * as appActions from "@/store/actions/appActions";
+import { showErrSnackbar } from "@/store/actions/appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/tests/utils";
@@ -43,11 +43,6 @@ const mockDispatch = jest.fn();
  * to test error handling
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
-
-/**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
 
 describe("Copy Paste actions", () => {
   afterEach(async () => {
@@ -156,11 +151,12 @@ describe("Copy Paste actions", () => {
       // run the thunk
       const thunkArgs = await setupCopyPaste({
         day: testDay,
+        dispatch: mockDispatch,
       });
       const pasteThunk = pasteSlotsDay(testDateLuxon);
       await pasteThunk(...thunkArgs);
       // check the error message being enqueued
-      expect(errNotifSpy).toHaveBeenCalled();
+      expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
     });
   });
 
@@ -205,11 +201,12 @@ describe("Copy Paste actions", () => {
         // run the thunk
         const thunkArgs = await setupCopyPaste({
           week: { slots: Object.values(testWeek), weekStart: testDateLuxon },
+          dispatch: mockDispatch,
         });
         const testThunk = pasteSlotsWeek(testDateLuxon);
         await testThunk(...thunkArgs);
         // check the error message being enqueued
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
       }
     );
   });

@@ -48,7 +48,7 @@ export const updateCustomer = (customer: Customer): FirestoreThunk => async (
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -88,6 +88,6 @@ export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };

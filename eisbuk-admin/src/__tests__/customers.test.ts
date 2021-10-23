@@ -12,7 +12,7 @@ import { adminDb } from "@/tests/settings";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { deleteAll } from "@/tests/utils";
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitForCondition, stripIdAndSecretKey } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
@@ -130,20 +130,6 @@ describe("Customer triggers", () => {
 const hasSecretKey = (data: DocumentData | undefined) => {
   return data && data.secretKey;
 };
-
-/**
- * A helper function used to remove `id` and `secretKey`
- * from customer structure for testing purposes
- * @param customer full customer entry
- * @returns customer entry withour `secretKey` and `id`
- */
-const stripIdAndSecretKey = ({
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  id: _id,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  secretKey: _secretKey,
-  ...customer
-}: Customer): Omit<Omit<Customer, "id">, "secretKey"> => customer;
 /**
  * A helper function used to strip excess customer data
  * and create customer base data (used to test `booking` entry for customer)

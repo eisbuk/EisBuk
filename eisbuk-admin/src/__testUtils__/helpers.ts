@@ -3,10 +3,11 @@ import {
   Firestore,
   DocumentData,
 } from "@google-cloud/firestore";
+import pRetry from "p-retry";
+
+import { Customer } from "eisbuk-shared";
 
 import { adminDb } from "@/tests/settings";
-
-import pRetry from "p-retry";
 
 interface WaitForCondition {
   (params: {
@@ -51,7 +52,6 @@ export const waitForCondition: WaitForCondition = async ({
     { retries: attempts, minTimeout: sleep, maxTimeout: sleep }
   );
 };
-
 /**
  * Recursively goes through all of the levels of firestore
  * record tree and returns a reference to final document from string path passed in.
@@ -95,3 +95,16 @@ export const getDocumentRef = (
     collectionsToDoc.join("/")
   );
 };
+/**
+ * A helper function used to remove `id` and `secretKey`
+ * from customer structure for testing purposes
+ * @param customer full customer entry
+ * @returns customer entry withour `secretKey` and `id`
+ */
+export const stripIdAndSecretKey = ({
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  id: _id,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  secretKey: _secretKey,
+  ...customer
+}: Customer): Omit<Omit<Customer, "id">, "secretKey"> => customer;
