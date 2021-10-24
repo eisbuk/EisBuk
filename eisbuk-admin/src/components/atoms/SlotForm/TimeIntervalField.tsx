@@ -9,6 +9,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import TimePickerField from "./TimePickerField";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 import {
   __startTimeInputId__,
@@ -66,9 +67,9 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         <DeleteIcon />
       </IconButton>
 
-      <div className={classes.error}>
-        {typeof error === "string" && t(error)}
-      </div>
+      <ErrorMessage className={classes.error} overridePosition>
+        {error}
+      </ErrorMessage>
     </div>
   );
 };
@@ -78,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
     position: "relative",
     display: "flex",
     justifyContent: "space-evenly",
-    margin: "0 -1.5rem",
   },
   error: {
     position: "absolute",
@@ -87,9 +87,6 @@ const useStyles = makeStyles((theme) => ({
     witdh: "80%",
     whitespace: "normal",
     transform: "translateX(-50%)",
-    fontSize: 14,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.error.dark,
   },
   intervalTitles: {
     fontSize: theme.typography.pxToRem(17),

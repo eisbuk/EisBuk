@@ -1,13 +1,14 @@
 import React from "react";
 import { useField } from "formik";
 import { DateTime } from "luxon";
-import { useTranslation } from "react-i18next";
 
 import TextField, { TextFieldProps } from "@material-ui/core/TextField";
 import Box from "@material-ui/core/Box";
 import IconButton from "@material-ui/core/IconButton";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 import { __decrementId__, __incrementId__ } from "./__testData__/testIds";
 
@@ -31,8 +32,6 @@ type Props = Omit<TextFieldProps, "name"> & {
  * **Important:** should be rendered as a decendant of `<Formik>` element (for context) and will throw otherwise.
  */
 const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
-  const { t } = useTranslation();
-
   const classes = useStyles();
 
   const [{ value }, { error }, { setValue }] = useField<string>(name);
@@ -89,14 +88,14 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         +
       </IconButton>
-      <span className={classes.error}>
-        {typeof error === "string" && t(error)}
-      </span>
+      <ErrorMessage className={classes.error} overridePosition>
+        {error}
+      </ErrorMessage>
     </Box>
   );
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     position: "relative",
     padding: "1.75rem 0",
@@ -112,9 +111,6 @@ const useStyles = makeStyles((theme) => ({
     whitespace: "nowrap",
     textAlign: "center",
     transform: "translateX(-50%)",
-    fontSize: 14,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.error.dark,
   },
 }));
 

@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
-import CustomerForm from "@/components/customers/CustomerForm";
+import CustomerForm from "./CustomerForm";
 
 export default {
   title: "Customer forms",
