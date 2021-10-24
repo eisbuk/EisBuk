@@ -112,6 +112,12 @@ const UserAttendance: React.FC<Props> = ({
 
   const attendanceButton = bookedInterval ? "👍" : "🗑️";
   const absenceButton = "👎";
+  const buttonClass = !bookedInterval
+    ? classes.trashCan
+    : localAttended
+    ? classes.attendedButton
+    : classes.absentButton;
+
   const attendnaceControl = (
     <div className={classes.actionsContainer}>
       <IntervalPicker
@@ -121,10 +127,10 @@ const UserAttendance: React.FC<Props> = ({
         onChange={handleIntervalChange}
       />
       <Button
+        className={buttonClass}
         data-testid={__attendanceButton__}
         variant="contained"
         size="small"
-        color={localAttended ? "primary" : "secondary"}
         onClick={handleClick}
         disabled={disableButton}
       >
@@ -149,9 +155,14 @@ const useStyles = makeStyles((theme: ETheme) => ({
   absent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
-  button: {
-    display: "block",
-    marginTop: theme.spacing(2),
+  trashCan: {
+    background: "rgba(0, 0, 0, 0.1)",
+  },
+  attendedButton: {
+    background: theme.palette.primary.main,
+  },
+  absentButton: {
+    background: theme.palette.secondary.main,
   },
   listItem: {
     padding: theme.spacing(1),
