@@ -1,7 +1,6 @@
 import i18n from "i18next";
 
 import {
-  Customer,
   Collection,
   OrgSubCollection,
   CustomerLoose,

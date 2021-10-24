@@ -61,13 +61,6 @@ const AddCustomersList: React.FC<Props> = ({
     onAddCustomer(customer);
   };
 
-  /**
-   * Customer list with customers already addeda filtered out
-   */
-  const customersToRender = customers.filter(
-    ({ id }) => !addedCustomers.includes(id)
-  );
-
   return (
     <Dialog onClose={() => onClose()} {...dialogProps}>
       <div className={classes.container}>
@@ -85,18 +78,24 @@ const AddCustomersList: React.FC<Props> = ({
           data-testid={__customersListId__}
           className={classes.listContainer}
         >
-          {customersToRender.map((customer) => (
-            <ListItem
-              key={customer.id}
-              onClick={handleCustomerClick(customer)}
-              button
-            >
-              <ListItemAvatar>
-                <EisbukAvatar {...customer} />
-              </ListItemAvatar>
-              <ListItemText primary={`${customer.name} ${customer.surname}`} />
-            </ListItem>
-          ))}
+          {customers.map(
+            (customer) =>
+              !addedCustomers.includes(customer.id) &&
+              !customer.deleted && (
+                <ListItem
+                  key={customer.id}
+                  onClick={handleCustomerClick(customer)}
+                  button
+                >
+                  <ListItemAvatar>
+                    <EisbukAvatar {...customer} />
+                  </ListItemAvatar>
+                  <ListItemText
+                    primary={`${customer.name} ${customer.surname}`}
+                  />
+                </ListItem>
+              )
+          )}
         </List>
       </div>
     </Dialog>

@@ -100,8 +100,9 @@ describe("AttendanceCard", () => {
           customers={[saul as CustomerWithAttendance]}
         />
       );
+
       screen.getByText("13:00 - 14:15");
-      screen.getByText(saul.name);
+      screen.getByText(`${saul.name} ${saul.surname}`);
       // create regex for type and category as they're part of the same string in the UI
       const categoryRegex = new RegExp(
         categoryLabel[baseAttendanceCard.categories[0]]
