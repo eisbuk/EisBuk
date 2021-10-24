@@ -110,8 +110,8 @@ const UserAttendance: React.FC<Props> = ({
     localAttended !== Boolean(attendedInterval) ||
     Boolean(attendedInterval && attendedInterval !== selectedInterval);
 
-  const attendanceButton = "👍";
-  const absenceButton = bookedInterval ? "👎" : "🗑️";
+  const attendanceButton = bookedInterval ? "👍" : "🗑️";
+  const absenceButton = "👎";
   const attendnaceControl = (
     <div className={classes.actionsContainer}>
       <IntervalPicker
