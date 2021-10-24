@@ -88,7 +88,7 @@ describe("Customer triggers", () => {
   );
 
   testWithEmulator(
-    "should update customer's 'bookings'  entry when a customer record is updated",
+    "should update customer's 'bookings' entry when a customer record is updated",
     async () => {
       const orgRef = adminDb
         .collection(Collection.Organizations)
