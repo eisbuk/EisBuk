@@ -1,10 +1,3 @@
-// #region form
-export const __requiredEntry = "Form.RequiredEntry";
-export const __requiredField = "Form.RequiredField";
-export const __invalidTime = "Form.InvalidTime";
-export const __timeMismatch = "Form.TimeMismatch";
-// #endregion form
-
 // #region SlotOperationButtons
 export const __slotButtonNoContextError =
   "Error: Each of the slot buttons needs to be nested under the 'SlotOperationButtons' for context. For more information, check the docs for 'SlotOperationButtons'";

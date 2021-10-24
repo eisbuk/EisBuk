@@ -38,6 +38,17 @@ export const __bookInterval__ = "BookingCard.BookInterval";
 export const __cancelBooking__ = "BookingCard.CancelBooking";
 // #endregion intervals
 
+// #region validationMessages
+export enum ValidationMessage {
+  Email = "Validations.Email",
+  RequiredEntry = "Validations.RequiredEntry",
+  RequiredField = "Validations.RequiredField",
+  InvalidTime = "Validations.InvalidTime",
+  InvalidDate = "Validations.InvalidDate",
+  TimeMismatch = "Validations.TimeMismatch",
+}
+// #endregion validationMessages
+
 // #region date
 export enum DateFormat {
   Weekday = "Date.Weekday",

@@ -13,13 +13,6 @@
     "Book": "Book",
     "Booked": "Booked"
   },
-  "SlotValidations": {
-    "Time": "Select the time",
-    "Category": "Choose at least one category",
-    "Training": "Choose the type of training",
-    "Duration": "Choose at least one duration",
-    "Required": "Required"
-  },
   "SlotForm": {
     "Type": "Type",
     "EditSlot": "Edit Slot",
@@ -46,11 +39,6 @@
     "NewAthlete": "New Athlete",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
     "CovidCertificateSuspended": "COVID-19 Certificate supsended"
-  },
-  "CustomerValidations": {
-    "Email": "Please insert a valid email",
-    "Category": "Select a category",
-    "Required": "Required"
   },
   "Authorization": {
     "NotAuthorized": "You are not authorized to login",
@@ -137,18 +125,20 @@
     "EditSlot": "Edit Slot",
     "Cancel": "Cancel"
   },
-  "Form": {
-    "RequiredEntry": "at least one value is required",
-    "RequiredField": "this field is required",
-    "InvalidTime": "invalid time format (\"HH:mm\")",
-    "TimeMismatch": "start time is greater than end time"
-  },
   "AttendanceCard": {
     "AddCustomersTitle": "Add customers"
   },
   "BookingCard": {
     "BookInterval": "Book",
     "CancelBooking": "Cancel"
+  },
+  "Validations": {
+    "Email": "Please insert a valid email",
+    "RequiredEntry": "At least one value is required",
+    "RequiredField": "This field is required",
+    "InvalidTime": "Invalid time format (\"HH:mm\")",
+    "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
+    "TimeMismatch": "Start time is greater than end time"
   },
   "Date": {
     "Weekday": "{{ date, EEE }}",
@@ -161,5 +151,8 @@
   },
   "Flags": {
     "Deleted": "deleted"
+  },
+  "DateInput": {
+    "placeholder": "dd/mm/yyyy"
   }
 }
