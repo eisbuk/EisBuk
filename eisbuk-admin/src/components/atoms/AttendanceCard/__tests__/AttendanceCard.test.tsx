@@ -199,10 +199,22 @@ describe("AttendanceCard", () => {
       );
     });
 
-    test("should show selected interval in interval field", () => {
-      // for UI purposes, we're displaying interval within (controlled) disabled text field
-      const intervalField = screen.getByRole("textbox");
-      expect(intervalField).toHaveProperty("value", attendedInterval);
+    test("should show booked interval (if any) when the attended and booked interval are different", () => {
+      cleanup();
+      render(
+        <AttendanceCard
+          {...baseAttendanceCard}
+          customers={[
+            { ...saul, bookedInterval, attendedInterval: bookedInterval },
+          ]}
+        />
+      );
+      // only one interval should be shown in case both booked and attended are the same
+      const displayedIntervals = screen.queryAllByText(bookedInterval);
+      expect(displayedIntervals).toHaveLength(1);
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen.getByText(attendedInterval);
+      screen.getByText(bookedInterval);
     });
 
     test("should disable prev button if first interval selected and next if las selected", () => {

@@ -115,7 +115,8 @@ const UserAttendance: React.FC<Props> = ({
       <IntervalPicker
         disabled={!localAttended}
         intervals={intervals}
-        value={selectedInterval}
+        attendedInterval={selectedInterval}
+        bookedInterval={bookedInterval}
         onChange={handleIntervalChange}
       />
       <Button
