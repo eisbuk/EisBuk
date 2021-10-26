@@ -105,12 +105,12 @@ const useStyles = makeStyles((theme: ETheme) => ({
       "-4px 8px 0px 4px rgba(255, 255, 255, 1), 4px 8px 0px 4px rgba(255, 255, 255, 1)",
   },
   strikeThrough: {
-    postion: "absolute",
+    position: "absolute",
     left: "50%",
-    // top: "50%",
-    transform: "translate(-50%, -50%)",
-    width: "120%",
-    height: "1px",
+    top: "50%",
+    transform: "translate(-50%, -100%)",
+    width: "150%",
+    height: "0.1rem",
     background: "red",
   },
   primary: {
