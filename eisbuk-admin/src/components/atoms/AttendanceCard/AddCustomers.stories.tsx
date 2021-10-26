@@ -1,8 +1,6 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import { Category } from "eisbuk-shared";
-
 import AddCustomersList from "./AddCustomers";
 
 import { allCustomers } from "@/__testData__/attendance";
@@ -12,24 +10,27 @@ export default {
   component: AddCustomersList,
 } as ComponentMeta<typeof AddCustomersList>;
 
-const filteredCustomers = [
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-  ...allCustomers,
-].filter(({ category }) => category === Category.Course);
+const additionalCustomers = [
+  { name: "Testio", surname: "Test" },
+  { name: "Bertrum", surname: "Gilfoyle" },
+  { name: "Rajesh", surname: "Koothrapali" },
+  { name: "Sheldon", surname: "Cooper" },
+  { name: "Richard", surname: "Hendricks" },
+  { name: "Kanye", surname: "West" },
+  { name: "North", surname: "West" },
+  { name: "South", surname: "West" },
+  { name: "West", surname: "West" },
+].map(({ name, surname }, i) => ({
+  ...allCustomers[0],
+  name,
+  surname,
+  id: `${name}-${i}`,
+}));
 
 export const Default = (): JSX.Element => (
   <AddCustomersList
     open={true}
-    customers={filteredCustomers}
+    customers={[...allCustomers, ...additionalCustomers]}
     onClose={() => {}}
     onAddCustomer={() => {}}
   />

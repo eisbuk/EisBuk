@@ -23,8 +23,8 @@ import { saul, walt } from "@/__testData__/customers";
 import {
   __addCustomersButtonId__,
   __closeCustomersListId__,
-  __customersListId__,
 } from "../__testData__/testIds";
+import { __customersListId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 
@@ -85,8 +85,9 @@ describe("AttendanceCard ->", () => {
         );
       }
     );
+
     testWithMutationObserver(
-      "should open customers list on add customers button click and close on esc button click",
+      "should close customers list on esc button press",
       async () => {
         render(<AttendnaceCard {...baseAttendanceCard} />);
         const customerList = screen.queryByTestId(__customersListId__);
@@ -104,8 +105,9 @@ describe("AttendanceCard ->", () => {
         );
       }
     );
+
     testWithMutationObserver(
-      "should open customers list on add customers button click and close on clicking outside modal",
+      "should close customer list on clicking outside modal",
       async () => {
         render(<AttendnaceCard {...baseAttendanceCard} />);
         const customerList = screen.queryByTestId(__customersListId__);
@@ -115,6 +117,27 @@ describe("AttendanceCard ->", () => {
         const dialogContainer = screen.getByRole("presentation");
         fireEvent.click(dialogContainer.children[0]);
 
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+
+    testWithMutationObserver(
+      "should close when there are no more customers to show",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        screen.getByTestId(__addCustomersButtonId__).click();
+        // click on each customer (expecting it to be removed)
+        baseAttendanceCard.allCustomers.forEach((customer) => {
+          const customerOnScreen = screen.queryByText(
+            new RegExp(customer.name)
+          );
+          if (customerOnScreen) {
+            customerOnScreen.click();
+          }
+        });
+        // the modal should close
         await waitForElementToBeRemoved(() =>
           screen.getByTestId(__customersListId__)
         );

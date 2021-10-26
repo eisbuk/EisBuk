@@ -13,7 +13,7 @@ import LoginRoute from "@/components/auth/LoginRoute";
 import DebugPage from "@/components/debugPage";
 
 import DashboardPage from "@/pages/root";
-import AthletesPage from "@/pages/CustomersPage";
+import AthletesPage from "@/pages/customers";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/LoginPage";
 import CustomerAreaPage from "@/pages/customer_area";

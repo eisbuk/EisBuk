@@ -24,7 +24,7 @@ import Payment from "@material-ui/icons/Payment";
 
 import { Category, Customer } from "eisbuk-shared";
 
-import { ValidationMessage } from "@/lib/labels";
+import { ValidationMessage, CustomerFormTitle } from "@/lib/labels";
 
 import { SvgComponent } from "@/types/components";
 
@@ -64,7 +64,7 @@ const CustomerValidation = Yup.object().shape({
 // #region mainComponent
 interface Props {
   open: boolean;
-  handleClose?: () => void;
+  onClose?: () => void;
   customer?: Partial<Customer>;
   updateCustomer?: (customer: Customer) => void;
 }
@@ -72,7 +72,7 @@ interface Props {
 const CustomerForm: React.FC<Props> = ({
   open,
   customer,
-  handleClose = () => {},
+  onClose = () => {},
   updateCustomer = () => {},
 }) => {
   const classes = useStyles();
@@ -84,11 +84,15 @@ const CustomerForm: React.FC<Props> = ({
     label: t(`Category.${categoryKey}`),
   }));
 
+  const editCustomerTitle = `${t(CustomerFormTitle.EditCustomer)} (${
+    customer?.name
+  } ${customer?.surname})`;
+  const newCustomerTitle = t(CustomerFormTitle.NewCustomer);
+  const title = customer ? editCustomerTitle : newCustomerTitle;
+
   return (
-    <Dialog open={open} onClose={handleClose}>
-      <DialogTitle id="form-dialog-title">
-        {t("CustomerForm.NewAthlete")}
-      </DialogTitle>
+    <Dialog open={open} onClose={onClose}>
+      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
       <Formik
         validateOnChange={false}
         initialValues={{
@@ -108,7 +112,7 @@ const CustomerForm: React.FC<Props> = ({
         onSubmit={(values, { setSubmitting }) => {
           updateCustomer(values as Customer);
           setSubmitting(false);
-          handleClose();
+          onClose();
         }}
       >
         {({ isSubmitting }) => (
@@ -176,10 +180,11 @@ const CustomerForm: React.FC<Props> = ({
               />
             </DialogContent>
             <DialogActions>
-              <Button onClick={handleClose} color="primary">
+              <Button onClick={onClose} color="primary">
                 {t("CustomerForm.Cancel")}
               </Button>
               <Button
+                // onClick={() => console.log("Click")}
                 type="submit"
                 disabled={isSubmitting}
                 variant="contained"
