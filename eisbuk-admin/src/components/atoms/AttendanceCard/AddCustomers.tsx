@@ -4,10 +4,6 @@ import { useTranslation } from "react-i18next";
 import Dialog, { DialogProps } from "@material-ui/core/Dialog";
 import Typography from "@material-ui/core/Typography";
 import IconButton from "@material-ui/core/IconButton";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemText from "@material-ui/core/ListItemText";
-import List from "@material-ui/core/List";
 
 import Close from "@material-ui/icons/Close";
 
@@ -17,12 +13,8 @@ import { Customer } from "eisbuk-shared";
 
 import { __addCustomersTitle__ } from "@/lib/labels";
 
-import EisbukAvatar from "@/components/users/EisbukAvatar";
-
-import {
-  __closeCustomersListId__,
-  __customersListId__,
-} from "./__testData__/testIds";
+import { __closeCustomersListId__ } from "./__testData__/testIds";
+import CustomerList from "../CustomerList";
 
 interface Props extends Omit<DialogProps, "onClose"> {
   onClose: () => void;
@@ -56,13 +48,25 @@ const AddCustomersList: React.FC<Props> = ({
     }
   }, [dialogProps.open]);
 
-  const handleCustomerClick = (customer: Customer) => () => {
+  const handleCustomerClick = (customer: Customer) => {
     setAddedCustomers([...addedCustomers, customer.id]);
     onAddCustomer(customer);
   };
 
+  const filteredCustomers = customers.filter(
+    (customer) => !addedCustomers.includes(customer.id) && !customer.deleted
+  );
+
+  // control closing of the modal when the list is empty
+  useEffect(() => {
+    if (!filteredCustomers || !filteredCustomers.length) {
+      onClose();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredCustomers]);
+
   return (
-    <Dialog onClose={() => onClose()} {...dialogProps}>
+    <Dialog onClose={onClose} {...dialogProps}>
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(__addCustomersTitle__)}
@@ -74,29 +78,11 @@ const AddCustomersList: React.FC<Props> = ({
         >
           <Close />
         </IconButton>
-        <List
-          data-testid={__customersListId__}
+        <CustomerList
           className={classes.listContainer}
-        >
-          {customers.map(
-            (customer) =>
-              !addedCustomers.includes(customer.id) &&
-              !customer.deleted && (
-                <ListItem
-                  key={customer.id}
-                  onClick={handleCustomerClick(customer)}
-                  button
-                >
-                  <ListItemAvatar>
-                    <EisbukAvatar {...customer} />
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={`${customer.name} ${customer.surname}`}
-                  />
-                </ListItem>
-              )
-          )}
-        </List>
+          customers={filteredCustomers}
+          onCustomerClick={handleCustomerClick}
+        />
       </div>
     </Dialog>
   );
@@ -110,6 +96,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: "4rem",
     paddingBottom: "0",
     backgroundColor: theme.palette.primary.light,
+    overflow: "hidden",
   },
   title: {
     position: "absolute",
@@ -124,9 +111,7 @@ const useStyles = makeStyles((theme) => ({
     transform: "translate(50%, -50%)",
   },
   listContainer: {
-    height: "calc(100% - 4rem)",
     backgroundColor: "rgba(255, 255, 255, 0.6)",
-    overflow: "auto",
   },
 }));
 

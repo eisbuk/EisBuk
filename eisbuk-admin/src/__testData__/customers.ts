@@ -14,6 +14,7 @@ export const saul: Customer = {
   covidCertificateSuspended: true,
   category: Category.Competitive,
   secretKey: "123445",
+  subscriptionNumber: "",
 };
 
 export const walt: Customer = {
@@ -28,6 +29,7 @@ export const walt: Customer = {
   covidCertificateReleaseDate: "2021-01-01",
   covidCertificateSuspended: false,
   secretKey: "000001",
+  subscriptionNumber: "",
 };
 
 export const gus: Customer = {
@@ -42,6 +44,7 @@ export const gus: Customer = {
   covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
   covidCertificateSuspended: false,
   secretKey: "000002",
+  subscriptionNumber: "",
 };
 
 export const jian: Customer = {
@@ -56,4 +59,5 @@ export const jian: Customer = {
   covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
   covidCertificateSuspended: false,
   secretKey: "000002",
+  subscriptionNumber: "",
 };

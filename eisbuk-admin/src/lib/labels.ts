@@ -60,3 +60,25 @@ export enum DateFormat {
   Time = "Date.Time",
 }
 // #endregion date
+
+// #region customer
+export enum CustomerLabel {
+  Name = "CustomerLabel.Name",
+  Surname = "CustomerLabel.Surname",
+  Category = "CustomerLabel.Category",
+  Email = "CustomerLabel.Email",
+}
+
+export enum CustomerFormTitle {
+  NewCustomer = "CustomerForm.NewCustomer",
+  EditCustomer = "CustomerForm.EditCustomer",
+}
+// #endregion customer
+
+// #region prompt
+export enum Prompt {
+  DeleteCustomer = "Prompt.DeleteCustomer",
+  DeleteSlot = "Prompt.DeleteSlot",
+  NonReversible = "Prompt.NonReversible",
+}
+// #endregion prompt
