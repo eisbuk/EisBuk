@@ -15,13 +15,10 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ETheme } from "@/themes";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import CustomerList from "@/components/customers/CustomerList";
+import CustomerList from "@/components/atoms/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
 
-import {
-  deleteCustomer,
-  updateCustomer,
-} from "@/store/actions/customerOperations";
+import { updateCustomer } from "@/store/actions/customerOperations";
 
 import { getCustomersList } from "@/store/selectors/firestore";
 
@@ -30,13 +27,16 @@ import useTitle from "@/hooks/useTitle";
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const [addAthleteDialog, setAddAthleteDialog] = useState(false);
   const dispatch = useDispatch();
+
   useTitle(t("CustomersPage.Athletes"));
+
+  const customers = useSelector(getCustomersList);
+
+  const [addAthleteDialog, setAddAthleteDialog] = useState(false);
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
-  const customers = useSelector(getCustomersList);
 
   return (
     <>
@@ -46,20 +46,7 @@ const CustomersPage: React.FC = () => {
         <Grid item xs={12}>
           {
             (isLoaded(customers),
-            !isEmpty(customers) && (
-              <CustomerList
-                onDeleteCustomer={(customer) =>
-                  dispatch(deleteCustomer(customer))
-                }
-                updateCustomer={(customer) =>
-                  dispatch(updateCustomer(customer))
-                }
-                customers={customers.map((o) => ({
-                  ...o,
-                  tableData: {},
-                }))}
-              />
-            ))
+            !isEmpty(customers) && <CustomerList {...{ customers }} extended />)
           }
           <Fab
             color="primary"
@@ -71,7 +58,7 @@ const CustomersPage: React.FC = () => {
           </Fab>
           <CustomerForm
             open={addAthleteDialog}
-            handleClose={toggleAddAthleteDialog}
+            onClose={toggleAddAthleteDialog}
             updateCustomer={(customer) => dispatch(updateCustomer(customer))}
           />
         </Grid>

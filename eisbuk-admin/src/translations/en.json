@@ -6,9 +6,7 @@
   },
   "Slots": {
     "Amateur": "Amateur",
-    "DeleteConfirmation": "Are you sure you want to delete the ",
     "All": "",
-    "NonReversible": "This action is non-reversible",
     "Slot": "slot",
     "Book": "Book",
     "Booked": "Booked"
@@ -36,7 +34,8 @@
     "CardNumber": "Card Number",
     "Cancel": "Cancel",
     "Save": "Save",
-    "NewAthlete": "New Athlete",
+    "NewCustomer": "New Athlete",
+    "EditCustomer": "Edit Athlete",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
     "CovidCertificateSuspended": "COVID-19 Certificate supsended"
   },
@@ -71,14 +70,6 @@
     "NonReversible": "This action is non-reversible"
   },
 
-  "CustomerList": {
-    "Name": "Name",
-    "Surname": "Surname",
-    "Category": "Category",
-    "Email": "Email",
-    "DeleteConfirmation": "Are you sure you want to remove ",
-    "NonReversible": "This action is not reversible, the user will definitely be deleted."
-  },
   "Categories": {
     "course": "course",
     "competitive": "competitive",
@@ -154,5 +145,16 @@
   },
   "DateInput": {
     "placeholder": "dd/mm/yyyy"
+  },
+  "CustomerLabel": {
+    "Name": "Name",
+    "Surname": "Surname",
+    "Category": "Category",
+    "Email": "Email"
+  },
+  "Prompt": {
+    "DeleteCustomer": "Are you sure you want to remove",
+    "DeleteSlot": "Are you sure you want to delete the",
+    "NonReversible": "This action is non-reversible"
   }
 }

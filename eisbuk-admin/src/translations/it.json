@@ -6,9 +6,7 @@
   },
   "Slots": {
     "Amateur": "Preagonismo",
-    "DeleteConfirmation": "Sei sicuro di voler rimuovere lo slot del",
     "All": "alle",
-    "NonReversible": "Questa azione non è reversibile",
     "Slot": "",
     "Book": "Prenota",
     "Booked": "Prenotato"
@@ -32,6 +30,21 @@
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
+  },
+  "CustomerForm": {
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "Phone": "Telefono",
+    "DateOfBirth": "Data di nascita",
+    "Category": "Categoria",
+    "MedicalCertificate": "Scadenza Cert. Medico",
+    "CardNumber": "Numero Tessera",
+    "Cancel": "Annulla",
+    "Save": "Salva",
+    "NewCustomer": "Nuovo Atleta",
+    "EditCustomer": "Modifica Atleta",
+    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
+    "CovidCertificateSuspended": "Certificazione verde sospesa"
   },
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
@@ -60,18 +73,9 @@
   },
   "SlotsPageContainer": {
     "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
-    "OfTheWeek": "della settimana del ",
-    "NonReversible": "Questa azione non è reversibile"
+    "OfTheWeek": "della settimana del "
   },
 
-  "CustomerList": {
-    "Name": "Nome",
-    "Surname": "Cognome",
-    "Category": "Categoria",
-    "Email": "Email",
-    "DeleteConfirmation": "Sei sicuro di voler rimuovere ",
-    "NonReversible": "Questa azione non è reversibile, l'utente verrà cancellato definitivamente."
-  },
   "Categories": {
     "course": "corso",
     "competitive": "agonismo",
@@ -147,5 +151,16 @@
   },
   "DateInput": {
     "placeholder": "gg/mm/aaaa"
+  },
+  "CustomerLabel": {
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "Category": "Categoria",
+    "Email": "Email"
+  },
+  "Prompt": {
+    "DeleteCustomer": "Sei sicuro di voler rimuovere",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+    "NonReversible": "Questa azione non è reversibile"
   }
 }

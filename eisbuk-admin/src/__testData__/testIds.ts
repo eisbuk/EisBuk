@@ -27,3 +27,7 @@ export const __dateNavPrevId__ = "date-navigation-previous-page";
 // #region BookingCard
 export const __bookingCardId__ = "booking-interval-card";
 // #endregion BookingCard
+
+// #region CustomerList
+export const __customersListId__ = "customer-list";
+// #endregion CustomerList
