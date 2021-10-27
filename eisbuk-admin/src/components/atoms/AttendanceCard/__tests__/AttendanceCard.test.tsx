@@ -76,6 +76,7 @@ jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
 // aliases for thumbs button for easier access
 const thumbsUp = "👍";
 const thumbsDown = "👎";
+const trashCan = "🗑️";
 
 const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
@@ -123,6 +124,10 @@ describe("AttendanceCard", () => {
       screen.getByText(thumbsDown).click();
       expect(screen.queryByText(thumbsDown)).toBeNull();
       screen.getByText(thumbsUp);
+    });
+    /** @TODO revisit this when migration from CRA is done */
+    xtest("should display a trash can icon when marking a non-booked athlete as absent", () => {
+      // test implementation here
     });
 
     test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
