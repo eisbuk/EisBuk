@@ -81,7 +81,7 @@ export const createNewSlot = (
     );
   } catch {
     // show error notification if operation failed
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -130,7 +130,7 @@ export const updateSlot = (
     );
   } catch {
     // show error notification if operation failed
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -164,7 +164,7 @@ export const deleteSlot = (
     );
   } catch {
     // show error notification if operation failed
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 // #endregion newOperations

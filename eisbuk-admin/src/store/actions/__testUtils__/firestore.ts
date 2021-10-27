@@ -9,6 +9,7 @@ import {
   CustomerBookings,
   Customer,
   BookingSubCollection,
+  CustomerLoose,
 } from "eisbuk-shared";
 
 import { LocalStore, FirestoreThunk } from "@/types/store";
@@ -19,6 +20,7 @@ import { adminDb } from "@/tests/settings";
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
 
 import { testDateLuxon } from "@/__testData__/date";
+import { waitForCondition } from "@/__testUtils__/helpers";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -31,6 +33,7 @@ const orgDb = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
  * Set up `attendance` data in emulated store and create `getState()` returning redux store
  * filled with `attendance` data as well
  * @param attendance entry for firestore attendance we want to set
+ * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
 export const setupTestAttendance = async ({
@@ -53,11 +56,12 @@ export const setupTestAttendance = async ({
 
   return [dispatch, getState, { getFirebase }];
 };
-
 /**
- * Set up `attendance` data in emulated store and create `getState()` returning redux store
- * filled with `attendance` data as well
- * @param attendance entry for firestore attendance we want to set
+ * Set up `slots` data in emulated store and create `getState()` returning redux store
+ * filled with `slots` data as `slotsByDay`
+ * @param slots entry for firestore slots we want to set
+ * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
+ * @param date optional date (in case we want to explicitly set the date for testing), defaults to `testDateLuxon`
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
 export const setupTestSlots = async ({
@@ -87,11 +91,12 @@ export const setupTestSlots = async ({
 
   return [dispatch, getState, { getFirebase }];
 };
-
 /**
- * Set up `attendance` data in emulated store and create `getState()` returning redux store
- * filled with `attendance` data as well
- * @param attendance entry for firestore attendance we want to set
+ * Create `getState()` returning redux store
+ * filled with `copyPaste` data
+ * @param day entry for `day` in `copyPaste` state
+ * @param week entry for `week` in `copyPaste` state
+ * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
 export const setupCopyPaste = async ({
@@ -109,11 +114,11 @@ export const setupCopyPaste = async ({
 
   return [dispatch, getState, { getFirebase }];
 };
-
 /**
  * Set up `bookings` data in emulated store and create `getState()` returning redux store
- * filled with `attendance` data as well
- * @param attendance entry for firestore attendance we want to set
+ * filled with `bookedSlots` for customer
+ * @param bookedSlots entry for firestore `bookedSlots` for customer (keyed by provided `secretKey`) we want to set
+ * @param secretKey test `secretKey` for customer
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
 export const setupTestBookings = async ({
@@ -141,6 +146,53 @@ export const setupTestBookings = async ({
       .set(bookedSlots[slotId])
   );
   await Promise.all(bookingsToUpdate);
+
+  return [dispatch, getState, { getFirebase }];
+};
+/**
+ * Set up `customers` data entry in emulated store and create `getState()` returning redux store
+ * filled with same `customers` data
+ * @param customer we want to set to firestore (optionally we can omit this and just return thunk args)
+ * @param secretKey test `secretKey` for customer
+ * @returns middleware args (dispatch, setState, { getFirebase } )
+ */
+export const setupTestCustomer = async ({
+  customer,
+  dispatch = (value: any) => value,
+}: {
+  customer: CustomerLoose;
+  dispatch?: Dispatch;
+}): Promise<ThunkParams> => {
+  const customersRef = orgDb.collection(OrgSubCollection.Customers);
+
+  // try and use `id` from provided customer (if not defined, will be replaced later)
+  let customerId = customer.id;
+
+  if (customerId) {
+    // we're immediately using the `id` (if provided) for document reference
+    await customersRef.doc(customerId).set(customer);
+  } else {
+    // we're setting a customer to unspecified doc id (should be assigned by the server/emulator)
+    await customersRef.doc().set(customer);
+    // update `customerId` to a newly created one
+    customerId = (await customersRef.get()).docs[0].id;
+  }
+
+  // halt the execution until customer doc has all data (`id` and `secretKey`), either provided
+  // or added by data trigger
+  const customerEntry = (await waitForCondition({
+    documentPath: `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}/${customerId}`,
+    condition: (data) => data && data.id && data.secretKey,
+  })) as Customer;
+
+  const getState = () =>
+    createTestStore({
+      data: {
+        customers: {
+          [customerId as string]: customerEntry,
+        },
+      },
+    });
 
   return [dispatch, getState, { getFirebase }];
 };

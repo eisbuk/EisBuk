@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { useFirestoreConnect, useFirestore } from "react-redux-firebase";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
+import { Collection, luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
 import { ORGANIZATION } from "@/config/envInfo";
 
@@ -58,8 +58,8 @@ const useFirestoreSubscribe = (): void => {
           collection: OrgSubCollection.Attendance,
           /** @TEMP below, investigate this later */
           where: [
-            ["date", ">", currentDate.minus({ months: 1 }).toJSDate()],
-            ["date", "<", currentDate.plus({ months: 1 }).toJSDate()],
+            ["date", ">", luxon2ISODate(currentDate.minus({ months: 1 }))],
+            ["date", "<", luxon2ISODate(currentDate.plus({ months: 1 }))],
           ],
         }),
       ]

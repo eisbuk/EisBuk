@@ -149,6 +149,9 @@
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}"
   },
+  "Flags": {
+    "Deleted": "deleted"
+  },
   "DateInput": {
     "placeholder": "dd/mm/yyyy"
   }

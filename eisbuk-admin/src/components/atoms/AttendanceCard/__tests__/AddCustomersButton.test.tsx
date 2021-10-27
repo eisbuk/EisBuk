@@ -122,19 +122,34 @@ describe("AttendanceCard ->", () => {
     );
 
     test("should render all customers for slot's category who haven't booked already (when open)", () => {
+      const waltRegex = new RegExp(walt.name);
       render(
         <AttendnaceCard
           {...baseAttendanceCard}
           customers={[saulWithAttendance]}
         />
       );
+      // make sure that walt isn't displayed before opening of the modal
+      expect(screen.queryByText(waltRegex)).toBeNull();
       screen.getByTestId(__addCustomersButtonId__).click();
-      const waltRegex = new RegExp(walt.name);
       // should render walt -> category: "course", not within attended customers
       screen.getByText(waltRegex);
       const customerList = screen.getByTestId(__customersListId__);
       // should have only two children (`walt` and `jian`) as `saul` has already been marked as attended, and `gus` doesn't belong to the category
       expect(customerList.children.length).toEqual(2);
+    });
+
+    test("should not render deleted customers", () => {
+      const waltRegex = new RegExp(walt.name);
+      render(
+        <AttendnaceCard
+          {...baseAttendanceCard}
+          customers={[saulWithAttendance]}
+          allCustomers={[saul, { ...walt, deleted: true }]}
+        />
+      );
+      screen.getByTestId(__addCustomersButtonId__).click();
+      expect(screen.queryByText(waltRegex)).toBeNull();
     });
 
     test("should remove customer from list and add to attended customers on click", () => {
