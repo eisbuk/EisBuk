@@ -27,24 +27,19 @@ export const Default = (): JSX.Element => (
   <AttendanceCard {...baseAttendanceCard} />
 );
 
-// const saulBookings = {
-//   bookedInterval: intervals[0],
-//   attendedInterval: intervals[1],
-// };
+const saulBookings = {
+  bookedInterval: intervals[0],
+  attendedInterval: intervals[1],
+};
 
-// const waltBookings = {
-//   bookedInterval: intervals[1],
-//   attendedInterval: null,
-// };
-
-const tempBookings = {
-  bookedInterval: "10:00",
-  attendedInterval: "11:00",
+const waltBookings = {
+  bookedInterval: intervals[1],
+  attendedInterval: null,
 };
 
 const customers = [
-  { ...saul, ...tempBookings },
-  { ...walt, ...tempBookings },
+  { ...saul, ...saulBookings },
+  { ...walt, ...waltBookings },
 ];
 
 export const MultipleWithCustomers = (): JSX.Element => (

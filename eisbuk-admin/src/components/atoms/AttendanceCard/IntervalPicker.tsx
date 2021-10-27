@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import ButtonGroup from "@material-ui/core/ButtonGroup";
 import IconButton from "@material-ui/core/Button";
@@ -9,6 +9,8 @@ import Right from "@material-ui/icons/ChevronRight";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { ETheme } from "@/themes";
+
+import IntervalUI from "./IntervalUI";
 
 import {
   __nextIntervalButtonId__,
@@ -49,11 +51,6 @@ const IntervalPicker: React.FC<Props> = ({
     onChange(intervals[newIndex]);
   };
 
-  // intervals to display
-  const primaryInterval = attendedInterval;
-  const secondaryInterval =
-    bookedInterval !== attendedInterval ? bookedInterval : null;
-
   return (
     <ButtonGroup className={classes.container} disabled={disabled}>
       <IconButton
@@ -63,15 +60,7 @@ const IntervalPicker: React.FC<Props> = ({
       >
         <Left />
       </IconButton>
-      <div className={classes.intervalContainer}>
-        {secondaryInterval && (
-          <div className={classes.secondary}>
-            <span>{secondaryInterval}</span>
-            <div className={classes.strikeThrough} />
-          </div>
-        )}
-        <span className={classes.primary}>{primaryInterval}</span>
-      </div>
+      <IntervalUI {...{ attendedInterval, bookedInterval }} />
       <IconButton
         onClick={handleClick(1)}
         disabled={intervalIndex === numIntervals - 1}
@@ -101,6 +90,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
     transform: "translate(-50%, -50%)",
     fontSize: "14px",
     background: "white",
+    whiteSpace: "nowrap",
     boxShadow:
       "-4px 8px 0px 4px rgba(255, 255, 255, 1), 4px 8px 0px 4px rgba(255, 255, 255, 1)",
   },
@@ -120,6 +110,25 @@ const useStyles = makeStyles((theme: ETheme) => ({
     transform: "translate(-50%, -50%)",
     fontFamily: theme.typography.h1.fontFamily,
     fontSize: "20px",
+    whiteSpace: "nowrap",
+  },
+  primaryTemp: {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    fontFamily: theme.typography.h1.fontFamily,
+    width: "70px",
+    height: "20px",
+    border: "1px solid red",
+  },
+  secondaryTemp: {
+    position: "absolute",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    background: "green",
+    width: "50px",
+    height: "10px",
   },
 }));
 
