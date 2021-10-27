@@ -24,7 +24,7 @@ service cloud.firestore {
     function checkValidDate(date) {
       return (
         date is string &&
-        date.matches('[12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+        date.matches('[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]')
       );
     }
     // we're using this func to check if the optional date is a valid ISO string
@@ -33,7 +33,7 @@ service cloud.firestore {
       return (date == "")
         || (
           date is string
-          && date.matches('[12][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]')
+          && date.matches('[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]')
         );
     }
     match /organizations/{organization} {
