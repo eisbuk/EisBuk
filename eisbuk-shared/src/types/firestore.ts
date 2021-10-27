@@ -107,7 +107,6 @@ export interface CustomerBase {
   category: Category;
   // eslint-disable-next-line camelcase
 }
-
 /**
  * Customer entry in the Firestore DB
  */
@@ -119,7 +118,14 @@ export interface Customer extends CustomerBase {
   certificateExpiration?: string;
   covidCertificateReleaseDate?: string;
   covidCertificateSuspended?: boolean;
+  deleted?: boolean;
 }
+/**
+ * Customer with loose data. The server generated ids (`id`, `secretKey`)
+ * are optional
+ */
+export type CustomerLoose = Omit<Omit<Customer, "id">, "secretKey"> &
+  Partial<Pick<Customer, "id"> & Pick<Customer, "secretKey">>;
 
 // #endregion customers
 

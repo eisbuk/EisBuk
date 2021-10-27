@@ -60,7 +60,7 @@ export const markAttendance = ({
       { merge: true }
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -126,6 +126,6 @@ export const markAbsence = ({
     // update month document with new values
     await slotToUpdate.set(attendanceEntry);
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };

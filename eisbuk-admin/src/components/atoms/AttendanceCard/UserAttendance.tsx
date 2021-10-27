@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -48,10 +49,13 @@ const UserAttendance: React.FC<Props> = ({
   markAbsence,
   ...customer
 }) => {
+  const { t } = useTranslation();
+
   const classes = useStyles();
   const listItemClass = [
     classes.listItem,
     attendedInterval ? "" : classes.absent,
+    customer.deleted ? classes.deleted : "",
   ].join(" ");
 
   /**
@@ -139,12 +143,19 @@ const UserAttendance: React.FC<Props> = ({
     </div>
   );
 
+  const customerString = [
+    `${customer.name} ${customer.surname}`,
+    customer.deleted ? `(${t("Flags.Deleted")})` : "",
+  ]
+    .join(" ")
+    .trim();
+
   return (
     <ListItem className={listItemClass}>
       <ListItemAvatar>
         <EisbukAvatar {...customer} />
       </ListItemAvatar>
-      <ListItemText primary={customer.name} />
+      <ListItemText primary={customerString} />
       <ListItemSecondaryAction>{attendnaceControl}</ListItemSecondaryAction>
     </ListItem>
   );
@@ -171,6 +182,9 @@ const useStyles = makeStyles((theme: ETheme) => ({
     minWidth: 120,
     display: "flex",
     flexDirection: "row",
+  },
+  deleted: {
+    opacity: 0.5,
   },
 }));
 // #endregion Styles

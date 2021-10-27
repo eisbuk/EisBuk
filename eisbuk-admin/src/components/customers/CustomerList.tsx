@@ -52,7 +52,8 @@ const CustomerList: React.FC<Props> = ({
   const searchRegex = new RegExp(searchString, "i");
   const customersToShow = customers.filter(
     (customer) =>
-      searchRegex.test(customer.name) || searchRegex.test(customer.surname)
+      (searchRegex.test(customer.name) || searchRegex.test(customer.surname)) &&
+      !customer.deleted
   );
   const history = useHistory();
   const { t } = useTranslation();

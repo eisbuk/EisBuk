@@ -32,7 +32,7 @@ const DashboardPage: React.FC = () => {
       <AppbarAdmin />
       <DateNavigation extraButtons={printButton} jump="day">
         {() => (
-          <Container maxWidth="sm">
+          <Container maxWidth="md">
             <List className={classes.root}>
               {attendanceCards.map((attendanceCard) => (
                 <AttendanceCard

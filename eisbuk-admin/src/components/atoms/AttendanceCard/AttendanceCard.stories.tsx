@@ -54,3 +54,13 @@ export const MultipleWithCustomers = (): JSX.Element => (
     <AttendanceCard {...{ ...baseAttendanceCard, customers: [customers[0]] }} />
   </>
 );
+
+export const WithDeletedCustomer = (): JSX.Element => (
+  <AttendanceCard
+    {...{ ...baseAttendanceCard }}
+    customers={[
+      { ...saul, ...saulBookings },
+      { ...walt, ...waltBookings, deleted: true },
+    ]}
+  />
+);

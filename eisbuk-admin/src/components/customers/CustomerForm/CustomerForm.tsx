@@ -1,5 +1,4 @@
 import React from "react";
-import { makeStyles } from "@material-ui/styles";
 import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
@@ -13,6 +12,8 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import InputAdornment from "@material-ui/core/InputAdornment";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import AccountCircle from "@material-ui/icons/AccountCircle";
 import Email from "@material-ui/icons/Email";
