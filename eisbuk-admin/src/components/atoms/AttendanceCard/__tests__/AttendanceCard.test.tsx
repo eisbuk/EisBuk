@@ -87,6 +87,13 @@ const bookedInterval = intervalKeys[0];
 // we're using different interval then booked for more versatile tests
 const attendedInterval = intervalKeys[1];
 
+// provide a polyfill for element.animate function
+if (typeof Element.prototype.animate !== "function") {
+  // we won't be testing the animate function. We just need it to not fail the tests
+  // therefore an empty function will suffice
+  Element.prototype.animate = () => Object.create({});
+}
+
 describe("AttendanceCard", () => {
   afterEach(() => {
     cleanup();
