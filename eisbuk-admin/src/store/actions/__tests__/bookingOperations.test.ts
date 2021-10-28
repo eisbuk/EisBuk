@@ -55,11 +55,6 @@ jest
   .mockImplementation(mockEnqueueSnackbar as any);
 
 /**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
-
-/**
  * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
  */
 const mockDispatch = jest.fn();
@@ -138,6 +133,7 @@ describe("Booking Notifications", () => {
         const thunkArgs = await setupTestBookings({
           bookedSlots,
           secretKey,
+          dispatch: mockDispatch,
         });
         const testThunk = bookInterval({
           secretKey,
@@ -146,7 +142,7 @@ describe("Booking Notifications", () => {
           date: testBooking.date,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
   });
@@ -198,13 +194,14 @@ describe("Booking Notifications", () => {
         const thunkArgs = await setupTestBookings({
           bookedSlots,
           secretKey,
+          dispatch: mockDispatch,
         });
         const testThunk = cancelBooking({
           secretKey,
           slotId: bookingId,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
   });

@@ -58,11 +58,6 @@ jest
   .mockImplementation(mockEnqueueSnackbar as any);
 
 /**
- * A spy function we're using to test `showErrSnackbar` being called
- */
-const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
-
-/**
  * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
  */
 const mockDispatch = jest.fn();
@@ -131,11 +126,12 @@ describe("Slot operations ->", () => {
         // run thunk
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         const testThunk = createNewSlot(testFromValues);
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
   });
@@ -204,6 +200,7 @@ describe("Slot operations ->", () => {
         // run thunk
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         const testThunk = updateSlot({
           ...testFromValues,
@@ -211,7 +208,7 @@ describe("Slot operations ->", () => {
         });
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
   });
@@ -259,12 +256,13 @@ describe("Slot operations ->", () => {
         // set up initial state
         const thunkArgs = await setupTestSlots({
           slots: initialSlots,
+          dispatch: mockDispatch,
         });
         // create a thunk curried with slot id
         const testThunk = deleteSlot("id");
         await testThunk(...thunkArgs);
         // check err snackbar being called
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
   });

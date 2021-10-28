@@ -81,11 +81,6 @@ const BookingCard: React.FC<Props> = ({
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
 
-  console.log("ISO date > ", dateISO);
-  console.log("Weekday > ", date.toFormat("EEE"));
-  console.log("Day > ", date.toFormat("d"));
-  console.log("Month > ", date.toFormat("MMMM"));
-
   /**
    * Date box is shown in `calendar` variant, but hidden in `booking` variant
    * as cards in `booking` view will already be inside date container.

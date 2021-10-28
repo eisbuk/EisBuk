@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import {
   BookingSubCollection,
   Customer,
+  luxon2ISODate,
   OrgSubCollection,
 } from "eisbuk-shared";
 
@@ -32,8 +33,8 @@ const useFirestoreBookings = (secretKey: Customer["secretKey"]): void => {
         {
           collection: BookingSubCollection.BookedSlots,
           where: [
-            ["date", ">=", currentDate.toJSDate()],
-            ["date", "<", currentDate.plus({ months: 1 }).toJSDate()],
+            ["date", ">=", luxon2ISODate(currentDate.minus({ months: 1 }))],
+            ["date", "<", luxon2ISODate(currentDate.plus({ months: 1 }))],
           ],
         },
       ],

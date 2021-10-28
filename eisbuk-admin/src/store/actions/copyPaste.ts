@@ -180,7 +180,7 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
 
     await batch.commit();
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -225,7 +225,7 @@ export const pasteSlotsWeek = (
 
     await batch.commit();
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 

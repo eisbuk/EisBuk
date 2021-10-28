@@ -1,6 +1,13 @@
 import i18n from "i18next";
 
-import { Customer } from "eisbuk-shared";
+import {
+  Collection,
+  OrgSubCollection,
+  CustomerLoose,
+  CustomerBase,
+} from "eisbuk-shared";
+
+import { NotificationMessage } from "@/lib/notifications";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -20,35 +27,41 @@ import {
  * @param customer to update in firestore
  * @returns async thunk
  */
-export const updateCustomer = (customer: Customer): FirestoreThunk => async (
-  dispatch,
-  getState,
-  { getFirebase }
-) => {
+export const updateCustomer = (
+  customer: CustomerLoose
+): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { id, ...updatedData } = customer;
 
-  const firebase = getFirebase();
-
   try {
-    await firebase
+    const firebase = getFirebase();
+
+    const customersRef = firebase
       .firestore()
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(ORGANIZATION)
-      .collection("customers")
-      .doc(id)
-      .set(updatedData);
+      .collection(OrgSubCollection.Customers);
+
+    // if the `id` is defined, we want to reference the existing customer doc in the db
+    // else the server will generate a uuid for a customer
+    const customerDoc = id ? customersRef.doc(id) : customersRef.doc();
+
+    await customerDoc.set(updatedData, { merge: true });
+
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} ${i18n.t(
-          "Notification.Updated"
+          NotificationMessage.Updated
         )}`,
+        options: {
+          variant: NotifVariant.Success,
+        },
         closeButton: true,
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };
 
@@ -59,27 +72,25 @@ export const updateCustomer = (customer: Customer): FirestoreThunk => async (
  * @param customer to delete from firestore
  * @returns async thunk
  */
-export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
-  dispatch,
-  _,
-  { getFirebase }
-) => {
-  const firebase = getFirebase();
-
+export const deleteCustomer = (
+  customer: CustomerBase
+): FirestoreThunk => async (dispatch, _, { getFirebase }) => {
   try {
+    const firebase = getFirebase();
+
     await firebase
       .firestore()
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(ORGANIZATION)
-      .collection("customers")
+      .collection(OrgSubCollection.Customers)
       .doc(customer.id)
-      .delete();
+      .set({ deleted: true }, { merge: true });
 
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
         message: `${customer.name} ${customer.surname} ${i18n.t(
-          "Notification.Removed"
+          NotificationMessage.Removed
         )}`,
         closeButton: true,
         options: {
@@ -88,6 +99,6 @@ export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
       })
     );
   } catch {
-    showErrSnackbar();
+    dispatch(showErrSnackbar);
   }
 };

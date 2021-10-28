@@ -38,6 +38,17 @@ export const __bookInterval__ = "BookingCard.BookInterval";
 export const __cancelBooking__ = "BookingCard.CancelBooking";
 // #endregion intervals
 
+// #region validationMessages
+export enum ValidationMessage {
+  Email = "Validations.Email",
+  RequiredEntry = "Validations.RequiredEntry",
+  RequiredField = "Validations.RequiredField",
+  InvalidTime = "Validations.InvalidTime",
+  InvalidDate = "Validations.InvalidDate",
+  TimeMismatch = "Validations.TimeMismatch",
+}
+// #endregion validationMessages
+
 // #region date
 export enum DateFormat {
   Weekday = "Date.Weekday",
@@ -49,3 +60,25 @@ export enum DateFormat {
   Time = "Date.Time",
 }
 // #endregion date
+
+// #region customer
+export enum CustomerLabel {
+  Name = "CustomerLabel.Name",
+  Surname = "CustomerLabel.Surname",
+  Category = "CustomerLabel.Category",
+  Email = "CustomerLabel.Email",
+}
+
+export enum CustomerFormTitle {
+  NewCustomer = "CustomerForm.NewCustomer",
+  EditCustomer = "CustomerForm.EditCustomer",
+}
+// #endregion customer
+
+// #region prompt
+export enum Prompt {
+  DeleteCustomer = "Prompt.DeleteCustomer",
+  DeleteSlot = "Prompt.DeleteSlot",
+  NonReversible = "Prompt.NonReversible",
+}
+// #endregion prompt

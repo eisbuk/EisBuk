@@ -12,6 +12,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
+import { Prompt, DateFormat } from "@/lib/labels";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons, {
@@ -22,7 +24,6 @@ import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
 import { __slotId__ } from "./__testData__/testIds";
-import { DateFormat } from "@/lib/labels";
 
 export interface SlotCardProps extends SlotInterface {
   /**
@@ -154,7 +155,7 @@ const createDeleteConfirmDialog = (dateString: SlotInterface["date"]) => {
   // get luxon date (for i18n function)
   const date = fromISO(dateString);
   // get delete prompt translation
-  const deletePrompt = i18n.t("Slots.DeleteConfirmation");
+  const deletePrompt = i18n.t(Prompt.DeleteSlot);
   // get date localization
   const confirmDialogDate = i18n.t(DateFormat.DayMonth, {
     date,
@@ -173,7 +174,7 @@ const createDeleteConfirmDialog = (dateString: SlotInterface["date"]) => {
   ].join(" ");
 
   // get translated non-reversible-action message
-  const description = i18n.t("Slots.NonReversible");
+  const description = i18n.t(Prompt.NonReversible);
   return { title, description };
 };
 // #endregion localUtils

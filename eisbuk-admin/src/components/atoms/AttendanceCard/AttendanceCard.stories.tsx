@@ -9,7 +9,7 @@ import {
   baseAttendanceCard,
   intervalStrings as intervals,
 } from "@/__testData__/attendance";
-import { saul, walt } from "@/__testData__/customers";
+import { saul, walt, gus } from "@/__testData__/customers";
 
 export default {
   title: "Attendance Card",
@@ -37,9 +37,15 @@ const waltBookings = {
   attendedInterval: null,
 };
 
+const gusBookings = {
+  bookedInterval: null,
+  attendedInterval: intervals[1],
+};
+
 const customers = [
   { ...saul, ...saulBookings },
   { ...walt, ...waltBookings },
+  { ...gus, ...gusBookings },
 ];
 
 export const MultipleWithCustomers = (): JSX.Element => (
@@ -47,4 +53,14 @@ export const MultipleWithCustomers = (): JSX.Element => (
     <AttendanceCard {...{ ...baseAttendanceCard, customers }} />
     <AttendanceCard {...{ ...baseAttendanceCard, customers: [customers[0]] }} />
   </>
+);
+
+export const WithDeletedCustomer = (): JSX.Element => (
+  <AttendanceCard
+    {...{ ...baseAttendanceCard }}
+    customers={[
+      { ...saul, ...saulBookings },
+      { ...walt, ...waltBookings, deleted: true },
+    ]}
+  />
 );

@@ -12,6 +12,7 @@ import { SlotType, Category } from "eisbuk-shared";
 
 import { categoryLabel } from "@/lib/labels";
 
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 // #region main
 
 /**
@@ -21,7 +22,6 @@ import { categoryLabel } from "@/lib/labels";
  * `"off_ice_dancing" | "off_ice_gym"`
  */
 const SelectCategories: React.FC = () => {
-  const { t } = useTranslation();
   const classes = useStyles();
 
   const [disabled, setDisabled] = useState(false);
@@ -49,9 +49,7 @@ const SelectCategories: React.FC = () => {
         {Object.values(Category).map((category) => (
           <CategoryCheckbox {...{ category, disabled, key: category }} />
         ))}
-        <div className={classes.error}>
-          {typeof error === "string" && t(error)}
-        </div>
+        <ErrorMessage>{error}</ErrorMessage>
       </Box>
     </>
   );

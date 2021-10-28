@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import ListItem from "@material-ui/core/ListItem";
 import ListItemAvatar from "@material-ui/core/ListItemAvatar";
@@ -48,10 +49,13 @@ const UserAttendance: React.FC<Props> = ({
   markAbsence,
   ...customer
 }) => {
+  const { t } = useTranslation();
+
   const classes = useStyles();
   const listItemClass = [
     classes.listItem,
     attendedInterval ? "" : classes.absent,
+    customer.deleted ? classes.deleted : "",
   ].join(" ");
 
   /**
@@ -110,6 +114,14 @@ const UserAttendance: React.FC<Props> = ({
     localAttended !== Boolean(attendedInterval) ||
     Boolean(attendedInterval && attendedInterval !== selectedInterval);
 
+  const attendanceButton = bookedInterval ? "👍" : "🗑️";
+  const absenceButton = "👎";
+  const buttonClass = !bookedInterval
+    ? classes.trashCan
+    : localAttended
+    ? classes.attendedButton
+    : classes.absentButton;
+
   const attendnaceControl = (
     <div className={classes.actionsContainer}>
       <IntervalPicker
@@ -120,24 +132,31 @@ const UserAttendance: React.FC<Props> = ({
         onChange={handleIntervalChange}
       />
       <Button
+        className={buttonClass}
         data-testid={__attendanceButton__}
         variant="contained"
         size="small"
-        color={localAttended ? "primary" : "secondary"}
         onClick={handleClick}
         disabled={disableButton}
       >
-        {localAttended ? "👍" : "👎"}
+        {localAttended ? attendanceButton : absenceButton}
       </Button>
     </div>
   );
+
+  const customerString = [
+    `${customer.name} ${customer.surname}`,
+    customer.deleted ? `(${t("Flags.Deleted")})` : "",
+  ]
+    .join(" ")
+    .trim();
 
   return (
     <ListItem className={listItemClass}>
       <ListItemAvatar>
         <EisbukAvatar {...customer} />
       </ListItemAvatar>
-      <ListItemText primary={customer.name} />
+      <ListItemText primary={customerString} />
       <ListItemSecondaryAction>{attendnaceControl}</ListItemSecondaryAction>
     </ListItem>
   );
@@ -148,9 +167,14 @@ const useStyles = makeStyles((theme: ETheme) => ({
   absent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
-  button: {
-    display: "block",
-    marginTop: theme.spacing(2),
+  trashCan: {
+    background: "rgba(0, 0, 0, 0.1)",
+  },
+  attendedButton: {
+    background: theme.palette.primary.main,
+  },
+  absentButton: {
+    background: theme.palette.secondary.main,
   },
   listItem: {
     padding: theme.spacing(1),
@@ -159,6 +183,9 @@ const useStyles = makeStyles((theme: ETheme) => ({
     minWidth: 120,
     display: "flex",
     flexDirection: "row",
+  },
+  deleted: {
+    opacity: 0.5,
   },
 }));
 // #endregion Styles

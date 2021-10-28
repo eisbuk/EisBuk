@@ -4,6 +4,7 @@ import {
   render,
   waitForElementToBeRemoved,
   cleanup,
+  fireEvent,
 } from "@testing-library/react";
 
 import { Customer, SlotInterface } from "eisbuk-shared";
@@ -22,8 +23,8 @@ import { saul, walt } from "@/__testData__/customers";
 import {
   __addCustomersButtonId__,
   __closeCustomersListId__,
-  __customersListId__,
 } from "../__testData__/testIds";
+import { __customersListId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 
@@ -85,20 +86,93 @@ describe("AttendanceCard ->", () => {
       }
     );
 
+    testWithMutationObserver(
+      "should close customers list on esc button press",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        const customerList = screen.queryByTestId(__customersListId__);
+        expect(customerList).toBeNull();
+        screen.getByTestId(__addCustomersButtonId__).click();
+        screen.getByTestId(__customersListId__);
+        fireEvent.keyDown(screen.getByTestId(__customersListId__), {
+          key: "Escape",
+          code: "Escape",
+          keyCode: 27,
+          charCode: 27,
+        });
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+
+    testWithMutationObserver(
+      "should close customer list on clicking outside modal",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        const customerList = screen.queryByTestId(__customersListId__);
+        expect(customerList).toBeNull();
+        screen.getByTestId(__addCustomersButtonId__).click();
+        screen.getByTestId(__customersListId__);
+        const dialogContainer = screen.getByRole("presentation");
+        fireEvent.click(dialogContainer.children[0]);
+
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+
+    testWithMutationObserver(
+      "should close when there are no more customers to show",
+      async () => {
+        render(<AttendnaceCard {...baseAttendanceCard} />);
+        screen.getByTestId(__addCustomersButtonId__).click();
+        // click on each customer (expecting it to be removed)
+        baseAttendanceCard.allCustomers.forEach((customer) => {
+          const customerOnScreen = screen.queryByText(
+            new RegExp(customer.name)
+          );
+          if (customerOnScreen) {
+            customerOnScreen.click();
+          }
+        });
+        // the modal should close
+        await waitForElementToBeRemoved(() =>
+          screen.getByTestId(__customersListId__)
+        );
+      }
+    );
+
     test("should render all customers for slot's category who haven't booked already (when open)", () => {
+      const waltRegex = new RegExp(walt.name);
       render(
         <AttendnaceCard
           {...baseAttendanceCard}
           customers={[saulWithAttendance]}
         />
       );
+      // make sure that walt isn't displayed before opening of the modal
+      expect(screen.queryByText(waltRegex)).toBeNull();
       screen.getByTestId(__addCustomersButtonId__).click();
-      const waltRegex = new RegExp(walt.name);
       // should render walt -> category: "course", not within attended customers
       screen.getByText(waltRegex);
       const customerList = screen.getByTestId(__customersListId__);
       // should have only two children (`walt` and `jian`) as `saul` has already been marked as attended, and `gus` doesn't belong to the category
       expect(customerList.children.length).toEqual(2);
+    });
+
+    test("should not render deleted customers", () => {
+      const waltRegex = new RegExp(walt.name);
+      render(
+        <AttendnaceCard
+          {...baseAttendanceCard}
+          customers={[saulWithAttendance]}
+          allCustomers={[saul, { ...walt, deleted: true }]}
+        />
+      );
+      screen.getByTestId(__addCustomersButtonId__).click();
+      expect(screen.queryByText(waltRegex)).toBeNull();
     });
 
     test("should remove customer from list and add to attended customers on click", () => {

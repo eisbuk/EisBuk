@@ -3,7 +3,7 @@ import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
-import * as appActions from "../appActions";
+import { showErrSnackbar } from "../appActions";
 
 import {
   createDocumentWithObservedAttendance,
@@ -29,6 +29,8 @@ const attendanceMonth = firestoreUtils
   .doc(ORGANIZATION)
   .collection(OrgSubCollection.Attendance)
   .doc(slotId);
+
+const mockDispatch = jest.fn();
 
 describe("Attendance operations ->", () => {
   describe("markAttendance ->", () => {
@@ -91,7 +93,6 @@ describe("Attendance operations ->", () => {
     testWithEmulator(
       "should enqueue error snackbar if update not successful",
       async () => {
-        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
         // cause synthetic error in execution
         jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
           throw new Error();
@@ -99,6 +100,7 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         const thunkArgs = await setupTestAttendance({
           attendance: { [slotId]: initialDoc },
+          dispatch: mockDispatch,
         });
         const testThunk = markAttendance({
           customerId,
@@ -106,7 +108,7 @@ describe("Attendance operations ->", () => {
           attendedInterval,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
       }
     );
   });
@@ -168,7 +170,6 @@ describe("Attendance operations ->", () => {
     testWithEmulator(
       "should enqueue error snackbar if update not successful",
       async () => {
-        const errNotifSpy = jest.spyOn(appActions, "showErrSnackbar");
         // cause synthetic error in execution
         jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
           throw new Error();
@@ -176,13 +177,14 @@ describe("Attendance operations ->", () => {
         const initialDoc = createDocumentWithObservedAttendance({});
         const thunkArgs = await setupTestAttendance({
           attendance: { [slotId]: initialDoc },
+          dispatch: mockDispatch,
         });
         const testThunk = markAbsence({
           customerId,
           slotId: observedSlotId,
         });
         await testThunk(...thunkArgs);
-        expect(errNotifSpy).toHaveBeenCalled();
+        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
       }
     );
   });
