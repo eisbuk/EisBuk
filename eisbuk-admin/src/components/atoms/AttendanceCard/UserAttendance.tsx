@@ -91,6 +91,9 @@ const UserAttendance: React.FC<Props> = ({
       markAttendance({ attendedInterval: selectedInterval });
     } else {
       markAbsence();
+      if (bookedInterval) {
+        setSelectedInterval(bookedInterval!);
+      }
     }
   };
 

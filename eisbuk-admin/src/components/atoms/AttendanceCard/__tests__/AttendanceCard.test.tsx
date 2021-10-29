@@ -230,7 +230,7 @@ describe("AttendanceCard", () => {
       screen.getByText(bookedInterval);
     });
 
-    test("should disable prev button if first interval selected and next if las selected", () => {
+    test("should disable prev button if first interval selected and next if last selected", () => {
       const prevButton = screen.getByTestId(__prevIntervalButtonId__);
       const nextButton = screen.getByTestId(__nextIntervalButtonId__);
       // buttons shouldn't be disabled as we're starting with middle interval
@@ -269,6 +269,16 @@ describe("AttendanceCard", () => {
         );
       }
     );
+
+    test("should display booked interval when customer marked as absent", () => {
+      // initial state -> intervals are different, two interval strings are shown
+      screen.getByText(bookedInterval);
+      screen.getByText(attendedInterval);
+      // mark absence
+      screen.getByText(thumbsUp).click();
+      expect(screen.queryByText(attendedInterval)).toBeNull();
+      screen.getByText(bookedInterval);
+    });
   });
 
   describe("Test debounce", () => {

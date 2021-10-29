@@ -45,7 +45,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
         handleFlip({
           node: node!,
           animateFrom: primaryRect,
-          duration: 300,
+          duration: 200,
           onFinish: () => {
             // on finish, save the DOMRect of secondary (to be used in case of dismount/FLIP back to primary position)
             secondaryRect.current = node!.getBoundingClientRect();
@@ -55,7 +55,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
         // animate strike through
         if (strikeRef.current) animateStrikeThrough(strikeRef.current);
         // fade in the next `primaryInterval` not to (visually) interfere with our FLIP transition
-        handleFadeIn(primaryRef.current!, 300);
+        handleFadeIn(primaryRef.current!, 200);
         break;
 
       // if `primaryRef` (primaryInterval) is defined and the node (`secondaryInterval`) is not, should transition the string
@@ -223,6 +223,7 @@ const animateStrikeThrough = (node: HTMLElement) => {
     [
       { transform: "translate(-100%, 0) scale(0%, 100%)" },
       { transform: "translate(-100%, 0) scale(0%, 100%)" },
+      { transform: "translate(-50%, 0) scale(100%, 100%)" },
       { transform: "translate(-50%, 0) scale(100%, 100%)" },
     ],
     { duration: 500 }
