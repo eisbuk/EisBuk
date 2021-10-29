@@ -9,7 +9,6 @@ import {
 
 import { testDate, testDateLuxon } from "./date";
 
-// #region slot
 /**
  * A helper function used to create a slotInterval.
  * Receives startHour (0-24) and duration and creates a record containing
@@ -104,7 +103,6 @@ export const slotsMonth = Array(8)
   string,
   Record<string, SlotInterface>
 >;
-// #endregion slot
 
 /**
  * Dummy week of slots (resembling a structure we should receive from store).
@@ -127,8 +125,3 @@ export const slotsWeek = Array(7)
       },
     };
   }, {} as Record<string, Record<string, SlotInterface>>);
-// #endregion slot
-
-// #region customers
-
-// #endregion customers

@@ -20,7 +20,7 @@ import CopyButton from "../CopyButton";
 import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update slot form to be more atomic  */

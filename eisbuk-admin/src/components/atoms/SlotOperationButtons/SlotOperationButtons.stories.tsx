@@ -13,7 +13,7 @@ import DeleteButton from "./DeleteButton";
 
 import { __storybookDate__ } from "@/lib/constants";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 export default {
   title: "Slot Operation Buttons",

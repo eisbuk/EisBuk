@@ -2,7 +2,7 @@ import { CustomerWithAttendance } from "@/types/components";
 
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 import { gus, walt, saul, jian } from "@/__testData__/customers";
 
 export const allCustomers = [gus, walt, saul, jian];

@@ -22,7 +22,7 @@ import { deleteAll } from "@/tests/utils";
 import {
   initialSlotIds,
   initialSlots,
-  testFromValues,
+  testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
 
@@ -89,7 +89,7 @@ describe("Slot operations ->", () => {
           dispatch: mockDispatch,
         });
         // create a thunk curried with test input values
-        const testThunk = createNewSlot(testFromValues);
+        const testThunk = createNewSlot(testFormValues);
         await testThunk(...thunkArgs);
         const slotsInFS = (await slotsRef.get()).docs;
         // check that the new slot was created
@@ -128,7 +128,7 @@ describe("Slot operations ->", () => {
           slots: initialSlots,
           dispatch: mockDispatch,
         });
-        const testThunk = createNewSlot(testFromValues);
+        const testThunk = createNewSlot(testFormValues);
         await testThunk(...thunkArgs);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
@@ -162,7 +162,7 @@ describe("Slot operations ->", () => {
         };
         // create a thunk curried with updated form values
         const testThunk = updateSlot({
-          ...testFromValues,
+          ...testFormValues,
           ...updates,
           id: slotId,
         });
@@ -203,7 +203,7 @@ describe("Slot operations ->", () => {
           dispatch: mockDispatch,
         });
         const testThunk = updateSlot({
-          ...testFromValues,
+          ...testFormValues,
           id: "slot",
         });
         await testThunk(...thunkArgs);

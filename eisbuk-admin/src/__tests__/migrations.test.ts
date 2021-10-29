@@ -2,6 +2,7 @@ import firebase from "firebase/app";
 import "@/tests/settings";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
+import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
 import { functionsZone, ORGANIZATION } from "@/config/envInfo";
 
@@ -27,7 +28,6 @@ import {
   unprunedMonth,
 } from "../__testData__/migrations";
 import { walt } from "@/__testData__/customers";
-import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
 const db = getFirebase().firestore();
 

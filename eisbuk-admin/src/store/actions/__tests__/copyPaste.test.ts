@@ -32,7 +32,7 @@ import {
   testSlots,
   testWeek,
 } from "../__testData__/copyPaste";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 /**
  * Mock dispatch function we're feeding to our thunk testing function (`setUpTestSlots`)
  */

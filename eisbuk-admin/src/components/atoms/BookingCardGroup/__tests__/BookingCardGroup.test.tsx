@@ -7,7 +7,7 @@ import BookingCardGroup from "../BookingCardGroup";
 
 import * as bookingOperations from "@/store/actions/bookingOperations";
 
-import { intervals, slot } from "../__testData__/dummyData";
+import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
 
 const secretKey = "secret-key";
@@ -51,22 +51,18 @@ describe("Booking Card Group ->", () => {
 
   describe("Smoke test ->", () => {
     test("should render", () => {
-      render(
-        <>
-          <BookingCardGroup {...slot} />
-        </>
-      );
+      render(<BookingCardGroup {...baseSlot} />);
     });
   });
 
   describe("Test booking functionality ->", () => {
     const intervalKeys = Object.keys(intervals);
     const bookedInterval = intervalKeys[0];
-    const { id: slotId } = slot;
+    const { id: slotId } = baseSlot;
 
     beforeEach(() => {
       render(
-        <>{<BookingCardGroup {...{ ...slot, bookedInterval, intervals }} />}</>
+        <BookingCardGroup {...{ ...baseSlot, bookedInterval, intervals }} />
       );
     });
 

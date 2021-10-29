@@ -7,6 +7,8 @@ import {
   Category,
 } from "eisbuk-shared";
 
+import { NotificationMessage } from "@/lib/notifications";
+
 import { Action, NotifVariant } from "@/enums/store";
 
 import { adminDb } from "@/tests/settings";
@@ -22,7 +24,6 @@ import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
-import { NotificationMessage } from "@/lib/notifications";
 
 const customersRef = adminDb
   .collection(Collection.Organizations)

@@ -7,7 +7,7 @@ import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { deleteAll } from "@/tests/utils";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 xdescribe("Firestore data validations", () => {
   afterEach(async () => {

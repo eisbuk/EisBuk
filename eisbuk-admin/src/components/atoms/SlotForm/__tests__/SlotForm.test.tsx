@@ -33,9 +33,10 @@ import {
   __timeIntervalFieldId__,
   __deleteIntervalId__,
 } from "../__testData__/testIds";
-import { dummySlot, dummySlotFormValues } from "../__testData__/dummyData";
 import { __slotFormId__ } from "@/__testData__/testIds";
 import { testDate } from "@/__testData__/date";
+import { slotToFormValues } from "../utils";
+import { baseSlot } from "@/__testData__/slots";
 
 /**
  * We're mocking `i18next.t` function to return easily testable string for all calls
@@ -54,6 +55,9 @@ jest.mock("react-redux", () => ({ useDispatch: () => mockDispatch }));
 const mockDispatch = jest.fn();
 
 const baseProps = { date: testDate, onClose: () => {}, open: true };
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { date: __date, ...testFormValues } = slotToFormValues(baseSlot)!;
 
 describe("SlotForm ->", () => {
   afterEach(() => {
@@ -105,7 +109,7 @@ describe("SlotForm ->", () => {
       render(
         <SlotForm
           {...baseProps}
-          slotToEdit={{ ...dummySlot, date: differentDate }}
+          slotToEdit={{ ...baseSlot, date: differentDate }}
         />
       );
     });
@@ -214,16 +218,16 @@ describe("SlotForm ->", () => {
           <SlotForm
             {...baseProps}
             onClose={mockOnClose}
-            slotToEdit={dummySlot}
+            slotToEdit={baseSlot}
           />
         );
         // trigger submit
         screen.getByText(__editSlot__).click();
         // create mock action for form submission
         const mockUpdateAction = mockUpdateImplementation({
-          ...dummySlotFormValues,
+          ...testFormValues,
           date: testDate,
-          id: dummySlot.id,
+          id: baseSlot.id,
         });
         await waitFor(() =>
           expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
@@ -238,7 +242,7 @@ describe("SlotForm ->", () => {
           <SlotForm
             {...baseProps}
             onClose={mockOnClose}
-            slotToEdit={dummySlot}
+            slotToEdit={baseSlot}
           />
         );
         // delete first interval
@@ -247,10 +251,10 @@ describe("SlotForm ->", () => {
         screen.getByText(__editSlot__).click();
         // create mock action for form submission
         const mockUpdateAction = mockUpdateImplementation({
-          ...dummySlotFormValues,
+          ...testFormValues,
           date: testDate,
-          id: dummySlot.id,
-          intervals: [dummySlotFormValues.intervals[1]],
+          id: baseSlot.id,
+          intervals: testFormValues.intervals.filter((_, i) => i !== 0),
         });
         await waitFor(() =>
           expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)

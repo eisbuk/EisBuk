@@ -5,7 +5,7 @@ import { CustomerRoute } from "@/enums/routes";
 
 import CustomerSlots from "./CustomerSlots";
 
-import { slotsMonth, slotsWeek } from "@/__testData__/dummyData";
+import { slotsMonth, slotsWeek } from "@/__testData__/slots";
 
 export default {
   title: "Customer Routes",
