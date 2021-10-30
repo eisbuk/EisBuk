@@ -1,7 +1,6 @@
 import {
   // Category,
   Collection,
-  OrgSubCollection,
   // SlotInterface,
   // SlotType,
   // SlotsById,
@@ -23,7 +22,7 @@ import {
 // import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
 
 beforeEach(async () => {
-  await deleteAll([OrgSubCollection.Slots, OrgSubCollection.SlotsByDay]);
+  await deleteAll();
   await deleteAllCollections(adminDb, [Collection.Organizations]);
 });
 

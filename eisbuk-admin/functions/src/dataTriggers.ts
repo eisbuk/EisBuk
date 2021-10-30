@@ -230,6 +230,7 @@ export const createAttendanceForBooking = functions
       string,
       string
     >;
+
     const db = admin.firestore();
 
     const isUpdate = Boolean(change.after.exists);
@@ -256,10 +257,11 @@ export const createAttendanceForBooking = functions
       },
     };
 
-    await db
+    const attendanceRef = db
       .collection(Collection.Organizations)
       .doc(organization)
       .collection(OrgSubCollection.Attendance)
-      .doc(bookingId)
-      .set(updatedEntry, { merge: true });
+      .doc(bookingId);
+
+    await attendanceRef.set(updatedEntry, { merge: true });
   });

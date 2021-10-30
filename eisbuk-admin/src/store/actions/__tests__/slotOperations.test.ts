@@ -74,8 +74,8 @@ jest.mock("i18next", () => ({
 }));
 
 describe("Slot operations ->", () => {
-  afterEach(async () => {
-    await Promise.all([deleteAll([OrgSubCollection.Slots])]);
+  beforeEach(async () => {
+    await deleteAll();
     jest.clearAllMocks();
   });
 

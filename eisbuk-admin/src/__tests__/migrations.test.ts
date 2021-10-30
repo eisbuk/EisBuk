@@ -43,11 +43,7 @@ const orgRef = db.collection(Collection.Organizations).doc(ORGANIZATION);
 
 describe("Migrations", () => {
   afterEach(async () => {
-    await deleteAll([
-      OrgSubCollection.Slots,
-      OrgSubCollection.Customers,
-      OrgSubCollection.Bookings,
-    ]);
+    await deleteAll();
   });
 
   describe("'migrateToNewDataModel'", () => {

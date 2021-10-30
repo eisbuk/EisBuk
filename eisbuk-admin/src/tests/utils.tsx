@@ -3,6 +3,7 @@ import axios from "axios";
 import { adminDb } from "./settings";
 import "firebase/auth";
 import { ORGANIZATION } from "@/config/envInfo";
+import { Collection, OrgSubCollection } from "eisbuk-shared/dist";
 
 /**
  * @param email
@@ -41,12 +42,10 @@ export const loginDefaultUser = (): Promise<void> => {
  * @param collections to delete
  * @returns
  */
-export const deleteAll = async (
-  collections: string[]
-): Promise<FirebaseFirestore.WriteResult[]> => {
-  const org = adminDb.collection("organizations").doc(ORGANIZATION);
+export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
+  const org = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
 
-  return deleteAllCollections(org, collections);
+  return deleteAllCollections(org, Object.values(OrgSubCollection));
 };
 
 /**

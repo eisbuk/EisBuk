@@ -45,9 +45,9 @@ const mockDispatch = jest.fn();
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
 describe("Copy Paste actions", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.Slots, OrgSubCollection.SlotsByDay]);
+    await deleteAll();
   });
 
   describe("copySlotsDay", () => {

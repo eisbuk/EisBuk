@@ -4,7 +4,6 @@ import {
   Category,
   Collection,
   Customer,
-  CustomerBase,
   OrgSubCollection,
 } from "eisbuk-shared";
 
@@ -12,15 +11,19 @@ import { adminDb } from "@/tests/settings";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { deleteAll } from "@/tests/utils";
-import { waitForCondition, stripIdAndSecretKey } from "@/__testUtils__/helpers";
+import {
+  waitForCondition,
+  stripIdAndSecretKey,
+  getCustomerBase,
+} from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
 
 type DocumentData = firebase.firestore.DocumentData;
 
-afterEach(async () => {
-  await deleteAll([OrgSubCollection.Customers, OrgSubCollection.Bookings]);
+beforeEach(async () => {
+  await deleteAll();
 });
 
 // string path to `customers` collection
@@ -130,20 +133,3 @@ describe("Customer triggers", () => {
 const hasSecretKey = (data: DocumentData | undefined) => {
   return data && data.secretKey;
 };
-/**
- * A helper function used to strip excess customer data
- * and create customer base data (used to test `booking` entry for customer)
- * @param customer customer entry (without `secretKey` for convenient testing)
- * @returns customer base structure
- */
-const getCustomerBase = ({
-  id,
-  name,
-  surname,
-  category,
-}: Omit<Customer, "secretKey">): CustomerBase => ({
-  id,
-  name,
-  surname,
-  category,
-});

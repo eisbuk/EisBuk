@@ -10,8 +10,8 @@ import { deleteAll } from "@/tests/utils";
 import { baseSlot } from "@/__testData__/slots";
 
 xdescribe("Firestore data validations", () => {
-  afterEach(async () => {
-    await deleteAll([OrgSubCollection.Slots]);
+  beforeEach(async () => {
+    await deleteAll();
   });
 
   describe("Test date ISO validations", () => {

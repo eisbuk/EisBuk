@@ -9,26 +9,32 @@ import { adminDb } from "@/tests/settings";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import {
-  customerId,
-  slotId,
+  getDocumentRef,
+  waitForCondition,
+  getCustomerBase,
+} from "@/__testUtils__/helpers";
+import { testWithEmulator } from "@/__testUtils__/envUtils";
+import { deleteAll, deleteAllCollections } from "@/tests/utils";
+
+import {
   testBooking,
   attendanceWithTestCustomer,
   baseAttendance,
-  secretKey,
-  customerBooking,
-  slot,
   emptyAttendance,
 } from "@/__testData__/dataTriggers";
+import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 
-import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
-import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/tests/utils";
+const slotId = baseSlot.id;
+const customerId = saul.id;
+const secretKey = saul.secretKey;
+const customerBooking = getCustomerBase(saul);
 
 // document refs
-const userBookingRef = getDocumentRef(
-  adminDb,
-  `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}/${secretKey}`
-);
+const orgRef = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
+const userBookingRef = orgRef
+  .collection(OrgSubCollection.Bookings)
+  .doc(secretKey);
 const attendanceDocPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Attendance}/${slotId}`;
 const slotAttendanceRef = getDocumentRef(adminDb, attendanceDocPath);
 const slotRef = getDocumentRef(
@@ -38,15 +44,14 @@ const slotRef = getDocumentRef(
 
 beforeEach(async () => {
   const clearAll = [
-    deleteAll([OrgSubCollection.Bookings]),
-    deleteAll([OrgSubCollection.Slots]),
-    deleteAll([OrgSubCollection.Attendance]),
+    deleteAllCollections(userBookingRef, [BookingSubCollection.BookedSlots]),
+    deleteAll(),
   ];
   await Promise.all(clearAll);
 });
 
 describe("Cloud functions -> Data triggers ->,", () => {
-  xdescribe("createAttendanceForBooking", () => {
+  describe("createAttendanceForBooking", () => {
     testWithEmulator(
       "should create attendance entry for booking and not overwrite existing data in slot",
       async () => {
@@ -66,6 +71,10 @@ describe("Cloud functions -> Data triggers ->,", () => {
         });
         expect(docRes).toEqual(attendanceWithTestCustomer);
         // test customer's attendnace being removed from slot's attendnace
+        await userBookingRef
+          .collection(BookingSubCollection.BookedSlots)
+          .doc(slotId)
+          .delete();
         const docRes2 = await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => Boolean(data && !data.attendances[customerId]),
@@ -81,7 +90,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should create attendance entry for slot (containing only the date) in 'attendance' collection, only on create slot (not on update)",
       async () => {
         // add new slot to trigger adding attendance for given slot
-        await slotRef.set(slot);
+        await slotRef.set(baseSlot);
         // check proper updates triggerd by write to slot
         const docRes = await waitForCondition({
           documentPath: attendanceDocPath,
@@ -94,7 +103,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         // wait for attendance entry to be deleted
         // update the slot and expect new slot attendance entry not to be created
         await slotRef.set({
-          ...slot,
+          ...baseSlot,
           intervals: {},
           categories: [Category.PreCompetitive],
         });
@@ -108,7 +117,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should delete attendance entry for slot when the slot is deleted",
       async () => {
         // we're following the same setup from the test before
-        await slotRef.set(slot);
+        await slotRef.set(baseSlot);
         await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => Boolean(data),

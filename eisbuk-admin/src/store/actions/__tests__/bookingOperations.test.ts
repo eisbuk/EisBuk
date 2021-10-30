@@ -71,9 +71,9 @@ jest.mock("i18next", () => ({
 }));
 
 describe("Booking Notifications", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.Bookings]);
+    await deleteAll();
   });
 
   describe("'bookInterval'", () => {

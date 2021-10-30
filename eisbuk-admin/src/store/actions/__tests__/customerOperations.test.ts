@@ -80,8 +80,8 @@ jest.mock("i18next", () => ({
 }));
 
 describe("customerOperations", () => {
-  afterEach(async () => {
-    await deleteAll([OrgSubCollection.Customers]);
+  beforeEach(async () => {
+    await deleteAll();
   });
 
   describe("updateCustomer", () => {
