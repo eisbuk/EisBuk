@@ -53,7 +53,7 @@ export const intervals = createIntervals(9);
 
 export const baseSlot: SlotInterface = {
   date: testDate,
-  id: "id",
+  id: "base-slot-id",
   type: SlotType.Ice,
   categories: [Category.Competitive],
   intervals,
