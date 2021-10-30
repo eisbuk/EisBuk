@@ -1,7 +1,7 @@
-import { getOrgFromLocation } from "@/config/envInfo";
+import { getOrgFromLocation } from "../envInfo";
 
 describe("Environment info", () => {
-  it("splits on the first double dash and returns the first part", async () => {
+  test("should split on the first double dash and return the first part", async () => {
     expect(getOrgFromLocation("no-double-dashes.web.app")).toEqual(
       "no-double-dashes.web.app"
     );

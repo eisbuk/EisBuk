@@ -7,7 +7,7 @@ import pRetry from "p-retry";
 
 import { Customer, CustomerBase } from "eisbuk-shared";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 
 interface WaitForCondition {
   (params: {

@@ -7,7 +7,7 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import {
@@ -16,7 +16,7 @@ import {
   getCustomerBase,
 } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll, deleteAllCollections } from "@/tests/utils";
+import { deleteAll, deleteAllCollections } from "@/__testUtils__/firestore";
 
 import {
   testBooking,

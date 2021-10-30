@@ -1,7 +1,11 @@
+import "firebase/auth";
 import { ExtendedFirebaseInstance } from "react-redux-firebase";
 import { DateTime } from "luxon";
 
-import { adminDb } from "@/tests/settings";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
+
+import { adminDb } from "@/__testSettings__";
+import { ORGANIZATION } from "@/config/envInfo";
 
 import { LocalStore } from "@/types/store";
 
@@ -77,4 +81,53 @@ export const createTestStore = ({
       : {}),
     copyPaste,
   };
+};
+
+/**
+ * Test util: creates default organization ("default") in emulated firestore db
+ * and adds admin ("test@example.com")
+ * @returns
+ */
+export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
+  const orgDefinition = {
+    admins: ["test@example.com"],
+  };
+
+  return adminDb.collection("organizations").doc("default").set(orgDefinition);
+};
+
+/**
+ * Test util: deletes provided collections from "default" organization in emulated firestore db
+ * @param collections to delete
+ * @returns
+ */
+export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
+  const org = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
+
+  return deleteAllCollections(org, Object.values(OrgSubCollection));
+};
+
+/**
+ * Test util: deletes provided collections from provided db
+ * @param db to delete from
+ * @param collections to delete
+ * @returns
+ */
+export const deleteAllCollections = async (
+  db:
+    | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+    | FirebaseFirestore.Firestore,
+  collections: string[]
+): Promise<FirebaseFirestore.WriteResult[]> => {
+  const toDelete: Promise<FirebaseFirestore.WriteResult>[] = [];
+
+  for (const coll of collections) {
+    // eslint-disable-next-line no-await-in-loop
+    const existing = await db.collection(coll).get();
+    existing.forEach((el) => {
+      toDelete.push(el.ref.delete());
+    });
+  }
+
+  return Promise.all(toDelete);
 };

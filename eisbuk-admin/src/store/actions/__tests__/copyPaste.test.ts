@@ -20,7 +20,6 @@ import {
 import { showErrSnackbar } from "@/store/actions/appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/tests/utils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -47,7 +46,7 @@ const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 describe("Copy Paste actions", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll();
+    await firestoreUtils.deleteAll();
   });
 
   describe("copySlotsDay", () => {

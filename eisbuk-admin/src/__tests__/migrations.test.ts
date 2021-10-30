@@ -1,17 +1,16 @@
 import firebase from "firebase/app";
-import "@/tests/settings";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
-import { functionsZone, ORGANIZATION } from "@/config/envInfo";
+import { ORGANIZATION } from "@/config/envInfo";
+
+import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
 
-import { deleteAll } from "@/tests/utils";
-
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import { getFirebase, deleteAll } from "@/__testUtils__/firestore";
 
 import {
   emptyMonth,
@@ -32,7 +31,7 @@ import { walt } from "@/__testData__/customers";
 const db = getFirebase().firestore();
 
 export const invokeFunction = (functionName: string) => (): Promise<any> =>
-  firebase.app().functions(functionsZone).httpsCallable(functionName)({
+  firebase.app().functions(__functionsZone__).httpsCallable(functionName)({
     organization: ORGANIZATION,
   });
 

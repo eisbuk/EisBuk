@@ -17,7 +17,6 @@ import * as appActions from "../appActions";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestSlots } from "../__testUtils__/firestore";
-import { deleteAll } from "@/tests/utils";
 
 import {
   initialSlotIds,
@@ -75,7 +74,7 @@ jest.mock("i18next", () => ({
 
 describe("Slot operations ->", () => {
   beforeEach(async () => {
-    await deleteAll();
+    await firestoreUtils.deleteAll();
     jest.clearAllMocks();
   });
 

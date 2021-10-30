@@ -7,7 +7,11 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import BugReportIcon from "@material-ui/icons/BugReport";
 
-import { functionsZone, ORGANIZATION } from "@/config/envInfo";
+import { ORGANIZATION } from "@/config/envInfo";
+
+import { __functionsZone__ } from "@/lib/constants";
+
+import { CloudFunction } from "@/enums/functions";
 
 const DebugMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -17,13 +21,16 @@ const DebugMenu: React.FC = () => {
   };
 
   /** @TEMP below, needs to be typed with cloud functions */
-  const handleClose = (functionName?: string, params?: any) => async () => {
+  const handleClose = (
+    functionName?: CloudFunction,
+    params?: any
+  ) => async () => {
     setAnchorEl(null);
     if (functionName) {
       try {
         const res = await firebase
           .app()
-          .functions(functionsZone)
+          .functions(__functionsZone__)
           .httpsCallable(functionName)({
           ...params,
           organization: ORGANIZATION,
@@ -54,13 +61,17 @@ const DebugMenu: React.FC = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose()}
       >
-        <MenuItem onClick={handleClose("createTestData")}>
+        <MenuItem onClick={handleClose(CloudFunction.CreateTestData)}>
           Create 1 athlete
         </MenuItem>
-        <MenuItem onClick={handleClose("createTestData", { howMany: 100 })}>
+        <MenuItem
+          onClick={handleClose(CloudFunction.CreateTestData, {
+            howMany: 100,
+          })}
+        >
           Create 100 athletes
         </MenuItem>
-        <MenuItem onClick={handleClose("createTestSlots")}>
+        <MenuItem onClick={handleClose(CloudFunction.CreateTestSlots)}>
           Create slots
         </MenuItem>
       </Menu>

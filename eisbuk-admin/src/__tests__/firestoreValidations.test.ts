@@ -1,11 +1,11 @@
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { deleteAll } from "@/tests/utils";
+import { deleteAll } from "@/__testUtils__/firestore";
 
 import { baseSlot } from "@/__testData__/slots";
 

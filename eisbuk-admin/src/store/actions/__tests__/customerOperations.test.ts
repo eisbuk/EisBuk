@@ -11,14 +11,13 @@ import { NotificationMessage } from "@/lib/notifications";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { deleteCustomer, updateCustomer } from "../customerOperations";
 import * as appActions from "../appActions";
 
-import { deleteAll } from "@/tests/utils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import { getFirebase, deleteAll } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey, waitForCondition } from "@/__testUtils__/helpers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
