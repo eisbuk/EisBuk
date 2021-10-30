@@ -20,31 +20,16 @@
   },
   "SlotForm": {
     "Type": "Tipo",
-    "EditSlot": "Modifica Slot",
-    "CreateSlot": "Crea Slot",
-    "Cancel": "Annulla",
-
-    "NewSlotTitle": "Crea Slot",
-    "EditSlotTitle": "Modifica Slot",
     "Intervals": "Intervalli",
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
   },
-  "CustomerForm": {
-    "Name": "Nome",
-    "Surname": "Cognome",
-    "Phone": "Telefono",
-    "DateOfBirth": "Data di nascita",
-    "Category": "Categoria",
-    "MedicalCertificate": "Scadenza Cert. Medico",
-    "CardNumber": "Numero Tessera",
-    "Cancel": "Annulla",
-    "Save": "Salva",
+  "FormTitle": {
     "NewCustomer": "Nuovo Atleta",
     "EditCustomer": "Modifica Atleta",
-    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
-    "CovidCertificateSuspended": "Certificazione verde sospesa"
+    "NewSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot"
   },
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
@@ -117,9 +102,10 @@
     "PreCompetitive": "pre-agonismo",
     "Adults": "adulti"
   },
-  "Action": {
+  "ActionButton": {
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
+    "Save": "Salva",
     "Cancel": "Annulla"
   },
   "AttendanceCard": {
@@ -156,7 +142,13 @@
     "Name": "Nome",
     "Surname": "Cognome",
     "Category": "Categoria",
-    "Email": "Email"
+    "Email": "Email",
+    "Phone": "Telefono",
+    "DateOfBirth": "Data di nascita",
+    "MedicalCertificate": "Scadenza Cert. Medico",
+    "CardNumber": "Numero Tessera",
+    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
+    "CovidCertificateSuspended": "Certificazione verde sospesa"
   },
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere",

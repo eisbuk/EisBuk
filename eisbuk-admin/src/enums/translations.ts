@@ -1,13 +1,17 @@
 import { Category, SlotType } from "eisbuk-shared";
 
 // #region SlotForm
-export const __newSlotTitle__ = "SlotForm.NewSlotTitle";
-export const __editSlotTitle__ = "SlotForm.EditSlotTitle";
-export const __addNewInterval__ = "SlotForm.AddInterval";
+export enum SlotFormLabel {
+  Type = "SlotForm.Type",
+  Intervals = "SlotForm.Intervals",
+  AddInterval = "SlotForm.AddInterval",
+  StartTime = "SlotForm.StartTime",
+  EndTime = "SlotForm.EndTime",
+}
 // #endregion SlotForm
 
 // #region SlotType
-export const slotTypeLabel = {
+export const SlotTypeLabel = {
   [SlotType.Ice]: "SlotType.Ice",
   [SlotType.OffIceDancing]: "SlotType.OffIceDancing",
   [SlotType.OffIceGym]: "SlotType.OffIceGym",
@@ -15,7 +19,7 @@ export const slotTypeLabel = {
 // #endregion SlotType
 
 // #region Category
-export const categoryLabel = {
+export const CategoryLabel = {
   [Category.Adults]: "Category.Adults",
   [Category.PreCompetitive]: "Category.PreCompetitive",
   [Category.Competitive]: "Category.Competitive",
@@ -24,9 +28,12 @@ export const categoryLabel = {
 // #endregion Category
 
 // #region actionButtons
-export const __cancel__ = "Action.Cancel";
-export const __createSlot__ = "Action.CreateSlot";
-export const __editSlot__ = "Action.EditSlot";
+export enum ActionButton {
+  CreateSlot = "ActionButton.CreateSlot",
+  EditSlot = "ActionButton.EditSlot",
+  Save = "ActionButton.Save",
+  Cancel = "ActionButton.Cancel",
+}
 // #endregion actionButtons
 
 // #region attendanceCard
@@ -67,13 +74,27 @@ export enum CustomerLabel {
   Surname = "CustomerLabel.Surname",
   Category = "CustomerLabel.Category",
   Email = "CustomerLabel.Email",
+  Phone = "CustomerLabel.Phone",
+  DateOfBirth = "CustomerLabel.DateOfBirth",
+  MedicalCertificate = "CustomerLabel.MedicalCertificate",
+  CardNumber = "CustomerLabel.CardNumber",
+  CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
+  CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
 }
 
-export enum CustomerFormTitle {
-  NewCustomer = "CustomerForm.NewCustomer",
-  EditCustomer = "CustomerForm.EditCustomer",
-}
 // #endregion customer
+
+// #region FormTitle
+export enum CustomerFormTitle {
+  NewCustomer = "FormTitle.NewCustomer",
+  EditCustomer = "FormTitle.EditCustomer",
+}
+
+export enum SlotFormTitle {
+  NewSlot = "FormTitle.NewSlot",
+  EditSlot = "FormTitle.EditSlot",
+}
+// #endregion FormTitle
 
 // #region prompt
 export enum Prompt {

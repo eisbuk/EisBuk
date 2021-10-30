@@ -24,7 +24,12 @@ import Payment from "@material-ui/icons/Payment";
 
 import { Category, Customer } from "eisbuk-shared";
 
-import { ValidationMessage, CustomerFormTitle } from "@/lib/labels";
+import {
+  CustomerLabel,
+  CustomerFormTitle,
+  ValidationMessage,
+  ActionButton,
+} from "@/enums/translations";
 
 import { SvgComponent } from "@/types/components";
 
@@ -126,31 +131,31 @@ const CustomerForm: React.FC<Props> = ({
               <MyField
                 className={classes.field}
                 name="name"
-                label={t("CustomerForm.Name")}
+                label={t(CustomerLabel.Name)}
                 Icon={AccountCircle}
               />
               <MyField
                 className={classes.field}
                 name="surname"
-                label={t("CustomerForm.Surname")}
+                label={t(CustomerLabel.Surname)}
                 Icon={AccountCircle}
               />
               <MyField
                 name="email"
-                label="Email"
+                label={t(CustomerLabel.Email)}
                 className={classes.field}
                 Icon={Email}
               />
               <MyField
                 name="phone"
-                label={t("CustomerForm.Phone")}
+                label={t(CustomerLabel.Phone)}
                 className={classes.field}
                 Icon={Phone}
               />
               <DateInput
                 name="birthday"
                 className={classes.field}
-                label={t("CustomerForm.DateOfBirth")}
+                label={t(CustomerLabel.DateOfBirth)}
                 Icon={Cake}
               />
 
@@ -158,30 +163,30 @@ const CustomerForm: React.FC<Props> = ({
 
               <DateInput
                 name="certificateExpiration"
-                label={t("CustomerForm.MedicalCertificate")}
+                label={t(CustomerLabel.MedicalCertificate)}
                 className={classes.field}
                 Icon={LocalHospital}
               />
               <DateInput
                 name="covidCertificateReleaseDate"
-                label={t("CustomerForm.CovidCertificateReleaseDate")}
+                label={t(CustomerLabel.CovidCertificateReleaseDate)}
                 className={classes.field}
                 Icon={LocalHospital}
               />
               <CustomCheckbox
                 name="covidCertificateSuspended"
-                label={t("CustomerForm.CovidCertificateSuspended")}
+                label={t(CustomerLabel.CovidCertificateSuspended)}
               />
               <MyField
                 name="subscriptionNumber"
-                label={t("CustomerForm.CardNumber")}
+                label={t(CustomerLabel.CardNumber)}
                 className={classes.field}
                 Icon={Payment}
               />
             </DialogContent>
             <DialogActions>
               <Button onClick={onClose} color="primary">
-                {t("CustomerForm.Cancel")}
+                {t(ActionButton.Cancel)}
               </Button>
               <Button
                 // onClick={() => console.log("Click")}
@@ -190,7 +195,7 @@ const CustomerForm: React.FC<Props> = ({
                 variant="contained"
                 color="primary"
               >
-                {t("CustomerForm.Save")}
+                {t(ActionButton.Save)}
               </Button>
             </DialogActions>
           </Form>

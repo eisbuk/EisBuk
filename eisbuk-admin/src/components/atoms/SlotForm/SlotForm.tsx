@@ -16,16 +16,15 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface, SlotInterval, SlotType, fromISO } from "eisbuk-shared";
 
-import {
-  DateFormat,
-  __cancel__,
-  __createSlot__,
-  __editSlotTitle__,
-  __editSlot__,
-  __newSlotTitle__,
-  ValidationMessage,
-} from "@/lib/labels";
 import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
+
+import {
+  SlotFormTitle,
+  ValidationMessage,
+  DateFormat,
+  ActionButton,
+  SlotTypeLabel,
+} from "@/enums/translations";
 
 import RadioSelection from "@/components/atoms/RadioSelection";
 import SelectCategories from "./SelectCategories";
@@ -126,14 +125,16 @@ const SlotForm: React.FC<Props> = ({
   };
 
   // get title based on mode (new-slot/edit)
-  const titleString = slotToEdit ? __editSlotTitle__ : __newSlotTitle__;
+  const titleString = slotToEdit
+    ? SlotFormTitle.EditSlot
+    : SlotFormTitle.NewSlot;
   const titleDate = t(DateFormat.DayMonth, { date: fromISO(date) });
   const title = `${t(titleString)} ( ${titleDate} )`;
 
   // options for type selection radio group
   const typeOptions = Object.keys(SlotType).map((typeKey) => ({
     value: SlotType[typeKey],
-    label: t(`SlotType.${typeKey}`),
+    label: t(SlotTypeLabel[typeKey]),
   }));
 
   return (
@@ -166,7 +167,7 @@ const SlotForm: React.FC<Props> = ({
                 data-testid={__cancelFormId__}
                 onClick={onClose}
               >
-                {t(__cancel__)}
+                {t(ActionButton.Cancel)}
               </Button>
               <Button
                 variant="contained"
@@ -177,7 +178,9 @@ const SlotForm: React.FC<Props> = ({
                 }
                 color="primary"
               >
-                {slotToEdit ? t(__editSlot__) : t(__createSlot__)}
+                {slotToEdit
+                  ? t(ActionButton.EditSlot)
+                  : t(ActionButton.CreateSlot)}
               </Button>
             </DialogActions>
           </Form>

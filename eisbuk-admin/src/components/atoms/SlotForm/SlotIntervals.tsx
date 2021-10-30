@@ -7,8 +7,9 @@ import Button from "@material-ui/core/Button";
 
 import { SlotInterval } from "eisbuk-shared";
 
-import { __addNewInterval__ } from "@/lib/labels";
 import { defaultInterval } from "@/lib/data";
+
+import { SlotFormLabel } from "@/enums/translations";
 
 import TimeIntervalField from "./TimeIntervalField";
 
@@ -32,7 +33,7 @@ const SlotIntervals: React.FC = () => {
 
   return (
     <>
-      <h5 className={classes.intervalsTitle}>{t("SlotForm.Intervals")}</h5>
+      <h5 className={classes.intervalsTitle}>{t(SlotFormLabel.Intervals)}</h5>
       {intervals?.map((_, i) => (
         <TimeIntervalField
           key={i}
@@ -48,7 +49,7 @@ const SlotIntervals: React.FC = () => {
           variant="contained"
           className={classes.addInterval}
         >
-          {t(__addNewInterval__)}
+          {t(SlotFormLabel.AddInterval)}
         </Button>
       </div>
     </>
