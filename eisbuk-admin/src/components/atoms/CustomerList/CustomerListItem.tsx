@@ -16,9 +16,8 @@ import DateRangeIcon from "@material-ui/icons/DateRange";
 
 import { Customer } from "eisbuk-shared";
 
-import { Prompt } from "@/lib/labels";
-
 import { Routes } from "@/enums/routes";
+import { CategoryLabel, Prompt } from "@/enums/translations";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
@@ -52,7 +51,7 @@ const CustomerListItem: React.FC<Props> = ({
   const extendedCells = (
     <>
       <TableCell>
-        {capitalizeFirst(t(`Categories.${customer.category}`))}
+        {capitalizeFirst(t(CategoryLabel[customer.category])).replace("-", " ")}
       </TableCell>
       <TableCell>{customer.email}</TableCell>
     </>
@@ -89,7 +88,9 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
 
   // delete customer flow
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const deleteDialogPrompt = `${Prompt.DeleteCustomer} ${customer.name} ${customer.surname}?`;
+  const deleteDialogPrompt = `${t(Prompt.DeleteCustomer)} ${customer.name} ${
+    customer.surname
+  }?`;
   const confirmDelete = () => dispatch(deleteCustomer(customer));
 
   // edit customer flow

@@ -1,15 +1,39 @@
 {
-  "AppbarAdmin": {
+  "NavigationLabel": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
     "Bookings": "Bookings"
   },
-  "Slots": {
-    "Amateur": "Amateur",
-    "All": "",
-    "Slot": "slot",
-    "Book": "Book",
-    "Booked": "Booked"
+  "CustomerNavigation": {
+    "BookIce": "Book Ice",
+    "BookOffIce": "Book Off-Ice",
+    "Calendar": "Calendar"
+  },
+
+  "Authorization": {
+    "NotAuthorized": "You are not authorized to login",
+    "AdminsOnly": "This space is reserved for administrators",
+    "LoggedInWith": "You are logged in with:",
+    "TryAgain": "Log out and try again with a different user"
+  },
+
+  "SlotType": {
+    "Ice": "ice",
+    "OffIceDancing": "off-ice-dancing",
+    "OffIceGym": "off-ice-gym"
+  },
+  "Category": {
+    "Adults": "adults",
+    "PreCompetitive": "pre-competitive",
+    "Competitive": "competitive",
+    "Course": "course"
+  },
+
+  "FormTitle": {
+    "NewCustomer": "New Athlete",
+    "EditCustomer": "Edit Athlete",
+    "NewSlot": "New Slot",
+    "EditSlot": "Edit Slot"
   },
   "SlotForm": {
     "Type": "Type",
@@ -17,120 +41,6 @@
     "AddInterval": "Add Interval",
     "StartTime": "Start Time",
     "EndTime": "End Time"
-  },
-  "FormTitle": {
-    "NewCustomer": "New Athlete",
-    "EditCustomer": "Edit Athlete",
-    "NewSlot": "New Slot",
-    "EditSlot": "Edit Slot"
-  },
-  "Authorization": {
-    "NotAuthorized": "You are not authorized to login",
-    "AdminsOnly": "This space is reserved for administrators",
-    "LoggedInWith": "You are logged in with: ",
-    "TryAgain": "Log out and try again with a different user"
-  },
-  "CustomerArea": {
-    "Book": "Book",
-    "Calendar": "Calendar"
-  },
-  "CustomerNavigation": {
-    "book_ice": "Book Ice",
-    "book_off_ice": "Book Off-Ice",
-    "calendar": "Calendar"
-  },
-  "CustomersPage": {
-    "Athletes": "Athletes",
-    "AddAthlete": "AddAthlete"
-  },
-  "DashboardPage": {
-    "Bookings": "Bookings"
-  },
-  "BookingsByDay": {
-    "Absent": "absent"
-  },
-  "SlotsPageContainer": {
-    "DeleteAllConfirmation": "Are you sure you want to remove all slots",
-    "OfTheWeek": "of the week",
-    "NonReversible": "This action is non-reversible"
-  },
-
-  "Categories": {
-    "course": "course",
-    "competitive": "competitive",
-    "pre-competitive": "pre-competitive",
-    "adults": "adults"
-  },
-  "SlotTypes": {
-    "off-ice-dancing": "off-ice-dancing",
-    "ice": "ice",
-    "off-ice-gym": "off-ice-gym"
-  },
-  "Notification": {
-    "Error": "Error",
-    "LogoutSuccess": "Logout Successful",
-    "LogoutError": "An error occurred",
-    "BookingSuccess": "Successfully booked",
-    "BookingCanceled": "Booking canceled",
-    "BookingCancelledError": "Error cancelling booking",
-    "Updated": "updated",
-    "Removed": "removed",
-    "SlotAdded": "Slot Added",
-    "SlotRemoved": "Slot Removed",
-    "SlotUpdated": "Slot Updated"
-  },
-  "AttendanceSheet": {
-    "Attendance": "Attendance"
-  },
-
-  "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
-
-  "SlotType": {
-    "OffIceDancing": "off-ice-dancing",
-    "Ice": "ice",
-    "OffIceGym": "off-ice-gym"
-  },
-  "Category": {
-    "Course": "course",
-    "Competitive": "competitive",
-    "PreCompetitive": "pre-competitive",
-    "Adults": "adults"
-  },
-  "ActionButton": {
-    "CreateSlot": "Create Slot",
-    "EditSlot": "Edit Slot",
-    "Save": "Save",
-    "Cancel": "Cancel"
-  },
-  "AttendanceCard": {
-    "AddCustomersTitle": "Add customers"
-  },
-  "BookingCard": {
-    "BookInterval": "Book",
-    "CancelBooking": "Cancel"
-  },
-  "Validations": {
-    "Email": "Please insert a valid email",
-    "RequiredEntry": "At least one value is required",
-    "RequiredField": "This field is required",
-    "InvalidTime": "Invalid time format (\"HH:mm\")",
-    "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
-    "TimeMismatch": "Start time is greater than end time"
-  },
-  "Date": {
-    "Weekday": "{{ date, EEE }}",
-    "Day": "{{ date, d }}",
-    "Month": "{{ date, MMMM }}",
-    "Full": "{{ date, EEEE d MMMM }}",
-    "DayMonth": "{{ date, d MMMM }}",
-    "MonthYear": "{{ date, MMMM yyyy }}",
-    "Time": "{{date, HH:mm}}"
-  },
-  "Flags": {
-    "Deleted": "deleted"
-  },
-  "DateInput": {
-    "placeholder": "dd/mm/yyyy"
   },
   "CustomerLabel": {
     "Name": "Name",
@@ -144,10 +54,56 @@
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
     "CovidCertificateSuspended": "COVID-19 Certificate supsended"
   },
+  "Validations": {
+    "Email": "Please insert a valid email",
+    "RequiredEntry": "At least one value is required",
+    "RequiredField": "This field is required",
+    "InvalidTime": "Invalid time format (\"HH:mm\")",
+    "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
+    "TimeMismatch": "Start time is greater than end time"
+  },
+
   "Prompt": {
     "DeleteCustomer": "Are you sure you want to remove",
     "DeleteSlot": "Are you sure you want to delete the",
     "NonReversible": "This action is non-reversible"
   },
-  "DialogAction": {}
+  "ActionButton": {
+    "CreateSlot": "Create Slot",
+    "EditSlot": "Edit Slot",
+    "AddAthlete": "Add Athlete",
+    "AddCustomers": "Add Customers",
+    "BookInterval": "Book",
+    "Save": "Save",
+    "Cancel": "Cancel"
+  },
+
+  "Notification": {
+    "Error": "Error",
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+    "BookingSuccess": "Successfully booked",
+    "BookingCanceled": "Booking canceled",
+    "BookingCanceledError": "Error cancelling booking",
+    "Updated": "updated",
+    "Removed": "removed",
+    "SlotAdded": "Slot Added",
+    "SlotRemoved": "Slot Removed",
+    "SlotUpdated": "Slot Updated"
+  },
+
+  "Flags": {
+    "Deleted": "deleted"
+  },
+
+  "Date": {
+    "Weekday": "{{ date, EEE }}",
+    "Day": "{{ date, d }}",
+    "Month": "{{ date, MMMM }}",
+    "Full": "{{ date, EEEE d MMMM }}",
+    "DayMonth": "{{ date, d MMMM }}",
+    "MonthYear": "{{ date, MMMM yyyy }}",
+    "Time": "{{date, HH:mm}}",
+    "Placeholder": "dd/mm/yyyy"
+  }
 }

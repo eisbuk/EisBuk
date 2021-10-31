@@ -13,7 +13,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Customer } from "eisbuk-shared";
 
-import { CustomerLabel } from "@/lib/labels";
+import { CustomerLabel } from "@/enums/translations";
 
 import CustomerListItem from "./CustomerListItem";
 

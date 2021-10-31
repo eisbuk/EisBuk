@@ -132,8 +132,8 @@ const SlotForm: React.FC<Props> = ({
   const title = `${t(titleString)} ( ${titleDate} )`;
 
   // options for type selection radio group
-  const typeOptions = Object.keys(SlotType).map((typeKey) => ({
-    value: SlotType[typeKey],
+  const typeOptions = Object.values(SlotType).map((typeKey) => ({
+    value: typeKey,
     label: t(SlotTypeLabel[typeKey]),
   }));
 

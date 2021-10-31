@@ -7,7 +7,7 @@ import { Customer, SlotInterface } from "eisbuk-shared";
 
 import { CustomerWithAttendance } from "@/types/components";
 
-import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
 
 import AttendanceCard from "../AttendanceCard";
 
@@ -106,9 +106,9 @@ describe("AttendanceCard", () => {
       screen.getByText(`${saul.name} ${saul.surname}`);
       // create regex for type and category as they're part of the same string in the UI
       const categoryRegex = new RegExp(
-        categoryLabel[baseAttendanceCard.categories[0]]
+        CategoryLabel[baseAttendanceCard.categories[0]]
       );
-      const typeRegex = new RegExp(slotTypeLabel[baseAttendanceCard.type]);
+      const typeRegex = new RegExp(SlotTypeLabel[baseAttendanceCard.type]);
       screen.getByText(categoryRegex);
       screen.getByText(typeRegex);
     });

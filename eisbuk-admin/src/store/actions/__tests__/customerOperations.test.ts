@@ -22,7 +22,7 @@ import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
-import { NotificationMessage } from "@/lib/notifications";
+import { NotificationMessage } from "@/enums/translations";
 
 const customersRef = adminDb
   .collection(Collection.Organizations)

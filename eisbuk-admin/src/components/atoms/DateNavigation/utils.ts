@@ -1,7 +1,7 @@
 import { DateTime, DateTimeUnit } from "luxon";
 import i18n from "i18next";
 
-import { DateFormat } from "@/lib/labels";
+import { DateFormat } from "@/enums/translations";
 
 /**
  * Creates a title from start time and timeframe lenght.

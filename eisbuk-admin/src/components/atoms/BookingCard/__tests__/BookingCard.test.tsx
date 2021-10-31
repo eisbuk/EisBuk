@@ -1,7 +1,7 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+import { ActionButton } from "@/enums/translations";
 
 import BookingCard from "../BookingCard";
 
@@ -29,14 +29,14 @@ describe("Interval Card ->", () => {
 
     test("should fire `bookInterval` on click, if the interval is not already booked", () => {
       render(<BookingCard {...baseProps} bookInterval={mockBookInterval} />);
-      screen.getByText(__bookInterval__).click();
+      screen.getByText(ActionButton.BookInterval).click();
       expect(mockBookInterval).toHaveBeenCalled();
     });
     test("should fire `cancelBooking` on click, if the interval is booked", () => {
       render(
         <BookingCard {...baseProps} booked cancelBooking={mockCancelBooking} />
       );
-      screen.getByText(__cancelBooking__).click();
+      screen.getByText(ActionButton.Cancel).click();
       expect(mockCancelBooking).toHaveBeenCalled();
     });
   });

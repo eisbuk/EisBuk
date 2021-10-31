@@ -1,7 +1,7 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+import { ActionButton } from "@/enums/translations";
 
 import BookingCardGroup from "../BookingCardGroup";
 
@@ -71,7 +71,7 @@ describe("Booking Card Group ->", () => {
     });
 
     test("should switch booked interval on 'bookInterval' click (on a non-booked interval)", () => {
-      screen.getAllByText(__bookInterval__)[0].click();
+      screen.getAllByText(ActionButton.BookInterval)[0].click();
       const mockBookAction = mockBookImplementation({
         slotId,
         secretKey,
@@ -82,7 +82,7 @@ describe("Booking Card Group ->", () => {
     });
 
     test("should remove booked interval on 'cancelBooking' click", () => {
-      screen.getByText(__cancelBooking__).click();
+      screen.getByText(ActionButton.Cancel).click();
       const mockCancelAction = mockCancelImplementation({
         slotId,
         secretKey,
@@ -92,7 +92,7 @@ describe("Booking Card Group ->", () => {
 
     test("should disable all buttons while the state is syncing (bookedInterval and localSelected are in discrepency)", () => {
       // the `bookedInterval` prop has athe value of the first interval, this way we're setting i to  null
-      screen.getByText(__cancelBooking__).click();
+      screen.getByText(ActionButton.Cancel).click();
       screen.getAllByRole("button").forEach((button) => {
         expect(button).toHaveProperty("disabled", true);
       });

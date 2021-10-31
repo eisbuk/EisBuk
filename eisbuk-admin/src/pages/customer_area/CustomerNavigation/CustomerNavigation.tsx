@@ -19,6 +19,7 @@ import {
   __bookOffIceButtonId__,
   __calendarButtonId__,
 } from "./__testData__/testIds";
+import { CustomerNavigationLabel } from "@/enums/translations";
 
 /**
  * A placeholder string we use for dynamic route parsing.
@@ -129,7 +130,7 @@ type LinkTabProps = Omit<TabProps, "onClick"> & {
 const LinkTab: React.FC<LinkTabProps> = ({ customerRoute, ...props }) => {
   const { t } = useTranslation();
 
-  const label = t(`CustomerNavigation.${customerRoute}`);
+  const label = t(CustomerNavigationLabel[customerRoute]);
 
   return <Tab {...{ ...props, label }} />;
 };

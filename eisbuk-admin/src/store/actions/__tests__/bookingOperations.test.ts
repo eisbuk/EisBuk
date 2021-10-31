@@ -7,7 +7,7 @@ import {
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { Action, NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/lib/notifications";
+import { NotificationMessage } from "@/enums/translations";
 
 import { bookInterval, cancelBooking } from "../bookingOperations";
 import * as appActions from "../appActions";

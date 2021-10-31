@@ -10,7 +10,7 @@ import "@testing-library/jest-dom";
 
 import { Customer } from "eisbuk-shared";
 
-import { CustomerFormTitle, Prompt } from "@/lib/labels";
+import { CustomerFormTitle, Prompt } from "@/enums/translations";
 
 import CustomerListItem from "../CustomerListItem";
 

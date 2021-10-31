@@ -15,7 +15,7 @@ import { SlotInterface } from "eisbuk-shared";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { slotTypeLabel } from "@/lib/labels";
+import { SlotTypeLabel } from "@/enums/translations";
 
 import { CustomerWithAttendance } from "@/types/components";
 
@@ -64,7 +64,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({
                 key="type"
                 color={slotLabel.color}
               >
-                {t(slotTypeLabel[type])}
+                {t(SlotTypeLabel[type])}
               </Typography>
             </Box>
             {notes && <span className={classes.flexCenter}> ({notes})</span>}

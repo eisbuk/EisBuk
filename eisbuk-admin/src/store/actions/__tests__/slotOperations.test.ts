@@ -7,9 +7,8 @@ import {
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { Action, NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
 import * as appActions from "../appActions";
