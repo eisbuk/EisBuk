@@ -76,7 +76,7 @@ jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
 // aliases for thumbs button for easier access
 const thumbsUp = "👍";
 const thumbsDown = "👎";
-const trashCan = "🗑️";
+// const trashCan = "🗑️";
 
 const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
