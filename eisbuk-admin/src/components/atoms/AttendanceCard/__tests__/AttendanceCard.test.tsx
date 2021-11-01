@@ -87,6 +87,13 @@ const bookedInterval = intervalKeys[0];
 // we're using different interval then booked for more versatile tests
 const attendedInterval = intervalKeys[1];
 
+// provide a polyfill for element.animate function
+if (typeof Element.prototype.animate !== "function") {
+  // we won't be testing the animate function. We just need it to not fail the tests
+  // therefore an empty function will suffice
+  Element.prototype.animate = () => Object.create({});
+}
+
 describe("AttendanceCard", () => {
   afterEach(() => {
     cleanup();
@@ -205,13 +212,25 @@ describe("AttendanceCard", () => {
       );
     });
 
-    test("should show selected interval in interval field", () => {
-      // for UI purposes, we're displaying interval within (controlled) disabled text field
-      const intervalField = screen.getByRole("textbox");
-      expect(intervalField).toHaveProperty("value", attendedInterval);
+    test("should show booked interval (if any) when the attended and booked interval are different", () => {
+      cleanup();
+      render(
+        <AttendanceCard
+          {...baseAttendanceCard}
+          customers={[
+            { ...saul, bookedInterval, attendedInterval: bookedInterval },
+          ]}
+        />
+      );
+      // only one interval should be shown in case both booked and attended are the same
+      const displayedIntervals = screen.queryAllByText(bookedInterval);
+      expect(displayedIntervals).toHaveLength(1);
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen.getByText(attendedInterval);
+      screen.getByText(bookedInterval);
     });
 
-    test("should disable prev button if first interval selected and next if las selected", () => {
+    test("should disable prev button if first interval selected and next if last selected", () => {
       const prevButton = screen.getByTestId(__prevIntervalButtonId__);
       const nextButton = screen.getByTestId(__nextIntervalButtonId__);
       // buttons shouldn't be disabled as we're starting with middle interval
@@ -250,6 +269,16 @@ describe("AttendanceCard", () => {
         );
       }
     );
+
+    test("should display booked interval when customer marked as absent", () => {
+      // initial state -> intervals are different, two interval strings are shown
+      screen.getByText(bookedInterval);
+      screen.getByText(attendedInterval);
+      // mark absence
+      screen.getByText(thumbsUp).click();
+      expect(screen.queryByText(attendedInterval)).toBeNull();
+      screen.getByText(bookedInterval);
+    });
   });
 
   describe("Test debounce", () => {
