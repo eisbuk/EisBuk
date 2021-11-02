@@ -16,7 +16,7 @@ import SlotOperationButtons, {
   DeleteButton,
 } from "@/components/atoms/SlotOperationButtons";
 
-import { collectionOfSlots } from "@/__testData__/dummyData";
+import { collectionOfSlots } from "@/__testData__/slots";
 
 export default {
   title: "Slots Day Container",

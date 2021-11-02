@@ -9,7 +9,6 @@ import {
 
 import { testDate, testDateLuxon } from "./date";
 
-// #region slot
 /**
  * A helper function used to create a slotInterval.
  * Receives startHour (0-24) and duration and creates a record containing
@@ -54,7 +53,7 @@ export const intervals = createIntervals(9);
 
 export const baseSlot: SlotInterface = {
   date: testDate,
-  id: "id",
+  id: "base-slot-id",
   type: SlotType.Ice,
   categories: [Category.Competitive],
   intervals,
@@ -104,7 +103,6 @@ export const slotsMonth = Array(8)
   string,
   Record<string, SlotInterface>
 >;
-// #endregion slot
 
 /**
  * Dummy week of slots (resembling a structure we should receive from store).
@@ -127,8 +125,3 @@ export const slotsWeek = Array(7)
       },
     };
   }, {} as Record<string, Record<string, SlotInterface>>);
-// #endregion slot
-
-// #region customers
-
-// #endregion customers

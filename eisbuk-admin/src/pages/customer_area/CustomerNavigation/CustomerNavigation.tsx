@@ -63,7 +63,9 @@ const CustomerNavigation: React.FC = () => {
         __placeholder__,
         CustomerRoute.BookIce
       );
-      history.push(defaultRoute);
+      // here we're using `.replace` rather than `.push`
+      // to allow for back navigation (since it's an automatic redirect)
+      history.replace(defaultRoute);
     }
   }, [customerRouteInPathname, asPath, history]);
 

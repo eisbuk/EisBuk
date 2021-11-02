@@ -1,7 +1,6 @@
 import { __eisbukSite__ } from "@/lib/constants";
 // Provide information about the environment we're running in
 
-const functionsZone = "europe-west6";
 let isDev: boolean;
 let ORGANIZATION: string;
 
@@ -34,4 +33,4 @@ if (!__eisbukSite__) {
   );
 }
 
-export { isDev, functionsZone, getOrgFromLocation, ORGANIZATION };
+export { isDev, getOrgFromLocation, ORGANIZATION };

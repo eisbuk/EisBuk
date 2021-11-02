@@ -32,7 +32,7 @@ import {
   __confirmDialogNoId__,
   __confirmDialogYesId__,
 } from "@/__testData__/testIds";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
 

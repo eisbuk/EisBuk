@@ -7,7 +7,7 @@ import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 import { createTestStore } from "@/__testUtils__/firestore";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
-import { baseSlot, createIntervals } from "@/__testData__/dummyData";
+import { baseSlot, createIntervals } from "@/__testData__/slots";
 import { walt, jian, saul } from "@/__testData__/customers";
 
 /**

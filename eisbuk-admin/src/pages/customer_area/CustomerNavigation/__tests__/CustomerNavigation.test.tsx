@@ -17,10 +17,12 @@ import i18n from "@/__testUtils__/i18n";
  * A mock function we're using to spy on `history.push` usage
  */
 const mockHistoryPush = jest.fn();
+const mockHistoryReplace = jest.fn();
 jest.mock("react-router-dom", () => ({
   useLocation: jest.fn(),
   useHistory: () => ({
     push: mockHistoryPush,
+    replace: mockHistoryReplace,
   }),
 }));
 
@@ -82,11 +84,11 @@ describe("CustomerNavigation", () => {
       expect(bookIceButton).toHaveProperty("disabled", true);
     });
 
-    test("should push to 'book_ice' if no 'customerRoute' part is present in 'pathname'", () => {
+    test("should redirect to 'book_ice' if no 'customerRoute' part is present in 'pathname' (using replace rather than push to enable back navigation) ", () => {
       const testRoute = `/some_string/some_other_string`;
       mockUseLocation.mockReturnValue({ pathname: testRoute } as any);
       render(<CustomerNavigation />);
-      expect(mockHistoryPush).toHaveBeenCalledWith(
+      expect(mockHistoryReplace).toHaveBeenCalledWith(
         [testRoute, CustomerRoute.BookIce].join("/")
       );
     });

@@ -9,7 +9,7 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 import { ORGANIZATION } from "@/config/envInfo";
 
 import { NotificationMessage } from "@/enums/translations";
@@ -17,8 +17,7 @@ import { NotificationMessage } from "@/enums/translations";
 import { deleteCustomer, updateCustomer } from "../customerOperations";
 import * as appActions from "../appActions";
 
-import { deleteAll } from "@/tests/utils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import { getFirebase, deleteAll } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey, waitForCondition } from "@/__testUtils__/helpers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
@@ -76,8 +75,8 @@ const getState = () => ({} as any);
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
 describe("customerOperations", () => {
-  afterEach(async () => {
-    await deleteAll([OrgSubCollection.Customers]);
+  beforeEach(async () => {
+    await deleteAll();
   });
 
   describe("updateCustomer", () => {

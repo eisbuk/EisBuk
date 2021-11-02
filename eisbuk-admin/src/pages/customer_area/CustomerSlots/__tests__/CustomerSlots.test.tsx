@@ -11,7 +11,7 @@ import * as bookingActions from "@/store/actions/bookingOperations";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { __dateNavNextId__ } from "@/__testData__/testIds";
-import { slotsMonth } from "@/__testData__/dummyData";
+import { slotsMonth } from "@/__testData__/slots";
 import { testDateLuxon, testDate } from "@/__testData__/date";
 
 /**

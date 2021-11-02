@@ -4,7 +4,7 @@ import { luxon2ISODate } from "eisbuk-shared";
 
 import { orderByWeekDay } from "../utils";
 
-import { slotsMonth } from "@/__testData__/dummyData";
+import { slotsMonth } from "@/__testData__/slots";
 
 describe("CustomerSlots", () => {
   describe("Test utils: 'orderByWeekDay'", () => {

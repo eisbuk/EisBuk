@@ -9,7 +9,7 @@ import * as bookingOperations from "@/store/actions/bookingOperations";
 
 import i18n from "@/__testUtils__/i18n";
 
-import { intervals, slot } from "../__testData__/dummyData";
+import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
 
 const secretKey = "secret-key";
@@ -49,17 +49,19 @@ describe("Booking Card Group ->", () => {
 
   describe("Smoke test ->", () => {
     test("should render", () => {
-      render(<BookingCardGroup {...slot} />);
+      render(<BookingCardGroup {...baseSlot} />);
     });
   });
 
   describe("Test booking functionality ->", () => {
     const intervalKeys = Object.keys(intervals);
     const bookedInterval = intervalKeys[0];
-    const { id: slotId } = slot;
+    const { id: slotId } = baseSlot;
 
     beforeEach(() => {
-      render(<BookingCardGroup {...{ ...slot, bookedInterval, intervals }} />);
+      render(
+        <BookingCardGroup {...{ ...baseSlot, bookedInterval, intervals }} />
+      );
     });
 
     test("should switch booked interval on 'bookInterval' click (on a non-booked interval)", () => {
@@ -76,7 +78,6 @@ describe("Booking Card Group ->", () => {
     });
 
     test("should remove booked interval on 'cancelBooking' click", () => {
-      screen.debug();
       screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       const mockCancelAction = mockCancelImplementation({
         slotId,

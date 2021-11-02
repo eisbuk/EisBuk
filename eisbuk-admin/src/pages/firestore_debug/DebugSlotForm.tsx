@@ -14,7 +14,7 @@ import { useFormStyles } from "./styles";
 
 import { deleteDoc, DispatchFSBaseParams, submitDoc, testJSON } from "./utils";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 /**
  * We're extracting intervals and categories (non string types)
