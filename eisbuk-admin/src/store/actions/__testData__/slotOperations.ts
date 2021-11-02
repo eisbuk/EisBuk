@@ -2,7 +2,7 @@ import { testDate } from "@/__testData__/date";
 import {
   baseSlot as baseSlotWithId,
   createIntervals,
-} from "@/__testData__/dummyData";
+} from "@/__testData__/slots";
 
 export const monthStr = testDate.substr(0, 7);
 
@@ -34,7 +34,7 @@ export const testSlot = {
  * - the date is DateTime instead of Timestamp
  * - the intervals are array rather than record
  */
-export const testFromValues = {
+export const testFormValues = {
   ...baseSlot,
   intervals: Object.values(createIntervals(15)),
 };

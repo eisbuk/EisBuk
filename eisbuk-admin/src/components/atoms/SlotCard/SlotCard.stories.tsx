@@ -5,7 +5,7 @@ import { SlotInterface } from "eisbuk-shared";
 
 import SlotCard from "./SlotCard";
 
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 /**
  * Decorator used to prevent slots diaplayed from stratching to full width

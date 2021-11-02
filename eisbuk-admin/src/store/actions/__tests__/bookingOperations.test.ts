@@ -22,7 +22,6 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestBookings } from "../__testUtils__/firestore";
-import { deleteAll } from "@/tests/utils";
 
 const bookingsRef = firestoreUtils
   .getFirebase()
@@ -71,9 +70,9 @@ jest.mock("i18next", () => ({
 }));
 
 describe("Booking Notifications", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.Bookings]);
+    await firestoreUtils.deleteAll();
   });
 
   describe("'bookInterval'", () => {

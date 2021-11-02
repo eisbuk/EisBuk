@@ -5,9 +5,9 @@ import {
 } from "@google-cloud/firestore";
 import pRetry from "p-retry";
 
-import { Customer } from "eisbuk-shared";
+import { Customer, CustomerBase } from "eisbuk-shared";
 
-import { adminDb } from "@/tests/settings";
+import { adminDb } from "@/__testSettings__";
 
 interface WaitForCondition {
   (params: {
@@ -15,6 +15,7 @@ interface WaitForCondition {
     condition: (data: DocumentData | undefined) => boolean;
     attempts?: number;
     sleep?: number;
+    verbose?: boolean;
   }): Promise<DocumentData | undefined>;
 }
 
@@ -34,6 +35,7 @@ export const waitForCondition: WaitForCondition = async ({
   condition,
   attempts = 10,
   sleep = 400,
+  verbose = false,
 }) => {
   const docId = documentPath.split("/").slice(-1);
 
@@ -44,6 +46,10 @@ export const waitForCondition: WaitForCondition = async ({
     // until the condition has been met
     async () => {
       const doc = (await document.get()).data();
+      // used for debugging
+      if (verbose) {
+        console.log(doc);
+      }
       if (condition(doc)) {
         return Promise.resolve(doc);
       }
@@ -95,6 +101,8 @@ export const getDocumentRef = (
     collectionsToDoc.join("/")
   );
 };
+
+// #region customer
 /**
  * A helper function used to remove `id` and `secretKey`
  * from customer structure for testing purposes
@@ -108,3 +116,21 @@ export const stripIdAndSecretKey = ({
   secretKey: _secretKey,
   ...customer
 }: Customer): Omit<Omit<Customer, "id">, "secretKey"> => customer;
+/**
+ * A helper function used to strip excess customer data
+ * and create customer base data (used to test `booking` entry for customer)
+ * @param customer customer entry (without `secretKey` for convenient testing)
+ * @returns customer base structure
+ */
+export const getCustomerBase = ({
+  id,
+  name,
+  surname,
+  category,
+}: Omit<Customer, "secretKey">): CustomerBase => ({
+  id,
+  name,
+  surname,
+  category,
+});
+// #endregion customer

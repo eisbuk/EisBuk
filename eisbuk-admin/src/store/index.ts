@@ -20,10 +20,10 @@ import {
   __authDomain__,
   __storageBucket__,
   __measurementId__,
+  __functionsZone__,
 } from "@/lib/constants";
 
 import rootReducer from "./reducers/rootReducer";
-import { functionsZone } from "@/config/envInfo";
 
 const fbConfig = {
   // common config data
@@ -63,7 +63,7 @@ if (__isDev__) {
   db.useEmulator("localhost", 8080);
   firebase.auth().useEmulator("http://localhost:9099/");
   functions.useEmulator("localhost", 5001);
-  firebase.app().functions(functionsZone).useEmulator("localhost", 5001);
+  firebase.app().functions(__functionsZone__).useEmulator("localhost", 5001);
   console.warn("Using emulator for functions and authentication");
   window.firebase = firebase as any;
 } else {

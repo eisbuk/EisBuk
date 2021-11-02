@@ -13,6 +13,8 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { saul } from "@/__testData__/customers";
 import {
@@ -20,7 +22,6 @@ import {
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({

@@ -9,15 +9,12 @@ import { getAdminSlots, getSlotsForCustomer } from "../slots";
 import {
   currentWeekStartDate,
   currentMonthStartDate,
-  testStoreState,
-  expectedWeek,
-  expectedMonth,
-} from "../__testData__/dummyData";
-import {
   testStore,
-  expectedWeek as expectedWeekAdmin,
+  expectedWeekAdmin,
   noSlotsStore,
   emptyWeek,
+  expectedMonthCustomer,
+  expectedWeekCustomer,
 } from "../__testData__/slots";
 
 describe("Slot selectors > ", () => {
@@ -31,8 +28,8 @@ describe("Slot selectors > ", () => {
         testDate
       );
       // test created selector against test store state
-      const res = selector(testStoreState as LocalStore);
-      expect(res).toEqual(expectedMonth);
+      const res = selector(testStore as LocalStore);
+      expect(res).toEqual(expectedMonthCustomer);
     });
 
     test("should get slots for a week with respect to 'startDate' and provided category if 'timeframe=\"week\"'", () => {
@@ -44,8 +41,8 @@ describe("Slot selectors > ", () => {
         testDate
       );
       // test created selector against test store state
-      const res = selector(testStoreState as LocalStore);
-      expect(res).toEqual(expectedWeek);
+      const res = selector(testStore as LocalStore);
+      expect(res).toEqual(expectedWeekCustomer);
     });
   });
 

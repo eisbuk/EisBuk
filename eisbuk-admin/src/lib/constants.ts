@@ -7,11 +7,12 @@
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
-// env info variable
-export const __isDev__ = process.env.NODE_ENV === "development";
-
-// dev organization constants
+// organization constants
 export const __eisbukSite__ = process.env.REACT_APP_EISBUK_SITE;
+
+// env info variable
+export const __isDev__ =
+  process.env.NODE_ENV === "development" || !__eisbukSite__;
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =
@@ -30,3 +31,4 @@ export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;
 
 // common constants, shared across all environments
 export const __projectId__ = "eisbuk";
+export const __functionsZone__ = "europe-west6";

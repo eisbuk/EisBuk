@@ -27,7 +27,7 @@ import {
   __slotFormId__,
   __cancelFormId__,
 } from "@/__testData__/testIds";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 jest.mock("react-redux", () => ({
   /** @TODO Remove this when we update SlotForm to be more atomic  */

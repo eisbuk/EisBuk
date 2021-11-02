@@ -1,6 +1,6 @@
 import { CustomerBookingEntry, SlotsById, luxon2ISODate } from "eisbuk-shared";
 
-import { baseSlot, intervals } from "@/__testData__/dummyData";
+import { baseSlot, intervals } from "@/__testData__/slots";
 import { testDateLuxon } from "@/__testData__/date";
 
 const intervalKeys = Object.keys(intervals);

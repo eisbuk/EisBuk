@@ -2,70 +2,18 @@ import {
   CustomerAttendance,
   CustomerBookingEntry,
   SlotAttendnace,
-  Category,
-  CustomerBase,
-  SlotInterface,
-  SlotType,
 } from "eisbuk-shared";
 
 import { testDate } from "@/__testData__/date";
+import { saul } from "@/__testData__/customers";
+import { intervals as intervalsRecord } from "@/__testData__/slots";
 
-/**
- * Customer id we're using across tests
- */
-export const customerId = "test-customer";
-/**
- * Secret key for customer we're using across tests
- */
-// eslint-disable-next-line camelcase
-export const secretKey = "test-secret-key";
-/**
- * Slot (booking) id we're using across tests
- */
-export const slotId = "slot-0";
-
-// #region slots
-
-/**
- * A dummy slot we're using across tests to test data triggers
- * listening to write/update/delete document in slots collection.
- */
-export const slot: Omit<SlotInterface, "id"> = {
-  date: testDate,
-  categories: [Category.Course],
-  intervals: {
-    ["11:30-12:30"]: {
-      startTime: "11:30",
-      endTime: "12:30",
-    },
-    ["09:00-11:00"]: {
-      startTime: "09:00",
-      endTime: "11:00",
-    },
-  },
-  type: SlotType.Ice,
-  notes: "",
-};
-
-// #endregion slots
-
-// #region bookings
-
-export const customerBooking: CustomerBase = {
-  id: customerId,
-  name: "Jian",
-  surname: "Yang",
-  category: Category.Course,
-};
-
-// #endregion bookings
-
-// #region attendance
+const intervals = Object.keys(intervalsRecord);
 
 /**
  * Interval we're using to test booking triggering attendance
  */
-const bookedInterval = "09:00-11:00";
+const bookedInterval = intervals[0];
 /**
  * Booking we're marking for our customer in order to test attendance trigger
  */
@@ -78,8 +26,8 @@ export const testBooking: CustomerBookingEntry = {
  */
 export const dummyAttendance: Record<string, CustomerAttendance> = {
   ["dummy-customer"]: {
-    bookedInterval: "11:30-12:30",
-    attendedInterval: "11:30-12:30",
+    bookedInterval: intervals[0],
+    attendedInterval: intervals[1],
   },
 };
 /**
@@ -106,11 +54,9 @@ export const attendanceWithTestCustomer: SlotAttendnace = {
   date: testDate,
   attendances: {
     ...dummyAttendance,
-    [customerId]: {
+    [saul.id]: {
       bookedInterval: bookedInterval,
       attendedInterval: bookedInterval,
     },
   },
 };
-
-// #endregion attendance
