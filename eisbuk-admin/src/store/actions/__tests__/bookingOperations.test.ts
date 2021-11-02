@@ -23,6 +23,7 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestBookings } from "../__testUtils__/firestore";
 import { deleteAll } from "@/tests/utils";
+import i18n from "@/__testUtils__/i18n";
 
 const bookingsRef = firestoreUtils
   .getFirebase()
@@ -64,11 +65,6 @@ const mockDispatch = jest.fn();
  * for error handling tests
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
-
-// we're mocking `t` from `i18next` to be an identity function for easier testing
-jest.mock("i18next", () => ({
-  t: (label: string) => label,
-}));
 
 describe("Booking Notifications", () => {
   afterEach(async () => {
@@ -112,7 +108,7 @@ describe("Booking Notifications", () => {
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           appActions.enqueueNotification({
-            message: NotificationMessage.BookingSuccess,
+            message: i18n.t(NotificationMessage.BookingSuccess),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -173,7 +169,7 @@ describe("Booking Notifications", () => {
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           appActions.enqueueNotification({
-            message: NotificationMessage.BookingCanceled,
+            message: i18n.t(NotificationMessage.BookingCanceled),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

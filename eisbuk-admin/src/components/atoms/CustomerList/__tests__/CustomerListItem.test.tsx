@@ -10,13 +10,14 @@ import "@testing-library/jest-dom";
 
 import { Customer } from "eisbuk-shared";
 
-import { CustomerFormTitle, Prompt } from "@/enums/translations";
+import { ActionButton, CustomerFormTitle, Prompt } from "@/enums/translations";
 
 import CustomerListItem from "../CustomerListItem";
 
 import * as customerActions from "@/store/actions/customerOperations";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import {
@@ -36,10 +37,6 @@ jest.mock("react-redux", () => ({
 
 jest.mock("react-router-dom", () => ({
   useHistory: () => ({ push: mockHistoryPush }),
-}));
-
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (label: string) => label }),
 }));
 
 /**
@@ -106,7 +103,7 @@ describe("CustomerList", () => {
       screen.getByTestId(__customerDeleteId__).click();
       // check proper rendering of confirm delete dialog message
       screen.getByText(
-        `${Prompt.DeleteCustomer} ${saul.name} ${saul.surname}?`
+        `${i18n.t(Prompt.DeleteCustomer)} ${saul.name} ${saul.surname}?`
       );
       // confirm deletion
       screen.getByTestId(__confirmDialogYesId__).click();
@@ -123,14 +120,16 @@ describe("CustomerList", () => {
         screen.getByTestId(__customerEditId__).click();
         // check proper rendering of confirm delete dialog message
         screen.getByText(
-          `${CustomerFormTitle.EditCustomer} (${saul.name} ${saul.surname})`
+          `${i18n.t(CustomerFormTitle.EditCustomer)} (${saul.name} ${
+            saul.surname
+          })`
         );
         // update customer
         const [nameInput, surnameInput] = screen.getAllByRole("textbox");
         fireEvent.change(nameInput, { target: { value: newName } });
         fireEvent.change(surnameInput, { target: { value: newSurname } });
         // submit form
-        screen.getByText("CustomerForm.Save").click();
+        screen.getByText(i18n.t(ActionButton.Save) as string).click();
         await waitFor(() =>
           expect(mockDispatch).toHaveBeenCalledWith(
             mockUpdateCustomerImplementation({

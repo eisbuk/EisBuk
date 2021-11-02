@@ -212,7 +212,6 @@ interface MyFieldProps extends FieldConfig<string> {
   row?: boolean;
   label?: string;
   className?: string;
-  views?: string[] /** @TODO look this up */;
 }
 
 const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {

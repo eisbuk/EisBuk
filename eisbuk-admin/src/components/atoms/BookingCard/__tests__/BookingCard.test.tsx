@@ -7,12 +7,7 @@ import BookingCard from "../BookingCard";
 
 import { baseProps } from "../__testData__/dummyData";
 
-/** @TODO remove this when the i18next is instantiated with tests */
-jest.mock("i18next", () => ({
-  ...jest.requireActual("i18next"),
-  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
-  t: (label: string) => label,
-}));
+import i18n from "@/__testUtils__/i18n";
 
 describe("Interval Card ->", () => {
   afterEach(() => {
@@ -29,14 +24,14 @@ describe("Interval Card ->", () => {
 
     test("should fire `bookInterval` on click, if the interval is not already booked", () => {
       render(<BookingCard {...baseProps} bookInterval={mockBookInterval} />);
-      screen.getByText(ActionButton.BookInterval).click();
+      screen.getByText(i18n.t(ActionButton.BookInterval) as string).click();
       expect(mockBookInterval).toHaveBeenCalled();
     });
     test("should fire `cancelBooking` on click, if the interval is booked", () => {
       render(
         <BookingCard {...baseProps} booked cancelBooking={mockCancelBooking} />
       );
-      screen.getByText(ActionButton.Cancel).click();
+      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       expect(mockCancelBooking).toHaveBeenCalled();
     });
   });

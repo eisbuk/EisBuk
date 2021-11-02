@@ -8,7 +8,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Category, SlotType } from "eisbuk-shared";
+import { Category, fromISO, SlotType } from "eisbuk-shared";
 
 import { defaultInterval, defaultSlotFormValues } from "@/lib/data";
 import {
@@ -18,6 +18,7 @@ import {
   SlotFormLabel,
   ActionButton,
   ValidationMessage,
+  DateFormat,
 } from "@/enums/translations";
 
 import SlotForm from "../SlotForm";
@@ -25,6 +26,7 @@ import SlotForm from "../SlotForm";
 import * as slotOperations from "@/store/actions/slotOperations";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+import i18n from "@/__testUtils__/i18n";
 
 import {
   __timeIntervalFieldId__,
@@ -32,16 +34,7 @@ import {
 } from "../__testData__/testIds";
 import { dummySlot, dummySlotFormValues } from "../__testData__/dummyData";
 import { __slotFormId__ } from "@/__testData__/testIds";
-import { testDate } from "@/__testData__/date";
-
-/**
- * We're mocking `i18next.t` function to return easily testable string for all calls
- */
-const mockT = jest.fn();
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: mockT }),
-}));
-mockT.mockImplementation((label: string) => label);
+import { testDate, testDateLuxon } from "@/__testData__/date";
 
 /**
  * We need slot create and update actions to be dispatched as thunks,
@@ -51,6 +44,9 @@ jest.mock("react-redux", () => ({ useDispatch: () => mockDispatch }));
 const mockDispatch = jest.fn();
 
 const baseProps = { date: testDate, onClose: () => {}, open: true };
+
+// commonly used translations
+const createSlotLabel = i18n.t(ActionButton.CreateSlot) as string;
 
 describe("SlotForm ->", () => {
   afterEach(() => {
@@ -63,21 +59,25 @@ describe("SlotForm ->", () => {
       render(<SlotForm {...baseProps} />);
     });
 
-    /** @TEMP This is temporarily skipped until we instantiate `i18next` with tests */
-    xtest("should render \"New Slot\" title if no 'slotToEdit' passed in", () => {
+    test("should render \"New Slot\" title if no 'slotToEdit' passed in", () => {
       // a test string we'll be using to test the title, this isn't actual form the string will be presented in
-      const titleString = `${SlotFormTitle.NewSlot} ${testDate}`;
-      screen.getByText(titleString);
+      const newSlotTitle = `${i18n.t(SlotFormTitle.NewSlot)} ( ${i18n.t(
+        DateFormat.DayMonth,
+        {
+          date: testDateLuxon,
+        }
+      )} )`;
+      screen.getByText(newSlotTitle);
     });
 
     test("should render all of the form fields", () => {
       // type field
       Object.values(SlotType).forEach((slotType) => {
-        screen.getByText(SlotTypeLabel[slotType]);
+        screen.getByText(i18n.t(SlotTypeLabel[slotType]) as string);
       });
       // categories field
       Object.values(Category).forEach((label) => {
-        screen.getByText(CategoryLabel[label]);
+        screen.getByText(i18n.t(CategoryLabel[label]) as string);
       });
       // intervals field
       screen.getByTestId(__timeIntervalFieldId__);
@@ -97,21 +97,20 @@ describe("SlotForm ->", () => {
     // we're imlicitly testing that the `slotToEdit.date` will take presedence over `date` prop
     // and serve as assurance that the edit form will always have a date present
     const differentDate = "2020-01-01";
+    const differentDateLuxon = fromISO("2020-01-01");
 
-    beforeEach(() => {
+    test("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
       render(
         <SlotForm
           {...baseProps}
           slotToEdit={{ ...dummySlot, date: differentDate }}
         />
       );
-    });
-
-    /** @TEMP This is temporarily skipped until we instantiate `i18next` with tests */
-    xtest("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
-      // a test string we'll be using to test the title, this isn't actual form the string will be presented in
-      const titleString = `${SlotFormTitle.EditSlot} ${differentDate}`;
-      screen.getByText(titleString);
+      screen.getByText(
+        `${i18n.t(SlotFormTitle.EditSlot)} ( ${i18n.t(DateFormat.DayMonth, {
+          date: differentDateLuxon,
+        })} )`
+      );
     });
   });
 
@@ -126,7 +125,7 @@ describe("SlotForm ->", () => {
     });
 
     test("should create a new interval field on 'Add New' button click", () => {
-      screen.getByText(SlotFormLabel.AddInterval).click();
+      screen.getByText(i18n.t(SlotFormLabel.AddInterval) as string).click();
       const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
       expect(intervalFields.length).toEqual(2);
     });
@@ -168,10 +167,12 @@ describe("SlotForm ->", () => {
           date: testDate,
         };
         // select `adults` category
-        screen.getByText(CategoryLabel[Category.Adults]).click();
+        screen
+          .getByText(i18n.t(CategoryLabel[Category.Adults]) as string)
+          .click();
         submitValues = { ...submitValues, categories: [Category.Adults] };
         // select slot type `ice`
-        screen.getByText(SlotTypeLabel[SlotType.Ice]).click();
+        screen.getByText(i18n.t(SlotTypeLabel[SlotType.Ice]) as string).click();
         submitValues = { ...submitValues, type: SlotType.Ice };
         // fill interval
         const [startTime1, endTime1] = screen.getAllByRole("textbox");
@@ -182,13 +183,13 @@ describe("SlotForm ->", () => {
           intervals: [{ startTime: "15:00", endTime: "16:30" }],
         };
         // add new (default) interval
-        screen.getByText(SlotFormLabel.AddInterval).click();
+        screen.getByText(i18n.t(SlotFormLabel.AddInterval) as string).click();
         submitValues = {
           ...submitValues,
           intervals: [...submitValues.intervals, defaultInterval],
         };
         // submit form
-        screen.getByText(ActionButton.CreateSlot).click();
+        screen.getByText(createSlotLabel).click();
         // create mock action for form submission
         const mockCreateAction = mockCreateImplementation(submitValues);
         await waitFor(() => {
@@ -200,7 +201,7 @@ describe("SlotForm ->", () => {
 
     test("should call 'onClose' on cancel button click", () => {
       render(<SlotForm {...baseProps} onClose={mockOnClose} />);
-      screen.getByText(ActionButton.Cancel).click();
+      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       expect(mockOnClose).toHaveBeenCalled();
     });
 
@@ -215,7 +216,7 @@ describe("SlotForm ->", () => {
           />
         );
         // trigger submit
-        screen.getByText(ActionButton.EditSlot).click();
+        screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
         // create mock action for form submission
         const mockUpdateAction = mockUpdateImplementation({
           ...dummySlotFormValues,
@@ -241,7 +242,7 @@ describe("SlotForm ->", () => {
         // delete first interval
         screen.getAllByTestId(__deleteIntervalId__)[0].click();
         // trigger submit
-        screen.getByText(ActionButton.EditSlot).click();
+        screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
         // create mock action for form submission
         const mockUpdateAction = mockUpdateImplementation({
           ...dummySlotFormValues,
@@ -264,8 +265,10 @@ describe("SlotForm ->", () => {
     testWithMutationObserver(
       "should show error if no categories are selected",
       async () => {
-        screen.getByText(ActionButton.CreateSlot).click();
-        await screen.findByText(ValidationMessage.RequiredEntry);
+        screen.getByText(createSlotLabel).click();
+        await screen.findByText(
+          i18n.t(ValidationMessage.RequiredEntry) as string
+        );
       }
     );
 
@@ -274,8 +277,10 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         fireEvent.change(startTime, { target: { value: "" } });
-        screen.getByText(ActionButton.CreateSlot).click();
-        await screen.findByText(ValidationMessage.RequiredField);
+        screen.getByText(createSlotLabel).click();
+        await screen.findByText(
+          i18n.t(ValidationMessage.RequiredField) as string
+        );
       }
     );
 
@@ -284,8 +289,10 @@ describe("SlotForm ->", () => {
       async () => {
         const [startTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "not_time_string");
-        screen.getByText(ActionButton.CreateSlot).click();
-        await screen.findByText(ValidationMessage.InvalidTime);
+        screen.getByText(createSlotLabel).click();
+        await screen.findByText(
+          i18n.t(ValidationMessage.InvalidTime) as string
+        );
       }
     );
 
@@ -295,8 +302,10 @@ describe("SlotForm ->", () => {
         const [startTime, endTime] = screen.getAllByRole("textbox");
         userEvent.type(startTime, "15:00");
         userEvent.type(endTime, "07:00");
-        screen.getByText(ActionButton.CreateSlot).click();
-        await screen.findByText(ValidationMessage.TimeMismatch);
+        screen.getByText(createSlotLabel).click();
+        await screen.findByText(
+          i18n.t(ValidationMessage.TimeMismatch) as string
+        );
       }
     );
   });

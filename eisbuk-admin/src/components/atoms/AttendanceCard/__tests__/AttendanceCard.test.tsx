@@ -1,5 +1,4 @@
 import React from "react";
-import i18n from "i18next";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
@@ -21,6 +20,7 @@ import {
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+import i18n from "@/__testUtils__/i18n";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -66,13 +66,6 @@ jest
   .spyOn(attendanceOperations, "markAbsence")
   .mockImplementation(mockMarkAbsImplementation as any);
 
-/**
- * We're mocking the implementation of translate function to return the same value passed in.
- * We're not testing the i18n right now
- * @TODO remove when we initialize i18n with tests
- */
-jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
-
 // aliases for thumbs button for easier access
 const thumbsUp = "👍";
 const thumbsDown = "👎";
@@ -106,9 +99,13 @@ describe("AttendanceCard", () => {
       screen.getByText(`${saul.name} ${saul.surname}`);
       // create regex for type and category as they're part of the same string in the UI
       const categoryRegex = new RegExp(
-        CategoryLabel[baseAttendanceCard.categories[0]]
+        i18n.t(CategoryLabel[baseAttendanceCard.categories[0]]),
+        "i"
       );
-      const typeRegex = new RegExp(SlotTypeLabel[baseAttendanceCard.type]);
+      const typeRegex = new RegExp(
+        i18n.t(SlotTypeLabel[baseAttendanceCard.type]),
+        "i"
+      );
       screen.getByText(categoryRegex);
       screen.getByText(typeRegex);
     });
