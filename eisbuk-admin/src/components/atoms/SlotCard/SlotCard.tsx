@@ -12,8 +12,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
-import { Prompt, DateFormat } from "@/lib/labels";
-
+import { Prompt, DateFormat, CategoryLabel } from "@/enums/translations";
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons, {
@@ -100,7 +99,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
                   color="textSecondary"
                   key={category}
                 >
-                  {t(`Categories.${category}`)}
+                  {t(CategoryLabel[category])}
                 </Typography>
               ))}
             </Box>
@@ -132,7 +131,11 @@ const SlotCard: React.FC<SlotCardProps> = ({
             >
               <EditSlotButton />
               <DeleteButton
-                confirmDialog={createDeleteConfirmDialog(slotData.date)}
+                confirmDialog={createDeleteConfirmDialog({
+                  date: slotData.date,
+                  startTime,
+                  endTime,
+                })}
               />
             </SlotOperationButtons>
           )}
@@ -151,26 +154,38 @@ const SlotCard: React.FC<SlotCardProps> = ({
  * @param date date of slot to delete
  * @returns `confirmDialog` object for `DeleteButton`
  */
-const createDeleteConfirmDialog = (dateString: SlotInterface["date"]) => {
+const createDeleteConfirmDialog = ({
+  date: isoDate,
+  startTime,
+  endTime,
+}: {
+  date: string;
+  startTime: string;
+  endTime: string;
+}) => {
   // get luxon date (for i18n function)
-  const date = fromISO(dateString);
+  const date = fromISO(isoDate);
   // get delete prompt translation
   const deletePrompt = i18n.t(Prompt.DeleteSlot);
   // get date localization
   const confirmDialogDate = i18n.t(DateFormat.DayMonth, {
     date,
   });
-  // get time-of-day localization
-  const confirmDialogTime = i18n.t(DateFormat.Time, { date });
-  // get translation for word "slot"
-  const slotTranslation = i18n.t("Slots.Slot");
+  // get time span localization
+  const startTimeString = i18n.t(DateFormat.Time, {
+    date: fromISO(startTime),
+  });
+  const endTimeString = i18n.t(DateFormat.Time, {
+    date: fromISO(endTime),
+  });
+  const confirmDialogTimespan = `(${startTimeString}-${endTimeString})`;
 
   // join title parts into one string
   const title = [
     deletePrompt,
     confirmDialogDate,
-    confirmDialogTime,
-    slotTranslation,
+    confirmDialogTimespan,
+    "slot",
   ].join(" ");
 
   // get translated non-reversible-action message

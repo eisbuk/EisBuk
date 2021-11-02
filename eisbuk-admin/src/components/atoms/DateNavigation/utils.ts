@@ -1,7 +1,7 @@
 import { DateTime, DateTimeUnit } from "luxon";
 import i18n from "i18next";
 
-import { DateFormat } from "@/lib/labels";
+import { DateFormat } from "@/enums/translations";
 
 /**
  * Creates a title from start time and timeframe lenght.
@@ -26,13 +26,11 @@ export const createDateTitle = (
 
     // for week and other views we're using standardized format: showing first and last date within the timeframe
     default:
-      const jumpKey = `${jump}s`;
-
       const startDateString = i18n.t(DateFormat.DayMonth, {
         date: startDate,
       });
       const endDateString = i18n.t(DateFormat.DayMonth, {
-        date: startDate.plus({ [jumpKey]: 1, days: -1 }),
+        date: startDate.endOf(jump).startOf("day"),
       });
 
       return [startDateString, endDateString].join(" - ");

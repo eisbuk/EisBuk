@@ -1,11 +1,13 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
+import { ActionButton } from "@/enums/translations";
 
 import BookingCardGroup from "../BookingCardGroup";
 
 import * as bookingOperations from "@/store/actions/bookingOperations";
+
+import i18n from "@/__testUtils__/i18n";
 
 import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
@@ -20,10 +22,6 @@ const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   ...jest.requireActual("react-redux"),
   useDispatch: () => mockDispatch,
-}));
-
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (str: string) => str }),
 }));
 
 // mock implementations we're using for easier testing
@@ -67,7 +65,9 @@ describe("Booking Card Group ->", () => {
     });
 
     test("should switch booked interval on 'bookInterval' click (on a non-booked interval)", () => {
-      screen.getAllByText(__bookInterval__)[0].click();
+      screen
+        .getAllByText(i18n.t(ActionButton.BookInterval) as string)[0]
+        .click();
       const mockBookAction = mockBookImplementation({
         slotId,
         secretKey,
@@ -78,7 +78,7 @@ describe("Booking Card Group ->", () => {
     });
 
     test("should remove booked interval on 'cancelBooking' click", () => {
-      screen.getByText(__cancelBooking__).click();
+      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       const mockCancelAction = mockCancelImplementation({
         slotId,
         secretKey,
@@ -88,7 +88,7 @@ describe("Booking Card Group ->", () => {
 
     test("should disable all buttons while the state is syncing (bookedInterval and localSelected are in discrepency)", () => {
       // the `bookedInterval` prop has athe value of the first interval, this way we're setting i to  null
-      screen.getByText(__cancelBooking__).click();
+      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       screen.getAllByRole("button").forEach((button) => {
         expect(button).toHaveProperty("disabled", true);
       });

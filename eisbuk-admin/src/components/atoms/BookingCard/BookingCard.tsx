@@ -11,12 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
-import {
-  __bookInterval__,
-  __cancelBooking__,
-  slotTypeLabel,
-  DateFormat,
-} from "@/lib/labels";
+import { ActionButton, SlotTypeLabel, DateFormat } from "@/enums/translations";
 
 import { slotsLabels } from "@/config/appConfig";
 
@@ -127,7 +122,7 @@ const BookingCard: React.FC<Props> = ({
       color={booked ? "secondary" : "primary"}
       variant="contained"
     >
-      {t(booked ? __cancelBooking__ : __bookInterval__)}
+      {t(booked ? ActionButton.Cancel : ActionButton.BookInterval)}
     </Button>
   );
 
@@ -175,7 +170,7 @@ const BookingCard: React.FC<Props> = ({
                 key="type"
                 color={slotLabel.color}
               >
-                {t(slotTypeLabel[type])}
+                {t(SlotTypeLabel[type])}
               </Typography>
             </Box>
           </Box>

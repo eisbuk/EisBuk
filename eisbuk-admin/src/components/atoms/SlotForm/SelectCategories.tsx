@@ -10,7 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotType, Category } from "eisbuk-shared";
 
-import { categoryLabel } from "@/lib/labels";
+import { CategoryLabel } from "@/enums/translations";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 // #region main
@@ -86,7 +86,7 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
     <FormControlLabel
       control={<Checkbox {...field} />}
       disabled={disabled}
-      label={t(categoryLabel[category])}
+      label={t(CategoryLabel[category])}
     />
   );
 };

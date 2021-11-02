@@ -1,133 +1,58 @@
 {
-  "AppbarAdmin": {
+  "NavigationLabel": {
     "Attendance": "Presenze",
     "Athletes": "Atleti",
     "Bookings": "Prenotazioni"
   },
-  "Slots": {
-    "Amateur": "Preagonismo",
-    "All": "alle",
-    "Slot": "",
-    "Book": "Prenota",
-    "Booked": "Prenotato"
+  "CustomerNavigation": {
+    "BookIce": "Prenota Ice",
+    "BookOffIce": "Prenota Off-Ice",
+    "Calendar": "Calendario"
   },
-  "SlotValidations": {
-    "Time": "Manca l'ora",
-    "Category": "Scegli almeno una categoria",
-    "Training": "Scegli il tipo di allenamento",
-    "Duration": "Devi scegliere almeno una durata",
-    "Required": "Richiesto"
+
+  "Authorization": {
+    "NotAuthorized": "Non sei autorizzato ad accedere.",
+    "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "LoggedInWith": "Hai effettuato l'accesso con:",
+    "TryAgain": "Esci e riprova con un altro utente"
+  },
+
+  "SlotType": {
+    "Ice": "ice",
+    "OffIceDancing": "off-ice-danza",
+    "OffIceGym": "off-ice-gym"
+  },
+  "Category": {
+    "Adults": "adulti",
+    "PreCompetitive": "pre-agonismo",
+    "Competitive": "agonismo",
+    "Course": "corso"
+  },
+
+  "FormTitle": {
+    "NewCustomer": "Nuovo Atleta",
+    "EditCustomer": "Modifica Atleta",
+    "NewSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot"
   },
   "SlotForm": {
     "Type": "Tipo",
-    "EditSlot": "Modifica Slot",
-    "CreateSlot": "Crea Slot",
-    "Cancel": "Annulla",
-
-    "NewSlotTitle": "Crea Slot",
-    "EditSlotTitle": "Modifica Slot",
     "Intervals": "Intervalli",
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
   },
-  "CustomerForm": {
+  "CustomerLabel": {
     "Name": "Nome",
     "Surname": "Cognome",
+    "Category": "Categoria",
+    "Email": "Email",
     "Phone": "Telefono",
     "DateOfBirth": "Data di nascita",
-    "Category": "Categoria",
     "MedicalCertificate": "Scadenza Cert. Medico",
     "CardNumber": "Numero Tessera",
-    "Cancel": "Annulla",
-    "Save": "Salva",
-    "NewCustomer": "Nuovo Atleta",
-    "EditCustomer": "Modifica Atleta",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
     "CovidCertificateSuspended": "Certificazione verde sospesa"
-  },
-  "Authorization": {
-    "NotAuthorized": "Non sei autorizzato ad accedere.",
-    "AdminsOnly": "Questo spazio è riservato agli amministratori",
-    "LoggedInWith": "Hai effettuato l'accesso con: ",
-    "TryAgain": "Esci e riprova con un altro utente"
-  },
-  "CustomerArea": {
-    "Book": "Prenota",
-    "Calendar": "Calendario"
-  },
-  "CustomerNavigation": {
-    "book_ice": "Prenota Ice",
-    "book_off_ice": "Prenota Off-Ice",
-    "calendar": "Calendario"
-  },
-  "CustomersPage": {
-    "Athletes": "Atleti",
-    "AddAthlete": "Aggiungi atleta"
-  },
-  "DashboardPage": {
-    "Bookings": "Prenotazioni"
-  },
-  "BookingsByDay": {
-    "Absent": "assente"
-  },
-  "SlotsPageContainer": {
-    "DeleteAllConfirmation": "Sei sicuro di voler rimuovere tutti gli slot ",
-    "OfTheWeek": "della settimana del "
-  },
-
-  "Categories": {
-    "course": "corso",
-    "competitive": "agonismo",
-    "pre-competitive": "preagonismo",
-    "adults": "adulti"
-  },
-  "SlotTypes": {
-    "off-ice-dancing": "off-ice-danza",
-    "ice": "ice",
-    "off-ice-gym": "off-ice-gym"
-  },
-  "Notification": {
-    "Error": "Errore",
-    "LogoutSuccess": "Hai effettuato il logout",
-    "LogoutError": "Si è verificato un errore",
-    "BookingSuccess": "Prenotazione effettuata",
-    "BookingCanceled": "Prenotazione rimossa",
-    "BookingCancelledError": "Errore nel rimuovere la prenotazione",
-    "Updated": "aggiornato",
-    "Removed": "rimosso",
-    "SlotAdded": "Slot Aggiunto",
-    "SlotRemoved": "Slot Eliminato",
-    "SlotUpdated": "Slot Aggiornato"
-  },
-  "AttendanceSheet": {
-    "Attendance": "Presenze"
-  },
-
-  "NewValuesTEMP": "Since JSON doesn't allow for comments, I'm using this as a border between old and new values",
-
-  "SlotType": {
-    "OffIceDancing": "off-ice-danza",
-    "Ice": "ice",
-    "OffIceGym": "off-ice-gym"
-  },
-  "Category": {
-    "Course": "corso",
-    "Competitive": "agonismo",
-    "PreCompetitive": "pre-agonismo",
-    "Adults": "adulti"
-  },
-  "Action": {
-    "CreateSlot": "Crea Slot",
-    "EditSlot": "Modifica Slot",
-    "Cancel": "Annulla"
-  },
-  "AttendanceCard": {
-    "AddCustomersTitle": "Aggiungi clienti"
-  },
-  "BookingCard": {
-    "BookInterval": "Prenota",
-    "CancelBooking": "Annulla"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -137,6 +62,40 @@
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
   },
+
+  "Prompt": {
+    "DeleteCustomer": "Sei sicuro di voler rimuovere",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+    "NonReversible": "Questa azione non è reversibile"
+  },
+  "ActionButton": {
+    "CreateSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot",
+    "AddAthlete": "Aggiungi atleta",
+    "AddCustomers": "Aggiungi clienti",
+    "BookInterval": "Prenota",
+    "Save": "Salva",
+    "Cancel": "Annulla"
+  },
+
+  "Notification": {
+    "Error": "Errore",
+    "LogoutSuccess": "Hai effettuato il logout",
+    "LogoutError": "Si è verificato un errore",
+    "BookingSuccess": "Prenotazione effettuata",
+    "BookingCanceled": "Prenotazione rimossa",
+    "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+    "Updated": "aggiornato",
+    "Removed": "rimosso",
+    "SlotAdded": "Slot Aggiunto",
+    "SlotRemoved": "Slot Eliminato",
+    "SlotUpdated": "Slot Aggiornato"
+  },
+
+  "Flags": {
+    "Deleted": "cancellato"
+  },
+
   "Date": {
     "Weekday": "{{ date, EEE }}",
     "Day": "{{ date, d }}",
@@ -144,23 +103,7 @@
     "Full": "{{ date, EEEE d MMMM }}",
     "DayMonth": "{{ date, d MMMM }}",
     "MonthYear": "{{ date, MMMM yyyy }}",
-    "Time": "{{date, HH:mm}}"
-  },
-  "Flags": {
-    "Deleted": "cancellato"
-  },
-  "DateInput": {
-    "placeholder": "gg/mm/aaaa"
-  },
-  "CustomerLabel": {
-    "Name": "Nome",
-    "Surname": "Cognome",
-    "Category": "Categoria",
-    "Email": "Email"
-  },
-  "Prompt": {
-    "DeleteCustomer": "Sei sicuro di voler rimuovere",
-    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
-    "NonReversible": "Questa azione non è reversibile"
+    "Time": "{{date, HH:mm}}",
+    "Placeholder": "gg/mm/aaaa"
   }
 }

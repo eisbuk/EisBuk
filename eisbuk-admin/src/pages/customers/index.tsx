@@ -14,6 +14,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 
+import { ActionButton, NavigationLabel } from "@/enums/translations";
+
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerList from "@/components/atoms/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
@@ -29,7 +31,7 @@ const CustomersPage: React.FC = () => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  useTitle(t("CustomersPage.Athletes"));
+  useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList);
 
@@ -50,7 +52,7 @@ const CustomersPage: React.FC = () => {
           }
           <Fab
             color="primary"
-            aria-label={t("CustomersPage.AddAthlete")}
+            aria-label={t(ActionButton.AddAthlete)}
             className={classes.fab}
             onClick={toggleAddAthleteDialog}
           >

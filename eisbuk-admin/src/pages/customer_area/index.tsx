@@ -68,10 +68,6 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const bookedSlots = useSelector(getBookedSlots);
 
-  /**
-   * @TODO This is copy pasted from old `CustomerAreaPage`.
-   * We might want to find a simpler way to handle this (admin status)
-   */
   const auth = useSelector(getFirebaseAuth);
 
   const title =

@@ -7,9 +7,8 @@ import {
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { Action, NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
 import * as appActions from "../appActions";
@@ -24,6 +23,7 @@ import {
   testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
+import i18n from "@/__testUtils__/i18n";
 
 const db = firestoreUtils.getFirebase().firestore();
 
@@ -67,11 +67,6 @@ const mockDispatch = jest.fn();
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
-// we're mocking `t` from `i18next` to be an identity function for easier testing
-jest.mock("i18next", () => ({
-  t: (label: string) => label,
-}));
-
 describe("Slot operations ->", () => {
   beforeEach(async () => {
     await firestoreUtils.deleteAll();
@@ -105,7 +100,7 @@ describe("Slot operations ->", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotAdded,
+            message: i18n.t(NotificationMessage.SlotAdded),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -179,7 +174,7 @@ describe("Slot operations ->", () => {
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotUpdated,
+            message: i18n.t(NotificationMessage.SlotUpdated),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -234,7 +229,7 @@ describe("Slot operations ->", () => {
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotDeleted,
+            message: i18n.t(NotificationMessage.SlotDeleted),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

@@ -7,12 +7,12 @@ import {
   Category,
 } from "eisbuk-shared";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { Action, NotifVariant } from "@/enums/store";
 
 import { adminDb } from "@/__testSettings__";
 import { ORGANIZATION } from "@/config/envInfo";
+
+import { NotificationMessage } from "@/enums/translations";
 
 import { deleteCustomer, updateCustomer } from "../customerOperations";
 import * as appActions from "../appActions";
@@ -21,6 +21,7 @@ import { getFirebase, deleteAll } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey, waitForCondition } from "@/__testUtils__/helpers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
+import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 
@@ -73,11 +74,6 @@ const getState = () => ({} as any);
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
-// we're mocking `t` from `i18next` to be an identity function for easier testing
-jest.mock("i18next", () => ({
-  t: (label: string) => label,
-}));
-
 describe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
@@ -107,7 +103,9 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: `${saul.name} ${saul.surname} ${NotificationMessage.Updated}`,
+            message: `${saul.name} ${saul.surname} ${i18n.t(
+              NotificationMessage.Updated
+            )}`,
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -185,7 +183,9 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: `${saul.name} ${saul.surname} ${NotificationMessage.Removed}`,
+            message: `${saul.name} ${saul.surname} ${i18n.t(
+              NotificationMessage.Removed
+            )}`,
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

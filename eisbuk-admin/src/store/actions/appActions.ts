@@ -2,9 +2,8 @@ import { DateTime } from "luxon";
 import { SnackbarKey } from "notistack";
 import i18n from "i18next";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { Action, NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { AppReducerAction, FirestoreThunk, Notification } from "@/types/store";
 

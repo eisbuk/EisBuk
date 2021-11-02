@@ -26,6 +26,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
 
+import { NavigationLabel } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
@@ -92,7 +93,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                 disabled={location.pathname === PrivateRoutes.Root}
                 startIcon={<DateRangeIcon />}
               >
-                {t("AppbarAdmin.Attendance")}
+                {t(NavigationLabel.Attendance)}
               </Button>
               <Button
                 component={Link}
@@ -110,7 +111,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                 variant="contained"
                 startIcon={<PeopleIcon />}
               >
-                {t("AppbarAdmin.Athletes")}
+                {t(NavigationLabel.Athletes)}
               </Button>
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
@@ -139,7 +140,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <ListItemIcon>
                 <DateRangeIcon />
               </ListItemIcon>
-              <ListItemText primary={t("AppbarAdmin.Attendance")} />
+              <ListItemText primary={t(NavigationLabel.Attendance)} />
             </ListItem>
             <ListItem
               button
@@ -150,7 +151,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <ListItemIcon>
                 <LibraryBooksIcon />
               </ListItemIcon>
-              <ListItemText primary={t("AppbarAdmin.Bookings")} />
+              <ListItemText primary={t(NavigationLabel.Bookings)} />
             </ListItem>
             <ListItem
               button
@@ -161,7 +162,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <ListItemIcon>
                 <PeopleIcon />
               </ListItemIcon>
-              <ListItemText primary={t("AppbarAdmin.Athletes")} />
+              <ListItemText primary={t(NavigationLabel.Athletes)} />
             </ListItem>
           </List>
         </SwipeableDrawer>
