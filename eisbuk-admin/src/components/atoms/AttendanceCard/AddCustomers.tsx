@@ -11,7 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Customer } from "eisbuk-shared";
 
-import { __addCustomersTitle__ } from "@/lib/labels";
+import { ActionButton } from "@/enums/translations";
 
 import { __closeCustomersListId__ } from "./__testData__/testIds";
 import CustomerList from "../CustomerList";
@@ -69,7 +69,7 @@ const AddCustomersList: React.FC<Props> = ({
     <Dialog onClose={onClose} {...dialogProps}>
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
-          {t(__addCustomersTitle__)}
+          {t(ActionButton.AddCustomers)}
         </Typography>
         <IconButton
           className={classes.closeButton}

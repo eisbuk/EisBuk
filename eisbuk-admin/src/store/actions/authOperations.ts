@@ -82,7 +82,7 @@ export const queryOrganizationStatus = (): FirestoreThunk => async (
       dispatch(updateOrganizationStatus(uid, admins));
     }
   } catch (err) {
-    // TODO: inform the user that the login was successful, but
+    /** @TODO inform the user that the login was successful, but */
     // the don't have permission to access
     dispatch(showErrSnackbar);
   }

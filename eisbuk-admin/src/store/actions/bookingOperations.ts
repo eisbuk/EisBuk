@@ -10,9 +10,8 @@ import {
 
 import { ORGANIZATION } from "@/config/envInfo";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { FirestoreThunk } from "@/types/store";
 

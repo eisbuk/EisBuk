@@ -32,14 +32,7 @@ import {
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
-  useSelector: () => "",
   useDispatch: () => mockDispatch,
-}));
-
-/** @TODO remove this when the i18next is instantiated with tests */
-jest.mock("i18next", () => ({
-  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
-  t: () => "",
 }));
 
 describe("SlotOperationButtons", () => {
@@ -84,37 +77,6 @@ describe("SlotOperationButtons", () => {
         );
       }
     );
-
-    /**
-     * @NOTE below test is not passing and is pretty complex.
-     * This has been hand tested for now and I didn't want to waste time
-     * sloving the complexity as the tested functionality should be moved
-     * (and tested) insite slot form component. At that point (slot form update)
-     * @TODO remove this altogether
-     */
-    // test("should properly submit form on submit", () => {
-    //   // test action we'll use to confirm 'createSlots' has been dispatched to store
-    //   const mockCreateAction = { type: "CREATE_SLOTS" };
-    //   // we're mocking sumit action to return a dummy redux action
-    //   // rather than firestore thunk for easier testing
-    //   jest
-    //     .spyOn(slotActions, "createSlots")
-    //     .mockImplementation(() => mockCreateAction as any);
-    //   render(
-    //     <SlotOperationButtons>
-    //       <NewSlotButton />
-    //     </SlotOperationButtons>
-    //   );
-    //   // open form
-    //   screen.getByTestId(__newSlotButtonId__).click();
-    //   // select off-ice-dancing type, which triggers all categories selection
-    //   // in effect having a minimal viable slot passing form validation
-    //   /** @TODO when i18next is instantiated with tests, this should be 'findByText' rather than testId */
-    //   screen.getByTestId(__offIceDancingButtonId__).click();
-    //   // submit form
-    //   screen.getByTestId(__confirmFormId__).click();
-    //   expect(mockDispatch).toHaveBeenCalledWith(mockCreateAction);
-    // });
   });
 
   describe("'NewSlotButton' edge cases/error handling test", () => {

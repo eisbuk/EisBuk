@@ -16,6 +16,7 @@ import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.sv
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
 import { getFirebaseAuth } from "@/store/selectors/auth";
+import { AuthMessage } from "@/enums/translations";
 
 // ***** Region Background Images ***** //
 const backgrounds = [
@@ -67,18 +68,17 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   return (
     <Paper style={style}>
       <Typography component="h1" variant="h2">
-        {t("Authorization.NotAuthorized")}
+        {t(AuthMessage.NotAuthorized)}
       </Typography>
       <Typography component="h2" variant="h4">
-        {t("Authorization.AdminsOnly")}
+        {t(AuthMessage.AdminsOnly)}
       </Typography>
       <Typography component="h2" variant="h5">
-        {t("Authorization.LoggedInWith")}{" "}
-        <b>{auth.email || auth.phoneNumber}</b>
+        {t(AuthMessage.LoggedInWith)} <b>{auth.email || auth.phoneNumber}</b>
       </Typography>
 
       <Button variant="contained" onClick={logOut}>
-        {t("Authorization.TryAgain")}
+        {t(AuthMessage.TryAgain)}
       </Button>
     </Paper>
   );

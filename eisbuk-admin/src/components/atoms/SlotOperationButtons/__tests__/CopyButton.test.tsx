@@ -5,6 +5,12 @@ import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
+import {
+  __noDateCopy,
+  __copyButtonWrongContextError,
+  __slotButtonNoContextError,
+} from "@/lib/errorMessages";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
@@ -12,26 +18,12 @@ import CopyButton from "../CopyButton";
 
 import * as copyPasteActions from "@/store/actions/copyPaste";
 
-import {
-  __noDateCopy,
-  __copyButtonWrongContextError,
-  __slotButtonNoContextError,
-} from "@/lib/errorMessages";
-
 import { __copyButtonId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
-  /** @TODO Remove this when we update SlotForm to be more atomic  */
-  useSelector: () => "",
   useDispatch: () => mockDispatch,
-}));
-
-/** @TODO remove this when the i18next is instantiated with tests */
-jest.mock("i18next", () => ({
-  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
-  t: () => "",
 }));
 
 describe("SlotOperationButtons", () => {

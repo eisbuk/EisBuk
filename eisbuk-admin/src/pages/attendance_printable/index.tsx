@@ -11,6 +11,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import PrintIcon from "@material-ui/icons/Print";
 
+import { NavigationLabel } from "@/enums/translations";
+
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import AttendanceSheet, {
@@ -44,7 +46,7 @@ const DashboardPage: React.FC = () => {
   // add a semantically correct HTML title as it
   // is used for default filename
   useTitle(
-    `${t("AttendanceSheet.Attendance").toLowerCase()}-${luxon2ISODate(date)}`
+    `${t(NavigationLabel.Attendance).toLowerCase()}-${luxon2ISODate(date)}`
   );
 
   return (

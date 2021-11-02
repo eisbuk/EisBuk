@@ -25,11 +25,6 @@ useFieldSpy.mockImplementation(
     ] as any
 );
 
-// We're translating errors internally, so for testing, we'll be mocking t function to return it's input (rather than translation)
-jest.mock("i18next", () => ({
-  useTranslation: () => ({ t: (str: string) => str }),
-}));
-
 describe("SlotForm,", () => {
   afterEach(() => {
     cleanup();

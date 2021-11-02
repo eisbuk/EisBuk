@@ -7,11 +7,6 @@ import { renderWithFormik } from "@/__testUtils__/wrappers";
 
 import { __timeIntervalFieldId__ } from "../__testData__/testIds";
 
-jest.mock("react-i18next", () => ({
-  ...jest.requireActual("react-i18next"),
-  useTranslation: () => ({ t: (str: string) => str }),
-}));
-
 describe("SlotForm ->", () => {
   afterEach(() => {
     cleanup();
