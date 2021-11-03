@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * A `build` script for functions esbuild process.
  * We're using this for building for production and in CI.

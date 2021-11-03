@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /**
  * A `watch` script for functions esbuild process.
  * We're using this to create a bundle and watch for changes (for development and tests).
