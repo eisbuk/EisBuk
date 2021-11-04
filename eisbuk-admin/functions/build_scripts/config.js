@@ -6,8 +6,8 @@
 const path = require("path");
 
 module.exports = {
-  entryPoints: [path.join(process.cwd(), "./src/index.ts")],
-  outfile: path.join(process.cwd(), "./dist/index.js"),
+  entryPoints: [path.join(__dirname, "..", "src", "index.ts")],
+  outfile: path.join(__dirname, "..", "dist", "index.js"),
   platform: "node",
   bundle: true,
   preserveSymlinks: true,

@@ -7,11 +7,12 @@
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "lint": "eslint .",
+    "typecheck": "tsc --noemit",
     "shell": "firebase functions:shell",
     "start": "yarn shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "functions:build": "yarn tsc && node build_scripts/build.js",
+    "functions:build": "node build_scripts/build.js",
     "functions:watch": "node build_scripts/watch.js"
   },
   "engines": {

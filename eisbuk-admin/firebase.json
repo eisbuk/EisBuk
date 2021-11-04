@@ -5,7 +5,6 @@
   },
   "functions": {
     "predeploy": [
-      "yarn --cwd \"$RESOURCE_DIR\" lint",
       "yarn --cwd \"$RESOURCE_DIR\" functions:build"
     ],
     "source": "functions"
