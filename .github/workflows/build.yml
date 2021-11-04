@@ -142,3 +142,15 @@ jobs:
         # We don't want a failed lint steps to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions typecheck"
+
+  cypress-run:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          install-command: ./eisbuk-install.sh
+          start: yarn start, yarn emulators:start
+          working-directory: eisbuk-admin
