@@ -6,20 +6,8 @@
 const path = require("path");
 
 module.exports = {
-  entryPoints: [path.join(__dirname, "..", "src", "index.ts")],
-  outfile: path.join(__dirname, "..", "dist", "index.js"),
+  outdir: path.join(__dirname, "..", "dist"),
   platform: "node",
-  bundle: true,
-  preserveSymlinks: true,
-  minify: true,
-  metafile: true,
-  external: [
-    "firebase-functions",
-    "firebase-admin",
-    "uuid",
-    "lodash",
-    "luxon",
-    "@google-cloud/firestore",
-    "",
-  ],
+  write: true,
+  format: "cjs",
 };
