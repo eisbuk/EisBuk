@@ -11,8 +11,7 @@ export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 export const __eisbukSite__ = process.env.REACT_APP_EISBUK_SITE;
 
 // env info variable
-export const __isDev__ =
-  process.env.NODE_ENV === "development" || !__eisbukSite__;
+export const __isDev__ = process.env.NODE_ENV === "development";
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =
