@@ -18,7 +18,7 @@ can be published at https://appname--new-feature-randomhash.web.app/
 function getOrgFromLocation(location: string): string {
   return location.replace(/--[^.]+/, "");
 }
-function getCookieValues(){
+function getOrgFromCookie(): string {
   const allCookies = document.cookie;
   const sepCookies = allCookies.split(";")
   // {
@@ -27,12 +27,12 @@ function getCookieValues(){
   // }
   let CookieValues = sepCookies.reduce((acc, curr) =>  ({
 
-    ...acc, [curr.slice(1,(curr.length-1)).split("=")[0]] : [curr.slice(1,(curr.length-1)).split("=")[1]]  
+    ...acc, [curr.slice(1,(curr.length-1)).split("=")[0]] : curr.slice(1,(curr.length-1)).split("=")[1]
 
   }), {})
-  return CookieValues;
-
+  return CookieValues["domain"];
 }
+
 
 if (!__eisbukSite__) {
   isDev =
@@ -40,8 +40,9 @@ if (!__eisbukSite__) {
     window.location.port !== "80" &&
     window.location.port !== "443";
 
-    console.log(getCookieValues())
-  ORGANIZATION =  getOrgFromLocation(window.location.hostname);
+  const orgCookie = getOrgFromCookie()
+  ORGANIZATION = orgCookie && getOrgFromLocation(window.location.hostname);
+  console.log(ORGANIZATION)
 } else {
   isDev = false;
   ORGANIZATION = __eisbukSite__;
