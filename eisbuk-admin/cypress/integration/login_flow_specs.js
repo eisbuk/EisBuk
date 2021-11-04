@@ -1,9 +1,11 @@
 /// <reference types="Cypress" />
 import { saul } from "@/__testData__/customers";
+import { v4 as uuidv4 } from "uuid";
 
+const id = uuidv4();
 describe("Login flow", () => {
   it("Creates admin and logs in", () => {
-    cy.visit("http://127.0.0.1:3000/debug");
+    cy.visit(`${id}.localhost:3000/debug`);
     cy.contains("Create admin test users").click();
     cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
       "createOrganization"
@@ -22,7 +24,7 @@ describe("Login flow", () => {
 
     // cy.pause()
 
-    cy.visit("http://127.0.0.1:3000/login");
+    cy.visit(`${id}.localhost:3000/login`);
     cy.contains("Sign in with email").click();
     cy.url().should("include", "/login");
     cy.get("[type='email']").type("test@eisbuk.it");
@@ -34,7 +36,7 @@ describe("Login flow", () => {
 });
 describe("add athlete", () => {
   it("should fill in the customer form and submit it", () => {
-    cy.visit("http://127.0.0.1:3000/atleti");
+    cy.visit(`${id}.localhost:3000/atleti`);
     cy.get("[data-cy='addAthlete']").click();
     cy.get("[name='name']").type(saul.name);
     cy.get("[name='surname']").type(saul.surname);
