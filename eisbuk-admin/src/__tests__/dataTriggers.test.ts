@@ -8,7 +8,7 @@ import {
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSettings__";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import {
   getDocumentRef,
@@ -35,7 +35,7 @@ const customerBooking = getCustomerBase(saul);
 const testMonth = testDate.substr(0, 7);
 
 // document paths
-const orgPath = `${Collection.Organizations}/${ORGANIZATION}`;
+const orgPath = `${Collection.Organizations}/${__organization__}`;
 const slotDocPath = `${orgPath}/${OrgSubCollection.Slots}/${slotId}`;
 const attendanceDocPath = `${orgPath}/${OrgSubCollection.Attendance}/${slotId}`;
 const userBookingDocPath = `${orgPath}/${OrgSubCollection.Bookings}/${secretKey}`;

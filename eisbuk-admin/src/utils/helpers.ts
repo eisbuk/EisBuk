@@ -2,9 +2,6 @@ import { DateTime } from "luxon";
 
 import { SlotInterface, SlotInterval } from "eisbuk-shared";
 
-type Primitive = string | number | boolean;
-
-// ***** Region Simple Helpers ***** //
 /**
  * Returns initials from provided name and last name
  * @param name
@@ -47,76 +44,6 @@ export const capitalizeFirst = (str: string): string => {
   return words.map((word) => capitalizeFirst(word)).join("-");
 };
 
-/**
- * - Calculates statistical mode (an array member with highest occurrence in the provided array)
- * - If two values have the same number of occurrences, returns null
- * @param arr array from which to calculate mode (all members need to be of same type)
- * @returns value of calculated mode or null
- * ```
- * mode([1, 2, 2]) = 2
- * mode(["bar", "foo", "bar"]) = "bar"
- * mode([1, 1, 2, 2]) = null
- * ```
- */
-export const mode = <T extends Primitive>(arr: T[]): T | null => {
-  // create an object with array values as keys and number of occurrences as values
-  const occurrences: Record<string, number> = {};
-
-  // holds the value with currently highest occurrence (while looping)
-  let highestOccurrence: T = arr[0];
-  // a flag which, if true at the end of execution (two occurrences are equal),
-  // triggers return null
-  let twoEqual = false;
-
-  // loop through the array and find highest occurrence
-  arr.forEach((value) => {
-    // convert value to string for easier processing
-    const stringValue = value.toString();
-    // string representation of highest occurring value
-    const highestOccurrenceString = highestOccurrence.toString();
-
-    if (!occurrences[stringValue]) {
-      // if new value add new key to ocurrences
-      occurrences[stringValue] = 1;
-    } else {
-      occurrences[stringValue]++;
-    }
-
-    // update highest occurrence if needed
-    if (occurrences[highestOccurrenceString] < occurrences[stringValue]) {
-      highestOccurrence = value;
-    }
-
-    // check if two ocurrences are the same and add a flag
-    twoEqual =
-      occurrences[highestOccurrenceString] === occurrences[stringValue] &&
-      highestOccurrenceString !== stringValue;
-  });
-
-  return twoEqual ? null : highestOccurrence;
-};
-// ***** End Region Simple Helpers ***** //
-
-// ***** Region To Flatten ***** //
-interface ToFlatten {
-  (toFlatten?: Record<string, any>[]): Record<string, any>;
-}
-
-/** @TODO This should maybe be called merge, since it essentially merges two or more objects, rather then flattening (lowering depth of object by one level) */
-/**
- * Flatten a list of objects, i.e. return an obect with all properties
- * from all objects in the list. If a property is defined inside two objects
- * the last one will prevail
- * @param toFlatten a list of objects to merge
- * @returns one object as a result of merging all the objects from the toFlatten list
- */
-export const flatten: ToFlatten = (toFlatten) =>
-  !toFlatten
-    ? {}
-    : toFlatten.reduce((partial, el) => ({ ...partial, ...el }), {});
-// ***** End Region To Flatten ***** //
-
-// ***** Region Get Month String ***** //
 interface GetMonthString {
   (startDate: DateTime, offset: number): string;
 }
@@ -135,7 +62,6 @@ export const getMonthStr: GetMonthString = (startDate, offset) =>
     .plus({ months: offset })
     .toISODate()
     .substring(0, 7);
-// ***** End Region Get Month String ***** //
 
 /**
  * Calculates the `startTime` of earliset interval and the `endTime` of latest interval,
@@ -164,3 +90,16 @@ export const getSlotTimespan = (
   // return time string
   return `${startTime} - ${endTime}`;
 };
+
+/**
+ * @param  {string} location (for instance website.web.app)
+ * @returns string
+
+Firebase hosting has a concept of "preview channels":
+https://firebase.google.com/docs/hosting/test-preview-deploy
+When deployed this way, apps will be served on a URL derived from the main
+hosting URL. For instance, for appname.web.app, a preview channel named new-feature
+can be published at https://appname--new-feature-randomhash.web.app/
+*/
+export const getOrgFromLocation = (location: string): string =>
+  location.replace(/--[^.]+/, "");

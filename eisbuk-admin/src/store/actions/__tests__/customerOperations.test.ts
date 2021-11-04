@@ -10,7 +10,7 @@ import {
 import { Action, NotifVariant } from "@/enums/store";
 
 import { adminDb } from "@/__testSettings__";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
 
@@ -27,10 +27,10 @@ import { saul } from "@/__testData__/customers";
 
 const customersRef = adminDb
   .collection(Collection.Organizations)
-  .doc(ORGANIZATION)
+  .doc(__organization__)
   .collection(OrgSubCollection.Customers);
 
-const customersPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}`;
+const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.

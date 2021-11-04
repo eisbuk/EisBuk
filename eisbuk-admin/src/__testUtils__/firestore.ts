@@ -5,7 +5,7 @@ import { DateTime } from "luxon";
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSettings__";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
 
@@ -102,7 +102,9 @@ export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
  * @returns
  */
 export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
-  const org = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
+  const org = adminDb
+    .collection(Collection.Organizations)
+    .doc(__organization__);
 
   return deleteAllCollections(org, Object.values(OrgSubCollection));
 };

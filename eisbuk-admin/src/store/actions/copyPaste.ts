@@ -9,7 +9,7 @@ import {
   luxon2ISODate,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { Action } from "@/enums/store";
 
@@ -169,7 +169,7 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
     // add updated slots to firestore
     const slotsRef = db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(__organization__)
       .collection(OrgSubCollection.Slots);
     const batch = db.batch();
 
@@ -211,7 +211,7 @@ export const pasteSlotsWeek = (
     // update each slot with new date and set up for firestore dispatching
     const slotsRef = db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(__organization__)
       .collection(OrgSubCollection.Slots);
     const batch = db.batch();
 
