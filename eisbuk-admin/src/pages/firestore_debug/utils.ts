@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 
 import { FirestoreThunk } from "@/types/store";
 import { Collection } from "eisbuk-shared/dist";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 type DocumentReference = firebase.firestore.DocumentReference;
 
@@ -68,7 +68,7 @@ export const submitDoc: DispatchFS<"submit"> = ({
   const db = getFirebase().firestore();
 
   const docRef = getRef(
-    db.collection(Collection.Organizations).doc(ORGANIZATION)
+    db.collection(Collection.Organizations).doc(__organization__)
   );
 
   // try and set updated document in firestore
@@ -91,7 +91,7 @@ export const deleteDoc: DispatchFS<"delete"> = ({
   const db = getFirebase().firestore();
 
   const docRef = getRef(
-    db.collection(Collection.Organizations).doc(ORGANIZATION)
+    db.collection(Collection.Organizations).doc(__organization__)
   );
 
   // try and delete document in firestore

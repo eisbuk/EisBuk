@@ -1,9 +1,9 @@
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-// ***** Region Wrap Organization ***** //
+// #region WrapOrganization
 type EnumSafeQuerySetting = Omit<ReduxFirestoreQuerySetting, "collection"> & {
   collection: OrgSubCollection;
 };
@@ -22,8 +22,8 @@ export const wrapOrganization: WrapOrganization = (toWrap) => {
   return {
     collection: Collection.Organizations,
     storeAs: toWrap.storeAs || toWrap.collection,
-    doc: ORGANIZATION,
+    doc: __organization__,
     subcollections: [{ ...toWrap }],
   };
 };
-// ***** End Region Wrap Organization ***** //
+// #endregion WrapOrganization

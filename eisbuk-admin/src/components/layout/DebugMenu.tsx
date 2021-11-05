@@ -7,9 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import BugReportIcon from "@material-ui/icons/BugReport";
 
-import { ORGANIZATION } from "@/config/envInfo";
-
-import { __functionsZone__ } from "@/lib/constants";
+import { __functionsZone__, __organization__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -33,7 +31,7 @@ const DebugMenu: React.FC = () => {
           .functions(__functionsZone__)
           .httpsCallable(functionName)({
           ...params,
-          organization: ORGANIZATION,
+          organization: __organization__,
         });
 
         console.log(res.data);

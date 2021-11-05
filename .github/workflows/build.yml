@@ -123,7 +123,11 @@ jobs:
       - name: Install and link packages
         run: ./eisbuk-install.sh
       - name: Run lint
-        run: "yarn --cwd eisbuk-admin eslint ."
+        run: "yarn --cwd eisbuk-admin lint:strict"
+      - name: Typecheck the functions
+        if: success() || failure() # Do not run on cancelled; run in all other cases
+        # We don't want a failed lint step to make this step not run
+        run: "yarn --cwd eisbuk-admin/functions typecheck"
 
   pre-commit:
     runs-on: ubuntu-latest

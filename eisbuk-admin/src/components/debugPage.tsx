@@ -5,9 +5,7 @@ import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 
-import { ORGANIZATION } from "@/config/envInfo";
-
-import { __functionsZone__ } from "@/lib/constants";
+import { __functionsZone__, __organization__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -25,7 +23,7 @@ export const invokeFunction = (functionName: CloudFunction) => {
     const res = await firebase
       .app()
       .functions(__functionsZone__)
-      .httpsCallable(functionName)({ organization: ORGANIZATION });
+      .httpsCallable(functionName)({ organization: __organization__ });
 
     console.log(res.data);
   };

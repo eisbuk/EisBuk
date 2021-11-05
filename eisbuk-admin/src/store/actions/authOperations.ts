@@ -1,6 +1,8 @@
 import i18n from "i18next";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { Collection } from "eisbuk-shared";
+
+import { __organization__ } from "@/lib/constants";
 
 import { NotifVariant, Action } from "@/enums/store";
 
@@ -72,8 +74,8 @@ export const queryOrganizationStatus = (): FirestoreThunk => async (
     const firestore = getFirebase().firestore();
 
     const res = await firestore
-      .collection("organizations")
-      .doc(ORGANIZATION)
+      .collection(Collection.Organizations)
+      .doc(__organization__)
       .get();
     const admins: string[] = res.data()?.admins ?? [];
     const { uid } = getState().firebase.auth;

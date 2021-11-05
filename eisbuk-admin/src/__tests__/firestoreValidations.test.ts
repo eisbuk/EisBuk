@@ -1,7 +1,7 @@
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { adminDb } from "@/__testSettings__";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
@@ -20,7 +20,7 @@ xdescribe("Firestore data validations", () => {
       async () => {
         const slotRef = adminDb
           .collection(Collection.Organizations)
-          .doc(ORGANIZATION)
+          .doc(__organization__)
           .collection(OrgSubCollection.Slots)
           .doc("test-slot");
 

@@ -6,7 +6,7 @@ import {
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSettings__";
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { deleteAll } from "@/__testUtils__/firestore";
 import {
@@ -19,9 +19,9 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { saul } from "@/__testData__/customers";
 
 // string path to `customers` collection
-const customersPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}`;
+const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 // string path to `bookings` collection
-const bookingsPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}`;
+const bookingsPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
 
 describe("Customer triggers", () => {
   beforeEach(async () => {
@@ -33,7 +33,7 @@ describe("Customer triggers", () => {
     async () => {
       const customersRef = adminDb
         .collection(Collection.Organizations)
-        .doc(ORGANIZATION)
+        .doc(__organization__)
         .collection(OrgSubCollection.Customers);
       // we're using saul's data only as newly created object (on `id` or `secretKey`)
       const newSaul = stripIdAndSecretKey(saul);
@@ -63,7 +63,7 @@ describe("Customer triggers", () => {
     async () => {
       const orgRef = adminDb
         .collection(Collection.Organizations)
-        .doc(ORGANIZATION);
+        .doc(__organization__);
       const customersRef = orgRef.collection(OrgSubCollection.Customers);
       // we're testing customer creation as it would happen in the wild (no `id` and `secretKey`) initially
       const newSaul = stripIdAndSecretKey(saul);
@@ -91,7 +91,7 @@ describe("Customer triggers", () => {
     async () => {
       const orgRef = adminDb
         .collection(Collection.Organizations)
-        .doc(ORGANIZATION);
+        .doc(__organization__);
       const saulRef = orgRef
         .collection(OrgSubCollection.Customers)
         .doc(saul.id);
