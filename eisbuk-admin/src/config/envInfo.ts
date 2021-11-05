@@ -41,8 +41,9 @@ if (!__eisbukSite__) {
     window.location.port !== "443";
 
   const orgCookie = getOrgFromCookie()
-  ORGANIZATION = orgCookie && getOrgFromLocation(window.location.hostname);
-  console.log(ORGANIZATION)
+  console.log(orgCookie)
+  console.log(getOrgFromLocation(window.location.hostname))
+  ORGANIZATION = orgCookie || getOrgFromLocation(window.location.hostname);
 } else {
   isDev = false;
   ORGANIZATION = __eisbukSite__;
