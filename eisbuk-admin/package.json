@@ -53,6 +53,9 @@
     "deploy:eisbuk": "firebase deploy --project eisbuk --only hosting:eisbuk",
     "deploy:production": "firebase deploy --project eisbuk --only hosting:igorice; firebase deploy --project eisbuk --except hosting",
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
+    "lint": "yarn eslint .",
+    "lint:fix": "yarn eslint . --fix",
+    "lint:strict": "yarn eslint . --max-warnings=0",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
