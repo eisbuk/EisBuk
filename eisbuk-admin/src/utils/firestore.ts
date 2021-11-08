@@ -1,4 +1,4 @@
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
@@ -22,7 +22,7 @@ export const wrapOrganization: WrapOrganization = (toWrap) => {
   return {
     collection: Collection.Organizations,
     storeAs: toWrap.storeAs || toWrap.collection,
-    doc: ORGANIZATION,
+    doc: getOrganization(),
     subcollections: [{ ...toWrap }],
   };
 };

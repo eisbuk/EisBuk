@@ -8,7 +8,7 @@ import {
   SlotInterface,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 import { NotificationMessage } from "@/lib/notifications";
 
@@ -39,7 +39,7 @@ export const bookInterval = ({
     // update booked interval to firestore
     await db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Bookings)
       .doc(secretKey)
       .collection(BookingSubCollection.BookedSlots)
@@ -78,7 +78,7 @@ export const cancelBooking = ({
     // remove the booking from firestore
     await db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Bookings)
       .doc(secretKey)
       .collection(BookingSubCollection.BookedSlots)

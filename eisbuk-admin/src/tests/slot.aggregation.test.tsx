@@ -19,7 +19,7 @@ import {
 // import { baseSlot } from "@/__testData__/dummyData";
 // import { testDate, testDateLuxon } from "@/__testData__/date";
 // import { luxon2ISODate } from "@/utils/date";
-// import { ORGANIZATION } from "@/config/envInfo";
+// import { getOrganization } from "@/config/envInfo";
 // import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
 
 beforeEach(async () => {
@@ -33,8 +33,8 @@ const maybeDescribe = process.env.FIRESTORE_EMULATOR_HOST
 
 // const monthString = testDate.substr(0, 7);
 
-// const slotsPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
-// const slotsByDayPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
+// const slotsPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Slots}`;
+// const slotsByDayPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Slots}`;
 
 maybeDescribe("Slot triggers", () => {
   it("update the slots summary on slot creation", async () => {

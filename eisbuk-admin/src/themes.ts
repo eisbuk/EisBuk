@@ -3,7 +3,7 @@ import responsiveFontSizes from "@material-ui/core/styles/responsiveFontSizes";
 
 import * as colors from "@material-ui/core/colors";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 const base = {
   palette: {
@@ -63,7 +63,7 @@ export const available = [igorice, eisbuk, development];
  * @returns
  */
 const getCurrentOrganizationSettings = () => {
-  switch (ORGANIZATION) {
+  switch (getOrganization()) {
     case "igorice.web.app":
       return {
         theme: igorice,

@@ -14,7 +14,7 @@ import {
 
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 import { adminDb } from "@/tests/settings";
 
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
@@ -27,7 +27,9 @@ type ThunkParams = Parameters<FirestoreThunk>;
 /**
  * Saved organization ref in db, to reduce excess typing
  */
-const orgDb = adminDb.collection(Collection.Organizations).doc(ORGANIZATION);
+const orgDb = adminDb
+  .collection(Collection.Organizations)
+  .doc(getOrganization());
 
 /**
  * Set up `attendance` data in emulated store and create `getState()` returning redux store
@@ -181,7 +183,9 @@ export const setupTestCustomer = async ({
   // halt the execution until customer doc has all data (`id` and `secretKey`), either provided
   // or added by data trigger
   const customerEntry = (await waitForCondition({
-    documentPath: `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}/${customerId}`,
+    documentPath: `${Collection.Organizations}/${getOrganization()}/${
+      OrgSubCollection.Customers
+    }/${customerId}`,
     condition: (data) => data && data.id && data.secretKey,
   })) as Customer;
 

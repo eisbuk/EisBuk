@@ -19,23 +19,25 @@ function getOrgFromLocation(location: string): string {
   return location.replace(/--[^.]+/, "");
 }
 
-if (!__eisbukSite__) {
-  isDev =
-    window.location.port !== "" &&
-    window.location.port !== "80" &&
-    window.location.port !== "443";
+export const getOrganization = () => {
+  if (!__eisbukSite__) {
+    isDev =
+      window.location.port !== "" &&
+      window.location.port !== "80" &&
+      window.location.port !== "443";
 
-  const localStorageOrganization = localStorage.getItem("organization");
-  console.log(localStorageOrganization);
-  console.log(getOrgFromLocation(window.location.hostname));
-  ORGANIZATION =
-    localStorageOrganization || getOrgFromLocation(window.location.hostname);
-} else {
-  isDev = false;
-  ORGANIZATION = __eisbukSite__;
-  console.log(
-    `Using ${ORGANIZATION} as organization as specified in EISBUK_SITE environment variable`
-  );
-}
+    const localStorageOrganization = localStorage.getItem("organization");
+    ORGANIZATION =
+      localStorageOrganization || getOrgFromLocation(window.location.hostname);
+    (window as any).organization = ORGANIZATION;
+  } else {
+    isDev = false;
+    ORGANIZATION = __eisbukSite__;
+    console.log(
+      `Using ${ORGANIZATION} as organization as specified in EISBUK_SITE environment variable`
+    );
+  }
+  return ORGANIZATION;
+};
 
-export { isDev, functionsZone, getOrgFromLocation, ORGANIZATION };
+export { isDev, functionsZone, getOrgFromLocation };

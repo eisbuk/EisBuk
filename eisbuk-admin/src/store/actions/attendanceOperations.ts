@@ -7,7 +7,7 @@ import {
   SlotInterface,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -40,7 +40,7 @@ export const markAttendance = ({
     // get month document ref from attendance collection
     const slotToUpdate = db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Attendance)
       .doc(slotId);
 
@@ -89,7 +89,7 @@ export const markAbsence = ({
     // get month document ref from attendance collection
     const slotToUpdate = db
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Attendance)
       .doc(slotId);
 

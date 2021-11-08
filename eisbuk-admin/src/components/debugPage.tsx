@@ -11,7 +11,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
 
-import { functionsZone, ORGANIZATION } from "@/config/envInfo";
+import { functionsZone, getOrganization } from "@/config/envInfo";
 
 /**
  * Invokes cloud function
@@ -23,7 +23,7 @@ export const invokeFunction = (functionName: CloudFunction) => {
     const res = await firebase
       .app()
       .functions(functionsZone)
-      .httpsCallable(functionName)({ organization: ORGANIZATION });
+      .httpsCallable(functionName)({ organization: getOrganization() });
 
     console.log(res.data);
   };

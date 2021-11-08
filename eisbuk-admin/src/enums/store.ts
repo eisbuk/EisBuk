@@ -17,7 +17,7 @@ export enum Action {
   DeleteSlotFromClipboard = "@@Eisbuk/DELETE_SLOT_FROM_CLIPBOARD0",
   AddSlotToClipboard = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD",
 
-  IsOrganizationStatusReceived = "@@Eisbuk/IS_ORGANIZATION_STATUS_RECEIVED",
+  IsOrganizationStatusReceived = "@@Eisbuk/IS_getOrganization()_STATUS_RECEIVED",
 }
 
 /**

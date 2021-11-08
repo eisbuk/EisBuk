@@ -13,7 +13,7 @@ import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 import {
   enqueueNotification,
@@ -39,7 +39,7 @@ export const updateCustomer = (
     const customersRef = firebase
       .firestore()
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Customers);
 
     // if the `id` is defined, we want to reference the existing customer doc in the db
@@ -81,7 +81,7 @@ export const deleteCustomer = (
     await firebase
       .firestore()
       .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Customers)
       .doc(customer.id)
       .set({ deleted: true }, { merge: true });

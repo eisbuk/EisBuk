@@ -5,7 +5,7 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 import { NotificationMessage } from "@/lib/notifications";
 
@@ -32,7 +32,7 @@ const db = firestoreUtils.getFirebase().firestore();
 // as we'll be using it throughout
 const slotsRef = db
   .collection(Collection.Organizations)
-  .doc(ORGANIZATION)
+  .doc(getOrganization())
   .collection(OrgSubCollection.Slots);
 
 /**

@@ -6,7 +6,7 @@ import {
 } from "eisbuk-shared";
 
 import { adminDb } from "@/tests/settings";
-import { ORGANIZATION } from "@/config/envInfo";
+import { getOrganization } from "@/config/envInfo";
 
 import {
   customerId,
@@ -27,13 +27,19 @@ import { deleteAll } from "@/tests/utils";
 // document refs
 const userBookingRef = getDocumentRef(
   adminDb,
-  `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}/${secretKey}`
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Bookings
+  }/${secretKey}`
 );
-const attendanceDocPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Attendance}/${slotId}`;
+const attendanceDocPath = `${Collection.Organizations}/${getOrganization()}/${
+  OrgSubCollection.Attendance
+}/${slotId}`;
 const slotAttendanceRef = getDocumentRef(adminDb, attendanceDocPath);
 const slotRef = getDocumentRef(
   adminDb,
-  `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}/${slotId}`
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Slots
+  }/${slotId}`
 );
 
 beforeEach(async () => {
