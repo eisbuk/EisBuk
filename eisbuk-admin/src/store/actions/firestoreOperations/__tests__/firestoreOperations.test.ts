@@ -26,10 +26,13 @@ const mockDispatch = jest.fn();
  * A mock implementation for our `subscribe` function. We're mocking it to
  * a sort of identity function, to test it being called with proper args.
  */
-const mockSubscribeImplementation = (
-  coll: CollectionSubscription,
-  date: DateTime
-) => ({ coll, date });
+const mockSubscribeImplementation = ({
+  coll,
+  currentDate,
+}: {
+  coll: CollectionSubscription;
+  currentDate: DateTime;
+}) => ({ coll, currentDate });
 /**
  * A spy we'll ocasionally be using to mock implementation of our
  * `subscribe` function
@@ -73,10 +76,10 @@ describe("Firestore subscriptions", () => {
         // here we're utilizing the mocked `subscribe` implementation as we want to test that
         // the returned value ended up in the `newListener`
         // later we'll test the actual function implementation
-        unsubscribe: mockSubscribeImplementation(
-          collection,
-          testDateLuxon
-        ) as any,
+        unsubscribe: mockSubscribeImplementation({
+          coll: collection,
+          currentDate: testDateLuxon,
+        }) as any,
       };
       expect(mockDispatch).toHaveBeenCalledWith(
         updateFirestoreListener(collection, newListener)

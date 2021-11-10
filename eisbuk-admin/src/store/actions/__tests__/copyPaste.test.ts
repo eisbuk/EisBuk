@@ -1,3 +1,5 @@
+import * as firestore from "@firebase/firestore";
+
 import {
   Collection,
   OrgSubCollection,
@@ -20,7 +22,7 @@ import {
 import { showErrSnackbar } from "@/store/actions/appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import * as firestoreUtils from "@/__testUtils__/firestore";
+import { deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
 
@@ -41,12 +43,12 @@ const mockDispatch = jest.fn();
  * Spy function we're using to occasionally cause errors on purpose
  * to test error handling
  */
-const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
+const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
 describe("Copy Paste actions", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await firestoreUtils.deleteAll();
+    await deleteAll([OrgSubCollection.SlotsByDay, OrgSubCollection.Slots]);
   });
 
   describe("copySlotsDay", () => {
@@ -91,11 +93,8 @@ describe("Copy Paste actions", () => {
     );
   });
 
-  const db = firestoreUtils.getFirebase().firestore();
-  const slotsRef = db
-    .collection(Collection.Organizations)
-    .doc(__organization__)
-    .collection(OrgSubCollection.Slots);
+  const db = firestore.getFirestore();
+  const slotsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Slots}`;
 
   const monthStr = testDate.substr(0, 7);
   const slotsByIdPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
@@ -174,7 +173,8 @@ describe("Copy Paste actions", () => {
         // run the thunk against a store
         await testThunk(...thunkArgs);
         // test that slots have been updated
-        const updatedSlots = await slotsRef.get();
+        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
+        const updatedSlots = await firestore.getDocs(slotsCollRef);
         // process dates for comparison
         const updatedDates = updatedSlots.docs
           .map((doc) => doc.data().date)

@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { isLoaded, isEmpty } from "react-redux-firebase";
 import { Route, Switch } from "react-router-dom";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
@@ -20,9 +19,9 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
 
-import useFirestoreSubscribe from "@/hooks/useFirestoreSubscribe";
-
 import { queryOrganizationStatus } from "@/store/actions/authOperations";
+
+import { isEmpty } from "./temp/helpers";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -33,18 +32,20 @@ import { queryOrganizationStatus } from "@/store/actions/authOperations";
  * @returns wrapper or components directly, both resulting if further rendering `AppComponents`
  */
 const AppContent: React.FC = () => {
-  const auth = useSelector((state: LocalStore) => state.firebase.auth);
+  const auth = useSelector((state: LocalStore) => state.auth);
   const dispatch = useDispatch();
 
   // When auth changes this component fires a query to determine
   // whether the current user is an administrator.
   useEffect(() => {
-    if (isLoaded(auth) && !isEmpty(auth)) {
+    if (
+      /** @TODO update this when we update `isLoaded` function */
+      // isLoaded(auth) &&
+      !isEmpty(auth)
+    ) {
       dispatch(queryOrganizationStatus());
     }
   }, [auth, dispatch]);
-
-  useFirestoreSubscribe();
 
   return (
     <Switch>

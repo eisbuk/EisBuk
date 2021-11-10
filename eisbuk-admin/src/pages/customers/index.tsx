@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { isLoaded, isEmpty } from "react-redux-firebase";
 import { useTranslation } from "react-i18next";
 
 import Container from "@material-ui/core/Container";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
-import LinearProgress from "@material-ui/core/LinearProgress";
+// import LinearProgress from "@material-ui/core/LinearProgress";
 
 import AddIcon from "@material-ui/icons/Add";
 
@@ -22,9 +21,11 @@ import CustomerForm from "@/components/customers/CustomerForm";
 
 import { updateCustomer } from "@/store/actions/customerOperations";
 
-import { getCustomersList } from "@/store/selectors/firestore";
+import { getCustomersList } from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
+
+import { isEmpty } from "@/temp/helpers";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -40,15 +41,17 @@ const CustomersPage: React.FC = () => {
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);
 
+  /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
     <>
       <AppbarAdmin />
-      {!isLoaded(customers) && <LinearProgress />}
+      {/* {!isLoaded(customers) && <LinearProgress />} */}
       <Container maxWidth="lg" className={classes.customersContainer}>
         <Grid item xs={12}>
           {
-            (isLoaded(customers),
-            !isEmpty(customers) && <CustomerList {...{ customers }} extended />)
+            // (isLoaded(customers) &&
+            !isEmpty(customers) && <CustomerList {...{ customers }} extended />
+            // )
           }
           <Fab
             data-testid="add-athlete"

@@ -1,14 +1,15 @@
 import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isLoaded, isEmpty } from "react-redux-firebase";
 
 import { Routes } from "@/enums/routes";
 
 import Unauthorized from "./Unauthorized";
-import Loading from "./Loading";
+// import Loading from "./Loading";
 
 import { getFirebaseAuth, getAmIAdmin } from "@/store/selectors/auth";
+
+import { isEmpty } from "@/temp/helpers";
 
 /**
  * Wrapper around route component to isolate (add auth check to) private routes
@@ -20,10 +21,11 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 
   const amIAdmin = useSelector(getAmIAdmin);
 
+  /** @TODO update below when we update auth and `isloaded` / `isEmpty` helpers */
   switch (true) {
     // display loading state until auth is processed
-    case !isLoaded(auth):
-      return <Loading />;
+    // case !isLoaded(auth):
+    //   return <Loading />;
 
     // render admin route
     case amIAdmin && !isEmpty(auth):

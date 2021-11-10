@@ -13,13 +13,13 @@ import DateNavigation from "@/components/atoms/DateNavigation";
 import AttendanceCard from "@/components/atoms/AttendanceCard";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import { getOrderedCustomers } from "@/store/selectors/customers";
+import { getCustomersList } from "@/store/selectors/customers";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
 
   const attendanceCards = useSelector(getSlotsWithAttendance);
-  const allCustomers = useSelector(getOrderedCustomers);
+  const allCustomers = useSelector(getCustomersList);
 
   const printButton = (
     <IconButton component={Link} to="/attendance_printable">

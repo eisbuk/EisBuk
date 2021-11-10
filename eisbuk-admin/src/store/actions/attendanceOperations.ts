@@ -1,3 +1,5 @@
+import { getFirestore } from "@firebase/firestore";
+
 import {
   Collection,
   Customer,
@@ -12,6 +14,12 @@ import { getOrganization } from "@/lib/getters";
 import { FirestoreThunk } from "@/types/store";
 
 import { showErrSnackbar } from "./appActions";
+import { doc, setDoc } from "firebase/firestore";
+
+const getAttendanceCollPath = () =>
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Attendance
+  }`;
 
 /**
  * Function called to mark attendance (with apropriate interval) for customer on given slot:
@@ -30,18 +38,12 @@ export const markAttendance = ({
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
   attendedInterval: string;
-}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch, getState) => {
   try {
-    const db = getFirebase().firestore();
-
     const localState = getState();
 
-    // get month document ref from attendance collection
-    const slotToUpdate = db
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Attendance)
-      .doc(slotId);
+    const db = getFirestore();
+    const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
 
     // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
     const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
@@ -54,7 +56,8 @@ export const markAttendance = ({
     };
 
     // update month document with new values
-    await slotToUpdate.set(
+    await setDoc(
+      slotToUpdate,
       { attendances: { [customerId]: updatedCustomerAttendance } },
       { merge: true }
     );
@@ -78,18 +81,12 @@ export const markAbsence = ({
 }: {
   slotId: SlotInterface["id"];
   customerId: Customer["id"];
-}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch, getState) => {
   try {
-    const db = getFirebase().firestore();
-
     const localState = getState();
 
-    // get month document ref from attendance collection
-    const slotToUpdate = db
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Attendance)
-      .doc(slotId);
+    const db = getFirestore();
+    const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
 
     // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
     const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
@@ -122,7 +119,7 @@ export const markAbsence = ({
     };
 
     // update month document with new values
-    await slotToUpdate.set(attendanceEntry);
+    await setDoc(slotToUpdate, attendanceEntry);
   } catch {
     dispatch(showErrSnackbar);
   }

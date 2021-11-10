@@ -5,10 +5,10 @@ import { LocalStore } from "@/types/store";
 import firestoreReducer from "../firestoreReducer";
 
 import {
+  updateLocalColl,
   deleteFirestoreListener,
   updateFirestoreListener,
-} from "@/store/actions/firestoreOperations";
-import { updateLocalColl } from "@/store/actions/firestoreSubscriptions";
+} from "@/store/actions/firestoreOperations/actionCreators";
 
 import { baseAttendance, slotId } from "@/__testData__/dataTriggers";
 
