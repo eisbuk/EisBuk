@@ -49,6 +49,7 @@ const CustomersPage: React.FC = () => {
             !isEmpty(customers) && <CustomerList {...{ customers }} extended />)
           }
           <Fab
+            data-testid="add-athlete"
             color="primary"
             aria-label={t("CustomersPage.AddAthlete")}
             className={classes.fab}
