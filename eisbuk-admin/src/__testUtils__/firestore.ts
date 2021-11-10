@@ -1,24 +1,11 @@
 import { DateTime } from "luxon";
-import { Firestore } from "@google-cloud/firestore";
 import { cloneDeep } from "lodash";
-
-import { adminDb } from "@/tests/settings";
 
 import { LocalStore } from "@/types/store";
 
 import { defaultState as app } from "@/store/reducers/appReducer";
 import { defaultState as copyPaste } from "@/store/reducers/copyPasteReducer";
-import { defaultState as authInfoEisbuk } from "@/store/reducers/authReducer";
-
-/**
- * Function we're using to simulate `getFirebase` function passed to Redux middleware.
- * Essentially we're returning firestore as `adminDb` already configured in settings to emulated db in the
- * same way `getFirebase` would return firestore inside of Redux middleware.
- * @returns firestore instance
- */
-export const getFirebase = (): { firestore: () => Firestore } => ({
-  firestore: () => adminDb,
-});
+import { defaultState as auth } from "@/store/reducers/authReducer";
 
 const testStoreDefaultState: LocalStore = {
   firestore: {
@@ -27,7 +14,7 @@ const testStoreDefaultState: LocalStore = {
   },
   app,
   copyPaste,
-  authInfoEisbuk,
+  auth,
 };
 
 /**

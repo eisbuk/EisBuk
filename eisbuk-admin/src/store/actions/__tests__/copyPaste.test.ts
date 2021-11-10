@@ -1,3 +1,5 @@
+import * as firestore from "@firebase/firestore";
+
 import {
   Collection,
   OrgSubCollection,
@@ -21,7 +23,6 @@ import { luxon2ISODate, luxonToFB } from "@/utils/date";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/tests/utils";
-import * as firestoreUtils from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
 
@@ -42,7 +43,7 @@ const mockDispatch = jest.fn();
  * Spy function we're using to occasionally cause errors on purpose
  * to test error handling
  */
-const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
+const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
 // mocked return value for `enqueueErrSnackbar`.
 // the actual return value is the thunk, but we're using this to easily test dispatching
@@ -99,11 +100,8 @@ describe("Copy Paste actions", () => {
     );
   });
 
-  const db = firestoreUtils.getFirebase().firestore();
-  const slotsRef = db
-    .collection(Collection.Organizations)
-    .doc(ORGANIZATION)
-    .collection(OrgSubCollection.Slots);
+  const db = firestore.getFirestore();
+  const slotsCollectionPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
 
   const monthStr = testDate.substr(0, 7);
   const slotsByIdPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
@@ -182,7 +180,8 @@ describe("Copy Paste actions", () => {
         // run the thunk against a store
         await testThunk(...thunkArgs);
         // test that slots have been updated
-        const updatedSlots = await slotsRef.get();
+        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
+        const updatedSlots = await firestore.getDocs(slotsCollRef);
         // process dates for comparison
         const updatedDates = updatedSlots.docs
           .map((doc) => doc.data().date)

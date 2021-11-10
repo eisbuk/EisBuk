@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isEmpty, isLoaded } from "react-redux-firebase";
+
+import { OrgSubCollection } from "eisbuk-shared";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -11,8 +12,6 @@ import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import useCustomerBookings from "@/hooks/useCustomerBookings";
-
 import {
   getBookingsCustomer,
   getBookedSlots,
@@ -21,7 +20,10 @@ import { getSlotsForCustomer } from "@/store/selectors/slots";
 import { getFirebaseAuth } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
 
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+
 import { splitSlotsByCustomerRoute } from "./utils";
+import { isEmpty } from "@/temp/helpers";
 
 /**
  * Customer sub routes:
@@ -33,12 +35,12 @@ import { splitSlotsByCustomerRoute } from "./utils";
  * - renders appropriate sub route with respect to `customerRoute` provided
  */
 const CustomerArea: React.FC = () => {
-  const { customerRoute, secretKey } = useParams<{
+  const { customerRoute } = useParams<{
     secretKey: string;
     customerRoute: CustomerRoute;
   }>();
 
-  useCustomerBookings(secretKey);
+  useFirestoreSubscribe([OrgSubCollection.Bookings]);
 
   const customerData = useSelector(getBookingsCustomer);
   const date = useSelector(getCalendarDay);
@@ -68,20 +70,19 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const bookedSlots = useSelector(getBookedSlots);
 
-  /**
-   * @TODO This is copy pasted from old `CustomerAreaPage`.
-   * We might want to find a simpler way to handle this (admin status)
-   */
+  /** @TODO update below when we update auth */
   const auth = useSelector(getFirebaseAuth);
 
   const title =
-    isLoaded(customerData) && customerData
-      ? `${customerData.name} ${customerData.surname}`
-      : "";
+    // isLoaded(customerData) &&
+    customerData ? `${customerData.name} ${customerData.surname}` : "";
 
   const headers = (
     <>
-      {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
+      {
+        // isLoaded(auth) &&
+        !isEmpty(auth) && <AppbarAdmin />
+      }
       <AppbarCustomer headingText={title} />
     </>
   );

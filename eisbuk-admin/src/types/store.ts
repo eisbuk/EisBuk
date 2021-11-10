@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Timestamp } from "@google-cloud/firestore";
 import { Unsubscribe } from "firebase/firestore";
+import { Dispatch } from "redux";
 
 import {
   BookingSubCollection,
@@ -19,8 +20,6 @@ import {
 } from "eisbuk-shared";
 
 import { Action, NotifVariant } from "@/enums/store";
-
-import { store } from "@/store";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -225,14 +224,13 @@ export type FirestoreState = {
 // #endregion firestore
 
 // #region thunks
-type Dispatch = typeof store.dispatch;
 type GetState = () => LocalStore;
 /**
  * Async Thunk in charge of updating the firestore and dispatching action
  * to local store with respect to firestore update outcome
  */
 export interface FirestoreThunk {
-  (dispatch: Dispatch, getState: GetState): Promise<void>;
+  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
 }
 
 // #endregion thunks

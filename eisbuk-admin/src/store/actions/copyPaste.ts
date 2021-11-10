@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { collection, getFirestore, writeBatch, doc } from "@firebase/firestore";
 
 import {
   Collection,
@@ -146,17 +147,18 @@ export const copySlotsWeek = (): FirestoreThunk => async (
   dispatch(setSlotWeekToClipboard({ slots, weekStart }));
 };
 
+const slotsCollectionPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
+
 /**
  * Creates Redux action to paste the day of slots from clipboard to a new day
  * @returns Redux action object
  */
 export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
   dispatch,
-  getState,
-  { getFirebase }
+  getState
 ) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
 
     // get slots day to copy from store
     const slotsToCopy = getState().copyPaste.day;
@@ -167,17 +169,14 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
     const date = luxonToFB(newDate);
 
     // add updated slots to firestore
-    const slotsRef = db
-      .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
-      .collection(OrgSubCollection.Slots);
-    const batch = db.batch();
+    const slotsCollRef = collection(db, slotsCollectionPath);
+    const batch = writeBatch(db);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
-      batch.set(slotsRef.doc(), { ...slotData, date });
+      const newSlotRef = doc(slotsCollRef);
+      batch.set(newSlotRef, { ...slotData, date });
     });
-
     await batch.commit();
   } catch {
     dispatch(showErrSnackbar());
@@ -190,9 +189,9 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
  */
 export const pasteSlotsWeek = (
   newWeekStart: DateTime
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch, getState) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
 
     const weekToPaste = getState().copyPaste.week;
 
@@ -210,16 +209,14 @@ export const pasteSlotsWeek = (
       newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks! * 3600 * 24 * 7;
 
     // update each slot with new date and set up for firestore dispatching
-    const slotsRef = db
-      .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
-      .collection(OrgSubCollection.Slots);
-    const batch = db.batch();
+    const slotsCollRef = collection(db, slotsCollectionPath);
+    const batch = writeBatch(db);
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     slots.forEach(({ id, date: oldDate, ...slotData }) => {
       const date = { seconds: oldDate.seconds + jump };
-      batch.set(slotsRef.doc(), { ...slotData, date });
+      const newSlotRef = doc(slotsCollRef);
+      batch.set(newSlotRef, { ...slotData, date });
     });
 
     await batch.commit();

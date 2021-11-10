@@ -9,7 +9,7 @@ import { ThemeProvider } from "@material-ui/core/styles";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import store from "@/store";
+import { store } from "@/store";
 
 import AppContent from "@/AppContent";
 import ReduxFirestoreProvider from "@/store/firestore/ReduxFirestoreProvider";

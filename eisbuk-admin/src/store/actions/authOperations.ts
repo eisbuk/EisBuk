@@ -1,3 +1,5 @@
+import { getFirestore, doc, getDoc } from "@firebase/firestore";
+import { getAuth } from "@firebase/auth";
 import i18n from "i18next";
 
 import { ORGANIZATION } from "@/config/envInfo";
@@ -10,6 +12,7 @@ import {
   enqueueNotification,
   showErrSnackbar,
 } from "@/store/actions/appActions";
+import { Collection } from "eisbuk-shared/dist";
 
 const updateOrganizationStatus = (
   uid: string,
@@ -25,14 +28,11 @@ const updateOrganizationStatus = (
  * - enqueues success/error snackbar depending on the outcome of firestore operation
  * @returns async thunk
  */
-export const signOut = (): FirestoreThunk => async (
-  dispatch,
-  getState,
-  { getFirebase }
-) => {
-  const firebase = getFirebase();
+export const signOut = (): FirestoreThunk => async (dispatch) => {
   try {
-    await firebase.auth().signOut();
+    const auth = getAuth();
+
+    await auth.signOut();
 
     dispatch(
       enqueueNotification({
@@ -65,18 +65,15 @@ export const signOut = (): FirestoreThunk => async (
  */
 export const queryOrganizationStatus = (): FirestoreThunk => async (
   dispatch,
-  getState,
-  { getFirebase }
+  getState
 ) => {
   try {
-    const firestore = getFirebase().firestore();
+    const db = getFirestore();
 
-    const res = await firestore
-      .collection("organizations")
-      .doc(ORGANIZATION)
-      .get();
+    const orgRef = doc(db, `${Collection.Organizations}/${ORGANIZATION}`);
+    const res = await getDoc(orgRef);
     const admins: string[] = res.data()?.admins ?? [];
-    const { uid } = getState().firebase.auth;
+    const { uid } = (getState() as any).firebase.auth; /** @TODO_AUTH */
 
     if (uid) {
       dispatch(updateOrganizationStatus(uid, admins));

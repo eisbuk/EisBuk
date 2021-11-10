@@ -1,5 +1,13 @@
 import { DateTime } from "luxon";
 import i18n from "i18next";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "@firebase/firestore";
 
 import {
   Collection,
@@ -20,6 +28,8 @@ import { FirestoreThunk } from "@/types/store";
 import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 import { luxonToFB } from "@/utils/date";
+
+const slotsCollectionPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
 
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
@@ -50,9 +60,10 @@ export const createNewSlot = (
     intervals: intervalsArr,
     ...slotData
   }: SlotFormValues & { date: DateTime }
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
+    const slotsCollRef = collection(db, slotsCollectionPath);
 
     const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
@@ -64,12 +75,8 @@ export const createNewSlot = (
     );
 
     const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
-    await db
-      .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
-      .collection(OrgSubCollection.Slots)
-      .doc()
-      .set(newSlot);
+
+    await addDoc(slotsCollRef, newSlot);
 
     // show success notification
     dispatch(
@@ -97,12 +104,13 @@ export const updateSlot = (
   {
     date: luxonDate,
     intervals: intervalsArr,
-    id,
+    id: slotId,
     ...slotData
   }: SlotFormValues & { date: DateTime; id: string }
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
+    const slotDocRef = doc(db, `${slotsCollectionPath}/${slotId}`);
 
     const date = luxonToFB(luxonDate);
     const intervals = intervalsArr.reduce(
@@ -112,14 +120,14 @@ export const updateSlot = (
       }),
       {} as Record<string, SlotInterval>
     );
-    const updatedSlot: SlotInterface = { ...slotData, date, intervals, id };
+    const updatedSlot: SlotInterface = {
+      ...slotData,
+      date,
+      intervals,
+      id: slotId,
+    };
 
-    await db
-      .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
-      .collection(OrgSubCollection.Slots)
-      .doc(id)
-      .set(updatedSlot);
+    await setDoc(slotDocRef, updatedSlot);
 
     // show success notification
     dispatch(
@@ -145,15 +153,12 @@ export const updateSlot = (
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlot = (
   slotId: SlotInterface["id"]
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+): FirestoreThunk => async (dispatch) => {
   try {
-    await getFirebase()
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(ORGANIZATION)
-      .collection(OrgSubCollection.Slots)
-      .doc(slotId)
-      .delete();
+    const db = getFirestore();
+    const slotDocRef = doc(db, `${slotsCollectionPath}/${slotId}`);
+
+    await deleteDoc(slotDocRef);
 
     // show success notification
     dispatch(

@@ -1,6 +1,7 @@
+import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
 import i18n from "i18next";
 
-import { Customer } from "eisbuk-shared";
+import { Collection, Customer, OrgSubCollection } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -13,6 +14,8 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
+const customersCollPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}`;
+
 /**
  * Creates firestore async thunk:
  * - updates the customer in firestore
@@ -21,23 +24,15 @@ import {
  * @returns async thunk
  */
 export const updateCustomer = (customer: Customer): FirestoreThunk => async (
-  dispatch,
-  getState,
-  { getFirebase }
+  dispatch
 ) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...updatedData } = customer;
-
-  const firebase = getFirebase();
-
   try {
-    await firebase
-      .firestore()
-      .collection("organizations")
-      .doc(ORGANIZATION)
-      .collection("customers")
-      .doc(id)
-      .set(updatedData);
+    const db = getFirestore();
+
+    const { id, ...updatedData } = customer;
+    const docRef = doc(db, `${customersCollPath}/${id}`);
+
+    await setDoc(docRef, updatedData);
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
@@ -60,20 +55,13 @@ export const updateCustomer = (customer: Customer): FirestoreThunk => async (
  * @returns async thunk
  */
 export const deleteCustomer = (customer: Customer): FirestoreThunk => async (
-  dispatch,
-  _,
-  { getFirebase }
+  dispatch
 ) => {
-  const firebase = getFirebase();
-
   try {
-    await firebase
-      .firestore()
-      .collection("organizations")
-      .doc(ORGANIZATION)
-      .collection("customers")
-      .doc(customer.id)
-      .delete();
+    const db = getFirestore();
+    const docRef = doc(db, `${customersCollPath}/${customer.id}`);
+
+    await deleteDoc(docRef);
 
     dispatch(
       enqueueNotification({

@@ -1,3 +1,5 @@
+import * as firestore from "@firebase/firestore";
+
 import {
   Category,
   Collection,
@@ -15,7 +17,6 @@ import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestSlots } from "../__testUtils__/firestore";
 import { deleteAll } from "@/tests/utils";
 
@@ -26,8 +27,6 @@ import {
   testSlot,
 } from "../__testData__/slotOperations";
 
-const db = firestoreUtils.getFirebase().firestore();
-
 // mocked return value for `enqueueErrSnackbar`.
 // the actual return value is the thunk, but we're using this to easily test dispatching
 const errNotifAction = { type: "err_spy" };
@@ -35,15 +34,10 @@ jest
   .spyOn(appActions, "showErrSnackbar")
   .mockImplementation(() => errNotifAction as any);
 
-// a jest mock function we're using to pass as dispatch at certain points
 const mockDispatch = jest.fn();
 
-// path of attendance collection and test month document to make our lives easier
-// as we'll be using it throughout
-const slotsRef = db
-  .collection(Collection.Organizations)
-  .doc(ORGANIZATION)
-  .collection(OrgSubCollection.Slots);
+const db = firestore.getFirestore();
+const slotsCollectionPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Slots}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -71,7 +65,7 @@ jest
  * A spy of `getFirebase` function which we're occasionally mocking to throw error
  * for error handling tests
  */
-const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
+const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
 // we're mocking `t` from `i18next` to be an identity function for easier testing
 jest.mock("i18next", () => ({
@@ -96,7 +90,8 @@ describe("Slot operations ->", () => {
         // create a thunk curried with test input values
         const testThunk = createNewSlot(testFromValues);
         await testThunk(...thunkArgs);
-        const slotsInFS = (await slotsRef.get()).docs;
+        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
+        const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
         // check that the new slot was created
         expect(slotsInFS.length).toEqual(3);
         // since we're not setting the id manually, we're finding our test slot by filtering out initial slot ids
@@ -173,7 +168,8 @@ describe("Slot operations ->", () => {
         });
         await testThunk(...thunkArgs);
         // check that the slot is properly updated
-        const testSlotInFS = (await slotsRef.doc(slotId).get()).data();
+        const slotDocRef = firestore.doc(db, slotsCollectionPath, slotId);
+        const testSlotInFS = (await firestore.getDoc(slotDocRef)).data();
         expect(testSlotInFS).toEqual({
           ...testSlot,
           id: slotId,
@@ -235,7 +231,8 @@ describe("Slot operations ->", () => {
         const testThunk = deleteSlot(slotId);
         await testThunk(...thunkArgs);
         // check that the slot was deleted from db
-        const slotsInFS = (await slotsRef.get()).docs;
+        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
+        const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
         expect(slotsInFS.length).toEqual(2);
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(

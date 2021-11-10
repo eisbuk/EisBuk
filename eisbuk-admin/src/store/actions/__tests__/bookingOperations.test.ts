@@ -1,3 +1,5 @@
+import * as firestore from "@firebase/firestore";
+
 import {
   BookingSubCollection,
   Collection,
@@ -20,17 +22,11 @@ import {
 } from "../__testData__/bookingOperations";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestBookings } from "../__testUtils__/firestore";
 import { deleteAll } from "@/tests/utils";
 
-const bookingsRef = firestoreUtils
-  .getFirebase()
-  .firestore()
-  .collection(Collection.Organizations)
-  .doc(ORGANIZATION)
-  .collection(OrgSubCollection.Bookings)
-  .doc(secretKey);
+const db = firestore.getFirestore();
+const bookingsCollectionPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -70,7 +66,7 @@ const mockDispatch = jest.fn();
  * A spy of `getFirebase` function which we're occasionally mocking to throw error
  * for error handling tests
  */
-const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
+const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
 // we're mocking `t` from `i18next` to be an identity function for easier testing
 jest.mock("i18next", () => ({
@@ -103,17 +99,15 @@ describe("Booking Notifications", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         // get all `bookedSlots` for customer
-        const bookedSlotsForCustomer = await bookingsRef
-          .collection(BookingSubCollection.BookedSlots)
-          .get();
+        const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
+        const bookedSlotsRef = firestore.collection(db, bookedSlotsPath);
+        const bookedSlotsForCustomer = await firestore.getDocs(bookedSlotsRef);
         // the updated `bookedSlots` should contain 2 default entries and one new (testBooking)
         expect(bookedSlotsForCustomer.docs.length).toEqual(3);
         // check the updated booking
+        const updatedBookingRef = firestore.doc(db, bookedSlotsPath, bookingId);
         const updatedBooking = (
-          await bookingsRef
-            .collection(BookingSubCollection.BookedSlots)
-            .doc(bookingId)
-            .get()
+          await firestore.getDoc(updatedBookingRef)
         ).data();
         expect(updatedBooking).toEqual(testBooking);
         // check that the success notification has been enqueued
@@ -172,9 +166,9 @@ describe("Booking Notifications", () => {
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(...thunkArgs);
         // get all `bookedSlots` for customer
-        const bookedSlotsForCustomer = await bookingsRef
-          .collection(BookingSubCollection.BookedSlots)
-          .get();
+        const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
+        const bookedSlotsRef = firestore.collection(db, bookedSlotsPath);
+        const bookedSlotsForCustomer = await firestore.getDocs(bookedSlotsRef);
         // the updated `bookedSlots` should contain 2 default entries (with testBooking removed)
         expect(bookedSlotsForCustomer.docs.length).toEqual(2);
         // check that the success notification has been enqueued

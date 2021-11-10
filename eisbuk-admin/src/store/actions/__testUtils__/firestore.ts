@@ -18,7 +18,7 @@ import { adminDb } from "@/tests/settings";
 
 import { fb2Luxon, luxon2ISODate } from "@/utils/date";
 
-import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
+import { createTestStore } from "@/__testUtils__/firestore";
 
 import { testDateLuxon } from "@/__testData__/date";
 
@@ -53,7 +53,7 @@ export const setupTestAttendance = async ({
 
   await Promise.all(updates);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**
@@ -87,7 +87,7 @@ export const setupTestSlots = async ({
 
   await Promise.all(updates);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**
@@ -109,7 +109,7 @@ export const setupCopyPaste = async ({
   // create `getState` state to return store populated with desired values
   const getState = () => createTestStore({ copyPaste });
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**
@@ -144,7 +144,7 @@ export const setupTestBookings = async ({
   );
   await Promise.all(bookingsToUpdate);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**
