@@ -37,9 +37,15 @@ export const invokeFunction = (functionName: CloudFunction) => {
 export const createAdminTestUsers = async (): Promise<void> => {
   await invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
-  await firebase
-    .auth()
-    .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+  try {
+    await firebase
+      .auth()
+      .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+  } catch (e) {
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword("test@eisbuk.it", "test00");
+  }
 };
 
 const DebugPage: React.FC = () => {
