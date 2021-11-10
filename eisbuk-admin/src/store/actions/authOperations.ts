@@ -1,6 +1,7 @@
 import i18n from "i18next";
 
 import { getOrganization } from "@/config/envInfo";
+import { Collection } from "eisbuk-shared";
 
 import { NotifVariant, Action } from "@/enums/store";
 
@@ -72,7 +73,7 @@ export const queryOrganizationStatus = (): FirestoreThunk => async (
     const firestore = getFirebase().firestore();
 
     const res = await firestore
-      .collection("organizations")
+      .collection(Collection.Organizations)
       .doc(getOrganization())
       .get();
     const admins: string[] = res.data()?.admins ?? [];
@@ -82,7 +83,7 @@ export const queryOrganizationStatus = (): FirestoreThunk => async (
       dispatch(updateOrganizationStatus(uid, admins));
     }
   } catch (err) {
-    // TODO: inform the user that the login was successful, but
+    /** @TODO inform the user that the login was successful, but */
     // the don't have permission to access
     dispatch(showErrSnackbar);
   }

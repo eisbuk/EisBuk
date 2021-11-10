@@ -1,7 +1,7 @@
 import { Customer, CustomerBase } from "eisbuk-shared";
 import { DeprecatedDuration } from "eisbuk-shared/dist/deprecated";
 
-import { baseSlot } from "./dummyData";
+import { baseSlot } from "./slots";
 import { gus, walt } from "./customers";
 
 // #region customerMigrations

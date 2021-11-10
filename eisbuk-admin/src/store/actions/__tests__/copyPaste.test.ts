@@ -20,7 +20,6 @@ import {
 import { showErrSnackbar } from "@/store/actions/appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/tests/utils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -32,7 +31,7 @@ import {
   testSlots,
   testWeek,
 } from "../__testData__/copyPaste";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 /**
  * Mock dispatch function we're feeding to our thunk testing function (`setUpTestSlots`)
  */
@@ -45,9 +44,9 @@ const mockDispatch = jest.fn();
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
 describe("Copy Paste actions", () => {
-  afterEach(async () => {
+  beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.Slots, OrgSubCollection.SlotsByDay]);
+    await firestoreUtils.deleteAll();
   });
 
   describe("copySlotsDay", () => {
@@ -92,16 +91,15 @@ describe("Copy Paste actions", () => {
     );
   });
 
+  const organization = getOrganization();
   const db = firestoreUtils.getFirebase().firestore();
   const slotsRef = db
     .collection(Collection.Organizations)
-    .doc(getOrganization())
+    .doc(organization)
     .collection(OrgSubCollection.Slots);
 
   const monthStr = testDate.substr(0, 7);
-  const slotsByIdPath = `${Collection.Organizations}/${getOrganization()}/${
-    OrgSubCollection.SlotsByDay
-  }/${monthStr}`;
+  const slotsByIdPath = `${Collection.Organizations}/${organization}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
 
   describe("pasteSlotsDay", () => {
     testWithEmulator(

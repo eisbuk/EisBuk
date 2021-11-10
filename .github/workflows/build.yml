@@ -55,7 +55,7 @@ jobs:
         id: findcomment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: 'github-actions[bot]'
+          comment-author: "github-actions[bot]"
           body-includes: Deployed URLs
 
       - name: Add preview channel URL to comment on PR
@@ -95,7 +95,7 @@ jobs:
         run: yarn --cwd eisbuk-admin test:emulators:ci
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure()    # Do not run on cancelled; run in all other cases
+        if: success() || failure() # Do not run on cancelled; run in all other cases
         with:
           name: JEST Tests
           path: eisbuk-admin/junit.xml
@@ -105,6 +105,29 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
+
+  run-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - name: Cache node modules and firebase emulators
+        uses: actions/cache@v2
+        with:
+          path: |
+            **/node_modules
+            $HOME/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+      - name: Install and link packages
+        run: ./eisbuk-install.sh
+      - name: Run lint
+        run: "yarn --cwd eisbuk-admin lint:strict"
+      - name: Typecheck the functions
+        if: success() || failure() # Do not run on cancelled; run in all other cases
+        # We don't want a failed lint step to make this step not run
+        run: "yarn --cwd eisbuk-admin/functions typecheck"
 
   pre-commit:
     runs-on: ubuntu-latest

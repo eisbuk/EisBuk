@@ -7,9 +7,8 @@ import {
 
 import { getOrganization } from "@/config/envInfo";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { Action, NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
 import * as appActions from "../appActions";
@@ -17,14 +16,14 @@ import * as appActions from "../appActions";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestSlots } from "../__testUtils__/firestore";
-import { deleteAll } from "@/tests/utils";
 
 import {
   initialSlotIds,
   initialSlots,
-  testFromValues,
+  testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
+import i18n from "@/__testUtils__/i18n";
 
 const db = firestoreUtils.getFirebase().firestore();
 
@@ -68,14 +67,9 @@ const mockDispatch = jest.fn();
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
-// we're mocking `t` from `i18next` to be an identity function for easier testing
-jest.mock("i18next", () => ({
-  t: (label: string) => label,
-}));
-
 describe("Slot operations ->", () => {
-  afterEach(async () => {
-    await Promise.all([deleteAll([OrgSubCollection.Slots])]);
+  beforeEach(async () => {
+    await firestoreUtils.deleteAll();
     jest.clearAllMocks();
   });
 
@@ -89,7 +83,7 @@ describe("Slot operations ->", () => {
           dispatch: mockDispatch,
         });
         // create a thunk curried with test input values
-        const testThunk = createNewSlot(testFromValues);
+        const testThunk = createNewSlot(testFormValues);
         await testThunk(...thunkArgs);
         const slotsInFS = (await slotsRef.get()).docs;
         // check that the new slot was created
@@ -106,7 +100,7 @@ describe("Slot operations ->", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotAdded,
+            message: i18n.t(NotificationMessage.SlotAdded),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -128,7 +122,7 @@ describe("Slot operations ->", () => {
           slots: initialSlots,
           dispatch: mockDispatch,
         });
-        const testThunk = createNewSlot(testFromValues);
+        const testThunk = createNewSlot(testFormValues);
         await testThunk(...thunkArgs);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
@@ -162,7 +156,7 @@ describe("Slot operations ->", () => {
         };
         // create a thunk curried with updated form values
         const testThunk = updateSlot({
-          ...testFromValues,
+          ...testFormValues,
           ...updates,
           id: slotId,
         });
@@ -180,7 +174,7 @@ describe("Slot operations ->", () => {
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotUpdated,
+            message: i18n.t(NotificationMessage.SlotUpdated),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -203,7 +197,7 @@ describe("Slot operations ->", () => {
           dispatch: mockDispatch,
         });
         const testThunk = updateSlot({
-          ...testFromValues,
+          ...testFormValues,
           id: "slot",
         });
         await testThunk(...thunkArgs);
@@ -235,7 +229,7 @@ describe("Slot operations ->", () => {
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: NotificationMessage.SlotDeleted,
+            message: i18n.t(NotificationMessage.SlotDeleted),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

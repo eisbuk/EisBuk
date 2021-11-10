@@ -2,9 +2,8 @@ import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import * as reactRedux from "react-redux";
 
-import { __bookInterval__, __cancelBooking__ } from "@/lib/labels";
-
 import { CustomerRoute } from "@/enums/routes";
+import { ActionButton } from "@/enums/translations";
 
 import CustomerSlots from "../CustomerSlots";
 
@@ -12,7 +11,7 @@ import * as bookingActions from "@/store/actions/bookingOperations";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { __dateNavNextId__ } from "@/__testData__/testIds";
-import { slotsMonth } from "@/__testData__/dummyData";
+import { slotsMonth } from "@/__testData__/slots";
 import { testDateLuxon, testDate } from "@/__testData__/date";
 
 /**
@@ -86,7 +85,7 @@ describe("CustomerSlots", () => {
       const testInterval = Object.keys(testSlot.intervals)[0];
       render(<CustomerSlots slots={slotsMonth} {...{ customerId }} />);
       // we're looking for first interval button
-      screen.queryAllByText(__bookInterval__)[0].click();
+      screen.queryAllByText(ActionButton.BookInterval)[0].click();
       // create a mock redux action to test dispatch being called with proper data
       const mockBookAction = mockBookImplementation({
         bookedInterval: testInterval,
@@ -106,7 +105,7 @@ describe("CustomerSlots", () => {
       render(
         <CustomerSlots slots={slotsMonth} {...{ bookedSlots, customerId }} />
       );
-      screen.queryAllByText(__cancelBooking__)[0].click();
+      screen.queryAllByText(ActionButton.Cancel)[0].click();
       // create a mock redux action to test dispatch being called with proper data
       const mockCancelAction = mockCancelImplementation({
         slotId,

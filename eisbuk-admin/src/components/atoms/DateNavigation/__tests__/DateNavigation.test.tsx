@@ -5,7 +5,6 @@ import "@testing-library/jest-dom";
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 import { DateTime } from "luxon";
-import i18n from "i18next";
 import * as reactRedux from "react-redux";
 
 import DateNavigation from "../DateNavigation";
@@ -13,9 +12,11 @@ import DateNavigation from "../DateNavigation";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { renderWithRouter } from "@/__testUtils__/wrappers";
+import i18n from "@/__testUtils__/i18n";
 
 import { testDateLuxon } from "@/__testData__/date";
 import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import { DateFormat } from "@/enums/translations";
 
 // import { __toggleId__ } from "./testData";
 
@@ -90,40 +91,32 @@ describe("Date Navigation", () => {
     });
   });
 
-  /** @TEMP This is temporarily skipped until we instantiate `i18next` with tests */
-  xdescribe("Test rendering of the timeframe (startTime-endTime) title", () => {
-    const spyT = jest.spyOn(i18n, "t");
-    beforeEach(() => spyT.mockClear());
-
+  describe("Test rendering of the timeframe (startTime-endTime) title", () => {
     test("should call translate function with start date and the date of last day of the week, in case of week view", () => {
       const endOfWeek = testDateLuxon.endOf("week").startOf("day");
       renderWithRouter(<DateNavigation />);
-      /** @TODO enable testing with i18n */
-      // here we're testing calls to translation function
-      // from `createDateTitle` function for simplicity
-      expect(spyT).toHaveBeenCalledTimes(2);
-      expect(spyT).toHaveBeenCalledWith("DateNavigationBar.Week", {
+      const weekStart = i18n.t(DateFormat.DayMonth, {
         date: testDateLuxon,
-      });
-      expect(spyT).toHaveBeenCalledWith("DateNavigationBar.Week", {
+      }) as string;
+      const weekEnd = i18n.t(DateFormat.DayMonth, {
         date: endOfWeek,
-      });
+      }) as string;
+      const weekString = `${weekStart} - ${weekEnd}`;
+      screen.getByText(weekString);
     });
 
     test("should call translate only once, with month string for month view", () => {
       renderWithRouter(<DateNavigation jump="month" />);
-      expect(spyT).toHaveBeenCalledTimes(1);
-      expect(spyT).toHaveBeenCalledWith("DateNavigationBar.Month", {
-        date: testDateLuxon,
-      });
+      screen.getByText(
+        i18n.t(DateFormat.MonthYear, { date: testDateLuxon }) as string
+      );
     });
 
     test("should call translate only once, with day string for day view", () => {
       renderWithRouter(<DateNavigation jump="day" />);
-      expect(spyT).toHaveBeenCalledTimes(1);
-      expect(spyT).toHaveBeenCalledWith("DateNavigationBar.Day", {
-        date: testDateLuxon,
-      });
+      screen.getByText(
+        i18n.t(DateFormat.Full, { date: testDateLuxon }) as string
+      );
     });
   });
 });

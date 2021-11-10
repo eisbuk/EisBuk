@@ -3,7 +3,7 @@ import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-// ***** Region Wrap Organization ***** //
+// #region WrapOrganization
 type EnumSafeQuerySetting = Omit<ReduxFirestoreQuerySetting, "collection"> & {
   collection: OrgSubCollection;
 };
@@ -26,4 +26,4 @@ export const wrapOrganization: WrapOrganization = (toWrap) => {
     subcollections: [{ ...toWrap }],
   };
 };
-// ***** End Region Wrap Organization ***** //
+// #endregion WrapOrganization

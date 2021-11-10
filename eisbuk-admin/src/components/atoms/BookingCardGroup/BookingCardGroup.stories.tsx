@@ -4,7 +4,8 @@ import { ComponentMeta } from "@storybook/react";
 import BookingCardGroup from "./BookingCardGroup";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 
-import { slot, customerId, intervals } from "./__testData__/dummyData";
+import { baseSlot, intervals } from "@/__testData__/slots";
+import { saul } from "@/__testData__/customers";
 import { testDateLuxon } from "@/__testData__/date";
 
 export default {
@@ -15,7 +16,9 @@ export default {
 export const Default = (): JSX.Element => (
   <SlotsDayContainer date={testDateLuxon}>
     {({ WrapElement }) => (
-      <BookingCardGroup {...{ ...slot, customerId, WrapElement }} />
+      <BookingCardGroup
+        {...{ ...baseSlot, customerId: saul.id, WrapElement }}
+      />
     )}
   </SlotsDayContainer>
 );
@@ -25,8 +28,8 @@ export const WithBookedInterval = (): JSX.Element => (
     {({ WrapElement }) => (
       <BookingCardGroup
         {...{
-          ...slot,
-          customerId,
+          ...baseSlot,
+          customerId: saul.id,
           WrapElement,
           bookedInterval: Object.keys(intervals)[0],
         }}

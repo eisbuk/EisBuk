@@ -1,7 +1,7 @@
 import { SlotsById, luxon2ISODate } from "eisbuk-shared";
 
 import { testDateLuxon } from "@/__testData__/date";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 /**
  * Day we'll be using to test copy/paste slots day

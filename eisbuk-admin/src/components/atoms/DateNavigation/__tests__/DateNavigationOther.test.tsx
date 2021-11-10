@@ -13,9 +13,9 @@ import { __storybookDate__ } from "@/lib/constants";
 
 import DateNavigation from "../DateNavigation";
 
-import { __toggleId__ } from "../__testData__/testData";
-
 import { renderWithRouter } from "@/__testUtils__/wrappers";
+
+import { __toggleId__ } from "../__testData__/testData";
 
 const mockDispatch = jest.fn();
 jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);

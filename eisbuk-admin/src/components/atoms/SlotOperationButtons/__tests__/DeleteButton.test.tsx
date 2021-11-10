@@ -32,20 +32,12 @@ import {
   __confirmDialogNoId__,
   __confirmDialogYesId__,
 } from "@/__testData__/testIds";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
-  /** @TODO Remove this when we update SlotForm to be more atomic  */
-  useSelector: () => "",
   useDispatch: () => mockDispatch,
-}));
-
-/** @TODO remove this when the i18next is instantiated with tests */
-jest.mock("i18next", () => ({
-  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
-  t: () => "",
 }));
 
 // #region mockDeleteActions

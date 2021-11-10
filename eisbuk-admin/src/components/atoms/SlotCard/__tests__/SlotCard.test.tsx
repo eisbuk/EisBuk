@@ -17,27 +17,18 @@ import {
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
 
 jest.mock("react-redux", () => ({
   ...jest.requireActual("react-redux"),
   useDispatch: () => mockDispatch,
-  /** We're mocking this not to fail tests including SlotForm (this will be returning newSlotTime as null) @TODO remove in the future */
-  useSelector: () => null,
 }));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({ secretKey: "secret_key" }),
-}));
-
-/** @TODO remove this when the i18next is instantiated with tests */
-jest.mock("i18next", () => ({
-  ...jest.requireActual("i18next"),
-  /** We're mocking this not to fail certain tests depending on this, but we're not testing the i18n values, so this is ok for now @TODO fix i18n in tests */
-  t: () => "",
 }));
 
 describe("SlotCard", () => {

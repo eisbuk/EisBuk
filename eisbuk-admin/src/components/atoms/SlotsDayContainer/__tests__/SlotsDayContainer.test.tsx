@@ -1,18 +1,16 @@
 import React from "react";
 import { screen, render } from "@testing-library/react";
-import { DateTime } from "luxon";
 
 import SlotsDayContainer from "../SlotsDayContainer";
 
-const testDateISO = "2021-03-01";
-const testDate = DateTime.fromISO(testDateISO);
+import { testDateLuxon } from "@/__testData__/date";
 
 describe("SlotsDayContainer", () => {
   describe("Render test", () => {
     test("should render children", () => {
       const testString = "test-string";
       render(
-        <SlotsDayContainer date={testDate}>
+        <SlotsDayContainer date={testDateLuxon}>
           {() => <>{testString}</>}
         </SlotsDayContainer>
       );
@@ -23,7 +21,7 @@ describe("SlotsDayContainer", () => {
       const additionalButtons = <button />;
       render(
         <SlotsDayContainer
-          date={testDate}
+          date={testDateLuxon}
           additionalButtons={additionalButtons}
           showAdditionalButtons
         />
@@ -35,7 +33,7 @@ describe("SlotsDayContainer", () => {
       const additionalButtons = <button />;
       render(
         <SlotsDayContainer
-          date={testDate}
+          date={testDateLuxon}
           additionalButtons={additionalButtons}
           showAdditionalButtons={false}
         />

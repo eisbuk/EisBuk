@@ -4,7 +4,7 @@ import { SlotType } from "eisbuk-shared";
 
 import SlotForm from "./SlotForm";
 
-import { dummySlot } from "./__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
 
 export default {
@@ -17,14 +17,14 @@ export const Default = (): JSX.Element => (
 );
 
 export const EditForm = (): JSX.Element => (
-  <SlotForm date={testDate} onClose={() => {}} slotToEdit={dummySlot} open />
+  <SlotForm date={testDate} onClose={() => {}} slotToEdit={baseSlot} open />
 );
 
 export const EditFormOffIce = (): JSX.Element => (
   <SlotForm
     date={testDate}
     onClose={() => {}}
-    slotToEdit={{ ...dummySlot, type: SlotType.OffIceDancing }}
+    slotToEdit={{ ...baseSlot, type: SlotType.OffIceDancing }}
     open
   />
 );

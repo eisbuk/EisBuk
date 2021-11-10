@@ -21,7 +21,6 @@ import { showErrSnackbar } from "./appActions";
  * @param - { slotId, customerId, attendedInterval }
  * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
- * @TODO This should probably be a @Saga to easily provide throttling until the update has been confirmed (to avoid excess requrests to the backend)
  */
 export const markAttendance = ({
   attendedInterval,
@@ -72,7 +71,6 @@ export const markAttendance = ({
  * @param - { slotId, customerId }
  * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
- * @TODO This should probably be a @Saga to easily provide throttling until the update has been confirmed (to avoid excess requrests to the backend)
  */
 export const markAbsence = ({
   slotId,

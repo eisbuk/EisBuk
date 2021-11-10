@@ -5,7 +5,8 @@ import "firebase/functions";
 import "firebase/firestore";
 import { Firestore } from "@google-cloud/firestore";
 import { credentials } from "@grpc/grpc-js";
-import { functionsZone } from "@/config/envInfo";
+
+import { __functionsZone__ } from "@/lib/constants";
 
 const projectId = "eisbuk";
 
@@ -26,7 +27,7 @@ if (!firebase.apps.length) {
   });
   firebase.auth().useEmulator("http://localhost:9098/");
   firebase.functions().useEmulator("localhost", 5002);
-  firebase.app().functions(functionsZone).useEmulator("localhost", 5002);
+  firebase.app().functions(__functionsZone__).useEmulator("localhost", 5002);
   firebase.firestore().settings({
     host: "localhost:8081",
     ssl: false,

@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "eisbuk-shared";
 
-import { capitalizeFirst, mode } from "@/utils/helpers";
+import { capitalizeFirst, getOrgFromLocation } from "@/utils/helpers";
 import { isISODay } from "@/utils/date";
 
 describe("Helpers", () => {
@@ -17,18 +17,6 @@ describe("Helpers", () => {
       const str = "hello-world";
       const want = "Hello-World";
       expect(capitalizeFirst(str)).toEqual(want);
-    });
-  });
-
-  describe("'mode' function", () => {
-    test("should return member with highest occurrence", () => {
-      const testArray = [1, 2, 2];
-      expect(mode(testArray)).toEqual(2);
-    });
-
-    test("should return 'null' if two values have same number of occurrences", () => {
-      const testArray = [1, 1, 2, 2];
-      expect(mode(testArray)).toEqual(null);
     });
   });
 });
@@ -51,6 +39,20 @@ describe("Date utils", () => {
       expect(isISODay("no-an-iso")).toEqual(false);
       // we want a valid ISO day (yyyy-mm-dd), while this is a valid ISO date, it should return `false`
       expect(isISODay("2021-01")).toEqual(false);
+    });
+  });
+
+  describe("getOrgFromLocation", () => {
+    test("should split on the first double dash and return the first part", async () => {
+      expect(getOrgFromLocation("no-double-dashes.web.app")).toEqual(
+        "no-double-dashes.web.app"
+      );
+      expect(getOrgFromLocation("one--double-dash-randomhash.web.app")).toEqual(
+        "one.web.app"
+      );
+      expect(
+        getOrgFromLocation("two--double--dashes-randomhash.web.app")
+      ).toEqual("two.web.app");
     });
   });
 });

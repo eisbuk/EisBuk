@@ -12,7 +12,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Category, SlotType, Customer, SlotInterface } from "eisbuk-shared";
 
-import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
 
 import { CustomerWithAttendance } from "@/types/components";
 
@@ -195,9 +195,9 @@ const AttendanceCard: React.FC<Props> = ({
 // #region localUtils
 const translateAndJoinTags = (categories: Category[], type: SlotType) => {
   const translatedCategories = categories.map((category) =>
-    i18n.t(categoryLabel[category])
+    i18n.t(CategoryLabel[category])
   );
-  const translatedType = i18n.t(slotTypeLabel[type]);
+  const translatedType = i18n.t(SlotTypeLabel[type]);
 
   return `${[...translatedCategories, translatedType].join(" ")}`;
 };

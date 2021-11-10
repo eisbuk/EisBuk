@@ -12,6 +12,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotType } from "eisbuk-shared";
 
+import { SlotTypeLabel as Translation } from "@/enums/translations";
+
 import { SvgProps } from "@/types/components";
 
 import { slotsLabels } from "@/config/appConfig";
@@ -34,7 +36,7 @@ const SlotTypeLabel: React.FC<Props> = ({ slotType }) => {
     <Box display="flex" alignItems="center" pl={1} pr={1}>
       <Icon className={classes.typeIcon} slotType={slotType} fontSize="small" />
       <Typography className={classes.type} key="type" color={slotLabel.color}>
-        {t(`SlotTypes.${slotType}`)}
+        {t(Translation[slotType])}
       </Typography>
     </Box>
   );

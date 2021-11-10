@@ -7,9 +7,8 @@ import {
   CustomerBase,
 } from "eisbuk-shared";
 
-import { NotificationMessage } from "@/lib/notifications";
-
 import { NotifVariant } from "@/enums/store";
+import { NotificationMessage } from "@/enums/translations";
 
 import { FirestoreThunk } from "@/types/store";
 

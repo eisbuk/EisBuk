@@ -1,9 +1,11 @@
 import React from "react";
 import { useField } from "formik";
-import i18n from "i18next";
+import { useTranslation } from "react-i18next";
 
 import TextField from "@material-ui/core/TextField";
 import InputAdornment from "@material-ui/core/InputAdornment";
+
+import { DateFormat } from "@/enums/translations";
 
 import { SvgComponent } from "@/types/components";
 
@@ -19,6 +21,8 @@ interface Props {
 }
 
 const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
+  const { t } = useTranslation();
+
   const [{ value = "" }, { error = "" }, { setValue }] = useField<
     string | undefined
   >(name);
@@ -53,7 +57,7 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
         onBlur={handleBlur}
         onChange={handleChange}
         type="text"
-        placeholder={i18n.t("DateInput.placeholder")}
+        placeholder={t(DateFormat.Placeholder)}
         error={Boolean(error)}
       />
       <ErrorMessage>{error}</ErrorMessage>

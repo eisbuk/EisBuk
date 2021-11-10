@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { DateFormat } from "@/lib/labels";
+import { DateFormat } from "@/enums/translations";
 
 /**
  * Wrapper function we're using to wrap each child element (for styling).

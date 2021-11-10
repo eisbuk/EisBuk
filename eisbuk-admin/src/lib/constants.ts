@@ -1,4 +1,7 @@
 // storybook env constants
+
+import { getOrgFromLocation } from "@/utils/helpers";
+
 /**
  * A date we're using for both storybook and testing
  * - for storybook it's convenient to have any 'static' date, in order for chromatic checks to not produce false positives
@@ -7,11 +10,14 @@
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
-// env info variable
-export const __isDev__ = process.env.NODE_ENV === "development";
+// organization constants
+export const __organization__ = window.location
+  ? getOrgFromLocation(window.location.hostname)
+  : "localhost";
 
-// dev organization constants
-export const __eisbukSite__ = process.env.REACT_APP_EISBUK_SITE;
+// env info variable
+// it's safe to say that we can treat the "test" environment the same as "development"
+export const __isDev__ = process.env.NODE_ENV !== "production";
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =
@@ -30,3 +36,4 @@ export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;
 
 // common constants, shared across all environments
 export const __projectId__ = "eisbuk";
+export const __functionsZone__ = "europe-west6";

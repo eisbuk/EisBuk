@@ -9,29 +9,28 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { adminDb } from "@/tests/settings";
 import { getOrganization } from "@/config/envInfo";
+import { adminDb } from "@/__testSettings__";
+
+import { NotificationMessage } from "@/enums/translations";
 
 import { deleteCustomer, updateCustomer } from "../customerOperations";
 import * as appActions from "../appActions";
 
-import { deleteAll } from "@/tests/utils";
-import { getFirebase } from "@/__testUtils__/firestore";
+import { getFirebase, deleteAll } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey, waitForCondition } from "@/__testUtils__/helpers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import * as firestoreUtils from "@/__testUtils__/firestore";
+import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
-import { NotificationMessage } from "@/lib/notifications";
-
+const organization = getOrganization();
 const customersRef = adminDb
   .collection(Collection.Organizations)
-  .doc(getOrganization())
+  .doc(organization)
   .collection(OrgSubCollection.Customers);
 
-const customersPath = `${Collection.Organizations}/${getOrganization()}/${
-  OrgSubCollection.Customers
-}`;
+const customersPath = `${Collection.Organizations}/${organization}/${OrgSubCollection.Customers}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -75,14 +74,9 @@ const getState = () => ({} as any);
  */
 const getFirebaseSpy = jest.spyOn(firestoreUtils, "getFirebase");
 
-// we're mocking `t` from `i18next` to be an identity function for easier testing
-jest.mock("i18next", () => ({
-  t: (label: string) => label,
-}));
-
 describe("customerOperations", () => {
-  afterEach(async () => {
-    await deleteAll([OrgSubCollection.Customers]);
+  beforeEach(async () => {
+    await deleteAll();
   });
 
   describe("updateCustomer", () => {
@@ -109,7 +103,9 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: `${saul.name} ${saul.surname} ${NotificationMessage.Updated}`,
+            message: `${saul.name} ${saul.surname} ${i18n.t(
+              NotificationMessage.Updated
+            )}`,
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -187,7 +183,9 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: `${saul.name} ${saul.surname} ${NotificationMessage.Removed}`,
+            message: `${saul.name} ${saul.surname} ${i18n.t(
+              NotificationMessage.Removed
+            )}`,
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

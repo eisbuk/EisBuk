@@ -1,4 +1,4 @@
-import { baseSlot } from "@/__testData__/dummyData";
+import { baseSlot } from "@/__testData__/slots";
 
 import { SlotType } from "eisbuk-shared";
 

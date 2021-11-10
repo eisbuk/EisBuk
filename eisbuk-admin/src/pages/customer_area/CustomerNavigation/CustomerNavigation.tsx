@@ -14,11 +14,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { CustomerRoute } from "@/enums/routes";
 
-import {
-  __bookIceButtonId__,
-  __bookOffIceButtonId__,
-  __calendarButtonId__,
-} from "./__testData__/testIds";
+import { CustomerNavigationLabel } from "@/enums/translations";
 
 /**
  * A placeholder string we use for dynamic route parsing.
@@ -67,7 +63,9 @@ const CustomerNavigation: React.FC = () => {
         __placeholder__,
         CustomerRoute.BookIce
       );
-      history.push(defaultRoute);
+      // here we're using `.replace` rather than `.push`
+      // to allow for back navigation (since it's an automatic redirect)
+      history.replace(defaultRoute);
     }
   }, [customerRouteInPathname, asPath, history]);
 
@@ -90,23 +88,20 @@ const CustomerNavigation: React.FC = () => {
           <LinkTab
             customerRoute={CustomerRoute.BookIce}
             icon={<EventNoteIcon />}
-            data-testid={__bookIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookIce}
             value={CustomerRoute.BookIce}
           />
           <LinkTab
             customerRoute={CustomerRoute.BookOffIce}
             icon={<EventNoteIcon />}
-            data-testid={__bookOffIceButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.BookOffIce}
             value={CustomerRoute.BookOffIce}
           />
           <LinkTab
             customerRoute={CustomerRoute.Calendar}
             icon={<PersonPinIcon />}
-            value={CustomerRoute.Calendar}
-            data-testid={__calendarButtonId__}
             disabled={customerRouteInPathname === CustomerRoute.Calendar}
+            value={CustomerRoute.Calendar}
           />
         </Tabs>
       </Container>
@@ -129,7 +124,7 @@ type LinkTabProps = Omit<TabProps, "onClick"> & {
 const LinkTab: React.FC<LinkTabProps> = ({ customerRoute, ...props }) => {
   const { t } = useTranslation();
 
-  const label = t(`CustomerNavigation.${customerRoute}`);
+  const label = t(CustomerNavigationLabel[customerRoute]);
 
   return <Tab {...{ ...props, label }} />;
 };

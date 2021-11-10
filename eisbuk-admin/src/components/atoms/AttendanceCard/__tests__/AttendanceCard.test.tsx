@@ -1,5 +1,4 @@
 import React from "react";
-import i18n from "i18next";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
@@ -7,11 +6,14 @@ import { Customer, SlotInterface } from "eisbuk-shared";
 
 import { CustomerWithAttendance } from "@/types/components";
 
-import { categoryLabel, slotTypeLabel } from "@/lib/labels";
+import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
 
 import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
+
+import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+import i18n from "@/__testUtils__/i18n";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { saul } from "@/__testData__/customers";
@@ -20,7 +22,6 @@ import {
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -66,17 +67,10 @@ jest
   .spyOn(attendanceOperations, "markAbsence")
   .mockImplementation(mockMarkAbsImplementation as any);
 
-/**
- * We're mocking the implementation of translate function to return the same value passed in.
- * We're not testing the i18n right now
- * @TODO remove when we initialize i18n with tests
- */
-jest.spyOn(i18n, "t").mockImplementation(((str: string) => str) as any);
-
 // aliases for thumbs button for easier access
 const thumbsUp = "👍";
 const thumbsDown = "👎";
-const trashCan = "🗑️";
+// const trashCan = "🗑️";
 
 const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
@@ -86,6 +80,13 @@ const intervalKeys = Object.keys(intervals);
 const bookedInterval = intervalKeys[0];
 // we're using different interval then booked for more versatile tests
 const attendedInterval = intervalKeys[1];
+
+// provide a polyfill for element.animate function
+if (typeof Element.prototype.animate !== "function") {
+  // we won't be testing the animate function. We just need it to not fail the tests
+  // therefore an empty function will suffice
+  Element.prototype.animate = () => Object.create({});
+}
 
 describe("AttendanceCard", () => {
   afterEach(() => {
@@ -106,9 +107,13 @@ describe("AttendanceCard", () => {
       screen.getByText(`${saul.name} ${saul.surname}`);
       // create regex for type and category as they're part of the same string in the UI
       const categoryRegex = new RegExp(
-        categoryLabel[baseAttendanceCard.categories[0]]
+        i18n.t(CategoryLabel[baseAttendanceCard.categories[0]]),
+        "i"
       );
-      const typeRegex = new RegExp(slotTypeLabel[baseAttendanceCard.type]);
+      const typeRegex = new RegExp(
+        i18n.t(SlotTypeLabel[baseAttendanceCard.type]),
+        "i"
+      );
       screen.getByText(categoryRegex);
       screen.getByText(typeRegex);
     });
@@ -205,13 +210,25 @@ describe("AttendanceCard", () => {
       );
     });
 
-    test("should show selected interval in interval field", () => {
-      // for UI purposes, we're displaying interval within (controlled) disabled text field
-      const intervalField = screen.getByRole("textbox");
-      expect(intervalField).toHaveProperty("value", attendedInterval);
+    test("should show booked interval (if any) when the attended and booked interval are different", () => {
+      cleanup();
+      render(
+        <AttendanceCard
+          {...baseAttendanceCard}
+          customers={[
+            { ...saul, bookedInterval, attendedInterval: bookedInterval },
+          ]}
+        />
+      );
+      // only one interval should be shown in case both booked and attended are the same
+      const displayedIntervals = screen.queryAllByText(bookedInterval);
+      expect(displayedIntervals).toHaveLength(1);
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen.getByText(attendedInterval);
+      screen.getByText(bookedInterval);
     });
 
-    test("should disable prev button if first interval selected and next if las selected", () => {
+    test("should disable prev button if first interval selected and next if last selected", () => {
       const prevButton = screen.getByTestId(__prevIntervalButtonId__);
       const nextButton = screen.getByTestId(__nextIntervalButtonId__);
       // buttons shouldn't be disabled as we're starting with middle interval
@@ -250,6 +267,16 @@ describe("AttendanceCard", () => {
         );
       }
     );
+
+    test("should display booked interval when customer marked as absent", () => {
+      // initial state -> intervals are different, two interval strings are shown
+      screen.getByText(bookedInterval);
+      screen.getByText(attendedInterval);
+      // mark absence
+      screen.getByText(thumbsUp).click();
+      expect(screen.queryByText(attendedInterval)).toBeNull();
+      screen.getByText(bookedInterval);
+    });
   });
 
   describe("Test debounce", () => {
