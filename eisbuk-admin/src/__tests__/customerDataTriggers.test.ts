@@ -5,7 +5,7 @@ import {
   OrgSubCollection,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 import { adminDb } from "@/__testSettings__";
 
 import { deleteAll } from "@/__testUtils__/firestore";

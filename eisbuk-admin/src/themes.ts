@@ -3,7 +3,7 @@ import responsiveFontSizes from "@material-ui/core/styles/responsiveFontSizes";
 
 import * as colors from "@material-ui/core/colors";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 
 const base = {
   palette: {

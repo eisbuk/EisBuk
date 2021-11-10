@@ -7,7 +7,7 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 import { adminDb } from "@/__testSettings__";
 
 import {

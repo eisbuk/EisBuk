@@ -7,7 +7,8 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import BugReportIcon from "@material-ui/icons/BugReport";
 
-import { functionsZone, getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
+import { __functionsZone__ } from "@/lib/constants";
 
 const DebugMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -23,7 +24,7 @@ const DebugMenu: React.FC = () => {
       try {
         const res = await firebase
           .app()
-          .functions(functionsZone)
+          .functions(__functionsZone__)
           .httpsCallable(functionName)({
           ...params,
           organization: getOrganization(),

@@ -103,3 +103,23 @@ can be published at https://appname--new-feature-randomhash.web.app/
 */
 export const getOrgFromLocation = (location: string): string =>
   location.replace(/--[^.]+/, "");
+
+export const getOrganization = () => {
+  return (
+    localStorage.getItem("organization") ||
+    getOrgFromLocation(window.location.hostname)
+  );
+};
+// export const getOrganization = () => {
+//   if (!__eisbukSite__) {
+//     const localStorageOrganization = localStorage.getItem("organization");
+//     ORGANIZATION =
+//       localStorageOrganization || getOrgFromLocation(window.location.hostname);
+//   } else {
+//     ORGANIZATION = __eisbukSite__;
+//     console.log(
+//       `Using ${ORGANIZATION} as organization as specified in EISBUK_SITE environment variable`
+//     );
+//   }
+//   return ORGANIZATION;
+// };

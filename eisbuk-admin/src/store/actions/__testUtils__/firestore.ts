@@ -14,7 +14,7 @@ import {
 
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 import { adminDb } from "@/__testSettings__";
 
 import { createTestStore, getFirebase } from "@/__testUtils__/firestore";

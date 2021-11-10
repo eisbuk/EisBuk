@@ -1,6 +1,6 @@
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
 import { showErrSnackbar } from "../appActions";

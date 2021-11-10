@@ -9,7 +9,7 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 import { adminDb } from "@/__testSettings__";
 
 import { NotificationMessage } from "@/enums/translations";

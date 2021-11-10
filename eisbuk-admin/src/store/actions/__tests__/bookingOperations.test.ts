@@ -4,7 +4,7 @@ import {
   OrgSubCollection,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";

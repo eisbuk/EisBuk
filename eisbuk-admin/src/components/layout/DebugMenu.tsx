@@ -7,7 +7,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 
 import BugReportIcon from "@material-ui/icons/BugReport";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";

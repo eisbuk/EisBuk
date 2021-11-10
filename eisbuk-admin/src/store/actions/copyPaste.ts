@@ -9,7 +9,7 @@ import {
   luxon2ISODate,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/config/envInfo";
+import { getOrganization } from "@/utils/helpers";
 
 import { Action } from "@/enums/store";
 
