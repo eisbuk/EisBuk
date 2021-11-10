@@ -21,17 +21,10 @@ function getOrgFromLocation(location: string): string {
 
 export const getOrganization = () => {
   if (!__eisbukSite__) {
-    isDev =
-      window.location.port !== "" &&
-      window.location.port !== "80" &&
-      window.location.port !== "443";
-
     const localStorageOrganization = localStorage.getItem("organization");
     ORGANIZATION =
       localStorageOrganization || getOrgFromLocation(window.location.hostname);
-    (window as any).organization = ORGANIZATION;
   } else {
-    isDev = false;
     ORGANIZATION = __eisbukSite__;
     console.log(
       `Using ${ORGANIZATION} as organization as specified in EISBUK_SITE environment variable`
@@ -39,5 +32,14 @@ export const getOrganization = () => {
   }
   return ORGANIZATION;
 };
+
+if (!__eisbukSite__) {
+  isDev =
+    window.location.port !== "" &&
+    window.location.port !== "80" &&
+    window.location.port !== "443";
+} else {
+  isDev = false;
+}
 
 export { isDev, functionsZone, getOrgFromLocation };
