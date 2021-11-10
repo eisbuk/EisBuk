@@ -39,7 +39,7 @@ describe("add athlete", () => {
     // cy.contains("Sign In").click();
     // needs to logout after each test run
     cy.visit(`localhost:3000/atleti`);
-    cy.get("[data-testid='addAthlete']").click();
+    cy.get("[data-testid='add-athlete']").click();
     cy.get("[name='name']").type(saul.name);
     cy.get("[name='surname']").type(saul.surname);
     cy.get("[name='email']").type(saul.email);
