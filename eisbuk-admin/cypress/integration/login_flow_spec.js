@@ -4,9 +4,11 @@ import { v4 as uuidv4 } from "uuid";
 
 beforeEach(() => {
   const id = uuidv4();
-  cy.visit(`localhost:3000/debug`).then((win) => {
+  cy.on("window:before:load", (win) => {
     win.localStorage.setItem("organization", id);
   });
+  cy.visit(`localhost:3000/debug`);
+
   cy.contains("Create admin test users").click();
   cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
     "createOrganization"
@@ -37,7 +39,7 @@ describe("add athlete", () => {
     // cy.contains("Sign In").click();
     // needs to logout after each test run
     cy.visit(`localhost:3000/atleti`);
-    cy.get("[data-cy='addAthlete']").click();
+    cy.get("[data-testid='addAthlete']").click();
     cy.get("[name='name']").type(saul.name);
     cy.get("[name='surname']").type(saul.surname);
     cy.get("[name='email']").type(saul.email);
