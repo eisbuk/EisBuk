@@ -104,7 +104,7 @@ can be published at https://appname--new-feature-randomhash.web.app/
 export const getOrgFromLocation = (location: string): string =>
   location.replace(/--[^.]+/, "");
 
-export const getOrganization = () => {
+export const getOrganization = (): string => {
   return (
     localStorage.getItem("organization") ||
     getOrgFromLocation(window.location.hostname)

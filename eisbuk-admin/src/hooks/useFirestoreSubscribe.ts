@@ -3,12 +3,10 @@ import { useFirestoreConnect, useFirestore } from "react-redux-firebase";
 
 import { Collection, luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
-import { getOrganization } from "@/utils/helpers";
-
 import { getCalendarDay } from "@/store/selectors/app";
 import { getAmIAdmin } from "@/store/selectors/auth";
 
-import { getMonthStr } from "@/utils/helpers";
+import { getMonthStr, getOrganization } from "@/utils/helpers";
 import { wrapOrganization } from "@/utils/firestore";
 
 /**
