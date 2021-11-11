@@ -1,9 +1,8 @@
 import {
   collection,
-  deleteDoc,
-  doc,
   DocumentData,
   DocumentReference,
+  doc,
   getFirestore,
   setDoc,
 } from "@firebase/firestore";
@@ -55,7 +54,7 @@ export const updateCustomer = (
       docRef = doc(customersCollRef);
     }
 
-    await setDoc(docRef, updatedData);
+    await setDoc(docRef, updatedData, { merge: true });
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
@@ -87,7 +86,7 @@ export const deleteCustomer = (
     const db = getFirestore();
     const docRef = doc(db, getCustomersCollPath(), customer.id);
 
-    await deleteDoc(docRef);
+    await setDoc(docRef, { deleted: true }, { merge: true });
 
     dispatch(
       enqueueNotification({

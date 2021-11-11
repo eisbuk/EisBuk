@@ -7,29 +7,14 @@ import {
 } from "@firebase/auth";
 import axios from "axios";
 
-import { auth } from "@/__testSettings__";
+import { auth } from "@/__testSetup__/firestoreSetup";
+import { defaultUser } from "@/__testSetup__/envData";
 
-/**
- * @TODO check this as it seems unnecessary
- * Test util: creates default organization ("default") in emulated firestore db
- * and adds admin ("test@example.com")
+/* Test util: loggs in with default user's email ("test@example.com")
  * @returns
  */
-//  export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
-//   const orgDefinition = {
-//     admins: ["test@example.com"],
-//   };
-
-//   return adminDb.collection("organizations").doc("default").set(orgDefinition);
-// };
-
-/**
- * Test util: loggs in with default user's email ("test@example.com")
- * @returns
- */
-export const loginDefaultUser = (): Promise<void> => {
-  return loginWithEmail("test@example.com");
-};
+export const loginDefaultUser = (): Promise<UserCredential> =>
+  signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password);
 
 /**
  * @param email
@@ -44,6 +29,7 @@ export const loginWithEmail = async (email: string): Promise<void> => {
 
 /**
  * Test util: loggs in with phone number
+ * @TODO this doesn't work for some reason in Node environment -> investigate further
  * @param phoneNumber
  * @returns
  */

@@ -2,6 +2,8 @@ import * as firestore from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
+import { db } from "@/__testSetup__/firestoreSetup";
+
 import { __organization__ } from "@/lib/constants";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
@@ -14,6 +16,7 @@ import {
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestAttendance } from "../__testUtils__/firestore";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 // test data
 const customerId = "customer-0";
@@ -21,12 +24,15 @@ const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-const db = firestore.getFirestore();
 const attendaceCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Attendance}`;
 
 const mockDispatch = jest.fn();
 
 describe("Attendance operations ->", () => {
+  beforeEach(async () => {
+    await loginDefaultUser();
+  });
+
   afterEach(() => {
     jest.clearAllMocks();
   });

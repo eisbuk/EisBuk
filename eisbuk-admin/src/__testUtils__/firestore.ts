@@ -1,9 +1,10 @@
 import { DateTime } from "luxon";
 import { cloneDeep } from "lodash";
 
-import { Collection } from "eisbuk-shared";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { adminDb } from "@/__testSettings__";
+import { adminDb } from "@/__testSetup__/firestoreSetup";
+
 import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
@@ -53,32 +54,16 @@ export const createTestStore = ({
 };
 
 /**
- * Test util: creates default organization ("default") in emulated firestore db
- * and adds admin ("test@example.com")
- * @returns
- */
-export const createDefaultOrg = (): Promise<FirebaseFirestore.WriteResult> => {
-  const orgDefinition = {
-    admins: ["test@example.com"],
-  };
-
-  return adminDb
-    .collection(Collection.Organizations)
-    .doc("default")
-    .set(orgDefinition);
-};
-
-/**
  * Test util: deletes provided collections from "default" organization in emulated firestore db
  * @param collections to delete
  * @returns
  */
-export const deleteAll = async (
-  collections: string[]
-): Promise<FirebaseFirestore.WriteResult[]> => {
-  const org = adminDb.collection("organizations").doc(__organization__);
+export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
+  const org = adminDb
+    .collection(Collection.Organizations)
+    .doc(__organization__);
 
-  return deleteAllCollections(org, collections);
+  return deleteAllCollections(org, Object.values(OrgSubCollection));
 };
 
 /**

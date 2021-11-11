@@ -1,6 +1,7 @@
 // storybook env constants
 
 import { getOrgFromLocation } from "@/utils/helpers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 /**
  * A date we're using for both storybook and testing
@@ -10,14 +11,21 @@ import { getOrgFromLocation } from "@/utils/helpers";
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
+// env info variable
+// this will return true if env is "test" as well
+export const __isDev__ = process.env.NODE_ENV !== "production";
+// check for explicit "test" environment
+export const __isTest__ = process.env.NODE_ENV === "test";
+
 // organization constants
-export const __organization__ = window.location
+export const __organization__ = __isTest__
+  ? // since we're importing organization string from this constant
+    // to make our lives easier (so that we don't have to mock organization)
+    // the __organization__ in test environment will always have a value of __testOrganization__
+    __testOrganization__
+  : window.location
   ? getOrgFromLocation(window.location.hostname)
   : "localhost";
-
-// env info variable
-// it's safe to say that we can treat the "test" environment the same as "development"
-export const __isDev__ = process.env.NODE_ENV !== "production";
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =

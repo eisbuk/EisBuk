@@ -7,6 +7,8 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
+import { db } from "@/__testSetup__/firestoreSetup";
+
 import { __organization__ } from "@/lib/constants";
 
 import { Action, NotifVariant } from "@/enums/store";
@@ -19,15 +21,16 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
 import { deleteAll } from "@/__testUtils__/firestore";
 
+import i18n from "@/__testUtils__/i18n";
+import { loginDefaultUser } from "@/__testUtils__/auth";
+
 import {
   initialSlotIds,
   initialSlots,
   testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
-import i18n from "@/__testUtils__/i18n";
 
-const db = firestore.getFirestore();
 const slotsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Slots}`;
 
 /**
@@ -65,7 +68,8 @@ const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
 describe("Slot operations ->", () => {
   beforeEach(async () => {
-    await deleteAll([OrgSubCollection.Slots]);
+    await deleteAll();
+    await loginDefaultUser();
     jest.clearAllMocks();
   });
 

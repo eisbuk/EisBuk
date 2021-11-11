@@ -13,15 +13,13 @@ import {
 } from "react-redux";
 import { DateTime } from "luxon";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
+import { Collection, luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { ReduxFirestoreContext } from "./ReduxFiresotreContext";
 
 import { getCalendarDay } from "../selectors/app";
-
-import { luxon2ISODate } from "@/utils/date";
 
 /**
  * `activeListeners` entry for each registered listener.
@@ -135,7 +133,7 @@ const ReduxFirestoreProvider: React.FC<ProviderProps> = ({
 };
 
 const subscribe = (coll: OrgSubCollection, currentDate: DateTime) => {
-  const orgPath = `${Collection.Organizations}/${ORGANIZATION}`;
+  const orgPath = `${Collection.Organizations}/${__organization__}`;
   const db = getFirestore();
   const collectionRef = collection(db, `${orgPath}/${coll}`);
   const [startDate, endDate] = [-1, 2].map((delta) => {

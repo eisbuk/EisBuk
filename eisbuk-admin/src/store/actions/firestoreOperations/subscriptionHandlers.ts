@@ -21,7 +21,7 @@ import {
   SlotsByDay,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
+import { __organization__ } from "@/lib/constants";
 
 import { Routes } from "@/enums/routes";
 
@@ -29,7 +29,7 @@ import { CollectionSubscription, LocalStore } from "@/types/store";
 
 import { updateLocalColl } from "./actionCreators";
 
-const orgPath = `${Collection.Organizations}/${ORGANIZATION}`;
+const orgPath = `${Collection.Organizations}/${__organization__}`;
 
 interface HandlerParams {
   currentDate: DateTime;

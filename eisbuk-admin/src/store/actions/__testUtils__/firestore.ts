@@ -15,7 +15,7 @@ import {
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
-import { adminDb } from "@/__testSettings__";
+import { adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { createTestStore } from "@/__testUtils__/firestore";
 
@@ -198,7 +198,7 @@ export const setupTestCustomer = async ({
       },
     });
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**

@@ -1,9 +1,11 @@
 import * as firestore from "@firebase/firestore";
+import { collection, query, where } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
-import { db } from "@/tests/settings";
+import { db } from "@/__testSetup__/firestoreSetup";
+
+import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
 
@@ -15,10 +17,9 @@ import { store } from "@/store/store";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { dummyAttendance } from "@/__testData__/dataTriggers";
 
-const getFirestore = () => db;
-jest.spyOn(firestore, "getFirestore").mockImplementation(getFirestore);
+jest.spyOn(firestore, "getFirestore");
 
-const attendanceCollPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Attendance}`;
+const attendanceCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Attendance}`;
 
 // we're using `onSnapshot` spy to test subscriptions to the firestore db
 const onSnapshotSpy = jest.spyOn(firestore, "onSnapshot");
@@ -30,17 +31,14 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should subscribe to attendance entries collection for prev, curr and next month", () => {
-      const attendanceCollRef = firestore.collection(
-        getFirestore(),
-        attendanceCollPath
-      );
+      const attendanceCollRef = collection(db, attendanceCollPath);
       const [startDate, endDate] = [-1, 2].map((delta) =>
         testDateLuxon.plus({ months: delta }).toISODate()
       );
-      const query = firestore.query(
+      const q = query(
         attendanceCollRef,
-        firestore.where("date", ">=", startDate),
-        firestore.where("date", "<=", endDate)
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
 
       subscribe({
@@ -49,23 +47,23 @@ describe("Firestore subscription handlers", () => {
         currentDate: testDateLuxon,
       });
 
-      expect(onSnapshotSpy.mock.calls[0][0]).toEqual(query);
+      expect(onSnapshotSpy.mock.calls[0][0]).toEqual(q);
     });
 
     test("should update 'attendance' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
       const initialAttendance: LocalStore["firestore"]["data"]["attendance"] = {
         ["slot-1"]: {
-          date: testDate as any /** @TODO remove this when merging */,
+          date: testDate,
           attendances: {},
         },
       };
       const updatedAttendance: LocalStore["firestore"]["data"]["attendance"] = {
         ["slot-2"]: {
-          date: testDate as any /** @TODO remove this when merging */,
+          date: testDate,
           attendances: dummyAttendance,
         },
         ["slot-3"]: {
-          date: testDate as any /** @TODO remove this when merging */,
+          date: testDate,
           attendances: {},
         },
       };

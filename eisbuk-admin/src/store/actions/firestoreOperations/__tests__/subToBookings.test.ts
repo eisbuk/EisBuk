@@ -1,30 +1,34 @@
 import * as firestore from "@firebase/firestore";
+import { collection, doc, query, where } from "@firebase/firestore";
 
 import {
   BookingSubCollection,
   Collection,
-  CustomerBase,
   CustomerBookingEntry,
   OrgSubCollection,
 } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
-import { db } from "@/tests/settings";
+import { db } from "@/__testSetup__/firestoreSetup";
+
+import { __organization__ } from "@/lib/constants";
+
+import { Routes } from "@/enums/routes";
+
+import { LocalStore } from "@/types/store";
 
 import { subscribe } from "../subscriptionHandlers";
+import { updateLocalColl } from "../actionCreators";
 
 import { store } from "@/store/store";
 
+import { getCustomerBase } from "@/__testUtils__/customers";
+
 import { testDate, testDateLuxon } from "@/__testData__/date";
-import { Routes } from "@/enums/routes";
 import { gus, saul } from "@/__testData__/customers";
-import { updateLocalColl } from "../actionCreators";
-import { LocalStore } from "@/types/store";
 
-const getFirestore = () => db;
-jest.spyOn(firestore, "getFirestore").mockImplementation(getFirestore);
+jest.spyOn(firestore, "getFirestore");
 
-const bookingsCollPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Bookings}`;
+const bookingsCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
 
 // set up secret key to be used throughout the tests
 const secretKey = "secret-key";
@@ -46,10 +50,7 @@ describe("Firestore subscription handlers", () => {
 
   describe("test subscribing to bookings", () => {
     test("should subscribe for customer's booking doc", () => {
-      const bookingDocRef = firestore.doc(
-        getFirestore(),
-        `${bookingsCollPath}/${secretKey}`
-      );
+      const bookingDocRef = doc(db, `${bookingsCollPath}/${secretKey}`);
 
       subscribe({
         coll: OrgSubCollection.Bookings,
@@ -61,17 +62,17 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should subscribe to customer's booked slots for prev, curr and next month", () => {
-      const bookedSlotsRef = firestore.collection(
-        getFirestore(),
+      const bookedSlotsRef = collection(
+        db,
         `${bookingsCollPath}/${secretKey}/${BookingSubCollection.BookedSlots}`
       );
       const [startDate, endDate] = [-1, 2].map((delta) =>
         testDateLuxon.plus({ months: delta }).toISODate()
       );
-      const bookingQuery = firestore.query(
+      const bookingQuery = query(
         bookedSlotsRef,
-        firestore.where("date", ">=", startDate),
-        firestore.where("date", "<=", endDate)
+        where("date", ">=", startDate),
+        where("date", "<=", endDate)
       );
 
       subscribe({
@@ -105,22 +106,11 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should update 'bookings' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
-      /** @TODO replace this with getCustomerBase */
-      const initialBookings: CustomerBase = {
-        name: saul.name,
-        surname: saul.surname,
-        id: saul.id,
-        category: saul.category,
-      };
+      const initialBookings = getCustomerBase(saul);
       store.dispatch(
         updateLocalColl(OrgSubCollection.Bookings, initialBookings)
       );
-      const updatedBookings = {
-        name: gus.name,
-        surname: gus.surname,
-        id: gus.id,
-        category: gus.category,
-      };
+      const updatedBookings = getCustomerBase(gus);
       const update = {
         data: () => updatedBookings,
       };

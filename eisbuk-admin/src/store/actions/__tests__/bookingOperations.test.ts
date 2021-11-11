@@ -65,7 +65,7 @@ const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 describe("Booking Notifications", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.Bookings]);
+    await deleteAll();
   });
 
   describe("'bookInterval'", () => {

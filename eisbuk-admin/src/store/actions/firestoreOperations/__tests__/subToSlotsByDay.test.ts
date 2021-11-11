@@ -1,9 +1,11 @@
 import * as firestore from "@firebase/firestore";
+import { doc } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
-import { db } from "@/tests/settings";
+import { db } from "@/__testSetup__/firestoreSetup";
+
+import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
 
@@ -13,11 +15,7 @@ import { updateLocalColl } from "../actionCreators";
 import { store } from "@/store/store";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
-import { baseSlot } from "@/__testData__/dummyData";
-import { slotId } from "@/__testData__/dataTriggers";
-
-const getFirestore = () => db;
-jest.spyOn(firestore, "getFirestore").mockImplementation(getFirestore);
+import { baseSlot } from "@/__testData__/slots";
 
 const onSnapshotSpy = jest.spyOn(firestore, "onSnapshot");
 
@@ -28,7 +26,7 @@ describe("Firestore subscription handlers", () => {
 
   describe("test subscribing to slotsByDay", () => {
     test("should subscribe to documents for previous, current, and following month", () => {
-      const slotsByDayPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.SlotsByDay}`;
+      const slotsByDayPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.SlotsByDay}`;
       // call the function
       subscribe({
         coll: OrgSubCollection.SlotsByDay,
@@ -41,7 +39,7 @@ describe("Firestore subscription handlers", () => {
           .plus({ months: delta })
           .toISODate()
           .substr(0, 7);
-        return firestore.doc(getFirestore(), `${slotsByDayPath}/${monthStr}`);
+        return doc(db, `${slotsByDayPath}/${monthStr}`);
       });
       // get docs subscribed within tests -> first param of `onSnapshot` calls
       const subscribedDocs = onSnapshotSpy.mock.calls.map(([doc]) => doc);
@@ -83,7 +81,7 @@ describe("Firestore subscription handlers", () => {
         },
       };
       const monthString = testDate.substr(0, 7);
-      const monthEntry = { [testDate]: { [slotId]: baseSlot } };
+      const monthEntry = { [testDate]: { [baseSlot.id]: baseSlot } };
       /**
        * A full update we're mocking to simulate document `snapshot` on snapshot update
        */

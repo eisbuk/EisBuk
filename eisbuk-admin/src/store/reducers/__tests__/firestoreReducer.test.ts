@@ -10,8 +10,9 @@ import {
   updateFirestoreListener,
 } from "@/store/actions/firestoreOperations/actionCreators";
 
-import { baseAttendance, slotId } from "@/__testData__/dataTriggers";
+import { baseAttendance } from "@/__testData__/dataTriggers";
 
+const slotId = "slot-id";
 // collection we'll be using throughout the tests
 const collection = OrgSubCollection.Attendance;
 const consumerId = "some-consumer-id";
@@ -76,7 +77,7 @@ describe("Firestore reducer", () => {
     const updatedAttendance = {
       [slotId]: {
         ...baseAttendance,
-        date: "1550-11-11" as any /** @TODO remove any ehn intergating with master */,
+        date: "1550-11-11",
       },
     };
 

@@ -11,7 +11,9 @@ import {
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
-import { functions } from "@/__testSettings__";
+import { getOrganization } from "@/lib/getters";
+
+import { functions } from "@/__testSetup__/firestoreSetup";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -33,7 +35,6 @@ import {
   unprunedMonth,
 } from "../__testData__/migrations";
 import { walt } from "@/__testData__/customers";
-import { getOrganization } from "@/lib/getters";
 
 const organization = getOrganization();
 
@@ -48,14 +49,9 @@ export const invokeFunction = (functionName: string) => (): Promise<any> =>
 const db = getFirestore();
 const orgDocPath = `${Collection.Organizations}/${organization}`;
 
-describe("Migrations", () => {
-  afterEach(async () => {
-    await deleteAll([
-      OrgSubCollection.Slots,
-      OrgSubCollection.Bookings,
-      DeprecatedOrgSubCollection.BookingsByDay,
-      OrgSubCollection.SlotsByDay,
-    ]);
+xdescribe("Migrations", () => {
+  beforeEach(async () => {
+    await deleteAll();
   });
 
   describe("'migrateToNewDataModel'", () => {

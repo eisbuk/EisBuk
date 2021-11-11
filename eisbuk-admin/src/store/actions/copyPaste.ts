@@ -7,6 +7,7 @@ import {
   SlotInterface,
   SlotsById,
   luxon2ISODate,
+  fromISO,
 } from "eisbuk-shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -213,7 +214,8 @@ export const pasteSlotsWeek = (
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     slots.forEach(({ id, date: oldDate, ...slotData }) => {
-      const date = { seconds: oldDate + jump };
+      const luxonDate = fromISO(oldDate).plus({ weeks: jump });
+      const date = luxon2ISODate(luxonDate);
       const newSlotRef = doc(slotsCollRef);
       batch.set(newSlotRef, { ...slotData, date });
     });

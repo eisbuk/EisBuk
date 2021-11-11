@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter } from "react-router-dom";
 import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
+import { Provider as ReduxProvider } from "react-redux";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
@@ -12,7 +13,6 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { store } from "@/store";
 
 import AppContent from "@/AppContent";
-import ReduxFirestoreProvider from "@/store/firestore/ReduxFirestoreProvider";
 
 import Notifier from "@/components/Notifier";
 
@@ -22,7 +22,7 @@ const App: React.FC = () => {
   const classes = useStyles();
 
   return (
-    <ReduxFirestoreProvider store={store}>
+    <ReduxProvider store={store}>
       <ThemeProvider theme={currentTheme}>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider className={classes.root} maxSnack={3}>
@@ -34,7 +34,7 @@ const App: React.FC = () => {
           </SnackbarProvider>
         </MuiPickersUtilsProvider>
       </ThemeProvider>
-    </ReduxFirestoreProvider>
+    </ReduxProvider>
   );
 };
 

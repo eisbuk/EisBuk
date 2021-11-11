@@ -1,4 +1,4 @@
-import { initializeApp } from "@firebase/app";
+import { initializeApp, FirebaseOptions } from "@firebase/app";
 import {
   useDeviceLanguage,
   getAuth,
@@ -24,7 +24,7 @@ import {
   __measurementId__,
 } from "@/lib/constants";
 
-const fbConfig = {
+const fbConfig: FirebaseOptions = {
   // common config data
   // loaded from .env variables according to environment
   databaseURL: __databaseURL__,
@@ -53,7 +53,8 @@ const auth = getAuth();
 useDeviceLanguage(auth);
 const db = getFirestore();
 
-const functions = getFunctions();
+const functions = getFunctions(firebase, "europe-west6");
+console.log(`Functions region > ${functions.region}`);
 
 if (__isDev__) {
   connectFirestoreEmulator(db, "localhost", 8080);

@@ -130,6 +130,7 @@
     "moduleNameMapper": {
       "@/(.*)": "<rootDir>/src/$1"
     },
+    "globalSetup": "<rootDir>/src/__testSetup__/initTests.ts",
     "collectCoverageFrom": [
       "src/**/*.{ts,tsx}",
       "src/*.{ts,tsx}",

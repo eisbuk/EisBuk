@@ -1,10 +1,12 @@
-import firebase from "firebase/app";
+import {
+  deleteDoc as delDoc,
+  getDoc,
+  setDoc,
+  doc,
+  getFirestore,
+} from "@firebase/firestore";
 
 import { FirestoreThunk } from "@/types/store";
-import { Collection } from "eisbuk-shared/dist";
-import { getOrganization } from "@/lib/getters";
-
-type DocumentReference = firebase.firestore.DocumentReference;
 
 /**
  * A helper function we're using to test string serialized record/array if parsable JSON objects
@@ -19,19 +21,10 @@ export const testJSON = (serialized: string | undefined): boolean => {
 };
 
 /**
- * A function we're passing as callback to submit/delete function.
- * accepts db (firestore) instance as param and creates ref to document we want
- * to create/update/delete
- */
-export interface GetRef {
-  (db: DocumentReference): DocumentReference;
-}
-
-/**
  * Base params for DispatchFB function (get's extended with `docValues` for "submit" variant)
  */
 export interface DispatchFSBaseParams {
-  getRef: GetRef;
+  docPath: string;
   /**
    * Optional string used for more precise console log message.
    * Defaults to "document"
@@ -61,21 +54,17 @@ interface DispatchFS<T extends "submit" | "delete"> {
  * of given document to firestore
  */
 export const submitDoc: DispatchFS<"submit"> = ({
-  getRef,
+  docPath,
   docValues,
   docType = "document",
-}) => async (_dispatch, _getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
-
-  const docRef = getRef(
-    db.collection(Collection.Organizations).doc(getOrganization())
-  );
+}) => async () => {
+  const docRef = doc(getFirestore(), docPath);
 
   // try and set updated document in firestore
-  await docRef.set(docValues);
+  await setDoc(docRef, docValues);
 
   // check updated document and log to console
-  const updatedDoc = (await docRef.get()).data();
+  const updatedDoc = (await getDoc(docRef)).data();
 
   console.log(`Updated ${docType} > `, updatedDoc);
 };
@@ -85,20 +74,16 @@ export const submitDoc: DispatchFS<"submit"> = ({
  * of given document to firestore
  */
 export const deleteDoc: DispatchFS<"delete"> = ({
-  getRef,
+  docPath,
   docType = "document",
-}) => async (_dispatch, _getState, { getFirebase }) => {
-  const db = getFirebase().firestore();
-
-  const docRef = getRef(
-    db.collection(Collection.Organizations).doc(getOrganization())
-  );
+}) => async () => {
+  const docRef = doc(getFirestore(), docPath);
 
   // try and delete document in firestore
-  await docRef.delete();
+  await delDoc(docRef);
 
   // check updated document and log to console
-  const deletedDoc = await docRef.get();
+  const deletedDoc = await getDoc(docRef);
 
   if (!deletedDoc.exists) {
     console.log(`${docType} successfully deleted`);

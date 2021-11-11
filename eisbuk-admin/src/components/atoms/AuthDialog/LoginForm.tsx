@@ -14,7 +14,7 @@ import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { __cancel__, __next__ } from "@/lib/labels";
+import { ActionButton } from "@/enums/translations";
 
 const auth = getAuth();
 
@@ -108,10 +108,10 @@ const LoginForm: React.FC<Props> = ({ onCancel }) => {
         )}
         <div className={classes.buttonsContainer}>
           <Button className={classes.cancelButton} onClick={onCancel}>
-            {t(__cancel__)}
+            {t(ActionButton.Cancel)}
           </Button>
           <Button className={classes.nextButton} type="submit">
-            {t(__next__)}
+            {t(ActionButton.Next)}
           </Button>
         </div>
       </Form>

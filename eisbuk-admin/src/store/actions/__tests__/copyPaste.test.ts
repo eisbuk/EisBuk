@@ -9,6 +9,8 @@ import {
   luxon2ISODate,
 } from "eisbuk-shared";
 
+import { db } from "@/__testSetup__/firestoreSetup";
+
 import { __organization__ } from "@/lib/constants";
 
 import {
@@ -25,6 +27,7 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import {
@@ -34,6 +37,7 @@ import {
   testWeek,
 } from "../__testData__/copyPaste";
 import { baseSlot } from "@/__testData__/slots";
+
 /**
  * Mock dispatch function we're feeding to our thunk testing function (`setUpTestSlots`)
  */
@@ -48,7 +52,8 @@ const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 describe("Copy Paste actions", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
-    await deleteAll([OrgSubCollection.SlotsByDay, OrgSubCollection.Slots]);
+    await deleteAll();
+    await loginDefaultUser();
   });
 
   describe("copySlotsDay", () => {
@@ -93,7 +98,6 @@ describe("Copy Paste actions", () => {
     );
   });
 
-  const db = firestore.getFirestore();
   const slotsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Slots}`;
 
   const monthStr = testDate.substr(0, 7);

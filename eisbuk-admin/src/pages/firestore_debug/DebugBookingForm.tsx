@@ -7,7 +7,13 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 
-import { BookingSubCollection, OrgSubCollection } from "eisbuk-shared";
+import {
+  BookingSubCollection,
+  Collection,
+  OrgSubCollection,
+} from "eisbuk-shared";
+
+import { __organization__ } from "@/lib/constants";
 
 import { useFormStyles } from "./styles";
 
@@ -92,12 +98,7 @@ const DebugBookingForm: React.FC = () => {
  */
 const getDispatchParams = (slotId: string): DispatchFSBaseParams => ({
   docType: "booking",
-  getRef: (org) =>
-    org
-      .collection(OrgSubCollection.Bookings)
-      .doc("test-customer")
-      .collection(BookingSubCollection.BookedSlots)
-      .doc(slotId),
+  docPath: `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}/test-customer/${BookingSubCollection.BookedSlots}/${slotId}`,
 });
 
 export default DebugBookingForm;

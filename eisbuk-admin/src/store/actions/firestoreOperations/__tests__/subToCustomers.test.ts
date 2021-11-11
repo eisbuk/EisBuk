@@ -1,9 +1,11 @@
 import * as firestore from "@firebase/firestore";
+import { collection } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { ORGANIZATION } from "@/config/envInfo";
-import { db } from "@/tests/settings";
+import { db } from "@/__testSetup__/firestoreSetup";
+
+import { __organization__ } from "@/lib/constants";
 
 import { subscribe } from "../subscriptionHandlers";
 
@@ -13,10 +15,9 @@ import { saul, gus, jian } from "@/__testData__/customers";
 import { testDateLuxon } from "@/__testData__/date";
 import { updateLocalColl } from "../actionCreators";
 
-const getFirestore = () => db;
-jest.spyOn(firestore, "getFirestore").mockImplementation(getFirestore);
+jest.spyOn(firestore, "getFirestore");
 
-const customersCollPath = `${Collection.Organizations}/${ORGANIZATION}/${OrgSubCollection.Customers}`;
+const customersCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
 // we're using `onSnapshot` spy to test subscriptions to the firestore db
 const onSnapshotSpy = jest.spyOn(firestore, "onSnapshot");
@@ -28,10 +29,7 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should subscribe to customers collection for an organization", () => {
-      const customersCollRef = firestore.collection(
-        getFirestore(),
-        customersCollPath
-      );
+      const customersCollRef = collection(db, customersCollPath);
 
       subscribe({
         coll: OrgSubCollection.Customers,

@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "@firebase/auth";
+import { getApp } from "@firebase/app";
 import { getFunctions, httpsCallable } from "@firebase/functions";
 
 import Container from "@material-ui/core/Container";
@@ -18,8 +19,9 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
 
+const app = getApp();
 const auth = getAuth();
-const functions = getFunctions();
+const functions = getFunctions(app, "europe-west6");
 
 /**
  * Invokes cloud function
@@ -28,6 +30,7 @@ const functions = getFunctions();
  */
 export const invokeFunction = (functionName: CloudFunction) => {
   return async (): Promise<void> => {
+    console.log(`Calling a function from > ${functions.region}`);
     const res = await httpsCallable(
       functions,
       functionName
