@@ -17,6 +17,7 @@ import {
   BookingSubCollection,
   Collection,
   CustomerBase,
+  OrganizationMeta,
   OrgSubCollection,
   SlotsByDay,
 } from "eisbuk-shared";
@@ -75,6 +76,8 @@ export const subscribe: SubscriptionHandler<"router"> = ({
       return subToAttendance(handlerParams);
     case OrgSubCollection.Customers:
       return subToCustomers(handlerParams);
+    case Collection.Organizations:
+      return subToOrganization(handlerParams);
     default:
       // this should be unreachable with proper usage
       console.error(
@@ -228,6 +231,20 @@ export const subToCustomers: SubscriptionHandler = ({ dispatch }) => {
     collRef,
     updateCollSnapshot(OrgSubCollection.Customers, dispatch)
   );
+};
+
+/**
+ * A subscription handler for `organizations`. Subscribes to organization data for a given organization.
+ * @param dispatch redux dispatch function
+ * @returns unsubscribe function returned from `onSnapshot` call
+ */
+export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
+  const docRef = doc(getFirestore(), orgPath);
+
+  return onSnapshot(docRef, (snapshot) => {
+    const update = { [snapshot.id]: snapshot.data() as OrganizationMeta };
+    dispatch(updateLocalColl(Collection.Organizations, update, true));
+  });
 };
 // #endregion subHandlers
 

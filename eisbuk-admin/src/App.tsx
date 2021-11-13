@@ -1,8 +1,8 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
 import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
 import { Provider as ReduxProvider } from "react-redux";
+import { getAuth } from "@firebase/auth";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
@@ -16,10 +16,16 @@ import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
 
+import { useConnectAuthToStore } from "@/store/firestore/useFirestoreAuth";
+
 import { currentTheme } from "@/themes";
 
 const App: React.FC = () => {
   const classes = useStyles();
+
+  // connect auth to store to recieve firebase SDK's auth updates
+  // through redux store
+  useConnectAuthToStore(getAuth(), store);
 
   return (
     <ReduxProvider store={store}>
@@ -28,9 +34,7 @@ const App: React.FC = () => {
           <SnackbarProvider className={classes.root} maxSnack={3}>
             <Notifier />
             <CssBaseline />
-            <BrowserRouter>
-              <AppContent />
-            </BrowserRouter>
+            <AppContent />
           </SnackbarProvider>
         </MuiPickersUtilsProvider>
       </ThemeProvider>

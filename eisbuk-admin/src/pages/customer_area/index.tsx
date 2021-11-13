@@ -17,13 +17,12 @@ import {
   getBookedSlots,
 } from "@/store/selectors/bookings";
 import { getSlotsForCustomer } from "@/store/selectors/slots";
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 import { splitSlotsByCustomerRoute } from "./utils";
-import { isEmpty } from "@/temp/helpers";
 
 /**
  * Customer sub routes:
@@ -70,19 +69,16 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const bookedSlots = useSelector(getBookedSlots);
 
-  /** @TODO update below when we update auth */
-  const auth = useSelector(getFirebaseAuth);
+  const isAdmin = useSelector(getIsAdmin);
 
   const title =
+    /** @TODO isLoaded */
     // isLoaded(customerData) &&
     customerData ? `${customerData.name} ${customerData.surname}` : "";
 
   const headers = (
     <>
-      {
-        // isLoaded(auth) &&
-        !isEmpty(auth) && <AppbarAdmin />
-      }
+      {isAdmin && <AppbarAdmin />}
       <AppbarCustomer headingText={title} />
     </>
   );

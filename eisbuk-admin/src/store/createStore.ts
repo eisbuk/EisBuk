@@ -14,7 +14,7 @@ const middlewares = [thunk];
  * (with default state for each test)
  * @returns a new store set up for our app
  */
-export default (): Store<LocalStore> =>
+export const getNewStore = (): Store<LocalStore> =>
   createStore(
     rootReducer,
     {},

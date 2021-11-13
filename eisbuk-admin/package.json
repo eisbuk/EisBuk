@@ -34,6 +34,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "unix-timestamp": "^0.2.0",
+    "use-sync-external-store": "1.0.0-alpha-5cccacd13-20211101",
     "uuid": "^8.3.0",
     "yup": "0.32.9"
   },
@@ -97,6 +98,7 @@
     "@types/react-i18next": "^8.1.0",
     "@types/react-router-dom": "^5.1.7",
     "@types/seedrandom": "^3.0.1",
+    "@types/use-sync-external-store": "^0.0.3",
     "@types/uuid": "^8.3.1",
     "@types/yup": "^0.29.13",
     "@typescript-eslint/eslint-plugin": "^4.30.0",

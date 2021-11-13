@@ -1,10 +1,7 @@
-import React, { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import React from "react";
 import { Route, Switch } from "react-router-dom";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
-
-import { LocalStore } from "@/types/store";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
@@ -19,10 +16,6 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
 
-import { queryOrganizationStatus } from "@/store/actions/authOperations";
-
-import { isEmpty } from "./temp/helpers";
-
 /**
  * All of the App content (including routes) wrapper.
  * On change of auth credentials (and initial render)
@@ -32,20 +25,17 @@ import { isEmpty } from "./temp/helpers";
  * @returns wrapper or components directly, both resulting if further rendering `AppComponents`
  */
 const AppContent: React.FC = () => {
-  const auth = useSelector((state: LocalStore) => state.auth);
-  const dispatch = useDispatch();
-
   // When auth changes this component fires a query to determine
   // whether the current user is an administrator.
-  useEffect(() => {
-    if (
-      /** @TODO update this when we update `isLoaded` function */
-      // isLoaded(auth) &&
-      !isEmpty(auth)
-    ) {
-      dispatch(queryOrganizationStatus());
-    }
-  }, [auth, dispatch]);
+  /** @TODO we should put organization subscription here */
+  // useEffect(() => {
+  //   if (
+  //     // isLoaded(auth) &&
+  //     !isEmpty(auth)
+  //   ) {
+  //     dispatch(queryOrganizationStatus());
+  //   }
+  // }, [auth, dispatch]);
 
   return (
     <Switch>

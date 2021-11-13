@@ -12,12 +12,10 @@ import { LocalStore } from "@/types/store";
 import { subscribe } from "../subscriptionHandlers";
 import { updateLocalColl } from "../actionCreators";
 
-import { store } from "@/store/store";
+import { getNewStore } from "@/store/createStore";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { dummyAttendance } from "@/__testData__/dataTriggers";
-
-jest.spyOn(firestore, "getFirestore");
 
 const attendanceCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Attendance}`;
 
@@ -43,7 +41,7 @@ describe("Firestore subscription handlers", () => {
 
       subscribe({
         coll: OrgSubCollection.Attendance,
-        dispatch: store.dispatch,
+        dispatch: jest.fn(),
         currentDate: testDateLuxon,
       });
 
@@ -51,6 +49,8 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should update 'attendance' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
+      const { dispatch, getState } = getNewStore();
+
       const initialAttendance: LocalStore["firestore"]["data"]["attendance"] = {
         ["slot-1"]: {
           date: testDate,
@@ -71,9 +71,7 @@ describe("Firestore subscription handlers", () => {
         (acc, key) => [...acc, { id: key, data: () => updatedAttendance[key] }],
         [] as any[]
       );
-      store.dispatch(
-        updateLocalColl(OrgSubCollection.Attendance, initialAttendance)
-      );
+      dispatch(updateLocalColl(OrgSubCollection.Attendance, initialAttendance));
       onSnapshotSpy.mockImplementation((_, callback) =>
         // we're calling the update callback immediately to simulate shapshot update
         (callback as any)(update)
@@ -81,11 +79,11 @@ describe("Firestore subscription handlers", () => {
 
       subscribe({
         coll: OrgSubCollection.Attendance,
-        dispatch: store.dispatch,
+        dispatch,
         currentDate: testDateLuxon,
       });
 
-      const updatedState = store.getState().firestore.data.attendance;
+      const updatedState = getState().firestore.data.attendance;
       expect(updatedState).toEqual(updatedAttendance);
     });
   });

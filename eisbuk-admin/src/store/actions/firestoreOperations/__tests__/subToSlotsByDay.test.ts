@@ -12,7 +12,7 @@ import { LocalStore } from "@/types/store";
 import { subscribe } from "../subscriptionHandlers";
 import { updateLocalColl } from "../actionCreators";
 
-import { store } from "@/store/store";
+import { getNewStore } from "@/store/createStore";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { baseSlot } from "@/__testData__/slots";
@@ -68,6 +68,7 @@ describe("Firestore subscription handlers", () => {
 
     test("should update month's slostByDay entry in local store on month's documet change", () => {
       // set up test data
+      const { dispatch, getState } = getNewStore();
       const prevMonthStart = testDateLuxon
         .plus({ months: -1 })
         .startOf("month")
@@ -87,9 +88,7 @@ describe("Firestore subscription handlers", () => {
        */
       const documentUpdate = { id: monthString, data: () => monthEntry };
       // set up test state
-      store.dispatch(
-        updateLocalColl(OrgSubCollection.SlotsByDay, initialSlotsByDay)
-      );
+      dispatch(updateLocalColl(OrgSubCollection.SlotsByDay, initialSlotsByDay));
       /*
        * 1. We're mocking the execution of `onSnapshot` to immideately run with our dummy month-slots-entry
        *    to test out the proper updating of the store
@@ -106,11 +105,10 @@ describe("Firestore subscription handlers", () => {
       // call the function
       subscribe({
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch,
         coll: OrgSubCollection.SlotsByDay,
       })();
-      const updatedState = (store.getState() as LocalStore).firestore.data
-        .slotsByDay;
+      const updatedState = (getState() as LocalStore).firestore.data.slotsByDay;
       // the firestore entry should be the same with only test month updated
       expect(updatedState).toEqual({
         ...initialSlotsByDay,

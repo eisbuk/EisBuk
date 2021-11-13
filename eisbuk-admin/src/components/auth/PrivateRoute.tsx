@@ -5,11 +5,13 @@ import { useSelector } from "react-redux";
 import { Routes } from "@/enums/routes";
 
 import Unauthorized from "./Unauthorized";
-// import Loading from "./Loading";
+import Loading from "./Loading";
 
-import { getFirebaseAuth, getAmIAdmin } from "@/store/selectors/auth";
-
-import { isEmpty } from "@/temp/helpers";
+import {
+  getIsAdmin,
+  getIsAuthEmpty,
+  getIsAuthLoaded,
+} from "@/store/selectors/auth";
 
 /**
  * Wrapper around route component to isolate (add auth check to) private routes
@@ -17,22 +19,22 @@ import { isEmpty } from "@/temp/helpers";
  * @returns JSX.Element
  */
 const PrivateRoute: React.FC<RouteProps> = (props) => {
-  const auth = useSelector(getFirebaseAuth);
-
-  const amIAdmin = useSelector(getAmIAdmin);
+  const isAuthEmpty = useSelector(getIsAuthEmpty);
+  const isAdmin = useSelector(getIsAdmin);
+  const isAuthLoaded = useSelector(getIsAuthLoaded);
 
   /** @TODO update below when we update auth and `isloaded` / `isEmpty` helpers */
   switch (true) {
-    // display loading state until auth is processed
-    // case !isLoaded(auth):
-    //   return <Loading />;
+    // display loading state until initial auth is loaded
+    case !isAuthLoaded:
+      return <Loading />;
 
     // render admin route
-    case amIAdmin && !isEmpty(auth):
+    case isAdmin:
       return <Route {...props} />;
 
     // render "unauthorized"
-    case !amIAdmin && !isEmpty(auth):
+    case !isAdmin && !isAuthEmpty:
       return <Unauthorized />;
 
     default:

@@ -9,13 +9,11 @@ import { __organization__ } from "@/lib/constants";
 
 import { subscribe } from "../subscriptionHandlers";
 
-import { store } from "@/store/store";
+import { getNewStore } from "@/store/createStore";
 
 import { saul, gus, jian } from "@/__testData__/customers";
 import { testDateLuxon } from "@/__testData__/date";
 import { updateLocalColl } from "../actionCreators";
-
-jest.spyOn(firestore, "getFirestore");
 
 const customersCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -33,7 +31,7 @@ describe("Firestore subscription handlers", () => {
 
       subscribe({
         coll: OrgSubCollection.Customers,
-        dispatch: store.dispatch,
+        dispatch: jest.fn(),
         currentDate: testDateLuxon,
       });
 
@@ -41,6 +39,8 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should update 'customers' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
+      const { dispatch, getState } = getNewStore();
+
       const initialCustomers = {
         saul,
         gus,
@@ -53,9 +53,7 @@ describe("Firestore subscription handlers", () => {
         (acc, key) => [...acc, { id: key, data: () => updatedCustomers[key] }],
         [] as any[]
       );
-      store.dispatch(
-        updateLocalColl(OrgSubCollection.Customers, initialCustomers)
-      );
+      dispatch(updateLocalColl(OrgSubCollection.Customers, initialCustomers));
       onSnapshotSpy.mockImplementation((_, callback) =>
         // we're calling the update callback immediately to simulate shapshot update
         (callback as any)(update)
@@ -63,11 +61,11 @@ describe("Firestore subscription handlers", () => {
 
       subscribe({
         coll: OrgSubCollection.Customers,
-        dispatch: store.dispatch,
+        dispatch,
         currentDate: testDateLuxon,
       });
 
-      const updatedState = store.getState().firestore.data.customers;
+      const updatedState = getState().firestore.data.customers;
       expect(updatedState).toEqual(updatedCustomers);
     });
   });

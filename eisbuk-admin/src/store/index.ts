@@ -24,6 +24,8 @@ import {
   __measurementId__,
 } from "@/lib/constants";
 
+import { getNewStore } from "./createStore";
+
 const fbConfig: FirebaseOptions = {
   // common config data
   // loaded from .env variables according to environment
@@ -76,4 +78,4 @@ if (__isDev__) {
   });
 }
 
-export * from "./store";
+export const store = getNewStore();

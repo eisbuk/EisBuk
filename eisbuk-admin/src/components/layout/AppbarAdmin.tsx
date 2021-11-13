@@ -33,7 +33,7 @@ import DebugMenu from "@/components/layout/DebugMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getLocalAuth } from "@/store/selectors/auth";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -44,7 +44,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
 
   const dispatch = useDispatch();
 
-  const auth = useSelector(getFirebaseAuth);
+  // this is asserted as non-null as this component shouldn't be rendered
+  // if user is not admin (and thus not authenticated either)
+  const userAuthInfo = useSelector(getLocalAuth)!;
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
@@ -60,7 +62,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     }
   };
 
-  const currentUser = auth.email || auth.phoneNumber;
+  const currentUser = userAuthInfo.email || userAuthInfo.phoneNumber;
   const { t } = useTranslation();
 
   return (

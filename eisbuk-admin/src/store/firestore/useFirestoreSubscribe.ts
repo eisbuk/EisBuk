@@ -1,10 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useContext, useEffect, useMemo, useRef } from "react";
+import { useDispatch } from "react-redux";
+import { useEffect, useMemo, useRef } from "react";
 import { v4 as uuid } from "uuid";
 
 import { CollectionSubscription } from "@/types/store";
 
-import { ReduxFirestoreContext } from "@/store/firestore/ReduxFiresotreContext";
+import {
+  addFirestoreListener,
+  removeFirestoreListener,
+} from "@/store/actions/firestoreOperations";
 
 /**
  * A hook used to communicate with `ReduxFirestoreProvider`.
@@ -12,6 +16,8 @@ import { ReduxFirestoreContext } from "@/store/firestore/ReduxFiresotreContext";
  * @param collections a list of (whitelisted) collections we're adding listeners for
  */
 const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
+  const dispatch = useDispatch();
+
   /**
    * A uuid used to identify the current instance of a hook as a consumer of registered listeners.
    */
@@ -33,13 +39,11 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
   // on each rerender, the current value for collections gets saved to `newCollections` ref
   newCollections.current = collections;
 
-  const { setListener, unsetListener } = useContext(ReduxFirestoreContext);
-
   useEffect(() => {
     // perform `setCollection` on each new collection (present in new state, but not in the old one)
     newCollections.current.forEach((coll) => {
       if (!oldCollections.current.includes(coll)) {
-        setListener(coll, consumerId);
+        dispatch(addFirestoreListener(coll, consumerId));
       }
     });
 
@@ -50,7 +54,7 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
       // unset collections present in old state, but not in the updated one
       oldCollections.current.forEach((coll) => {
         if (!newCollections.current.includes(coll)) {
-          unsetListener(coll, consumerId);
+          dispatch(removeFirestoreListener(coll, consumerId));
         }
       });
     };

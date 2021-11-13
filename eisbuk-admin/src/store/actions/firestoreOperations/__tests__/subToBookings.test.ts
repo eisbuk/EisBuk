@@ -19,14 +19,12 @@ import { LocalStore } from "@/types/store";
 import { subscribe } from "../subscriptionHandlers";
 import { updateLocalColl } from "../actionCreators";
 
-import { store } from "@/store/store";
+import { getNewStore } from "@/store/createStore";
 
 import { getCustomerBase } from "@/__testUtils__/customers";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { gus, saul } from "@/__testData__/customers";
-
-jest.spyOn(firestore, "getFirestore");
 
 const bookingsCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
 
@@ -55,7 +53,7 @@ describe("Firestore subscription handlers", () => {
       subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch: jest.fn(),
       });
 
       expect(onSnapshotSpy.mock.calls[0][0]).toEqual(bookingDocRef);
@@ -78,7 +76,7 @@ describe("Firestore subscription handlers", () => {
       subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch: jest.fn(),
       });
 
       expect(onSnapshotSpy.mock.calls[1][0]).toEqual(bookingQuery);
@@ -96,7 +94,7 @@ describe("Firestore subscription handlers", () => {
       const unsubscribe = subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch: jest.fn(),
       });
       unsubscribe();
 
@@ -106,10 +104,10 @@ describe("Firestore subscription handlers", () => {
     });
 
     test("should update 'bookings' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
+      const { dispatch, getState } = getNewStore();
+
       const initialBookings = getCustomerBase(saul);
-      store.dispatch(
-        updateLocalColl(OrgSubCollection.Bookings, initialBookings)
-      );
+      dispatch(updateLocalColl(OrgSubCollection.Bookings, initialBookings));
       const updatedBookings = getCustomerBase(gus);
       const update = {
         data: () => updatedBookings,
@@ -125,15 +123,16 @@ describe("Firestore subscription handlers", () => {
       subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch,
       });
 
-      const updatedState = (store.getState() as LocalStore).firestore.data
-        .bookings;
+      const updatedState = (getState() as LocalStore).firestore.data.bookings;
       expect(updatedState).toEqual(updatedBookings);
     });
 
     test("should update 'bookedSlots' entry in the local store on snapshot update (and overwrite the existing data completely)", () => {
+      const { dispatch, getState } = getNewStore();
+
       const initialBookedSlots: Record<string, CustomerBookingEntry> = {
         ["slot-1"]: {
           date: testDate as any,
@@ -144,7 +143,7 @@ describe("Firestore subscription handlers", () => {
           interval: "10:00-11:00",
         },
       };
-      store.dispatch(
+      dispatch(
         updateLocalColl(BookingSubCollection.BookedSlots, initialBookedSlots)
       );
       const updatedBookedSlots: Record<string, CustomerBookingEntry> = {
@@ -174,10 +173,10 @@ describe("Firestore subscription handlers", () => {
       subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
-        dispatch: store.dispatch,
+        dispatch,
       });
 
-      const updatedState = (store.getState() as LocalStore).firestore.data
+      const updatedState = (getState() as LocalStore).firestore.data
         .bookedSlots;
       expect(updatedState).toEqual(updatedBookedSlots);
     });

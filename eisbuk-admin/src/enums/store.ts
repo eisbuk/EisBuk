@@ -17,7 +17,9 @@ export enum Action {
   DeleteSlotFromClipboard = "@@Eisbuk/DELETE_SLOT_FROM_CLIPBOARD0",
   AddSlotToClipboard = "@@Eisbuk/ADD_SLOT_TO_CLIPBOARD",
 
-  IsOrganizationStatusReceived = "@@Eisbuk/IS_ORGANIZATION_STATUS_RECEIVED",
+  UpdateAuthInfo = "@@Eisbuk/UPDATE_AUTH_INFO",
+  UpdateAdminStatus = "@@Eisbuk/UPDATE_ADMIN_STATUS",
+  Logout = "@@Eisbuk/LOGOUT",
 
   UpdateFirestoreListener = "@@Eisbuk/UPDATE_FIRESTORE_LISTENER",
   UpdateLocalCollection = "@@Eisbuk/UPDATE_LOCAL_COLLECTION",

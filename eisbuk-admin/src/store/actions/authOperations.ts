@@ -1,26 +1,37 @@
-import { getFirestore, doc, getDoc } from "@firebase/firestore";
-import { getAuth } from "@firebase/auth";
+// import { CollectionReference, getFirestore } from "@firebase/firestore";
+import { getAuth, User } from "@firebase/auth";
 import i18n from "i18next";
 
 import { getOrganization } from "@/lib/getters";
 import { Collection } from "eisbuk-shared";
 
-import { NotifVariant, Action } from "@/enums/store";
+// import { __organization__ } from "@/lib/constants";
 
-import { AuthReducerAction, FirestoreThunk } from "@/types/store";
+import {
+  Action,
+  NotifVariant,
+  //  Action
+} from "@/enums/store";
+
+import {
+  FirestoreData,
+  AuthReducerAction,
+  FirestoreThunk,
+} from "@/types/store";
 
 import {
   enqueueNotification,
-  showErrSnackbar,
+  // showErrSnackbar,
 } from "@/store/actions/appActions";
+import { __organization__ } from "@/lib/constants";
 
-const updateOrganizationStatus = (
-  uid: string,
-  admins: string[]
-): AuthReducerAction<Action.IsOrganizationStatusReceived> => ({
-  type: Action.IsOrganizationStatusReceived,
-  payload: { uid, admins },
-});
+// const updateOrganizationStatus = (
+//   uid: string,
+//   admins: string[]
+// ): AuthReducerAction<Action.IsOrganizationStatusReceived> => ({
+//   type: Action.IsOrganizationStatusReceived,
+//   payload: { uid, admins },
+// });
 
 /**
  * Creates firestore async thunk:
@@ -63,24 +74,90 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
  * - on error enqueues error snackbar
  * @returns async thunk
  */
-export const queryOrganizationStatus = (): FirestoreThunk => async (
+// export const queryOrganizationStatus = (): FirestoreThunk => async (
+//   dispatch,
+//   getState
+// ) => {
+//   try {
+//     const db = getFirestore();
+
+//     const orgRef = doc(db, `${Collection.Organizations}/${__organization__}`);
+//     const res = await getDoc(orgRef);
+//     const admins: string[] = res.data()?.admins ?? [];
+//     const { uid } = (getState() as any).firebase.auth; /** @TODO_AUTH */
+
+//     if (uid) {
+//       dispatch(updateOrganizationStatus(uid, admins));
+//     }
+//   } catch (err) {
+//     /** @TODO inform the user that the login was successful, but */
+//     // they don't have permission to access
+//     dispatch(showErrSnackbar);
+//   }
+// };
+
+export const checkAdminStatus = (
+  authString: string,
+  orgsInStore?: FirestoreData[Collection.Organizations]
+): boolean =>
+  !authString || !orgsInStore
+    ? false
+    : !orgsInStore[__organization__]
+    ? false
+    : orgsInStore[__organization__].admins.includes(authString);
+
+/**
+ * An update user callback, called by firestore's `onAuthStateChanged`,
+ * get's passed a new user, determines the `isAuthenticated` and `isAdmin` state,
+ * dispatches the updates to store
+ * @param user {User | null} new user (if authenticated) or null if not authenticated as a user in our firebase auth record
+ * @returns a firestore thunk dispatching appropriate updates to the store
+ */
+export const updateAuthUser = (user: User | null): FirestoreThunk => async (
   dispatch,
   getState
 ) => {
-  try {
-    const db = getFirestore();
+  // stop early (and log out) if not user recieved
+  if (!user) {
+    dispatch({ type: Action.Logout });
+    return;
+  }
 
-    const orgRef = doc(db, `${Collection.Organizations}/${getOrganization()}`);
-    const res = await getDoc(orgRef);
-    const admins: string[] = res.data()?.admins ?? [];
-    const { uid } = (getState() as any).firebase.auth; /** @TODO_AUTH */
+  const orgsInStore = getState().firestore.data.organizations;
+  const { email, phoneNumber } = user;
 
-    if (uid) {
-      dispatch(updateOrganizationStatus(uid, admins));
-    }
-  } catch (err) {
-    /** @TODO inform the user that the login was successful, but */
-    // they don't have permission to access
-    dispatch(showErrSnackbar);
+  const isAdmin = checkAdminStatus(email || phoneNumber || "", orgsInStore);
+
+  dispatch({
+    type: Action.UpdateAuthInfo,
+    payload: { userData: user, isAdmin, isEmpty: false, isLoaded: true },
+  } as AuthReducerAction<Action.UpdateAuthInfo>);
+};
+
+/**
+ * @TODO
+ * @param user {User | null} new user (if authenticated) or null if not authenticated as a user in our firebase auth record
+ * @returns a firestore thunk dispatching appropriate updates to the store
+ */
+export const revalidateAdminStatus: FirestoreThunk = async (
+  dispatch,
+  getState
+) => {
+  const { organizations } = getState().firestore.data;
+  const { userData, isAdmin: isAdminInStore } = getState().auth;
+
+  // the user is authenticated if user data recieved
+  // (even if they're not an admin for a current organization)
+  const isAdmin = checkAdminStatus(
+    userData?.email || userData?.phoneNumber || "",
+    organizations
+  );
+
+  // update store only if needed
+  if (isAdmin !== isAdminInStore) {
+    dispatch({
+      type: Action.UpdateAdminStatus,
+      payload: isAdmin,
+    } as AuthReducerAction<Action.UpdateAdminStatus>);
   }
 };

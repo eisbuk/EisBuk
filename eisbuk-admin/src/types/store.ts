@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
-import { Unsubscribe } from "firebase/firestore";
 import { Dispatch } from "redux";
+
+import { Unsubscribe } from "@firebase/firestore";
+import { User } from "@firebase/auth";
 
 import {
   BookingSubCollection,
@@ -19,7 +21,6 @@ import {
 } from "eisbuk-shared";
 
 import { Action, NotifVariant } from "@/enums/store";
-
 import { CustomerRoute } from "@/enums/routes";
 
 // #region app
@@ -75,29 +76,33 @@ export interface AppState {
 /**
  * Whitelisted actions for auth reducer
  */
-export type AuthAction = Action.IsOrganizationStatusReceived | string;
+export type AuthAction =
+  | Action.UpdateAuthInfo
+  | Action.Logout
+  | Action.UpdateAdminStatus;
+
 /**
  * Auth reducer action generic
  * gets passed one of whitelisted auth reducer actions as type parameter
  */
 export type AuthReducerAction<
   A extends AuthAction
-> = A extends Action.IsOrganizationStatusReceived
+> = A extends Action.UpdateAuthInfo
   ? {
-      type: Action.IsOrganizationStatusReceived;
-      payload?: Omit<AuthState["info"], "myUserId">;
+      type: A;
+      payload: AuthState;
     }
+  : A extends Action.UpdateAdminStatus
+  ? { type: A; payload: boolean }
   : { type: string };
 /**
  * `authInfoEisbuuk` portion of the local store
  */
 export interface AuthState {
-  firebase: any;
-  info: {
-    admins: string[];
-    myUserId: string | null;
-    uid: string | null;
-  };
+  userData: User | null;
+  isAdmin: boolean;
+  isEmpty: boolean;
+  isLoaded: boolean;
 }
 // #endregion authInfoEisbuk
 
@@ -175,6 +180,7 @@ export interface FirestoreListener {
  * A whitelist of collections we can add a firebase subscrption for
  */
 export type CollectionSubscription =
+  | Collection.Organizations
   | OrgSubCollection.SlotsByDay
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings
