@@ -7,7 +7,7 @@ import {
   luxon2ISODate,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 import {
   copySlotsDay,

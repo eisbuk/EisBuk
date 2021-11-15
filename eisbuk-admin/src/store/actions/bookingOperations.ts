@@ -8,7 +8,7 @@ import {
   SlotInterface,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";

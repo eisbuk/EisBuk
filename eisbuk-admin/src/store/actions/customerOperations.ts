@@ -12,7 +12,7 @@ import { NotificationMessage } from "@/enums/translations";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 import {
   enqueueNotification,

@@ -1,6 +1,6 @@
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { adminDb } from "@/__testSettings__";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";

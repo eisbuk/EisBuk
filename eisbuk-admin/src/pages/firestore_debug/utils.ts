@@ -2,7 +2,7 @@ import firebase from "firebase/app";
 
 import { FirestoreThunk } from "@/types/store";
 import { Collection } from "eisbuk-shared/dist";
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 type DocumentReference = firebase.firestore.DocumentReference;
 

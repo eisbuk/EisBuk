@@ -6,7 +6,8 @@ import { Collection, luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 import { getCalendarDay } from "@/store/selectors/app";
 import { getAmIAdmin } from "@/store/selectors/auth";
 
-import { getMonthStr, getOrganization } from "@/utils/helpers";
+import { getMonthStr } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { wrapOrganization } from "@/utils/firestore";
 
 /**

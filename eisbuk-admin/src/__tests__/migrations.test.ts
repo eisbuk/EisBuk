@@ -3,7 +3,7 @@ import firebase from "firebase/app";
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";

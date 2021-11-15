@@ -1,4 +1,4 @@
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { ReduxFirestoreQuerySetting } from "react-redux-firebase";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";

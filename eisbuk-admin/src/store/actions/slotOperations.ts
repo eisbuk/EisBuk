@@ -8,7 +8,7 @@ import {
   SlotInterval,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 import { SlotFormValues } from "@/lib/data";
 

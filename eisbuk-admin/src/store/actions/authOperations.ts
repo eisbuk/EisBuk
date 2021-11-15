@@ -1,6 +1,6 @@
 import i18n from "i18next";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { Collection } from "eisbuk-shared";
 
 import { NotifVariant, Action } from "@/enums/store";

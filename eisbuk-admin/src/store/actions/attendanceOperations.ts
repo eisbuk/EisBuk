@@ -7,7 +7,7 @@ import {
   SlotInterface,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 import { FirestoreThunk } from "@/types/store";
 
