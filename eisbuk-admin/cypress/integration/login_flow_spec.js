@@ -7,7 +7,7 @@ beforeEach(() => {
   cy.on("window:before:load", (win) => {
     win.localStorage.setItem("organization", id);
   });
-  cy.visit(`localhost:3000/debug`);
+  cy.visit(`/debug`);
 
   cy.contains("Create admin test users").click();
   cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
@@ -30,7 +30,7 @@ describe("add athlete", () => {
   it("should fill in the customer form and submit it", () => {
     // cy.pause()
 
-    // cy.visit(`localhost:3000/login`);
+    // cy.visit(`/login`);
     // cy.contains("Sign in with email").click();
     // cy.url().should("include", "/login");
     // cy.get("[type='email']").type("test@eisbuk.it");
@@ -38,7 +38,7 @@ describe("add athlete", () => {
     // cy.get("[type='password']").type("test00");
     // cy.contains("Sign In").click();
     // needs to logout after each test run
-    cy.visit(`localhost:3000/atleti`);
+    cy.visit(`/atleti`);
     cy.get("[data-testid='add-athlete']").click();
     cy.get("[name='name']").type(saul.name);
     cy.get("[name='surname']").type(saul.surname);
