@@ -13,7 +13,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
 
-import { getOrganization } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 
 /**
  * Invokes cloud function
