@@ -14,6 +14,10 @@ beforeEach(() => {
     "POST",
     "www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=fake-key"
   ).as("signupNewUser");
+  cy.intercept(
+    "POST",
+    "www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=fake-key"
+  ).as("signinOldUser");
 
   cy.contains("Create admin test users").click();
 
@@ -21,6 +25,10 @@ beforeEach(() => {
     expect(request.body).to.have.property("data");
   });
   cy.wait("@signupNewUser").then(({ request }) => {
+    expect(request.body).to.have.property("email", `test@eisbuk.it`);
+  });
+
+  cy.wait("@signinOldUser").then(({ request }) => {
     expect(request.body).to.have.property("email", `test@eisbuk.it`);
   });
 });
