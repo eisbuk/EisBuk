@@ -148,6 +148,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Cache node modules
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.os }}-cypress-modules-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: ./eisbuk-install.sh
       - name: Cypress run
