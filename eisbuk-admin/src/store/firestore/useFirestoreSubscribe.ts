@@ -59,6 +59,16 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
       });
     };
   }, [collections]);
+
+  useEffect(() => {
+    return () => {
+      setTimeout(() => {
+        oldCollections.current.forEach((coll) => {
+          dispatch(removeFirestoreListener(coll, consumerId));
+        });
+      }, 50);
+    };
+  }, []);
 };
 
 export default useFirestoreSubscribe;

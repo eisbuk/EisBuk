@@ -13,6 +13,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 
+import { OrgSubCollection } from "eisbuk-shared";
+
 import { ActionButton, NavigationLabel } from "@/enums/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
@@ -26,6 +28,7 @@ import { getCustomersList } from "@/store/selectors/customers";
 import useTitle from "@/hooks/useTitle";
 
 import { isEmpty } from "@/temp/helpers";
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -36,7 +39,12 @@ const CustomersPage: React.FC = () => {
 
   const customers = useSelector(getCustomersList);
 
+  console.log("Customers > ", customers);
+  console.log("Is empty > ", isEmpty(customers));
+
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
+
+  useFirestoreSubscribe([OrgSubCollection.Customers]);
 
   const toggleAddAthleteDialog = () =>
     setAddAthleteDialog(addAthleteDialog ? false : true);

@@ -14,9 +14,17 @@ import AttendanceCard from "@/components/atoms/AttendanceCard";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCustomersList } from "@/store/selectors/customers";
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import { OrgSubCollection } from "eisbuk-shared/dist";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
+
+  useFirestoreSubscribe([
+    OrgSubCollection.Attendance,
+    OrgSubCollection.Customers,
+    OrgSubCollection.SlotsByDay,
+  ]);
 
   const attendanceCards = useSelector(getSlotsWithAttendance);
   const allCustomers = useSelector(getCustomersList);

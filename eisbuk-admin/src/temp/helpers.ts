@@ -3,5 +3,10 @@
  * @TEMP checks input if not falsy or empty object/array
  * @TODO update when we're updating `isEmpty` and `isLoaded` functions
  */
-export const isEmpty = (input: unknown): boolean =>
-  input instanceof Object && input !== null && Object.values(input).length > 0;
+export const isEmpty = (input: unknown): boolean => {
+  const isObject = input instanceof Object;
+  const notNull = input !== null;
+  const hasItems = Object.values((input as any) || {}).length > 0;
+
+  return !(isObject && notNull && hasItems);
+};

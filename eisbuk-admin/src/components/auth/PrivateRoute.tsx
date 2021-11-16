@@ -23,7 +23,6 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
   const isAdmin = useSelector(getIsAdmin);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
 
-  /** @TODO update below when we update auth and `isloaded` / `isEmpty` helpers */
   switch (true) {
     // display loading state until initial auth is loaded
     case !isAuthLoaded:

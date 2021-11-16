@@ -39,7 +39,10 @@ const CustomerArea: React.FC = () => {
     customerRoute: CustomerRoute;
   }>();
 
-  useFirestoreSubscribe([OrgSubCollection.Bookings]);
+  useFirestoreSubscribe([
+    OrgSubCollection.Bookings,
+    OrgSubCollection.SlotsByDay,
+  ]);
 
   const customerData = useSelector(getBookingsCustomer);
   const date = useSelector(getCalendarDay);

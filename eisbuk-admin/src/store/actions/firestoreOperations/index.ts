@@ -58,14 +58,23 @@ export const removeFirestoreListener = (
   const {
     firestore: { listeners },
   } = getState();
+  console.log("Running unsubscribe listener for > ", collection);
   // check if listener for provided collection exists
   const listener = listeners[collection];
   if (listener) {
+    console.log(
+      "Number of cunsumers subscribed to a given listener > ",
+      listener?.consumers.length
+    );
     // remove current consumer from the list of subscribed consumers
     listener.consumers = listener.consumers.filter(
       (consumer) => consumer !== consumerId
     );
     // if this was the last consumer, unsubscribe the listener from firestore
+    console.log(
+      "Number of cunsumers subscribed to a given listener after removal > ",
+      listener?.consumers.length
+    );
     if (!listener.consumers.length) {
       listener.unsubscribe();
       // remove listener entry and firestore.data entry for a collection
