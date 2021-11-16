@@ -3,7 +3,8 @@ import firebase from "firebase/app";
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
+
 import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
@@ -28,16 +29,15 @@ import {
 import { walt } from "@/__testData__/customers";
 
 const db = getFirebase().firestore();
-const organization = getOrganization();
 export const invokeFunction = (functionName: string) => (): Promise<any> =>
   firebase.app().functions(__functionsZone__).httpsCallable(functionName)({
-    organization,
+    __organization__,
   });
 
 /**
  * Document ref to test organization, to save excess typing
  */
-const orgRef = db.collection(Collection.Organizations).doc(organization);
+const orgRef = db.collection(Collection.Organizations).doc(__organization__);
 
 describe("Migrations", () => {
   afterEach(async () => {

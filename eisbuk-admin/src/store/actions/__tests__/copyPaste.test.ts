@@ -7,7 +7,7 @@ import {
   luxon2ISODate,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
 
 import {
   copySlotsDay,
@@ -91,15 +91,14 @@ describe("Copy Paste actions", () => {
     );
   });
 
-  const organization = getOrganization();
   const db = firestoreUtils.getFirebase().firestore();
   const slotsRef = db
     .collection(Collection.Organizations)
-    .doc(organization)
+    .doc(__organization__)
     .collection(OrgSubCollection.Slots);
 
   const monthStr = testDate.substr(0, 7);
-  const slotsByIdPath = `${Collection.Organizations}/${organization}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
+  const slotsByIdPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.SlotsByDay}/${monthStr}`;
 
   describe("pasteSlotsDay", () => {
     testWithEmulator(

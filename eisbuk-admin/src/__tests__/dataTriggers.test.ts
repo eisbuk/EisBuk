@@ -7,7 +7,8 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
+
 import { adminDb } from "@/__testSettings__";
 
 import {
@@ -33,10 +34,9 @@ const customerId = saul.id;
 const secretKey = saul.secretKey;
 const customerBooking = getCustomerBase(saul);
 const testMonth = testDate.substr(0, 7);
-const organization = getOrganization();
 
 // document paths
-const orgPath = `${Collection.Organizations}/${organization}`;
+const orgPath = `${Collection.Organizations}/${__organization__}`;
 const slotDocPath = `${orgPath}/${OrgSubCollection.Slots}/${slotId}`;
 const attendanceDocPath = `${orgPath}/${OrgSubCollection.Attendance}/${slotId}`;
 const userBookingDocPath = `${orgPath}/${OrgSubCollection.Bookings}/${secretKey}`;

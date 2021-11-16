@@ -1,6 +1,6 @@
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
 import { showErrSnackbar } from "../appActions";
@@ -26,7 +26,7 @@ const attendanceMonth = firestoreUtils
   .getFirebase()
   .firestore()
   .collection(Collection.Organizations)
-  .doc(getOrganization())
+  .doc(__organization__)
   .collection(OrgSubCollection.Attendance)
   .doc(slotId);
 

@@ -9,7 +9,8 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
+
 import { adminDb } from "@/__testSettings__";
 
 import { NotificationMessage } from "@/enums/translations";
@@ -24,13 +25,12 @@ import * as firestoreUtils from "@/__testUtils__/firestore";
 import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
-const organization = getOrganization();
 const customersRef = adminDb
   .collection(Collection.Organizations)
-  .doc(organization)
+  .doc(__organization__)
   .collection(OrgSubCollection.Customers);
 
-const customersPath = `${Collection.Organizations}/${organization}/${OrgSubCollection.Customers}`;
+const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.

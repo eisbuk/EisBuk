@@ -4,7 +4,7 @@ import {
   OrgSubCollection,
 } from "eisbuk-shared";
 
-import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
@@ -28,7 +28,7 @@ const bookingsRef = firestoreUtils
   .getFirebase()
   .firestore()
   .collection(Collection.Organizations)
-  .doc(getOrganization())
+  .doc(__organization__)
   .collection(OrgSubCollection.Bookings)
   .doc(secretKey);
 
