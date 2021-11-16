@@ -19,7 +19,7 @@ jobs:
           path: |
             **/node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Build app
@@ -90,7 +90,7 @@ jobs:
           path: |
             **/node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Run tests
@@ -122,7 +122,7 @@ jobs:
           path: |
             **/node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Lint client app
