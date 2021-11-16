@@ -41,6 +41,7 @@ module.exports = {
     "build/*",
     "functions/*",
     "node_modules/*",
+    "cypress/*", // XXX: this is a hack to avoid eslint errors
     "reportWebVitals.js",
     "config-overrides.js",
     "react-app-env.d.ts",
