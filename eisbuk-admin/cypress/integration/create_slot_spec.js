@@ -21,15 +21,15 @@ beforeEach(() => {
 
   cy.contains("Create admin test users").click();
 
-  cy.wait("@createOrganization").then(({ request }) => {
-    expect(request.body).to.have.property("data");
-  });
-  cy.wait("@signupNewUser").then(({ request }) => {
-    expect(request.body).to.have.property("email", `test@eisbuk.it`);
-  });
-
-  cy.wait("@signinOldUser").then(({ request }) => {
-    expect(request.body).to.have.property("email", `test@eisbuk.it`);
+  // We wait for @createOrganization to complete
+  cy.wait("@createOrganization").then(() => {
+    // and then for @signupNewUser (every time)
+    cy.wait("@signupNewUser").then(({ response }) => {
+      // If this response is 400 it means we also need to wait on @signinOldUser
+      if (response.statusCode === 400) {
+        cy.wait("@signinOldUser");
+      }
+    });
   });
 });
 
