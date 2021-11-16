@@ -7,19 +7,9 @@ import { auth, functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { CloudFunction } from "@/enums/functions";
 
-import { deleteAllCollections } from "@/__testUtils__/firestore";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import {
-  loginDefaultUser,
-  loginWithEmail,
-  // loginWithPhone,
-} from "@/__testUtils__/auth";
-
-beforeAll(async () => {
-  await deleteAllCollections(adminDb, [Collection.Organizations]);
-  await loginDefaultUser();
-});
+import { loginWithEmail } from "@/__testUtils__/auth";
 
 describe("Cloud functions", () => {
   testWithEmulator(

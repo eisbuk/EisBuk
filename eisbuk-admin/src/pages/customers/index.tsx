@@ -27,7 +27,7 @@ import { getCustomersList } from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
 
-import { isEmpty } from "@/temp/helpers";
+import { isEmpty } from "@/utils/helpers";
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 const CustomersPage: React.FC = () => {

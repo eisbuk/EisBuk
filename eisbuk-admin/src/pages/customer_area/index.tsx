@@ -74,10 +74,9 @@ const CustomerArea: React.FC = () => {
 
   const isAdmin = useSelector(getIsAdmin);
 
-  const title =
-    /** @TODO isLoaded */
-    // isLoaded(customerData) &&
-    customerData ? `${customerData.name} ${customerData.surname}` : "";
+  const title = customerData
+    ? `${customerData.name} ${customerData.surname}`
+    : "";
 
   const headers = (
     <>

@@ -17,10 +17,7 @@ import { isEmpty } from "lodash";
  * @param auth firebase.auth instance
  * @param store redux store instance
  */
-export const useConnectAuthToStore = (
-  auth: Auth,
-  store: Store<LocalStore, any>
-): void => {
+export default (auth: Auth, store: Store<LocalStore, any>): void => {
   const dispatch = store.dispatch;
 
   // we're using this (expermantal) hook to mimic

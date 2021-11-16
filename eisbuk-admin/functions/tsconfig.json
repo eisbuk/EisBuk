@@ -26,14 +26,10 @@
     "baseUrl": ".",
     "rootDir": "src/",
     "typeRoots": ["node_modules/@types"],
-    "preserveSymlinks": false,
+    "preserveSymlinks": true,
+    "skipLibCheck": true,
     "noEmit": true
   },
   "exclude": ["node_modules"],
-  "include": [
-    "./src/**/*.tsx",
-    "./src/**/*.ts",
-    "./eslintrc.js",
-    "eisbuk-shared"
-  ]
+  "include": ["./src/**/*.tsx", "./src/**/*.ts", "./eslintrc.js"]
 }

@@ -23,7 +23,6 @@ import {
   enqueueNotification,
   // showErrSnackbar,
 } from "@/store/actions/appActions";
-import { __organization__ } from "@/lib/constants";
 
 // const updateOrganizationStatus = (
 //   uid: string,
@@ -99,13 +98,14 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
 export const checkAdminStatus = (
   authString: string,
   orgsInStore?: FirestoreData[Collection.Organizations]
-): boolean =>
-  !authString || !orgsInStore
+): boolean => {
+  const organization = getOrganization();
+  return !authString || !orgsInStore
     ? false
-    : !orgsInStore[__organization__]
+    : !orgsInStore[organization]
     ? false
-    : orgsInStore[__organization__].admins.includes(authString);
-
+    : orgsInStore[organization].admins.includes(authString);
+};
 /**
  * An update user callback, called by firestore's `onAuthStateChanged`,
  * get's passed a new user, determines the `isAuthenticated` and `isAdmin` state,

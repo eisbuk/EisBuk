@@ -4,8 +4,6 @@ import { db } from "@/__testSetup__/firestoreSetup";
 
 import { __organization__ } from "@/lib/constants";
 
-import { adminDb } from "@/__testSettings__";
-
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { deleteAll } from "@/__testUtils__/firestore";
