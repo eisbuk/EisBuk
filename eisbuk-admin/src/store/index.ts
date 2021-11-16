@@ -43,7 +43,10 @@ const fbConfig: FirebaseOptions = {
 };
 
 if (__isDev__) {
-  console.warn("Using local emulated Database : " + fbConfig.databaseURL);
+  console.warn(
+    "Using local emulated Database (localhost:8080) instead of " +
+      fbConfig.databaseURL
+  );
 }
 
 // Initialize Firebase, Firestore and Functions instances
