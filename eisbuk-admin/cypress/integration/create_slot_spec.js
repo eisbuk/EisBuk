@@ -39,6 +39,7 @@ beforeEach(() => {
 describe("Create slot", () => {
   it("fills in slot form and submits it", () => {
     cy.visit("/prenotazioni");
+    cy.contains("Attendance", { timeout: 10000 });
     cy.get("[type='checkbox']").click();
     cy.get("[data-testid='new-slot-button']").first().click();
     cy.get("[value='ice']").check();
@@ -54,6 +55,7 @@ describe("Create slot", () => {
   });
   it("creates an off-ice slot", () => {
     cy.visit("/prenotazioni");
+    cy.contains("Attendance", { timeout: 10000 });
     cy.get("[type='checkbox']").click();
     cy.get("[data-testid='new-slot-button']").first().click();
     cy.get("[value='off-ice-dancing']").check();
@@ -68,6 +70,7 @@ describe("Create slot", () => {
   });
   it("creates a multi-interval slot", () => {
     cy.visit("/prenotazioni");
+    cy.contains("Attendance", { timeout: 10000 });
     cy.get("[type='checkbox']").click();
     cy.get("[data-testid='new-slot-button']").first().click();
     cy.get("[value='ice']").check();
