@@ -24,10 +24,13 @@ beforeEach(() => {
   // We wait for @createOrganization to complete
   cy.wait("@createOrganization").then(() => {
     // and then for @signupNewUser (every time)
+    cy.log("Organization created");
     cy.wait("@signupNewUser").then(({ response }) => {
       // If this response is 400 it means we also need to wait on @signinOldUser
       if (response.statusCode === 400) {
-        cy.wait("@signinOldUser");
+        cy.wait("@signinOldUser").then(() => cy.log("User signed in"));
+      } else {
+        cy.log("User created");
       }
     });
   });
