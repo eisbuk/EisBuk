@@ -5,13 +5,15 @@ import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 
-import { __functionsZone__, __organization__ } from "@/lib/constants";
+import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
+
+import { getOrganization } from "@/lib/getters";
 
 /**
  * Invokes cloud function
@@ -23,7 +25,7 @@ export const invokeFunction = (functionName: CloudFunction) => {
     const res = await firebase
       .app()
       .functions(__functionsZone__)
-      .httpsCallable(functionName)({ organization: __organization__ });
+      .httpsCallable(functionName)({ organization: getOrganization() });
 
     console.log(res.data);
   };
@@ -37,9 +39,15 @@ export const invokeFunction = (functionName: CloudFunction) => {
 export const createAdminTestUsers = async (): Promise<void> => {
   await invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
-  await firebase
-    .auth()
-    .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+  try {
+    await firebase
+      .auth()
+      .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+  } catch (e) {
+    await firebase
+      .auth()
+      .signInWithEmailAndPassword("test@eisbuk.it", "test00");
+  }
 };
 
 const DebugPage: React.FC = () => {

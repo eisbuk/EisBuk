@@ -60,6 +60,7 @@ const db = firebase.firestore();
 const functions = firebase.functions();
 
 if (__isDev__) {
+  db.settings({ experimentalAutoDetectLongPolling: true });
   db.useEmulator("localhost", 8080);
   firebase.auth().useEmulator("http://localhost:9099/");
   functions.useEmulator("localhost", 5001);

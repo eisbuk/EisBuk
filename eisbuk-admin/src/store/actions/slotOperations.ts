@@ -8,7 +8,7 @@ import {
   SlotInterval,
 } from "eisbuk-shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { SlotFormValues } from "@/lib/data";
 
@@ -63,7 +63,7 @@ export const createNewSlot = (
     const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
     await db
       .collection(Collection.Organizations)
-      .doc(__organization__)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Slots)
       .doc()
       .set(newSlot);
@@ -112,7 +112,7 @@ export const updateSlot = (
 
     await db
       .collection(Collection.Organizations)
-      .doc(__organization__)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Slots)
       .doc(id)
       .set(updatedSlot);
@@ -146,7 +146,7 @@ export const deleteSlot = (
     await getFirebase()
       .firestore()
       .collection(Collection.Organizations)
-      .doc(__organization__)
+      .doc(getOrganization())
       .collection(OrgSubCollection.Slots)
       .doc(slotId)
       .delete();

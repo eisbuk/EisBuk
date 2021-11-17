@@ -3,12 +3,11 @@ import { useFirestoreConnect, useFirestore } from "react-redux-firebase";
 
 import { Collection, luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
-import { __organization__ } from "@/lib/constants";
-
 import { getCalendarDay } from "@/store/selectors/app";
 import { getAmIAdmin } from "@/store/selectors/auth";
 
 import { getMonthStr } from "@/utils/helpers";
+import { getOrganization } from "@/lib/getters";
 import { wrapOrganization } from "@/utils/firestore";
 
 /**
@@ -32,7 +31,7 @@ const useFirestoreSubscribe = (): void => {
   const baseSubscriptions = [
     {
       collection: Collection.Organizations,
-      doc: __organization__,
+      doc: getOrganization(),
     },
     wrapOrganization({
       collection: OrgSubCollection.SlotsByDay,

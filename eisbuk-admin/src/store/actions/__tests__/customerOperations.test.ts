@@ -9,8 +9,9 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { adminDb } from "@/__testSettings__";
 import { __organization__ } from "@/lib/constants";
+
+import { adminDb } from "@/__testSettings__";
 
 import { NotificationMessage } from "@/enums/translations";
 
@@ -24,7 +25,6 @@ import * as firestoreUtils from "@/__testUtils__/firestore";
 import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
-
 const customersRef = adminDb
   .collection(Collection.Organizations)
   .doc(__organization__)

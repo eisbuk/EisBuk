@@ -7,8 +7,9 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { adminDb } from "@/__testSettings__";
 import { __organization__ } from "@/lib/constants";
+
+import { adminDb } from "@/__testSettings__";
 
 import {
   getDocumentRef,
