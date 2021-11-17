@@ -73,11 +73,13 @@ describe("Create slot", () => {
     cy.get("[value='ice']").check();
     cy.get("[value='competitive']").check();
 
-    cy.get("[data-testid='add-interval']").click();
+    cy.contains("Add Interval").click();
 
     cy.get("[type='text']").eq(2).clear().type("09:00");
     cy.get("[type='text']").eq(3).clear().type("10:30");
-    cy.get("[data-testid='add-interval']").click();
+
+    cy.contains("Add Interval").click();
+
     cy.get("[name='notes']").type("some notes");
     cy.get("[type='text']").eq(2).clear().type("11:00");
     cy.get("[type='text']").eq(3).clear().type("12:30");
