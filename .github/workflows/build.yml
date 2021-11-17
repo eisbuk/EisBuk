@@ -162,8 +162,6 @@ jobs:
         env:
           # Instruct the app this is going to be a dev build
           BUILD_ENV: test
-      - name: Solve mysterious problem with cypress trying to access non existent file
-        run: touch eisbuk-admin/build/firebase-messaging-sw.js
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

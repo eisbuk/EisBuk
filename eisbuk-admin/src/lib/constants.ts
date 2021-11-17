@@ -34,8 +34,6 @@ export const __firebaseApiKey__ =
     : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
-export const __messagingSenderId__ =
-  process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID;
 
 // production only env variables
 export const __authDomain__ = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;

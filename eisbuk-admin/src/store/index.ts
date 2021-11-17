@@ -18,7 +18,6 @@ import {
   __firebaseAppId__,
   __databaseURL__,
   __projectId__,
-  __messagingSenderId__,
   __authDomain__,
   __storageBucket__,
   __measurementId__,
@@ -32,7 +31,6 @@ const fbConfig: FirebaseOptions = {
   databaseURL: __databaseURL__,
   projectId: __projectId__,
   apiKey: __firebaseApiKey__,
-  messagingSenderId: __messagingSenderId__,
   appId: __firebaseAppId__,
   // additional production-only config data
   ...(!__isDev__ && {
