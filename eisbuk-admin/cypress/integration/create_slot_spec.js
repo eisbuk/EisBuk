@@ -72,12 +72,40 @@ describe("Create slot", () => {
 
     cy.get("[data-testid='add-interval']").click();
 
-    cy.get("[type='text']").eq(2).clear().type("09:00");
-    cy.get("[type='text']").eq(3).clear().type("10:30");
+    cy.get("[type='text']").eq(1).clear().type("09:00");
+    cy.get("[type='text']").eq(2).clear().type("10:30");
     cy.get("[data-testid='add-interval']").click();
     cy.get("[name='notes']").type("some notes");
     cy.get("[type='text']").eq(2).clear().type("11:00");
     cy.get("[type='text']").eq(3).clear().type("12:30");
     cy.get("[type='submit']").click();
+  });
+  it("submits an invalid time format", () => {
+    cy.visit("/prenotazioni");
+    cy.get("[type='checkbox']").click();
+    cy.get("[data-testid='new-slot-button']").first().click();
+    cy.get("[value='ice']").check();
+    cy.get("[value='competitive']").check();
+
+    cy.get("[type='text']").eq(0).clear().type("9");
+    cy.get("[type='text']").eq(1).clear().type("10 pm");
+
+    cy.get("[type='submit']").click();
+    cy.get(`[data-testid='error-message']`).eq(0);
+    cy.get(`[data-testid='error-message']`).eq(1);
+  });
+  it("submits an invalid interval", () => {
+    cy.visit("/prenotazioni");
+    cy.get("[type='checkbox']").click();
+    cy.get("[data-testid='new-slot-button']").first().click();
+    cy.get("[value='ice']").check();
+    cy.get("[value='competitive']").check();
+
+    cy.get("[type='text']").eq(0).clear().type("9:00");
+    cy.get("[type='text']").eq(1).clear().type("7:00");
+
+    cy.get("[type='submit']").click();
+    cy.get("[data-testid='error-message']");
+    cy.get("[role='dialog'");
   });
 });
