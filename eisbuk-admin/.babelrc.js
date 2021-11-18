@@ -1,4 +1,5 @@
 const plugins = [
+  ["@babel/plugin-proposal-private-methods", { loose: true }],
   [
     "@babel/transform-runtime",
     {

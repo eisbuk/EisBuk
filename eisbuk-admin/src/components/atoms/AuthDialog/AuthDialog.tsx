@@ -32,6 +32,12 @@ const uiConfig = {
   ],
 };
 
+/**
+ * An auth dialog we're using instead of `StyledFirebaseAuth`. It
+ * utilizes `firebaseui` components with auth loaded internally and the
+ * login flow handled by `firebaseui`
+ * @returns
+ */
 const AuthDialog: React.FC = () => {
   const initAuthUI = useCallback((node: Element | null) => {
     if (node) {

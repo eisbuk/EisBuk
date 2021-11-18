@@ -39,9 +39,6 @@ const CustomersPage: React.FC = () => {
 
   const customers = useSelector(getCustomersList);
 
-  console.log("Customers > ", customers);
-  console.log("Is empty > ", isEmpty(customers));
-
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
 
   useFirestoreSubscribe([OrgSubCollection.Customers]);

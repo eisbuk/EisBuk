@@ -18,7 +18,7 @@ import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.s
 import { getLocalAuth } from "@/store/selectors/auth";
 import { AuthMessage } from "@/enums/translations";
 
-// ***** Region Background Images ***** //
+// #region backgroundImages
 const backgrounds = [
   figureSkatingSilhouetteCouple,
   figureSkatingSilhouetteSkirt,
@@ -26,9 +26,9 @@ const backgrounds = [
   girlIceSkating,
   iceSkatingSilhouette,
 ];
-// ***** End Region Background Images ***** //
+// #endregion backgroundImages
 
-// ***** Region Styles ***** //
+// #region styles
 /** @TODO refactor to use className instead of inline stlye */
 const baseStyle = {
   backgroundRepeat: "no-repeat",
@@ -37,7 +37,7 @@ const baseStyle = {
   backgroundPosition: "center",
   height: "100vh",
 };
-// ***** End Region Styles ***** //
+// #endregion styles
 
 interface Props {
   backgroundIndex?: number;
@@ -78,7 +78,7 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
       </Typography>
       <Typography component="h2" variant="h5">
         {t(AuthMessage.LoggedInWith)}{" "}
-        <b>{userAuthData.email || userAuthData.phoneNumber}</b>
+        <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
       </Typography>
 
       <Button variant="contained" onClick={logOut}>

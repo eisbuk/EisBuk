@@ -5,13 +5,7 @@ import i18n from "i18next";
 import { getOrganization } from "@/lib/getters";
 import { Collection } from "eisbuk-shared";
 
-// import { __organization__ } from "@/lib/constants";
-
-import {
-  Action,
-  NotifVariant,
-  //  Action
-} from "@/enums/store";
+import { Action, NotifVariant } from "@/enums/store";
 
 import {
   FirestoreData,
@@ -23,14 +17,6 @@ import {
   enqueueNotification,
   // showErrSnackbar,
 } from "@/store/actions/appActions";
-
-// const updateOrganizationStatus = (
-//   uid: string,
-//   admins: string[]
-// ): AuthReducerAction<Action.IsOrganizationStatusReceived> => ({
-//   type: Action.IsOrganizationStatusReceived,
-//   payload: { uid, admins },
-// });
 
 /**
  * Creates firestore async thunk:
@@ -95,6 +81,12 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
 //   }
 // };
 
+/**
+ * Checks admin status locally (against organization in local store)
+ * @param authString email or phone for which to check against organization's admins
+ * @param orgsInStore organizations in local store against which to check
+ * @returns isAdmin
+ */
 export const checkAdminStatus = (
   authString: string,
   orgsInStore?: FirestoreData[Collection.Organizations]
@@ -107,10 +99,10 @@ export const checkAdminStatus = (
     : orgsInStore[organization].admins.includes(authString);
 };
 /**
- * An update user callback, called by firestore's `onAuthStateChanged`,
- * get's passed a new user, determines the `isAuthenticated` and `isAdmin` state,
- * dispatches the updates to store
- * @param user {User | null} new user (if authenticated) or null if not authenticated as a user in our firebase auth record
+ * An update user callback, called by firestore's `onAuthStateChanged`.
+ * Get's passed a new user, determines the `isAuthenticated` and `isAdmin` state,
+ * dispatches the updates to store.
+ * @param user new user (if authenticated) or null if not authenticated as a user in our firebase auth record
  * @returns a firestore thunk dispatching appropriate updates to the store
  */
 export const updateAuthUser = (user: User | null): FirestoreThunk => async (
@@ -135,9 +127,8 @@ export const updateAuthUser = (user: User | null): FirestoreThunk => async (
 };
 
 /**
- * @TODO
- * @param user {User | null} new user (if authenticated) or null if not authenticated as a user in our firebase auth record
- * @returns a firestore thunk dispatching appropriate updates to the store
+ * A thunk ran when the organization status is updated, reads the store state internally
+ * and revalidates the auth user's admin status against updated organization.
  */
 export const revalidateAdminStatus: FirestoreThunk = async (
   dispatch,

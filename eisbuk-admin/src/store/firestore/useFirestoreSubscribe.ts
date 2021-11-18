@@ -62,6 +62,10 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
 
   useEffect(() => {
     return () => {
+      // we're unsetting the firestore listener with timeout to allow for
+      // other consumers (instances of this hook) to update subscriptions
+      // and prevent unsubscribing from the listener's which might be reused by the
+      // next rendered component/view
       setTimeout(() => {
         oldCollections.current.forEach((coll) => {
           dispatch(removeFirestoreListener(coll, consumerId));
