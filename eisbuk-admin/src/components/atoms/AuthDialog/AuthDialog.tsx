@@ -1,105 +1,45 @@
-import React, { useState } from "react";
+import React, { useCallback } from "react";
+import * as firebaseui from "firebaseui";
 
-import Avatar from "@material-ui/core/Avatar";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
+import {
+  getAuth,
+  PhoneAuthProvider,
+  GoogleAuthProvider,
+  EmailAuthProvider,
+} from "firebase/auth";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+// import styles necessary for firebase ui elements
+import "firebaseui/dist/firebaseui.css";
 
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+const auth = getAuth();
 
-import LoginForm from "./LoginForm";
+const ui = new firebaseui.auth.AuthUI(auth);
 
-import { organizationInfo } from "@/themes";
-
-const AuthDialog: React.FC = () => {
-  const classes = useStyles();
-
-  // controlls the different login view with respect to selected login method
-  const [view, setView] = useState<"default" | "phone" | "email">("default");
-
-  /**
-   * Cancel handler for different login flows (returns to initial view)
-   */
-  const handleCancel = () => setView("default");
-
-  /**
-   * Handles google login flow
-   */
-  const handleGoogleLogin = () => {};
-
-  const defaultView = (
-    <>
-      <Button
-        variant="text"
-        className={[classes.button, classes.phoneButton].join(" ")}
-        onClick={() => setView("phone")}
-      >
-        Phone Login
-      </Button>
-      <Button
-        variant="text"
-        className={classes.button}
-        onClick={handleGoogleLogin}
-      >
-        Google Login
-      </Button>
-      <Button
-        variant="text"
-        className={[classes.button, classes.emailButton].join(" ")}
-        onClick={() => setView("email")}
-      >
-        Email Login
-      </Button>
-    </>
-  );
-
-  return (
-    <Paper elevation={2} className={classes.paper}>
-      <Avatar className={classes.avatar}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography component="h1" variant="h5">
-        {organizationInfo.name}
-      </Typography>
-      <div className={classes.actionContainer}>
-        {view === "default" && defaultView}
-        {view === "email" && <LoginForm onCancel={handleCancel} />}
-      </div>
-    </Paper>
-  );
+const uiConfig = {
+  signInOptions: [
+    {
+      provider: PhoneAuthProvider.PROVIDER_ID,
+      // The default selected country.
+      defaultCountry: "IT",
+      recaptchaParameters: {
+        type: "image", // 'audio'
+        size: "invisible", // 'invisible' or 'compact'
+        badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
+      },
+    },
+    GoogleAuthProvider.PROVIDER_ID,
+    EmailAuthProvider.PROVIDER_ID,
+  ],
 };
 
-const useStyles = makeStyles((theme) => ({
-  paper: {
-    padding: theme.spacing(8, 4),
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-  },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
-  },
-  actionContainer: {
-    width: "12.5rem",
-  },
-  button: {
-    width: "100%",
-    boxShadow: "0 0 4px 2px rgba(0, 0, 0, 0.1)",
-    marginTop: "1rem",
-    marginBottom: "0.5rem",
-    borderRadius: "0",
-  },
-  phoneButton: {
-    background: "green",
-    color: "white",
-  },
-  emailButton: {
-    background: "red",
-    color: "white",
-  },
-}));
+const AuthDialog: React.FC = () => {
+  const initAuthUI = useCallback((node: Element | null) => {
+    if (node) {
+      ui.start(node, uiConfig);
+    }
+  }, []);
+
+  return <div ref={initAuthUI} />;
+};
 
 export default AuthDialog;

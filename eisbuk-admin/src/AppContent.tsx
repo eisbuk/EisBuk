@@ -14,7 +14,7 @@ import DebugPage from "@/components/debugPage";
 import DashboardPage from "@/pages/root";
 import AthletesPage from "@/pages/customers";
 import SlotsPage from "@/pages/slots";
-import LoginPage from "@/pages/LoginPage";
+import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
@@ -49,8 +49,8 @@ const AppContent: React.FC = () => {
           path={PrivateRoutes.Root}
           component={DashboardPage}
         />
-        <PrivateRoute path={PrivateRoutes.Atleti} component={AthletesPage} />
-        <PrivateRoute path={PrivateRoutes.Prenotazioni} component={SlotsPage} />
+        <PrivateRoute path={PrivateRoutes.Athletes} component={AthletesPage} />
+        <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
         <PrivateRoute
           path={Routes.AttendancePrintable}
           component={AttendancePrintable}

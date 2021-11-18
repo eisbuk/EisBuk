@@ -97,8 +97,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               </Button>
               <Button
                 component={Link}
-                disabled={location.pathname === PrivateRoutes.Prenotazioni}
-                to={PrivateRoutes.Prenotazioni}
+                disabled={location.pathname === PrivateRoutes.Slots}
+                to={PrivateRoutes.Slots}
                 variant="contained"
                 startIcon={<LibraryBooksIcon />}
               >
@@ -106,8 +106,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               </Button>
               <Button
                 component={Link}
-                to={PrivateRoutes.Atleti}
-                disabled={location.pathname === PrivateRoutes.Atleti}
+                to={PrivateRoutes.Athletes}
+                disabled={location.pathname === PrivateRoutes.Athletes}
                 variant="contained"
                 startIcon={<PeopleIcon />}
               >
@@ -145,8 +145,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <ListItem
               button
               component={Link}
-              disabled={location.pathname === PrivateRoutes.Prenotazioni}
-              to={PrivateRoutes.Prenotazioni}
+              disabled={location.pathname === PrivateRoutes.Slots}
+              to={PrivateRoutes.Slots}
             >
               <ListItemIcon>
                 <LibraryBooksIcon />
@@ -156,8 +156,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <ListItem
               button
               component={Link}
-              to={PrivateRoutes.Atleti}
-              disabled={location.pathname === PrivateRoutes.Atleti}
+              to={PrivateRoutes.Athletes}
+              disabled={location.pathname === PrivateRoutes.Athletes}
             >
               <ListItemIcon>
                 <PeopleIcon />

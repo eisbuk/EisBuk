@@ -1,16 +1,7 @@
 import React from "react";
-// import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import _ from "lodash";
 
-// import {
-//   getAuth,
-//   PhoneAuthProvider,
-//   GoogleAuthProvider,
-//   EmailAuthProvider,
-// } from "firebase/auth";
-
 import Avatar from "@material-ui/core/Avatar";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Paper from "@material-ui/core/Paper";
 import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
@@ -20,6 +11,8 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { organizationInfo } from "@/themes";
+
+import AuthDialog from "@/components/atoms/AuthDialog";
 
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
 import figureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
@@ -35,33 +28,15 @@ const loginBackgrounds = [
   iceSkatingSilhouette,
 ];
 
-// const auth = getAuth();
+const loginImageStyle = {
+  backgroundImage: `url(${_.sample(loginBackgrounds)})`,
+};
 
 const SignInSide: React.FC = () => {
   const classes = useStyles();
 
-  const loginImageStyle = {
-    backgroundImage: `url(${_.sample(loginBackgrounds)})`,
-  };
-  // const uiConfig = {
-  //   signInOptions: [
-  //     {
-  //       provider: PhoneAuthProvider.PROVIDER_ID,
-  //       // The default selected country.
-  //       defaultCountry: "IT",
-  //       recaptchaParameters: {
-  //         type: "image", // 'audio'
-  //         size: "invisible", // 'invisible' or 'compact'
-  //         badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-  //       },
-  //     },
-  //     GoogleAuthProvider.PROVIDER_ID,
-  //     EmailAuthProvider.PROVIDER_ID,
-  //   ],
-  // };
   return (
     <Grid container component="main" className={classes.root}>
-      <CssBaseline />
       <Grid
         item
         xs={false}
@@ -78,7 +53,7 @@ const SignInSide: React.FC = () => {
           <Typography component="h1" variant="h5">
             {organizationInfo.name}
           </Typography>
-          {/* <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} /> */}
+          <AuthDialog />
         </div>
       </Grid>
     </Grid>
@@ -107,13 +82,6 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
-  },
-  form: {
-    width: "100%", // Fix IE 11 issue.
-    marginTop: theme.spacing(1),
-  },
-  submit: {
-    margin: theme.spacing(3, 0, 2),
   },
 }));
 
