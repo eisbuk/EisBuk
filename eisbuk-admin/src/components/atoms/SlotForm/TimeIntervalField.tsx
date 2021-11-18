@@ -67,7 +67,11 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         <DeleteIcon />
       </IconButton>
 
-      <ErrorMessage className={classes.error} overridePosition>
+      <ErrorMessage
+        data-testid="error-message"
+        className={classes.error}
+        overridePosition
+      >
         {error}
       </ErrorMessage>
     </div>

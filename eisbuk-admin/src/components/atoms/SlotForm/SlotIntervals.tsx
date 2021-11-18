@@ -47,6 +47,7 @@ const SlotIntervals: React.FC = () => {
           onClick={addInterval}
           color="primary"
           variant="contained"
+          data-testid="add-interval"
           className={classes.addInterval}
         >
           {t(SlotFormLabel.AddInterval)}
