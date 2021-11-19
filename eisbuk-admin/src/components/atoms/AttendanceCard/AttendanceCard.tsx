@@ -72,8 +72,7 @@ const AttendanceCard: React.FC<Props> = ({
    */
   const orderedIntervals = useMemo(
     () => Object.keys(intervals).sort((a, b) => (a < b ? -1 : 1)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [intervals]
   );
 
   /**
