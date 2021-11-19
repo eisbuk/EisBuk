@@ -18,16 +18,15 @@ module.exports = {
   parser: "@typescript-eslint/parser",
   settings: {
     "import/resolver": {
-      typescript: {},
+      typescript: {
+        // Required for certain syntax usages
+        ecmaVersion: 2017,
+        project: getTsProject(),
+      },
     },
   },
-  parserOptions: {
-    // Required for certain syntax usages
-    ecmaVersion: 2017,
-    project: getTsProject(),
-  },
   root: true,
-  plugins: ["promise"],
+  plugins: ["promise", "import"],
   extends: [
     "google",
     "eslint:recommended",
@@ -192,12 +191,15 @@ module.exports = {
     // Allow explicit any, but still avoid where possible
     "@typescript-eslint/no-explicit-any": "off",
 
-    // we're using empty functions as fallback for unedfined props
+    // we're using empty functions as fallback for undefined props
     "@typescript-eslint/no-empty-function": "off",
 
     // This just gets in the way
     "import/no-named-as-default-member": "off",
     "import/no-named-as-default": "off",
+
+    // we're turning this off as it produces false positives on imported namespaces (i.e. react)
+    "import/default": "off",
 
     // no-case-declarations
     "no-case-declarations": "off",

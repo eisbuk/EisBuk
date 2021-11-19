@@ -1,3 +1,26 @@
 {
-    "postStartCommand": "./disable-ipv6.sh"
+  "extensions": ["esbenp.prettier-vscode", "dbaeumer.vscode-eslint"],
+  "settings": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+
+    "[javascript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[json]": {
+      "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+
+    "eslint.workingDirectories": [
+      {
+        "directory": "./client",
+        "changeProcessCWD": true
+      }
+    ],
+    "firestorerules.usePrettierFormatter": true
+  },
+  "postStartCommand": "./disable-ipv6.sh"
 }
