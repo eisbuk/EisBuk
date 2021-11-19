@@ -1,25 +1,29 @@
 /* eslint-disable @typescript-eslint/ban-types */
-import {
-  ExtendedFirebaseInstance,
-  FirebaseReducer,
-} from "react-redux-firebase";
 import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
+import { Dispatch } from "redux";
 
-import { SlotInterface, SlotsByDay, SlotsById } from "eisbuk-shared";
-
-import { Action, NotifVariant } from "@/enums/store";
-
-import { store } from "@/store";
+import { Unsubscribe } from "@firebase/firestore";
+import { User } from "@firebase/auth";
 
 import {
-  FirestoreStatusEntry,
-  FirestoreData,
-  FirestoreOrdered,
-} from "@/types/firestore";
+  BookingSubCollection,
+  Collection,
+  Customer,
+  CustomerBase,
+  CustomerBookingEntry,
+  OrganizationMeta,
+  OrgSubCollection,
+  SlotAttendnace,
+  SlotInterface,
+  SlotsByDay,
+  SlotsById,
+} from "eisbuk-shared";
+
+import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
 
-// #region App Reducer
+// #region app
 /**
  * Notification interface used to enqueue notification snackbar
  */
@@ -33,7 +37,6 @@ export interface Notification {
   };
   dismissed?: boolean;
 }
-
 /**
  * Whitelisted actions for app reducer
  */
@@ -52,7 +55,6 @@ interface AppActionPayload {
   [Action.CloseSnackbar]?: SnackbarKey;
   [Action.ChangeDay]: DateTime;
 }
-
 /**
  * App reducer action generic
  * gets passed one of whitelisted app reducer actions as type parameter
@@ -61,27 +63,23 @@ export interface AppReducerAction<A extends AppAction> {
   type: A;
   payload: AppActionPayload[A];
 }
-
+/**
+ * `app` portion of the local store
+ */
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
 }
-// #endregion Region App
+// #endregion app
 
-// #region Auth
-/**
- * In store auth info object
- */
-export interface AuthInfoEisbuk {
-  admins: string[];
-  myUserId: string | null;
-  uid: string | null;
-}
-
+// #region authInfoEisbuk
 /**
  * Whitelisted actions for auth reducer
  */
-export type AuthAction = Action.IsOrganizationStatusReceived | string;
+export type AuthAction =
+  | Action.UpdateAuthInfo
+  | Action.Logout
+  | Action.UpdateAdminStatus;
 
 /**
  * Auth reducer action generic
@@ -89,26 +87,33 @@ export type AuthAction = Action.IsOrganizationStatusReceived | string;
  */
 export type AuthReducerAction<
   A extends AuthAction
-> = A extends Action.IsOrganizationStatusReceived
+> = A extends Action.UpdateAuthInfo
   ? {
-      type: Action.IsOrganizationStatusReceived;
-      payload?: Omit<AuthInfoEisbuk, "myUserId">;
+      type: A;
+      payload: AuthState;
     }
+  : A extends Action.UpdateAdminStatus
+  ? { type: A; payload: boolean }
   : { type: string };
-// #endregion Region Auth
+/**
+ * `authInfoEisbuuk` portion of the local store
+ */
+export interface AuthState {
+  userData: User | null;
+  isAdmin: boolean;
+  isEmpty: boolean;
+  isLoaded: boolean;
+}
+// #endregion authInfoEisbuk
 
 // #region copyPaste
-
+/**
+ * `week` portion of `copyPaste` portion of the local store
+ */
 export interface SlotsWeek {
   weekStart: DateTime;
   slots: SlotInterface[];
 }
-
-export interface CopyPasteState {
-  day: SlotsById | null;
-  week: SlotsWeek | null;
-}
-
 /**
  * Whitelisted actions for copy paste reducer
  */
@@ -117,7 +122,6 @@ export type CopyPasteAction =
   | Action.CopySlotWeek
   | Action.DeleteSlotFromClipboard
   | Action.AddSlotToClipboard;
-
 /**
  * Record of payloads for each of the copy paste reducer actions
  */
@@ -127,7 +131,6 @@ interface CopyPastePayload {
   [Action.DeleteSlotFromClipboard]: SlotInterface["id"];
   [Action.AddSlotToClipboard]: SlotInterface;
 }
-
 /**
  * Copy Paste reducer action generic
  * gets passed one of whitelisted copy paste reducer actions as type parameter
@@ -136,64 +139,114 @@ export interface CopyPasteReducerAction<A extends CopyPasteAction> {
   type: A;
   payload: CopyPastePayload[A];
 }
-// #endregion Region Copy Paste
-
-// #region Firebase Reducer
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface ProfileType {}
-// eslint-disable-next-line @typescript-eslint/no-empty-interface
-interface Schema {}
-// #endregion Region Firebase Reducer
-
-// #region Firestore
-type Dispatch = typeof store.dispatch;
-type GetState = () => LocalStore;
-
-export interface FirebaseGetters {
-  getFirebase: () => ExtendedFirebaseInstance;
+/**
+ * `copyPaste` portion of the local store
+ */
+export interface CopyPasteState {
+  day: SlotsById | null;
+  week: SlotsWeek | null;
 }
+// #endregion copyPaste
 
+// #region firestore
+/**
+ * `firestore.data` structure in local store
+ */
+export interface FirestoreData {
+  [Collection.Organizations]: { [organization: string]: OrganizationMeta };
+  [OrgSubCollection.Customers]: { [customerId: string]: Customer };
+  [OrgSubCollection.Bookings]: CustomerBase;
+  [BookingSubCollection.BookedSlots]: {
+    [slotId: string]: CustomerBookingEntry;
+  };
+  [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
+  [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
+}
+/**
+ * Entry for a particular listener in `firestore` portion of local store
+ */
+export interface FirestoreListener {
+  /**
+   * A list of all consumer ids (hook instances subscribed to a particlar firestore listener)
+   */
+  consumers: string[];
+  /**
+   * A function returned from firebase `onSnapshot` listener, used to unsubscribe from particular collection
+   */
+  unsubscribe: Unsubscribe;
+  /** @TODO add additional meta functionality (for reporting) here */
+}
+/**
+ * A whitelist of collections we can add a firebase subscrption for
+ */
+export type CollectionSubscription =
+  | Collection.Organizations
+  | OrgSubCollection.SlotsByDay
+  | OrgSubCollection.Customers
+  | OrgSubCollection.Bookings
+  | OrgSubCollection.Attendance;
+/**
+ * Whitelisted actions for firestore reducer
+ */
+export type FirestoreAction =
+  | Action.UpdateFirestoreListener
+  | Action.DeleteFirestoreListener
+  | Action.UpdateLocalCollection;
+/**
+ * A generic used to type the payload we'll recieve from UpdateLocalCollection action
+ */
+export interface UpdateFirestoreDataPayload<
+  C extends CollectionSubscription | BookingSubCollection.BookedSlots
+> {
+  collection: C;
+  data: FirestoreData[C];
+  merge?: boolean;
+}
+/**
+ * Record of payloads for each of the firestore reducer actions
+ */
+interface FirestorReducerPayload {
+  [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>;
+  [Action.UpdateFirestoreListener]: FirestoreListener;
+  [Action.DeleteFirestoreListener]: CollectionSubscription;
+}
+/**
+ * Copy Paste reducer action generic
+ * gets passed one of whitelisted copy paste reducer actions as type parameter
+ */
+export interface FirestoreReducerAction<A extends FirestoreAction> {
+  type: A;
+  payload: FirestorReducerPayload[A];
+}
+/**
+ * `firestore` portion of the local store
+ */
+export type FirestoreState = {
+  data: Partial<FirestoreData>;
+  listeners: { [index in CollectionSubscription]?: FirestoreListener };
+};
+// #endregion firestore
+
+// #region thunks
+type GetState = () => LocalStore;
 /**
  * Async Thunk in charge of updating the firestore and dispatching action
  * to local store with respect to firestore update outcome
  */
 export interface FirestoreThunk {
-  (
-    dispatch: Dispatch,
-    getState: GetState,
-    firebaseParams: FirebaseGetters
-  ): Promise<void>;
+  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
 }
 
-type FirestoreRedux = {
-  status: {
-    requesting: FirestoreStatusEntry<boolean>;
-    requested: FirestoreStatusEntry<boolean>;
-    timestamps: FirestoreStatusEntry<number>;
-  };
-  data: Partial<FirestoreData>;
-  ordered: Partial<FirestoreOrdered>;
-  listeners: {
-    byId: {};
-    allIds: [];
-  };
-  errors: {
-    byQuery: {};
-    allIds: [];
-  };
-  queries: {};
-};
-// #region Firestore
+// #endregion thunks
 
-// #region Full Store
+// #region FullStore
 export interface LocalStore {
-  firebase: FirebaseReducer.Reducer<ProfileType, Schema>;
-  firestore: FirestoreRedux;
+  firestore: FirestoreState;
   app: AppState;
   copyPaste: CopyPasteState;
-  authInfoEisbuk: AuthInfoEisbuk;
+  auth: AuthState;
 }
-// #endregion Region Full Store
+// #endregion FullStore
 
 // #region mappedValues
 export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {

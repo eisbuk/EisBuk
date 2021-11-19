@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "eisbuk-shared";
 
-import { capitalizeFirst, getOrgFromLocation } from "@/utils/helpers";
+import { capitalizeFirst, getOrgFromLocation, isEmpty } from "@/utils/helpers";
 import { isISODay } from "@/utils/date";
 
 describe("Helpers", () => {
@@ -53,6 +53,30 @@ describe("Date utils", () => {
       expect(
         getOrgFromLocation("two--double--dashes-randomhash.web.app")
       ).toEqual("two.web.app");
+    });
+  });
+
+  describe("isEmpty", () => {
+    test("should return false on all defined, non-null primitive values", async () => {
+      expect(isEmpty("string")).toEqual(false);
+      expect(isEmpty("")).toEqual(false);
+      expect(isEmpty(20)).toEqual(false);
+      expect(isEmpty(0)).toEqual(false);
+      expect(isEmpty(true)).toEqual(false);
+      expect(isEmpty(false)).toEqual(false);
+    });
+
+    test("should return true on null and undefined", async () => {
+      expect(isEmpty(null)).toEqual(true);
+      expect(isEmpty(undefined)).toEqual(true);
+    });
+
+    test("should return true empty arrays and objects and false on non-empty ones", async () => {
+      expect(isEmpty([])).toEqual(true);
+      expect(isEmpty({})).toEqual(true);
+
+      expect(isEmpty(["element"])).toEqual(false);
+      expect(isEmpty({ foo: "bar" })).toEqual(false);
     });
   });
 });

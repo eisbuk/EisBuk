@@ -15,10 +15,10 @@ import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhou
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getLocalAuth } from "@/store/selectors/auth";
 import { AuthMessage } from "@/enums/translations";
 
-// ***** Region Background Images ***** //
+// #region backgroundImages
 const backgrounds = [
   figureSkatingSilhouetteCouple,
   figureSkatingSilhouetteSkirt,
@@ -26,9 +26,9 @@ const backgrounds = [
   girlIceSkating,
   iceSkatingSilhouette,
 ];
-// ***** End Region Background Images ***** //
+// #endregion backgroundImages
 
-// ***** Region Styles ***** //
+// #region styles
 /** @TODO refactor to use className instead of inline stlye */
 const baseStyle = {
   backgroundRepeat: "no-repeat",
@@ -37,7 +37,7 @@ const baseStyle = {
   backgroundPosition: "center",
   height: "100vh",
 };
-// ***** End Region Styles ***** //
+// #endregion styles
 
 interface Props {
   backgroundIndex?: number;
@@ -51,7 +51,10 @@ interface Props {
 const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const dispatch = useDispatch();
 
-  const auth = useSelector(getFirebaseAuth);
+  // this is asserted as non-null as it shouldn't be render
+  // if user is not authentidated (user data doesn't exist)
+  // but only if user is authenticated and not admin
+  const userAuthData = useSelector(getLocalAuth)!;
 
   const background = _.isNil(backgroundIndex)
     ? _.sample(backgrounds)
@@ -74,7 +77,8 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
         {t(AuthMessage.AdminsOnly)}
       </Typography>
       <Typography component="h2" variant="h5">
-        {t(AuthMessage.LoggedInWith)} <b>{auth.email || auth.phoneNumber}</b>
+        {t(AuthMessage.LoggedInWith)}{" "}
+        <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
       </Typography>
 
       <Button variant="contained" onClick={logOut}>

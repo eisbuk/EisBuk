@@ -103,3 +103,13 @@ can be published at https://appname--new-feature-randomhash.web.app/
 */
 export const getOrgFromLocation = (location: string): string =>
   location.replace(/--[^.]+/, "");
+
+/**
+ * Checks if we've recieved and empty object.
+ */
+export const isEmpty = (input: unknown): boolean =>
+  [undefined, null].includes(input as any)
+    ? true
+    : input instanceof Object && Object.values(input).length === 0
+    ? true
+    : false;

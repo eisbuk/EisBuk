@@ -1,11 +1,10 @@
 import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isLoaded, isEmpty } from "react-redux-firebase";
 
 import { PrivateRoutes } from "@/enums/routes";
 
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getIsAuthEmpty, getIsAuthLoaded } from "@/store/selectors/auth";
 
 /**
  * Login route, checks for auth, if auth not provided, renders passed route props (LoginComponent)
@@ -14,14 +13,17 @@ import { getFirebaseAuth } from "@/store/selectors/auth";
  * @returns JSX.Element
  */
 const LoginRoute: React.FC<RouteProps> = (props) => {
-  const auth = useSelector(getFirebaseAuth);
+  const isAuthEmpty = useSelector(getIsAuthEmpty);
+  const isAuthLoaded = useSelector(getIsAuthLoaded);
 
-  return (
-    <>
-      {isLoaded(auth) && isEmpty(auth) && <Route {...props} />}
-      {isLoaded(auth) && !isEmpty(auth) && <Redirect to={PrivateRoutes.Root} />}
-    </>
-  );
+  switch (true) {
+    case isAuthLoaded && isAuthEmpty:
+      return <Route {...props} />;
+    case isAuthLoaded && !isAuthEmpty:
+      return <Redirect to={PrivateRoutes.Root} />;
+    default:
+      return null;
+  }
 };
 
 export default LoginRoute;

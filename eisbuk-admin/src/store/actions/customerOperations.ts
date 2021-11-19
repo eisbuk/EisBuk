@@ -1,3 +1,11 @@
+import {
+  collection,
+  DocumentData,
+  DocumentReference,
+  doc,
+  getFirestore,
+  setDoc,
+} from "@firebase/firestore";
 import i18n from "i18next";
 
 import {
@@ -19,6 +27,11 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
+const getCustomersCollPath = () =>
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Customers
+  }`;
+
 /**
  * Creates firestore async thunk:
  * - updates the customer in firestore
@@ -28,25 +41,20 @@ import {
  */
 export const updateCustomer = (
   customer: CustomerLoose
-): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { id, ...updatedData } = customer;
-
+): FirestoreThunk => async (dispatch) => {
   try {
-    const firebase = getFirebase();
+    const db = getFirestore();
 
-    const customersRef = firebase
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Customers);
+    const { id, ...updatedData } = customer;
+    let docRef: DocumentReference<DocumentData>;
+    if (id) {
+      docRef = doc(db, getCustomersCollPath(), id);
+    } else {
+      const customersCollRef = collection(db, getCustomersCollPath());
+      docRef = doc(customersCollRef);
+    }
 
-    // if the `id` is defined, we want to reference the existing customer doc in the db
-    // else the server will generate a uuid for a customer
-    const customerDoc = id ? customersRef.doc(id) : customersRef.doc();
-
-    await customerDoc.set(updatedData, { merge: true });
-
+    await setDoc(docRef, updatedData, { merge: true });
     dispatch(
       enqueueNotification({
         key: new Date().getTime() + Math.random(),
@@ -73,17 +81,12 @@ export const updateCustomer = (
  */
 export const deleteCustomer = (
   customer: CustomerBase
-): FirestoreThunk => async (dispatch, _, { getFirebase }) => {
+): FirestoreThunk => async (dispatch) => {
   try {
-    const firebase = getFirebase();
+    const db = getFirestore();
+    const docRef = doc(db, getCustomersCollPath(), customer.id);
 
-    await firebase
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Customers)
-      .doc(customer.id)
-      .set({ deleted: true }, { merge: true });
+    await setDoc(docRef, { deleted: true }, { merge: true });
 
     dispatch(
       enqueueNotification({

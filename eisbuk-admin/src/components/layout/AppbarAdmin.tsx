@@ -33,7 +33,7 @@ import DebugMenu from "@/components/layout/DebugMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getLocalAuth } from "@/store/selectors/auth";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -44,7 +44,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
 
   const dispatch = useDispatch();
 
-  const auth = useSelector(getFirebaseAuth);
+  const userAuthInfo = useSelector(getLocalAuth);
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
@@ -60,7 +60,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     }
   };
 
-  const currentUser = auth.email || auth.phoneNumber;
+  const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
   const { t } = useTranslation();
 
   return (
@@ -97,8 +97,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               </Button>
               <Button
                 component={Link}
-                disabled={location.pathname === PrivateRoutes.Prenotazioni}
-                to={PrivateRoutes.Prenotazioni}
+                disabled={location.pathname === PrivateRoutes.Slots}
+                to={PrivateRoutes.Slots}
                 variant="contained"
                 startIcon={<LibraryBooksIcon />}
               >
@@ -106,8 +106,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               </Button>
               <Button
                 component={Link}
-                to={PrivateRoutes.Atleti}
-                disabled={location.pathname === PrivateRoutes.Atleti}
+                to={PrivateRoutes.Athletes}
+                disabled={location.pathname === PrivateRoutes.Athletes}
                 variant="contained"
                 startIcon={<PeopleIcon />}
               >
@@ -145,8 +145,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <ListItem
               button
               component={Link}
-              disabled={location.pathname === PrivateRoutes.Prenotazioni}
-              to={PrivateRoutes.Prenotazioni}
+              disabled={location.pathname === PrivateRoutes.Slots}
+              to={PrivateRoutes.Slots}
             >
               <ListItemIcon>
                 <LibraryBooksIcon />
@@ -156,8 +156,8 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <ListItem
               button
               component={Link}
-              to={PrivateRoutes.Atleti}
-              disabled={location.pathname === PrivateRoutes.Atleti}
+              to={PrivateRoutes.Athletes}
+              disabled={location.pathname === PrivateRoutes.Athletes}
             >
               <ListItemIcon>
                 <PeopleIcon />

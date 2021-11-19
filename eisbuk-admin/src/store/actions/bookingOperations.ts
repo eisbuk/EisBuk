@@ -1,3 +1,4 @@
+import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
 import i18n from "i18next";
 
 import {
@@ -17,6 +18,11 @@ import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification, showErrSnackbar } from "./appActions";
 
+const getBookingsPath = () =>
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Bookings
+  }`;
+
 /**
  * Dispatches booked interval to firestore.
  * Additionally, it cancels booked interval for the same slot if one is already booked.
@@ -31,19 +37,19 @@ export const bookInterval = ({
   secretKey: Customer["secretKey"];
   bookedInterval: string;
   date: SlotInterface["date"];
-}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
+    const docRef = doc(
+      db,
+      getBookingsPath(),
+      secretKey,
+      BookingSubCollection.BookedSlots,
+      slotId
+    );
 
     // update booked interval to firestore
-    await db
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Bookings)
-      .doc(secretKey)
-      .collection(BookingSubCollection.BookedSlots)
-      .doc(slotId)
-      .set({ interval: bookedInterval, date });
+    await setDoc(docRef, { interval: bookedInterval, date });
 
     // show success message
     dispatch(
@@ -70,19 +76,19 @@ export const cancelBooking = ({
 }: {
   slotId: SlotInterface["id"];
   secretKey: Customer["secretKey"];
-}): FirestoreThunk => async (dispatch, getState, { getFirebase }) => {
+}): FirestoreThunk => async (dispatch) => {
   try {
-    const db = getFirebase().firestore();
+    const db = getFirestore();
+    const docRef = doc(
+      db,
+      getBookingsPath(),
+      secretKey,
+      BookingSubCollection.BookedSlots,
+      slotId
+    );
 
     // remove the booking from firestore
-    await db
-      .collection(Collection.Organizations)
-      .doc(getOrganization())
-      .collection(OrgSubCollection.Bookings)
-      .doc(secretKey)
-      .collection(BookingSubCollection.BookedSlots)
-      .doc(slotId)
-      .delete();
+    await deleteDoc(docRef);
 
     // show success message
     dispatch(

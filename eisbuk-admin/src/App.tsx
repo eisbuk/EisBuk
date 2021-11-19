@@ -1,46 +1,48 @@
 import React from "react";
-import { BrowserRouter } from "react-router-dom";
-import { Provider } from "react-redux";
-import { ReactReduxFirebaseProvider } from "react-redux-firebase";
 import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
+import { Provider as ReduxProvider } from "react-redux";
+import { getAuth } from "@firebase/auth";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
 import { ThemeProvider } from "@material-ui/core/styles";
 
-import { rrfProps, store } from "@/store";
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { store } from "@/store";
 
 import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
 
+import useConnectAuthToStore from "@/store/firestore/useConnectAuthToStore";
+
 import { currentTheme } from "@/themes";
-import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const App: React.FC = () => {
   const classes = useStyles();
 
+  // connect auth to store to recieve firebase SDK's auth updates
+  // through redux store
+  useConnectAuthToStore(getAuth(), store);
+
   return (
-    <Provider store={store}>
-      <ReactReduxFirebaseProvider {...rrfProps}>
-        <ThemeProvider theme={currentTheme}>
-          <MuiPickersUtilsProvider utils={LuxonUtils}>
-            <SnackbarProvider className={classes.root} maxSnack={3}>
-              <Notifier />
-              <CssBaseline />
-              <BrowserRouter>
-                <AppContent />
-              </BrowserRouter>
-            </SnackbarProvider>
-          </MuiPickersUtilsProvider>
-        </ThemeProvider>
-      </ReactReduxFirebaseProvider>
-    </Provider>
+    <ReduxProvider store={store}>
+      <ThemeProvider theme={currentTheme}>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <SnackbarProvider className={classes.root} maxSnack={3}>
+            <Notifier />
+            <CssBaseline />
+            <AppContent />
+          </SnackbarProvider>
+        </MuiPickersUtilsProvider>
+      </ThemeProvider>
+    </ReduxProvider>
   );
 };
 
-// ***** Region Styles ***** //
+// #region styles
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(0.75, 0),
@@ -57,5 +59,6 @@ const useStyles = makeStyles((theme) => ({
     pointerEvents: "all",
   },
 }));
-// ***** End Region Styles ***** //
+// #region styles
+
 export default App;

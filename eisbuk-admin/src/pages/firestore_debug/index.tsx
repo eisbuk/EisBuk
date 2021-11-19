@@ -1,12 +1,11 @@
 import React from "react";
-import firebase from "firebase/app";
-import { isEmpty, isLoaded } from "react-redux-firebase";
-import { useSelector } from "react-redux";
+
+// import { signOut, signInWithEmailAndPassword, getAuth } from "@firebase/auth";
 
 import Container from "@material-ui/core/Container";
 import Paper from "@material-ui/core/Paper";
 import Box from "@material-ui/core/Box";
-import Button from "@material-ui/core/Button";
+// import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
@@ -15,30 +14,26 @@ import DebugSlotForm from "./DebugSlotForm";
 import DebugCustomerForm from "./DebugCustomerForm";
 import DebugBookingForm from "./DebugBookingForm";
 
-import { createAdminTestUsers } from "@/components/debugPage";
-
-import { getFirebaseAuth } from "@/store/selectors/auth";
+// import { createAdminTestUsers } from "@/components/debugPage";
 
 const FirestoreDebug: React.FC = () => {
+  // const auth = getAuth();
+
   const classes = useStyles();
 
-  const auth = useSelector(getFirebaseAuth);
+  // const isAdmin = isLoaded(auth) && !isEmpty(auth);
 
-  const isAdmin = isLoaded(auth) && !isEmpty(auth);
+  // const logIn = async () => {
+  //   try {
+  //     await createAdminTestUsers();
+  //   } catch {
+  //     await signInWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
+  //   }
+  // };
 
-  const logIn = async () => {
-    try {
-      await createAdminTestUsers();
-    } catch {
-      await firebase
-        .auth()
-        .signInWithEmailAndPassword("test@eisbuk.it", "test00");
-    }
-  };
-
-  const logOut = async () => {
-    await firebase.auth().signOut();
-  };
+  // const logOut = async () => {
+  //   await signOut(auth);
+  // };
 
   return (
     <Container>
@@ -46,14 +41,14 @@ const FirestoreDebug: React.FC = () => {
         <Typography variant="h6">
           {"Click to toggle admin (login) state ->"}
         </Typography>
-        <Button
+        {/* <Button
           className={classes.button}
           variant="contained"
           style={{ color: "white", background: isAdmin ? "green" : "red" }}
           onClick={isAdmin ? logOut : logIn}
         >
           Admin
-        </Button>
+        </Button> */}
       </Box>
       <Paper elevation={2} className={classes.itemContainer}>
         <DebugSlotForm />

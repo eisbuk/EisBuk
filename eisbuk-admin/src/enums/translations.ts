@@ -87,6 +87,7 @@ export enum ActionButton {
   AddCustomers = "ActionButton.AddCustomers",
   BookInterval = "ActionButton.BookInterval",
   Save = "ActionButton.Save",
+  Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
 }
 // #endregion dialog

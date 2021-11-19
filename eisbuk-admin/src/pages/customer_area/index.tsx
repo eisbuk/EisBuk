@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { isEmpty, isLoaded } from "react-redux-firebase";
+
+import { OrgSubCollection } from "eisbuk-shared";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -11,15 +12,15 @@ import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import useCustomerBookings from "@/hooks/useCustomerBookings";
-
 import {
   getBookingsCustomer,
   getBookedSlots,
 } from "@/store/selectors/bookings";
 import { getSlotsForCustomer } from "@/store/selectors/slots";
-import { getFirebaseAuth } from "@/store/selectors/auth";
+import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
+
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 import { splitSlotsByCustomerRoute } from "./utils";
 
@@ -33,12 +34,15 @@ import { splitSlotsByCustomerRoute } from "./utils";
  * - renders appropriate sub route with respect to `customerRoute` provided
  */
 const CustomerArea: React.FC = () => {
-  const { customerRoute, secretKey } = useParams<{
+  const { customerRoute } = useParams<{
     secretKey: string;
     customerRoute: CustomerRoute;
   }>();
 
-  useCustomerBookings(secretKey);
+  useFirestoreSubscribe([
+    OrgSubCollection.Bookings,
+    OrgSubCollection.SlotsByDay,
+  ]);
 
   const customerData = useSelector(getBookingsCustomer);
   const date = useSelector(getCalendarDay);
@@ -68,16 +72,15 @@ const CustomerArea: React.FC = () => {
   // create bookings to display
   const bookedSlots = useSelector(getBookedSlots);
 
-  const auth = useSelector(getFirebaseAuth);
+  const isAdmin = useSelector(getIsAdmin);
 
-  const title =
-    isLoaded(customerData) && customerData
-      ? `${customerData.name} ${customerData.surname}`
-      : "";
+  const title = customerData
+    ? `${customerData.name} ${customerData.surname}`
+    : "";
 
   const headers = (
     <>
-      {isLoaded(auth) && !isEmpty(auth) && <AppbarAdmin />}
+      {isAdmin && <AppbarAdmin />}
       <AppbarCustomer headingText={title} />
     </>
   );

@@ -1,5 +1,7 @@
 import React, { useState } from "react";
-import firebase from "firebase/app";
+
+import { getApp } from "@firebase/app";
+import { getFunctions, httpsCallable } from "@firebase/functions";
 
 import Button from "@material-ui/core/Button";
 import Menu from "@material-ui/core/Menu";
@@ -11,6 +13,9 @@ import { getOrganization } from "@/lib/getters";
 import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
+
+const app = getApp();
+const functions = getFunctions(app, __functionsZone__);
 
 const DebugMenu: React.FC = () => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
@@ -27,10 +32,10 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(null);
     if (functionName) {
       try {
-        const res = await firebase
-          .app()
-          .functions(__functionsZone__)
-          .httpsCallable(functionName)({
+        const res = await httpsCallable(
+          functions,
+          functionName
+        )({
           ...params,
           organization: getOrganization(),
         });
@@ -70,7 +75,7 @@ const DebugMenu: React.FC = () => {
         >
           Create 100 athletes
         </MenuItem>
-        <MenuItem onClick={handleClose(CloudFunction.CreateTestSlots)}>
+        <MenuItem onClick={() => handleClose(CloudFunction.CreateTestSlots)}>
           Create slots
         </MenuItem>
       </Menu>

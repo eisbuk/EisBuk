@@ -1,14 +1,16 @@
-/* eslint-disable import/no-duplicates */
-import "firebase/auth";
-import "firebase/firestore";
-import "firebase/functions";
-
-import firebase from "firebase";
-import { createStore, applyMiddleware } from "redux";
-import { getFirebase } from "react-redux-firebase";
-import { createFirestoreInstance } from "redux-firestore";
-import { composeWithDevTools } from "redux-devtools-extension";
-import thunk from "redux-thunk";
+import { initializeApp, FirebaseOptions } from "@firebase/app";
+import {
+  useDeviceLanguage,
+  getAuth,
+  connectAuthEmulator,
+} from "@firebase/auth";
+import {
+  initializeFirestore,
+  connectFirestoreEmulator,
+  getFirestore,
+  enableIndexedDbPersistence,
+} from "@firebase/firestore";
+import { connectFunctionsEmulator, getFunctions } from "@firebase/functions";
 
 import {
   __isDev__,
@@ -20,12 +22,11 @@ import {
   __authDomain__,
   __storageBucket__,
   __measurementId__,
-  __functionsZone__,
 } from "@/lib/constants";
 
-import rootReducer from "./reducers/rootReducer";
+import { getNewStore } from "./createStore";
 
-const fbConfig = {
+const fbConfig: FirebaseOptions = {
   // common config data
   // loaded from .env variables according to environment
   databaseURL: __databaseURL__,
@@ -45,30 +46,26 @@ if (__isDev__) {
   console.warn("Using local emulated Database : " + fbConfig.databaseURL);
 }
 
-// react-redux-firebase Configuration
-const rrfConfig = {
-  // userProfile: 'users'
-  useFirestoreForProfile: true, // Firestore for Profile instead of Realtime DB
-  // enableClaims: true // Get custom claims along with the profile
-};
-
 // Initialize Firebase, Firestore and Functions instances
-firebase.initializeApp(fbConfig);
-firebase.auth().useDeviceLanguage();
-const db = firebase.firestore();
+const firebase = initializeApp(fbConfig);
+initializeFirestore(firebase, {});
 
-const functions = firebase.functions();
+const auth = getAuth();
+// eslint-disable-next-line react-hooks/rules-of-hooks
+useDeviceLanguage(auth);
+const db = getFirestore();
+
+const functions = getFunctions(firebase, "europe-west6");
+console.log(`Functions region > ${functions.region}`);
 
 if (__isDev__) {
-  db.settings({ experimentalAutoDetectLongPolling: true });
-  db.useEmulator("localhost", 8080);
-  firebase.auth().useEmulator("http://localhost:9099/");
-  functions.useEmulator("localhost", 5001);
-  firebase.app().functions(__functionsZone__).useEmulator("localhost", 5001);
+  connectFirestoreEmulator(db, "localhost", 8080);
+  connectAuthEmulator(auth, "http://localhost:9099/");
+  connectFunctionsEmulator(functions, "localhost", 5001);
   console.warn("Using emulator for functions and authentication");
-  window.firebase = firebase as any;
+  // window.firebase = firebase as any;
 } else {
-  db.enablePersistence().catch((err) => {
+  enableIndexedDbPersistence(db).catch((err) => {
     if (err.code === "failed-precondition") {
       console.warn(
         "Multiple tabs open, persistence can only be enabled in one tab at a a time."
@@ -81,23 +78,4 @@ if (__isDev__) {
   });
 }
 
-// Create Redux Store with Reducers and Initial state
-const middlewares = [thunk.withExtraArgument({ getFirebase })];
-export const store = createStore(
-  rootReducer,
-  {},
-  composeWithDevTools(applyMiddleware(...middlewares))
-);
-
-export const rrfProps = {
-  firebase,
-  config: rrfConfig,
-  dispatch: store.dispatch,
-  createFirestoreInstance,
-};
-
-// Export Redux Store and react-redux-firebase props
-export default {
-  store,
-  rrfProps,
-};
+export const store = getNewStore();

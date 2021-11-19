@@ -235,6 +235,7 @@ export const createAttendanceForBooking = functions
 
     const isUpdate = Boolean(change.after.exists);
 
+    /** @TODO might be good idea to add transaction here */
     const { id: customerId } = (
       await db
         .collection(Collection.Organizations)

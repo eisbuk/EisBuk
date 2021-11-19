@@ -1,4 +1,8 @@
+import * as firestore from "@firebase/firestore";
+
 import { Collection, OrgSubCollection } from "eisbuk-shared";
+
+import { db } from "@/__testSetup__/firestoreSetup";
 
 import { __organization__ } from "@/lib/constants";
 
@@ -11,8 +15,8 @@ import {
 } from "../__testData__/attendanceOperations";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import * as firestoreUtils from "@/__testUtils__/firestore";
 import { setupTestAttendance } from "../__testUtils__/firestore";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 // test data
 const customerId = "customer-0";
@@ -20,19 +24,19 @@ const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-// path of attendance collection and test month document to make our lives easier
-// as we'll be using it throughout
-const attendanceMonth = firestoreUtils
-  .getFirebase()
-  .firestore()
-  .collection(Collection.Organizations)
-  .doc(__organization__)
-  .collection(OrgSubCollection.Attendance)
-  .doc(slotId);
+const attendaceCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Attendance}`;
 
 const mockDispatch = jest.fn();
 
 describe("Attendance operations ->", () => {
+  beforeEach(async () => {
+    await loginDefaultUser();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("markAttendance ->", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",
@@ -56,8 +60,8 @@ describe("Attendance operations ->", () => {
           [customerId]: { attendedInterval, bookedInterval },
         });
         // check updated db
-        const resDoc = await attendanceMonth.get();
-        const resData = resDoc.data();
+        const docRef = firestore.doc(db, attendaceCollectionPath, slotId);
+        const resData = (await firestore.getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -84,8 +88,8 @@ describe("Attendance operations ->", () => {
           [customerId]: { bookedInterval: null, attendedInterval },
         });
         // check updated db
-        const resDoc = await attendanceMonth.get();
-        const resData = resDoc.data();
+        const docRef = firestore.doc(db, attendaceCollectionPath, slotId);
+        const resData = (await firestore.getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -94,7 +98,7 @@ describe("Attendance operations ->", () => {
       "should enqueue error snackbar if update not successful",
       async () => {
         // cause synthetic error in execution
-        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+        jest.spyOn(firestore, "getFirestore").mockImplementationOnce(() => {
           throw new Error();
         });
         const initialDoc = createDocumentWithObservedAttendance({});
@@ -135,8 +139,8 @@ describe("Attendance operations ->", () => {
           [customerId]: { attendedInterval: null, bookedInterval },
         });
         // check updated db
-        const resDoc = await attendanceMonth.get();
-        const resData = resDoc.data();
+        const docRef = firestore.doc(db, attendaceCollectionPath, slotId);
+        const resData = (await firestore.getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -161,8 +165,8 @@ describe("Attendance operations ->", () => {
         // the customer should be removed (only the rest of the test data should be in the doc)
         const expectedDoc = createDocumentWithObservedAttendance({});
         // check updated db
-        const resDoc = await attendanceMonth.get();
-        const resData = resDoc.data();
+        const docRef = firestore.doc(db, attendaceCollectionPath, slotId);
+        const resData = (await firestore.getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -171,7 +175,7 @@ describe("Attendance operations ->", () => {
       "should enqueue error snackbar if update not successful",
       async () => {
         // cause synthetic error in execution
-        jest.spyOn(firestoreUtils, "getFirebase").mockImplementationOnce(() => {
+        jest.spyOn(firestore, "getFirestore").mockImplementationOnce(() => {
           throw new Error();
         });
         const initialDoc = createDocumentWithObservedAttendance({});

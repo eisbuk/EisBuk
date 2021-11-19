@@ -8,7 +8,9 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 
-import { OrgSubCollection } from "eisbuk-shared";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
+
+import { __organization__ } from "@/lib/constants";
 
 import { useFormStyles } from "./styles";
 
@@ -142,7 +144,7 @@ const DebugSlotForm: React.FC = () => {
  */
 const getDispatchParams = (slotId: string): DispatchFSBaseParams => ({
   docType: "slot",
-  getRef: (org) => org.collection(OrgSubCollection.Slots).doc(slotId),
+  docPath: `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Slots}/${slotId}`,
 });
 
 export default DebugSlotForm;

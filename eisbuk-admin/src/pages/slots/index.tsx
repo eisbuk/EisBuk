@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
-import { SlotInterface } from "eisbuk-shared";
+import { OrgSubCollection, SlotInterface } from "eisbuk-shared";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -30,11 +30,14 @@ import {
   addSlotToClipboard,
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
 
   const date = useSelector(getCalendarDay);
+
+  useFirestoreSubscribe([OrgSubCollection.SlotsByDay]);
 
   const slotsToShow = useSelector(getAdminSlots);
   const daysToShow = Object.keys(slotsToShow);

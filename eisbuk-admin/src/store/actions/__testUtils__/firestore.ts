@@ -15,9 +15,9 @@ import {
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
-import { adminDb } from "@/__testSettings__";
+import { adminDb } from "@/__testSetup__/firestoreSetup";
 
-import { createTestStore, getFirebase } from "@/__testUtils__/firestore";
+import { createTestStore } from "@/__testUtils__/firestore";
 
 import { testDateLuxon } from "@/__testData__/date";
 import { waitForCondition } from "@/__testUtils__/helpers";
@@ -56,7 +56,7 @@ export const setupTestAttendance = async ({
 
   await Promise.all(updates);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 /**
  * Set up `slots` data in emulated store and create `getState()` returning redux store
@@ -91,7 +91,7 @@ export const setupTestSlots = async ({
 
   await Promise.all(updates);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 /**
  * Create `getState()` returning redux store
@@ -114,7 +114,7 @@ export const setupCopyPaste = async ({
   // create `getState` state to return store populated with desired values
   const getState = () => createTestStore({ copyPaste });
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 /**
  * Set up `bookings` data in emulated store and create `getState()` returning redux store
@@ -149,7 +149,7 @@ export const setupTestBookings = async ({
   );
   await Promise.all(bookingsToUpdate);
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 /**
  * Set up `customers` data entry in emulated store and create `getState()` returning redux store
@@ -198,7 +198,7 @@ export const setupTestCustomer = async ({
       },
     });
 
-  return [dispatch, getState, { getFirebase }];
+  return [dispatch, getState];
 };
 
 /**

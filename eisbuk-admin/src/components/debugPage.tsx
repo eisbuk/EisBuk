@@ -1,11 +1,17 @@
 import React from "react";
-import firebase from "firebase/app";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "@firebase/auth";
+import { getApp } from "@firebase/app";
+import { getFunctions, httpsCallable } from "@firebase/functions";
 
 import Container from "@material-ui/core/Container";
 import Box from "@material-ui/core/Box";
 import Button from "@material-ui/core/Button";
 
-import { __functionsZone__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -13,7 +19,9 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
 
-import { getOrganization } from "@/lib/getters";
+const app = getApp();
+const auth = getAuth();
+const functions = getFunctions(app, "europe-west6");
 
 /**
  * Invokes cloud function
@@ -22,10 +30,11 @@ import { getOrganization } from "@/lib/getters";
  */
 export const invokeFunction = (functionName: CloudFunction) => {
   return async (): Promise<void> => {
-    const res = await firebase
-      .app()
-      .functions(__functionsZone__)
-      .httpsCallable(functionName)({ organization: getOrganization() });
+    console.log(`Calling a function from > ${functions.region}`);
+    const res = await httpsCallable(
+      functions,
+      functionName
+    )({ organization: getOrganization() });
 
     console.log(res.data);
   };
@@ -40,13 +49,9 @@ export const createAdminTestUsers = async (): Promise<void> => {
   await invokeFunction(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
   try {
-    await firebase
-      .auth()
-      .createUserWithEmailAndPassword("test@eisbuk.it", "test00");
+    await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
   } catch (e) {
-    await firebase
-      .auth()
-      .signInWithEmailAndPassword("test@eisbuk.it", "test00");
+    await signInWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
   }
 };
 

@@ -1,31 +1,39 @@
+import { User } from "@firebase/auth";
+
 import { LocalStore } from "@/types/store";
 
 /**
- * Get auth object from firebase part of the local store
+ * Get local user auth object
  * @param state Local Redux Store
- * @returns auth object
+ * @returns {User} auth data
  */
-export const getFirebaseAuth = (
-  state: LocalStore
-): LocalStore["firebase"]["auth"] => state.firebase.auth;
+export const getLocalAuth = (state: LocalStore): User | null =>
+  state.auth.userData;
 
 /**
- * Get local auth object
+ * Get boolean representing if a curren user is an authenticated
+ * with our firebase auth record
+ *
+ * **Not to be confused with is admin as this only means that the user is authenticated with (at least) one of
+ * our organizations, not necessarily the current organization**
+ *
  * @param state Local Redux Store
- * @returns local auth object (authInfoEisbuk)
+ * @returns true is current user is admin (boolean)
  */
-export const getLocalAuth = (state: LocalStore): LocalStore["authInfoEisbuk"] =>
-  state.authInfoEisbuk;
+export const getIsAuthEmpty = (state: LocalStore): boolean =>
+  state.auth.isEmpty;
 
 /**
  * Get boolean representing if currently logged in user is administrator
  * @param state Local Redux Store
  * @returns true is current user is admin (boolean)
- *
- * We rely on the firestore rules to enforce security: only users whose
- * email or phone number appears amongst the organization admins will be able
- * to get a valid response (and hence a populated array) from the organization.
- * For this reason we only check that the admins array is non-empty here.
  */
-export const getAmIAdmin = (state: LocalStore): boolean =>
-  state.authInfoEisbuk.admins.length > 0;
+export const getIsAdmin = (state: LocalStore): boolean => state.auth.isAdmin;
+
+/**
+ * Get boolean representing auth load state (set to true when initial auth is loaded)
+ * @param state Local Redux Store
+ * @returns true is current user is admin (boolean)
+ */
+export const getIsAuthLoaded = (state: LocalStore): boolean =>
+  state.auth.isLoaded;
