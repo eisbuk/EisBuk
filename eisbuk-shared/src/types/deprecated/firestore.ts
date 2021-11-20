@@ -1,7 +1,6 @@
 import { Timestamp } from "@google-cloud/firestore";
 
-import { SlotInterface } from "../firestore";
-import { Customer } from "../firestore";
+import { SlotInterface, Customer } from "../firestore";
 
 /**
  * Deprecated entry for bookings meta. Now it's `CustomerBase`

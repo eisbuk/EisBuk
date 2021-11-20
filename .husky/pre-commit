@@ -1,0 +1,5 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+yarn --cwd eisbuk-admin lint-staged
+yarn --cwd eisbuk-shared lint-staged
