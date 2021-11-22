@@ -7,6 +7,7 @@ import IconButton from "@material-ui/core/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 
 import TimePickerField from "./TimePickerField";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
@@ -74,29 +75,33 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    position: "relative",
-    display: "flex",
-    justifyContent: "space-evenly",
-  },
-  error: {
-    position: "absolute",
-    bottom: 4,
-    left: "50%",
-    witdh: "80%",
-    whitespace: "normal",
-    transform: "translateX(-50%)",
-  },
-  intervalTitles: {
-    fontSize: theme.typography.pxToRem(17),
-    fontWeight: theme.typography.fontWeightLight,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.light,
-  },
-  dark: {
-    backgroundColor: theme.palette.grey[50],
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    container: {
+      position: "relative",
+      display: "flex",
+      justifyContent: "space-evenly",
+    },
+    error: {
+      position: "absolute",
+      bottom: 4,
+      left: "50%",
+      witdh: "80%",
+      whitespace: "normal",
+      transform: "translateX(-50%)",
+    },
+    intervalTitles: {
+      fontSize: theme.typography.pxToRem(17),
+      fontWeight: "bold",
+      // FIXME: the following causes a typescript error
+      // fontWeight: theme.typography.fontWeightBold,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.primary.light,
+    },
+    dark: {
+      backgroundColor: theme.palette.grey[50],
+    },
+  })
+);
 
 export default TimeIntervalField;

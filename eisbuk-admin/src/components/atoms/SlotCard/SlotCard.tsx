@@ -9,6 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
@@ -195,65 +196,73 @@ const createDeleteConfirmDialog = ({
 // #endregion localUtils
 
 // #region styles
-const useStyles = makeStyles((theme) => ({
-  root: {
-    border: "1px solid",
-    borderColor: theme.palette.divider,
-    position: "relative",
-    "&.MuiPaper-elevation8": {
-      borderWidth: 1,
-      borderStyle: "solid",
-      borderColor: theme.palette.primary.light,
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      border: "1px solid",
+      borderColor: theme.palette.divider,
+      position: "relative",
+      "&.MuiPaper-elevation8": {
+        borderWidth: 1,
+        borderStyle: "solid",
+        borderColor: theme.palette.primary.light,
+      },
     },
-  },
-  wrapper: {
-    display: "flex",
-    padding: 0,
-    "&:last-child": {
-      paddingBottom: 0,
+    wrapper: {
+      display: "flex",
+      padding: 0,
+      "&:last-child": {
+        paddingBottom: 0,
+      },
     },
-  },
-  categories: {
-    padding: 4,
-  },
-  category: {
-    textTransform: "uppercase",
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.pxToRem(10),
-    paddingLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-  },
-  notes: { fontWeight: theme.typography.fontWeightLight },
-  actionsContainer: {
-    display: "flex",
-    justifyContent: "start",
-    alignItems: "center",
-    height: "2.25rem",
-    borderTopWidth: 1,
-    borderTopStyle: "solid",
-    borderTopColor: theme.palette.divider,
-    padding: "0 0.5rem",
-  },
-  intervalTag: {
-    margin: "0.25rem",
-    background: theme.palette.primary.main,
-    padding: "0.25rem 0.5rem",
-    borderRadius: "0.5rem",
-    overflow: "hidden",
-    color: theme.palette.primary.contrastText,
-    fontWeight: "bold",
-    fontSize: "0.75rem",
-  },
-  buttons: {
-    marginLeft: "auto",
-  },
-  selected: {
-    backgroundColor: theme.palette.warning.light,
-  },
-  cursorPointer: {
-    cursor: "pointer",
-  },
-}));
+    categories: {
+      padding: 4,
+    },
+    category: {
+      textTransform: "uppercase",
+      fontWeight: "bold",
+      // FIXME: the following causes a typescript error
+      // fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.pxToRem(10),
+      paddingLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    notes: {
+      fontWeight: "bold",
+      // FIXME: the following causes a typescript error
+      // fontWeight: theme.typography.fontWeightBold,
+    },
+    actionsContainer: {
+      display: "flex",
+      justifyContent: "start",
+      alignItems: "center",
+      height: "2.25rem",
+      borderTopWidth: 1,
+      borderTopStyle: "solid",
+      borderTopColor: theme.palette.divider,
+      padding: "0 0.5rem",
+    },
+    intervalTag: {
+      margin: "0.25rem",
+      background: theme.palette.primary.main,
+      padding: "0.25rem 0.5rem",
+      borderRadius: "0.5rem",
+      overflow: "hidden",
+      color: theme.palette.primary.contrastText,
+      fontWeight: "bold",
+      fontSize: "0.75rem",
+    },
+    buttons: {
+      marginLeft: "auto",
+    },
+    selected: {
+      backgroundColor: theme.palette.warning.light,
+    },
+    cursorPointer: {
+      cursor: "pointer",
+    },
+  })
+);
 // #endregion styles
 
 export default SlotCard;
