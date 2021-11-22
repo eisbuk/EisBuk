@@ -24,7 +24,7 @@
     "*.{js,ts,tsx}": [
       "eslint --fix --max-warnings=0"
     ],
-    "*.{js,ts,tsx,json,yml,yaml,md}": [
+    "*.{js,ts,tsx,json,yml,yaml,md,mdx}": [
       "prettier --write"
     ]
   },
