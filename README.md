@@ -2,7 +2,6 @@
 
 ## Booking management for ice skating lessons
 
-
 ### As an admin you can:
 
 - login as an admin in an organization.
@@ -51,5 +50,5 @@ Start storybook
 EisBuk is a booking system developed for an ice skating school.
 It's open source, so if it fits your needs you can install it and use it.
 
-If you want to work on the code you'll need to install the husky pre-commit hooks.
-
+If you want to contribute make sure you include tests for your change, and that
+existing tests don't break.
