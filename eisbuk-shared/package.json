@@ -1,7 +1,7 @@
 {
   "name": "eisbuk-shared",
   "version": "1.0.0",
-  "description": "Code shared among all of our packages",
+  "description": "Shared code for eisbuk packages (frontend and cloud functions backend)",
   "private": true,
   "main": "dist/index.js",
   "types": "dist",

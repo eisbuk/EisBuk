@@ -1,6 +1,6 @@
 {
   "private": true,
-  "name": "jest",
+  "name": "eisbuk",
   "devDependencies": {
     "husky": "^7.0.4",
     "lint-staged": "^12.0.3",
