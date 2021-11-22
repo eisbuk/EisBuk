@@ -1,9 +1,6 @@
 {
-  "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
-    "**/@typescript-eslint/parser": "^4.1.1"
-  },
   "name": "functions",
+  "version": "1.0.0",
   "description": "Cloud Functions for Firebase",
   "scripts": {
     "typecheck": "tsc",
