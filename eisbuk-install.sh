@@ -18,6 +18,7 @@ yarn link
 cd ../eisbuk-admin
 yarn
 yarn link eisbuk-shared
+yarn prepare  # Install husky pre-commit hook
 
 # install "functions" and include "eisbuk-shared" symlink
 cd functions

@@ -56,7 +56,8 @@
     "lint:strict": "eslint . --max-warnings=0",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "prepare": "cd .. && husky install"
   },
   "browserslist": {
     "production": [
