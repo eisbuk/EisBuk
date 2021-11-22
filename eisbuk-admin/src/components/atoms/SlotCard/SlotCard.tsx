@@ -220,17 +220,15 @@ const useStyles = makeStyles((theme) =>
     },
     category: {
       textTransform: "uppercase",
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
       fontSize: theme.typography.pxToRem(10),
       paddingLeft: theme.spacing(1),
       paddingRight: theme.spacing(1),
     },
     notes: {
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
     },
     actionsContainer: {
       display: "flex",

@@ -61,9 +61,8 @@ const useStyles = makeStyles((theme) =>
     intervalsTitle: {
       letterSpacing: 1,
       fontSize: theme.typography.pxToRem(18),
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
     },

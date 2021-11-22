@@ -246,18 +246,16 @@ const useStyles = makeStyles((theme) =>
       width: "100%",
     },
     notes: {
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
     },
     typeIcon: {
       opacity: 0.5,
     },
     type: {
       textTransform: "uppercase",
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
       fontSize: theme.typography.pxToRem(10),
     },
     fadeOverlay: {
@@ -279,22 +277,19 @@ const useStyles = makeStyles((theme) =>
     weekday: {
       textTransform: "uppercase",
       fontSize: theme.typography.pxToRem(20),
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
     },
     day: {
       fontSize: theme.typography.h2.fontSize,
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
     },
     month: {
       textTransform: "uppercase",
       fontSize: theme.typography.pxToRem(13),
-      fontWeight: "bold",
-      // FIXME: the following causes a typescript error
-      // fontWeight: theme.typography.fontWeightBold,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
     },
     deleteButton: {},
   })
