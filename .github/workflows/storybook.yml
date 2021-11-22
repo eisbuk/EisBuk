@@ -16,7 +16,7 @@ jobs:
           path: "**/node_modules"
           key: ${{ runner.os }}-modules-2-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         with:

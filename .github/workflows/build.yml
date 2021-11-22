@@ -20,7 +20,7 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Build app
         run: |
           yarn --cwd eisbuk-admin build | tee build.output
@@ -90,7 +90,7 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Run tests
         run: yarn --cwd eisbuk-admin test:emulators:ci
       - name: Test Report
@@ -121,21 +121,21 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Lint client app
         run: "yarn --cwd eisbuk-admin lint:strict"
       - name: Lint eisbuk-shared
         # Do not run on cancelled; run in all other cases
         # We don't want a failed prevoius lint step to make this step not run
-        if: success() || failure() 
+        if: success() || failure()
         run: "yarn --cwd eisbuk-shared lint:strict"
       - name: Lint the functions
         # Do not run on cancelled; run in all other cases
         # We don't want a failed prevoius lint step to make this step not run
-        if: success() || failure() 
+        if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions lint:strict"
       - name: Typecheck the functions
         # Do not run on cancelled; run in all other cases
         # We don't want a failed lint steps to make this step not run
-        if: success() || failure() 
+        if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions typecheck"

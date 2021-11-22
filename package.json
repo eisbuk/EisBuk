@@ -1,0 +1,25 @@
+{
+  "private": true,
+  "name": "jest",
+  "devDependencies": {
+    "husky": "^7.0.4",
+    "lint-staged": "^12.0.3",
+    "prettier": "^2.4.1"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix --max-warnings=0"
+    ],
+    "*.{js,ts,tsx,json,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "workspaces": [
+    "eisbuk-shared",
+    "eisbuk-admin",
+    "eisbuk-admin/functions"
+  ]
+}

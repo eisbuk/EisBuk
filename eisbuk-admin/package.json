@@ -56,8 +56,7 @@
     "lint:strict": "eslint . --max-warnings=0",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public",
-    "prepare": "cd .. && husky install"
+    "build-storybook": "build-storybook -s public"
   },
   "browserslist": {
     "production": [
@@ -117,10 +116,8 @@
     "eslint-plugin-unused-imports": "^1.0.1",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.11.0",
-    "husky": "^7.0.4",
     "jest-environment-jsdom-sixteen": "^2.0.0",
     "jest-junit": "^12.2.0",
-    "lint-staged": "^12.0.3",
     "p-retry": "^4.6.1",
     "react-app-rewired": "^2.1.8",
     "reselect": "^4.0.0",
@@ -144,13 +141,5 @@
       "!**/node_modules/**"
     ],
     "testTimeout": 10000
-  },
-  "lint-staged": {
-    "*.{js,ts,tsx}": [
-      "eslint --fix --max-warnings=0"
-    ],
-    "*.{js,ts,tsx,json}": [
-      "prettier --write"
-    ]
   }
 }
