@@ -12,11 +12,11 @@ beforeEach(() => {
   );
   cy.intercept(
     "POST",
-    "www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser*"
+    "identitytoolkit.googleapis.com/v1/accounts:signUp*"
   ).as("signupNewUser");
   cy.intercept(
     "POST",
-    "www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword*"
+    "identitytoolkit.googleapis.com/v1/accounts:signInWithPassword*"
   ).as("signinOldUser");
 
   cy.contains("Create admin test users").click();
