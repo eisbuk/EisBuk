@@ -129,6 +129,7 @@ const DateNavigation: React.FC<Props> = ({
       edge="end"
       onChange={(_, checked) => setToggleState(checked)}
       checked={toggleState}
+      aria-label="Toggle visibility of slot operation buttons."
       data-testid={__toggleId__}
     />
   );
