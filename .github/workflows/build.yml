@@ -154,7 +154,8 @@ jobs:
           path: |
             **/node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+            $HOME/.cache/Cypress
+          key: ${{ runner.os }}-modules-emulators-cypress-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install dependencies
         run: yarn
       - name: Build app
