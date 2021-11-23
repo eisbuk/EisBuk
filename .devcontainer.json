@@ -22,5 +22,7 @@
     ],
     "firestorerules.usePrettierFormatter": true
   },
-  "postStartCommand": "./disable-ipv6.sh"
+  "containerEnv": {
+    "WSL_DISTRO_NAME": "See https://github.com/firebase/firebase-tools/issues/3843"
+  }
 }

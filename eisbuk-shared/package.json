@@ -1,17 +1,18 @@
 {
   "name": "eisbuk-shared",
   "version": "1.0.0",
-  "description": "Code shared among all of our packages",
+  "description": "Shared code for eisbuk packages (frontend and cloud functions backend)",
   "private": true,
   "main": "dist/index.js",
   "types": "dist",
   "devDependencies": {
     "@google-cloud/firestore": "^4.13.2",
-    "@types/luxon": "^2.0.5",
-    "typescript": "^4.3.5"
+    "@types/luxon": "^2.0.5"
   },
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "lint": "eslint .",
+    "lint:strict": "eslint . --max-warnings=0"
   },
   "dependencies": {
     "luxon": "^2.0.2"

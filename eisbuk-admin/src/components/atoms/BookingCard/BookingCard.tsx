@@ -8,6 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
@@ -184,108 +185,115 @@ const BookingCard: React.FC<Props> = ({
 
 // #region styles
 
-const useStyles = makeStyles((theme) => ({
-  root: {
-    position: "relative",
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-  },
-  content: {
-    display: "flex",
-    flexDirection: "row",
-    padding: 0,
-    "&:last-child": {
-      // Fix for Material-UI defaulting this to 24
-      paddingBottom: 0,
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    root: {
+      position: "relative",
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(1),
     },
-  },
-  date: {
-    backgroundColor: theme.palette.primary.main,
-    color: theme.palette.getContrastText(theme.palette.primary.main),
-    padding: theme.spacing(1),
-    "& .MuiTypography-root:not(.makeStyles-weekday-20)": {
-      lineHeight: 1,
+    content: {
+      display: "flex",
+      flexDirection: "row",
+      padding: 0,
+      "&:last-child": {
+        // Fix for Material-UI defaulting this to 24
+        paddingBottom: 0,
+      },
     },
-  },
-  bottomBox: {
-    height: "2.25rem",
-  },
-  flexCenter: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  typeLabel: {
-    height: "100%",
-  },
-  boxCenter: {
-    width: "100%",
-  },
-  boxLeft: {
-    boxSizing: "border-box",
-    width: "50%",
-    marginRight: "auto",
-  },
-  topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
-  time: {
-    boxSizing: "border-box",
-    padding: theme.spacing(1.5),
-    fontSize: theme.typography.h6.fontSize!,
-    color: theme.palette.grey[700],
-    "& strong": {
-      fontSize: theme.typography.h5.fontSize!,
-      color: theme.palette.primary.main,
-      marginRight: "0.25rem",
+    date: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.getContrastText(theme.palette.primary.main),
+      padding: theme.spacing(1),
+      "& .MuiTypography-root:not(.makeStyles-weekday-20)": {
+        lineHeight: 1,
+      },
     },
-  },
-  notesWrapper: {
-    borderLeft: `1px solid ${theme.palette.divider}`,
-    paddingLeft: theme.spacing(1),
-    width: "100%",
-  },
-  notes: {
-    fontWeight: theme.typography.fontWeightLight,
-  },
-  typeIcon: {
-    opacity: 0.5,
-  },
-  type: {
-    textTransform: "uppercase",
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.pxToRem(10),
-  },
-  fadeOverlay: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    opacity: 0.8,
-    background: "white",
-  },
-  actionButton: {
-    position: "absolute",
-    right: 0,
-    bottom: 0,
-    width: "50%",
-    height: "2.25rem",
-  },
-  weekday: {
-    textTransform: "uppercase",
-    fontSize: theme.typography.pxToRem(20),
-    fontWeight: theme.typography.fontWeightBold,
-  },
-  day: {
-    fontSize: theme.typography.h2.fontSize,
-    fontWeight: theme.typography.fontWeightLight,
-  },
-  month: {
-    textTransform: "uppercase",
-    fontSize: theme.typography.pxToRem(13),
-    fontWeight: theme.typography.fontWeightBold,
-  },
-  deleteButton: {},
-}));
+    bottomBox: {
+      height: "2.25rem",
+    },
+    flexCenter: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    typeLabel: {
+      height: "100%",
+    },
+    boxCenter: {
+      width: "100%",
+    },
+    boxLeft: {
+      boxSizing: "border-box",
+      width: "50%",
+      marginRight: "auto",
+    },
+    topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
+    time: {
+      boxSizing: "border-box",
+      padding: theme.spacing(1.5),
+      fontSize: theme.typography.h6.fontSize!,
+      color: theme.palette.grey[700],
+      "& strong": {
+        fontSize: theme.typography.h5.fontSize!,
+        color: theme.palette.primary.main,
+        marginRight: "0.25rem",
+      },
+    },
+    notesWrapper: {
+      borderLeft: `1px solid ${theme.palette.divider}`,
+      paddingLeft: theme.spacing(1),
+      width: "100%",
+    },
+    notes: {
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    typeIcon: {
+      opacity: 0.5,
+    },
+    type: {
+      textTransform: "uppercase",
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.pxToRem(10),
+    },
+    fadeOverlay: {
+      position: "absolute",
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0,
+      opacity: 0.8,
+      background: "white",
+    },
+    actionButton: {
+      position: "absolute",
+      right: 0,
+      bottom: 0,
+      width: "50%",
+      height: "2.25rem",
+    },
+    weekday: {
+      textTransform: "uppercase",
+      fontSize: theme.typography.pxToRem(20),
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    day: {
+      fontSize: theme.typography.h2.fontSize,
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    month: {
+      textTransform: "uppercase",
+      fontSize: theme.typography.pxToRem(13),
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    deleteButton: {},
+  })
+);
 
 // #endregion styles
 

@@ -7,6 +7,7 @@ on:
 jobs:
   build_v14:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -20,7 +21,7 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Build app
         run: |
           yarn --cwd eisbuk-admin build | tee build.output
@@ -77,6 +78,7 @@ jobs:
 
   test_v14:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -90,7 +92,7 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
+        run: yarn
       - name: Run tests
         run: yarn --cwd eisbuk-admin test:emulators:ci
       - name: Test Report
@@ -108,6 +110,7 @@ jobs:
 
   run-lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
@@ -121,21 +124,21 @@ jobs:
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v12-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
-        run: ./eisbuk-install.sh
-      - name: Run lint
+        run: yarn
+      - name: Lint client app
         run: "yarn --cwd eisbuk-admin lint:strict"
+      - name: Lint eisbuk-shared
+        # Do not run on cancelled; run in all other cases
+        # We don't want a failed prevoius lint step to make this step not run
+        if: success() || failure()
+        run: "yarn --cwd eisbuk-shared lint:strict"
+      - name: Lint the functions
+        # Do not run on cancelled; run in all other cases
+        # We don't want a failed prevoius lint step to make this step not run
+        if: success() || failure()
+        run: "yarn --cwd eisbuk-admin/functions lint:strict"
       - name: Typecheck the functions
-        if: success() || failure() # Do not run on cancelled; run in all other cases
-        # We don't want a failed lint step to make this step not run
+        # Do not run on cancelled; run in all other cases
+        # We don't want a failed lint steps to make this step not run
+        if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions typecheck"
-
-  pre-commit:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
-        with:
-          python-version: "3.7"
-          architecture: "x64"
-      - uses: pre-commit/action@v2.0.0

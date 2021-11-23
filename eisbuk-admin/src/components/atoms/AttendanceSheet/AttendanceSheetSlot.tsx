@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 
 import { SlotInterface } from "eisbuk-shared";
 
@@ -102,45 +103,48 @@ const AttendanceSheetSlot: React.FC<Props> = ({
 };
 
 // #region styles
-const useStyles = makeStyles((theme) => ({
-  // general
-  tableRow: {
-    borderBottom: "1px solid rgba(224, 224, 224, 1)",
-    paddingRight: 0,
-  },
-  bold: {
-    fontWeight: 600,
-    color: "black",
-  },
-  flexCenter: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  tableCell: {
-    width: "50%",
-  },
-  // heading
-  heading: {
-    border: "3px solid rgba(224, 224, 224, 1)",
-  },
-  type: {
-    textTransform: "uppercase",
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.pxToRem(10),
-  },
-  typeLabel: {
-    height: "100%",
-  },
-  typeIcon: {
-    opacity: 0.5,
-  },
-  // table body
-  customerName: {
-    borderRight: "1px solid rgba(224, 224, 224, 1)",
-    color: theme.palette.grey[600],
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    // general
+    tableRow: {
+      borderBottom: "1px solid rgba(224, 224, 224, 1)",
+      paddingRight: 0,
+    },
+    bold: {
+      fontWeight: 600,
+      color: "black",
+    },
+    flexCenter: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    tableCell: {
+      width: "50%",
+    },
+    // heading
+    heading: {
+      border: "3px solid rgba(224, 224, 224, 1)",
+    },
+    type: {
+      textTransform: "uppercase",
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.pxToRem(10),
+    },
+    typeLabel: {
+      height: "100%",
+    },
+    typeIcon: {
+      opacity: 0.5,
+    },
+    // table body
+    customerName: {
+      borderRight: "1px solid rgba(224, 224, 224, 1)",
+      color: theme.palette.grey[600],
+    },
+  })
+);
 
 // #endregion styles
 

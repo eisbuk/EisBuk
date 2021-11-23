@@ -9,6 +9,7 @@ import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
 import FitnessCenter from "@material-ui/icons/FitnessCenter";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 
 import { SlotType } from "eisbuk-shared";
 
@@ -64,15 +65,18 @@ const Icon: React.FC<IconProps> = ({ slotType, ...props }) => {
   }
 };
 
-const useStyles = makeStyles((theme) => ({
-  typeIcon: {
-    opacity: 0.5,
-  },
-  type: {
-    textTransform: "uppercase",
-    fontWeight: theme.typography.fontWeightBold,
-    fontSize: theme.typography.pxToRem(10),
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    typeIcon: {
+      opacity: 0.5,
+    },
+    type: {
+      textTransform: "uppercase",
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+      fontSize: theme.typography.pxToRem(10),
+    },
+  })
+);
 
 export default SlotTypeLabel;

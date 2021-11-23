@@ -1,5 +1,6 @@
 import React from "react";
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import createStyles from "@material-ui/core/styles/createStyles";
 import { useTranslation } from "react-i18next";
 import { useField } from "formik";
 
@@ -18,9 +19,8 @@ const SlotIntervals: React.FC = () => {
 
   const classes = useStyles();
 
-  const [{ value: intervals }, , { setValue }] = useField<SlotInterval[]>(
-    "intervals"
-  );
+  const [{ value: intervals }, , { setValue }] =
+    useField<SlotInterval[]>("intervals");
 
   const addInterval = () => {
     const newIntervals = [...intervals, defaultInterval];
@@ -56,23 +56,26 @@ const SlotIntervals: React.FC = () => {
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  intervalsTitle: {
-    letterSpacing: 1,
-    fontSize: theme.typography.pxToRem(18),
-    fontWeight: theme.typography.fontWeightLight,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.light,
-  },
-  addInterval: {
-    marginTop: theme.spacing(3),
-    borderRadius: theme.spacing(100),
-  },
-  buttonContainer: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    intervalsTitle: {
+      letterSpacing: 1,
+      fontSize: theme.typography.pxToRem(18),
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.primary.light,
+    },
+    addInterval: {
+      marginTop: theme.spacing(3),
+      borderRadius: theme.spacing(100),
+    },
+    buttonContainer: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+  })
+);
 
 export default SlotIntervals;
