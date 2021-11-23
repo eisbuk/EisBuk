@@ -37,55 +37,77 @@ beforeEach(() => {
 });
 
 describe("Create slot", () => {
-  it("fills in slot form and submits it", () => {
+  beforeEach(() => {
     cy.visit("/prenotazioni");
-    cy.contains("Attendance", { timeout: 10000 });
-    cy.get("[type='checkbox']").click();
-    cy.get("[data-testid='new-slot-button']").first().click();
-    cy.get("[value='ice']").check();
-    cy.get("[value='competitive']").check();
-    cy.get("[type='text']").eq(0).clear().type("09:00");
-    cy.get("[type='text']").eq(1).clear().type("10:30");
-    cy.get("[name='notes']").type("some notes");
-    cy.get("[type='submit']").click();
+    
+    cy.get("div[aria-label='Page Navigation']").as("Page-Nav");
+      
+    cy.get("@Page-Nav").within(() => {
+      cy.get("a[href='/prenotazioni']")
+        .should("have.attr", "aria-disabled", "true")
+        .and("have.attr", "aria-current", "page");
 
-    //check for created slot or snackbar
+      cy.get("a[href='/']")
+        .should("have.attr", "aria-disabled", "false")
+        .and("have.attr", "aria-current", "false");
+
+      cy.get("a[href='/atleti']")
+        .should("have.attr", "aria-disabled", "false")
+        .and("have.attr", "aria-current", "false");
+    })
+
+    cy.get("[aria-label='Toggle visibility of slot operation buttons.']").as("Slot-Operation-Toggle");
+  })
+
+  it("fills in slot form and submits it", () => {
+    cy.get("@Slot-Operation-Toggle").click();
+    cy.get("[aria-label='Create new slots button']").eq(0).click()
+
+    cy.get("[aria-label='ice']").click()
+    cy.get("[aria-label='competitive']").click();
+
+    cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
+    cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");
+
+    cy.get("[aria-label='Additional slot notes']").type("some notes");
+    cy.get("[aria-label='Confirm slot creation']").click();
+
+    // check for created slot or snackbar
 
     // tst for disabled checkbox
   });
+
   it("creates an off-ice slot", () => {
-    cy.visit("/prenotazioni");
-    cy.contains("Attendance", { timeout: 10000 });
-    cy.get("[type='checkbox']").click();
-    cy.get("[data-testid='new-slot-button']").first().click();
-    cy.get("[value='off-ice-dancing']").check();
+    cy.get("@Slot-Operation-Toggle").click();
+    cy.get("[aria-label='Create new slots button']").eq(0).click()
 
-    //check for value of the entire checkbox to be disabled
-    cy.get("[value='competitive']").should("be.disabled");
+    cy.get("[aria-label='off-ice-dancing']").click();
 
-    cy.get("[type='text']").eq(0).clear().type("09:00");
-    cy.get("[type='text']").eq(1).clear().type("10:30");
-    cy.get("[name='notes']").type("some notes");
-    cy.get("[type='submit']").click();
+    cy.get("[aria-label='Slot Category']")
+      .should("have.attr", "aria-disabled", "true");
+
+    cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
+    cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");
+    cy.get("[aria-label='Additional slot notes']").type("some notes");
+    cy.get("[aria-label='Confirm slot creation']").click();
   });
+  
   it("creates a multi-interval slot", () => {
-    cy.visit("/prenotazioni");
-    cy.contains("Attendance", { timeout: 10000 });
-    cy.get("[type='checkbox']").click();
-    cy.get("[data-testid='new-slot-button']").first().click();
-    cy.get("[value='ice']").check();
-    cy.get("[value='competitive']").check();
+    cy.get("@Slot-Operation-Toggle").click();
+    cy.get("[aria-label='Create new slots button']").eq(0).click()
 
-    cy.contains("Add Interval").click();
+    cy.get("[aria-label='ice']").click();
+    cy.get("[aria-label='competitive']").click();
 
-    cy.get("[type='text']").eq(2).clear().type("09:00");
-    cy.get("[type='text']").eq(3).clear().type("10:30");
+    cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
+    cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");
 
-    cy.contains("Add Interval").click();
+    cy.get("[aria-label='Add Interval']").click();
 
-    cy.get("[name='notes']").type("some notes");
-    cy.get("[type='text']").eq(2).clear().type("11:00");
-    cy.get("[type='text']").eq(3).clear().type("12:30");
-    cy.get("[type='submit']").click();
+    cy.get("[aria-label='intervals[1] start time']").clear().type("09:00");
+    cy.get("[aria-label='intervals[1] end time']").clear().type("10:30");
+
+    cy.get("[aria-label='Additional slot notes']").type("some notes");
+    cy.get("[aria-label='Confirm slot creation']").click();
   });
 });
