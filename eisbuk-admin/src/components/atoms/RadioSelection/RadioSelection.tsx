@@ -10,7 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 type Props = Omit<FieldAttributes<any>, "options"> & {
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; }[];
 };
 
 /**
@@ -25,7 +25,7 @@ type Props = Omit<FieldAttributes<any>, "options"> & {
 const RadioSelection: React.FC<Props> = ({ options, ...props }) => {
   const classes = useStyles();
 
-  const [, { error }] = useField(props.name);
+  const [field, { error }] = useField(props.name);
 
   return (
     <div className={classes.container}>
@@ -36,6 +36,8 @@ const RadioSelection: React.FC<Props> = ({ options, ...props }) => {
             value={value}
             label={label}
             control={<Radio />}
+            aria-checked={field.value === value ? "true" : "false"}
+            aria-label={label}
           />
         ))}
       </Field>

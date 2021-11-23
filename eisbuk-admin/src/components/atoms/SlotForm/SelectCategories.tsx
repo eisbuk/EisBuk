@@ -45,7 +45,14 @@ const SelectCategories: React.FC = () => {
 
   return (
     <>
-      <Box className={classes.container} display="flex" flexWrap="wrap">
+      <Box
+        className={classes.container}
+        display="flex"
+        flexWrap="wrap"
+        role="group"
+        aria-label="Slot Category"
+        aria-disabled={disabled}
+      >
         {Object.values(Category).map((category) => (
           <CategoryCheckbox {...{ category, disabled, key: category }} />
         ))}
@@ -87,6 +94,8 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
       control={<Checkbox {...field} />}
       disabled={disabled}
       label={t(CategoryLabel[category])}
+      role="checkbox"
+      aria-label={category}
     />
   );
 };

@@ -48,6 +48,7 @@ const SlotIntervals: React.FC = () => {
           color="primary"
           variant="contained"
           className={classes.addInterval}
+          aria-label='Add Interval'
         >
           {t(SlotFormLabel.AddInterval)}
         </Button>
