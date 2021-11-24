@@ -1,9 +1,9 @@
 // this is a quick hack for weird eslint errors related to tsconfig.json
-const getTsProject = () => {
+const getTsProjects = () => {
   let root = __dirname;
   if (!root.includes("eisbuk-admin")) root += "/eisbuk-admin";
-  console.log("TS Root > ", root);
-  return `${root}/tsconfig.json`;
+  console.log("ESLint Root > ", root);
+  return [`${root}/tsconfig.json`, `${root}/cypress/tsconfig.json`];
 };
 
 module.exports = {
@@ -11,7 +11,7 @@ module.exports = {
     {
       files: ["*.ts", "*.tsx"], // Your TypeScript files extension
       parserOptions: {
-        project: [getTsProject()], // Specify it only for TypeScript files
+        project: getTsProjects(), // Specify it only for TypeScript files
       },
     },
   ],
@@ -21,7 +21,7 @@ module.exports = {
       typescript: {
         // Required for certain syntax usages
         ecmaVersion: 2017,
-        project: getTsProject(),
+        project: getTsProjects(),
       },
     },
   },
@@ -41,7 +41,6 @@ module.exports = {
     "build/*",
     "functions/*",
     "node_modules/*",
-    "cypress/*", // XXX: this is a hack to avoid eslint errors
     "reportWebVitals.js",
     "config-overrides.js",
     "react-app-env.d.ts",

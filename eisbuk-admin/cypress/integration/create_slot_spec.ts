@@ -1,19 +1,25 @@
+/* eslint-disable promise/no-nesting */
+/* eslint-disable promise/always-return */
+/* eslint-disable promise/catch-or-return */
 import { v4 as uuidv4 } from "uuid";
+
+import { Category, SlotType } from "eisbuk-shared";
+
+import { Routes, PrivateRoutes } from "@/enums/routes";
 
 beforeEach(() => {
   const id = uuidv4();
   cy.on("window:before:load", (win) => {
     win.localStorage.setItem("organization", id);
   });
-  cy.visit(`/debug`);
+  cy.visit(`${Routes.Debug}`);
 
   cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
     "createOrganization"
   );
-  cy.intercept(
-    "POST",
-    "identitytoolkit.googleapis.com/v1/accounts:signUp*"
-  ).as("signupNewUser");
+  cy.intercept("POST", "identitytoolkit.googleapis.com/v1/accounts:signUp*").as(
+    "signupNewUser"
+  );
   cy.intercept(
     "POST",
     "identitytoolkit.googleapis.com/v1/accounts:signInWithPassword*"
@@ -39,9 +45,9 @@ beforeEach(() => {
 describe("Create slot", () => {
   beforeEach(() => {
     cy.visit("/");
-    
+
     cy.get("div[aria-label='Page Navigation']").as("Page-Nav");
-      
+
     cy.get("@Page-Nav").within(() => {
       cy.get("a[href='/']")
         .should("have.attr", "aria-disabled", "true")
@@ -51,20 +57,22 @@ describe("Create slot", () => {
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
 
-      cy.get("a[href='/athletes']")
+      cy.get(`a[href='${PrivateRoutes.Athletes}']`)
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
-    })
+    });
 
-    cy.get("[aria-label='Toggle visibility of slot operation buttons.']").as("Slot-Operation-Toggle");
-  })
+    cy.get("[aria-label='Toggle visibility of slot operation buttons.']").as(
+      "Slot-Operation-Toggle"
+    );
+  });
 
   it("fills in slot form and submits it", () => {
     cy.get("@Slot-Operation-Toggle").click();
-    cy.get("[aria-label='Create new slots button']").eq(0).click()
+    cy.get("[aria-label='Create new slots button']").eq(0).click();
 
-    cy.get("[aria-label='ice']").click()
-    cy.get("[aria-label='competitive']").click();
+    cy.get(`[aria-label='${SlotType.Ice}']`).click();
+    cy.get(`[aria-label='${Category.Competitive}']`).click();
 
     cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
     cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");
@@ -79,25 +87,28 @@ describe("Create slot", () => {
 
   it("creates an off-ice slot", () => {
     cy.get("@Slot-Operation-Toggle").click();
-    cy.get("[aria-label='Create new slots button']").eq(0).click()
+    cy.get("[aria-label='Create new slots button']").eq(0).click();
 
-    cy.get("[aria-label='off-ice-dancing']").click();
+    cy.get(`[aria-label='${SlotType.OffIceDancing}']`).click();
 
-    cy.get("[aria-label='Slot Category']")
-      .should("have.attr", "aria-disabled", "true");
+    cy.get("[aria-label='Slot Category']").should(
+      "have.attr",
+      "aria-disabled",
+      "true"
+    );
 
     cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
     cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");
     cy.get("[aria-label='Additional slot notes']").type("some notes");
     cy.get("[aria-label='Confirm slot creation']").click();
   });
-  
+
   it("creates a multi-interval slot", () => {
     cy.get("@Slot-Operation-Toggle").click();
-    cy.get("[aria-label='Create new slots button']").eq(0).click()
+    cy.get("[aria-label='Create new slots button']").eq(0).click();
 
-    cy.get("[aria-label='ice']").click();
-    cy.get("[aria-label='competitive']").click();
+    cy.get(`[aria-label='${SlotType.Ice}']`).click();
+    cy.get(`[aria-label='${Category.Competitive}']`).click();
 
     cy.get("[aria-label='intervals[0] start time']").clear().type("09:00");
     cy.get("[aria-label='intervals[0] end time']").clear().type("10:30");

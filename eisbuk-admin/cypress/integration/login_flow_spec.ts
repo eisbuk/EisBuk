@@ -1,13 +1,17 @@
-/// <reference types="Cypress" />
-import { saul } from "@/__testData__/customers";
+/* eslint-disable promise/always-return */
+/* eslint-disable promise/catch-or-return */
 import { v4 as uuidv4 } from "uuid";
+
+import { PrivateRoutes, Routes } from "@/enums/routes";
+
+import { saul } from "@/__testData__/customers";
 
 beforeEach(() => {
   const id = uuidv4();
   cy.on("window:before:load", (win) => {
     win.localStorage.setItem("organization", id);
   });
-  cy.visit(`/debug`);
+  cy.visit(Routes.Debug);
 
   cy.contains("Create admin test users").click();
   cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
@@ -38,7 +42,7 @@ describe("add athlete", () => {
     // cy.get("[type='password']").type("test00");
     // cy.contains("Sign In").click();
     // needs to logout after each test run
-    cy.visit(`/atleti`);
+    cy.visit(PrivateRoutes.Athletes);
     cy.get("[data-testid='add-athlete']").click();
     cy.get("[name='name']").type(saul.name);
     cy.get("[name='surname']").type(saul.surname);
@@ -46,11 +50,9 @@ describe("add athlete", () => {
     cy.get("[name='phone']").type(saul.phone);
     cy.get("[placeholder='dd/mm/yyyy']").first().type(saul.birthday);
     cy.get("[value='competitive']").check();
+    cy.get("[placeholder='dd/mm/yyyy']").eq(1).type(saul.certificateExpiration);
     cy.get("[placeholder='dd/mm/yyyy']")
-      .eq(`1`)
-      .type(saul.certificateExpiration);
-    cy.get("[placeholder='dd/mm/yyyy']")
-      .eq(`2`)
+      .eq(2)
       .type(saul.covidCertificateReleaseDate);
     cy.get("[type='checkbox']").check();
     cy.get("[type='submit']").click();
