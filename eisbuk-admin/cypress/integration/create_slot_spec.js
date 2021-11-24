@@ -38,12 +38,12 @@ beforeEach(() => {
 
 describe("Create slot", () => {
   beforeEach(() => {
-    cy.visit("/prenotazioni");
+    cy.visit("/");
     
     cy.get("div[aria-label='Page Navigation']").as("Page-Nav");
       
     cy.get("@Page-Nav").within(() => {
-      cy.get("a[href='/prenotazioni']")
+      cy.get("a[href='/']")
         .should("have.attr", "aria-disabled", "true")
         .and("have.attr", "aria-current", "page");
 
@@ -51,7 +51,7 @@ describe("Create slot", () => {
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
 
-      cy.get("a[href='/atleti']")
+      cy.get("a[href='/athletes']")
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
     })
