@@ -40,16 +40,11 @@ const fbConfig: FirebaseOptions = {
   }),
 };
 
-if (__isDev__) {
-  console.warn(
-    "Using local emulated Database (localhost:8080) instead of " +
-      fbConfig.databaseURL
-  );
-}
-
 // Initialize Firebase, Firestore and Functions instances
 const firebase = initializeApp(fbConfig);
-initializeFirestore(firebase, {});
+initializeFirestore(firebase, {
+  experimentalForceLongPolling: __isDev__,
+});
 
 const auth = getAuth();
 // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -60,6 +55,10 @@ const functions = getFunctions(firebase, "europe-west6");
 console.log(`Functions region > ${functions.region}`);
 
 if (__isDev__) {
+  console.warn(
+    "Using local emulated Database (localhost:8080) instead of " +
+      fbConfig.databaseURL
+  );
   connectFirestoreEmulator(db, "localhost", 8080);
   connectAuthEmulator(auth, "http://localhost:9099/");
   connectFunctionsEmulator(functions, "localhost", 5001);
