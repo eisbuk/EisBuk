@@ -22,15 +22,15 @@ import {
   SlotsByDay,
 } from "eisbuk-shared";
 
-import { __organization__ } from "@/lib/constants";
-
 import { Routes } from "@/enums/routes";
 
 import { CollectionSubscription, LocalStore } from "@/types/store";
 
 import { updateLocalColl } from "./actionCreators";
 
-const orgPath = `${Collection.Organizations}/${__organization__}`;
+import { getOrganization } from "@/lib/getters";
+
+const getOrgPath = () => `organizations/${getOrganization()}`;
 
 interface HandlerParams {
   currentDate: DateTime;
@@ -108,7 +108,7 @@ const subToSlotsByDay: SubscriptionHandler = ({ currentDate, dispatch }) =>
         .substr(0, 7);
       const docRef = doc(
         getFirestore(),
-        `${orgPath}/${OrgSubCollection.SlotsByDay}/${monthString}`
+        `${getOrgPath()}/${OrgSubCollection.SlotsByDay}/${monthString}`
       );
       const unsubCurr = onSnapshot(docRef, (snapshot) => {
         const updatedMonth = snapshot.data() as SlotsByDay;
@@ -150,7 +150,9 @@ export const subToBookings: SubscriptionHandler = ({
   }) || { params: { secretKey: "" } };
 
   // create reference for a booking doc
-  const customerBookingsPath = `${orgPath}/${OrgSubCollection.Bookings}/${secretKey}`;
+  const customerBookingsPath = `${getOrgPath()}/${
+    OrgSubCollection.Bookings
+  }/${secretKey}`;
   const docRef = doc(getFirestore(), customerBookingsPath);
 
   // create query for bookedSlots
@@ -198,7 +200,7 @@ export const subToAttendance: SubscriptionHandler = ({
 }) => {
   const collRef = collection(
     getFirestore(),
-    `${orgPath}/${OrgSubCollection.Attendance}`
+    `${getOrgPath()}/${OrgSubCollection.Attendance}`
   );
   // we're subscribing to prev, curr and next month's `attendance`
   const [startDate, endDate] = [-1, 2].map((delta) =>
@@ -224,7 +226,7 @@ export const subToAttendance: SubscriptionHandler = ({
 export const subToCustomers: SubscriptionHandler = ({ dispatch }) => {
   const collRef = collection(
     getFirestore(),
-    `${orgPath}/${OrgSubCollection.Customers}`
+    `${getOrgPath()}/${OrgSubCollection.Customers}`
   );
 
   return onSnapshot(
@@ -239,7 +241,7 @@ export const subToCustomers: SubscriptionHandler = ({ dispatch }) => {
  * @returns unsubscribe function returned from `onSnapshot` call
  */
 export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
-  const docRef = doc(getFirestore(), orgPath);
+  const docRef = doc(getFirestore(), getOrgPath());
 
   return onSnapshot(docRef, (snapshot) => {
     const update = { [snapshot.id]: snapshot.data() as OrganizationMeta };
@@ -257,21 +259,21 @@ export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
  * @param dispatch
  * @returns
  */
-const updateCollSnapshot = <
-  C extends CollectionSubscription | BookingSubCollection.BookedSlots
->(
-  collection: C,
-  dispatch: Dispatch
-) => (snapshot: QuerySnapshot<DocumentData>) => {
-  type CollData = Required<LocalStore["firestore"]["data"]>[C];
-  type CollEntry = CollData[keyof CollData];
+const updateCollSnapshot =
+  <C extends CollectionSubscription | BookingSubCollection.BookedSlots>(
+    collection: C,
+    dispatch: Dispatch
+  ) =>
+  (snapshot: QuerySnapshot<DocumentData>) => {
+    type CollData = Required<LocalStore["firestore"]["data"]>[C];
+    type CollEntry = CollData[keyof CollData];
 
-  let updatedData: CollData = {} as CollData;
-  snapshot.forEach((doc) => {
-    const customerId = doc.id;
-    const customer = doc.data() as CollEntry;
-    updatedData = { ...updatedData, [customerId]: customer };
-  });
-  dispatch(updateLocalColl(collection, updatedData));
-};
+    let updatedData: CollData = {} as CollData;
+    snapshot.forEach((doc) => {
+      const customerId = doc.id;
+      const customer = doc.data() as CollEntry;
+      updatedData = { ...updatedData, [customerId]: customer };
+    });
+    dispatch(updateLocalColl(collection, updatedData));
+  };
 // #endregion helpers
