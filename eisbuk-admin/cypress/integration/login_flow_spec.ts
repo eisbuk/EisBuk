@@ -1,47 +1,17 @@
 /* eslint-disable promise/always-return */
 /* eslint-disable promise/catch-or-return */
-import { v4 as uuidv4 } from "uuid";
-
-import { PrivateRoutes, Routes } from "@/enums/routes";
+import { PrivateRoutes } from "@/enums/routes";
 
 import { saul } from "@/__testData__/customers";
 
 beforeEach(() => {
-  const id = uuidv4();
-  cy.on("window:before:load", (win) => {
-    win.localStorage.setItem("organization", id);
-  });
-  cy.visit(Routes.Debug);
-
-  cy.contains("Create admin test users").click();
-  cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
-    "createOrganization"
-  );
-
-  cy.intercept(
-    "POST",
-    "www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=fake-key"
-  ).as("signupNewUser");
-
-  cy.wait("@createOrganization").then(({ request }) => {
-    expect(request.body).to.have.property("data");
-  });
-  cy.wait("@signupNewUser").then(({ request }) => {
-    expect(request.body).to.have.property("email", "test@eisbuk.it");
-  });
+  // Initialize app, create default user,
+  // create default organization, sign in as admin
+  cy.initAdminApp();
 });
+
 describe("add athlete", () => {
   it("should fill in the customer form and submit it", () => {
-    // cy.pause()
-
-    // cy.visit(`/login`);
-    // cy.contains("Sign in with email").click();
-    // cy.url().should("include", "/login");
-    // cy.get("[type='email']").type("test@eisbuk.it");
-    // cy.contains("Next").click();
-    // cy.get("[type='password']").type("test00");
-    // cy.contains("Sign In").click();
-    // needs to logout after each test run
     cy.visit(PrivateRoutes.Athletes);
     cy.get("[data-testid='add-athlete']").click();
     cy.get("[name='name']").type(saul.name);

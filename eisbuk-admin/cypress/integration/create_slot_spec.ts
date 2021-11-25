@@ -1,45 +1,14 @@
 /* eslint-disable promise/no-nesting */
 /* eslint-disable promise/always-return */
 /* eslint-disable promise/catch-or-return */
-import { v4 as uuidv4 } from "uuid";
-
 import { Category, SlotType } from "eisbuk-shared";
 
-import { Routes, PrivateRoutes } from "@/enums/routes";
+import { PrivateRoutes } from "@/enums/routes";
 
 beforeEach(() => {
-  const id = uuidv4();
-  cy.on("window:before:load", (win) => {
-    win.localStorage.setItem("organization", id);
-  });
-  cy.visit(`${Routes.Debug}`);
-
-  cy.intercept("POST", "/eisbuk/europe-west6/createOrganization").as(
-    "createOrganization"
-  );
-  cy.intercept("POST", "identitytoolkit.googleapis.com/v1/accounts:signUp*").as(
-    "signupNewUser"
-  );
-  cy.intercept(
-    "POST",
-    "identitytoolkit.googleapis.com/v1/accounts:signInWithPassword*"
-  ).as("signinOldUser");
-
-  cy.contains("Create admin test users").click();
-
-  // We wait for @createOrganization to complete
-  cy.wait("@createOrganization").then(() => {
-    // and then for @signupNewUser (every time)
-    cy.log("Organization created");
-    cy.wait("@signupNewUser").then(({ response }) => {
-      // If this response is 400 it means we also need to wait on @signinOldUser
-      if (response.statusCode === 400) {
-        cy.wait("@signinOldUser").then(() => cy.log("User signed in"));
-      } else {
-        cy.log("User created");
-      }
-    });
-  });
+  // Initialize app, create default user,
+  // create default organization, sign in as admin
+  cy.initAdminApp();
 });
 
 describe("Create slot", () => {
@@ -53,7 +22,7 @@ describe("Create slot", () => {
         .should("have.attr", "aria-disabled", "true")
         .and("have.attr", "aria-current", "page");
 
-      cy.get("a[href='/']")
+      cy.get(`a[href='${PrivateRoutes.Slots}']`)
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
 
@@ -61,6 +30,8 @@ describe("Create slot", () => {
         .should("have.attr", "aria-disabled", "false")
         .and("have.attr", "aria-current", "false");
     });
+
+    cy.get(`a[href='${PrivateRoutes.Slots}']`).click();
 
     cy.get("[aria-label='Toggle visibility of slot operation buttons.']").as(
       "Slot-Operation-Toggle"
@@ -80,9 +51,9 @@ describe("Create slot", () => {
     cy.get("[aria-label='Additional slot notes']").type("some notes");
     cy.get("[aria-label='Confirm slot creation']").click();
 
-    // check for created slot or snackbar
+    /** @TODO check for created slot or snackbar */
 
-    // tst for disabled checkbox
+    /** @TODO tst for disabled checkbox */
   });
 
   it("creates an off-ice slot", () => {
