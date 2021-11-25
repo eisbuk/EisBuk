@@ -25,27 +25,25 @@ const DebugMenu: React.FC = () => {
   };
 
   /** @TEMP below, needs to be typed with cloud functions */
-  const handleClose = (
-    functionName?: CloudFunction,
-    params?: any
-  ) => async () => {
-    setAnchorEl(null);
-    if (functionName) {
-      try {
-        const res = await httpsCallable(
-          functions,
-          functionName
-        )({
-          ...params,
-          organization: getOrganization(),
-        });
+  const handleClose =
+    (functionName?: CloudFunction, params?: any) => async () => {
+      setAnchorEl(null);
+      if (functionName) {
+        try {
+          const res = await httpsCallable(
+            functions,
+            functionName
+          )({
+            ...params,
+            organization: getOrganization(),
+          });
 
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
+          console.log(res.data);
+        } catch (err) {
+          console.error(err);
+        }
       }
-    }
-  };
+    };
 
   return (
     <>
@@ -75,7 +73,7 @@ const DebugMenu: React.FC = () => {
         >
           Create 100 athletes
         </MenuItem>
-        <MenuItem onClick={() => handleClose(CloudFunction.CreateTestSlots)}>
+        <MenuItem onClick={handleClose(CloudFunction.CreateTestSlots)}>
           Create slots
         </MenuItem>
       </Menu>

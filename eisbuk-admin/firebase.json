@@ -4,7 +4,13 @@
     "indexes": "firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["yarn --cwd \"$RESOURCE_DIR\" build"],
+    "predeploy": [
+      "yarn --cwd \"$RESOURCE_DIR\" build",
+      "sed -i '/eisbuk-shared/d' \"$RESOURCE_DIR/package.json\""
+    ],
+    "postdeploy": [
+      "sed -i -e \\'s/  .dependencies.: {/  \"dependencies\": {\\n    \"eisbuk-shared\": \"1.0.0\",/\\' \"$RESOURCE_DIR/package.json\""
+    ],
     "source": "functions"
   },
   "hosting": [
