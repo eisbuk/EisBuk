@@ -108,7 +108,9 @@ const subToSlotsByDay: SubscriptionHandler = ({ currentDate, dispatch }) =>
         .substr(0, 7);
       const docRef = doc(
         getFirestore(),
-        `${getOrgPath()}/${OrgSubCollection.SlotsByDay}/${monthString}`
+        getOrgPath(),
+        OrgSubCollection.SlotsByDay,
+        monthString
       );
       const unsubCurr = onSnapshot(docRef, (snapshot) => {
         const updatedMonth = snapshot.data() as SlotsByDay;
