@@ -5,14 +5,9 @@ import { Category, SlotType } from "eisbuk-shared";
 
 import { PrivateRoutes } from "@/enums/routes";
 
-beforeEach(() => {
-  // Initialize app, create default user,
-  // create default organization, sign in as admin
-  cy.initAdminApp();
-});
-
 describe("Create slot", () => {
   beforeEach(() => {
+    cy.initAdminApp();
     cy.visit(PrivateRoutes.Root);
 
     cy.get("div[aria-label='Page Navigation']").as("Page-Nav");

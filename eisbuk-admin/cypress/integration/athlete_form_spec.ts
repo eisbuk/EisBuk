@@ -4,13 +4,12 @@ import { PrivateRoutes } from "@/enums/routes";
 
 import { saul } from "@/__testData__/customers";
 
-beforeEach(() => {
-  // Initialize app, create default user,
-  // create default organization, sign in as admin
-  cy.initAdminApp();
-});
-
 describe("add athlete", () => {
+  beforeEach(() => {
+    // Initialize app, create default user,
+    // create default organization, sign in as admin
+    cy.initAdminApp();
+  });
   it("should fill in the customer form and submit it", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.get("[data-testid='add-athlete']").click();
