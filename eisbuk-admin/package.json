@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "eisbuk-shared": "1.0.0",
     "@date-io/luxon": "1.x",
     "@emotion/react": "^11.1.4",
     "@emotion/styled": "^11.0.0",
@@ -11,6 +10,7 @@
     "@material-ui/icons": "^4.11.2",
     "@material-ui/pickers": "^3.2.10",
     "clsx": "^1.1.1",
+    "eisbuk-shared": "1.0.0",
     "firebase": "9.1.1",
     "firebase-tools": "^9.16.6",
     "firebaseui": "^6.0.0",
@@ -53,7 +53,8 @@
     "lint:strict": "eslint . --max-warnings=0",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "build-temp": "node build_scripts/build.js"
   },
   "browserslist": {
     "production": [
@@ -104,6 +105,9 @@
     "customize-cra": "^1.0.0",
     "cypress": "^8.7.0",
     "debugging-aid": "^0.5.3",
+    "dotenv": "^10.0.0",
+    "esbuild": "^0.13.15",
+    "esbuild-plugin-svgr": "^0.0.3",
     "eslint": "^7.31.0",
     "eslint-config-google": "^0.14.0",
     "eslint-import-resolver-typescript": "^2.4.0",
