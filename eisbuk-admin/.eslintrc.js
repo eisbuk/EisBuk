@@ -39,6 +39,7 @@ module.exports = {
   ],
   ignorePatterns: [
     "build/*",
+    "dist",
     "functions/*",
     "node_modules/*",
     "reportWebVitals.js",
