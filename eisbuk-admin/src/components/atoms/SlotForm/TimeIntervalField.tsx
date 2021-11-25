@@ -53,15 +53,17 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         name={`${name}.startTime`}
         label={t("SlotForm.StartTime")}
         data-testid={__startTimeInputId__}
+        aria-label={`${name} start time`}
       />
       <TimePickerField
         name={`${name}.endTime`}
         label={t("SlotForm.EndTime")}
         data-testid={__endTimeInputId__}
+        aria-label={`${name} end time`}
       />
       <IconButton
         data-testid={__deleteIntervalId__}
-        aria-label="delete"
+        aria-label="Delete Interval"
         color="primary"
         onClick={onDelete}
       >

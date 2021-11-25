@@ -149,7 +149,11 @@ const SlotForm: React.FC<Props> = ({
           <Form data-testid={__slotFormId__}>
             <DialogContent>
               <FormControl component="fieldset">
-                <RadioSelection options={typeOptions} name="type" />
+                <RadioSelection
+                  options={typeOptions}
+                  name="type"
+                  aria-label="Slot Type"
+                />
                 <SelectCategories />
                 <SlotIntervals />
                 <Field
@@ -158,6 +162,7 @@ const SlotForm: React.FC<Props> = ({
                   as={TextField}
                   label="Notes"
                   multiline
+                  aria-label="Additional slot notes"
                 />
               </FormControl>
             </DialogContent>
@@ -166,6 +171,7 @@ const SlotForm: React.FC<Props> = ({
                 color="primary"
                 data-testid={__cancelFormId__}
                 onClick={onClose}
+                aria-label="Cancel slot creation"
               >
                 {t(ActionButton.Cancel)}
               </Button>
@@ -177,6 +183,7 @@ const SlotForm: React.FC<Props> = ({
                   (isSubmitting || isValidating)
                 }
                 color="primary"
+                aria-label="Confirm slot creation"
               >
                 {slotToEdit
                   ? t(ActionButton.EditSlot)

@@ -12,8 +12,10 @@ export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable
-// this will return true if env is "test" as well
-export const __isDev__ = process.env.NODE_ENV !== "production";
+// this will return true if env is "test" as well or if the `BUILD_ENV` variable has a value
+export const __isDev__ =
+  process.env.NODE_ENV !== "production" || process.env.BUILD_ENV !== "";
+
 // check for explicit "test" environment
 export const __isTest__ = process.env.NODE_ENV === "test";
 
@@ -34,8 +36,6 @@ export const __firebaseApiKey__ =
     : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
-export const __messagingSenderId__ =
-  process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID;
 
 // production only env variables
 export const __authDomain__ = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;

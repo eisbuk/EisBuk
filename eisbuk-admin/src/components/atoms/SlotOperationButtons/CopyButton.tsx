@@ -76,6 +76,7 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
         size={size || iconSize}
         onClick={onCopy}
         data-testid={__copyButtonId__}
+        aria-label="Copy slots button"
       >
         <Badge color="secondary" variant="dot" invisible={!displayBadge}>
           <FileCopyIcon />

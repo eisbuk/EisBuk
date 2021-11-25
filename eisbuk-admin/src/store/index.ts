@@ -18,7 +18,6 @@ import {
   __firebaseAppId__,
   __databaseURL__,
   __projectId__,
-  __messagingSenderId__,
   __authDomain__,
   __storageBucket__,
   __measurementId__,
@@ -32,7 +31,6 @@ const fbConfig: FirebaseOptions = {
   databaseURL: __databaseURL__,
   projectId: __projectId__,
   apiKey: __firebaseApiKey__,
-  messagingSenderId: __messagingSenderId__,
   appId: __firebaseAppId__,
   // additional production-only config data
   ...(!__isDev__ && {
@@ -42,13 +40,11 @@ const fbConfig: FirebaseOptions = {
   }),
 };
 
-if (__isDev__) {
-  console.warn("Using local emulated Database : " + fbConfig.databaseURL);
-}
-
 // Initialize Firebase, Firestore and Functions instances
 const firebase = initializeApp(fbConfig);
-initializeFirestore(firebase, {});
+initializeFirestore(firebase, {
+  experimentalForceLongPolling: __isDev__,
+});
 
 const auth = getAuth();
 // eslint-disable-next-line react-hooks/rules-of-hooks
@@ -59,6 +55,10 @@ const functions = getFunctions(firebase, "europe-west6");
 console.log(`Functions region > ${functions.region}`);
 
 if (__isDev__) {
+  console.warn(
+    "Using local emulated Database (localhost:8080) instead of " +
+      fbConfig.databaseURL
+  );
   connectFirestoreEmulator(db, "localhost", 8080);
   connectAuthEmulator(auth, "http://localhost:9099/");
   connectFunctionsEmulator(functions, "localhost", 5001);

@@ -85,31 +85,34 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <MenuItem onClick={handleClose("logout")}>Logout</MenuItem>
           </Menu>
           <Hidden xsDown>
-            <ButtonGroup color="secondary">
+            <ButtonGroup color="secondary" aria-label="Page Navigation">
               <Button
                 component={Link}
                 to={PrivateRoutes.Root}
                 variant="contained"
-                disabled={location.pathname === PrivateRoutes.Root}
                 startIcon={<DateRangeIcon />}
+                disabled={location.pathname === PrivateRoutes.Root}
+                aria-current={location.pathname === PrivateRoutes.Root ? "page" : "false"}
               >
                 {t(NavigationLabel.Attendance)}
               </Button>
               <Button
                 component={Link}
-                disabled={location.pathname === PrivateRoutes.Slots}
                 to={PrivateRoutes.Slots}
                 variant="contained"
                 startIcon={<LibraryBooksIcon />}
+                disabled={location.pathname === PrivateRoutes.Slots}
+                aria-current={location.pathname === PrivateRoutes.Slots ? "page" : "false"}
               >
                 Slots
               </Button>
               <Button
                 component={Link}
                 to={PrivateRoutes.Athletes}
-                disabled={location.pathname === PrivateRoutes.Athletes}
                 variant="contained"
                 startIcon={<PeopleIcon />}
+                disabled={location.pathname === PrivateRoutes.Athletes}
+                aria-current={location.pathname === PrivateRoutes.Athletes ? "page" : "false"}
               >
                 {t(NavigationLabel.Athletes)}
               </Button>
@@ -136,6 +139,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               component={Link}
               to={PrivateRoutes.Root}
               disabled={location.pathname === PrivateRoutes.Root}
+              aria-current={location.pathname === PrivateRoutes.Root ? "page" : "false"}
             >
               <ListItemIcon>
                 <DateRangeIcon />
@@ -145,8 +149,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <ListItem
               button
               component={Link}
-              disabled={location.pathname === PrivateRoutes.Slots}
               to={PrivateRoutes.Slots}
+              disabled={location.pathname === PrivateRoutes.Slots}
+              aria-current={location.pathname === PrivateRoutes.Slots ? "page" : "false"}
             >
               <ListItemIcon>
                 <LibraryBooksIcon />
@@ -158,6 +163,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               component={Link}
               to={PrivateRoutes.Athletes}
               disabled={location.pathname === PrivateRoutes.Athletes}
+              aria-current={location.pathname === PrivateRoutes.Athletes ? "page" : "false"}
             >
               <ListItemIcon>
                 <PeopleIcon />
