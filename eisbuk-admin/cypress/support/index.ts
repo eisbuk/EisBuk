@@ -41,7 +41,7 @@ declare global {
        * - creates a default organization with given name
        * - creates/logs-in a default user (admin of default organization)
        */
-      initAdminApp: () => Chainable<Element>;
+      initAdminApp: (doLogin?: boolean) => Chainable<Element>;
     }
   }
 }

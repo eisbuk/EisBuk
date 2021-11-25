@@ -9,6 +9,7 @@ import {
   connectAuthEmulator,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
 } from "@firebase/auth";
 import {
   initializeFirestore,
@@ -37,27 +38,39 @@ connectFunctionsEmulator(functions, "localhost", 5001);
 /**
  * Set up app for testing and log in as default admin
  */
-Cypress.Commands.add("initAdminApp", () => {
+Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
   // create a random organization name in order to run each test
   // against it's own organization, using the same db without conflicts
   const organization = uuidv4();
+  console.log(doLogin);
+  debugger;
   cy.on("window:before:load", (win) => {
     // the `organization` name is set to local storage and read from the app while testing
     win.localStorage.setItem("organization", organization);
   });
+  // create a default organization (containing the default user as an admin)
+  await httpsCallable(
+    functions,
+    CloudFunction.CreateOrganization
+  )({ organization });
 
-  // create or login a default user in order to run the tests with admin access
-  createUserWithEmailAndPassword(
+  // Always create a user
+  await createUserWithEmailAndPassword(
     auth,
     defaultUser.email,
     defaultUser.password
-  ).catch(() => {
-    signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password);
+  ).catch(async () => {
+    if (doLogin) {
+      await signInWithEmailAndPassword(
+        auth,
+        defaultUser.email,
+        defaultUser.password
+      );
+      console.log(`Logged in as ${defaultUser.email}`);
+    } else {
+      debugger;
+      await signOut(auth);
+      console.log(`Logged out`);
+    }
   });
-
-  // create a default organization (containing the default user as an admin)
-  httpsCallable(
-    functions,
-    CloudFunction.CreateOrganization
-  )({ organization }).catch();
 });
