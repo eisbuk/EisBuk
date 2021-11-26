@@ -1,17 +1,18 @@
-// this is a quick hack for weird eslint errors related to tsconfig.json
-const getTsProjects = () => {
-  let root = __dirname;
-  if (!root.includes("eisbuk-admin")) root += "/eisbuk-admin";
-  console.log("ESLint Root > ", root);
-  return [`${root}/tsconfig.json`, `${root}/cypress/tsconfig.json`];
-};
+const tsProjects = ["", "esbuild", "cypress"].map((projectDir) =>
+  [__dirname, projectDir, "tsconfig.json"].join("/").replace("//", "/")
+);
+
+console.log("Running lint, using TS projects:");
+tsProjects.forEach((projectPath) => {
+  console.log(projectPath);
+});
 
 module.exports = {
   overrides: [
     {
       files: ["*.ts", "*.tsx"], // Your TypeScript files extension
       parserOptions: {
-        project: getTsProjects(), // Specify it only for TypeScript files
+        project: tsProjects, // Specify it only for TypeScript files
       },
     },
   ],
@@ -21,7 +22,7 @@ module.exports = {
       typescript: {
         // Required for certain syntax usages
         ecmaVersion: 2017,
-        project: getTsProjects(),
+        project: tsProjects,
       },
     },
   },
