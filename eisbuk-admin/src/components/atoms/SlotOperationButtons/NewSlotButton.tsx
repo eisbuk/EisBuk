@@ -71,7 +71,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
         size={size || iconSize}
         onClick={showForm}
         data-testid={__newSlotButtonId__}
-        aria-label="Create new slots button"
+        aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
       >
         <AddCircleOutlineIcon />
       </IconButton>
