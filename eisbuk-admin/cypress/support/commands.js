@@ -43,8 +43,6 @@ Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
   // create a random organization name in order to run each test
   // against it's own organization, using the same db without conflicts
   const organization = uuidv4();
-  console.log(doLogin);
-  debugger;
   cy.on("window:before:load", (win) => {
     // the `organization` name is set to local storage and read from the app while testing
     win.localStorage.setItem("organization", organization);
