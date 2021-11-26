@@ -1,0 +1,3 @@
+# ignore /dist folder as it will be recompiled on 
+# each build/serve invocation anyhow
+dist
