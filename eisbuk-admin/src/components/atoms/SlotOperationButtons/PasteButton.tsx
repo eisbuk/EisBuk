@@ -74,7 +74,7 @@ export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
         onClick={handlePaste}
         disabled={disableButton}
         data-testid={__pasteButtonId__}
-        aria-label="Paste copied slots button"
+        aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
       >
         <AssignmentIcon />
       </IconButton>
