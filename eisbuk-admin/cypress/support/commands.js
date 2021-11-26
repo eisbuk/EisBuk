@@ -37,6 +37,7 @@ connectFunctionsEmulator(functions, "localhost", 5001);
 
 /**
  * Set up app for testing and log in as default admin
+ * @param {boolean} doLogin - whether to log in as default admin
  */
 Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
   // create a random organization name in order to run each test
