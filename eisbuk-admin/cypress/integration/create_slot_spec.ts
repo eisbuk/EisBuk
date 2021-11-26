@@ -88,12 +88,12 @@ describe("Create slot", () => {
     cy.get("[aria-label='Confirm slot creation']").click();
   });
 
-  it("submits an invalid time format", () => {
+  it("shows 'invalid time format' validation error", () => {
     cy.visit(PrivateRoutes.Slots);
     cy.get("[type='checkbox']").click();
     cy.get("[data-testid='new-slot-button']").first().click();
-    cy.get("[value='ice']").check();
-    cy.get("[value='competitive']").check();
+    cy.get(`[value='${SlotType.Ice}']`).check();
+    cy.get(`[value='${Category.Competitive}']`).check();
 
     cy.get("[type='text']").eq(0).clear().type("9");
     cy.get("[type='text']").eq(1).clear().type("10 pm");
@@ -101,12 +101,12 @@ describe("Create slot", () => {
     cy.get("[type='submit']").click();
     cy.contains("Invalid time format");
   });
-  it("submits an invalid interval", () => {
+  it("shows validation error for inconsistent period start/end", () => {
     cy.visit(PrivateRoutes.Slots);
     cy.get("[type='checkbox']").click();
     cy.get("[data-testid='new-slot-button']").first().click();
-    cy.get("[value='ice']").check();
-    cy.get("[value='competitive']").check();
+    cy.get(`[value='${SlotType.Ice}']`).check();
+    cy.get(`[value='${Category.Competitive}']`).check();
 
     cy.get("[type='text']").eq(0).clear().type("9:00");
     cy.get("[type='text']").eq(1).clear().type("7:00");
