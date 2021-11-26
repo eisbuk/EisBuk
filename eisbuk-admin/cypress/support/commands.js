@@ -53,12 +53,17 @@ Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
     CloudFunction.CreateOrganization
   )({ organization });
 
-  // Always create a user
-  await createUserWithEmailAndPassword(
-    auth,
-    defaultUser.email,
-    defaultUser.password
-  ).catch(async () => {
+  // Always create a user (and maybe log them out)
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      defaultUser.email,
+      defaultUser.password
+    );
+    if (!doLogin) {
+      await signOut(auth);
+    }
+  } catch (error) {
     if (doLogin) {
       await signInWithEmailAndPassword(
         auth,
@@ -67,9 +72,8 @@ Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
       );
       console.log(`Logged in as ${defaultUser.email}`);
     } else {
-      debugger;
       await signOut(auth);
       console.log(`Logged out`);
     }
-  });
+  }
 });
