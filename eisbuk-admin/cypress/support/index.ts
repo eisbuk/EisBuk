@@ -42,6 +42,24 @@ declare global {
        * - creates/logs-in a default user (admin of default organization)
        */
       initAdminApp: (doLogin?: boolean) => Chainable<Element>;
+      /**
+       * @param {string} attr A DOM element attribute - e.g [attr=]
+       * @param {string} label A value for the attribute - [=label]
+       * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
+       */
+      getAttrWith: (
+        attr: string,
+        label: string,
+        strict?: boolean
+      ) => Chainable<Element>;
     }
   }
 }
+
+// Party like its 1999:
+// Overrides browser global Date Object to start from the last full week of the last Millenium
+// This means "new Date()" will always return Monday 20th December 1999 in all tests
+beforeEach(() => {
+  const time = new Date("1999-12-20").getTime();
+  cy.clock(time, ["Date"]);
+});

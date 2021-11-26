@@ -10,9 +10,9 @@ describe("login", () => {
     cy.visit(PrivateRoutes.Root);
     cy.contains("Sign in with email").click();
     cy.url().should("include", Routes.Login);
-    cy.get("[type='email']").type("test@eisbuk.it");
+    cy.getAttrWith("type", "email").type("test@eisbuk.it");
     cy.contains("Next").click();
-    cy.get("[type='password']").type("test00");
+    cy.getAttrWith("type", "password").type("test00");
     cy.contains("Sign In").click();
   });
 });

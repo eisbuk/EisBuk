@@ -12,19 +12,21 @@ describe("add athlete", () => {
   });
   it("should fill in the customer form and submit it", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.get("[data-testid='add-athlete']").click();
-    cy.get("[name='name']").type(saul.name);
-    cy.get("[name='surname']").type(saul.surname);
-    cy.get("[name='email']").type(saul.email);
-    cy.get("[name='phone']").type(saul.phone);
-    cy.get("[placeholder='dd/mm/yyyy']").first().type(saul.birthday);
-    cy.get("[value='competitive']").check();
-    cy.get("[placeholder='dd/mm/yyyy']").eq(1).type(saul.certificateExpiration);
-    cy.get("[placeholder='dd/mm/yyyy']")
+    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("name", "name").type(saul.name);
+    cy.getAttrWith("name", "surname").type(saul.surname);
+    cy.getAttrWith("name", "email").type(saul.email);
+    cy.getAttrWith("name", "phone").type(saul.phone);
+    cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(saul.birthday);
+    cy.getAttrWith("value", "competitive").check();
+    cy.getAttrWith("placeholder", "dd/mm/yyyy")
+      .eq(1)
+      .type(saul.certificateExpiration);
+    cy.getAttrWith("placeholder", "dd/mm/yyyy")
       .eq(2)
       .type(saul.covidCertificateReleaseDate);
-    cy.get("[type='checkbox']").check();
-    cy.get("[type='submit']").click();
+    cy.getAttrWith("type", "checkbox").check();
+    cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
 });
