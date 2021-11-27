@@ -1,0 +1,33 @@
+yarn run v1.22.15
+$ ts-node --project ./esbuild/tsconfig.json esbuild/src/build.ts --mode production
+[ARGV] Using provided value for NODE_ENV: "production"
+[ARGV] No --env-prefix specified, falling back to REACT_APP
+No --outdir provided, using "/home/ivan/dev/JS/eisbuk/eisbuk-admin/dist/app" as fallback
+[BUILD_APP] Loading env variables in mode "production"
+[LOAD_ENV] Looking for env files in /home/ivan/dev/JS/eisbuk/eisbuk-admin
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env -- looking for env file...
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env.production.local -- looking for env file...
+[COPY_PUBLIC_FILES] Looking for public files in /home/ivan/dev/JS/eisbuk/eisbuk-admin/public
+[COPY_PUBLIC_FILES] /public folder found
+[COPY_PUBLIC_FILES] Copying public files to /home/ivan/dev/JS/eisbuk/eisbuk-admin/dist
+[COPY_PUBLIC_FILES] No /home/ivan/dev/JS/eisbuk/eisbuk-admin/dist folder found, created new
+[COPY_PUBLIC_FILES] Copied /home/ivan/dev/JS/eisbuk/eisbuk-admin/public/favicon.ico to '/dist' folder for deployment
+[COPY_PUBLIC_FILES] Copied /home/ivan/dev/JS/eisbuk/eisbuk-admin/public/index.html to '/dist' folder for deployment
+[COPY_PUBLIC_FILES] Copied /home/ivan/dev/JS/eisbuk/eisbuk-admin/public/manifest.json to '/dist' folder for deployment
+[COPY_PUBLIC_FILES] Copied /home/ivan/dev/JS/eisbuk/eisbuk-admin/public/robots.txt to '/dist' folder for deployment
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env -- found, loading env vars...
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env -- successfully loaded anv vars
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env.production.local -- found, loading env vars...
+[LOAD_ENV] /home/ivan/dev/JS/eisbuk/eisbuk-admin/.env.production.local -- successfully loaded anv vars
+[LOAD_ENV] Looking for vars prefixed with "REACT_APP"
+[BUILD_APP] Creating an optimized production build...
+[BUILD_APP] Build process successfully finished
+[BUILD] Build process successfully finished
+
+File sizes after bundle finished:
+
+39601 dist/app/bundle.css
+50687 dist/app/bundle.css.map
+2055339 dist/app/bundle.js
+9282072 dist/app/bundle.js.map
+Done in 5.35s.

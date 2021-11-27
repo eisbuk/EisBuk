@@ -14,34 +14,12 @@ const distPath = path.join(process.cwd(), "dist");
  * Performs the (async) `esbuild` powered bundling process of our app
  * with provided config.
  */
-const buildApp = async () => {
+const buildApp = async ({
+  NODE_ENV,
+  envPrefix,
+  outdir,
+}: ReturnType<typeof loadNodeArgs>) => {
   const logger = createLogger("BUILD_APP");
-
-  const args = loadNodeArgs();
-
-  // check nodeEnv and fallback to "development" if needed
-  let NODE_ENV = "development";
-  const nodeEnvWhitelist = ["development", "test", "storybook", "production"];
-
-  const nodeEnvInvalid =
-    typeof args.mode !== "string" || !nodeEnvWhitelist.includes(args.mode);
-
-  if (!args.mode) {
-    logger.log(`NODE_ENV not specified, using "${NODE_ENV}" as default`);
-  } else if (nodeEnvInvalid) {
-    logger.log(`Invalid value for NODE_ENV, using "${NODE_ENV}" as default`);
-  } else {
-    NODE_ENV = args.mode;
-    logger.log(`Using provided value for NODE_ENV: "${NODE_ENV}"`);
-  }
-
-  // check for env variable prefix and fall back to "REACT_APP" if not defined
-  let envPrefix = "REACT_APP";
-  if (!args.envPrefix) {
-    logger.log(`No --env-prefix specified, falling back to ${envPrefix}`);
-  } else {
-    envPrefix = args.envPrefix;
-  }
 
   // load env vars to be bundled in the code
   logger.log(`Loading env variables in mode "${NODE_ENV}"`);
@@ -49,10 +27,10 @@ const buildApp = async () => {
 
   // bundle the app
   logger.log("Creating an optimized production build...");
-  build({
+  await build({
     ...config,
     define: { process: processEnv },
-    outfile: path.join(distPath, "app", "bundle.js"),
+    outfile: path.join(outdir, "bundle.js"),
     write: true,
     minify: true,
     sourcemap: true,
@@ -108,9 +86,42 @@ const copyPublicFiles = async () => {
 };
 
 /**
+ * Scans
+ */
+const outputBundleSize = async (dirpath: string): Promise<void> => {
+  console.log("");
+  console.log("File sizes after bundle finished:");
+  console.log("");
+  await new Promise<void>((res) =>
+    fs.readdir(dirpath, (err, fNames) => {
+      if (err) throw err;
+      fNames.forEach((fName) => {
+        const fullPath = path.join(dirpath, fName);
+        const relPath = path.relative(process.cwd(), fullPath);
+
+        const { size } = fs.statSync(fullPath);
+
+        const indent = 12;
+        const kb = Math.floor(size / 1000);
+        const b = Math.floor(size % 1000);
+        const sizeString = `${kb}.${b} KB`;
+        const wsLen = indent - sizeString.length;
+        const whitespace = " ".repeat(wsLen);
+
+        console.log(`${sizeString}${whitespace}${relPath}`);
+      });
+      res();
+    })
+  );
+  console.log("");
+};
+
+/**
  * Main execution
  */
 (async () => {
-  await Promise.all([buildApp(), copyPublicFiles()]);
+  const buildArgs = loadNodeArgs();
+  await Promise.all([buildApp(buildArgs), copyPublicFiles()]);
   createLogger("BUILD").log("Build process successfully finished");
+  await outputBundleSize(buildArgs.outdir);
 })();

@@ -1,14 +1,20 @@
-import { kebabToCamel } from "./utils";
+import path from "path";
+
+import { createLogger, kebabToCamel } from "./utils";
 
 interface BuildOptions {
   /**
-   * Build mode, passed as `NODE_ENV`
+   * `"development"` | `"storybook"` | `"test"` | `"production"`
    */
-  mode: string;
+  NODE_ENV: string;
   /**
    * Prefix for env vars
    */
   envPrefix: string;
+  /**
+   * Path to output dir
+   */
+  outdir: string;
 }
 
 /**
@@ -16,13 +22,15 @@ interface BuildOptions {
  * @returns options as an { option: value } record
  */
 export default (): BuildOptions => {
-  const whitelistedOptions = ["mode", "env-prefix"].map(
+  const logger = createLogger("ARGV");
+
+  const whitelistedOptions = ["mode", "env-prefix", "outdir"].map(
     (option) => `--${option}`
   );
 
   const args = process.argv.slice(2);
 
-  return args.reduce(
+  const parsedArgs = args.reduce(
     (acc, curr, i) => {
       // we're skipping the option values
       // and loading them explicitly for each option
@@ -35,6 +43,42 @@ export default (): BuildOptions => {
 
       return { ...acc, [option]: args[i + 1] };
     },
-    { mode: "", envPrefix: "" }
+    { mode: "", envPrefix: "", outdir: "" }
   );
+
+  // check nodeEnv and fallback to "development" if needed
+  let NODE_ENV = "development";
+  const nodeEnvWhitelist = ["development", "test", "storybook", "production"];
+
+  const nodeEnvInvalid =
+    typeof parsedArgs.mode !== "string" ||
+    !nodeEnvWhitelist.includes(parsedArgs.mode);
+
+  if (!parsedArgs.mode) {
+    logger.log(`NODE_ENV not specified, using "${NODE_ENV}" as default`);
+  } else if (nodeEnvInvalid) {
+    logger.log(`Invalid value for NODE_ENV, using "${NODE_ENV}" as default`);
+  } else {
+    NODE_ENV = parsedArgs.mode;
+    logger.log(`Using provided value for NODE_ENV: "${NODE_ENV}"`);
+  }
+
+  // check for env variable prefix and fall back to "REACT_APP" if not defined
+  let envPrefix = "REACT_APP";
+  if (!parsedArgs.envPrefix) {
+    logger.log(`No --env-prefix specified, falling back to ${envPrefix}`);
+  } else {
+    envPrefix = parsedArgs.envPrefix;
+  }
+
+  // check for outdir and fall back to `/dist/app` if non provided
+  let outdir = path.join(process.cwd(), "dist", "app");
+  if (!parsedArgs.outdir) {
+    logger.log(`No --outdir provided, using "${outdir}" as fallback`);
+  } else {
+    outdir = path.join(process.cwd(), parsedArgs.outdir);
+    logger.log(`Using, using "${outdir}" as bundle output directory`);
+  }
+
+  return { envPrefix, outdir, NODE_ENV };
 };
