@@ -16,7 +16,7 @@
   "hosting": [
     {
       "site": "igorice",
-      "public": "build",
+      "public": "dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
@@ -27,7 +27,7 @@
     },
     {
       "site": "eisbuk",
-      "public": "build",
+      "public": "dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
