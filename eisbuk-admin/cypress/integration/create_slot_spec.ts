@@ -122,7 +122,7 @@ describe("Create slot", () => {
 
     cy.getAttrWith("type", "submit").click();
     // The dialog is still there
-    cy.getAttrWith("role", "dialog'").within(() => {
+    cy.getAttrWith("role", "dialog").within(() => {
       // and it contains this error message
       cy.contains("Start time is greater than end time");
     });
