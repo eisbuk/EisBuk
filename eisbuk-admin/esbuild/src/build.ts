@@ -4,7 +4,7 @@ import path from "path";
 import config from "./lib/config";
 import loadEnv from "./lib/loadEnv";
 import { createLogger } from "./lib/utils";
-import { CLIArgs } from "./types";
+import { CLIArgs } from "./lib/types";
 
 type BuildArgs = Omit<CLIArgs, "serve">;
 

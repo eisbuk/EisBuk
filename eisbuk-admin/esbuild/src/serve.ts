@@ -2,7 +2,7 @@
 import { serve } from "esbuild";
 import path from "path";
 
-import { CLIArgs } from "./types";
+import { CLIArgs } from "./lib/types";
 
 import config from "./lib/config";
 import loadEnv from "./lib/loadEnv";
