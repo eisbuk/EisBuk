@@ -1,27 +1,14 @@
 import path from "path";
 
-import { createLogger, kebabToCamel } from "./utils";
+import { CLIArgs } from "../types";
 
-interface BuildOptions {
-  /**
-   * `"development"` | `"storybook"` | `"test"` | `"production"`
-   */
-  NODE_ENV: string;
-  /**
-   * Prefix for env vars
-   */
-  envPrefix: string;
-  /**
-   * Path to output dir
-   */
-  outdir: string;
-}
+import { createLogger, kebabToCamel } from "./utils";
 
 /**
  * Loads node args passed from CLI
  * @returns options as an { option: value } record
  */
-export default (): BuildOptions => {
+export default (): CLIArgs => {
   const logger = createLogger("ARGV");
 
   const whitelistedOptions = ["mode", "env-prefix", "outdir"].map(
@@ -30,13 +17,27 @@ export default (): BuildOptions => {
 
   const args = process.argv.slice(2);
 
+  // check for serve command
+  const subCommand = !args[0].startsWith("--") ? args.splice(0, 1)[0] : "";
+
+  const [serve, subComErr] = ((): [boolean, string | null] => {
+    if (!subCommand) return [false, null];
+    if (subCommand === "serve") return [true, null];
+    const err = `Unknown sub command "${subCommand}", the only sub command currently supported is "serve"`;
+    return [false, err];
+  })();
+
+  // throw if unknown sub command
+  if (subComErr) logger.fatal(subComErr);
+
+  // parse the rest of the args
   const parsedArgs = args.reduce(
     (acc, curr, i) => {
       // we're skipping the option values
       // and loading them explicitly for each option
       if (i % 2 === 1) return acc;
       if (!whitelistedOptions.includes(curr)) {
-        throw new Error(`Unknown option ${curr}`);
+        logger.fatal(`Unknown option ${curr}`);
       }
       // remove prefixed "--" get camelCased option string
       const option = kebabToCamel(curr.slice(2));
@@ -80,5 +81,5 @@ export default (): BuildOptions => {
     logger.log(`Using, using "${outdir}" as bundle output directory`);
   }
 
-  return { envPrefix, outdir, NODE_ENV };
+  return { envPrefix, outdir, NODE_ENV, serve };
 };

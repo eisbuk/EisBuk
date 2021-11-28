@@ -22,6 +22,8 @@ export const loadEnv = async (
   // create a custom logger prepending every message with "[LOAD_ENV]"
   const logger = createLogger("LOAD_ENV");
 
+  logger.log(`Loading env variables in mode "${NODE_ENV}"`);
+
   // load envs from env files (if any)
   logger.log(`Looking for env files in ${rootPath}`);
   const parsedEnvFiles = await Promise.all(
@@ -38,7 +40,7 @@ export const loadEnv = async (
   // env vars from files and process.env are added in this order
   // to keep order of presedence:
   // `process.env` -> `.env.${NODE_ENV}.local` -> `.env`
-  const processedVars = [parsedEnvFiles, process.env].reduce(
+  const processedVars = [...parsedEnvFiles, process.env].reduce(
     (acc, curr) => ({
       ...acc,
       // pick only the vars with provided prefix from each file/process.env
@@ -58,7 +60,7 @@ export const loadEnv = async (
  */
 const loadEnvFile = (
   pathToFile: string,
-  logger: ReturnType<typeof createLogger> = console
+  logger: ReturnType<typeof createLogger>
 ) =>
   new Promise<DotenvParseOutput>((res) => {
     logger.log(pathToFile, "-- looking for env file...");

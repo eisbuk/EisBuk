@@ -1,4 +1,5 @@
 import http from "http";
+import { createLogger } from "./lib/utils";
 
 /**
  * A HOF used to create a root listener for proxy server
@@ -46,8 +47,28 @@ const createProxyListener =
     return forwardReq(req.url!);
   };
 
-export default (targetHost: string, targetPort: number): http.Server =>
-  http.createServer(createProxyListener(targetHost, targetPort));
+interface DevServerArgs {
+  targetHost: string;
+  targetPort: number;
+  listenPort: number;
+}
+
+export default ({
+  targetHost,
+  targetPort,
+  listenPort,
+}: DevServerArgs): Promise<void> => {
+  const proxy = http.createServer(createProxyListener(targetHost, targetPort));
+
+  return new Promise<void>((res) =>
+    proxy.listen(listenPort, "localhost", () => {
+      createLogger("DEV_PROXY").log(
+        `Listening to http://localhost:${listenPort} and forwarding requests to dev server (${targetHost}:${targetPort})`
+      );
+      res();
+    })
+  );
+};
 
 // #region utils
 const endWithStatusCode = (res: http.ServerResponse, statusCode: number) => {

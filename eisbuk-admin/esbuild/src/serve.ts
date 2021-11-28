@@ -2,23 +2,28 @@
 import { serve } from "esbuild";
 import path from "path";
 
-import config from "./lib/config";
+import { CLIArgs } from "./types";
 
-import { loadEnv } from "./lib/utils";
+import config from "./lib/config";
+import loadEnv from "./lib/loadEnv";
+import { createLogger } from "./lib/utils";
 
 import createDevProxy from "./devProxy";
 
 const rootdir = process.cwd();
 const servedir = path.join(rootdir, "public");
 
-(async () => {
+export default async ({
+  NODE_ENV,
+  envPrefix,
+}: Omit<Omit<CLIArgs, "serve">, "outdir">): Promise<void> => {
   // load env variables
-  const processEnv = await loadEnv(rootdir, "development");
+  const processEnv = await loadEnv(rootdir, NODE_ENV, envPrefix);
 
   // create a dev server (and build) with esbuild
   const {
-    host,
-    port,
+    host: targetHost,
+    port: targetPort,
     stop: stopDevServer,
   } = await serve(
     { servedir, host: "localhost" },
@@ -30,15 +35,12 @@ const servedir = path.join(rootdir, "public");
     }
   );
 
-  console.log(`[DEV_SERVER]: Serving static content from ${host}:${port}`);
+  createLogger("DEV_SERVER").log(
+    `Serving static content from ${targetHost}:${targetPort}`
+  );
 
   // create a proxy server forwarding to dev server
-  const devProxy = createDevProxy(host, port);
-  devProxy.listen(3000, "localhost", () => {
-    console.log(
-      `[DEV_PROXY]: Listening to http://localhost:3000 and forwarding requests to dev server (${host}:${port})`
-    );
-  });
+  createDevProxy({ targetHost, targetPort, listenPort: 3000 });
 
   process.on("SIGINT", () => {
     // stop dev server (freeing up port in use, most often 8000)
@@ -46,4 +48,4 @@ const servedir = path.join(rootdir, "public");
     // kill current process (freeing up port 3000)
     process.kill(process.pid);
   });
-})();
+};

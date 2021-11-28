@@ -2,6 +2,7 @@ interface EConsole {
   log: Console["log"];
   warn: Console["warn"];
   error: Console["error"];
+  fatal: (message?: string) => never;
 }
 
 /**
@@ -17,6 +18,9 @@ export const createLogger = (prefix: string): EConsole => ({
     console.warn(`[${prefix}] ${message}`, ...additional),
   error: (message, ...additional) =>
     console.error(`[${prefix}] ${message}`, ...additional),
+  fatal: (message) => {
+    throw new Error(`[${prefix}] ${message}`);
+  },
 });
 
 /**
