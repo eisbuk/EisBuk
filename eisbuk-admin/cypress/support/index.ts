@@ -20,6 +20,8 @@ import "./commands";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
+
 // ***********************************************************
 //
 // When adding a new Command in "./commands.js" file, add the
@@ -56,10 +58,9 @@ declare global {
   }
 }
 
-// Party like its 1999:
-// Overrides browser global Date Object to start from the last full week of the last Millenium
-// This means "new Date()" will always return Monday 20th December 1999 in all tests
+// Overrides browser global Date Object to start from the first week of March 2021
+// This means "new Date()" will always return Monday 1st March 2021 in all tests
 beforeEach(() => {
-  const time = new Date("1999-12-20").getTime();
+  const time = new Date(__staticTestDate__).getTime();
   cy.clock(time, ["Date"]);
 });
