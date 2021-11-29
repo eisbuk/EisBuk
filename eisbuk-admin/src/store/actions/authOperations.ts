@@ -92,11 +92,17 @@ export const checkAdminStatus = (
   orgsInStore?: FirestoreData[Collection.Organizations]
 ): boolean => {
   const organization = getOrganization();
-  return !authString || !orgsInStore
-    ? false
-    : !orgsInStore[organization]
-    ? false
-    : orgsInStore[organization].admins.includes(authString);
+  debugger;
+  if (!authString || !orgsInStore) {
+    // At least one of authString or orgsInStore is missing
+    // hence the current user is not an admin
+    return false;
+  }
+  if (!orgsInStore[organization]) {
+    // The current organization is not in the local store
+    return false;
+  }
+  return orgsInStore[organization].admins.includes(authString);
 };
 /**
  * An update user callback, called by firestore's `onAuthStateChanged`.
@@ -105,26 +111,25 @@ export const checkAdminStatus = (
  * @param user new user (if authenticated) or null if not authenticated as a user in our firebase auth record
  * @returns a firestore thunk dispatching appropriate updates to the store
  */
-export const updateAuthUser = (user: User | null): FirestoreThunk => async (
-  dispatch,
-  getState
-) => {
-  // stop early (and log out) if not user recieved
-  if (!user) {
-    dispatch({ type: Action.Logout });
-    return;
-  }
+export const updateAuthUser =
+  (user: User | null): FirestoreThunk =>
+  async (dispatch, getState) => {
+    // stop early (and log out) if not user recieved
+    if (!user) {
+      dispatch({ type: Action.Logout });
+      return;
+    }
 
-  const orgsInStore = getState().firestore.data.organizations;
-  const { email, phoneNumber } = user;
+    const orgsInStore = getState().firestore.data.organizations;
+    const { email, phoneNumber } = user;
 
-  const isAdmin = checkAdminStatus(email || phoneNumber || "", orgsInStore);
+    const isAdmin = checkAdminStatus(email || phoneNumber || "", orgsInStore);
 
-  dispatch({
-    type: Action.UpdateAuthInfo,
-    payload: { userData: user, isAdmin, isEmpty: false, isLoaded: true },
-  } as AuthReducerAction<Action.UpdateAuthInfo>);
-};
+    dispatch({
+      type: Action.UpdateAuthInfo,
+      payload: { userData: user, isAdmin, isEmpty: false, isLoaded: true },
+    } as AuthReducerAction<Action.UpdateAuthInfo>);
+  };
 
 /**
  * A thunk ran when the organization status is updated, reads the store state internally
