@@ -14,7 +14,7 @@ export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 // env info variable
 // this will return true if env is "test" as well or if the `BUILD_ENV` variable has a value
 export const __isDev__ =
-  process.env.NODE_ENV !== "production" || process.env.BUILD_ENV;
+  process.env.NODE_ENV !== "production" || Boolean(process.env.BUILD_ENV);
 
 // check for explicit "test" environment
 export const __isTest__ = process.env.NODE_ENV === "test";
