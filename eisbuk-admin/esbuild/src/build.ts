@@ -29,7 +29,6 @@ export default async ({
     define: { process: processEnv },
     outfile: path.join(outdir, "bundle.js"),
     write: true,
-    minify: true,
     sourcemap: true,
     metafile: true,
   });

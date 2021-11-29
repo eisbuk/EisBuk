@@ -1,6 +1,6 @@
 import path from "path";
 
-import { CLIArgs } from "../types";
+import { CLIArgs } from "../lib/types";
 
 import { createLogger, kebabToCamel } from "./utils";
 

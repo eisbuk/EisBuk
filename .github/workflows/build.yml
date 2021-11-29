@@ -163,7 +163,7 @@ jobs:
       - name: Install dependencies
         run: yarn
       - name: Build app
-        run: yarn --cwd eisbuk-admin build
+        run: yarn --cwd eisbuk-admin build:test
         env:
           # Instruct the app this is going to be a dev build
           REACT_APP_BUILD_ENV: test

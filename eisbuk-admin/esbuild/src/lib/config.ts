@@ -12,6 +12,7 @@ const config: BuildOptions = {
   bundle: true,
   target: "es6",
   format: "cjs",
+  minify: true,
 };
 
 export default config;
