@@ -27,6 +27,10 @@ const App: React.FC = () => {
   // through redux store
   useConnectAuthToStore(getAuth(), store);
 
+  store.subscribe(() => {
+    console.log(store.getState());
+  });
+
   return (
     <ReduxProvider store={store}>
       <ThemeProvider theme={currentTheme}>
