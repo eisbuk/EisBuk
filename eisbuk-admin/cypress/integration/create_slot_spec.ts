@@ -100,7 +100,7 @@ describe("Create slot", () => {
   it("shows 'invalid time format' validation error", () => {
     cy.visit(PrivateRoutes.Slots);
     cy.getAttrWith("type", "checkbox").click();
-    cy.getAttrWith("data-testid", "new-slot-button").first().click();
+    cy.getAttrWith("aria-label", "Create new slots on", false).eq(0).click();
     cy.getAttrWith("value", SlotType.Ice).check();
     cy.getAttrWith("value", Category.Competitive).check();
 
@@ -108,12 +108,13 @@ describe("Create slot", () => {
     cy.getAttrWith("type", "text").eq(1).clear().type("10 pm");
 
     cy.getAttrWith("type", "submit").click();
-    cy.contains("Invalid time format");
+    cy.getAttrWith("role", "dialog").contains("Invalid time format");
   });
+
   it("shows validation error for inconsistent period start/end", () => {
     cy.visit(PrivateRoutes.Slots);
     cy.getAttrWith("type", "checkbox").click();
-    cy.getAttrWith("data-testid", "new-slot-button").first().click();
+    cy.getAttrWith("aria-label", "Create new slots on", false).eq(0).click();
     cy.getAttrWith("value", SlotType.Ice).check();
     cy.getAttrWith("value", Category.Competitive).check();
 
@@ -121,10 +122,8 @@ describe("Create slot", () => {
     cy.getAttrWith("type", "text").eq(1).clear().type("7:00");
 
     cy.getAttrWith("type", "submit").click();
-    // The dialog is still there
-    cy.getAttrWith("role", "dialog").within(() => {
-      // and it contains this error message
-      cy.contains("Start time is greater than end time");
-    });
+    cy.getAttrWith("role", "dialog").contains(
+      "Start time is greater than end time"
+    );
   });
 });
