@@ -48,14 +48,25 @@ describe("add athlete", () => {
     cy.getAttrWith("type", "submit").click();
     cy.contains(`Invalid date format ("dd/mm/yyyy")`);
   });
-  it("should enter date separated with - and check that it's modified to /", () => {
+  it("should enter different date separators and check that they're replaced with /", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
     cy.getAttrWith("name", "name").type(saul.name);
     cy.getAttrWith("name", "surname").type(saul.surname);
     cy.getAttrWith("name", "email").type(saul.email);
     cy.getAttrWith("name", "phone").type(saul.phone);
-    cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type("12-12-1990");
+    cy.getAttrWith("placeholder", "dd/mm/yyyy")
+      .first()
+      .type("12-12-1990")
+      .blur();
+
+    cy.getAttrWith("value", "12/12/1990").clear();
+    cy.getAttrWith("placeholder", "dd/mm/yyyy")
+      .first()
+      .type("12.12.1990")
+      .blur();
+    cy.getAttrWith("value", "12/12/1990");
+
     cy.getAttrWith("value", "competitive").check();
     cy.getAttrWith("placeholder", "dd/mm/yyyy")
       .eq(1)
@@ -64,8 +75,8 @@ describe("add athlete", () => {
       .eq(2)
       .type(saul.covidCertificateReleaseDate);
     cy.getAttrWith("type", "checkbox").check();
-    cy.getAttrWith("value", "12/12/1990");
 
     cy.getAttrWith("type", "submit").click();
+    cy.contains(`${saul.name} ${saul.surname} update`);
   });
 });
