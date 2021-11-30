@@ -35,8 +35,12 @@ yarn-error.log*
 build-storybook.log*
 
 # IDE specific
-.vscode\
+.vscode
 
 # Test result files
 junit.xml
 coverage
+
+# Built app
+/dist
+/build
