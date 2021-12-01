@@ -23,14 +23,14 @@ interface Props {
   customers?: Customer[];
   extended?: boolean;
   onCustomerClick?: (customer: Customer) => void;
-  className?: string;
+  classNames?: { rootDiv?: string; tableContainer?: string };
 }
 
 const CustomerList: React.FC<Props> = ({
   customers,
   extended,
   onCustomerClick = () => {},
-  className = "",
+  classNames = { rootDiv: "" },
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -48,9 +48,11 @@ const CustomerList: React.FC<Props> = ({
   const searchRegex = new RegExp(searchString, "i");
 
   return (
-    <div className={className}>
+    <div className={classNames?.rootDiv}>
       <SearchField {...{ searchString, setSearchString }} center={!extended} />
-      <TableContainer className={classes.tableContainer}>
+      <TableContainer
+        className={classNames.tableContainer || classes.tableContainer}
+      >
         <Table size="small">
           <TableHead>
             <TableRow className={classes.tableHeadRow}>
@@ -122,7 +124,6 @@ const useStyles = makeStyles(() => ({
   },
   tableContainer: {
     overflow: "auto",
-    maxHeight: "30rem",
   },
 }));
 // #endregion styles
