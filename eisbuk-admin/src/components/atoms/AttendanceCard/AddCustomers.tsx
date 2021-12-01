@@ -65,6 +65,10 @@ const AddCustomersList: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredCustomers]);
 
+  const classNames = {
+    rootDiv: classes.listContainer,
+    tableContainer: classes.tableContainer,
+  };
   return (
     <Dialog onClose={onClose} {...dialogProps}>
       <div className={classes.container}>
@@ -79,7 +83,7 @@ const AddCustomersList: React.FC<Props> = ({
           <Close />
         </IconButton>
         <CustomerList
-          className={classes.listContainer}
+          classNames={classNames}
           customers={filteredCustomers}
           onCustomerClick={handleCustomerClick}
         />
@@ -112,6 +116,10 @@ const useStyles = makeStyles((theme) => ({
   },
   listContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
+  },
+  tableContainer: {
+    overflow: "auto",
+    maxHeight: "30rem",
   },
 }));
 
