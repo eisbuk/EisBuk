@@ -39,6 +39,8 @@ jobs:
         run: mv .env.production.local eisbuk-admin
       - name: Build app
         run: yarn --cwd eisbuk-admin build
+        env:
+          BUILD_ENV: "" # Workaround for a bug that will be fixed soon, but not quite yet
       - name: Deploy to firebase
         run: yarn --cwd eisbuk-admin deploy:production
         env: # Or as an environment variable
