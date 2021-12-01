@@ -70,7 +70,7 @@ const AddCustomersList: React.FC<Props> = ({
     tableContainer: classes.tableContainer,
   };
   return (
-    <Dialog onClose={onClose} {...dialogProps}>
+    <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(ActionButton.AddCustomers)}
