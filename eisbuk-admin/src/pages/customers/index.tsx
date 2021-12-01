@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import Container from "@material-ui/core/Container";
 import Fab from "@material-ui/core/Fab";
 import Grid from "@material-ui/core/Grid";
 // import LinearProgress from "@material-ui/core/LinearProgress";
@@ -51,29 +50,27 @@ const CustomersPage: React.FC = () => {
     <>
       <AppbarAdmin />
       {/* {!isLoaded(customers) && <LinearProgress />} */}
-      <Container maxWidth="lg" className={classes.customersContainer}>
-        <Grid item xs={12}>
-          {
-            // (isLoaded(customers) &&
-            !isEmpty(customers) && <CustomerList {...{ customers }} extended />
-            // )
-          }
-          <Fab
-            data-testid="add-athlete"
-            color="primary"
-            aria-label={t(ActionButton.AddAthlete)}
-            className={classes.fab}
-            onClick={toggleAddAthleteDialog}
-          >
-            <AddIcon />
-          </Fab>
-          <CustomerForm
-            open={addAthleteDialog}
-            onClose={toggleAddAthleteDialog}
-            updateCustomer={(customer) => dispatch(updateCustomer(customer))}
-          />
-        </Grid>
-      </Container>
+      <Grid item xs={12}>
+        {
+          // (isLoaded(customers) &&
+          !isEmpty(customers) && <CustomerList {...{ customers }} extended />
+          // )
+        }
+        <Fab
+          data-testid="add-athlete"
+          color="primary"
+          aria-label={t(ActionButton.AddAthlete)}
+          className={classes.fab}
+          onClick={toggleAddAthleteDialog}
+        >
+          <AddIcon />
+        </Fab>
+        <CustomerForm
+          open={addAthleteDialog}
+          onClose={toggleAddAthleteDialog}
+          updateCustomer={(customer) => dispatch(updateCustomer(customer))}
+        />
+      </Grid>
     </>
   );
 };
@@ -88,10 +85,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
     height: "100vh",
     overflow: "auto",
   },
-  customersContainer: {
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3),
-  },
+
   fab: {
     position: "fixed",
     bottom: theme.spacing(5),
