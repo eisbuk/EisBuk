@@ -120,8 +120,11 @@ const logServer = http.createServer(async (req, res) => {
     } else {
       // close the logs for future writes
       logs[specname].closed = true;
-      await writeLogFile(logs[specname].logs, specname.replace(".ts", ""));
-      console.log("Log file written");
+      const filePath = await writeLogFile(
+        logs[specname].logs,
+        specname.replace(".ts", "")
+      );
+      console.log("Log file written: ", filePath);
     }
   }
 
@@ -132,9 +135,6 @@ const logServer = http.createServer(async (req, res) => {
 // exit gracefully on oudside signal
 // such as `fuser -k -SIGINT 8888/tcp`
 process.on("SIGINT", () => {
-  process.exit();
-});
-process.on("SIGTREM", () => {
   process.exit();
 });
 

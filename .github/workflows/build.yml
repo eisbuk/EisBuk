@@ -184,4 +184,4 @@ jobs:
           CYPRESS_BASE_URL: http://localhost:5000
       - name: "Check cypress test in-app logs"
         if: success() || failure()
-        run: "fuser -k -SIGINT 8888/tcp && cat eisbuk-admin/cypress/logs/*"
+        run: "fuser -k -SIGINT 8888/tcp && cat eisbuk-admin/cypress_browser_logs/*"

@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/cypress_browser_logs
 
 # production
 /build

@@ -7,12 +7,12 @@ import os from "os";
  * and write that string to a file.
  * @param {object} testLogs object containing logs for each test
  * @param {string} specname the name of test suite ("spec" in cypress)
- * @returns {Promise<void>}
+ * @returns {string} path to the written file
  */
 const writeLogFile = async (
   testLogs: Record<string, unknown[][]>,
   specname: string
-): Promise<void> => {
+): Promise<string> => {
   let output = "";
 
   const processedSpecname = specname.replace(
@@ -23,9 +23,6 @@ const writeLogFile = async (
   // start with heading for the logfile
   output = appendLine(output, `## Logs for ${processedSpecname}`);
   output = appendLine(output, "");
-
-  console.log("Initial output");
-  console.log(output);
 
   Object.keys(testLogs).forEach((testname, i) => {
     const processedTestname = testname.replace(/%[0-9]+/g, " ");
@@ -64,7 +61,7 @@ const writeLogFile = async (
     output = appendLine(output, "");
   });
 
-  const logsDir = path.join(__dirname, "..", "logs");
+  const logsDir = path.join(process.cwd(), "cypress_browser_logs");
 
   // check if logs directory exists
   await new Promise<void>((res) => {
@@ -80,10 +77,10 @@ const writeLogFile = async (
 
   // write logs to file
   const logFilePath = path.join(logsDir, `${specname}.logs.md`);
-  return new Promise((res) => {
+  return new Promise<string>((res) => {
     fs.writeFile(logFilePath, output, (err) => {
       if (err) throw err;
-      res();
+      res(logFilePath);
     });
   });
 };
