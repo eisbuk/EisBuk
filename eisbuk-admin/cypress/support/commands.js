@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
+const http = require("http");
+
 import { initializeApp } from "@firebase/app";
 import {
   getFunctions,
@@ -60,4 +63,28 @@ Cypress.Commands.add("initAdminApp", () => {
     functions,
     CloudFunction.CreateOrganization
   )({ organization }).catch();
+});
+
+/**
+ * Logs message to node terminal instead of browsers console.
+ * @param {string} msg A message to log to terminal
+ */
+Cypress.Commands.add("logToServer", (msg) => {
+  console.log(msg);
+  http.request({ host: "localhost", port: 8888, method: "get" }).end();
+});
+
+/**
+ * Sends a request to logging server to end logging for the current
+ * suite (spec) and write the collected logs to a file.
+ */
+Cypress.Commands.add("endLog", () => {
+  http
+    .request({
+      host: "localhost",
+      path: `/end_log`,
+      port: 8888,
+      method: "GET",
+    })
+    .end();
 });

@@ -17,6 +17,7 @@
 
 // Import commands.js using ES2015 syntax:
 import "./commands";
+import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
@@ -41,7 +42,48 @@ declare global {
        * - creates a default organization with given name
        * - creates/logs-in a default user (admin of default organization)
        */
-      initAdminApp: () => Chainable<Element>;
+      initAdminApp: (doLogin?: boolean) => Chainable<Element>;
+      /**
+       * @param {string} attr A DOM element attribute - e.g [attr=]
+       * @param {string} label A value for the attribute - [=label]
+       * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
+       */
+      getAttrWith: (
+        attr: string,
+        label: string,
+        strict?: boolean
+      ) => Chainable<Element>;
+      // /**
+      //  * Logs message to node terminal instead of browsers console.
+      //  * @param {string} msg A message to log to terminal
+      //  */
+      // logToServer: (msg: string) => Chainable<Element>;
+      endLog: () => Chainable<Element>;
     }
   }
 }
+
+beforeEach(() => {
+  // Overrides browser global Date Object to start from the first week of March 2021
+  // This means "new Date()" will always return Monday 1st March 2021 in all tests
+  const time = new Date(__staticTestDate__).getTime();
+  cy.clock(time, ["Date"]);
+
+  // Stub the window console to send console message to the logging
+  // server instead
+  const { titlePath } = Cypress.currentTest;
+  const testname = titlePath.join("_");
+
+  cy.on("window:before:load", (win) => {
+    win.console.log = (...message: any[]) => {
+      win.fetch(`http://localhost:8888?testname=${testname}`, {
+        method: "POST",
+        body: JSON.stringify({ message }),
+      });
+    };
+  });
+});
+
+after(() => {
+  cy.endLog();
+});
