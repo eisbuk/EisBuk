@@ -10,7 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { SlotType, Category } from "eisbuk-shared";
 
-import { CategoryLabel } from "@/enums/translations";
+import { CategoryLabel, SlotFormAria } from "@/enums/translations";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 // #region main
@@ -23,6 +23,8 @@ import ErrorMessage from "@/components/atoms/ErrorMessage";
  */
 const SelectCategories: React.FC = () => {
   const classes = useStyles();
+
+  const { t } = useTranslation();
 
   const [disabled, setDisabled] = useState(false);
 
@@ -50,7 +52,7 @@ const SelectCategories: React.FC = () => {
         display="flex"
         flexWrap="wrap"
         role="group"
-        aria-label="Slot Category"
+        aria-label={t(SlotFormAria.SlotCategory)}
         aria-disabled={disabled}
       >
         {Object.values(Category).map((category) => (
@@ -95,7 +97,7 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
       disabled={disabled}
       label={t(CategoryLabel[category])}
       role="checkbox"
-      aria-label={category}
+      aria-label={t(CategoryLabel[category])}
     />
   );
 };

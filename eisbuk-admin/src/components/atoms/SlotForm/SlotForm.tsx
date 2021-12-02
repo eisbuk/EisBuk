@@ -24,6 +24,7 @@ import {
   DateFormat,
   ActionButton,
   SlotTypeLabel,
+  SlotFormAria,
 } from "@/enums/translations";
 
 import RadioSelection from "@/components/atoms/RadioSelection";
@@ -152,7 +153,7 @@ const SlotForm: React.FC<Props> = ({
                 <RadioSelection
                   options={typeOptions}
                   name="type"
-                  aria-label="Slot Type"
+                  aria-label={t(SlotFormAria.SlotType)}
                 />
                 <SelectCategories />
                 <SlotIntervals />
@@ -162,7 +163,7 @@ const SlotForm: React.FC<Props> = ({
                   as={TextField}
                   label="Notes"
                   multiline
-                  aria-label="Additional slot notes"
+                  aria-label={t(SlotFormAria.SlotNotes)}
                 />
               </FormControl>
             </DialogContent>
@@ -171,7 +172,7 @@ const SlotForm: React.FC<Props> = ({
                 color="primary"
                 data-testid={__cancelFormId__}
                 onClick={onClose}
-                aria-label="Cancel slot creation"
+                aria-label={t(SlotFormAria.CancelSlot)}
               >
                 {t(ActionButton.Cancel)}
               </Button>
@@ -183,7 +184,11 @@ const SlotForm: React.FC<Props> = ({
                   (isSubmitting || isValidating)
                 }
                 color="primary"
-                aria-label="Confirm slot creation"
+                aria-label={
+                  slotToEdit
+                    ? t(SlotFormAria.ConfirmEditSlot)
+                    : t(SlotFormAria.ConfirmCreateSlot)
+                }
               >
                 {slotToEdit
                   ? t(ActionButton.EditSlot)

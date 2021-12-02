@@ -12,6 +12,8 @@ import createStyles from "@material-ui/core/styles/createStyles";
 import TimePickerField from "./TimePickerField";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 
+import { SlotFormAria } from "@/enums/translations";
+
 import {
   __startTimeInputId__,
   __endTimeInputId__,
@@ -53,17 +55,17 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         name={`${name}.startTime`}
         label={t("SlotForm.StartTime")}
         data-testid={__startTimeInputId__}
-        aria-label={`${name} start time`}
+        aria-label={t(SlotFormAria.IntervalStart)}
       />
       <TimePickerField
         name={`${name}.endTime`}
         label={t("SlotForm.EndTime")}
         data-testid={__endTimeInputId__}
-        aria-label={`${name} end time`}
+        aria-label={t(SlotFormAria.IntervalEnd)}
       />
       <IconButton
         data-testid={__deleteIntervalId__}
-        aria-label="Delete Interval"
+        aria-label={t(SlotFormAria.DeleteInterval)}
         color="primary"
         onClick={onDelete}
       >
