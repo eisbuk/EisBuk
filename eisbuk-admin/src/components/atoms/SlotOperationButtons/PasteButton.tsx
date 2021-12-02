@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import IconButton from "@material-ui/core/IconButton";
 
 import AssignmentIcon from "@material-ui/icons/Assignment";
 
 import { ButtonContextType } from "@/enums/components";
+import { AdminAria, DateFormat } from "@/enums/translations";
 
 import { SlotButtonProps } from "@/types/components";
 
@@ -33,6 +35,8 @@ import { __pasteButtonId__ } from "@/__testData__/testIds";
  */
 export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
 
@@ -74,7 +78,10 @@ export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
         onClick={handlePaste}
         disabled={disableButton}
         data-testid={__pasteButtonId__}
-        aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
+        aria-label={`${t(AdminAria.PasteSlots)} ${t(DateFormat.Full, {
+          date,
+        })}`}
+        // aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
       >
         <AssignmentIcon />
       </IconButton>

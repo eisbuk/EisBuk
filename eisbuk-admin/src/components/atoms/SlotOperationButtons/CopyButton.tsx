@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import IconButton from "@material-ui/core/IconButton";
 import Badge from "@material-ui/core/Badge";
@@ -7,6 +8,7 @@ import Badge from "@material-ui/core/Badge";
 import FileCopyIcon from "@material-ui/icons/FileCopy";
 
 import { ButtonContextType } from "@/enums/components";
+import { AdminAria, DateFormat } from "@/enums/translations";
 
 import { SlotButtonProps } from "@/types/components";
 
@@ -36,6 +38,8 @@ import { __copyButtonId__ } from "@/__testData__/testIds";
  */
 export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
   const dispatch = useDispatch();
+
+  const { t } = useTranslation();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
 
@@ -76,7 +80,8 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
         size={size || iconSize}
         onClick={onCopy}
         data-testid={__copyButtonId__}
-        aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
+        aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
+        // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
       >
         <Badge color="secondary" variant="dot" invisible={!displayBadge}>
           <FileCopyIcon />

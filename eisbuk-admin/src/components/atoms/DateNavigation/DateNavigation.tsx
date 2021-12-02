@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import Toolbar from "@material-ui/core/Toolbar";
 import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
@@ -21,6 +22,8 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { createDateTitle } from "./utils";
 
 import { __toggleId__ } from "./__testData__/testData";
+
+import { AdminAria } from "@/enums/translations";
 
 import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
 
@@ -72,6 +75,8 @@ const DateNavigation: React.FC<Props> = ({
   ...props
 }) => {
   const classes = useStyles();
+
+  const { t } = useTranslation();
 
   const reduxDate = useSelector(getCalendarDay);
   const dispatch = useDispatch();
@@ -129,7 +134,7 @@ const DateNavigation: React.FC<Props> = ({
       edge="end"
       onChange={(_, checked) => setToggleState(checked)}
       checked={toggleState}
-      aria-label="Toggle visibility of slot operation buttons."
+      aria-label={t(AdminAria.ToggleSlotOperations)}
       data-testid={__toggleId__}
     />
   );
@@ -149,7 +154,7 @@ const DateNavigation: React.FC<Props> = ({
             edge="start"
             className={classes.prev}
             color="inherit"
-            aria-label="menu"
+            aria-label={t(AdminAria.SeePastDates)}
             data-testid={__dateNavPrevId__}
             onClick={paginate("decrement")}
           >
@@ -166,7 +171,7 @@ const DateNavigation: React.FC<Props> = ({
             edge="start"
             className={classes.next}
             color="inherit"
-            aria-label="menu"
+            aria-label={t(AdminAria.SeeFutureDates)}
             data-testid={__dateNavNextId__}
             onClick={paginate("increment")}
           >
