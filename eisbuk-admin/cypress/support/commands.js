@@ -66,23 +66,43 @@ Cypress.Commands.add("initAdminApp", () => {
 });
 
 /**
- * Logs message to node terminal instead of browsers console.
- * @param {string} msg A message to log to terminal
+ * @TODO This currently doesn't work in the tests for some reason
+ * should try and make it work and maybe replace the logging server altogether
  */
-Cypress.Commands.add("logToServer", (msg) => {
-  console.log(msg);
-  http.request({ host: "localhost", port: 8888, method: "get" }).end();
-});
+// /**
+//  * POSTs a log message to the logging server.
+//  * @param {string} specName Name of the current spec (test suite)
+//  * @param {string} testName Name of the current test
+//  * @param {array} message Message from `console.log` (accepted as a ...rest array)
+//  */
+// Cypress.Commands.add("postLog", (specName, testName, ...message) => {
+//   const data = JSON.stringify({ message });
+
+//   const req = http.request({
+//     host: "localhost",
+//     path: `/log?specname=${specName}&tesename=${testName}`,
+//     port: 8888,
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "Content-Length": data.length,
+//     },
+//   });
+
+//   req.write(data);
+//   req.end();
+// });
 
 /**
  * Sends a request to logging server to end logging for the current
  * suite (spec) and write the collected logs to a file.
+ * @param {string} specName name of the spec to finish and print logs to file
  */
-Cypress.Commands.add("endLog", () => {
+Cypress.Commands.add("endLog", (specName) => {
   http
     .request({
       host: "localhost",
-      path: `/end_log`,
+      path: `/end_log?specname=${specName}`,
       port: 8888,
       method: "GET",
     })

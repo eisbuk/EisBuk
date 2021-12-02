@@ -13,22 +13,27 @@ const writeLogFile = async (
   testLogs: Record<string, unknown[][]>,
   specname: string
 ): Promise<void> => {
-  const logFilePath = path.join(process.cwd(), `${specname}.logs.md`);
-
   let output = "";
 
+  const processedSpecname = specname.replace(
+    /_[a-z]/gi,
+    (s) => ` ${s[1].toUpperCase()}`
+  );
+
   // start with heading for the logfile
-  output = appendLine(output, `## Logs for ${specname}`);
+  output = appendLine(output, `## Logs for ${processedSpecname}`);
   output = appendLine(output, "");
 
   console.log("Initial output");
   console.log(output);
 
   Object.keys(testLogs).forEach((testname, i) => {
+    const processedTestname = testname.replace(/%[0-9]+/g, " ");
+
     // add test title for logs region
     output = appendLine(
       output,
-      `<b>Logs for Test ${i}: "${testname}"</b>`,
+      `<b>Logs for Test ${i}: "${processedTestname}"</b>`,
       "</br>"
     );
 
@@ -59,6 +64,22 @@ const writeLogFile = async (
     output = appendLine(output, "");
   });
 
+  const logsDir = path.join(__dirname, "..", "logs");
+
+  // check if logs directory exists
+  await new Promise<void>((res) => {
+    fs.readdir(logsDir, (err) => {
+      if (!err) return res();
+      // create dir if it doesn't exist
+      return fs.mkdir(logsDir, (err) => {
+        if (err) throw err;
+        return res();
+      });
+    });
+  });
+
+  // write logs to file
+  const logFilePath = path.join(logsDir, `${specname}.logs.md`);
   return new Promise((res) => {
     fs.writeFile(logFilePath, output, (err) => {
       if (err) throw err;
@@ -157,11 +178,12 @@ const createExpandable = ({
     return appendLineWithIndentation("", `${title}: ${b.join(" ")}`, "</br>");
   }
 
+  buffer = appendLine(buffer, "", "</br>");
   buffer = appendLine(
     buffer,
     `<summary>${indent(title, indentation - 2)}: ${b[0]} ... ${b[1]}</summary>`
   );
-  buffer = appendLineWithIndentation(buffer, b[0], "</br></br>");
+  buffer = appendLineWithIndentation(buffer, b[0], "</br>");
   buffer = buffer + content;
   buffer = appendLineWithIndentation(buffer, b[1]);
   buffer = appendLineWithIndentation(buffer, `</details>`);

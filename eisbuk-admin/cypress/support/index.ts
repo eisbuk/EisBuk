@@ -53,12 +53,24 @@ declare global {
         label: string,
         strict?: boolean
       ) => Chainable<Element>;
-      // /**
-      //  * Logs message to node terminal instead of browsers console.
-      //  * @param {string} msg A message to log to terminal
-      //  */
-      // logToServer: (msg: string) => Chainable<Element>;
-      endLog: () => Chainable<Element>;
+      /**
+       * POSTs a log message to the logging server.
+       * @param {string} specName Name of the current spec (test suite)
+       * @param {string} testName Name of the current test
+       * @param {array} message Message from `console.log` (accepted as a ...rest array)
+       */
+      postLog: (
+        specName: string,
+        testName: string,
+        ...message: any[]
+      ) => Chainable<Element>;
+      /**
+       * Sends a request to logging server to end logging for the current
+       * suite (spec) and write the collected logs to a file.
+       * @param {string} specName name of the spec to finish and print logs to file
+       */
+
+      endLog: (specName: string) => Chainable<Element>;
     }
   }
 }
@@ -69,21 +81,28 @@ beforeEach(() => {
   const time = new Date(__staticTestDate__).getTime();
   cy.clock(time, ["Date"]);
 
-  // Stub the window console to send console message to the logging
+  // Stub the `window.console.log` to send console message to the logging
   // server instead
-  const { titlePath } = Cypress.currentTest;
-  const testname = titlePath.join("_");
+  const { title: testname } = Cypress.currentTest;
+  const specname = Cypress.spec.name;
 
   cy.on("window:before:load", (win) => {
     win.console.log = (...message: any[]) => {
-      win.fetch(`http://localhost:8888?testname=${testname}`, {
-        method: "POST",
-        body: JSON.stringify({ message }),
-      });
+      const data = JSON.stringify({ message });
+
+      win.fetch(
+        `http://localhost:8888/log?specname=${specname}&testname=${testname}`,
+        {
+          method: "POST",
+          body: data,
+        }
+      );
     };
   });
 });
 
 after(() => {
-  cy.endLog();
+  const specname = Cypress.spec.name;
+
+  cy.endLog(specname);
 });
