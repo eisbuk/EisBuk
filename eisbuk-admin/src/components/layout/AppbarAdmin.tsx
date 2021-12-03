@@ -22,6 +22,8 @@ import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import MenuIcon from "@material-ui/icons/Menu";
 
+import Cake from "@material-ui/icons/Cake";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
@@ -34,30 +36,48 @@ import DebugMenu from "@/components/layout/DebugMenu";
 import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
+import { getCustomersWithBirthday } from "@/store/selectors/customers";
+import { IconButton } from "@material-ui/core";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
   const location = useLocation();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
+    useState<HTMLElement | null>(null);
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const dispatch = useDispatch();
 
   const userAuthInfo = useSelector(getLocalAuth);
 
+  const customers = useSelector(getCustomersWithBirthday);
+
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
   };
 
-  const handleClose = (action = "") => () => {
-    switch (action) {
-      case "logout":
-        dispatch(signOut());
-      // eslint-disable-next-line no-fallthrough
-      default:
-        setAnchorEl(null);
-    }
+  const handleClose =
+    (action = "") =>
+    () => {
+      switch (action) {
+        case "logout":
+          dispatch(signOut());
+        // eslint-disable-next-line no-fallthrough
+        default:
+          setAnchorEl(null);
+      }
+    };
+  const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (
+    e
+  ) => {
+    setBirthdaysAnchorEl(e.currentTarget);
+  };
+
+  const handleBirthdaysClose = () => () => {
+    setBirthdaysAnchorEl(null);
   };
 
   const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
@@ -92,7 +112,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                 variant="contained"
                 startIcon={<DateRangeIcon />}
                 disabled={location.pathname === PrivateRoutes.Root}
-                aria-current={location.pathname === PrivateRoutes.Root ? "page" : "false"}
+                aria-current={
+                  location.pathname === PrivateRoutes.Root ? "page" : "false"
+                }
               >
                 {t(NavigationLabel.Attendance)}
               </Button>
@@ -102,7 +124,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                 variant="contained"
                 startIcon={<LibraryBooksIcon />}
                 disabled={location.pathname === PrivateRoutes.Slots}
-                aria-current={location.pathname === PrivateRoutes.Slots ? "page" : "false"}
+                aria-current={
+                  location.pathname === PrivateRoutes.Slots ? "page" : "false"
+                }
               >
                 Slots
               </Button>
@@ -112,10 +136,15 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                 variant="contained"
                 startIcon={<PeopleIcon />}
                 disabled={location.pathname === PrivateRoutes.Athletes}
-                aria-current={location.pathname === PrivateRoutes.Athletes ? "page" : "false"}
+                aria-current={
+                  location.pathname === PrivateRoutes.Athletes
+                    ? "page"
+                    : "false"
+                }
               >
                 {t(NavigationLabel.Athletes)}
               </Button>
+
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>
@@ -124,6 +153,28 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
+          <IconButton onClick={handleBirthdaysClick}>
+            <Cake />
+          </IconButton>
+
+          <Menu
+            id="simple-menu"
+            anchorEl={birthdaysAnchorEl}
+            keepMounted
+            open={Boolean(birthdaysAnchorEl)}
+            onClose={handleBirthdaysClose()}
+          >
+            {customers?.map((customer) => {
+              console.log(customer.name);
+              return (
+                !customer.deleted && (
+                  <MenuItem key={customer.id}>
+                    {`${customer.name} ${customer.surname}`}
+                  </MenuItem>
+                )
+              );
+            })}
+          </Menu>
         </Toolbar>
       </AppBar>
       <Hidden smUp>
@@ -139,7 +190,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               component={Link}
               to={PrivateRoutes.Root}
               disabled={location.pathname === PrivateRoutes.Root}
-              aria-current={location.pathname === PrivateRoutes.Root ? "page" : "false"}
+              aria-current={
+                location.pathname === PrivateRoutes.Root ? "page" : "false"
+              }
             >
               <ListItemIcon>
                 <DateRangeIcon />
@@ -151,7 +204,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               component={Link}
               to={PrivateRoutes.Slots}
               disabled={location.pathname === PrivateRoutes.Slots}
-              aria-current={location.pathname === PrivateRoutes.Slots ? "page" : "false"}
+              aria-current={
+                location.pathname === PrivateRoutes.Slots ? "page" : "false"
+              }
             >
               <ListItemIcon>
                 <LibraryBooksIcon />
@@ -163,7 +218,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               component={Link}
               to={PrivateRoutes.Athletes}
               disabled={location.pathname === PrivateRoutes.Athletes}
-              aria-current={location.pathname === PrivateRoutes.Athletes ? "page" : "false"}
+              aria-current={
+                location.pathname === PrivateRoutes.Athletes ? "page" : "false"
+              }
             >
               <ListItemIcon>
                 <PeopleIcon />
