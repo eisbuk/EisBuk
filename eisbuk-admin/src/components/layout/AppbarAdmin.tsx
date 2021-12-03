@@ -22,6 +22,8 @@ import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import MenuIcon from "@material-ui/icons/Menu";
 
+import Cake from "@material-ui/icons/Cake";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
@@ -34,17 +36,24 @@ import DebugMenu from "@/components/layout/DebugMenu";
 import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
+import { getCustomersWithBirthday } from "@/store/selectors/customers";
+import { IconButton } from "@material-ui/core";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
   const location = useLocation();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
+    useState<HTMLElement | null>(null);
+
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const dispatch = useDispatch();
 
   const userAuthInfo = useSelector(getLocalAuth);
+
+  const customers = useSelector(getCustomersWithBirthday);
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
@@ -61,6 +70,15 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           setAnchorEl(null);
       }
     };
+  const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (
+    e
+  ) => {
+    setBirthdaysAnchorEl(e.currentTarget);
+  };
+
+  const handleBirthdaysClose = () => () => {
+    setBirthdaysAnchorEl(null);
+  };
 
   const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
   const { t } = useTranslation();
@@ -126,6 +144,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               >
                 {t(NavigationLabel.Athletes)}
               </Button>
+
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>
@@ -137,6 +156,28 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
+          <IconButton onClick={handleBirthdaysClick}>
+            <Cake />
+          </IconButton>
+
+          <Menu
+            id="simple-menu"
+            anchorEl={birthdaysAnchorEl}
+            keepMounted
+            open={Boolean(birthdaysAnchorEl)}
+            onClose={handleBirthdaysClose()}
+          >
+            {customers?.map((customer) => {
+              console.log(customer.name);
+              return (
+                !customer.deleted && (
+                  <MenuItem key={customer.id}>
+                    {`${customer.name} ${customer.surname}`}
+                  </MenuItem>
+                )
+              );
+            })}
+          </Menu>
         </Toolbar>
       </AppBar>
       <Hidden smUp>
