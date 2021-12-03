@@ -163,7 +163,7 @@ jobs:
         run: yarn --cwd eisbuk-admin build
         env:
           # Instruct the app this is going to be a dev build
-          BUILD_ENV: test
+          REACT_APP_BUILD_ENV: test
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
