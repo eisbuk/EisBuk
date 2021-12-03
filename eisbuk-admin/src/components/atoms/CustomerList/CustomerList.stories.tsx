@@ -24,9 +24,5 @@ export const Default = (): JSX.Element => (
 );
 
 export const Extended = (): JSX.Element => (
-  <Container>
-    <Paper elevation={3}>
-      <CustomerList {...{ customers }} extended />
-    </Paper>
-  </Container>
+  <CustomerList {...{ customers }} extended />
 );

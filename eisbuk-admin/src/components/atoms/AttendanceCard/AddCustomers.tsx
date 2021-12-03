@@ -65,10 +65,6 @@ const AddCustomersList: React.FC<Props> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredCustomers]);
 
-  const classNames = {
-    rootDiv: classes.listContainer,
-    tableContainer: classes.tableContainer,
-  };
   return (
     <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
       <div className={classes.container}>
@@ -83,7 +79,8 @@ const AddCustomersList: React.FC<Props> = ({
           <Close />
         </IconButton>
         <CustomerList
-          classNames={classNames}
+          className={classes.listContainer}
+          tableContainerClassName={classes.tableContainer}
           customers={filteredCustomers}
           onCustomerClick={handleCustomerClick}
         />

@@ -23,14 +23,16 @@ interface Props {
   customers?: Customer[];
   extended?: boolean;
   onCustomerClick?: (customer: Customer) => void;
-  classNames?: { rootDiv?: string; tableContainer?: string };
+  className?: string;
+  tableContainerClassName?: string;
 }
 
 const CustomerList: React.FC<Props> = ({
   customers,
   extended,
   onCustomerClick = () => {},
-  classNames = { rootDiv: "" },
+  className = "",
+  tableContainerClassName,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -48,10 +50,10 @@ const CustomerList: React.FC<Props> = ({
   const searchRegex = new RegExp(searchString, "i");
 
   return (
-    <div className={classNames?.rootDiv}>
+    <div className={className}>
       <SearchField {...{ searchString, setSearchString }} center={!extended} />
       <TableContainer
-        className={classNames.tableContainer || classes.tableContainer}
+        className={tableContainerClassName || classes.tableContainer}
       >
         <Table size="small">
           <TableHead>
