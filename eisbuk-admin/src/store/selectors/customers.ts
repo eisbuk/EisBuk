@@ -1,6 +1,7 @@
 import { Customer } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
+import { DateTime } from "luxon";
 
 /**
  * Get a record of all the customers for current organization from firebase store
@@ -21,4 +22,18 @@ export const getCustomersRecord = (
 export const getCustomersList = (state: LocalStore): Customer[] => {
   const customersInStore = getCustomersRecord(state);
   return Object.values(customersInStore);
+};
+
+/**
+ * Get a list of all the customers whose birthdays are today
+ * (not an actual firestore query but rather synced local store entry)
+ * @param state Local Redux Store
+ * @returns list of customers whose birthdays are on todays date
+ */
+export const getCustomersWithBirthday = (state: LocalStore): Customer[] => {
+  const customersInStore = getCustomersRecord(state);
+
+  return Object.values(customersInStore).filter(
+    (c) => c.birthday === DateTime.now().toISODate()
+  );
 };
