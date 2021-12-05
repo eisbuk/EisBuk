@@ -58,9 +58,14 @@ const logServer = http.createServer(async (req, res) => {
     return;
   }
 
-  const { testname, specname } = getParams(params) as {
+  const {
+    testname,
+    specname,
+    method: severity,
+  } = getParams(params) as {
     testname?: string;
     specname?: string;
+    method?: "log" | "error" | "warn";
   };
 
   // default functionality, adds log to logs for a given spec and a given test
@@ -88,14 +93,16 @@ const logServer = http.createServer(async (req, res) => {
         // create logs entry for a particular test (if one doesn't exist)
         if (!specLogs[testname]) specLogs[testname] = [];
 
-        const logMessage = await parseLogs(req);
+        const logMessage = await parseLogs(req, severity);
         specLogs[testname].push(logMessage);
 
         const [timestamp, ...message] = logMessage;
         console.log(`[${specname}][${testname}][${timestamp}]`);
         console.log("    ", ...message);
 
-        break;
+        res.writeHead(200);
+        res.end();
+        return;
 
       // this should only happen if the logs are closed
       // at which point we're not returning a failed response
@@ -118,18 +125,21 @@ const logServer = http.createServer(async (req, res) => {
       res.end();
       return;
     } else {
-      // close the logs for future writes
-      logs[specname].closed = true;
-      const filePath = await writeLogFile(
-        logs[specname].logs,
-        specname.replace(".ts", "")
-      );
-      console.log("Log file written: ", filePath);
+      // we're setting a 3sec timeout before closing the logs
+      // for writes, in case there are some delayed logs comming in
+      setTimeout(async () => {
+        // close the logs for future writes
+        logs[specname].closed = true;
+        const filePath = await writeLogFile(
+          logs[specname].logs,
+          specname.replace(".ts", "")
+        );
+        console.log("Log file written: ", filePath);
+        res.writeHead(200);
+        res.end();
+      }, 3000);
     }
   }
-
-  res.writeHead(200);
-  res.end();
 });
 
 // exit gracefully on oudside signal

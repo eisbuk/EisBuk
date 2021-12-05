@@ -104,7 +104,7 @@ Cypress.Commands.add("endLog", (specName) => {
       host: "localhost",
       path: `/end_log?specname=${specName}`,
       port: 8888,
-      method: "GET",
+      method: "POST",
     })
     .end();
 });

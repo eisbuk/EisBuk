@@ -39,8 +39,8 @@ const writeLogFile = async (
     output = appendLine(output, "<summary>See logs</summary>");
 
     // add each message to test logs box
-    testLogs[testname].forEach(([timestamp, ...msgs]) => {
-      output = appendLine(output, `[${timestamp}]`, "</br>");
+    testLogs[testname].forEach(([timestamp, severity, ...msgs]) => {
+      output = appendLine(output, `[${timestamp}][ ${severity} ]`, "</br>");
       // we want the console logs to be indented to begin with
       output += indent("", 1);
       msgs.forEach((msg) => {

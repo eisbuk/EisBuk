@@ -69,7 +69,6 @@ declare global {
        * suite (spec) and write the collected logs to a file.
        * @param {string} specName name of the spec to finish and print logs to file
        */
-
       endLog: (specName: string) => Chainable<Element>;
     }
   }
@@ -87,17 +86,19 @@ beforeEach(() => {
   const specname = Cypress.spec.name;
 
   cy.on("window:before:load", (win) => {
-    win.console.log = (...message: any[]) => {
-      const data = JSON.stringify({ message });
+    ["log", "error", "warn"].forEach((method) => {
+      win.console[method] = (...message: any[]) => {
+        const data = JSON.stringify({ message });
 
-      win.fetch(
-        `http://localhost:8888/log?specname=${specname}&testname=${testname}`,
-        {
-          method: "POST",
-          body: data,
-        }
-      );
-    };
+        win.fetch(
+          `http://localhost:8888/log?specname=${specname}&testname=${testname}&method=${method}`,
+          {
+            method: "POST",
+            body: data,
+          }
+        );
+      };
+    });
   });
 });
 

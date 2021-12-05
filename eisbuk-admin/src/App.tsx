@@ -27,6 +27,8 @@ const App: React.FC = () => {
   // through redux store
   useConnectAuthToStore(getAuth(), store);
 
+  console.log("Hello world");
+
   return (
     <ReduxProvider store={store}>
       <ThemeProvider theme={currentTheme}>

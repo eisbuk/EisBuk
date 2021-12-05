@@ -8,7 +8,10 @@ type LogMessage = [string, ...unknown[]];
  * @param {string} testName for log organization
  * @param {http.IncomingMessage} req request message
  */
-export default (req: http.IncomingMessage): Promise<LogMessage> =>
+export default (
+  req: http.IncomingMessage,
+  severity: string
+): Promise<LogMessage> =>
   new Promise<LogMessage>((res) => {
     // timestamp each log
     const timestamp = new Date(Date.now())
@@ -33,6 +36,6 @@ export default (req: http.IncomingMessage): Promise<LogMessage> =>
         logMsg = [err];
       }
 
-      res([timestamp, ...logMsg]);
+      res([timestamp, severity, ...logMsg]);
     });
   });

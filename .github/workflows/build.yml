@@ -182,6 +182,14 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           CYPRESS_BASE_URL: http://localhost:5000
-      - name: "Check cypress test in-app logs"
+      - name: Stop logging server
         if: success() || failure()
-        run: "fuser -k -SIGINT 8888/tcp && cat eisbuk-admin/cypress_browser_logs/*"
+        run: "fuser -k -SIGINT 8888/tcp"
+      - name: "Create cypress browser logs summaries"
+        if: success() || failure()
+        # Create summeries
+        uses: eisbuk/custom-check-summary@master
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_DIR: eisbuk-admin/cypress_browser_logs
+          SUMMARY_TITLE: "Cypress browser logs for spec"
