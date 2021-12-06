@@ -24,6 +24,7 @@ interface Props {
   extended?: boolean;
   onCustomerClick?: (customer: Customer) => void;
   className?: string;
+  tableContainerClassName?: string;
 }
 
 const CustomerList: React.FC<Props> = ({
@@ -31,6 +32,7 @@ const CustomerList: React.FC<Props> = ({
   extended,
   onCustomerClick = () => {},
   className = "",
+  tableContainerClassName,
 }) => {
   const classes = useStyles();
   const { t } = useTranslation();
@@ -50,7 +52,9 @@ const CustomerList: React.FC<Props> = ({
   return (
     <div className={className}>
       <SearchField {...{ searchString, setSearchString }} center={!extended} />
-      <TableContainer className={classes.tableContainer}>
+      <TableContainer
+        className={tableContainerClassName || classes.tableContainer}
+      >
         <Table size="small">
           <TableHead>
             <TableRow className={classes.tableHeadRow}>
@@ -122,7 +126,6 @@ const useStyles = makeStyles(() => ({
   },
   tableContainer: {
     overflow: "auto",
-    maxHeight: "30rem",
   },
 }));
 // #endregion styles
