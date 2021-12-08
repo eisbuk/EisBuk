@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 
-import { Customer } from "eisbuk-shared";
+import { CustomerBirthday } from "eisbuk-shared";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
-import { IconButton } from "@material-ui/core";
+import { Divider, IconButton } from "@material-ui/core";
 
 import Cake from "@material-ui/icons/Cake";
+import { DateTime } from "luxon";
 
 interface Props {
-  customers: Customer[];
+  customers: CustomerBirthday;
 }
 const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
@@ -23,6 +24,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
+  const today = DateTime.now().toFormat("dd/MM");
 
   return (
     <>
@@ -35,15 +37,31 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
         keepMounted
         open={Boolean(birthdaysAnchorEl)}
         onClose={handleBirthdaysClose()}
+        PaperProps={{
+          style: {
+            maxHeight: "10rem",
+            width: "20ch",
+          },
+        }}
       >
-        {customers?.map((customer) => {
-          console.log(customer.name);
+        {Object.keys(customers).map((customerBirthdayKey) => {
           return (
-            !customer.deleted && (
-              <MenuItem key={customer.id}>
-                {`${customer.name} ${customer.surname}`}
+            <div key={customerBirthdayKey}>
+              <MenuItem>
+                {customerBirthdayKey === today ? "today" : customerBirthdayKey}
               </MenuItem>
-            )
+              <Divider></Divider>
+              {customers[customerBirthdayKey].map((customer) => {
+                return (
+                  !customer.deleted && (
+                    <MenuItem key={customer.id}>
+                      {`${customer.name} ${customer.surname}`}
+                    </MenuItem>
+                  )
+                );
+              })}
+              <Divider></Divider>
+            </div>
           );
         })}
       </Menu>
