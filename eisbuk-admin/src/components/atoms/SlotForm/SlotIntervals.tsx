@@ -10,7 +10,7 @@ import { SlotInterval } from "eisbuk-shared";
 
 import { defaultInterval } from "@/lib/data";
 
-import { SlotFormLabel } from "@/enums/translations";
+import { SlotFormLabel, SlotFormAria } from "@/enums/translations";
 
 import TimeIntervalField from "./TimeIntervalField";
 
@@ -48,7 +48,7 @@ const SlotIntervals: React.FC = () => {
           color="primary"
           variant="contained"
           className={classes.addInterval}
-          aria-label='Add Interval'
+          aria-label={t(SlotFormAria.AddInterval)}
         >
           {t(SlotFormLabel.AddInterval)}
         </Button>

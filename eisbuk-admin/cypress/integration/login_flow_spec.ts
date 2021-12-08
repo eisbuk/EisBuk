@@ -1,31 +1,18 @@
-/* eslint-disable promise/always-return */
-/* eslint-disable promise/catch-or-return */
-import { PrivateRoutes } from "@/enums/routes";
+import { Routes, PrivateRoutes } from "@/enums/routes";
 
-import { saul } from "@/__testData__/customers";
-
-beforeEach(() => {
-  // Initialize app, create default user,
-  // create default organization, sign in as admin
-  cy.initAdminApp();
-});
-
-describe("add athlete", () => {
-  it("should fill in the customer form and submit it", () => {
-    cy.visit(PrivateRoutes.Athletes);
-    cy.get("[data-testid='add-athlete']").click();
-    cy.get("[name='name']").type(saul.name);
-    cy.get("[name='surname']").type(saul.surname);
-    cy.get("[name='email']").type(saul.email);
-    cy.get("[name='phone']").type(saul.phone);
-    cy.get("[placeholder='dd/mm/yyyy']").first().type(saul.birthday);
-    cy.get("[value='competitive']").check();
-    cy.get("[placeholder='dd/mm/yyyy']").eq(1).type(saul.certificateExpiration);
-    cy.get("[placeholder='dd/mm/yyyy']")
-      .eq(2)
-      .type(saul.covidCertificateReleaseDate);
-    cy.get("[type='checkbox']").check();
-    cy.get("[type='submit']").click();
-    cy.contains(`${saul.name} ${saul.surname} update`);
+describe("login", () => {
+  beforeEach(() => {
+    // Initialize app, create default user,
+    // create default organization but don't sign in
+    cy.initAdminApp(false);
+  });
+  it("can log in", () => {
+    cy.visit(PrivateRoutes.Root);
+    cy.contains("Sign in with email").click();
+    cy.url().should("include", Routes.Login);
+    cy.getAttrWith("type", "email").type("test@eisbuk.it");
+    cy.contains("Next").click();
+    cy.getAttrWith("type", "password").type("test00");
+    cy.contains("Sign In").click();
   });
 });
