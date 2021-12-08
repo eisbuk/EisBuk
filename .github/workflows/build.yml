@@ -18,6 +18,7 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
@@ -90,6 +91,7 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
@@ -122,6 +124,7 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
@@ -157,9 +160,10 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
             $HOME/.cache/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-rclone-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-cypress-v14-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn
