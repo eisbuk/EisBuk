@@ -181,11 +181,8 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - uses: eisbuk/create-file-action@v1
-        name: Create file with gcloud cretentials
-        env:
-          FILE_NAME: ~/.gcloud.json
-          FILE_DATA: ${{ secrets.GCLOUD_JSON }}
+      - name: Create file with gcloud cretentials
+        run: echo "${{ secrets.GCLOUD_JSON }}" > ${{ env.HOME }}/.gcloud.json
 
       - name: Copy test results to gcloud
         uses: wei/rclone@v1
