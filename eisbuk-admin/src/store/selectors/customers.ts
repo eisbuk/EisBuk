@@ -1,4 +1,4 @@
-import { Customer } from "eisbuk-shared";
+import { Customer, CustomerBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 import { DateTime } from "luxon";
@@ -28,12 +28,37 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
  * Get a list of all the customers whose birthdays are today
  * (not an actual firestore query but rather synced local store entry)
  * @param state Local Redux Store
- * @returns list of customers whose birthdays are on todays date
+ * @returns list of customers grouped by birthday
  */
-export const getCustomersWithBirthday = (state: LocalStore): Customer[] => {
+export const getCustomersWithBirthday = (
+  state: LocalStore
+): CustomerBirthday => {
   const customersInStore = getCustomersRecord(state);
 
-  return Object.values(customersInStore).filter(
-    (c) => c.birthday === DateTime.now().toISODate()
+  // find index of birthday thats >= todays date to slice at that and concat the rest at the end
+  const sortedCustomers = Object.values(customersInStore).sort((a, b) =>
+    DateTime.fromISO(a.birthday)
+      .set({ year: 2000 })
+      .toString()
+      .localeCompare(
+        DateTime.fromISO(b.birthday).set({ year: 2000 }).toString()
+      )
+  );
+
+  const index = sortedCustomers.findIndex(
+    (c) =>
+      DateTime.now().set({ year: 2000 }) <=
+      DateTime.fromISO(c.birthday).set({ year: 2000 })
+  );
+
+  const rearrangedCustomer = sortedCustomers
+    .slice(index)
+    .concat(sortedCustomers.splice(0, index));
+
+  return rearrangedCustomer.reduce(
+    (r, v, i, a, k = DateTime.fromISO(v.birthday).toFormat("dd/MM")) => (
+      (r[k] || (r[k] = [])).push(v), r
+    ),
+    {}
   );
 };
