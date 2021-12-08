@@ -145,7 +145,7 @@ jobs:
         run: "yarn --cwd eisbuk-admin/functions typecheck"
 
   cypress-run:
-    runs-on: ubuntu-20.04
+    runs-on: macos-11
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -159,7 +159,6 @@ jobs:
             **/node_modules
             $HOME/.cache/firebase/emulators
             $HOME/.cache/Cypress
-            /tmp/rclone.deb
           key: ${{ runner.os }}-modules-emulators-cypress-rclone-v14-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
@@ -198,8 +197,7 @@ jobs:
 
       - name: Install rclone
         run: |
-          wget -c https://downloads.rclone.org/v1.57.0/rclone-v1.57.0-linux-amd64.deb -O /tmp/rclone.deb
-          sudo dpkg -i /tmp/rclone.deb
+          curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone
           echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
         env:
