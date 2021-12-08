@@ -20,7 +20,7 @@ jobs:
             **/node_modules
             node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Build app
@@ -93,7 +93,7 @@ jobs:
             **/node_modules
             node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Run tests
@@ -126,7 +126,7 @@ jobs:
             **/node_modules
             node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Lint client app
@@ -148,7 +148,7 @@ jobs:
         run: "yarn --cwd eisbuk-admin/functions typecheck"
 
   cypress-run:
-    runs-on: macos-11
+    runs-on: ubuntu-20.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
