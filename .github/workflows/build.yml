@@ -215,7 +215,10 @@ jobs:
             bucket_policy_only = true
 
       - name: Copy test results to gcloud
-        run: rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
+        run: |
+          cd eisbuk-admin/cypress/videos/ && tree -H . -L 1 --noreport --charset utf-8 -o index.html && cd -
+          mv eisbuk-admin/cypress/videos eisbuk-admin/cypress/reports/html/
+          rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
 
       - name: Print gcloud url to view test results
         run: echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
