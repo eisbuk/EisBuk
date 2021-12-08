@@ -22,6 +22,8 @@ import "./commands";
 
 import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
 
+import "cypress-mochawesome-reporter/register";
+
 // ***********************************************************
 //
 // When adding a new Command in "./commands.js" file, add the
