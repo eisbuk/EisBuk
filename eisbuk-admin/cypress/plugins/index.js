@@ -8,10 +8,10 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 const {
   beforeRunHook,
   afterRunHook,
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
 } = require("cypress-mochawesome-reporter/lib");
 
 // This function is called when a project is opened or re-opened (e.g. due to
