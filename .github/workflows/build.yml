@@ -190,6 +190,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create file with gcloud cretentials
+        if: success() || failure()
         # To make sure the file contents are not manipulated by the github infrastructure
         # they're encoded using base64. Here we decode them.
         # A downside of this approach is that we don't get the default
@@ -197,10 +198,12 @@ jobs:
         run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
 
       - name: Set destination of test results
+        if: success() || failure()
         run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
         id: results-destination
 
       - name: Install rclone
+        if: success() || failure()
         run: |
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone
@@ -215,12 +218,14 @@ jobs:
             bucket_policy_only = true
 
       - name: Copy test results to gcloud
+        if: success() || failure()
         run: |
           cd eisbuk-admin/cypress/videos/ && tree -H . -L 1 --noreport --charset utf-8 -o index.html && cd -
           mv eisbuk-admin/cypress/videos eisbuk-admin/cypress/reports/html/
           rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
 
       - name: Print gcloud url to view test results
+        if: success() || failure()
         run: |
           mkdir result_tabs
           echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
