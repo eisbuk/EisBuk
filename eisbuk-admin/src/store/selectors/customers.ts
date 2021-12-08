@@ -46,8 +46,8 @@ export const getCustomersWithBirthday = (
   );
   const index = sortedCustomers.findIndex(
     (c) =>
-      DateTime.now().set({ year: 2000 }) <=
-      DateTime.fromISO(c.birthday).set({ year: 2000 })
+      DateTime.now().startOf("day").set({ year: 2000 }) <=
+      DateTime.fromISO(c.birthday).startOf("day").set({ year: 2000 })
   );
   const rearrangedCustomer = sortedCustomers
     .slice(index === -1 ? 0 : index)
