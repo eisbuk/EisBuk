@@ -106,5 +106,28 @@
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
     "Placeholder": "dd/mm/yyyy"
+  },
+
+  "AdminAria": {
+    "PageNav": "Page navigation",
+    "SeePastDates": "See past dates",
+    "SeeFutureDates": "See future dates",
+    "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
+    "CopySlots": "Copy slots from",
+    "PasteSlots": "Paste copied slots on",
+    "CreateSlots": "Create new slots on"
+  },
+
+  "SlotFormAria": {
+    "SlotCategory": "Slot category",
+    "SlotType": "Slot type",
+    "AddInterval": "Add interval",
+    "IntervalStart": "Interval start time",
+    "IntervalEnd": "Interval end time",
+    "DeleteInterval": "Delete interval",
+    "SlotNotes": "Additional slot notes",
+    "CancelSlot": "Cancel slot creation",
+    "ConfirmCreateSlot": "Confirm slot creation",
+    "ConfirmEditSlot": "Confirm slot edits"
   }
 }

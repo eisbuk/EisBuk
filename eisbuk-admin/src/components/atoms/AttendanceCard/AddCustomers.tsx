@@ -66,7 +66,7 @@ const AddCustomersList: React.FC<Props> = ({
   }, [filteredCustomers]);
 
   return (
-    <Dialog onClose={onClose} {...dialogProps}>
+    <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(ActionButton.AddCustomers)}
@@ -80,6 +80,7 @@ const AddCustomersList: React.FC<Props> = ({
         </IconButton>
         <CustomerList
           className={classes.listContainer}
+          tableContainerClassName={classes.tableContainer}
           customers={filteredCustomers}
           onCustomerClick={handleCustomerClick}
         />
@@ -112,6 +113,10 @@ const useStyles = makeStyles((theme) => ({
   },
   listContainer: {
     backgroundColor: "rgba(255, 255, 255, 0.6)",
+  },
+  tableContainer: {
+    overflow: "auto",
+    maxHeight: "30rem",
   },
 }));
 

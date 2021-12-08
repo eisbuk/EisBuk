@@ -1,4 +1,5 @@
 import React, { useState, useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import IconButton from "@material-ui/core/IconButton";
 
@@ -7,6 +8,7 @@ import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
 import { luxon2ISODate } from "eisbuk-shared";
 
 import { ButtonContextType } from "@/enums/components";
+import { AdminAria, DateFormat } from "@/enums/translations";
 
 import { SlotButtonProps } from "@/types/components";
 
@@ -31,6 +33,8 @@ import { __newSlotButtonId__ } from "@/__testData__/testIds";
  */
 export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
+
+  const { t } = useTranslation();
 
   const [openForm, setOpenForm] = useState(false);
 
@@ -71,7 +75,10 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
         size={size || iconSize}
         onClick={showForm}
         data-testid={__newSlotButtonId__}
-        aria-label="Create new slots button"
+        aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
+          date: luxonDate,
+        })}`}
+        // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
       >
         <AddCircleOutlineIcon />
       </IconButton>

@@ -20,6 +20,8 @@ import "./commands";
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
+
 // ***********************************************************
 //
 // When adding a new Command in "./commands.js" file, add the
@@ -41,7 +43,24 @@ declare global {
        * - creates a default organization with given name
        * - creates/logs-in a default user (admin of default organization)
        */
-      initAdminApp: () => Chainable<Element>;
+      initAdminApp: (doLogin?: boolean) => Chainable<Element>;
+      /**
+       * @param {string} attr A DOM element attribute - e.g [attr=]
+       * @param {string} label A value for the attribute - [=label]
+       * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
+       */
+      getAttrWith: (
+        attr: string,
+        label: string,
+        strict?: boolean
+      ) => Chainable<Element>;
     }
   }
 }
+
+// Overrides browser global Date Object to start from the first week of March 2021
+// This means "new Date()" will always return Monday 1st March 2021 in all tests
+beforeEach(() => {
+  const time = new Date(__staticTestDate__).getTime();
+  cy.clock(time, ["Date"]);
+});

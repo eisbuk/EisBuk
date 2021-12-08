@@ -26,7 +26,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
 
-import { NavigationLabel } from "@/enums/translations";
+import { NavigationLabel, AdminAria } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
@@ -91,7 +91,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             <MenuItem onClick={handleClose("logout")}>Logout</MenuItem>
           </Menu>
           <Hidden xsDown>
-            <ButtonGroup color="secondary" aria-label="Page Navigation">
+            <ButtonGroup color="secondary" aria-label={t(AdminAria.PageNav)}>
               <Button
                 component={Link}
                 to={PrivateRoutes.Root}

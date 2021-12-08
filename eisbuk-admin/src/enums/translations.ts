@@ -130,3 +130,28 @@ export enum DateFormat {
   Placeholder = "Date.Placeholder",
 }
 // #endregion date
+
+// #region aria-labels
+export enum AdminAria {
+  PageNav = "AdminAria.PageNav",
+  SeePastDates = "AdminAria.SeePastDates",
+  SeeFutureDates = "AdminAria.SeeFutureDates",
+  ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
+  CopySlots = "AdminAria.CopySlots",
+  PasteSlots = "AdminAria.PasteSlots",
+  CreateSlots = "AdminAria.CreateSlots",
+}
+
+export enum SlotFormAria {
+  SlotCategory = "SlotFormAria.SlotCategory",
+  SlotType = "SlotFormAria.SlotType",
+  AddInterval = "SlotFormAria.AddInterval",
+  IntervalStart = "SlotFormAria.IntervalStart",
+  IntervalEnd = "SlotFormAria.IntervalEnd",
+  DeleteInterval = "SlotFormAria.DeleteInterval",
+  SlotNotes = "SlotFormAria.SlotNotes",
+  CancelSlot = "SlotFormAria.CancelSlot",
+  ConfirmCreateSlot = "SlotFormAria.ConfirmCreateSlot",
+  ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
+}
+// #endregion aria-labels

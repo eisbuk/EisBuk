@@ -1,3 +1,5 @@
+// / <reference types="cypress" />
+
 import { initializeApp } from "@firebase/app";
 import {
   getFunctions,
@@ -9,6 +11,7 @@ import {
   connectAuthEmulator,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
 } from "@firebase/auth";
 import {
   initializeFirestore,
@@ -36,8 +39,9 @@ connectFunctionsEmulator(functions, "localhost", 5001);
 
 /**
  * Set up app for testing and log in as default admin
+ * @param {boolean} doLogin - whether to log in as default admin
  */
-Cypress.Commands.add("initAdminApp", () => {
+Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
   // create a random organization name in order to run each test
   // against it's own organization, using the same db without conflicts
   const organization = uuidv4();
@@ -45,19 +49,43 @@ Cypress.Commands.add("initAdminApp", () => {
     // the `organization` name is set to local storage and read from the app while testing
     win.localStorage.setItem("organization", organization);
   });
-
-  // create or login a default user in order to run the tests with admin access
-  createUserWithEmailAndPassword(
-    auth,
-    defaultUser.email,
-    defaultUser.password
-  ).catch(() => {
-    signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password);
-  });
-
   // create a default organization (containing the default user as an admin)
-  httpsCallable(
+  await httpsCallable(
     functions,
     CloudFunction.CreateOrganization
-  )({ organization }).catch();
+  )({ organization });
+
+  // Always create a user (and maybe log them out)
+  try {
+    await createUserWithEmailAndPassword(
+      auth,
+      defaultUser.email,
+      defaultUser.password
+    );
+    if (!doLogin) {
+      await signOut(auth);
+    }
+  } catch (error) {
+    if (doLogin) {
+      await signInWithEmailAndPassword(
+        auth,
+        defaultUser.email,
+        defaultUser.password
+      );
+      console.log(`Logged in as ${defaultUser.email}`);
+    } else {
+      await signOut(auth);
+      console.log(`Logged out`);
+    }
+  }
+});
+
+/**
+ * @param {string} attr A DOM element attribute - e.g [attr=]
+ * @param {string} label A value for the attribute - [=label]
+ * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
+ */
+Cypress.Commands.add("getAttrWith", (attr, label, strict = true) => {
+  const glob = strict ? "" : "*";
+  return cy.get(`[${attr}${glob}="${label}"]`);
 });
