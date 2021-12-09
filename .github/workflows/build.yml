@@ -220,8 +220,6 @@ jobs:
       - name: Copy test results to gcloud
         if: success() || failure()
         run: |
-          cd eisbuk-admin/cypress/videos/ && tree -H . -L 1 --noreport --charset utf-8 -o index.html && cd -
-          mv eisbuk-admin/cypress/videos eisbuk-admin/cypress/reports/html/
           rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
 
       - name: Print gcloud url to view test results
