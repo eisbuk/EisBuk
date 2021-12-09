@@ -55,6 +55,7 @@ export const getCustomersWithBirthday = (
 
   return rearrangedCustomer.reduce(
     (r, v, i, a, k = DateTime.fromISO(v.birthday).toFormat("dd/MM")) => (
+      // eslint-disable-next-line
       (r[k] || (r[k] = [])).push(v), r
     ),
     {}
