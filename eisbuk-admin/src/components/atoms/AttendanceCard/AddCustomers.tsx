@@ -62,7 +62,6 @@ const AddCustomersList: React.FC<Props> = ({
     if (!filteredCustomers || !filteredCustomers.length) {
       onClose();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredCustomers]);
 
   return (

@@ -33,8 +33,6 @@ export default ({
 
       // create a request for final destination (dev server)
       const proxyReq = http.request(options, (proxyRes) => {
-        console.log("Recieved res from dev server > ", proxyRes.statusCode);
-
         switch (proxyRes.statusCode) {
           case undefined:
             // this shouldn't happen and indicates an internal error

@@ -93,7 +93,6 @@ const AttendanceCard: React.FC<Props> = ({
           categories.includes(category) &&
           !customers.find(({ id: customerId }) => customerId === id)
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [customers]
   );
 

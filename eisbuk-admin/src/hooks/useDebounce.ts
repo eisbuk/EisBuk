@@ -27,7 +27,6 @@ const useDebounce: DebounceHook = (fn, delay) => {
       };
     }
     return () => {};
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values]);
 
   const debouncedFunc = (...params: Parameters<typeof fn>) => {
