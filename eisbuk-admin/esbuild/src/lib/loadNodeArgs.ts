@@ -11,7 +11,7 @@ import { createLogger, kebabToCamel } from "./utils";
 export default (): CLIArgs => {
   const logger = createLogger("ARGV");
 
-  const whitelistedOptions = ["mode", "env-prefix", "outdir"].map(
+  const whitelistedOptions = ["mode", "env-prefix", "distpath"].map(
     (option) => `--${option}`
   );
 
@@ -44,7 +44,7 @@ export default (): CLIArgs => {
 
       return { ...acc, [option]: args[i + 1] };
     },
-    { mode: "", envPrefix: "", outdir: "" }
+    { mode: "", envPrefix: "", distpath: "" }
   );
 
   // check nodeEnv and fallback to "development" if needed
@@ -72,14 +72,14 @@ export default (): CLIArgs => {
     envPrefix = parsedArgs.envPrefix;
   }
 
-  // check for outdir and fall back to `/dist/app` if non provided
-  let outdir = path.join(process.cwd(), "dist", "app");
-  if (!parsedArgs.outdir) {
-    logger.log(`No --outdir provided, using "${outdir}" as fallback`);
+  // check for distpath and apply fallback if necessary
+  let distpath = path.join(process.cwd(), serve ? "dev-server-meta" : "dist");
+  if (!parsedArgs.distpath) {
+    logger.log(`No --distpath provided, using "${distpath}" as fallback`);
   } else {
-    outdir = path.join(process.cwd(), parsedArgs.outdir);
-    logger.log(`Using, using "${outdir}" as bundle output directory`);
+    distpath = path.join(process.cwd(), parsedArgs.distpath);
+    logger.log(`Using, using "${distpath}" as bundle output directory`);
   }
 
-  return { envPrefix, outdir, NODE_ENV, serve };
+  return { envPrefix, distpath, NODE_ENV, serve };
 };

@@ -10,6 +10,7 @@ const config: BuildOptions = {
   entryPoints: [path.join(process.cwd(), "src", "index.tsx")],
   plugins: [svgr()],
   bundle: true,
+  write: true,
   target: "es6",
   format: "cjs",
   minify: true,

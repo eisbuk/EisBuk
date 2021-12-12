@@ -8,10 +8,7 @@ import outputFileSizes from "./lib/outputFileSizes";
 import buildApp from "./build";
 import serveDev from "./serve";
 
-/** @TEMP */
 const publicPath = path.join(process.cwd(), "public");
-const distPath = path.join(process.cwd(), "dist");
-/** @TEMP */
 
 /**
  * An entry point for custom bundler built on top of ESBuild.
@@ -20,17 +17,22 @@ const distPath = path.join(process.cwd(), "dist");
 (async () => {
   const logger = createLogger("ROOT");
 
-  const { NODE_ENV, outdir, envPrefix, serve } = loadNodeArgs();
+  const { NODE_ENV, distpath, envPrefix, serve } = loadNodeArgs();
+
+  // out dir of bundle (js and css) files
+  const outdir = path.join(distpath, "app");
+  // build app for appropriate env functionality: build/serve
+  await copyFolder(publicPath, distpath);
 
   if (!serve) {
-    await Promise.all([
-      buildApp({ NODE_ENV, outdir, envPrefix }),
-      copyFolder(publicPath, distPath),
-    ]);
+    await buildApp({
+      NODE_ENV,
+      outdir,
+      envPrefix,
+    });
     logger.log("Build process successfully finished");
-
     await outputFileSizes(outdir);
   } else {
-    await serveDev({ NODE_ENV, envPrefix });
+    await serveDev({ NODE_ENV, outdir, envPrefix, servedir: distpath });
   }
 })();

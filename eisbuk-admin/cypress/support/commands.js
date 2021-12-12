@@ -25,7 +25,7 @@ import { CloudFunction } from "@/enums/functions";
 import { defaultUser } from "@/__testSetup__/envData";
 
 // create a new app and connect SDK to emulators
-const app = initializeApp({ projectId: "eisbuk", apiKey: "test-api-key" });
+const app = initializeApp({ projectId: "eisbuk", apiKey: "api-key" });
 initializeFirestore(app, {});
 
 const auth = getAuth(app);

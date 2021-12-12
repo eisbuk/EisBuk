@@ -6,7 +6,14 @@ import loadEnv from "./lib/loadEnv";
 import { createLogger } from "./lib/utils";
 import { CLIArgs } from "./lib/types";
 
-type BuildArgs = Omit<CLIArgs, "serve">;
+export interface BuildParams {
+  NODE_ENV: CLIArgs["NODE_ENV"];
+  envPrefix: CLIArgs["envPrefix"];
+  /**
+   * Full path to the output bundle dir
+   */
+  outdir: string;
+}
 
 /**
  * Performs the (async) `esbuild` powered bundling process of our app
@@ -16,7 +23,7 @@ export default async ({
   NODE_ENV,
   envPrefix,
   outdir,
-}: BuildArgs): Promise<void> => {
+}: BuildParams): Promise<void> => {
   const logger = createLogger("BUILD_APP");
 
   // load env vars to be bundled in the code
@@ -28,9 +35,7 @@ export default async ({
     ...config,
     define: { process: processEnv },
     outfile: path.join(outdir, "bundle.js"),
-    write: true,
     sourcemap: true,
-    metafile: true,
   });
 
   logger.log("Build process successfully finished");

@@ -1,17 +1,27 @@
 import http from "http";
 import { createLogger } from "./lib/utils";
 
-/**
- * A HOF used to create a root listener for proxy server
- * @param targetHost final destination `hostname` of forwarded request
- * @param targetPort final destination `port` of forwarded request
- */
-const createProxyListener =
-  (targetHost: string, targetPort: number): http.RequestListener =>
-  async (req, res) => {
+interface DevServerArgs {
+  targetHost: string;
+  targetPort: number;
+  listenPort: number;
+  addClient: (res: http.ServerResponse) => void;
+}
+
+export default ({
+  targetHost,
+  targetPort,
+  listenPort,
+  addClient,
+}: DevServerArgs): Promise<void> => {
+  const proxy = http.createServer(async (req, res) => {
     // fail early if the `req.url` is not defined
     if (!req.url) return endWithStatusCode(res, 400);
 
+    // if SSE listener register and return
+    if (req.url === "/hmr") return addClient(res);
+
+    // for all else, forward request to dev server and pipe the response back
     const forwardReq = (path: string) => {
       const options: http.RequestOptions = {
         host: targetHost,
@@ -45,29 +55,16 @@ const createProxyListener =
     };
 
     return forwardReq(req.url!);
-  };
+  });
 
-interface DevServerArgs {
-  targetHost: string;
-  targetPort: number;
-  listenPort: number;
-}
-
-export default ({
-  targetHost,
-  targetPort,
-  listenPort,
-}: DevServerArgs): Promise<void> => {
-  const proxy = http.createServer(createProxyListener(targetHost, targetPort));
-
-  return new Promise<void>((res) =>
+  return new Promise<void>((res) => {
     proxy.listen(listenPort, "localhost", () => {
       createLogger("DEV_PROXY").log(
         `Listening to http://localhost:${listenPort} and forwarding requests to dev server (${targetHost}:${targetPort})`
       );
       res();
-    })
-  );
+    });
+  });
 };
 
 // #region utils
