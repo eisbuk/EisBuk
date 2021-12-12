@@ -129,17 +129,15 @@ jobs:
         run: "yarn --cwd eisbuk-admin lint:strict"
       - name: Lint eisbuk-shared
         # Do not run on cancelled; run in all other cases
-        # We don't want a failed prevoius lint step to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-shared lint:strict"
       - name: Lint the functions
-        # Do not run on cancelled; run in all other cases
-        # We don't want a failed prevoius lint step to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions lint:strict"
+      - name: Typecheck client app
+        if: success() || failure()
+        run: "yarn --cwd eisbuk-admin typecheck"
       - name: Typecheck the functions
-        # Do not run on cancelled; run in all other cases
-        # We don't want a failed lint steps to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions typecheck"
 

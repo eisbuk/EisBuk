@@ -17,3 +17,12 @@ export interface CLIArgs {
    */
   serve: boolean;
 }
+
+export interface BuildParams {
+  NODE_ENV: CLIArgs["NODE_ENV"];
+  envPrefix: CLIArgs["envPrefix"];
+  /**
+   * Full path to the output bundle dir
+   */
+  outdir: string;
+}

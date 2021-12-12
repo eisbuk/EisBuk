@@ -1,19 +1,11 @@
 import { build } from "esbuild";
 import path from "path";
 
+import { BuildParams } from "./lib/types";
 import config from "./lib/config";
+
 import loadEnv from "./lib/loadEnv";
 import { createLogger } from "./lib/utils";
-import { CLIArgs } from "./lib/types";
-
-export interface BuildParams {
-  NODE_ENV: CLIArgs["NODE_ENV"];
-  envPrefix: CLIArgs["envPrefix"];
-  /**
-   * Full path to the output bundle dir
-   */
-  outdir: string;
-}
 
 /**
  * Performs the (async) `esbuild` powered bundling process of our app

@@ -53,6 +53,7 @@
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
+    "typecheck": "tsc",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"

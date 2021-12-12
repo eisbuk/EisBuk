@@ -3,11 +3,12 @@ import { ServerResponse } from "http";
 import fs from "fs";
 import path from "path";
 
+import { BuildParams } from "./lib/types";
+
 import { createLogger } from "./lib/utils";
 import config from "./lib/config";
 import loadEnv from "./lib/loadEnv";
 
-import { BuildParams } from "./build";
 import createDevProxy from "./devProxy";
 
 /**
