@@ -32,9 +32,19 @@
     "**/@typescript-eslint/eslint-plugin": "^4.1.1",
     "**/@typescript-eslint/parser": "^4.1.1"
   },
-  "workspaces": [
-    "eisbuk-shared",
-    "eisbuk-admin",
-    "eisbuk-admin/functions"
-  ]
+  "workspaces": {
+    "packages": [
+      "eisbuk-shared",
+      "eisbuk-admin",
+      "eisbuk-admin/functions"
+    ],
+    "nohoist": [
+      "**/mochawesome",
+      "**/mochawesome/**",
+      "**/mocha",
+      "**/mocha/**",
+      "**/cypress",
+      "**/cypress/**"
+    ]
+  }
 }

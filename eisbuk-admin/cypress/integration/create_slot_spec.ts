@@ -10,26 +10,31 @@ import { AdminAria, SlotFormAria } from "@/enums/translations";
 
 const t = i18n.t;
 
-describe("Create slot", () => {
+const createSlotSpec = (config = { isMobile: false }) => {
   beforeEach(() => {
     cy.initAdminApp();
     cy.visit(PrivateRoutes.Root);
     cy.getAttrWith("aria-label", t(AdminAria.PageNav)).as("Page-Nav");
+    if (config.isMobile) {
+      cy.get("@Page-Nav").click();
+    } else {
+      cy.get("@Page-Nav").within(() => {
+        // TODO we should not be doing assertions in a beforeEach
+        // function. These assertions should be moved to their own
+        // test, maybe called "navigation".
+        cy.getAttrWith("href", PrivateRoutes.Root)
+          .should("have.attr", "aria-disabled", "true")
+          .and("have.attr", "aria-current", "page");
 
-    cy.get("@Page-Nav").within(() => {
-      cy.getAttrWith("href", PrivateRoutes.Root)
-        .should("have.attr", "aria-disabled", "true")
-        .and("have.attr", "aria-current", "page");
+        cy.getAttrWith("href", PrivateRoutes.Slots)
+          .should("have.attr", "aria-disabled", "false")
+          .and("have.attr", "aria-current", "false");
 
-      cy.getAttrWith("href", PrivateRoutes.Slots)
-        .should("have.attr", "aria-disabled", "false")
-        .and("have.attr", "aria-current", "false");
-
-      cy.getAttrWith("href", PrivateRoutes.Athletes)
-        .should("have.attr", "aria-disabled", "false")
-        .and("have.attr", "aria-current", "false");
-    });
-
+        cy.getAttrWith("href", PrivateRoutes.Athletes)
+          .should("have.attr", "aria-disabled", "false")
+          .and("have.attr", "aria-current", "false");
+      });
+    }
     cy.getAttrWith("href", PrivateRoutes.Slots).click();
 
     cy.getAttrWith("aria-label", t(AdminAria.ToggleSlotOperations)).as(
@@ -131,7 +136,6 @@ describe("Create slot", () => {
   });
 
   it("shows validation error for inconsistent period start/end", () => {
-    cy.visit(PrivateRoutes.Slots);
     cy.getAttrWith("type", "checkbox").click();
     cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
     cy.getAttrWith("value", SlotType.Ice).check();
@@ -145,4 +149,14 @@ describe("Create slot", () => {
       "Start time is greater than end time"
     );
   });
-});
+};
+
+const iphoneSe2 = {
+  viewportHeight: 667,
+  viewportWidth: 375,
+};
+
+describe("Create slot (mobile)", iphoneSe2, () =>
+  createSlotSpec({ isMobile: true })
+);
+describe("Create slot (desktop)", createSlotSpec);
