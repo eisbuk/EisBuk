@@ -61,3 +61,33 @@ export const jian: Customer = {
   secretKey: "000002",
   subscriptionNumber: "",
 };
+
+export const mike: Customer = {
+  id: "mike",
+  name: "Mike",
+  surname: "Ehrmantraut",
+  certificateExpiration: "2022-12-27",
+  category: Category.PreCompetitive,
+  email: "mike@ehrmantraut",
+  phone: "123456777",
+  birthday: "2022-12-27",
+  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
+  covidCertificateSuspended: false,
+  secretKey: "000022",
+  subscriptionNumber: "",
+};
+
+export const jane: Customer = {
+  id: "jane",
+  name: "Jane",
+  surname: "Margolis",
+  certificateExpiration: "2023-03-27",
+  category: Category.Adults,
+  email: "jane@margolis",
+  phone: "123456777",
+  birthday: "2009-12-23",
+  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
+  covidCertificateSuspended: false,
+  secretKey: "000222",
+  subscriptionNumber: "",
+};
