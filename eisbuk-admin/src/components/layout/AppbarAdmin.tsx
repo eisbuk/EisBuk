@@ -143,7 +143,6 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
-
           <BirthdayMenu customers={customers} />
         </Toolbar>
       </AppBar>
