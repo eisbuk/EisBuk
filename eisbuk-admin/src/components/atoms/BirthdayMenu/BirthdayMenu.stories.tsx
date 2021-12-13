@@ -3,13 +3,13 @@ import React from "react";
 import BirthdayMenu from "./BirthdayMenu";
 
 import { saul, walt } from "@/__testData__/customers";
-import { CustomerBirthday } from "eisbuk-shared/dist";
+import { CustomersByBirthday } from "eisbuk-shared/dist";
 
 export default {
   title: "Birthday Menu",
   component: BirthdayMenu,
 };
-const customers: CustomerBirthday[] = [
+const customers: CustomersByBirthday[] = [
   { birthday: "2020-12-12", customers: [saul, walt] },
 ];
 export const Default = (): JSX.Element => (

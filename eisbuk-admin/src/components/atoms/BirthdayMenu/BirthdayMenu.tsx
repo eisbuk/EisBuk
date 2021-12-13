@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { CustomerBirthday } from "eisbuk-shared";
+import { CustomersByBirthday } from "eisbuk-shared";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -10,7 +10,7 @@ import Cake from "@material-ui/icons/Cake";
 import { DateTime } from "luxon";
 
 interface Props {
-  customers: CustomerBirthday[];
+  customers: CustomersByBirthday[];
 }
 const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
