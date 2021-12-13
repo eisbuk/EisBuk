@@ -51,7 +51,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
               <MenuItem>
                 {customerBirthday === today ? "today" : customerBirthday}
               </MenuItem>
-              <Divider></Divider>
+              <Divider />
               {customer.customers.map(
                 (cus) =>
                   !cus.deleted && (
@@ -60,7 +60,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
                     </MenuItem>
                   )
               )}
-              <Divider></Divider>
+              <Divider />
             </div>
           );
         })}
