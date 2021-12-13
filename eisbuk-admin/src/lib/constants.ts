@@ -24,9 +24,10 @@ export const __organization__ = __isTest__
     // to make our lives easier (so that we don't have to mock organization)
     // the __organization__ in test environment will always have a value of __testOrganization__
     __testOrganization__
-  : window.location
-  ? getOrgFromLocation(window.location.hostname)
-  : "localhost";
+  : process.env.REACT_APP_EISBUK_SITE ||
+    (window.location
+      ? getOrgFromLocation(window.location.hostname)
+      : "localhost");
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =
