@@ -10,7 +10,7 @@ import Cake from "@material-ui/icons/Cake";
 import { DateTime } from "luxon";
 
 interface Props {
-  customers: CustomerBirthday;
+  customers: CustomerBirthday[];
 }
 const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
@@ -24,7 +24,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
-  const today = DateTime.now().toFormat("dd/MM");
+  const today = DateTime.now().toISODate().substring(5);
 
   return (
     <>
@@ -44,22 +44,22 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
           },
         }}
       >
-        {Object.keys(customers).map((customerBirthdayKey) => {
+        {customers.map((customer) => {
+          const customerBirthday = customer.birthday.substring(5);
           return (
-            <div key={customerBirthdayKey}>
+            <div key={customer.birthday}>
               <MenuItem>
-                {customerBirthdayKey === today ? "today" : customerBirthdayKey}
+                {customerBirthday === today ? "today" : customerBirthday}
               </MenuItem>
               <Divider></Divider>
-              {customers[customerBirthdayKey].map((customer) => {
-                return (
-                  !customer.deleted && (
-                    <MenuItem key={customer.id}>
-                      {`${customer.name} ${customer.surname}`}
+              {customer.customers.map(
+                (cus) =>
+                  !cus.deleted && (
+                    <MenuItem key={cus.id}>
+                      {`${cus.name} ${cus.surname}`}
                     </MenuItem>
                   )
-                );
-              })}
+              )}
               <Divider></Divider>
             </div>
           );
