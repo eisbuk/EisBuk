@@ -8,7 +8,7 @@ export default {
   title: "Birthday Menu",
   component: BirthdayMenu,
 };
-const customers = { "12-12-2020": [saul, walt] };
+const customers = [{ birthday: "2020-12-12", customers: [saul, walt] }];
 export const Default = (): JSX.Element => (
   <BirthdayMenu customers={customers} />
 );
