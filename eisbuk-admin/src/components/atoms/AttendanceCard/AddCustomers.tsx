@@ -115,8 +115,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   tableContainer: {
-    overflow: "auto",
-    maxHeight: "30rem",
+    overflowY: "auto",
+    overflowX: "hidden",
+    maxHeight: "calc(100vh - 14rem)",
   },
 }));
 

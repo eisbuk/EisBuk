@@ -53,7 +53,13 @@ const CustomersPage: React.FC = () => {
       <Grid item xs={12}>
         {
           // (isLoaded(customers) &&
-          !isEmpty(customers) && <CustomerList {...{ customers }} extended />
+          !isEmpty(customers) && (
+            <CustomerList
+              {...{ customers }}
+              tableContainerClassName={classes.tableContainer}
+              extended
+            />
+          )
           // )
         }
         <Fab
@@ -80,12 +86,11 @@ const useStyles = makeStyles((theme: ETheme) => ({
     backgroundColor: theme.palette.secondary.main,
     paddingBottom: theme.spacing(3),
   },
-  content: {
-    flexGrow: 1,
-    height: "100vh",
-    overflow: "auto",
+  tableContainer: {
+    height: "calc(100vh - 9rem)",
+    overflowX: "hidden",
+    overflowY: "auto",
   },
-
   fab: {
     position: "fixed",
     bottom: theme.spacing(5),
