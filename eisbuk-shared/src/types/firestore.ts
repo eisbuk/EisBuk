@@ -121,9 +121,12 @@ export interface Customer extends CustomerBase {
   subscriptionNumber?: string;
   deleted?: boolean;
 }
-
-export interface CustomerBirthday {
-  [birthday: string]: Customer[];
+/**
+ * Object with birthday prop and customer prop
+ */
+export interface CustomersByBirthday {
+  birthday: string;
+  customers: Customer[];
 }
 /**
  * Customer with loose data. The server generated ids (`id`, `secretKey`)
