@@ -30,34 +30,39 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
  * @param state Local Redux Store
  * @returns list of customers grouped by birthday
  */
-export const getCustomersWithBirthday = (
-  state: LocalStore
-): CustomerBirthday => {
-  const customersInStore = getCustomersRecord(state);
+export const getCustomersWithBirthday =
+  (date: DateTime) =>
+  (state: LocalStore): CustomerBirthday[] => {
+    const customersInStore = getCustomersRecord(state);
 
-  // find index of birthday thats >= todays date to slice at that and concat the rest at the end
-  const sortedCustomers = Object.values(customersInStore).sort((a, b) =>
-    DateTime.fromISO(a.birthday)
-      .set({ year: 2000 })
-      .toString()
-      .localeCompare(
-        DateTime.fromISO(b.birthday).set({ year: 2000 }).toString()
-      )
-  );
-  const index = sortedCustomers.findIndex(
-    (c) =>
-      DateTime.now().startOf("day").set({ year: 2000 }) <=
-      DateTime.fromISO(c.birthday).startOf("day").set({ year: 2000 })
-  );
-  const rearrangedCustomer = sortedCustomers
-    .slice(index === -1 ? 0 : index)
-    .concat(sortedCustomers.splice(0, index));
+    const customers: CustomerBirthday[] = [];
+    Object.values(customersInStore).forEach((customer) => {
+      const index = customers.findIndex(
+        (customerBirthday) => customerBirthday.birthday === customer.birthday
+      );
+      index !== -1
+        ? customers[index].customers.push(customer)
+        : customers.push({
+            birthday: customer.birthday,
+            customers: [customer],
+          });
+    });
+    const sortedCustomers = customers.sort((a, b) =>
+      DateTime.fromISO(a.birthday)
+        .set({ year: 2000 })
+        .toString()
+        .localeCompare(
+          DateTime.fromISO(b.birthday).set({ year: 2000 }).toString()
+        )
+    );
+    const index = sortedCustomers.findIndex(
+      (c) =>
+        date.startOf("day").set({ year: 2000 }) <=
+        DateTime.fromISO(c.birthday).startOf("day").set({ year: 2000 })
+    );
+    const rearrangedCustomers = sortedCustomers
+      .slice(index === -1 ? 0 : index)
+      .concat(index === -1 ? [] : sortedCustomers.slice(0, index));
 
-  return rearrangedCustomer.reduce(
-    (r, v, i, a, k = DateTime.fromISO(v.birthday).toFormat("dd/MM")) => (
-      // eslint-disable-next-line
-      (r[k] || (r[k] = [])).push(v), r
-    ),
-    {}
-  );
-};
+    return rearrangedCustomers;
+  };

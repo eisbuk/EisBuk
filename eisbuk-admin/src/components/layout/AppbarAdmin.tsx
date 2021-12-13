@@ -36,6 +36,7 @@ import { signOut } from "@/store/actions/authOperations";
 import { getLocalAuth } from "@/store/selectors/auth";
 import BirthdayMenu from "../atoms/BirthdayMenu/BirthdayMenu";
 import { getCustomersWithBirthday } from "@/store/selectors/customers";
+import { DateTime } from "luxon";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -49,7 +50,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
 
   const userAuthInfo = useSelector(getLocalAuth);
 
-  const customers = useSelector(getCustomersWithBirthday);
+  const customers = useSelector(getCustomersWithBirthday(DateTime.now()));
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
