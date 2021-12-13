@@ -1,4 +1,4 @@
-import { Customer, CustomerBirthday } from "eisbuk-shared";
+import { Customer, CustomersByBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 import { DateTime } from "luxon";
@@ -25,17 +25,17 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
 };
 
 /**
- * Get a list of all the customers whose birthdays are today
+ * Creates a selector that gets a list of all the customers whose birthdays are today
  * (not an actual firestore query but rather synced local store entry)
- * @param state Local Redux Store
- * @returns list of customers grouped by birthday
+ * @param date DateTime to use as "today"
+ * @returns selector to get a list of customers grouped by birthday
  */
 export const getCustomersWithBirthday =
   (date: DateTime) =>
-  (state: LocalStore): CustomerBirthday[] => {
+  (state: LocalStore): CustomersByBirthday[] => {
     const customersInStore = getCustomersRecord(state);
 
-    const customers: CustomerBirthday[] = [];
+    const customers: CustomersByBirthday[] = [];
     Object.values(customersInStore).forEach((customer) => {
       const index = customers.findIndex(
         (customerBirthday) => customerBirthday.birthday === customer.birthday
