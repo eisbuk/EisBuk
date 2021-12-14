@@ -21,6 +21,7 @@
     "i18next-http-backend": "^1.2.6",
     "luxon": "^2.0.2",
     "moment": "^2.27.0",
+    "node-mailer": "^0.1.1",
     "notistack": "^1.0.0",
     "react": "^16.13.1",
     "react-app-rewire-alias": "^1.0.3",

@@ -6,12 +6,34 @@ import {
 } from "../enums/firestore";
 
 // #region organizations
+/**
+ * A config to be used for mail service, including mailing server
+ * config as well as message template
+ */
+export interface OrgMailConfig {
+  /**
+   * SMTP transporter config for nodemailer
+   */
+  config: {
+    host: string;
+    port: string;
+    auth: { user: string; pass: string };
+  };
+  /**
+   * Template data for all emails sent from organization
+   */
+  template: {
+    from: string;
+    subject: string;
+  };
+}
 
 /**
- * Metadata record included in each organization (other than nested collections)
+ * Organization data record included in each organization (other than nested collections)
  */
-export interface OrganizationMeta {
+export interface OrganizationData {
   admins: string[];
+  mailConfig: OrgMailConfig;
 }
 
 // #endregion organizations
@@ -209,7 +231,7 @@ export type SlotAttendnace = {
  */
 export interface FirestoreSchema {
   [Collection.Organizations]: {
-    [organization: string]: OrganizationMeta & {
+    [organization: string]: OrganizationData & {
       [OrgSubCollection.Slots]: { [slotId: string]: SlotInterface };
       [OrgSubCollection.SlotsByDay]: {
         [monthStr: string]: SlotsByDay;
