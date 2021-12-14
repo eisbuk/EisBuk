@@ -31,7 +31,7 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
  * @returns selector to get a list of customers grouped by birthday
  */
 export const getCustomersWithBirthday =
-  (date: DateTime) =>
+  (date: string) =>
   (state: LocalStore): CustomersByBirthday[] => {
     const customersInStore = getCustomersRecord(state);
 
@@ -56,9 +56,7 @@ export const getCustomersWithBirthday =
         )
     );
     const index = sortedCustomers.findIndex(
-      (c) =>
-        date.startOf("day").toString().substring(5) <=
-        DateTime.fromISO(c.birthday).startOf("day").toString().substring(5)
+      (c) => date.substring(5) <= c.birthday.substring(5)
     );
     const rearrangedCustomers = sortedCustomers
       .slice(index === -1 ? 0 : index)
