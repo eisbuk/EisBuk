@@ -50,7 +50,9 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
 
   const userAuthInfo = useSelector(getLocalAuth);
 
-  const customers = useSelector(getCustomersWithBirthday(DateTime.now()));
+  const customers = useSelector(
+    getCustomersWithBirthday(DateTime.now().toISODate())
+  );
 
   const handleClick: React.MouseEventHandler<HTMLSpanElement> = (e) => {
     setAnchorEl(e.currentTarget);
