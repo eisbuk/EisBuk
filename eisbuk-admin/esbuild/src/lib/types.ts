@@ -1,21 +1,37 @@
 export interface CLIArgs {
   /**
+   * NODE_ENV parsed from `--mode` CLI option:
    * `"development"` | `"storybook"` | `"test"` | `"production"`
+   * @default "development"
    */
   NODE_ENV: string;
   /**
-   * Prefix for env vars
+   * Bundler mode: "build" | "serve"
+   * @default "build"
+   */
+  mode: "build" | "serve";
+  /**
+   * Prefix used to filter (pick) env vars.
+   * @default "REACT_APP"
    */
   envPrefix: string;
   /**
-   * Path to output dir of the entire content (bundle will be added into `/app` dir within that directory)
+   * Path (relative to rootdir) to output dir of the entire content (bundle will be added into `/app` dir within that directory)
+   * @default "dist"
    */
   distpath: string;
   /**
-   * A boolean flag used to determine which flow to use.
-   * If `true` we're using `serve` if `false` using `build`
+   * Path (relative to rootdir) to template files (index.html, manifest.json, etc.) to copy
+   * to dispath directory
+   * @default "public"
    */
-  serve: boolean;
+  publicpath: string;
+  /**
+   * A boolean flag to enable/disable reload signals from dev server.
+   * Ignored in build mode.
+   * @default true
+   */
+  hotReload: boolean;
 }
 
 export interface BuildParams {
@@ -25,4 +41,13 @@ export interface BuildParams {
    * Full path to the output bundle dir
    */
   outdir: string;
+}
+
+export interface ServeParams extends BuildParams {
+  hotReload: CLIArgs["hotReload"];
+  /**
+   * A directory from which the esbuild server will serve content.
+   * Should be equal to `distpath` (since all of the static files will be copied there)
+   */
+  servedir: string;
 }

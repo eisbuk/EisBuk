@@ -3,7 +3,7 @@ import { ServerResponse } from "http";
 import fs from "fs";
 import path from "path";
 
-import { BuildParams } from "./lib/types";
+import { ServeParams } from "./lib/types";
 
 import { createLogger } from "./lib/utils";
 import config from "./lib/config";
@@ -31,7 +31,8 @@ export default async ({
   envPrefix,
   outdir,
   servedir,
-}: BuildParams & { servedir: string }): Promise<void> => {
+  hotReload,
+}: ServeParams): Promise<void> => {
   const processEnv = await loadEnv(process.cwd(), NODE_ENV, envPrefix);
 
   // create a development build
@@ -40,12 +41,10 @@ export default async ({
     define: { process: processEnv },
     outfile: path.join(outdir, "bundle.js"),
     sourcemap: true,
-    banner: {
-      js: `(() => new EventSource("/hmr").onmessage = () => location.reload())();`,
-    },
     watch: {
       onRebuild:
         // send SSE rebuild signal to each of the clients on rebuild
+        // if `hotReload` disabled, this will have no effect
         () => {
           // send update signal to each client
           clients.forEach((res) => res.write("data: update\n\n"));
@@ -53,6 +52,17 @@ export default async ({
           clients.length = 0;
         },
     },
+
+    // add hot reload option if
+    ...(hotReload
+      ? {
+          banner: {
+            // add the following script to the top of our bundle in order to subscribe to dev server
+            // for reload SSE message
+            js: `(() => new EventSource("/hmr").onmessage = () => location.reload())();`,
+          },
+        }
+      : {}),
   });
 
   // create a dev server with esbuild
