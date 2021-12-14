@@ -2,6 +2,7 @@ import { build, serve } from "esbuild";
 import { ServerResponse } from "http";
 import fs from "fs";
 import path from "path";
+import { spawn } from "child_process";
 
 import { ServeParams } from "./lib/types";
 
@@ -77,12 +78,25 @@ export default async ({
   );
 
   // create a proxy server forwarding to dev server and sending
-  createDevProxy({
+  await createDevProxy({
     targetHost,
     targetPort,
     listenPort: 3000,
     addClient,
   });
+
+  // open the default browser only if it is not opened yet
+  setTimeout(() => {
+    const open = {
+      darwin: ["open"],
+      linux: ["xdg-open"],
+      win32: ["cmd", "/c", "start"],
+    } as Record<NodeJS.Platform, string[]>;
+    const ptf = process.platform;
+    if (clients.length === 0) {
+      spawn(open[ptf][0], [...open[ptf].slice(1), `http://localhost:3000`]);
+    }
+  }, 1000);
 
   process.on("SIGINT", () => {
     stopDevServer();
