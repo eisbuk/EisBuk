@@ -11,8 +11,7 @@ import { __testOrganization__ } from "@/__testSetup__/envData";
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
-// env info variable
-// this will return true if env is "test" as well or if the `BUILD_ENV` variable has a value
+// env info variable (production, storybook, test, etc)
 export const __isDev__ = process.env.NODE_ENV !== "production";
 
 // check for explicit "test" environment
