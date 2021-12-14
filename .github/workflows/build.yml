@@ -18,8 +18,9 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Build app
@@ -89,8 +90,9 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Run tests
@@ -121,8 +123,9 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-v14-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
       - name: Install and link packages
         run: yarn
       - name: Lint client app
@@ -154,11 +157,15 @@ jobs:
         with:
           path: |
             **/node_modules
+            node_modules
             $HOME/.cache/firebase/emulators
             $HOME/.cache/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-v14-${{ hashFiles('**/yarn.lock') }}
+            $HOME/Library/Caches/Cypress
+          key: ${{ runner.os }}-modules-emulators-cypress-node14-v1-${{ hashFiles('**/yarn.lock') }}
+
       - name: Install dependencies
         run: yarn
+
       - name: Build app
         run: yarn --cwd eisbuk-admin build:test
       - name: Cypress run
@@ -168,9 +175,58 @@ jobs:
           working-directory: eisbuk-admin
           wait-on: http://localhost:8080, http://localhost:5000
           record: true
+          config-file: cypress-ci.json
         env:
           # pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CYPRESS_BASE_URL: http://localhost:5000
+
+      - name: Create file with gcloud cretentials
+        if: success() || failure()
+        # To make sure the file contents are not manipulated by the github infrastructure
+        # they're encoded using base64. Here we decode them.
+        # A downside of this approach is that we don't get the default
+        # protection in case of accidental printing of the secret file.
+        run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+
+      - name: Set destination of test results
+        if: success() || failure()
+        run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+        id: results-destination
+
+      - name: Install rclone
+        if: success() || failure()
+        run: |
+          curl https://rclone.org/install.sh | sudo bash
+          mkdir -p ~/.config/rclone
+          echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+        env:
+          RCLONE_CONF: |
+            [gcloud]
+            type = google cloud storage
+            service_account_file = ${{ github.workspace }}/.gcloud.json
+            object_acl = publicRead
+            bucket_acl = publicRead
+            bucket_policy_only = true
+
+      - name: Copy test results to gcloud
+        if: success() || failure()
+        run: |
+          rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
+
+      - name: Print gcloud url to view test results
+        if: success() || failure()
+        run: |
+          mkdir result_tabs
+          echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
+          echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html > result_tabs/cypress.md
+
+      - name: "Create cypress browser logs summaries"
+        if: success() || failure()
+        # Create summeries
+        uses: eisbuk/custom-check-summary@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          FILE_DIR: result_tabs
+          SUMMARY_TITLE: "Cypress results"
