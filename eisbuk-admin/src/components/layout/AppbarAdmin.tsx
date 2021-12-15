@@ -138,7 +138,10 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             </ButtonGroup>
           </Hidden>
           <Hidden smUp>
-            <Button onClick={() => setDrawerOpen(drawerOpen ? false : true)}>
+            <Button
+              onClick={() => setDrawerOpen(drawerOpen ? false : true)}
+              aria-label={t(AdminAria.PageNav)}
+            >
               <MenuIcon />
             </Button>
           </Hidden>

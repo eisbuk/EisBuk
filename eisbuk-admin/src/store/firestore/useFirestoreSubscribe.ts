@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useDispatch } from "react-redux";
 import { useEffect, useMemo, useRef } from "react";
 import { v4 as uuid } from "uuid";

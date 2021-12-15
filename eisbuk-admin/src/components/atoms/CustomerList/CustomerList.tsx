@@ -111,9 +111,6 @@ const SearchField: React.FC<{
 
 // #region styles
 const useStyles = makeStyles(() => ({
-  tableHeadRow: {
-    height: "3rem",
-  },
   searchLeft: {
     margin: "1rem 2rem",
   },
@@ -123,6 +120,9 @@ const useStyles = makeStyles(() => ({
     "& .MuiOutlinedInput-root": {
       boxShadow: "0.125rem 0.125rem 0.25rem rgba(0, 0, 0, 0.2)",
     },
+  },
+  tableHeadRow: {
+    height: "3rem",
   },
   tableContainer: {
     overflow: "auto",

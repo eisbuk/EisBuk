@@ -62,7 +62,6 @@ const AddCustomersList: React.FC<Props> = ({
     if (!filteredCustomers || !filteredCustomers.length) {
       onClose();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredCustomers]);
 
   return (
@@ -115,8 +114,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(255, 255, 255, 0.6)",
   },
   tableContainer: {
-    overflow: "auto",
-    maxHeight: "30rem",
+    overflowY: "auto",
+    overflowX: "hidden",
+    maxHeight: "calc(100vh - 14rem)",
   },
 }));
 

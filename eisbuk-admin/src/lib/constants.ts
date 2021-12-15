@@ -11,12 +11,8 @@ import { __testOrganization__ } from "@/__testSetup__/envData";
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
-// env info variable
-// this will return true if env is "test" as well or if the `BUILD_ENV` variable has a value
-export const __isDev__ =
-  process.env.NODE_ENV !== "production" ||
-  (Boolean(process.env.REACT_APP_BUILD_ENV) &&
-    process.env.REACT_APP_BUILD_ENV !== "production");
+// env info variable (production, storybook, test, etc)
+export const __isDev__ = process.env.NODE_ENV !== "production";
 
 // check for explicit "test" environment
 export const __isTest__ = process.env.NODE_ENV === "test";
@@ -27,14 +23,15 @@ export const __organization__ = __isTest__
     // to make our lives easier (so that we don't have to mock organization)
     // the __organization__ in test environment will always have a value of __testOrganization__
     __testOrganization__
-  : window.location
-  ? getOrgFromLocation(window.location.hostname)
-  : "localhost";
+  : process.env.REACT_APP_EISBUK_SITE ||
+    (window.location
+      ? getOrgFromLocation(window.location.hostname)
+      : "localhost");
 
 // variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
 export const __firebaseApiKey__ =
-  process.env.NODE_ENV === "test"
-    ? "test"
+  process.env.NODE_ENV !== "production"
+    ? "api-key"
     : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
