@@ -13,8 +13,13 @@ import { defaultUser } from "@/__testSetup__/envData";
 /* Test util: loggs in with default user's email ("test@example.com")
  * @returns
  */
-export const loginDefaultUser = (): Promise<UserCredential> =>
-  signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password);
+export const loginDefaultUser = (): Promise<UserCredential> => {
+  return signInWithEmailAndPassword(
+    auth,
+    defaultUser.email,
+    defaultUser.password
+  );
+};
 
 /**
  * @param email

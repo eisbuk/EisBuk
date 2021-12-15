@@ -16,7 +16,7 @@ export interface OrgMailConfig {
    */
   config: {
     host: string;
-    port: string;
+    port: number;
     auth: { user: string; pass: string };
   };
   /**

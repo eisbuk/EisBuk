@@ -17,4 +17,5 @@ export enum PrivateRoutes {
   Root = "/",
   Athletes = "/athletes",
   Slots = "/slots",
+  AdminPreferences = "/admin_preferences",
 }

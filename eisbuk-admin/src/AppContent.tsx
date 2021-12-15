@@ -18,6 +18,7 @@ import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
+import AdminPreferences from "@/pages/admin_preferences";
 
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
@@ -54,6 +55,10 @@ const AppContent: React.FC = () => {
         <PrivateRoute
           path={Routes.AttendancePrintable}
           component={AttendancePrintable}
+        />
+        <PrivateRoute
+          path={PrivateRoutes.AdminPreferences}
+          component={AdminPreferences}
         />
 
         <Route

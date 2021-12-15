@@ -1,7 +1,7 @@
 import * as firestore from "@firebase/firestore";
 import { doc } from "@firebase/firestore";
 
-import { Collection } from "eisbuk-shared";
+import { Collection, OrganizationData } from "eisbuk-shared";
 
 import { db } from "@/__testSetup__/firestoreSetup";
 
@@ -45,7 +45,7 @@ describe("Firestore subscription handlers", () => {
       const initialOrganizations: FirestoreData[Collection.Organizations] = {
         ["dummy-organization"]: {
           admins: ["dummy-organization-admin", "dummy-organization-admin"],
-        },
+        } as OrganizationData,
       };
       const newOrgName = "new-orgnization";
       const newOrganizationEntry = {

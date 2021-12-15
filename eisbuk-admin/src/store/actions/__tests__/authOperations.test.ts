@@ -1,16 +1,17 @@
 import { User } from "@firebase/auth";
 
-import { Collection } from "eisbuk-shared";
+import { Collection, OrganizationData } from "eisbuk-shared";
 
 import { defaultUser } from "@/__testSetup__/envData";
 
 import { __organization__ } from "@/lib/constants";
 
+import { Action } from "@/enums/store";
+
 import { revalidateAdminStatus, updateAuthUser } from "../authOperations";
 import { updateLocalColl } from "@/store/actions/firestoreOperations/actionCreators";
 
 import { getNewStore } from "@/store/createStore";
-import { Action } from "@/enums/store";
 
 // a minimalist dummy entry for a user
 const testUser: User = { uid: "some uuid", email: defaultUser.email } as User;
@@ -29,7 +30,7 @@ describe("Auth operations", () => {
     const { dispatch } = testStore;
     dispatch(
       updateLocalColl(Collection.Organizations, {
-        [__organization__]: { admins: [defaultUser.email] },
+        [__organization__]: { admins: [defaultUser.email] } as OrganizationData,
       })
     );
   });

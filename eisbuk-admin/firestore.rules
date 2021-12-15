@@ -37,6 +37,7 @@ service cloud.firestore {
         );
     }
     match /organizations/{organization} {
+      allow create, update: if isAdmin(organization);
       match /{document=**} {
         // Administrators can read and delete any object in the organization
         // for complete write (create/update) we're checking the validity of data at document level

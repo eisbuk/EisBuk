@@ -17,7 +17,7 @@ import {
   BookingSubCollection,
   Collection,
   CustomerBase,
-  OrganizationMeta,
+  OrganizationData,
   OrgSubCollection,
   SlotsByDay,
 } from "eisbuk-shared";
@@ -246,7 +246,7 @@ export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
   const docRef = doc(getFirestore(), getOrgPath());
 
   return onSnapshot(docRef, (snapshot) => {
-    const update = { [snapshot.id]: snapshot.data() as OrganizationMeta };
+    const update = { [snapshot.id]: snapshot.data() as OrganizationData };
     dispatch(updateLocalColl(Collection.Organizations, update, true));
   });
 };

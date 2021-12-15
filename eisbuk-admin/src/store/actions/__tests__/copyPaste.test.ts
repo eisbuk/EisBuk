@@ -195,7 +195,7 @@ describe("Copy Paste actions", () => {
     );
 
     testWithEmulator(
-      "should dispatch 'setSlotDayToClipboard' with appropriate slots",
+      "should show error message on unsuccessful update operation",
       async () => {
         // intentionally cause error
         getFirebaseSpy.mockImplementationOnce(() => {
