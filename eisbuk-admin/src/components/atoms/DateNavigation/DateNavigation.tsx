@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";

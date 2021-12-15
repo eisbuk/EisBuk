@@ -42,7 +42,6 @@ const SelectCategories: React.FC = () => {
     } else {
       setDisabled(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slotType]);
 
   return (

@@ -37,7 +37,6 @@ jobs:
           REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
-          BUILD_ENV: "" # Workaround for a bug that will be fixed soon, but not quite yet
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
       - name: Deploy preview channel
@@ -133,17 +132,15 @@ jobs:
         run: "yarn --cwd eisbuk-admin lint:strict"
       - name: Lint eisbuk-shared
         # Do not run on cancelled; run in all other cases
-        # We don't want a failed prevoius lint step to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-shared lint:strict"
       - name: Lint the functions
-        # Do not run on cancelled; run in all other cases
-        # We don't want a failed prevoius lint step to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions lint:strict"
+      - name: Typecheck client app
+        if: success() || failure()
+        run: "yarn --cwd eisbuk-admin typecheck"
       - name: Typecheck the functions
-        # Do not run on cancelled; run in all other cases
-        # We don't want a failed lint steps to make this step not run
         if: success() || failure()
         run: "yarn --cwd eisbuk-admin/functions typecheck"
 
@@ -170,11 +167,7 @@ jobs:
         run: yarn
 
       - name: Build app
-        run: yarn --cwd eisbuk-admin build
-        env:
-          # Instruct the app this is going to be a dev build
-          REACT_APP_BUILD_ENV: test
-
+        run: yarn --cwd eisbuk-admin build:test
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:

@@ -36,12 +36,13 @@
     "yup": "0.32.9"
   },
   "scripts": {
-    "start": "react-app-rewired start",
-    "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app NODE_ENV=production react-app-rewired start --reset-cache",
-    "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app NODE_ENV=production react-app-rewired start --reset-cache",
     "emulators:inspect": "bash -c '(trap \"kill 0\" SIGINT; ./functions/build_scripts/watch.js & firebase emulators:start --project eisbuk --inspect-functions 9229)'",
     "emulators:start": "bash -c '(trap \"kill 0\" SIGINT; ./functions/build_scripts/watch.js & firebase emulators:start --project eisbuk)'",
-    "build": "react-app-rewired build",
+    "build": "node esbuild/bundler.js --NODE_ENV production",
+    "build:test": "node esbuild/bundler.js --NODE_ENV test",
+    "start": "node esbuild/bundler.js --mode serve",
+    "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app node esbuild/bundler.js --NODE_ENV production --mode serve",
+    "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app node esbuild/bundler.js --NODE_ENV production --mode serve",
     "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ./functions/build_scripts/watch.js & firebase -c firebase-testing.json  emulators:exec --project eisbuk -- \"yarn jest --watch --runInBand src\")'",
     "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ./functions/build_scripts/watch.js & firebase -c firebase-testing.json  emulators:exec --project eisbuk -- \"yarn jest --ci --reporters=default --reporters=jest-junit --collect-coverage --forceExit --runInBand\")'",
     "test:quicktest": "echo Running tests with no emulators support && yarn jest --watch --env=jest-environment-jsdom-sixteen src",
@@ -51,6 +52,7 @@
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
+    "typecheck": "tsc",
     "eject": "react-scripts eject",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
@@ -87,7 +89,7 @@
     "@types/jest": "^26.0.23",
     "@types/lodash": "^4.14.170",
     "@types/luxon": "^2.0.5",
-    "@types/node": "^12.0.0",
+    "@types/node": "^16.11.10",
     "@types/p-retry": "^3.0.1",
     "@types/react": "^17.0.13",
     "@types/react-dom": "^17.0.8",
@@ -105,6 +107,9 @@
     "cypress": "^8.7.0",
     "cypress-mochawesome-reporter": "^2.3.0",
     "debugging-aid": "^0.5.3",
+    "dotenv": "^10.0.0",
+    "esbuild": "^0.13.15",
+    "esbuild-plugin-svgr": "^0.0.3",
     "eslint": "^7.31.0",
     "eslint-config-google": "^0.14.0",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -125,6 +130,7 @@
     "storybook-addon-material-ui": "^0.9.0-alpha.22",
     "storybook-react-router": "^1.0.8",
     "ts-jest": "^24.3.0",
+    "ts-node": "^10.4.0",
     "typescript": "~4.4.2"
   },
   "jest": {

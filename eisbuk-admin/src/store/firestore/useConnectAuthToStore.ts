@@ -35,12 +35,10 @@ export default (auth: Auth, store: Store<LocalStore, any>): void => {
     if (organizations && !isEmpty(organizations)) {
       dispatch(revalidateAdminStatus);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [organizations]);
 
   // set listener to user's auth state and update auth in redux
   useEffect(() => {
     onAuthStateChanged(auth, (user) => dispatch(updateAuthUser(user)));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 };
