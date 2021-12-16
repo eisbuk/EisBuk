@@ -1,7 +1,6 @@
 import { Customer, CustomersByBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
-import { DateTime } from "luxon";
 
 /**
  * Get a record of all the customers for current organization from firebase store
@@ -48,12 +47,7 @@ export const getCustomersWithBirthday =
           });
     });
     const sortedCustomers = customers.sort((a, b) =>
-      DateTime.fromISO(a.birthday)
-        .set({ year: 2000 })
-        .toString()
-        .localeCompare(
-          DateTime.fromISO(b.birthday).set({ year: 2000 }).toString()
-        )
+      a.birthday.substring(5).localeCompare(b.birthday.substring(5))
     );
     const index = sortedCustomers.findIndex(
       (c) => date.substring(5) <= c.birthday.substring(5)
