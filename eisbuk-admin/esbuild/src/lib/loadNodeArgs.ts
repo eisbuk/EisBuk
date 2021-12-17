@@ -4,7 +4,7 @@ import { CLIArgs } from "../lib/types";
 
 import { createLogger, kebabToCamel } from "./utils";
 
-import { NodeEnv, Mode } from "./enums";
+import { NodeEnv, Mode, DeployStage } from "./enums";
 
 /**
  * Loads node args passed from CLI
@@ -14,7 +14,6 @@ export default (): CLIArgs => {
   const logger = createLogger("ARGV");
 
   const whitelistedOptions = [
-    "NODE_ENV",
     "mode",
     "env-prefix",
     "distpath",
@@ -39,7 +38,6 @@ export default (): CLIArgs => {
       return { ...acc, [option]: args[i + 1] };
     },
     {
-      NODE_ENV: "",
       mode: "",
       envPrefix: "",
       distpath: "",
@@ -47,23 +45,6 @@ export default (): CLIArgs => {
       hotReload: "",
     }
   );
-
-  // check arg for `NODE_ENV` and fallback to "development" if needed
-  let NODE_ENV: NodeEnv = NodeEnv.Development;
-
-  const nodeEnvWhitelist = Object.values(NodeEnv);
-  const nodeEnvInvalid = !nodeEnvWhitelist.includes(
-    parsedArgs.NODE_ENV as NodeEnv
-  );
-
-  if (!parsedArgs.NODE_ENV) {
-    logger.log(`NODE_ENV not specified, using "${NODE_ENV}" as default`);
-  } else if (nodeEnvInvalid) {
-    logger.log(`Invalid value for NODE_ENV, using "${NODE_ENV}" as default`);
-  } else {
-    NODE_ENV = parsedArgs.NODE_ENV as NodeEnv;
-    logger.log(`Using provided value for NODE_ENV: "${NODE_ENV}"`);
-  }
 
   // check `mode` arg and fallback to "build" if not provided
   let mode: Mode = Mode.Build;
@@ -125,5 +106,45 @@ export default (): CLIArgs => {
     logger.log(`Hot reload set to '${hotReload}'`);
   }
 
-  return { envPrefix, distpath, NODE_ENV, mode, hotReload, publicpath };
+  // check for `NODE_ENV` and apply a fallback if needed
+  let NODE_ENV: NodeEnv = process.env.NODE_ENV as NodeEnv;
+
+  const nodeEnvWhitelist = Object.values(NodeEnv);
+  const nodeEnvInvalid = !nodeEnvWhitelist.includes(NODE_ENV);
+
+  if (!NODE_ENV) {
+    NODE_ENV = mode === Mode.Serve ? NodeEnv.Development : NodeEnv.Production;
+    logger.log(`NODE_ENV not specified, using "${NODE_ENV}" as default`);
+  } else if (nodeEnvInvalid) {
+    NODE_ENV = mode === Mode.Serve ? NodeEnv.Development : NodeEnv.Production;
+    logger.log(`Invalid value for NODE_ENV, using "${NODE_ENV}" as default`);
+  }
+
+  // check for `DEPLOY_STAGE` and apply a fallback if needed
+  let DEPLOY_STAGE: DeployStage = process.env.NODE_ENV as DeployStage;
+
+  const deployStageWhitelist = Object.values(DeployStage);
+  const deployStageInvalid = !deployStageWhitelist.includes(DEPLOY_STAGE);
+
+  if (!DEPLOY_STAGE) {
+    DEPLOY_STAGE = NODE_ENV as any;
+    logger.log(
+      `DEPLOY_STAGE not specified, using "${DEPLOY_STAGE}" as default`
+    );
+  } else if (deployStageInvalid) {
+    DEPLOY_STAGE = NODE_ENV as any;
+    logger.log(
+      `Invalid value for DEPLOY_STAGE, using "${DEPLOY_STAGE}" as default`
+    );
+  }
+
+  return {
+    envPrefix,
+    distpath,
+    NODE_ENV,
+    DEPLOY_STAGE,
+    mode,
+    hotReload,
+    publicpath,
+  };
 };

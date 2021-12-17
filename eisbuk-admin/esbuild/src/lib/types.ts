@@ -1,15 +1,28 @@
+import { DeployStage, Mode, NodeEnv } from "./enums";
+
 export interface CLIArgs {
   /**
-   * NODE_ENV parsed from `--mode` CLI option:
-   * `"development"` | `"storybook"` | `"test"` | `"production"`
-   * @default "development"
+   * Node's NODE_ENV variable
+   * @default
+   * - "production" for "build" mode
+   * - "development" for "serve" mode
    */
-  NODE_ENV: string;
+  NODE_ENV: NodeEnv;
+  /**
+   * Env variable we're using to  provide different stage of deployment (environment)
+   * without extending (messing up) default NODE_ENV values.
+   *
+   * Why not to use NODE_ENV for this:
+   * https://rafaelalmeidatk.com/blog/why-you-should-not-use-a-custom-value-with-node-env
+   *
+   * @default =NODE_ENV
+   */
+  DEPLOY_STAGE: DeployStage;
   /**
    * Bundler mode: "build" | "serve"
    * @default "build"
    */
-  mode: "build" | "serve";
+  mode: Mode;
   /**
    * Prefix used to filter (pick) env vars.
    * @default "REACT_APP"
@@ -35,12 +48,14 @@ export interface CLIArgs {
 }
 
 export interface BuildParams {
-  NODE_ENV: CLIArgs["NODE_ENV"];
-  envPrefix: CLIArgs["envPrefix"];
   /**
    * Full path to the output bundle dir
    */
   outdir: string;
+  /**
+   * Stringified JSON of process.env variables
+   */
+  processEnv: string;
 }
 
 export interface ServeParams extends BuildParams {
