@@ -121,7 +121,7 @@ export default (): CLIArgs => {
   }
 
   // check for `DEPLOY_STAGE` and apply a fallback if needed
-  let DEPLOY_STAGE: DeployStage = process.env.NODE_ENV as DeployStage;
+  let DEPLOY_STAGE: DeployStage = process.env.DEPLOY_STAGE as DeployStage;
 
   const deployStageWhitelist = Object.values(DeployStage);
   const deployStageInvalid = !deployStageWhitelist.includes(DEPLOY_STAGE);
@@ -136,6 +136,8 @@ export default (): CLIArgs => {
     logger.log(
       `Invalid value for DEPLOY_STAGE, using "${DEPLOY_STAGE}" as default`
     );
+  } else {
+    logger.log(`Using "${DEPLOY_STAGE}" as DEPLOY_STAGE`);
   }
 
   return {
