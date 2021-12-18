@@ -74,9 +74,13 @@ service cloud.firestore {
         // the dates (birthday, certificateExpiration, covidCertificateReleaseDate)
         // as valid ISO strings
         allow create, update: if isAdmin(organization)
-          && checkValidDate(request.resource.data.birthday)
           // the following fields are optional
           // we're checking for date validity only if the field is defined
+          && (
+            !("birthday" in request.resource.data)
+            || request.resource.data.birthday == ""
+            || checkValidDate(request.resource.data.birthday)
+          )
           && (
             !("certificateExpiration" in request.resource.data)
             || checkOptionalValidDate(request.resource.data.certificateExpiration)

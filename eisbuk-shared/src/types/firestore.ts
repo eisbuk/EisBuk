@@ -112,7 +112,7 @@ export interface CustomerBase {
  */
 export interface Customer extends CustomerBase {
   secretKey: string;
-  birthday: string;
+  birthday?: string;
   email: string;
   phone: string;
   certificateExpiration?: string;

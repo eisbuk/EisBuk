@@ -37,7 +37,8 @@ export const getCustomersWithBirthday =
     const customersByBirthday: CustomersByBirthday[] = [];
     Object.values(customersInStore).forEach((customer) => {
       // we're using just the (mm/dd) date without the year
-      const trimmedBirthday = customer.birthday.substring(5);
+      const trimmedBirthday =
+        customer.birthday?.substring(5) || ""; /** Very @TEMP */
       const index = customersByBirthday.findIndex(
         (entry) => entry.birthday === trimmedBirthday
       );

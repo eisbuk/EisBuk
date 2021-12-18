@@ -71,7 +71,7 @@ const CustomerList: React.FC<Props> = ({
                   searchRegex.test(customer.surname)) &&
                 !customer.deleted && (
                   <CustomerListItem
-                    key={customer.id}
+                    key={customer.id || "temp"}
                     onClick={onCustomerClick}
                     {...{ ...customer, extended }}
                   />
