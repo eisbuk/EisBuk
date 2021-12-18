@@ -1,9 +1,10 @@
 import React from "react";
 
+import { CustomersByBirthday } from "eisbuk-shared";
+
 import BirthdayMenu from "./BirthdayMenu";
 
 import { saul, walt } from "@/__testData__/customers";
-import { CustomersByBirthday } from "eisbuk-shared/dist";
 
 export default {
   title: "Birthday Menu",

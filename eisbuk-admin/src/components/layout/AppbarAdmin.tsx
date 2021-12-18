@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { DateTime } from "luxon";
 
 import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
 import Button from "@material-ui/core/Button";
@@ -30,13 +31,12 @@ import { NavigationLabel, AdminAria } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu/BirthdayMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
-import BirthdayMenu from "../atoms/BirthdayMenu/BirthdayMenu";
 import { getCustomersWithBirthday } from "@/store/selectors/customers";
-import { DateTime } from "luxon";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -133,7 +133,6 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               >
                 {t(NavigationLabel.Athletes)}
               </Button>
-
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>

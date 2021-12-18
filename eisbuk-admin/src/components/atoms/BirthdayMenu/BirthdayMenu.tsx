@@ -1,13 +1,13 @@
 import React, { useState } from "react";
-
-import { CustomersByBirthday } from "eisbuk-shared";
+import { DateTime } from "luxon";
 
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { Divider, IconButton } from "@material-ui/core";
 
 import Cake from "@material-ui/icons/Cake";
-import { DateTime } from "luxon";
+
+import { CustomersByBirthday } from "eisbuk-shared";
 
 interface Props {
   customers: CustomersByBirthday[];

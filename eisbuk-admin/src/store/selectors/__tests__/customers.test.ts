@@ -1,11 +1,13 @@
+import { DateTime } from "luxon";
+
 import { LocalStore } from "@/types/store";
+
+import { getCustomersWithBirthday } from "../customers";
 
 import {
   testStore,
   expectedCustomersBirthdays,
 } from "../__testData__/customers";
-import { getCustomersWithBirthday } from "../customers";
-import { DateTime } from "luxon";
 
 describe("Customer Selectors", () => {
   describe("Customers birthdays", () => {
