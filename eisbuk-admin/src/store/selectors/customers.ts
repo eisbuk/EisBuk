@@ -34,27 +34,29 @@ export const getCustomersWithBirthday =
   (state: LocalStore): CustomersByBirthday[] => {
     const customersInStore = getCustomersRecord(state);
 
-    const customers: CustomersByBirthday[] = [];
+    const customersByBirthday: CustomersByBirthday[] = [];
     Object.values(customersInStore).forEach((customer) => {
-      const index = customers.findIndex(
-        (customerBirthday) => customerBirthday.birthday === customer.birthday
+      // we're using just the (mm/dd) date without the year
+      const trimmedBirthday = customer.birthday.substring(5);
+      const index = customersByBirthday.findIndex(
+        (entry) => entry.birthday === trimmedBirthday
       );
       index !== -1
-        ? customers[index].customers.push(customer)
-        : customers.push({
-            birthday: customer.birthday,
+        ? customersByBirthday[index].customers.push(customer)
+        : customersByBirthday.push({
+            birthday: trimmedBirthday,
             customers: [customer],
           });
     });
-    const sortedCustomers = customers.sort((a, b) =>
-      a.birthday.substring(5).localeCompare(b.birthday.substring(5))
+    const sortedCustomersByBirthday = customersByBirthday.sort((a, b) =>
+      a.birthday.localeCompare(b.birthday)
     );
-    const index = sortedCustomers.findIndex(
-      (c) => date.substring(5) <= c.birthday.substring(5)
+    const index = sortedCustomersByBirthday.findIndex(
+      (entry) => date.substring(5) <= entry.birthday
     );
-    const rearrangedCustomers = sortedCustomers
+    const rearrangedCustomers = sortedCustomersByBirthday
       .slice(index === -1 ? 0 : index)
-      .concat(index === -1 ? [] : sortedCustomers.slice(0, index));
+      .concat(index === -1 ? [] : sortedCustomersByBirthday.slice(0, index));
 
     return rearrangedCustomers;
   };
