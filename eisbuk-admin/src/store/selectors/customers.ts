@@ -1,4 +1,4 @@
-import { Customer } from "eisbuk-shared";
+import { Customer, CustomersByBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -22,3 +22,41 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
   const customersInStore = getCustomersRecord(state);
   return Object.values(customersInStore);
 };
+
+/**
+ * Creates a selector that gets a list of all the customers whose birthdays are today
+ * (not an actual firestore query but rather synced local store entry)
+ * @param date DateTime to use as "today"
+ * @returns selector to get a list of customers grouped by birthday
+ */
+export const getCustomersWithBirthday =
+  (date: string) =>
+  (state: LocalStore): CustomersByBirthday[] => {
+    const customersInStore = getCustomersRecord(state);
+
+    const customersByBirthday: CustomersByBirthday[] = [];
+    Object.values(customersInStore).forEach((customer) => {
+      // we're using just the (mm/dd) date without the year
+      const trimmedBirthday = customer.birthday.substring(5);
+      const index = customersByBirthday.findIndex(
+        (entry) => entry.birthday === trimmedBirthday
+      );
+      index !== -1
+        ? customersByBirthday[index].customers.push(customer)
+        : customersByBirthday.push({
+            birthday: trimmedBirthday,
+            customers: [customer],
+          });
+    });
+    const sortedCustomersByBirthday = customersByBirthday.sort((a, b) =>
+      a.birthday.localeCompare(b.birthday)
+    );
+    const index = sortedCustomersByBirthday.findIndex(
+      (entry) => date.substring(5) <= entry.birthday
+    );
+    const rearrangedCustomers = sortedCustomersByBirthday
+      .slice(index === -1 ? 0 : index)
+      .concat(index === -1 ? [] : sortedCustomersByBirthday.slice(0, index));
+
+    return rearrangedCustomers;
+  };
