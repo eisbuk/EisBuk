@@ -116,6 +116,8 @@ export enum NotificationMessage {
   Updated = "Notification.Updated",
   Removed = "Notification.Removed",
 
+  EmailSent = "Notification.EmailSent",
+
   Error = "Notification.Error",
 }
 // #endregion notifications

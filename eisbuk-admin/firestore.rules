@@ -43,11 +43,11 @@ service cloud.firestore {
         // for complete write (create/update) we're checking the validity of data at document level
         allow read, delete: if isAdmin(organization);
       }
-      // match /{document} {
-      //   // Administrators can read and delete any object in the organization
-      //   // for complete write (create/update) we're checking the validity of data at document level
-      //   allow read, write: if isAdmin(organization);
-      // }
+      match /emailQueue/{email} {
+        // Administrators can read and delete any object in the organization
+        // for complete write (create/update) we're checking the validity of data at document level
+        allow read, write: if isAdmin(organization);
+      }
       match /bookings/{secretKey}/bookedSlots/{slotId} {
         // Anyone with a 'secretKey' can write to 'bookedSlots' for given customer (secretKey)
         // Here we're checking for valid date when writing to 'bookedSlots' document

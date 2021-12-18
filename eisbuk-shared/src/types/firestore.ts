@@ -6,34 +6,43 @@ import {
 } from "../enums/firestore";
 
 // #region organizations
-/**
- * A config to be used for mail service, including mailing server
- * config as well as message template
- */
-export interface OrgMailConfig {
-  /**
-   * SMTP transporter config for nodemailer
-   */
-  config: {
-    host: string;
-    port: number;
-    auth: { user: string; pass: string };
-  };
-  /**
-   * Template data for all emails sent from organization
-   */
-  template: {
-    from: string;
-    subject: string;
-  };
-}
+/** @TODO Uncomment this when we find a way to add organization templates for server emails */
+// /**
+//  * A config to be used for mail service, including mailing server
+//  * config as well as message template
+//  */
+// export interface OrgMailConfig {
+//   /**
+//    * SMTP transporter config for nodemailer
+//    */
+//   config: {
+//     host: string;
+//     port: number;
+//     auth: { user: string; pass: string };
+//   };
+//   /**
+//    * Template data for all emails sent from organization
+//    */
+//   template: {
+//     /**
+//      * Received email will show this address as `from`.
+//      *
+//      * _note: doesn't work with gmail, as gmail always uses the authenticated user as `from`_
+//      */
+//     from: string;
+//     /**
+//      * A subject for email template (i.e. "Link to manage your bookings")
+//      */
+//     subject: string;
+//   };
+// }
 
 /**
  * Organization data record included in each organization (other than nested collections)
  */
 export interface OrganizationData {
   admins: string[];
-  mailConfig: OrgMailConfig;
+  // mailConfig: OrgMailConfig;
 }
 
 // #endregion organizations
@@ -224,6 +233,16 @@ export type SlotAttendnace = {
 
 // #endregion attendance
 
+// #region emailQueue
+export interface EmailMessage {
+  to: string;
+  message: {
+    subject: string;
+    html: string;
+  };
+}
+// #endregion emailQueue
+
 // #region firestoreSchema
 
 /**
@@ -244,6 +263,9 @@ export interface FirestoreSchema {
       };
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
+      };
+      [OrgSubCollection.EmailQueue]: {
+        [id: string]: EmailMessage;
       };
     };
   };

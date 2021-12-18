@@ -88,6 +88,7 @@
     "BookingCanceledError": "Error cancelling booking",
     "Updated": "updated",
     "Removed": "removed",
+    "EmailSent": "Email successfully sent",
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"

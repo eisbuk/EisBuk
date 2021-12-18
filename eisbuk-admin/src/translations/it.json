@@ -88,6 +88,7 @@
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
     "Updated": "aggiornato",
     "Removed": "rimosso",
+    "EmailSent": "Email inviata con successo",
     "SlotAdded": "Slot Aggiunto",
     "SlotRemoved": "Slot Eliminato",
     "SlotUpdated": "Slot Aggiornato"

@@ -15,7 +15,11 @@ import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
 
-import { deleteCustomer, updateCustomer } from "../customerOperations";
+import {
+  deleteCustomer,
+  sendBookingsLink,
+  updateCustomer,
+} from "../customerOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -27,6 +31,7 @@ import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
+import { getOrganization } from "@/lib/getters";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -76,6 +81,10 @@ describe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
     await loginDefaultUser();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe("updateCustomer", () => {
@@ -205,6 +214,78 @@ describe("customerOperations", () => {
       });
       const testThunk = deleteCustomer(saul);
       await testThunk(...thunkArgs);
+      // check err snackbar being called
+      expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+    });
+  });
+
+  describe("sendBookingsLink", () => {
+    const testMail = {
+      to: saul.email,
+      subject: "A booking s link",
+      accessLink: "https://access.com/link",
+    };
+
+    testWithEmulator(
+      "should queue the right mail to email queue in firestore and show success notification",
+      async () => {
+        /** @TEMP below, until we set up admin preferences (and email logic able to consume them) */
+        // // set up test state
+        // const template: OrgMailConfig["template"] = {
+        //   from: "eisbuk@test",
+        //   subject: "Test Email",
+        // };
+        // const getState = () =>
+        //   createTestStore({
+        //     data: {
+        //       organizations: {
+        //         [getOrganization()]: {
+        //           mailConfig: {
+        //             template,
+        //           },
+        //         } as OrganizationData,
+        //       },
+        //     },
+        //   });
+        // run the thunk
+
+        await sendBookingsLink(testMail)(mockDispatch, getState);
+        // check results
+        const mailQueueRef = collection(
+          db,
+          Collection.Organizations,
+          getOrganization(),
+          OrgSubCollection.EmailQueue
+        );
+        const mailQueue = await getDocs(mailQueueRef);
+        expect(mailQueue.docs.length).toEqual(1);
+        expect(mailQueue.docs[0].data()).toEqual({
+          to: saul.email,
+          message: {
+            subject: testMail.subject,
+            html: testMail.accessLink,
+          },
+        });
+        // check for success notification
+        expect(mockDispatch).toHaveBeenCalledWith(
+          mockEnqueueSnackbar({
+            message: i18n.t(NotificationMessage.EmailSent),
+            closeButton: true,
+            options: {
+              variant: NotifVariant.Success,
+            },
+          })
+        );
+      }
+    );
+
+    testWithEmulator("error", async () => {
+      // intentionally cause error
+      getFirebaseSpy.mockImplementationOnce(() => {
+        throw new Error();
+      });
+      // run thunk
+      await sendBookingsLink(testMail)(mockDispatch, jest.fn());
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
     });

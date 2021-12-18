@@ -13,6 +13,7 @@ import {
   OrgSubCollection,
   CustomerLoose,
   CustomerBase,
+  EmailMessage,
 } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
@@ -39,38 +40,38 @@ const getCustomersCollPath = () =>
  * @param customer to update in firestore
  * @returns async thunk
  */
-export const updateCustomer = (
-  customer: CustomerLoose
-): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
+export const updateCustomer =
+  (customer: CustomerLoose): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
 
-    const { id, ...updatedData } = customer;
-    let docRef: DocumentReference<DocumentData>;
-    if (id) {
-      docRef = doc(db, getCustomersCollPath(), id);
-    } else {
-      const customersCollRef = collection(db, getCustomersCollPath());
-      docRef = doc(customersCollRef);
+      const { id, ...updatedData } = customer;
+      let docRef: DocumentReference<DocumentData>;
+      if (id) {
+        docRef = doc(db, getCustomersCollPath(), id);
+      } else {
+        const customersCollRef = collection(db, getCustomersCollPath());
+        docRef = doc(customersCollRef);
+      }
+
+      await setDoc(docRef, updatedData, { merge: true });
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: `${customer.name} ${customer.surname} ${i18n.t(
+            NotificationMessage.Updated
+          )}`,
+          options: {
+            variant: NotifVariant.Success,
+          },
+          closeButton: true,
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
     }
-
-    await setDoc(docRef, updatedData, { merge: true });
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: `${customer.name} ${customer.surname} ${i18n.t(
-          NotificationMessage.Updated
-        )}`,
-        options: {
-          variant: NotifVariant.Success,
-        },
-        closeButton: true,
-      })
-    );
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+  };
 
 /**
  * Creates firestore async thunk:
@@ -79,28 +80,67 @@ export const updateCustomer = (
  * @param customer to delete from firestore
  * @returns async thunk
  */
-export const deleteCustomer = (
-  customer: CustomerBase
-): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const docRef = doc(db, getCustomersCollPath(), customer.id);
+export const deleteCustomer =
+  (customer: CustomerBase): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(db, getCustomersCollPath(), customer.id);
 
-    await setDoc(docRef, { deleted: true }, { merge: true });
+      await setDoc(docRef, { deleted: true }, { merge: true });
 
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: `${customer.name} ${customer.surname} ${i18n.t(
-          NotificationMessage.Removed
-        )}`,
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: `${customer.name} ${customer.surname} ${i18n.t(
+            NotificationMessage.Removed
+          )}`,
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };
+
+interface BookingMailProps {
+  to: string;
+  subject: string;
+  accessLink: string;
+}
+
+export const sendBookingsLink =
+  ({ to, accessLink, subject }: BookingMailProps): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const emailQueueRef = collection(
+        getFirestore(),
+        Collection.Organizations,
+        getOrganization(),
+        OrgSubCollection.EmailQueue
+      );
+      const newEmailRef = doc(emailQueueRef);
+
+      const newEmail: EmailMessage = {
+        to,
+        message: { subject, html: accessLink },
+      };
+      await setDoc(newEmailRef, newEmail);
+
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.EmailSent),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };
