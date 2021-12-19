@@ -105,7 +105,8 @@
     "DayMonth": "{{ date, d MMMM }}",
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
-    "Placeholder": "gg/mm/aaaa"
+    "Placeholder": "gg/mm/aaaa",
+    "Today": "Oggi"
   },
 
   "AdminAria": {
