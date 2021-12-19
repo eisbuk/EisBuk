@@ -45,7 +45,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
         }}
       >
         {customers.map((customer) => {
-          const customerBirthday = customer.birthday.substring(5);
+          const customerBirthday = customer.birthday;
           return (
             <div key={customer.birthday}>
               <MenuItem>
