@@ -1,18 +1,25 @@
 import React, { useState } from "react";
 
-import { CustomersByBirthday } from "eisbuk-shared";
+import { CustomersByBirthday, fromISO } from "eisbuk-shared";
 
 import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Divider, IconButton } from "@material-ui/core";
+
+import IconButton from "@material-ui/core/IconButton";
 
 import Cake from "@material-ui/icons/Cake";
+import CustomerListItem from "../CustomerList/CustomerListItem";
+import makeStyles from "@material-ui/core/styles/makeStyles";
 import { DateTime } from "luxon";
 
+import { useTranslation } from "react-i18next";
+import { DateFormat } from "@/enums/translations";
 interface Props {
   customers: CustomersByBirthday[];
 }
 const BirthdayMenu: React.FC<Props> = ({ customers }) => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
     useState<HTMLElement | null>(null);
   const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (
@@ -24,7 +31,6 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
-  const today = DateTime.now().toISODate().substring(5);
 
   return (
     <>
@@ -32,35 +38,35 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
         <Cake />
       </IconButton>
       <Menu
-        id="simple-menu"
         anchorEl={birthdaysAnchorEl}
         keepMounted
         open={Boolean(birthdaysAnchorEl)}
         onClose={handleBirthdaysClose()}
         PaperProps={{
           style: {
-            maxHeight: "10rem",
-            width: "20ch",
+            maxHeight: "20rem",
+            width: "35ch",
           },
         }}
       >
         {customers.map((customer) => {
-          const customerBirthday = customer.birthday.substring(5);
+          const customerBirthday =
+            customer.birthday.substring(5) ===
+            DateTime.now().toISODate().substring(5)
+              ? t("Today")
+              : t(DateFormat.DayMonth, { date: fromISO(customer.birthday) });
+
           return (
             <div key={customer.birthday}>
-              <MenuItem>
-                {customerBirthday === today ? "today" : customerBirthday}
-              </MenuItem>
-              <Divider />
-              {customer.customers.map(
-                (cus) =>
-                  !cus.deleted && (
-                    <MenuItem key={cus.id}>
-                      {`${cus.name} ${cus.surname}`}
-                    </MenuItem>
+              <div className={classes.birthdayHeader}>{customerBirthday}</div>
+              {customer.customers?.map((cus) => {
+                return (
+                  !cus.deleted &&
+                  cus.birthday && (
+                    <CustomerListItem key={cus.id} {...{ ...cus }} />
                   )
-              )}
-              <Divider />
+                );
+              })}
             </div>
           );
         })}
@@ -68,5 +74,14 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
     </>
   );
 };
+const useStyles = makeStyles(() => ({
+  birthdayHeader: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "20px",
+    margin: "10px",
+  },
+  defaultPointer: { cursor: "default" },
+}));
 
 export default BirthdayMenu;
