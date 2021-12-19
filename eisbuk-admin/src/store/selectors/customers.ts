@@ -29,13 +29,15 @@ export const getCustomersList = (state: LocalStore): Customer[] => {
  * @param date DateTime to use as "today"
  * @returns selector to get a list of customers grouped by birthday
  */
-export const getCustomersWithBirthday =
+export const getCustomersByBirthday =
   (date: string) =>
   (state: LocalStore): CustomersByBirthday[] => {
     const customersInStore = getCustomersRecord(state);
 
     const customersByBirthday: CustomersByBirthday[] = [];
     Object.values(customersInStore).forEach((customer) => {
+      // omit the customer if the birthday is not provided
+      if (!customer.birthday) return;
       // we're using just the (mm/dd) date without the year
       const trimmedBirthday = customer.birthday.substring(5);
       const index = customersByBirthday.findIndex(
