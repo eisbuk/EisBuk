@@ -25,7 +25,7 @@ export const walt: Customer = {
   category: Category.Competitive,
   email: "walt@im_the_one_who.knocks",
   phone: "123456777",
-  birthday: "2001-01-01",
+  birthday: "2002-01-01",
   covidCertificateReleaseDate: "2021-01-01",
   covidCertificateSuspended: false,
   secretKey: "000001",

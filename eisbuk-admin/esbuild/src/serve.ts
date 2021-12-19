@@ -8,7 +8,6 @@ import { ServeParams } from "./lib/types";
 
 import { createLogger } from "./lib/utils";
 import config from "./lib/config";
-import loadEnv from "./lib/loadEnv";
 
 import createDevProxy from "./devProxy";
 
@@ -28,14 +27,11 @@ const addClient = (res: http.ServerResponse) => {
 };
 
 export default async ({
-  NODE_ENV,
-  envPrefix,
   outdir,
   servedir,
   hotReload,
+  processEnv,
 }: ServeParams): Promise<void> => {
-  const processEnv = await loadEnv(process.cwd(), NODE_ENV, envPrefix);
-
   // create a development build
   build({
     ...config,
@@ -54,7 +50,7 @@ export default async ({
         },
     },
 
-    // add hot reload option if
+    // add hot reload option if required
     ...(hotReload
       ? {
           banner: {

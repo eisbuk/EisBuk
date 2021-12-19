@@ -19,6 +19,7 @@ import Notifier from "@/components/Notifier";
 import useConnectAuthToStore from "@/store/firestore/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
+import { __projectId__ } from "./lib/constants";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -26,6 +27,8 @@ const App: React.FC = () => {
   // connect auth to store to recieve firebase SDK's auth updates
   // through redux store
   useConnectAuthToStore(getAuth(), store);
+
+  console.log("project id > ", __projectId__);
 
   return (
     <ReduxProvider store={store}>

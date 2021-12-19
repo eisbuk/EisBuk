@@ -8,6 +8,7 @@ import outputFileSizes from "./lib/outputFileSizes";
 import buildApp from "./build";
 import serveDev from "./serve";
 import { Mode } from "./lib/enums";
+import loadEnv from "./lib/loadEnv";
 
 /**
  * An entry point for custom bundler built on top of ESBuild.
@@ -16,8 +17,23 @@ import { Mode } from "./lib/enums";
 (async () => {
   const logger = createLogger("ROOT");
 
-  const { NODE_ENV, distpath, envPrefix, mode, hotReload, publicpath } =
-    loadNodeArgs();
+  const {
+    NODE_ENV,
+    DEPLOY_STAGE,
+    distpath,
+    envPrefix,
+    mode,
+    hotReload,
+    publicpath,
+  } = loadNodeArgs();
+
+  // load env vars to be bundled in the code
+  const processEnv = await loadEnv({
+    rootPath: process.cwd(),
+    NODE_ENV,
+    DEPLOY_STAGE,
+    envPrefix,
+  });
 
   // out dir of bundle (js and css) files
   const outdir = path.join(distpath, "app");
@@ -25,20 +41,15 @@ import { Mode } from "./lib/enums";
   await copyFolder(publicpath, distpath);
 
   if (mode === Mode.Build) {
-    await buildApp({
-      NODE_ENV,
-      outdir,
-      envPrefix,
-    });
+    await buildApp({ outdir, processEnv });
     logger.log("Build process successfully finished");
     await outputFileSizes(outdir);
   } else {
     await serveDev({
-      NODE_ENV,
       outdir,
-      envPrefix,
       servedir: distpath,
       hotReload,
+      processEnv,
     });
   }
 })();

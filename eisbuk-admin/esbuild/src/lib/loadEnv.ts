@@ -4,6 +4,13 @@ import fs from "fs";
 
 import { createLogger, pickWithPrefix } from "./utils";
 
+interface LoadEnvParams {
+  rootPath: string;
+  NODE_ENV: string;
+  DEPLOY_STAGE: string;
+  envPrefix: string;
+}
+
 /**
  * Looks for env vars in `.env` and `.env.${NODE_ENV}.local` files and in current `process.env`.
  * Picks only the vars prefixed with provided `envPrefix` and returns a stringified JSON containing
@@ -14,11 +21,12 @@ import { createLogger, pickWithPrefix } from "./utils";
  * @param {string} envPrefix `"development"`, `"test"`, `"storybook"` or `"production"`, if not specified (or invalid), falls back to "development"
  * @returns JSON stringified object to be used as process, containing `{ env: { ...envVariables } }`
  */
-export const loadEnv = async (
-  rootPath: string,
-  NODE_ENV: string,
-  envPrefix: string
-): Promise<string> => {
+export const loadEnv = async ({
+  rootPath,
+  NODE_ENV,
+  DEPLOY_STAGE,
+  envPrefix,
+}: LoadEnvParams): Promise<string> => {
   // create a custom logger prepending every message with "[LOAD_ENV]"
   const logger = createLogger("LOAD_ENV");
 
@@ -26,10 +34,12 @@ export const loadEnv = async (
 
   // load envs from env files (if any)
   logger.log(`Looking for env files in ${rootPath}`);
+  const envFiles = [".env", `.env.${NODE_ENV}.local`];
+  if (NODE_ENV !== DEPLOY_STAGE) envFiles.push(`.env.${DEPLOY_STAGE}.local`);
   const parsedEnvFiles = await Promise.all(
     // the env files are loaded in this order so that more specific `.env.${NODE_ENV}.local`
     // file can take presedence (overwrite vars present in both of the files)
-    [".env", `.env.${NODE_ENV}.local`].map((fName) => {
+    envFiles.map((fName) => {
       const pathToFile = path.join(rootPath, fName);
       return loadEnvFile(pathToFile, logger);
     })
@@ -39,7 +49,7 @@ export const loadEnv = async (
   logger.log(`Looking for vars prefixed with "${envPrefix}"`);
   // env vars from files and process.env are added in this order
   // to keep order of presedence:
-  // `process.env` -> `.env.${NODE_ENV}.local` -> `.env`
+  // `process.env` -> `.env.${DEPLOY_STAGE}.local` -> `.env.${NODE_ENV}.local` -> `.env`
   const processedVars = [...parsedEnvFiles, process.env].reduce(
     (acc, curr) => ({
       ...acc,
