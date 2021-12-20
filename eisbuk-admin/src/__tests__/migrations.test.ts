@@ -1,19 +1,11 @@
 import { httpsCallable } from "@firebase/functions";
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-  setDoc,
-} from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
 import { getOrganization } from "@/lib/getters";
 
-import { functions } from "@/__testSetup__/firestoreSetup";
+import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -34,7 +26,7 @@ import {
   testBookingsByDay,
   unprunedMonth,
 } from "../__testData__/migrations";
-import { walt } from "@/__testData__/customers";
+import * as customers from "@/__testData__/customers";
 
 const organization = getOrganization();
 
@@ -46,10 +38,9 @@ export const invokeFunction = (functionName: string) => (): Promise<any> =>
     organization,
   });
 
-const db = getFirestore();
-const orgDocPath = `${Collection.Organizations}/${organization}`;
+const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
 
-xdescribe("Migrations", () => {
+describe("Migrations", () => {
   beforeEach(async () => {
     await deleteAll();
   });
@@ -58,20 +49,17 @@ xdescribe("Migrations", () => {
     testWithEmulator(
       "should delete old slots from firestore, leaving the new ones intact",
       async () => {
-        const slotsCollPath = `${orgDocPath}/${OrgSubCollection.Slots}`;
+        const slotsCollRef = orgRef.collection(OrgSubCollection.Slots);
         // set up test state
-        const initialSlots = Object.keys(mixedSlots).map(
-          (slotId) => {
-            const docRef = doc(db, slotsCollPath, slotId);
-            return setDoc(docRef, mixedSlots[slotId]);
-          }
-          //
+        await Promise.all(
+          Object.keys(mixedSlots).map((slotId) =>
+            slotsCollRef.doc(slotId).set(mixedSlots[slotId])
+          )
         );
-        await Promise.all(initialSlots);
         // fire migration function
         await invokeFunction(CloudFunction.MigrateToNewDataModel)();
         // check updated slots
-        const updatedSlots = await getDocs(collection(db, slotsCollPath));
+        const updatedSlots = await slotsCollRef.get();
         // only the one slot (of new interface) should remain
         expect(updatedSlots.docs.length).toEqual(1);
       }
@@ -81,46 +69,43 @@ xdescribe("Migrations", () => {
       "should delete old bookings from firestore (data collection within customer's bookings)",
       async () => {
         // set up test state
-        const waltsBookingsPath = `${orgDocPath}/${OrgSubCollection.Bookings}/${walt.secretKey}`;
-        const waltsBookingsDoc = doc(db, waltsBookingsPath);
-        await setDoc(waltsBookingsDoc, migratedCustomers.walt);
+        const waltsBookingsRef = orgRef
+          .collection(OrgSubCollection.Bookings)
+          .doc(customers.walt.secretKey);
+        await waltsBookingsRef.set(migratedCustomers.walt);
         await Promise.all(
-          Object.keys(testBookingData).map((slotId) => {
-            const docRef = doc(db, waltsBookingsPath, "data", slotId);
-            return setDoc(docRef, testBookingData[slotId]);
-          })
+          Object.keys(testBookingData).map((slotId) =>
+            waltsBookingsRef
+              .collection("data")
+              .doc(slotId)
+              .set(testBookingData[slotId])
+          )
         );
         // fire migration function
         await invokeFunction(CloudFunction.MigrateToNewDataModel)();
         // check that the `bookings.data` was deleted
-        const updatedBookingsDataRef = collection(
-          db,
-          waltsBookingsPath,
-          "data"
-        );
-        const updatedWaltsBookings = await getDocs(updatedBookingsDataRef);
+        const updatedWaltsBookings = await waltsBookingsRef
+          .collection("data")
+          .get();
         expect(updatedWaltsBookings.empty).toEqual(true);
       }
     );
 
     testWithEmulator(
-      "should migrate booking info for each custoemr to use 'id' instead of 'customer_id'",
+      "should migrate booking info for each customer to use 'id' instead of 'customer_id'",
       async () => {
-        const collPath = `${orgDocPath}/${OrgSubCollection.Bookings}`;
-        const bookingsRef = collection(db, collPath);
+        const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
         // set up test state
-        const initialBookings = Object.keys(migratedCustomers).map(
-          (customerId) => {
+        await Promise.all(
+          Object.keys(migratedCustomers).map((customerId) => {
             const { secretKey } = migratedCustomers[customerId];
-            const docRef = doc(db, collPath, secretKey);
-            return setDoc(docRef, oldCustomerBase[customerId]);
-          }
+            return bookingsRef.doc(secretKey).set(oldCustomerBase[customerId]);
+          })
         );
-        await Promise.all(initialBookings);
         // fire migration function
         await invokeFunction(CloudFunction.MigrateToNewDataModel)();
         // check updated customers' bookings
-        const updatedBookings = await getDocs(bookingsRef);
+        const updatedBookings = await bookingsRef.get();
         updatedBookings.forEach((bookingSnapshot) => {
           const {
             // eslint-disable-next-line camelcase
@@ -137,33 +122,32 @@ xdescribe("Migrations", () => {
     );
 
     testWithEmulator("should delete all bookingsByDay", async () => {
-      const bookingsByDayPath = `${orgDocPath}/${DeprecatedOrgSubCollection.BookingsByDay}`;
+      const bookingsByDayRef = orgRef.collection(
+        DeprecatedOrgSubCollection.BookingsByDay
+      );
       // set up test state
-      const testDocRef = doc(db, bookingsByDayPath, "2020-03");
-      await setDoc(testDocRef, testBookingsByDay);
+      await bookingsByDayRef.doc("2020-03").set(testBookingsByDay);
       // fire migration function
       await invokeFunction(CloudFunction.MigrateToNewDataModel)();
       // check that the bookings are deleted
-      const bookingsByDayRef = collection(db, bookingsByDayPath);
-      const updatedBookingsByDay = await getDocs(bookingsByDayRef);
+      const updatedBookingsByDay = await bookingsByDayRef.get();
       expect(updatedBookingsByDay.empty).toEqual(true);
     });
 
     testWithEmulator(
       "should migrate customer data to use 'secretKey' instead of 'secret_key'",
       async () => {
-        const customersCollPath = `${orgDocPath}/${OrgSubCollection.Customers}`;
+        const customersCollRef = orgRef.collection(OrgSubCollection.Customers);
         // set up test state
-        const initialCustomers = Object.keys(oldCustomers).map((customerId) => {
-          const docRef = doc(db, customersCollPath, customerId);
-          return setDoc(docRef, oldCustomers[customerId]);
-        });
-        await Promise.all(initialCustomers);
+        await Promise.all(
+          Object.keys(oldCustomers).map((customerId) =>
+            customersCollRef.doc(customerId).set(oldCustomers[customerId])
+          )
+        );
         // fire migration function
         await invokeFunction(CloudFunction.MigrateToNewDataModel)();
         // check updated customers
-        const customersCollRef = collection(db, customersCollPath);
-        const updatedCustomers = await getDocs(customersCollRef);
+        const updatedCustomers = await customersCollRef.get();
         updatedCustomers.forEach((customerSnapshot) => {
           // eslint-disable-next-line camelcase
           const { secret_key, ...updatedCustomer } = customerSnapshot.data();
@@ -181,21 +165,43 @@ xdescribe("Migrations", () => {
     testWithEmulator(
       "should delete all 'slotsByDay' entries not containing any slots",
       async () => {
-        const slotsByDayPath = `${orgDocPath}/${OrgSubCollection.SlotsByDay}`;
-        // set up initial state
-        const pruningMonthRef = doc(db, slotsByDayPath, pruningMonthString);
-        const emptyMonthRef = doc(db, slotsByDayPath, emptyMonthString);
-        await setDoc(pruningMonthRef, unprunedMonth);
-        await setDoc(emptyMonthRef, emptyMonth);
+        const slotsByDayRef = orgRef.collection(OrgSubCollection.SlotsByDay);
+        // set up initial stateconst pruningMonthRef = slotsByDayRef.doc(pruningMonthString);
+        const pruningMonthRef = slotsByDayRef.doc(pruningMonthString);
+        const emptyMonthRef = slotsByDayRef.doc(emptyMonthString);
+        await pruningMonthRef.set(unprunedMonth);
+        await emptyMonthRef.set(emptyMonth);
         // run the migration
         await invokeFunction(CloudFunction.PruneSlotsByDay)();
         // there should only be one month entry in 'slotsByDay' (an empty month should be deleted)
-        const slotsByDayCollRef = collection(db, slotsByDayPath);
-        const slotsByDay = await getDocs(slotsByDayCollRef);
+        const slotsByDay = await slotsByDayRef.get();
         expect(slotsByDay.docs.length).toEqual(1);
         // check the non empty month being pruned accordingly
-        const pruningMonth = await getDoc(pruningMonthRef);
+        const pruningMonth = await pruningMonthRef.get();
         expect(pruningMonth.data()).toEqual(prunedMonth);
+      }
+    );
+  });
+
+  describe("'addIdsToCustomers'", () => {
+    testWithEmulator(
+      "should add document id's to customer entries as 'id' property",
+      async () => {
+        const customersCollRef = orgRef.collection(OrgSubCollection.Customers);
+        // set up initial state
+        await Promise.all(
+          Object.values(customers).map(({ id, ...customer }) =>
+            customersCollRef.doc(id).set(customer)
+          )
+        );
+        // run migration
+        await invokeFunction(CloudFunction.AddIdsToCustomers)();
+        // check results
+        const customersColl = await customersCollRef.get();
+        customersColl.forEach(async (doc) => {
+          const customer = doc.data();
+          expect(customer.id).toEqual(doc.id);
+        });
       }
     );
   });
