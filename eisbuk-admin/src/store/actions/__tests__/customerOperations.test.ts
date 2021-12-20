@@ -31,7 +31,6 @@ import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
-import { getOrganization } from "@/lib/getters";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -251,12 +250,7 @@ describe("customerOperations", () => {
 
         await sendBookingsLink(testMail)(mockDispatch, getState);
         // check results
-        const mailQueueRef = collection(
-          db,
-          Collection.Organizations,
-          getOrganization(),
-          OrgSubCollection.EmailQueue
-        );
+        const mailQueueRef = collection(db, Collection.EmailQueue);
         const mailQueue = await getDocs(mailQueueRef);
         expect(mailQueue.docs.length).toEqual(1);
         expect(mailQueue.docs[0].data()).toEqual({

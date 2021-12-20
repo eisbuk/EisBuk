@@ -116,12 +116,7 @@ export const sendBookingsLink =
   ({ to, accessLink, subject }: BookingMailProps): FirestoreThunk =>
   async (dispatch) => {
     try {
-      const emailQueueRef = collection(
-        getFirestore(),
-        Collection.Organizations,
-        getOrganization(),
-        OrgSubCollection.EmailQueue
-      );
+      const emailQueueRef = collection(getFirestore(), Collection.EmailQueue);
       const newEmailRef = doc(emailQueueRef);
 
       const newEmail: EmailMessage = {

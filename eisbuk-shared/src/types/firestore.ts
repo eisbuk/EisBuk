@@ -264,7 +264,7 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [OrgSubCollection.EmailQueue]: {
+      [Collection.EmailQueue]: {
         [id: string]: EmailMessage;
       };
     };

@@ -1,6 +1,7 @@
 // region collections names
 export enum Collection {
   Organizations = "organizations",
+  EmailQueue = "emailQueue",
 }
 
 export enum OrgSubCollection {
@@ -9,7 +10,6 @@ export enum OrgSubCollection {
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
-  EmailQueue = "emailQueue",
 }
 
 export enum BookingSubCollection {

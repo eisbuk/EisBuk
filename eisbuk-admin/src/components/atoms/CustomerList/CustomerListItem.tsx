@@ -13,6 +13,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import DateRangeIcon from "@material-ui/icons/DateRange";
+import Mail from "@material-ui/icons/Mail";
 
 import { Customer } from "eisbuk-shared";
 
@@ -25,6 +26,7 @@ import CustomerForm from "@/components/customers/CustomerForm";
 
 import {
   deleteCustomer,
+  sendBookingsLink,
   updateCustomer,
 } from "@/store/actions/customerOperations";
 
@@ -33,6 +35,7 @@ import {
   __customerDeleteId__,
   __customerEditId__,
   __openBookingsId__,
+  __sendBookingsEmailId__,
 } from "./__testData__/testIds";
 
 interface Props extends Customer {
@@ -104,6 +107,16 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
   const bookingsRoute = `${Routes.CustomerArea}/${customer.secretKey}`;
   const redirectToBookings = () => history.push(bookingsRoute);
 
+  // send booking link flow
+  const sendBookingsEmail = () => {
+    const mail = {
+      to: customer.email,
+      subject: "",
+      accessLink: `${window.location.host}/${bookingsRoute}`.replace("//", "/"),
+    };
+    dispatch(sendBookingsLink(mail));
+  };
+
   return (
     <>
       <IconButton
@@ -128,6 +141,14 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
       >
         <DateRangeIcon />
       </IconButton>
+      <IconButton
+        color="primary"
+        onClick={sendBookingsEmail}
+        data-testid={__sendBookingsEmailId__}
+      >
+        <Mail />
+      </IconButton>
+
       <ConfirmDialog
         open={deleteDialog}
         title={deleteDialogPrompt}
