@@ -1,6 +1,8 @@
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
+import "@/__testSetup__/firestoreSetup";
+
 import CustomerList from "../CustomerList";
 
 import { saul, gus } from "@/__testData__/customers";

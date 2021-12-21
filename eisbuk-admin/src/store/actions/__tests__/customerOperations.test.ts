@@ -10,7 +10,7 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { db } from "@/__testSetup__/firestoreSetup";
+import { db, adminDb } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
@@ -228,30 +228,9 @@ describe("customerOperations", () => {
     testWithEmulator(
       "should queue the right mail to email queue in firestore and show success notification",
       async () => {
-        /** @TEMP below, until we set up admin preferences (and email logic able to consume them) */
-        // // set up test state
-        // const template: OrgMailConfig["template"] = {
-        //   from: "eisbuk@test",
-        //   subject: "Test Email",
-        // };
-        // const getState = () =>
-        //   createTestStore({
-        //     data: {
-        //       organizations: {
-        //         [getOrganization()]: {
-        //           mailConfig: {
-        //             template,
-        //           },
-        //         } as OrganizationData,
-        //       },
-        //     },
-        //   });
-        // run the thunk
-
         await sendBookingsLink(testMail)(mockDispatch, getState);
         // check results
-        const mailQueueRef = collection(db, Collection.EmailQueue);
-        const mailQueue = await getDocs(mailQueueRef);
+        const mailQueue = await adminDb.collection(Collection.EmailQueue).get();
         expect(mailQueue.docs.length).toEqual(1);
         expect(mailQueue.docs[0].data()).toEqual({
           to: saul.email,
@@ -273,15 +252,17 @@ describe("customerOperations", () => {
       }
     );
 
-    testWithEmulator("error", async () => {
-      // intentionally cause error
-      getFirebaseSpy.mockImplementationOnce(() => {
-        throw new Error();
-      });
-      // run thunk
-      await sendBookingsLink(testMail)(mockDispatch, jest.fn());
-      // check err snackbar being called
-      expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
-    });
+    testWithEmulator(
+      "should show error notification if function call unsuccessful",
+      async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { to, ...incompletePayload } = testMail;
+        await sendBookingsLink(incompletePayload as any)(
+          mockDispatch,
+          getState
+        );
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+      }
+    );
   });
 });

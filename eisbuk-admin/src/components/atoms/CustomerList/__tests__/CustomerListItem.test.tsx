@@ -27,6 +27,7 @@ import {
   __customerDeleteId__,
   __customerEditId__,
   __openBookingsId__,
+  __sendBookingsEmailId__,
 } from "../__testData__/testIds";
 import { __confirmDialogYesId__ } from "@/__testData__/testIds";
 
@@ -149,6 +150,23 @@ describe("CustomerList", () => {
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`
       );
+    });
+
+    test("should send the email with booking link on email button click", () => {
+      // unmount tree created by `beforeEach`
+      cleanup();
+      // mock thunk creator to identity function for easier testing
+      jest
+        .spyOn(customerActions, "sendBookingsLink")
+        .mockImplementation((payload) => payload as any);
+      // mock hostname to create a predictable booking link
+      render(<CustomerListItem {...saul} extended />);
+      screen.getByTestId(__sendBookingsEmailId__).click();
+      expect(mockDispatch).toHaveBeenCalledWith({
+        to: saul.email,
+        accessLink: `localhost${Routes.CustomerArea}/${saul.secretKey}`,
+        subject: "A link to manage your bookings",
+      });
     });
   });
 });

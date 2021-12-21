@@ -111,7 +111,7 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
   const sendBookingsEmail = () => {
     const mail = {
       to: customer.email,
-      subject: "Test email",
+      subject: "A link to manage your bookings",
       accessLink: `${window.location.host}/${bookingsRoute}`.replace("//", "/"),
     };
     dispatch(sendBookingsLink(mail));

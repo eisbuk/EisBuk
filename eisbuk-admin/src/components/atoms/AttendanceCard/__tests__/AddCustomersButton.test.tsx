@@ -9,6 +9,8 @@ import {
 
 import { Customer, SlotInterface } from "eisbuk-shared";
 
+import "@/__testSetup__/firestoreSetup";
+
 import AttendnaceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";

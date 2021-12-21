@@ -22,6 +22,7 @@ import FirestoreDebug from "@/pages/firestore_debug";
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
+import { CollectionSubscription } from "./types/store";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -35,7 +36,7 @@ const AppContent: React.FC = () => {
   const isAuthLoaded = useSelector(getIsAuthLoaded);
   const isAuthEmpty = useSelector(getIsAuthEmpty);
 
-  const subscribedCollections =
+  const subscribedCollections: CollectionSubscription[] =
     isAuthLoaded && !isAuthEmpty ? [Collection.Organizations] : [];
 
   useFirestoreSubscribe(subscribedCollections);
