@@ -10,7 +10,10 @@ import "@testing-library/jest-dom";
 
 import { Customer } from "eisbuk-shared";
 
+import "@/__testSetup__/firestoreSetup";
+
 import { ActionButton, CustomerFormTitle, Prompt } from "@/enums/translations";
+import { Routes } from "@/enums/routes";
 
 import CustomerListItem from "../CustomerListItem";
 
@@ -26,7 +29,6 @@ import {
   __openBookingsId__,
 } from "../__testData__/testIds";
 import { __confirmDialogYesId__ } from "@/__testData__/testIds";
-import { Routes } from "@/enums/routes";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();

@@ -28,6 +28,9 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
+import { invokeFunction } from "@/utils/firebase";
+import { CloudFunction } from "@/enums/functions";
+
 const getCustomersCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}/${
     OrgSubCollection.Customers
@@ -116,14 +119,12 @@ export const sendBookingsLink =
   ({ to, accessLink, subject }: BookingMailProps): FirestoreThunk =>
   async (dispatch) => {
     try {
-      const emailQueueRef = collection(getFirestore(), Collection.EmailQueue);
-      const newEmailRef = doc(emailQueueRef);
-
       const newEmail: EmailMessage = {
         to,
         message: { subject, html: accessLink },
       };
-      await setDoc(newEmailRef, newEmail);
+
+      await invokeFunction(CloudFunction.SendEmail)(newEmail);
 
       dispatch(
         enqueueNotification({

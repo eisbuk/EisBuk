@@ -1,11 +1,13 @@
 export enum CloudFunction {
-  MigrateSlotsToPluralCategories = "migrateSlotsToPluralCategories",
-  CreateTestData = "createTestData",
   Ping = "ping",
+  SendEmail = "sendEmail",
+
+  CreateTestData = "createTestData",
   CreateOrganization = "createOrganization",
   CreateTestSlots = "createTestSlots",
   CreateStaleTestData = "createStaleTestData",
 
+  MigrateSlotsToPluralCategories = "migrateSlotsToPluralCategories",
   MigrateToNewDataModel = "migrateToNewDataModel",
   PruneSlotsByDay = "pruneSlotsByDay",
   AddIdsToCustomers = "addIdsToCustomers",
