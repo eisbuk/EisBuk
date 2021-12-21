@@ -112,7 +112,7 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
     const mail = {
       to: customer.email,
       subject: "A link to manage your bookings",
-      accessLink: `${window.location.host}/${bookingsRoute}`.replace("//", "/"),
+      accessLink: `https://${window.location.host}${bookingsRoute}`,
     };
     dispatch(sendBookingsLink(mail));
   };
@@ -145,6 +145,8 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
         color="primary"
         onClick={sendBookingsEmail}
         data-testid={__sendBookingsEmailId__}
+        // disable button if email or secret key not provided
+        disabled={!(customer.email && customer.secretKey)}
       >
         <Mail />
       </IconButton>

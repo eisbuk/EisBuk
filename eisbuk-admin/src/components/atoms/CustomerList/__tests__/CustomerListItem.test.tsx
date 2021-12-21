@@ -151,10 +151,10 @@ describe("CustomerList", () => {
         `${Routes.CustomerArea}/${saul.secretKey}`
       );
     });
+  });
 
+  describe("Test email button", () => {
     test("should send the email with booking link on email button click", () => {
-      // unmount tree created by `beforeEach`
-      cleanup();
       // mock thunk creator to identity function for easier testing
       jest
         .spyOn(customerActions, "sendBookingsLink")
@@ -164,9 +164,29 @@ describe("CustomerList", () => {
       screen.getByTestId(__sendBookingsEmailId__).click();
       expect(mockDispatch).toHaveBeenCalledWith({
         to: saul.email,
-        accessLink: `localhost${Routes.CustomerArea}/${saul.secretKey}`,
+        accessLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
         subject: "A link to manage your bookings",
       });
+    });
+
+    test("should disable the button if secretKey not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { secretKey, ...noSecretKeySaul } = saul;
+      render(<CustomerListItem {...(noSecretKeySaul as Customer)} extended />);
+      expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+
+    test("should disable the button if email is not provided", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { email, ...noEmailSaul } = saul;
+      render(<CustomerListItem {...(noEmailSaul as Customer)} extended />);
+      expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
+        "disabled",
+        true
+      );
     });
   });
 });
