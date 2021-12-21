@@ -9,6 +9,8 @@
     "@material-ui/core": "^4.11.2",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/pickers": "^3.2.10",
+    "@sentry/react": "^6.16.1",
+    "@sentry/tracing": "^6.16.1",
     "clsx": "^1.1.1",
     "eisbuk-shared": "1.0.0",
     "firebase": "9.1.1",
