@@ -6,14 +6,14 @@ import "./i18next/i18n";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
-import { __isProduction__ } from "@/lib/constants";
+import { __sentryDSN__ } from "@/lib/constants";
 
 import App from "@/App";
 
-if (__isProduction__) {
-  // init crashlytics only for production
+if (__sentryDSN__) {
+  // init crashlytics only if dsn provided
   Sentry.init({
-    dsn: "https://d1a59edc9bd2488ab6a0bbb48df59458@o1096484.ingest.sentry.io/6117136",
+    dsn: __sentryDSN__,
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 1.0,
   });
