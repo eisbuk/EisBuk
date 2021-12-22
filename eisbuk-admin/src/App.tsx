@@ -19,7 +19,7 @@ import Notifier from "@/components/Notifier";
 import useConnectAuthToStore from "@/store/firestore/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
-import { __projectId__ } from "./lib/constants";
+import { Button } from "@material-ui/core";
 
 const App: React.FC = () => {
   const classes = useStyles();
@@ -28,13 +28,28 @@ const App: React.FC = () => {
   // through redux store
   useConnectAuthToStore(getAuth(), store);
 
-  console.log("project id > ", __projectId__);
+  const breakTheApp = () => {
+    throw new Error("Why Lisa, whyyy !?");
+  };
 
   return (
     <ReduxProvider store={store}>
       <ThemeProvider theme={currentTheme}>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider className={classes.root} maxSnack={3}>
+            <Button
+              variant="contained"
+              color="secondary"
+              style={{
+                position: "fixed",
+                top: "2rem",
+                left: "2rem",
+                zIndex: 10,
+              }}
+              onClick={breakTheApp}
+            >
+              Break me
+            </Button>
             <Notifier />
             <CssBaseline />
             <AppContent />

@@ -17,6 +17,7 @@ if (__sentryDSN__) {
     integrations: [new Integrations.BrowserTracing()],
     tracesSampleRate: 1.0,
   });
+  console.log("Sentry initialized");
 }
 
 ReactDOM.render(<App />, document.getElementById("root"));
