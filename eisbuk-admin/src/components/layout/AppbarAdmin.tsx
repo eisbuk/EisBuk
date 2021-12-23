@@ -37,6 +37,7 @@ import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
+import BirthdayDialog from "../atoms/BirthdayMenu/BirthdayDialog";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -71,6 +72,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     };
   const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
   const { t } = useTranslation();
+  const [showAll, setShowAll] = useState(false);
 
   return (
     <>
@@ -145,7 +147,15 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
-          <BirthdayMenu customers={customers} />
+          <BirthdayMenu
+            customers={customers}
+            onClickShowAll={() => setShowAll(true)}
+          />
+          <BirthdayDialog
+            open={showAll}
+            onClose={() => setShowAll(false)}
+            customers={customers}
+          ></BirthdayDialog>
         </Toolbar>
       </AppBar>
       <Hidden smUp>
