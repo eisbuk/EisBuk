@@ -90,6 +90,9 @@ export enum ActionButton {
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
 }
+export enum Title {
+  UpcomingBirthdays = "Title.UpcomingBirthdays",
+}
 // #endregion dialog
 
 // #region notifications

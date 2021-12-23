@@ -130,5 +130,8 @@
     "CancelSlot": "Annulla creazione dello slot",
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
+  },
+  "Title": {
+    "UpcomingBirthdays": "Prossimi Compleanni"
   }
 }
