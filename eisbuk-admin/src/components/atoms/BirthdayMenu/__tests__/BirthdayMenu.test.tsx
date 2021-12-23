@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 
 import BirthdayMenu from "../BirthdayMenu";
 
-import { saul, gus, jane } from "@/__testData__/customers";
+import { saul, gus, jane, jian } from "@/__testData__/customers";
 import { DateTime } from "luxon";
 
 const CustomersByBirthday = [
@@ -12,20 +12,30 @@ const CustomersByBirthday = [
     customers: [jane],
   },
   {
-    birthday: "2009-12-23",
+    birthday: DateTime.now().plus({ days: 3 }).toISODate(),
     customers: [saul],
   },
   {
-    birthday: "2022-12-27",
+    birthday: DateTime.now().plus({ days: 5 }).toISODate(),
     customers: [gus],
+  },
+  {
+    birthday: DateTime.now().plus({ days: 7 }).toISODate(),
+    customers: [jian],
   },
 ];
 describe("BirthdayMenu", () => {
   describe("Smoke test", () => {
-    test("should display existing customers", () => {
-      render(<BirthdayMenu customers={CustomersByBirthday} />);
-      screen.getByText(saul.name);
-      screen.getByText(gus.name);
+    test("should display existing customers in 3 dates only", () => {
+      render(
+        <BirthdayMenu
+          customers={CustomersByBirthday}
+          onClickShowAll={() => {}}
+        />
+      );
+      screen.getByText(`${saul.name} ${saul.surname}`);
+      screen.getByText(`${gus.name} ${gus.surname}`);
+      expect(screen.queryByText(`${jian.name} ${jian.surname}`)).toBeNull();
     });
   });
 });
