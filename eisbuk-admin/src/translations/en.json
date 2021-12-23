@@ -133,5 +133,8 @@
   },
   "Title": {
     "UpcomingBirthdays": "Upcoming Birthdays"
+  },
+  "MenuButton": {
+    "ShowAll": "Show All"
   }
 }

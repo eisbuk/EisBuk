@@ -89,11 +89,18 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
+  ShowAll = "ActionButton",
 }
 export enum Title {
   UpcomingBirthdays = "Title.UpcomingBirthdays",
 }
 // #endregion dialog
+
+// #region menu
+export enum MenuButton {
+  ShowAll = "MenuButton.ShowAll",
+}
+// #endregion menu
 
 // #region notifications
 export enum NotificationMessage {

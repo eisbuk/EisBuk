@@ -133,5 +133,9 @@
   },
   "Title": {
     "UpcomingBirthdays": "Prossimi Compleanni"
+  },
+
+  "MenuButton": {
+    "ShowAll": "Mostra Tutto"
   }
 }
