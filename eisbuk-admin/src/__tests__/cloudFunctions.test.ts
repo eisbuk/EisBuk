@@ -1,16 +1,22 @@
 import { httpsCallable } from "@firebase/functions";
+import { signOut } from "@firebase/auth";
 
 import { HTTPErrors, SendEmailErrors } from "eisbuk-shared";
 
-import { functions } from "@/__testSetup__/firestoreSetup";
+import { auth, functions } from "@/__testSetup__/firestoreSetup";
+
+import { getOrganization } from "@/lib/getters";
 
 import { CloudFunction } from "@/enums/functions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-
-import { getOrganization } from "@/lib/getters";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 describe("Cloud functions", () => {
+  beforeEach(async () => {
+    await loginDefaultUser();
+  });
+
   describe("ping", () => {
     testWithEmulator("should respond if pinged", async (done) => {
       const result = await httpsCallable(
@@ -31,6 +37,19 @@ describe("Cloud functions", () => {
     const html = "html";
     const organization = getOrganization();
 
+    testWithEmulator(
+      "should reject if user not authenticaten (and not an admin)",
+      async () => {
+        await signOut(auth);
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization, message: { html, subject } })
+        ).rejects.toThrow(HTTPErrors.Unauth);
+      }
+    );
+
     testWithEmulator("should reject if no payload provided", async () => {
       await expect(
         httpsCallable(functions, CloudFunction.SendEmail)()
@@ -45,7 +64,7 @@ describe("Cloud functions", () => {
             functions,
             CloudFunction.SendEmail
           )({ to, message: { html, subject } })
-        ).rejects.toThrow(SendEmailErrors.NoOrganziation);
+        ).rejects.toThrow(HTTPErrors.Unauth);
       }
     );
 

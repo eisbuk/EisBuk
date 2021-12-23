@@ -1,6 +1,7 @@
 // #region cloudFunctions
 export enum HTTPErrors {
   NoPayload = "No request payload provided",
+  Unauth = "Unathorized",
 }
 
 export enum SendEmailErrors {

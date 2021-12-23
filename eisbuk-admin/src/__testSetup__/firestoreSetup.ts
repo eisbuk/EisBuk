@@ -35,7 +35,7 @@ const app = initializeApp({
   apiKey: "aaa",
 });
 
-export const auth = getAuth();
+export const auth = getAuth(app);
 connectAuthEmulator(auth, "http://localhost:9098");
 
 export const db = getFirestore();
