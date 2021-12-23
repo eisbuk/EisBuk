@@ -11,7 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { DateTime } from "luxon";
 
 import { useTranslation } from "react-i18next";
-import { DateFormat } from "@/enums/translations";
+import { DateFormat, MenuButton } from "@/enums/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 interface Props {
   customers: CustomersByBirthday[];
@@ -33,6 +33,10 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
+  const handleShowAll = () => {
+    onClickShowAll();
+    setBirthdaysAnchorEl(null);
+  };
 
   return (
     <>
@@ -46,7 +50,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
         onClose={handleBirthdaysClose()}
         PaperProps={{
           style: {
-            maxHeight: "20rem",
+            maxHeight: "50rem",
             width: "35ch",
           },
         }}
@@ -58,34 +62,27 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
               : t(DateFormat.DayMonth, {
                   date: DateTime.fromISO(`2021-${customer.birthday}`),
                 });
-          console.log(DateTime.fromISO(customer.birthday));
-
           return (
             <div key={customer.birthday}>
-              {customer.customers.length > 1 && (
-                <>
-                  <div className={classes.birthdayHeader}>
-                    {customerBirthday}
-                  </div>
-
-                  {customer.customers.slice(0, 2).map((cus) => {
-                    return (
-                      !cus.deleted &&
-                      cus.birthday && (
-                        <BirthdayMenuItem key={cus.id} {...{ ...cus }} />
-                      )
-                    );
-                  })}
-                </>
-              )}
+              {customer.customers.slice(0, 2).map((cus) => {
+                return (
+                  !cus.deleted &&
+                  cus.birthday && (
+                    <div>
+                      <BirthdayMenuItem key={cus.id} {...{ ...cus }} />
+                      <div className={classes.birthday}>{customerBirthday}</div>
+                    </div>
+                  )
+                );
+              })}
             </div>
           );
         })}
         <div
-          onClick={() => onClickShowAll()}
+          onClick={handleShowAll}
           className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
         >
-          Show All
+          {t(MenuButton.ShowAll)}
         </div>
       </Menu>
     </>
@@ -99,6 +96,12 @@ const useStyles = makeStyles(() => ({
     margin: "10px",
   },
   pointerCursor: { cursor: "pointer" },
+
+  birthday: {
+    position: "absolute",
+    transform: "translateY(-250%)",
+    right: "1rem",
+  },
 }));
 
 export default BirthdayMenu;

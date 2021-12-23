@@ -8,7 +8,7 @@ import { Customer } from "eisbuk-shared";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 
-type Props = Customer
+type Props = Customer;
 
 const BirthdayMenuItem: React.FC<Props> = ({ ...customer }) => {
   return (
