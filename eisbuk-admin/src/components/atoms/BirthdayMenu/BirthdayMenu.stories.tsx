@@ -14,5 +14,5 @@ const customers: CustomersByBirthday[] = [
   { birthday: "2020-12-12", customers: [saul, walt] },
 ];
 export const Default = (): JSX.Element => (
-  <BirthdayMenu customers={customers} />
+  <BirthdayMenu customers={customers} onClickShowAll={() => {}} />
 );
