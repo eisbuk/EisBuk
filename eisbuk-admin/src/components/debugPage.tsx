@@ -114,6 +114,15 @@ const DebugPage: React.FC = () => {
           Migrate to new data model
         </Button>
       </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={invokeFunction(CloudFunction.AddIdsToCustomers)}
+          color="primary"
+          variant="contained"
+        >
+          Add doc ids to customer structures
+        </Button>
+      </Box>
     </Container>
   );
 };

@@ -11,9 +11,8 @@ import { __testOrganization__ } from "@/__testSetup__/envData";
 export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
-// env info variable (production, storybook, test, etc)
+// env info variable (production, test, etc)
 export const __isDev__ = process.env.NODE_ENV !== "production";
-
 // check for explicit "test" environment
 export const __isTest__ = process.env.NODE_ENV === "test";
 
@@ -44,3 +43,6 @@ export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;
 
 // common constants, shared across all environments
 export const __functionsZone__ = "europe-west6";
+
+// other
+export const __sentryDSN__ = process.env.REACT_APP_SENTRY_DSN;

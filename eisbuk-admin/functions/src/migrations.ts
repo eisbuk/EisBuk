@@ -1,3 +1,4 @@
+/* eslint-disable promise/always-return */
 import * as functions from "firebase-functions";
 import {
   WriteBatch,
@@ -248,13 +249,12 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
             const customerBookingsRef = bookingsRef.doc(secretKey);
 
             // check if customers booking info needs migrating
-            const customerInfo = customerBooking.data() as Partial<DeprecatedBookingsMeta> &
-              Partial<CustomerBase>;
+            const customerInfo =
+              customerBooking.data() as Partial<DeprecatedBookingsMeta> &
+                Partial<CustomerBase>;
             if (customerInfo.customer_id) {
-              const {
-                customer_id: id,
-                ...custoemrData
-              } = customerInfo as DeprecatedBookingsMeta;
+              const { customer_id: id, ...custoemrData } =
+                customerInfo as DeprecatedBookingsMeta;
               const customerBase: CustomerBase = { ...custoemrData, id };
               // queue updates
               batch.set(customerBookingsRef, customerBase);
@@ -345,6 +345,42 @@ export const pruneSlotsByDay = functions
       return { success: true };
     } catch (error) {
       functions.logger.error(error);
+      return { success: false };
+    }
+  });
+
+export const addIdsToCustomers = functions
+  .region("europe-west6")
+  .https.onCall(async ({ organization }) => {
+    try {
+      const db = admin.firestore();
+
+      // get all customers
+      const customerDocs = await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Customers)
+        .get();
+
+      const updates: Promise<any>[] = [];
+
+      customerDocs.forEach((customerSnapshot) => {
+        const data = customerSnapshot.data();
+        if (!data.id) {
+          updates.push(
+            customerSnapshot.ref.set(
+              { id: customerSnapshot.id },
+              { merge: true }
+            )
+          );
+        }
+      });
+
+      await Promise.all(updates);
+
+      return { success: true };
+    } catch (err) {
+      functions.logger.error(err);
       return { success: false };
     }
   });

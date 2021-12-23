@@ -66,12 +66,12 @@ const CustomerList: React.FC<Props> = ({
           </TableHead>
           <TableBody data-testid={__customersListId__}>
             {customers?.map(
-              (customer) =>
+              (customer, i) =>
                 (searchRegex.test(customer.name) ||
                   searchRegex.test(customer.surname)) &&
                 !customer.deleted && (
                   <CustomerListItem
-                    key={customer.id || "temp"}
+                    key={customer.id || `temp-key-${i}`}
                     onClick={onCustomerClick}
                     {...{ ...customer, extended }}
                   />
