@@ -56,7 +56,11 @@ const BirthdayDialog: React.FC<Props> = ({
                   return (
                     !cus.deleted &&
                     cus.birthday && (
-                      <BirthdayMenuItem key={cus.id} {...{ ...cus }} />
+                      <BirthdayMenuItem
+                        key={cus.id}
+                        customer={cus}
+                        showAll={true}
+                      />
                     )
                   );
                 })}
