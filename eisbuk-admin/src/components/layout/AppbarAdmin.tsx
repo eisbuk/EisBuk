@@ -147,10 +147,12 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
-          <BirthdayMenu
-            customers={customers}
-            onClickShowAll={() => setShowAll(true)}
-          />
+          {customers.length > 0 && (
+            <BirthdayMenu
+              customers={customers}
+              onClickShowAll={() => setShowAll(true)}
+            />
+          )}
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}
