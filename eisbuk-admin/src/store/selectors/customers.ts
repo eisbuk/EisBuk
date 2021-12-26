@@ -36,8 +36,8 @@ export const getCustomersByBirthday =
 
     const customersByBirthday: CustomersByBirthday[] = [];
     Object.values(customersInStore).forEach((customer) => {
-      // omit the customer if the birthday is not provided
-      if (!customer.birthday) return;
+      // omit the customer if the birthday is not provided or customer is deleted
+      if (!customer.birthday || customer.deleted) return;
       // we're using just the (mm/dd) date without the year
       const trimmedBirthday = customer.birthday.substring(5);
       const index = customersByBirthday.findIndex(
