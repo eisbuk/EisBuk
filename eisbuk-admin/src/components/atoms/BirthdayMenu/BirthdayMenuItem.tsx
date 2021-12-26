@@ -23,8 +23,8 @@ const BirthdayMenuItem: React.FC<Props> = ({ customer, showAll = false }) => {
   const { t } = useTranslation();
 
   const customerBirthday =
-    customer.birthday === DateTime.now().toISODate().substring(5)
-      ? t("Today")
+    customer.birthday?.substring(5) === DateTime.now().toISODate().substring(5)
+      ? t(DateFormat.Today)
       : t(DateFormat.DayMonth, {
           date: DateTime.fromISO(customer.birthday || ""),
         });

@@ -138,6 +138,7 @@ export enum DateFormat {
   MonthYear = "Date.MonthYear",
   Time = "Date.Time",
   Placeholder = "Date.Placeholder",
+  Today = "Today",
 }
 // #endregion date
 
