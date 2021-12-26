@@ -5,11 +5,14 @@ import { CustomersByBirthday } from "eisbuk-shared";
 import Menu from "@material-ui/core/Menu";
 import IconButton from "@material-ui/core/IconButton";
 import Cake from "@material-ui/icons/Cake";
+import Badge from "@material-ui/core/Badge";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { useTranslation } from "react-i18next";
 import { MenuButton } from "@/enums/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
+import { DateTime } from "luxon";
 interface Props {
   customers: CustomersByBirthday[];
   onClickShowAll: () => void;
@@ -34,11 +37,22 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
 
+  const getTodaysBirthdays = (): number =>
+    customers[0].birthday === DateTime.now().toISODate().substring(5)
+      ? customers[0].customers.length
+      : 0;
+
   return (
     <>
-      <IconButton onClick={handleBirthdaysClick}>
-        <Cake />
-      </IconButton>
+      <Badge
+        className={classes.badge}
+        color="secondary"
+        badgeContent={getTodaysBirthdays()}
+      >
+        <IconButton onClick={handleBirthdaysClick}>
+          <Cake />
+        </IconButton>
+      </Badge>
       <Menu
         anchorEl={birthdaysAnchorEl}
         keepMounted
@@ -85,6 +99,12 @@ const useStyles = makeStyles(() => ({
     margin: "10px",
   },
   pointerCursor: { cursor: "pointer" },
+
+  badge: {
+    "& .MuiBadge-anchorOriginTopRightRectangle": {
+      transform: "translate(0%, 0%)",
+    },
+  },
 }));
 
 export default BirthdayMenu;
