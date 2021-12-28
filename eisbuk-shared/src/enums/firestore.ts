@@ -1,7 +1,13 @@
 // region collections names
 export enum Collection {
   Organizations = "organizations",
-  EmailQueue = "emailQueue",
+  /**
+   * Queue for emails waiting to be sent using `firestore-send-email`
+   * extension. The value is "mail" as it's the default for an extension.
+   *
+   * This can be changed, but the change should be reflected in firestore extension setup as well.
+   */
+  EmailQueue = "mail",
 }
 
 export enum OrgSubCollection {
