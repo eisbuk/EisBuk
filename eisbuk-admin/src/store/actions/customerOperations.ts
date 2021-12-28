@@ -14,6 +14,7 @@ import {
   CustomerLoose,
   CustomerBase,
   EmailMessage,
+  Customer,
 } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
@@ -30,6 +31,8 @@ import {
 
 import { invokeFunction } from "@/utils/firebase";
 import { CloudFunction } from "@/enums/functions";
+import { getCustomersRecord } from "../selectors/customers";
+import { Routes } from "@/enums/routes";
 
 const getCustomersCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}/${
@@ -109,19 +112,34 @@ export const deleteCustomer =
     }
   };
 
-interface BookingMailProps {
-  to: string;
-  subject: string;
-  accessLink: string;
-}
-
 export const sendBookingsLink =
-  ({ to, accessLink, subject }: BookingMailProps): FirestoreThunk =>
-  async (dispatch) => {
+  (customerId: Customer["id"]): FirestoreThunk =>
+  async (dispatch, getState) => {
     try {
+      const {
+        email: to,
+        name,
+        secretKey,
+      } = getCustomersRecord(getState())[customerId];
+
+      const subject = "A link to manage your bookings";
+
+      if (!secretKey || !to) {
+        // this should be unreachable
+        // (email button should be disabled in case secret key or email are not provided)
+        throw new Error();
+      }
+
+      const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${secretKey}`;
+
+      const html = `<p>Dear ${name}</p>
+      <br />
+      <p>Here's a link to manage your bookings with ${getOrganization()}:</p>
+      <p>${bookingsLink}</p>`;
+
       const newEmail: EmailMessage = {
         to,
-        message: { subject, html: accessLink },
+        message: { subject, html },
       };
 
       await invokeFunction(CloudFunction.SendEmail)(newEmail);

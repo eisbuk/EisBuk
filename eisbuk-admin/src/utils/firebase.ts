@@ -15,12 +15,9 @@ const functions = getFunctions(app, "europe-west6");
  */
 export const invokeFunction = (functionName: CloudFunction) => {
   return async (payload?: Record<string, any>): Promise<void> => {
-    console.log(`Calling a function from > ${functions.region}`);
-    const res = await httpsCallable(
+    await httpsCallable(
       functions,
       functionName
     )({ ...payload, organization: getOrganization() });
-
-    console.log(res.data);
   };
 };

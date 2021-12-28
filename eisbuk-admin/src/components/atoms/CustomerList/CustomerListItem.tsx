@@ -108,14 +108,7 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
   const redirectToBookings = () => history.push(bookingsRoute);
 
   // send booking link flow
-  const sendBookingsEmail = () => {
-    const mail = {
-      to: customer.email,
-      subject: "A link to manage your bookings",
-      accessLink: `https://${window.location.host}${bookingsRoute}`,
-    };
-    dispatch(sendBookingsLink(mail));
-  };
+  const sendBookingsEmail = () => dispatch(sendBookingsLink(customer.id));
 
   return (
     <>

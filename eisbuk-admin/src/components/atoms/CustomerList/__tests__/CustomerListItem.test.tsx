@@ -154,7 +154,7 @@ describe("CustomerList", () => {
   });
 
   describe("Test email button", () => {
-    test("should send the email with booking link on email button click", () => {
+    test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id", () => {
       // mock thunk creator to identity function for easier testing
       jest
         .spyOn(customerActions, "sendBookingsLink")
@@ -162,11 +162,7 @@ describe("CustomerList", () => {
       // mock hostname to create a predictable booking link
       render(<CustomerListItem {...saul} extended />);
       screen.getByTestId(__sendBookingsEmailId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        to: saul.email,
-        accessLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
-        subject: "A link to manage your bookings",
-      });
+      expect(mockDispatch).toHaveBeenCalledWith(saul.id);
     });
 
     test("should disable the button if secretKey not defined", () => {

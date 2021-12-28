@@ -23,7 +23,7 @@ import {
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/__testUtils__/firestore";
+import { createTestStore, deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
@@ -219,26 +219,31 @@ describe("customerOperations", () => {
   });
 
   describe("sendBookingsLink", () => {
-    const testMail = {
-      to: saul.email,
-      subject: "A booking s link",
-      accessLink: "https://access.com/link",
-    };
+    // test state for all tests
+    const getState = () =>
+      createTestStore({
+        data: {
+          customers: {
+            [saul.id]: saul,
+          },
+        },
+      });
 
     testWithEmulator(
       "should queue the right mail to email queue in firestore and show success notification",
       async () => {
-        await sendBookingsLink(testMail)(mockDispatch, getState);
+        await sendBookingsLink(saul.id)(mockDispatch, getState);
         // check results
         const mailQueue = await adminDb.collection(Collection.EmailQueue).get();
         expect(mailQueue.docs.length).toEqual(1);
-        expect(mailQueue.docs[0].data()).toEqual({
-          to: saul.email,
-          message: {
-            subject: testMail.subject,
-            html: testMail.accessLink,
-          },
-        });
+        const sentMail = mailQueue.docs[0].data();
+        expect(sentMail.to).toEqual(saul.email);
+        expect(sentMail.message.subject).toBeDefined();
+        // we're not matching the complete html of message
+        // but are asserting that it contains important parts
+        const bookingLink = `https://localhost/customer_area/${saul.secretKey}`;
+        expect(sentMail.message.html.includes(bookingLink)).toBeTruthy();
+        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
@@ -255,12 +260,12 @@ describe("customerOperations", () => {
     testWithEmulator(
       "should show error notification if function call unsuccessful",
       async () => {
+        // intentionally cause error to test error handling
+        const getState = () => {
+          throw new Error();
+        };
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { to, ...incompletePayload } = testMail;
-        await sendBookingsLink(incompletePayload as any)(
-          mockDispatch,
-          getState
-        );
+        await sendBookingsLink(saul.id)(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
