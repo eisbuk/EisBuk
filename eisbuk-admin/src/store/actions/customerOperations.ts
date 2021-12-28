@@ -133,7 +133,6 @@ export const sendBookingsLink =
       const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${secretKey}`;
 
       const html = `<p>Dear ${name}</p>
-      <br />
       <p>Here's a link to manage your bookings with ${getOrganization()}:</p>
       <p>${bookingsLink}</p>`;
 
