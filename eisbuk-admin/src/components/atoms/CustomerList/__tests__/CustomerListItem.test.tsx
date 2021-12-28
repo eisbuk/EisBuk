@@ -29,7 +29,6 @@ import {
   __openBookingsId__,
   __sendBookingsEmailId__,
 } from "../__testData__/testIds";
-import { __confirmDialogYesId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -109,7 +108,7 @@ describe("CustomerList", () => {
         `${i18n.t(Prompt.DeleteCustomer)} ${saul.name} ${saul.surname}?`
       );
       // confirm deletion
-      screen.getByTestId(__confirmDialogYesId__).click();
+      screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith(
         mockDeleteCustomerImplementation(saul)
       );
@@ -156,12 +155,17 @@ describe("CustomerList", () => {
   describe("Test email button", () => {
     test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id", () => {
       // mock thunk creator to identity function for easier testing
-      jest
+      const sendMailSpy = jest
         .spyOn(customerActions, "sendBookingsLink")
         .mockImplementation((payload) => payload as any);
-      // mock hostname to create a predictable booking link
       render(<CustomerListItem {...saul} extended />);
       screen.getByTestId(__sendBookingsEmailId__).click();
+      // the function shouldn't be called before confirmation
+      expect(sendMailSpy).not.toHaveBeenCalled();
+      screen.getByText(i18n.t(Prompt.SendEmailTitle) as string);
+      const emailConfirmationMessage = new RegExp(i18n.t(Prompt.ConfirmEmail));
+      screen.getByText(emailConfirmationMessage);
+      screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith(saul.id);
     });
 

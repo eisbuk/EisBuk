@@ -108,6 +108,8 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
   const redirectToBookings = () => history.push(bookingsRoute);
 
   // send booking link flow
+  const [sendMailDialog, setSendMailDialog] = useState(false);
+  const sendMailPromptMessage = `${t(Prompt.ConfirmEmail)} ${customer.email} ?`;
   const sendBookingsEmail = () => dispatch(sendBookingsLink(customer.id));
 
   return (
@@ -136,7 +138,7 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
       </IconButton>
       <IconButton
         color="primary"
-        onClick={sendBookingsEmail}
+        onClick={() => setSendMailDialog(true)}
         data-testid={__sendBookingsEmailId__}
         // disable button if email or secret key not provided
         disabled={!(customer.email && customer.secretKey)}
@@ -151,6 +153,14 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
         onConfirm={confirmDelete}
       >
         {t(Prompt.NonReversible)}
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={sendMailDialog}
+        title={t(Prompt.SendEmailTitle)}
+        setOpen={setSendMailDialog}
+        onConfirm={sendBookingsEmail}
+      >
+        {sendMailPromptMessage}
       </ConfirmDialog>
       <CustomerForm
         updateCustomer={handleSubmit}

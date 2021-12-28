@@ -79,6 +79,8 @@ export enum Prompt {
   DeleteCustomer = "Prompt.DeleteCustomer",
   DeleteSlot = "Prompt.DeleteSlot",
   NonReversible = "Prompt.NonReversible",
+  SendEmailTitle = "Prompt.SendEmailTitle",
+  ConfirmEmail = "Prompt.ConfirmEmail",
 }
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
