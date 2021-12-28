@@ -1,79 +1,98 @@
-import { signOut } from "@firebase/auth";
 import { httpsCallable } from "@firebase/functions";
+import { signOut } from "@firebase/auth";
 
-import { Collection } from "eisbuk-shared";
+import { HTTPErrors, SendEmailErrors } from "eisbuk-shared";
 
-import { auth, functions, adminDb } from "@/__testSetup__/firestoreSetup";
+import { auth, functions } from "@/__testSetup__/firestoreSetup";
+
+import { getOrganization } from "@/lib/getters";
 
 import { CloudFunction } from "@/enums/functions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-
-import { loginWithEmail } from "@/__testUtils__/auth";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 describe("Cloud functions", () => {
-  testWithEmulator(
-    "should deny access to users not belonging to the organization",
-    async () => {
-      const testOrg = "default";
-      // here we're using adminDb to bypass firestore.rules check
-      await adminDb
-        .collection(Collection.Organizations)
-        .doc(testOrg)
-        .set({
-          admins: ["test@example.com", "+1234567890"],
-        });
-      // We're not logged in yet, so this should throw
-      await expect(
-        httpsCallable(
-          functions,
-          CloudFunction.CreateTestData
-        )({
-          organization: "default",
-        })
-      ).rejects.toThrow();
+  beforeEach(async () => {
+    await loginDefaultUser();
+  });
 
-      // We log in with the wrong user
-      await loginWithEmail("wrong@example.com");
-      await expect(
-        httpsCallable(
-          functions,
-          CloudFunction.CreateTestData
-        )({
-          organization: "default",
-        })
-      ).rejects.toThrow();
-
-      // ...and with the right one
-      await signOut(auth);
-      await loginWithEmail("test@example.com");
-      await httpsCallable(
+  describe("ping", () => {
+    testWithEmulator("should respond if pinged", async (done) => {
+      const result = await httpsCallable(
         functions,
-        CloudFunction.CreateTestData
+        CloudFunction.Ping
       )({
-        organization: "default",
+        foo: "bar",
       });
-
-      /** @TODO phone login doesn't work in node enviroment, investigate or test with cypress */
-      // await signOut(auth);
-      // await loginWithPhone("+1234567890");
-      // await httpsCallable(
-      //   functions,
-      //   CloudFunction.CreateTestData
-      // )({
-      //   organization: "default",
-      // });
-    }
-  );
-
-  testWithEmulator("should respond if pinged", async (done) => {
-    const result = await httpsCallable(
-      functions,
-      CloudFunction.Ping
-    )({
-      foo: "bar",
+      expect(result).toEqual({ data: { pong: true, data: { foo: "bar" } } });
+      done();
     });
-    expect(result).toEqual({ data: { pong: true, data: { foo: "bar" } } });
-    done();
+  });
+
+  describe("sendMail", () => {
+    // Dummy data for error testing
+    const to = "saul@gmail.com";
+    const subject = "Subject";
+    const html = "html";
+    const organization = getOrganization();
+
+    testWithEmulator(
+      "should reject if user not authenticaten (and not an admin)",
+      async () => {
+        await signOut(auth);
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization, message: { html, subject } })
+        ).rejects.toThrow(HTTPErrors.Unauth);
+      }
+    );
+
+    testWithEmulator("should reject if no payload provided", async () => {
+      await expect(
+        httpsCallable(functions, CloudFunction.SendEmail)()
+      ).rejects.toThrow(HTTPErrors.NoPayload);
+    });
+
+    testWithEmulator(
+      "should reject if no value for organziation provided",
+      async () => {
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ to, message: { html, subject } })
+        ).rejects.toThrow(HTTPErrors.Unauth);
+      }
+    );
+
+    testWithEmulator("should reject if no recipient provided", async () => {
+      await expect(
+        httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({ organization, message: { html, subject } })
+      ).rejects.toThrow(SendEmailErrors.NoRecipient);
+    });
+
+    testWithEmulator("should reject if no email body provided", async () => {
+      await expect(
+        httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({ to, organization, message: { subject } })
+      ).rejects.toThrow(SendEmailErrors.NoMsgBody);
+    });
+
+    testWithEmulator("should reject if no subject provided", async () => {
+      await expect(
+        httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({ to, organization, message: { html } })
+      ).rejects.toThrow(SendEmailErrors.NoSubject);
+    });
   });
 });

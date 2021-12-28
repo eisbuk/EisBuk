@@ -1,5 +1,7 @@
 export * from "./enums/firestore";
+export * from "./enums/errorMessages";
 export * from "./types/firestore";
+export * from "./types/cloudFunctions";
 export * from "./utils";
 
 import italianNames from "./assets/italian-names.json";

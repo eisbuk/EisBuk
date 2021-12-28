@@ -10,16 +10,20 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { db } from "@/__testSetup__/firestoreSetup";
+import { db, adminDb } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
 
-import { deleteCustomer, updateCustomer } from "../customerOperations";
+import {
+  deleteCustomer,
+  sendBookingsLink,
+  updateCustomer,
+} from "../customerOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/__testUtils__/firestore";
+import { createTestStore, deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
@@ -76,6 +80,10 @@ describe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
     await loginDefaultUser();
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   describe("updateCustomer", () => {
@@ -208,5 +216,58 @@ describe("customerOperations", () => {
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
     });
+  });
+
+  describe("sendBookingsLink", () => {
+    // test state for all tests
+    const getState = () =>
+      createTestStore({
+        data: {
+          customers: {
+            [saul.id]: saul,
+          },
+        },
+      });
+
+    testWithEmulator(
+      "should queue the right mail to email queue in firestore and show success notification",
+      async () => {
+        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        // check results
+        const mailQueue = await adminDb.collection(Collection.EmailQueue).get();
+        expect(mailQueue.docs.length).toEqual(1);
+        const sentMail = mailQueue.docs[0].data();
+        expect(sentMail.to).toEqual(saul.email);
+        expect(sentMail.message.subject).toBeDefined();
+        // we're not matching the complete html of message
+        // but are asserting that it contains important parts
+        const bookingLink = `https://localhost/customer_area/${saul.secretKey}`;
+        expect(sentMail.message.html.includes(bookingLink)).toBeTruthy();
+        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
+        // check for success notification
+        expect(mockDispatch).toHaveBeenCalledWith(
+          mockEnqueueSnackbar({
+            message: i18n.t(NotificationMessage.EmailSent),
+            closeButton: true,
+            options: {
+              variant: NotifVariant.Success,
+            },
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should show error notification if function call unsuccessful",
+      async () => {
+        // intentionally cause error to test error handling
+        const getState = () => {
+          throw new Error();
+        };
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+      }
+    );
   });
 });

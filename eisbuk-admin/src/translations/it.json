@@ -66,7 +66,9 @@
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
-    "NonReversible": "Questa azione non è reversibile"
+    "NonReversible": "Questa azione non è reversibile",
+    "SendEmailTitle": "Conferma email",
+    "ConfirmEmail": "Sei sicuro di voler inviare un'email a:"
   },
   "ActionButton": {
     "CreateSlot": "Crea Slot",
@@ -88,6 +90,7 @@
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
     "Updated": "aggiornato",
     "Removed": "rimosso",
+    "EmailSent": "Email inviata con successo",
     "SlotAdded": "Slot Aggiunto",
     "SlotRemoved": "Slot Eliminato",
     "SlotUpdated": "Slot Aggiornato"

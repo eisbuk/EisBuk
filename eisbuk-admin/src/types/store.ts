@@ -12,7 +12,7 @@ import {
   Customer,
   CustomerBase,
   CustomerBookingEntry,
-  OrganizationMeta,
+  OrganizationData,
   OrgSubCollection,
   SlotAttendnace,
   SlotInterface,
@@ -85,16 +85,15 @@ export type AuthAction =
  * Auth reducer action generic
  * gets passed one of whitelisted auth reducer actions as type parameter
  */
-export type AuthReducerAction<
-  A extends AuthAction
-> = A extends Action.UpdateAuthInfo
-  ? {
-      type: A;
-      payload: AuthState;
-    }
-  : A extends Action.UpdateAdminStatus
-  ? { type: A; payload: boolean }
-  : { type: string };
+export type AuthReducerAction<A extends AuthAction> =
+  A extends Action.UpdateAuthInfo
+    ? {
+        type: A;
+        payload: AuthState;
+      }
+    : A extends Action.UpdateAdminStatus
+    ? { type: A; payload: boolean }
+    : { type: string };
 /**
  * `authInfoEisbuuk` portion of the local store
  */
@@ -153,7 +152,7 @@ export interface CopyPasteState {
  * `firestore.data` structure in local store
  */
 export interface FirestoreData {
-  [Collection.Organizations]: { [organization: string]: OrganizationMeta };
+  [Collection.Organizations]: { [organization: string]: OrganizationData };
   [OrgSubCollection.Customers]: { [customerId: string]: Customer };
   [OrgSubCollection.Bookings]: CustomerBase;
   [BookingSubCollection.BookedSlots]: {

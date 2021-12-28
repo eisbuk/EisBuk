@@ -10,7 +10,10 @@ import "@testing-library/jest-dom";
 
 import { Customer } from "eisbuk-shared";
 
+import "@/__testSetup__/firestoreSetup";
+
 import { ActionButton, CustomerFormTitle, Prompt } from "@/enums/translations";
+import { Routes } from "@/enums/routes";
 
 import CustomerListItem from "../CustomerListItem";
 
@@ -24,9 +27,8 @@ import {
   __customerDeleteId__,
   __customerEditId__,
   __openBookingsId__,
+  __sendBookingsEmailId__,
 } from "../__testData__/testIds";
-import { __confirmDialogYesId__ } from "@/__testData__/testIds";
-import { Routes } from "@/enums/routes";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -106,7 +108,7 @@ describe("CustomerList", () => {
         `${i18n.t(Prompt.DeleteCustomer)} ${saul.name} ${saul.surname}?`
       );
       // confirm deletion
-      screen.getByTestId(__confirmDialogYesId__).click();
+      screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith(
         mockDeleteCustomerImplementation(saul)
       );
@@ -146,6 +148,44 @@ describe("CustomerList", () => {
       screen.getByTestId(__openBookingsId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`
+      );
+    });
+  });
+
+  describe("Test email button", () => {
+    test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id", () => {
+      // mock thunk creator to identity function for easier testing
+      const sendMailSpy = jest
+        .spyOn(customerActions, "sendBookingsLink")
+        .mockImplementation((payload) => payload as any);
+      render(<CustomerListItem {...saul} extended />);
+      screen.getByTestId(__sendBookingsEmailId__).click();
+      // the function shouldn't be called before confirmation
+      expect(sendMailSpy).not.toHaveBeenCalled();
+      screen.getByText(i18n.t(Prompt.SendEmailTitle) as string);
+      const emailConfirmationMessage = new RegExp(i18n.t(Prompt.ConfirmEmail));
+      screen.getByText(emailConfirmationMessage);
+      screen.getByText("Yes").click();
+      expect(mockDispatch).toHaveBeenCalledWith(saul.id);
+    });
+
+    test("should disable the button if secretKey not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { secretKey, ...noSecretKeySaul } = saul;
+      render(<CustomerListItem {...(noSecretKeySaul as Customer)} extended />);
+      expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+
+    test("should disable the button if email is not provided", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { email, ...noEmailSaul } = saul;
+      render(<CustomerListItem {...(noEmailSaul as Customer)} extended />);
+      expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
+        "disabled",
+        true
       );
     });
   });

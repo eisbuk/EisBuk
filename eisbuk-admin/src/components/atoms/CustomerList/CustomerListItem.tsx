@@ -13,6 +13,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import DateRangeIcon from "@material-ui/icons/DateRange";
+import Mail from "@material-ui/icons/Mail";
 
 import { Customer } from "eisbuk-shared";
 
@@ -25,6 +26,7 @@ import CustomerForm from "@/components/customers/CustomerForm";
 
 import {
   deleteCustomer,
+  sendBookingsLink,
   updateCustomer,
 } from "@/store/actions/customerOperations";
 
@@ -33,6 +35,7 @@ import {
   __customerDeleteId__,
   __customerEditId__,
   __openBookingsId__,
+  __sendBookingsEmailId__,
 } from "./__testData__/testIds";
 
 interface Props extends Customer {
@@ -104,6 +107,11 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
   const bookingsRoute = `${Routes.CustomerArea}/${customer.secretKey}`;
   const redirectToBookings = () => history.push(bookingsRoute);
 
+  // send booking link flow
+  const [sendMailDialog, setSendMailDialog] = useState(false);
+  const sendMailPromptMessage = `${t(Prompt.ConfirmEmail)} ${customer.email} ?`;
+  const sendBookingsEmail = () => dispatch(sendBookingsLink(customer.id));
+
   return (
     <>
       <IconButton
@@ -128,6 +136,16 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
       >
         <DateRangeIcon />
       </IconButton>
+      <IconButton
+        color="primary"
+        onClick={() => setSendMailDialog(true)}
+        data-testid={__sendBookingsEmailId__}
+        // disable button if email or secret key not provided
+        disabled={!(customer.email && customer.secretKey)}
+      >
+        <Mail />
+      </IconButton>
+
       <ConfirmDialog
         open={deleteDialog}
         title={deleteDialogPrompt}
@@ -135,6 +153,14 @@ const AdditionalButtons: React.FC<Customer> = (customer) => {
         onConfirm={confirmDelete}
       >
         {t(Prompt.NonReversible)}
+      </ConfirmDialog>
+      <ConfirmDialog
+        open={sendMailDialog}
+        title={t(Prompt.SendEmailTitle)}
+        setOpen={setSendMailDialog}
+        onConfirm={sendBookingsEmail}
+      >
+        {sendMailPromptMessage}
       </ConfirmDialog>
       <CustomerForm
         updateCustomer={handleSubmit}

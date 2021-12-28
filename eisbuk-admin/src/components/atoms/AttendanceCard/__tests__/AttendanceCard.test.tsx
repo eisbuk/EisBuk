@@ -4,6 +4,8 @@ import "@testing-library/jest-dom";
 
 import { Customer, SlotInterface } from "eisbuk-shared";
 
+import "@/__testSetup__/firestoreSetup";
+
 import { CustomerWithAttendance } from "@/types/components";
 
 import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";

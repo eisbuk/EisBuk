@@ -2,6 +2,8 @@ import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import admin from "firebase-admin";
 
+import { Collection, HTTPErrors } from "eisbuk-shared";
+
 type Auth = CallableContext["auth"];
 
 /**
@@ -27,21 +29,26 @@ export const roundTo = (val: number, modbase: number): number =>
  * @param auth
  */
 export const checkUser = async (
-  organization: string,
-  auth: Auth
+  organization?: string,
+  auth?: Auth
 ): Promise<void | never> => {
-  if (auth && auth.token && (auth.token.email || auth.token.phone_number)) {
-    const org = await admin
-      .firestore()
-      .collection("organizations")
-      .doc(organization)
-      .get();
-    if (!isOrgAdmin(org.data()?.admins, auth)) {
-      throwUnauth();
-    }
-  } else {
+  if (!organization || !auth || !auth.token) {
     throwUnauth();
   }
+
+  const token = auth!.token!;
+  const authString = token.email || token.phone_number;
+  if (!authString) {
+    throwUnauth();
+  }
+
+  const org = await admin
+    .firestore()
+    .collection(Collection.Organizations)
+    .doc(organization!)
+    .get();
+
+  if (!isOrgAdmin(org.data()?.admins, auth)) throwUnauth();
 };
 
 /**
@@ -71,7 +78,7 @@ const isOrgAdmin = (admins: string[] | undefined, auth: Auth): boolean => {
 const throwUnauth = (): never => {
   throw new functions.https.HttpsError(
     "permission-denied",
-    "unauthorized",
+    HTTPErrors.Unauth,
     "The function must be called while authenticated with a user that is an admin of the given organization."
   );
 };

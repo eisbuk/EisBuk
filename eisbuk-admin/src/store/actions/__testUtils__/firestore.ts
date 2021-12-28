@@ -10,6 +10,7 @@ import {
   Customer,
   BookingSubCollection,
   CustomerLoose,
+  OrganizationData,
 } from "eisbuk-shared";
 
 import { LocalStore, FirestoreThunk } from "@/types/store";
@@ -32,11 +33,37 @@ const orgDb = adminDb
   .doc(getOrganization());
 
 /**
+ * Set up `organization` data in emulated store and create `getState()` returning redux store
+ * filled with `attendance` data as well
+ * @param attendance entry for firestore attendance we want to set
+ * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
+ * @returns middleware args (dispatch, setState )
+ */
+export const setupTestOrganziation = async ({
+  organization,
+  dispatch = (value: any) => value,
+}: {
+  organization: OrganizationData;
+  dispatch?: Dispatch;
+}): Promise<ThunkParams> => {
+  // create `getState` state to return store populated with desired values
+  const getState = () =>
+    createTestStore({
+      data: { organizations: { [getOrganization()]: organization } },
+    });
+
+  // set desired values to emulated db
+  await orgDb.set(organization);
+
+  return [dispatch, getState];
+};
+
+/**
  * Set up `attendance` data in emulated store and create `getState()` returning redux store
  * filled with `attendance` data as well
  * @param attendance entry for firestore attendance we want to set
  * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
- * @returns middleware args (dispatch, setState, { getFirebase } )
+ * @returns middleware args (dispatch, setState )
  */
 export const setupTestAttendance = async ({
   attendance,
