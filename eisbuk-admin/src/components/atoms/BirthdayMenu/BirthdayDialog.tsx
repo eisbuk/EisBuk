@@ -11,7 +11,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
-import { DateFormat, Title } from "@/enums/translations";
+import { DateFormat, BirthdayMenu } from "@/enums/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 import { DateTime } from "luxon";
 
@@ -32,7 +32,7 @@ const BirthdayDialog: React.FC<Props> = ({
     <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
-          {t(Title.UpcomingBirthdays)}
+          {t(BirthdayMenu.UpcomingBirthdays)}
         </Typography>
         <IconButton className={classes.closeButton} onClick={() => onClose()}>
           <Close />
@@ -42,7 +42,7 @@ const BirthdayDialog: React.FC<Props> = ({
           {customers.map((customer) => {
             const customerBirthday =
               customer.birthday === DateTime.now().toISODate().substring(5)
-                ? t("Today")
+                ? t(DateFormat.Today)
                 : t(DateFormat.DayMonth, {
                     date: DateTime.fromISO(`2021-${customer.birthday}`),
                   });

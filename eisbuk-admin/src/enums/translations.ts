@@ -91,16 +91,14 @@ export enum ActionButton {
   Cancel = "ActionButton.Cancel",
   ShowAll = "ActionButton",
 }
-export enum Title {
-  UpcomingBirthdays = "Title.UpcomingBirthdays",
-}
 // #endregion dialog
 
-// #region menu
-export enum MenuButton {
-  ShowAll = "MenuButton.ShowAll",
+// #region birthdayMenu
+export enum BirthdayMenu {
+  ShowAll = "BirthdayMenu.ShowAll",
+  UpcomingBirthdays = "BirthdayMenu.UpcomingBirthdays",
 }
-// #endregion menu
+// #endregion birthdayMenu
 
 // #region notifications
 export enum NotificationMessage {
@@ -138,7 +136,7 @@ export enum DateFormat {
   MonthYear = "Date.MonthYear",
   Time = "Date.Time",
   Placeholder = "Date.Placeholder",
-  Today = "Today",
+  Today = "Date.Today",
 }
 // #endregion date
 

@@ -131,11 +131,8 @@
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
   },
-  "Title": {
+  "BirthdayMenu": {
+    "ShowAll": "Mostra Tutti",
     "UpcomingBirthdays": "Prossimi Compleanni"
-  },
-
-  "MenuButton": {
-    "ShowAll": "Mostra Tutto"
   }
 }

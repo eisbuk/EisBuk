@@ -10,7 +10,7 @@ import Badge from "@material-ui/core/Badge";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { useTranslation } from "react-i18next";
-import { MenuButton } from "@/enums/translations";
+import { BirthdayMenu as BirthdayEnums } from "@/enums/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 import { DateTime } from "luxon";
 interface Props {
@@ -85,7 +85,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
           onClick={handleShowAll}
           className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
         >
-          {t(MenuButton.ShowAll)}
+          {t(BirthdayEnums.ShowAll)}
         </div>
       </Menu>
     </>
