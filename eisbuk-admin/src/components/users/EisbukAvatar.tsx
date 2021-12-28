@@ -61,7 +61,9 @@ const getColor = ({ name, surname }: { name: string; surname: string }) => {
 };
 
 // ***** Region Main Component ***** //
-export const EisbukAvatar: React.FC<Customer & { className?: string }> = ({
+export const EisbukAvatar: React.FC<
+  Customer & { className?: string } & { wrap?: boolean }
+> = ({
   name,
   surname,
   className,
@@ -69,6 +71,7 @@ export const EisbukAvatar: React.FC<Customer & { className?: string }> = ({
   certificateExpiration,
   covidCertificateReleaseDate,
   covidCertificateSuspended,
+  wrap = true,
 }) => {
   const classes = useStyles();
 
@@ -131,7 +134,13 @@ export const EisbukAvatar: React.FC<Customer & { className?: string }> = ({
       variant = "circular";
       break;
   }
-  return wrapAvatar(
+  return wrap ? (
+    wrapAvatar(
+      <Avatar className={`${className} ${additionalClass}`} variant={variant}>
+        {getInitials(name, surname)}
+      </Avatar>
+    )
+  ) : (
     <Avatar className={`${className} ${additionalClass}`} variant={variant}>
       {getInitials(name, surname)}
     </Avatar>

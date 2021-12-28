@@ -1,18 +1,26 @@
 import React, { useState } from "react";
-import { DateTime } from "luxon";
-
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import { Divider, IconButton } from "@material-ui/core";
-
-import Cake from "@material-ui/icons/Cake";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
+import Menu from "@material-ui/core/Menu";
+import IconButton from "@material-ui/core/IconButton";
+import Cake from "@material-ui/icons/Cake";
+import Badge from "@material-ui/core/Badge";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { useTranslation } from "react-i18next";
+import { BirthdayMenu as BirthdayEnums } from "@/enums/translations";
+import BirthdayMenuItem from "./BirthdayMenuItem";
+import { DateTime } from "luxon";
 interface Props {
   customers: CustomersByBirthday[];
+  onClickShowAll: () => void;
 }
-const BirthdayMenu: React.FC<Props> = ({ customers }) => {
+const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
+  const classes = useStyles();
+  const { t } = useTranslation();
+
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
     useState<HTMLElement | null>(null);
   const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (
@@ -24,49 +32,79 @@ const BirthdayMenu: React.FC<Props> = ({ customers }) => {
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
-  const today = DateTime.now().toISODate().substring(5);
+  const handleShowAll = () => {
+    onClickShowAll();
+    setBirthdaysAnchorEl(null);
+  };
+
+  const getTodaysBirthdays = (): number =>
+    customers[0].birthday === DateTime.now().toISODate().substring(5)
+      ? customers[0].customers.length
+      : 0;
 
   return (
     <>
-      <IconButton onClick={handleBirthdaysClick}>
-        <Cake />
-      </IconButton>
+      <Badge
+        className={classes.badge}
+        color="secondary"
+        badgeContent={getTodaysBirthdays()}
+      >
+        <IconButton onClick={handleBirthdaysClick}>
+          <Cake />
+        </IconButton>
+      </Badge>
       <Menu
-        id="simple-menu"
         anchorEl={birthdaysAnchorEl}
         keepMounted
         open={Boolean(birthdaysAnchorEl)}
         onClose={handleBirthdaysClose()}
         PaperProps={{
           style: {
-            maxHeight: "10rem",
-            width: "20ch",
+            maxHeight: "50rem",
+            width: "40ch",
           },
         }}
       >
-        {customers.map((customer) => {
-          const customerBirthday = customer.birthday;
+        {customers.slice(0, 3).map((customer) => {
           return (
             <div key={customer.birthday}>
-              <MenuItem>
-                {customerBirthday === today ? "today" : customerBirthday}
-              </MenuItem>
-              <Divider />
-              {customer.customers.map(
-                (cus) =>
-                  !cus.deleted && (
-                    <MenuItem key={cus.id}>
-                      {`${cus.name} ${cus.surname}`}
-                    </MenuItem>
+              {customer.customers.slice(0, 2).map((cus) => {
+                return (
+                  !cus.deleted &&
+                  cus.birthday && (
+                    <div>
+                      <BirthdayMenuItem key={cus.id} customer={cus} />
+                    </div>
                   )
-              )}
-              <Divider />
+                );
+              })}
             </div>
           );
         })}
+        <div
+          onClick={handleShowAll}
+          className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
+        >
+          {t(BirthdayEnums.ShowAll)}
+        </div>
       </Menu>
     </>
   );
 };
+const useStyles = makeStyles(() => ({
+  birthdayHeader: {
+    display: "flex",
+    alignItems: "center",
+    fontSize: "20px",
+    margin: "10px",
+  },
+  pointerCursor: { cursor: "pointer" },
+
+  badge: {
+    "& .MuiBadge-anchorOriginTopRightRectangle": {
+      transform: "translate(0%, 0%)",
+    },
+  },
+}));
 
 export default BirthdayMenu;

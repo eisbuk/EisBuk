@@ -105,7 +105,8 @@
     "DayMonth": "{{ date, d MMMM }}",
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
-    "Placeholder": "gg/mm/aaaa"
+    "Placeholder": "gg/mm/aaaa",
+    "Today": "Oggi"
   },
 
   "AdminAria": {
@@ -129,5 +130,9 @@
     "CancelSlot": "Annulla creazione dello slot",
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
+  },
+  "BirthdayMenu": {
+    "ShowAll": "Mostra Tutti",
+    "UpcomingBirthdays": "Prossimi Compleanni"
   }
 }
