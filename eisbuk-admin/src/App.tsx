@@ -27,11 +27,16 @@ const App: React.FC = () => {
   // through redux store
   useConnectAuthToStore(getAuth(), store);
 
+  const explode = () => {
+    throw new Error("Why Lisa WHY!?");
+  };
+
   return (
     <ReduxProvider store={store}>
       <ThemeProvider theme={currentTheme}>
         <MuiPickersUtilsProvider utils={LuxonUtils}>
           <SnackbarProvider className={classes.root} maxSnack={3}>
+            <button onClick={explode}>ERROR</button>
             <Notifier />
             <CssBaseline />
             <AppContent />
