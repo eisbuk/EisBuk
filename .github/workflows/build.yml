@@ -37,6 +37,7 @@ jobs:
           REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
           REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.SELF_HOSTED_DSN }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
       - name: Deploy preview channel
@@ -76,6 +77,17 @@ jobs:
             ```
           reactions: heart, hooray, laugh, rocket
           edit-mode: replace
+
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_URL: https://sentry.libroc.co/
+          SENTRY_AUTH_TOKEN: ${{ secrets.SELF_HOSTED_AUTH_TOKEN }}
+          SENTRY_ORG: eisbuk
+          SENTRY_PROJECT: eisbuk-client
+        with:
+          environment: production
+          sourcemaps: "./eisbuk-admin/dist/app"
 
   test_v14:
     runs-on: ubuntu-latest

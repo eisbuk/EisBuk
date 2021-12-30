@@ -28,7 +28,7 @@ const App: React.FC = () => {
   useConnectAuthToStore(getAuth(), store);
 
   const explode = () => {
-    throw new Error("Why Lisa WHY!?");
+    throw new Error("It's all over");
   };
 
   return (
