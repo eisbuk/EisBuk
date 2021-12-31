@@ -19,6 +19,7 @@ import {
 
 import { NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
+import { SendBookingLinkMethod } from "@/enums/other";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -113,7 +114,13 @@ export const deleteCustomer =
   };
 
 export const sendBookingsLink =
-  (customerId: Customer["id"]): FirestoreThunk =>
+  ({
+    customerId,
+    method,
+  }: {
+    customerId: Customer["id"];
+    method: SendBookingLinkMethod;
+  }): FirestoreThunk =>
   async (dispatch, getState) => {
     try {
       const {

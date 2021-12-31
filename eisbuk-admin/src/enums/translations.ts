@@ -81,6 +81,8 @@ export enum Prompt {
   NonReversible = "Prompt.NonReversible",
   SendEmailTitle = "Prompt.SendEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
+  SendSMSTitle = "Prompt.SendSMSTitle",
+  ConfirmSMS = "Prompt.ConfirmSMS",
 }
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",

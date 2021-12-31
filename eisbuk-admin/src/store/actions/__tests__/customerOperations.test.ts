@@ -31,6 +31,7 @@ import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
+import { SendBookingLinkMethod } from "@/enums/other";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -232,7 +233,10 @@ xdescribe("customerOperations", () => {
     testWithEmulator(
       "should queue the right mail to email queue in firestore and show success notification",
       async () => {
-        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        await sendBookingsLink(saul.id, SendBookingLinkMethod.Email)(
+          mockDispatch,
+          getState
+        );
         // check results
         const mailQueue = await adminDb.collection(Collection.EmailQueue).get();
         expect(mailQueue.docs.length).toEqual(1);
@@ -265,7 +269,10 @@ xdescribe("customerOperations", () => {
           throw new Error();
         };
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        await sendBookingsLink(saul.id, SendBookingLinkMethod.Email)(
+          mockDispatch,
+          getState
+        );
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
