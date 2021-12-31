@@ -1,32 +1,36 @@
 import React, { useCallback } from "react";
 import * as firebaseui from "firebaseui";
-
+import { getApp } from "@firebase/app";
 import {
   getAuth,
-  PhoneAuthProvider,
+  // PhoneAuthProvider,
   GoogleAuthProvider,
   EmailAuthProvider,
-} from "firebase/auth";
+} from "@firebase/auth";
 
 // import styles necessary for firebase ui elements
 import "firebaseui/dist/firebaseui.css";
 
-const auth = getAuth();
+const auth = getAuth(getApp());
 
 const ui = new firebaseui.auth.AuthUI(auth);
 
-const uiConfig = {
+const uiConfig: firebaseui.auth.Config = {
   signInOptions: [
-    {
-      provider: PhoneAuthProvider.PROVIDER_ID,
-      // The default selected country.
-      defaultCountry: "IT",
-      recaptchaParameters: {
-        type: "image", // 'audio'
-        size: "invisible", // 'invisible' or 'compact'
-        badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-      },
-    },
+    /**
+     * Phone auth is temporarily removed as it seems to be incompatible with Firebase v9
+     * @TODO investigate further and/or implement our own solution if necessary
+     */
+    // {
+    //   provider: PhoneAuthProvider.PROVIDER_ID,
+    //   // The default selected country.
+    //   defaultCountry: "IT",
+    //   recaptchaParameters: {
+    //     type: "image", // 'audio'
+    //     size: "invisible", // 'invisible' or 'compact'
+    //     badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
+    //   },
+    // },
     GoogleAuthProvider.PROVIDER_ID,
     EmailAuthProvider.PROVIDER_ID,
   ],
