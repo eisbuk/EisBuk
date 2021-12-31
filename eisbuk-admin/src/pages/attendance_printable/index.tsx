@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import { luxon2ISODate } from "eisbuk-shared";
+import { luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
 import Container from "@material-ui/core/Container";
 import IconButton from "@material-ui/core/IconButton";
@@ -23,10 +23,17 @@ import useTitle from "@/hooks/useTitle";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
   const { t } = useTranslation();
+
+  useFirestoreSubscribe([
+    OrgSubCollection.Attendance,
+    OrgSubCollection.Customers,
+    OrgSubCollection.SlotsByDay,
+  ]);
 
   const attendanceSlots = useSelector(getSlotsWithAttendance);
 
