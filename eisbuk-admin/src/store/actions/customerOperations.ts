@@ -15,6 +15,7 @@ import {
   CustomerBase,
   EmailMessage,
   Customer,
+  SMSMessage,
 } from "eisbuk-shared";
 
 import { NotifVariant } from "@/enums/store";
@@ -113,25 +114,24 @@ export const deleteCustomer =
     }
   };
 
-export const sendBookingsLink =
-  ({
-    customerId,
-    method,
-  }: {
+interface SendBookingsLink {
+  (payload: {
     customerId: Customer["id"];
     method: SendBookingLinkMethod;
-  }): FirestoreThunk =>
+  }): FirestoreThunk;
+}
+
+export const sendBookingsLink: SendBookingsLink =
+  ({ customerId, method }) =>
   async (dispatch, getState) => {
     try {
-      const {
-        email: to,
-        name,
-        secretKey,
-      } = getCustomersRecord(getState())[customerId];
+      const { email, phone, name, secretKey } = getCustomersRecord(getState())[
+        customerId
+      ];
 
       const subject = "prenotazioni lezioni di Igor Ice Team";
 
-      if (!secretKey || !to) {
+      if (!secretKey) {
         // this should be unreachable
         // (email button should be disabled in case secret key or email are not provided)
         throw new Error();
@@ -143,12 +143,26 @@ export const sendBookingsLink =
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
       <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
 
-      const newEmail: EmailMessage = {
-        to,
-        message: { subject, html },
-      };
+      let to: string;
+      let message: SMSMessage["message"] | EmailMessage["message"];
+      let handler: CloudFunction.SendEmail | CloudFunction.SendSMS;
 
-      await invokeFunction(CloudFunction.SendEmail)(newEmail);
+      switch (method) {
+        case SendBookingLinkMethod.Email:
+          handler = CloudFunction.SendEmail;
+          to = email;
+          message = {
+            subject,
+            html,
+          };
+          break;
+        case SendBookingLinkMethod.SMS:
+          handler = CloudFunction.SendSMS;
+          to = phone;
+          message = html.replace(/<\/*[a-z]\/*>/g, "");
+      }
+
+      await invokeFunction(handler)({ to, message });
 
       dispatch(
         enqueueNotification({

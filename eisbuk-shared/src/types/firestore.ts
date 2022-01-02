@@ -233,7 +233,7 @@ export type SlotAttendnace = {
 
 // #endregion attendance
 
-// #region emailQueue
+// #region cloudSentMessages
 export interface EmailMessage {
   to: string;
   message: {
@@ -241,7 +241,12 @@ export interface EmailMessage {
     html: string;
   };
 }
-// #endregion emailQueue
+
+export interface SMSMessage {
+  to: string;
+  message: string;
+}
+// #endregion cloudSentMessages
 
 // #region firestoreSchema
 
