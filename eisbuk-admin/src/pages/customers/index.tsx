@@ -17,7 +17,6 @@ import { OrgSubCollection } from "eisbuk-shared";
 import { ActionButton, NavigationLabel } from "@/enums/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import CustomerList from "@/components/atoms/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
 
 import { updateCustomer } from "@/store/actions/customerOperations";
@@ -28,6 +27,7 @@ import useTitle from "@/hooks/useTitle";
 
 import { isEmpty } from "@/utils/helpers";
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import CustomerGrid from "@/components/atoms/CustomerList/CustomerGrid";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -54,11 +54,7 @@ const CustomersPage: React.FC = () => {
         {
           // (isLoaded(customers) &&
           !isEmpty(customers) && (
-            <CustomerList
-              {...{ customers }}
-              tableContainerClassName={classes.tableContainer}
-              extended
-            />
+            <CustomerGrid {...{ customers }}></CustomerGrid>
           )
           // )
         }
