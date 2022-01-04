@@ -18,7 +18,7 @@ export const getSlotsWithAttendance = (
   if (!slotsByDay || !attendance || !allCustomers) return [];
 
   const dateISO = luxon2ISODate(calendarDay);
-  const monthString = dateISO.substr(0, 7);
+  const monthString = dateISO.substring(0, 7);
 
   const slotsForMonth = slotsByDay[monthString];
 
