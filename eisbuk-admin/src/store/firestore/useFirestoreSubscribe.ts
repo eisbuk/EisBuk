@@ -1,4 +1,4 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useRef } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -8,6 +8,7 @@ import {
   addFirestoreListener,
   removeFirestoreListener,
 } from "@/store/actions/firestoreOperations";
+import { getCalendarDay } from "../selectors/app";
 
 /**
  * A hook used to communicate with `ReduxFirestoreProvider`.
@@ -58,6 +59,21 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
       });
     };
   }, [collections]);
+
+  // #region quickfix
+  /**
+   * This is a temporary solution, and is sub optimal
+   * @TODO Fix ASAP
+   */
+  const date = useSelector(getCalendarDay);
+
+  useEffect(() => {
+    newCollections.current.forEach((coll) => {
+      dispatch(removeFirestoreListener(coll, consumerId));
+      dispatch(addFirestoreListener(coll, consumerId));
+    });
+  }, [date]);
+  // #endregion quickfix
 
   useEffect(() => {
     return () => {
