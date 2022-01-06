@@ -36,7 +36,7 @@ const CustomersPage: React.FC = () => {
 
   useTitle(t(NavigationLabel.Athletes));
 
-  const customers = useSelector(getCustomersList);
+  const customers = useSelector(getCustomersList(true));
 
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
 
