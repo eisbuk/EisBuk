@@ -4,7 +4,7 @@ import { getSlotsWithAttendance } from "../attendance";
 
 describe("Selectors ->", () => {
   describe("Test 'getSlotsWithAttendance'", () => {
-    test("should get slots for current day (read from store) with customers attendance data for each slot", () => {
+    test("should get slots for current day (read from store) with customers attendance (sorted by customer name) data for each slot", () => {
       const res = getSlotsWithAttendance(testStore);
       expect(res).toEqual(expectedStruct);
     });

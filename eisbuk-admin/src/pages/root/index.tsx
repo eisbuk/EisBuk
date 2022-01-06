@@ -27,7 +27,7 @@ const DashboardPage: React.FC = () => {
   ]);
 
   const attendanceCards = useSelector(getSlotsWithAttendance);
-  const allCustomers = useSelector(getCustomersList);
+  const allCustomers = useSelector(getCustomersList(true));
 
   const printButton = (
     <IconButton component={Link} to="/attendance_printable">

@@ -38,10 +38,15 @@ export const getSlotsWithAttendance = (
     // create customer + attendance-for-customer entries for slot
     const customers: AttendanceCardProps["customers"] = Object.keys(
       slotsAttendance
-    ).map((customerId) => ({
-      ...allCustomers[customerId],
-      ...slotsAttendance[customerId],
-    }));
+    )
+      .map((customerId) => ({
+        ...allCustomers[customerId],
+        ...slotsAttendance[customerId],
+      }))
+      // sort customers alphabetically
+      .sort(({ name: a1, surname: a2 }, { name: b1, surname: b2 }) =>
+        `${a1} ${a2}`.toLowerCase() < `${b1} ${b2}`.toLowerCase() ? -1 : 1
+      );
 
     return { ...slotsInDay[slotId], customers };
   });

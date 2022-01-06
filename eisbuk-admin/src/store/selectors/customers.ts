@@ -18,10 +18,12 @@ export const getCustomersRecord = (
  * @param state Local Redux Store
  * @returns list of customers
  */
-export const getCustomersList = (state: LocalStore): Customer[] => {
-  const customersInStore = getCustomersRecord(state);
-  return Object.values(customersInStore);
-};
+export const getCustomersList =
+  (sort?: boolean) =>
+  (state: LocalStore): Customer[] => {
+    const customerList = Object.values(getCustomersRecord(state) || {});
+    return sort ? customerList : customerList;
+  };
 
 /**
  * Creates a selector that gets a list of all the customers whose birthdays are today

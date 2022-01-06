@@ -172,10 +172,7 @@ export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
   {
     ...slotsForADay["slot-0"],
     customers: [
-      {
-        ...walt,
-        ...attendance["slot-0"].attendances[walt.id],
-      },
+      // customers should be sorted alphabetically
       {
         ...jian,
         ...attendance["slot-0"].attendances[jian.id],
@@ -183,6 +180,10 @@ export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
       {
         ...saul,
         ...attendance["slot-0"].attendances[saul.id],
+      },
+      {
+        ...walt,
+        ...attendance["slot-0"].attendances[walt.id],
       },
     ],
   },

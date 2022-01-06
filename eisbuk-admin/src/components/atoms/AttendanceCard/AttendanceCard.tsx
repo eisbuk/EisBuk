@@ -54,7 +54,7 @@ export interface Props extends SlotInterface {
  */
 const AttendanceCard: React.FC<Props> = ({
   categories,
-  customers,
+  customers: attendedCustomers,
   intervals,
   type,
   id: slotId,
@@ -91,9 +91,9 @@ const AttendanceCard: React.FC<Props> = ({
       allCustomers.filter(
         ({ category, id }) =>
           categories.includes(category) &&
-          !customers.find(({ id: customerId }) => customerId === id)
+          !attendedCustomers.find(({ id: customerId }) => customerId === id)
       ),
-    [customers]
+    [attendedCustomers]
   );
 
   /**
@@ -112,13 +112,13 @@ const AttendanceCard: React.FC<Props> = ({
         <ListItemText
           primary={
             <span>
-              {timeString} <b>({customers.length})</b>
+              {timeString} <b>({attendedCustomers.length})</b>
             </span>
           }
           secondary={translateAndJoinTags(categories, type)}
         />
       </ListItem>
-      {customers.map(
+      {attendedCustomers.map(
         (customer) =>
           customer.bookedInterval && (
             <UserAttendance
@@ -146,7 +146,7 @@ const AttendanceCard: React.FC<Props> = ({
           )
       )}
       <Divider className={classes.thickerDivider} />
-      {customers.map(
+      {attendedCustomers.map(
         (customer) =>
           !customer.bookedInterval && (
             <UserAttendance
