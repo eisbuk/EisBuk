@@ -88,15 +88,11 @@ const AttendanceCard: React.FC<Props> = ({
    */
   const filteredCustomers = useMemo(
     () =>
-      allCustomers
-        .filter(
-          ({ category, id }) =>
-            categories.includes(category) &&
-            !attendedCustomers.find(({ id: customerId }) => customerId === id)
-        )
-        .sort(({ name: a1, surname: a2 }, { name: b1, surname: b2 }) =>
-          `${a1} ${a2}`.toLowerCase() < `${b1} ${b2}`.toLowerCase() ? -1 : 1
-        ),
+      allCustomers.filter(
+        ({ category, id }) =>
+          categories.includes(category) &&
+          !attendedCustomers.find(({ id: customerId }) => customerId === id)
+      ),
     [attendedCustomers]
   );
 

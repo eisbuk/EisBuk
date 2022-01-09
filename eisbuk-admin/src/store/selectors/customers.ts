@@ -2,6 +2,8 @@ import { Customer, CustomersByBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
+import { compareCustomers } from "@/utils/customers";
+
 /**
  * Get a record of all the customers for current organization from firebase store
  * (not an actual firestore query but rather synced local store entry)
@@ -22,7 +24,7 @@ export const getCustomersList =
   (sort?: boolean) =>
   (state: LocalStore): Customer[] => {
     const customerList = Object.values(getCustomersRecord(state) || {});
-    return sort ? customerList : customerList;
+    return sort ? customerList.sort(compareCustomers) : customerList;
   };
 
 /**

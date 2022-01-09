@@ -4,6 +4,8 @@ import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
+import { compareCustomers } from "@/utils/customers";
+
 export const getSlotsWithAttendance = (
   state: LocalStore
 ): Omit<AttendanceCardProps, "allCustomers">[] => {
@@ -44,9 +46,7 @@ export const getSlotsWithAttendance = (
         ...slotsAttendance[customerId],
       }))
       // sort customers alphabetically
-      .sort(({ name: a1, surname: a2 }, { name: b1, surname: b2 }) =>
-        `${a1} ${a2}`.toLowerCase() < `${b1} ${b2}`.toLowerCase() ? -1 : 1
-      );
+      .sort(compareCustomers);
 
     return { ...slotsInDay[slotId], customers };
   });
