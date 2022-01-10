@@ -20,7 +20,7 @@ import { getSlotsForCustomer } from "@/store/selectors/slots";
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
 
-import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
 
 import { splitSlotsByCustomerRoute } from "./utils";
 

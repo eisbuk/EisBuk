@@ -23,7 +23,7 @@ import useTitle from "@/hooks/useTitle";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();

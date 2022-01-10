@@ -45,10 +45,10 @@ export const updateFirestoreListener = (
   listener: FirestoreListener
 ): {
   type: Action.UpdateFirestoreListener;
-  payload: Partial<Record<CollectionSubscription, FirestoreListener>>;
+  payload: { collection: CollectionSubscription; listener: FirestoreListener };
 } => ({
   type: Action.UpdateFirestoreListener,
-  payload: { [collection]: listener },
+  payload: { collection, listener },
 });
 
 /**
@@ -62,7 +62,9 @@ export const deleteFirestoreListener = (
 ): {
   type: Action.DeleteFirestoreListener;
   payload: CollectionSubscription;
-} => ({
-  type: Action.DeleteFirestoreListener,
-  payload: collection,
-});
+} => {
+  return {
+    type: Action.DeleteFirestoreListener,
+    payload: collection,
+  };
+};

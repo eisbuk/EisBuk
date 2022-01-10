@@ -16,7 +16,7 @@ import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
 
-import useConnectAuthToStore from "@/store/firestore/useConnectAuthToStore";
+import useConnectAuthToStore from "@/store/firestore/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
 

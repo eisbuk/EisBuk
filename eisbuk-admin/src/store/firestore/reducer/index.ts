@@ -18,15 +18,18 @@ export default (
 ): FirestoreState => {
   switch (action.type) {
     case Action.UpdateFirestoreListener:
+      const { collection, listener } =
+        action.payload as FirestoreReducerAction<Action.UpdateFirestoreListener>["payload"];
       return {
         ...state,
         listeners: {
           ...state.listeners,
-          ...(action.payload as FirestoreReducerAction<Action.UpdateFirestoreListener>["payload"]),
+          [collection]: { ...state.listeners[collection], ...listener },
         },
       };
     case Action.DeleteFirestoreListener:
-      const collectionToDelete = action.payload as FirestoreReducerAction<Action.DeleteFirestoreListener>["payload"];
+      const collectionToDelete =
+        action.payload as FirestoreReducerAction<Action.DeleteFirestoreListener>["payload"];
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [collectionToDelete]: _coll, ...data } = state.data;
       // eslint-disable-next-line @typescript-eslint/no-unused-vars

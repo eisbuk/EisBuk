@@ -170,9 +170,33 @@ export interface FirestoreListener {
    */
   consumers: string[];
   /**
-   * A function returned from firebase `onSnapshot` listener, used to unsubscribe from particular collection
+   * A function returned from firebase `onSnapshot` listener, used to unsubscribe from particular collection.
+   * When paginating through (adding more subscription entries) this function gets compositioned into a new one,
+   * thus on `unsubscribe()` call we're unsubscribing from all subscriptions for a given collection.
    */
   unsubscribe: Unsubscribe;
+  /**
+   * A range for which we're subscribing.
+   * @example
+   * ```
+   * ["date", "2021-01-01", "2022-01-01"]
+   * // subscribes to
+   * query(
+   *  collectionRef,
+   *  where("date", ">=", "2021-01-01"),
+   *  where("date", "<=", "2022-01-01"),
+   * )
+   * ```
+   */
+  range?: [string, string, string];
+  /**
+   * Document id's we're subscribing to (i.e. `slostByDay` month entries)
+   * @example
+   * ```
+   * ["2021-01", "2021-02"]
+   * ```
+   */
+  documents?: string[];
   /** @TODO add additional meta functionality (for reporting) here */
 }
 /**
@@ -206,7 +230,10 @@ export interface UpdateFirestoreDataPayload<
  */
 interface FirestorReducerPayload {
   [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>;
-  [Action.UpdateFirestoreListener]: FirestoreListener;
+  [Action.UpdateFirestoreListener]: {
+    collection: CollectionSubscription;
+    listener: FirestoreListener;
+  };
   [Action.DeleteFirestoreListener]: CollectionSubscription;
 }
 /**

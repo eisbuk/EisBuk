@@ -24,7 +24,11 @@ import {
 
 import { Routes } from "@/enums/routes";
 
-import { CollectionSubscription, LocalStore } from "@/types/store";
+import {
+  CollectionSubscription,
+  FirestoreListener,
+  LocalStore,
+} from "@/types/store";
 
 import { updateLocalColl } from "./actionCreators";
 
@@ -49,7 +53,9 @@ interface SubscriptionHandler<
     params: T extends "router"
       ? HandlerParams & { coll: CollectionSubscription }
       : HandlerParams
-  ): Unsubscribe;
+  ): Pick<FirestoreListener, "unsubscribe"> &
+    Pick<FirestoreListener, "documents"> &
+    Pick<FirestoreListener, "range">;
 }
 
 // #region handlerRouter
@@ -81,10 +87,10 @@ export const subscribe: SubscriptionHandler<"router"> = ({
     default:
       // this should be unreachable with proper usage
       console.error(
-        "Trying to subscribe to a non whitelisted function, please investigate the usage"
+        "Trying to subscribe to a non whitelisted collection, please investigate the usage"
       );
       // return an empty function not to break the app
-      return () => {};
+      return { unsubscribe: () => {} };
   }
 };
 // #endregion handlerRouter
@@ -99,13 +105,13 @@ export const subscribe: SubscriptionHandler<"router"> = ({
  * @returns unsubscribe function, created by chaining all three unsubscribe functions received
  * from each individal `onSnapshot` call
  */
-const subToSlotsByDay: SubscriptionHandler = ({ currentDate, dispatch }) =>
-  [-1, 0, 1].reduce(
-    (acc, delta): Unsubscribe => {
-      const monthString = currentDate
-        .plus({ months: delta })
-        .toISODate()
-        .substr(0, 7);
+const subToSlotsByDay: SubscriptionHandler = ({ currentDate, dispatch }) => {
+  const documents = [-1, 0, 1].map((delta) =>
+    currentDate.plus({ months: delta }).toISODate().substring(0, 7)
+  );
+
+  const unsubscribe = documents.reduce(
+    (acc, monthString): Unsubscribe => {
       const docRef = doc(
         getFirestore(),
         getOrgPath(),
@@ -129,6 +135,9 @@ const subToSlotsByDay: SubscriptionHandler = ({ currentDate, dispatch }) =>
     },
     (() => {}) as Unsubscribe
   );
+
+  return { unsubscribe, documents };
+};
 
 /**
  * A subscription handler for `bookings`. Subscribes to firestore `bookings` entry for a customer (using `secretKey`),
@@ -183,9 +192,12 @@ export const subToBookings: SubscriptionHandler = ({
   );
 
   // we want our unsubscribe function to unsubscribe from both listeners
-  return () => {
-    unsubDoc();
-    unsubColl();
+  return {
+    range: ["date", startDate, endDate],
+    unsubscribe: () => {
+      unsubDoc();
+      unsubColl();
+    },
   };
 };
 
@@ -214,10 +226,12 @@ export const subToAttendance: SubscriptionHandler = ({
     where("date", "<=", endDate)
   );
 
-  return onSnapshot(
+  const unsubscribe = onSnapshot(
     attendanceQuery,
     updateCollSnapshot(OrgSubCollection.Attendance, dispatch)
   );
+
+  return { unsubscribe, range: ["date", startDate, endDate] };
 };
 
 /**
@@ -231,10 +245,14 @@ export const subToCustomers: SubscriptionHandler = ({ dispatch }) => {
     `${getOrgPath()}/${OrgSubCollection.Customers}`
   );
 
-  return onSnapshot(
+  const unsubscribe = onSnapshot(
     collRef,
     updateCollSnapshot(OrgSubCollection.Customers, dispatch)
   );
+
+  return {
+    unsubscribe,
+  };
 };
 
 /**
@@ -245,10 +263,12 @@ export const subToCustomers: SubscriptionHandler = ({ dispatch }) => {
 export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
   const docRef = doc(getFirestore(), getOrgPath());
 
-  return onSnapshot(docRef, (snapshot) => {
+  const unsubscribe = onSnapshot(docRef, (snapshot) => {
     const update = { [snapshot.id]: snapshot.data() as OrganizationData };
     dispatch(updateLocalColl(Collection.Organizations, update, true));
   });
+
+  return { unsubscribe };
 };
 // #endregion subHandlers
 
@@ -261,21 +281,21 @@ export const subToOrganization: SubscriptionHandler = ({ dispatch }) => {
  * @param dispatch
  * @returns
  */
-const updateCollSnapshot =
+export const updateCollSnapshot =
   <C extends CollectionSubscription | BookingSubCollection.BookedSlots>(
     collection: C,
     dispatch: Dispatch
   ) =>
-  (snapshot: QuerySnapshot<DocumentData>) => {
+  (snapshot: QuerySnapshot<DocumentData>): void => {
     type CollData = Required<LocalStore["firestore"]["data"]>[C];
     type CollEntry = CollData[keyof CollData];
 
     let updatedData: CollData = {} as CollData;
     snapshot.forEach((doc) => {
-      const customerId = doc.id;
-      const customer = doc.data() as CollEntry;
-      updatedData = { ...updatedData, [customerId]: customer };
+      const docId = doc.id;
+      const entry = doc.data() as CollEntry;
+      updatedData = { ...updatedData, [docId]: entry };
     });
-    dispatch(updateLocalColl(collection, updatedData));
+    dispatch(updateLocalColl(collection, updatedData, true));
   };
 // #endregion helpers

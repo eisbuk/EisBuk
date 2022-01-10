@@ -2,13 +2,13 @@ import { OrgSubCollection } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
-import firestoreReducer from "../firestoreReducer";
+import firestoreReducer from "../";
 
 import {
   updateLocalColl,
   deleteFirestoreListener,
   updateFirestoreListener,
-} from "@/store/actions/firestoreOperations/actionCreators";
+} from "@/store/firestore/actions/actionCreators";
 
 import { baseAttendance } from "@/__testData__/dataTriggers";
 
