@@ -6,6 +6,7 @@ import Button from "@material-ui/core/Button";
 import { closeSnackbar } from "@/store/actions/appActions";
 
 import { SnackbarKey } from "notistack";
+import { __notificationButton__ } from "@/__testData__/testIds";
 
 /**
  * Standardized action function to be used with `notistack` notifications
@@ -16,7 +17,11 @@ const NotificationButton = (key: SnackbarKey): JSX.Element => {
   const dispatch = useDispatch();
 
   return (
-    <Button variant="outlined" onClick={() => dispatch(closeSnackbar(key))}>
+    <Button
+      data-testid={__notificationButton__}
+      variant="outlined"
+      onClick={() => dispatch(closeSnackbar(key))}
+    >
       OK
     </Button>
   );

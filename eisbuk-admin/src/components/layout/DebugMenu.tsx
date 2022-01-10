@@ -13,6 +13,10 @@ import { getOrganization } from "@/lib/getters";
 import { __functionsZone__ } from "@/lib/constants";
 
 import { CloudFunction } from "@/enums/functions";
+import {
+  __debugButtonId__,
+  __create100Athletes__,
+} from "@/__testData__/testIds";
 
 const app = getApp();
 const functions = getFunctions(app, __functionsZone__);
@@ -25,25 +29,27 @@ const DebugMenu: React.FC = () => {
   };
 
   /** @TEMP below, needs to be typed with cloud functions */
-  const handleClose =
-    (functionName?: CloudFunction, params?: any) => async () => {
-      setAnchorEl(null);
-      if (functionName) {
-        try {
-          const res = await httpsCallable(
-            functions,
-            functionName
-          )({
-            ...params,
-            organization: getOrganization(),
-          });
+  const handleClose = (
+    functionName?: CloudFunction,
+    params?: any
+  ) => async () => {
+    setAnchorEl(null);
+    if (functionName) {
+      try {
+        const res = await httpsCallable(
+          functions,
+          functionName
+        )({
+          ...params,
+          organization: getOrganization(),
+        });
 
-          console.log(res.data);
-        } catch (err) {
-          console.error(err);
-        }
+        console.log(res.data);
+      } catch (err) {
+        console.error(err);
       }
-    };
+    }
+  };
 
   return (
     <>
@@ -52,6 +58,7 @@ const DebugMenu: React.FC = () => {
         variant="contained"
         startIcon={<BugReportIcon />}
         onClick={handleClick}
+        data-testid={__debugButtonId__}
       >
         Debug
       </Button>
@@ -67,8 +74,9 @@ const DebugMenu: React.FC = () => {
           Create 1 athlete
         </MenuItem>
         <MenuItem
+          data-testid={__create100Athletes__}
           onClick={handleClose(CloudFunction.CreateTestData, {
-            howMany: 100,
+            numUsers: 100,
           })}
         >
           Create 100 athletes

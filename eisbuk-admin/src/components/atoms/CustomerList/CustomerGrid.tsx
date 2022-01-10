@@ -9,7 +9,7 @@ import { Customer } from "eisbuk-shared";
 import CustomerGridItem from "./CustomerGridItem";
 
 import CustomerDialog from "./CustomerDialog";
-
+import { __customersGridId__ } from "@/__testData__/testIds";
 interface Props {
   customers?: Customer[];
   className?: string;
@@ -41,7 +41,7 @@ const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
     <div className={className}>
       <SearchField {...{ searchString, setSearchString }} />
 
-      <div className={classes.container}>
+      <div className={classes.container} data-testid={__customersGridId__}>
         {customers?.map(
           (customer, i) =>
             (searchRegex.test(customer.name) ||
