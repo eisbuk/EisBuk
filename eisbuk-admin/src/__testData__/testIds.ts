@@ -31,3 +31,17 @@ export const __bookingCardId__ = "booking-interval-card";
 // #region CustomerList
 export const __customersListId__ = "customer-list";
 // #endregion CustomerList
+
+// #region CustomerGrid
+export const __customersGridId__ = "customer-grid";
+export const __customersDialogId__ = "customer-dialog";
+// #endregion CustomerGrid
+
+// #region DebugMenu
+export const __debugButtonId__ = "debug-button";
+export const __create100Athletes__ = "create-athletes";
+// #endregion DebugMenu
+
+// #region notificationButton
+export const __notificationButton__ = "notification-button";
+// #endregion notificationButton

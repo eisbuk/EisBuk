@@ -40,6 +40,7 @@ import {
   __openBookingsId__,
   __sendBookingsEmailId__,
 } from "./__testData__/testIds";
+import { __customersDialogId__ } from "@/__testData__/testIds";
 
 interface Props {
   customer: Customer;
@@ -53,7 +54,7 @@ const CustomerDialog: React.FC<Props> = ({ open, onClose, customer }) => {
   const classes = useStyles();
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog data-testid={__customersDialogId__} open={open} onClose={onClose}>
       <Card className={classes.Card}>
         <CardContent className={classes.CardContent}>
           <Box className={classes.Box}>
