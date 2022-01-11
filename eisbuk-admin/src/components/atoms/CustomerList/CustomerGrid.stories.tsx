@@ -15,6 +15,16 @@ const customers = Object.values(customersObj);
 
 export const Default = (): JSX.Element => (
   <Paper elevation={3}>
-    <CustomerGrid {...{ customers }} />
+    <CustomerGrid
+      customers={[
+        ...customers,
+        {
+          ...customers[0],
+          id: "grzegorz",
+          name: "Grzegorz",
+          surname: "Brzęczyszczykiewicz",
+        },
+      ]}
+    />
   </Paper>
 );

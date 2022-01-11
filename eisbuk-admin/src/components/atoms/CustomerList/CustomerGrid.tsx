@@ -101,7 +101,7 @@ const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexFlow: "row wrap",
-    justifyContent: "center",
+    justifyContent: "start",
   },
 }));
 // #endregion styles
