@@ -1,10 +1,6 @@
 import React from "react";
 
-import Box from "@material-ui/core/Box";
-
 import Typography from "@material-ui/core/Typography";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -23,38 +19,28 @@ const CustomerGridItem: React.FC<Props> = ({
   const classes = useStyles();
 
   return (
-    <div onClick={() => onClick(customer)} className={classes.card}>
-      <Card>
-        <CardContent className={classes.cardContent}>
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <EisbukAvatar {...customer} />
-          </Box>
-          <Typography className={classes.name} variant="body2">
-            {customer.name} {customer.surname}
-          </Typography>
-        </CardContent>
-      </Card>
+    <div onClick={() => onClick(customer)} className={classes.container}>
+      <EisbukAvatar className={classes.avatar} {...customer} />
+      <Typography variant="body2">{customer.name}</Typography>
+      <Typography variant="body2">{customer.surname}</Typography>
     </div>
   );
 };
 
 const useStyles = makeStyles(() => ({
   cursorPointer: { cursor: "pointer" },
-  card: {
-    padding: "0.7rem",
-    cursor: "pointer",
-    // flexGrow: 1,
-  },
-  cardContent: {
-    // height: "4rem",
-    paddingTop: "2rem",
-    height: "10rem",
-  },
-  name: {
+  container: {
+    boxSizing: "border-box",
+    width: "6.125rem",
+    height: "7.5rem",
+    margin: "1rem 0.75rem",
+    padding: "1.125rem 0.25rem",
     display: "flex",
-    justifyContent: "center",
-    paddingTop: "1rem",
+    alignItems: "center",
+    flexDirection: "column",
+    cursor: "pointer",
   },
+  avatar: { width: 50, height: 50, marginBottom: "0.5rem" },
 }));
 
 export default CustomerGridItem;
