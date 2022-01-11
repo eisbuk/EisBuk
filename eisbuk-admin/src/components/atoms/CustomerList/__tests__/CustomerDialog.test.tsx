@@ -71,12 +71,9 @@ describe("Customer Dialog", () => {
     cleanup();
   });
 
-  // describe("Test onClick functionality of CustomerDialog", () => {
-  //   const mockOnClick = jest.fn();
-
   describe("Test CustomerDialog", () => {
     beforeEach(() => {
-      render(<CustomerDialog onClose={() => {}} open={true} customer={saul} />);
+      render(<CustomerDialog onClose={() => {}} customer={saul} />);
     });
 
     afterEach(() => {
@@ -144,7 +141,7 @@ describe("Customer Dialog", () => {
       const sendMailSpy = jest
         .spyOn(customerActions, "sendBookingsLink")
         .mockImplementation((payload) => payload as any);
-      render(<CustomerDialog onClose={() => {}} open={true} customer={saul} />);
+      render(<CustomerDialog onClose={() => {}} customer={saul} />);
 
       screen.getByTestId(__sendBookingsEmailId__).click();
       // the function shouldn't be called before confirmation
@@ -162,7 +159,6 @@ describe("Customer Dialog", () => {
       render(
         <CustomerDialog
           onClose={() => {}}
-          open={true}
           customer={noSecretKeySaul as Customer}
         />
       );
@@ -177,11 +173,7 @@ describe("Customer Dialog", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { email, ...noEmailSaul } = saul;
       render(
-        <CustomerDialog
-          onClose={() => {}}
-          open={true}
-          customer={noEmailSaul as Customer}
-        />
+        <CustomerDialog onClose={() => {}} customer={noEmailSaul as Customer} />
       );
 
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(

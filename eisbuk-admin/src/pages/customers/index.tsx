@@ -53,9 +53,7 @@ const CustomersPage: React.FC = () => {
       <Grid item xs={12}>
         {
           // (isLoaded(customers) &&
-          !isEmpty(customers) && (
-            <CustomerGrid {...{ customers }}></CustomerGrid>
-          )
+          !isEmpty(customers) && <CustomerGrid {...{ customers }} />
           // )
         }
         <Fab

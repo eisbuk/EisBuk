@@ -7,7 +7,7 @@ import * as customersObj from "@/__testData__/customers";
 import CustomerGrid from "./CustomerGrid";
 
 export default {
-  title: "Customer Griddd",
+  title: "Customer Grid",
   component: CustomerGrid,
 } as ComponentMeta<typeof CustomerGrid>;
 

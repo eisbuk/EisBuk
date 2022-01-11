@@ -23,17 +23,12 @@ const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
   const [searchString, setSearchString] = useState("");
   const searchRegex = new RegExp(searchString, "i");
 
-  const [dialogCustomer, setDialogCustomer] = useState<Customer>(
-    {} as Customer
-  );
-
-  const [open, setOpen] = React.useState(false);
+  const [dialogCustomer, setDialogCustomer] = useState<Customer | null>(null);
 
   const handleClose = () => {
-    setOpen(false);
+    setDialogCustomer(null);
   };
   const onCustomerClick = (customer: Customer) => {
-    setOpen(true);
     setDialogCustomer(customer);
   };
 
@@ -55,11 +50,7 @@ const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
             )
         )}
       </div>
-      <CustomerDialog
-        open={open}
-        onClose={handleClose}
-        customer={dialogCustomer}
-      ></CustomerDialog>
+      <CustomerDialog onClose={handleClose} customer={dialogCustomer} />
     </div>
   );
 };
