@@ -43,44 +43,45 @@ import {
 import { __customersDialogId__ } from "@/__testData__/testIds";
 
 interface Props {
-  customer: Customer;
+  customer: Customer | null;
   onClick?: (customer: Customer) => void;
   onClose: () => void;
-  open: boolean;
 }
 
-const CustomerDialog: React.FC<Props> = ({ open, onClose, customer }) => {
+const CustomerDialog: React.FC<Props> = ({ onClose, customer }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
   return (
-    <Dialog data-testid={__customersDialogId__} open={open} onClose={onClose}>
+    <Dialog
+      data-testid={__customersDialogId__}
+      open={Boolean(customer)}
+      onClose={onClose}
+    >
       <Card className={classes.Card}>
         <CardContent className={classes.CardContent}>
           <Box className={classes.Box}>
-            {/* {extended && <AdditionalButtons {...customer} />} */}
             <EisbukAvatar
-              {...{ ...customer, className: classes.BiggerAvatar }}
+              {...{ ...customer!, className: classes.BiggerAvatar }}
             />
             <Typography variant="h4" className={classes.Name}>
-              {customer.name} {customer.surname}
+              {customer?.name} {customer?.surname}
             </Typography>
           </Box>
 
-          <br></br>
+          <br />
           <Typography variant="h6" component="div">
             {t(CustomerLabel.Category)}:{" "}
-            {capitalizeFirst(t(CategoryLabel[customer.category])).replace(
-              "-",
-              " "
-            )}
+            {capitalizeFirst(
+              t(CategoryLabel[customer?.category || ""])
+            ).replace("-", " ")}
           </Typography>
           <Typography variant="h6">
-            {t(CustomerLabel.Email)}: {customer.email}
+            {t(CustomerLabel.Email)}: {customer?.email}
           </Typography>
         </CardContent>
         <CardActions className={classes.CardActions}>
-          <AdditionalButtons customer={customer} onClose={onClose} />
+          <ActionButtons customer={customer} onClose={onClose} />
         </CardActions>
       </Card>
     </Dialog>
@@ -88,9 +89,9 @@ const CustomerDialog: React.FC<Props> = ({ open, onClose, customer }) => {
 };
 
 /**
- * Action buttons for customer operations, used only on `extended` variant.
+ * Action buttons for customer operations
  */
-const AdditionalButtons: React.FC<Omit<Props, "open">> = ({
+const ActionButtons: React.FC<Omit<Props, "open">> = ({
   customer,
   onClose,
 }) => {
@@ -101,12 +102,12 @@ const AdditionalButtons: React.FC<Omit<Props, "open">> = ({
 
   // delete customer flow
   const [deleteDialog, setDeleteDialog] = useState(false);
-  const deleteDialogPrompt = `${t(Prompt.DeleteCustomer)} ${customer.name} ${
-    customer.surname
+  const deleteDialogPrompt = `${t(Prompt.DeleteCustomer)} ${customer?.name} ${
+    customer?.surname
   }?`;
   const confirmDelete = () => {
     onClose();
-    dispatch(deleteCustomer(customer));
+    customer && dispatch(deleteCustomer(customer));
   };
 
   // edit customer flow
@@ -118,15 +119,17 @@ const AdditionalButtons: React.FC<Omit<Props, "open">> = ({
     dispatch(updateCustomer(customer));
   };
   // redirect to customers `bookings` entry flow
-  const bookingsRoute = `${Routes.CustomerArea}/${customer.secretKey}`;
+  const bookingsRoute = `${Routes.CustomerArea}/${customer?.secretKey}`;
   const redirectToBookings = () => history.push(bookingsRoute);
 
   // send booking link flow
   const [sendMailDialog, setSendMailDialog] = useState(false);
-  const sendMailPromptMessage = `${t(Prompt.ConfirmEmail)} ${customer.email} ?`;
+  const sendMailPromptMessage = `${t(Prompt.ConfirmEmail)} ${
+    customer?.email
+  } ?`;
   const sendBookingsEmail = () => {
     onClose();
-    dispatch(sendBookingsLink(customer.id));
+    customer && dispatch(sendBookingsLink(customer.id));
   };
 
   return (
@@ -158,7 +161,7 @@ const AdditionalButtons: React.FC<Omit<Props, "open">> = ({
         onClick={() => setSendMailDialog(true)}
         data-testid={__sendBookingsEmailId__}
         // disable button if email or secret key not provided
-        disabled={!(customer.email && customer.secretKey)}
+        disabled={!(customer?.email && customer?.secretKey)}
       >
         <Mail />
       </IconButton>
@@ -182,7 +185,7 @@ const AdditionalButtons: React.FC<Omit<Props, "open">> = ({
       <CustomerForm
         updateCustomer={handleSubmit}
         open={editCustomer}
-        customer={customer}
+        customer={customer!}
         onClose={closeCustomerForm}
       />
     </>

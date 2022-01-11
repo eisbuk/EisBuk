@@ -13,5 +13,5 @@ export default {
 // const customers = Object.values(customersObj);
 
 export const Default = (): JSX.Element => (
-  <CustomerDialog customer={walt} open={true} onClose={(): void => {}} />
+  <CustomerDialog customer={walt} onClose={(): void => {}} />
 );
