@@ -137,5 +137,11 @@
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"
+  },
+  "CustomerActionButtons": {
+    "Delete": "Delete",
+    "Edit": "Edit",
+    "Bookings": "Bookings",
+    "SendEmail": "Send Email"
   }
 }
