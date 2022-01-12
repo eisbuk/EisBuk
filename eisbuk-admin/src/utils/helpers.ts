@@ -8,7 +8,7 @@ import { SlotInterface, SlotInterval } from "eisbuk-shared";
  * @param surname
  * @returns
  */
-export const getInitials = (name: string, surname: string): string =>
+export const getInitials = (name = "", surname = ""): string =>
   `${name[0]}${surname[0]}`;
 
 interface CheckIndex {
