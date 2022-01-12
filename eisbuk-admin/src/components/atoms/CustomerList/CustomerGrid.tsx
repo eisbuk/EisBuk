@@ -50,7 +50,9 @@ const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
             )
         )}
       </div>
-      <CustomerDialog onClose={handleClose} customer={dialogCustomer} />
+      {dialogCustomer && (
+        <CustomerDialog onClose={handleClose} customer={dialogCustomer} />
+      )}
     </div>
   );
 };
