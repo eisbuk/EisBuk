@@ -17,9 +17,12 @@ import {
   FirestoreThunk,
 } from "@/types/store";
 
-import { updateFirestoreListener, updateLocalColl } from "./actions";
+import {
+  updateFirestoreListener,
+  updateLocalColl,
+} from "@/store/firestore/actions";
 
-import { getFirestoreListeners } from "./selectors";
+import { getFirestoreListeners } from "@/store/firestore/selectors";
 
 type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
   Pick<FirestoreListener, "documents">;
@@ -27,7 +30,7 @@ type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
 interface SubscribeFunction {
   (params: {
     collPath: string;
-    storeAs: string;
+    storeAs?: string;
     constraint: FirestoreListenerConstraint | null;
   }): FirestoreThunk;
 }
@@ -51,6 +54,11 @@ export const updateSubscription: SubscribeFunction =
 
     // subscribe to all
     if (constraint === null) {
+      // if already subscribed to a constrained collection,
+      // unsubscribe
+      if (listener.unsubscribe) {
+        listener.unsubscribe();
+      }
       listener.unsubscribe = onSnapshot(
         collRef,
         createCollSnapshotHandler(dispatch, collName)
@@ -63,6 +71,7 @@ export const updateSubscription: SubscribeFunction =
     if (range) {
       const [rangeProperty, rangeStart, rangeEnd] = range;
       let unsubscribe: Unsubscribe;
+      let oldUnsubscribe: Unsubscribe;
 
       const rangeInStore = listener.range;
 
@@ -71,8 +80,24 @@ export const updateSubscription: SubscribeFunction =
       if (rangeInStore && rangeProperty === rangeInStore[0]) {
         const [, storeRangeStart, storeRangeEnd] = rangeInStore;
         switch (true) {
+          // extend range in both directions: should happed rarely (or never) in production
+          case rangeStart < storeRangeStart && rangeEnd > storeRangeEnd:
+            // unsubscribe from old range
+            listener.unsubscribe();
+            listener.unsubscribe = onSnapshot(
+              query(
+                collRef,
+                where(rangeProperty, ">=", storeRangeEnd),
+                where(rangeProperty, "<=", rangeEnd)
+              ),
+              createCollSnapshotHandler(dispatch, collName)
+            );
+            // update listener with the new range
+            listener.range = [rangeProperty, rangeStart, rangeEnd];
+            break;
+
           // add range from right side
-          case storeRangeEnd > rangeStart && rangeEnd > storeRangeEnd:
+          case rangeStart <= storeRangeEnd && rangeEnd > storeRangeEnd:
             unsubscribe = onSnapshot(
               query(
                 collRef,
@@ -81,15 +106,16 @@ export const updateSubscription: SubscribeFunction =
               ),
               createCollSnapshotHandler(dispatch, collName)
             );
+            oldUnsubscribe = listener.unsubscribe;
             listener.unsubscribe = () => {
-              listener.unsubscribe();
+              oldUnsubscribe();
               unsubscribe();
             };
             listener.range = [rangeProperty, storeRangeStart, rangeEnd];
             break;
 
           // add range from left side
-          case storeRangeStart < rangeEnd && rangeStart < storeRangeStart:
+          case rangeStart < storeRangeStart && rangeEnd >= storeRangeStart:
             unsubscribe = onSnapshot(
               query(
                 collRef,
@@ -98,15 +124,15 @@ export const updateSubscription: SubscribeFunction =
               ),
               createCollSnapshotHandler(dispatch, collName)
             );
+            oldUnsubscribe = listener.unsubscribe;
             listener.unsubscribe = () => {
-              listener.unsubscribe();
+              oldUnsubscribe();
               unsubscribe();
             };
             listener.range = [rangeProperty, rangeStart, storeRangeEnd];
             break;
 
-          // new range starts before the range in store
-          // or two ranges have no overlap (in which case new range takes presedance)
+          // if two ranges have no overlap (in which case new range takes presedance)
           // this shouldn't happen in production but is here as an edge case
           default:
             // unsubscribe from old range
@@ -142,8 +168,8 @@ export const updateSubscription: SubscribeFunction =
       // if some documents for collection already exist in store
       // trim new documents to only subscribe to diff
       const subscribedDocs = listener.documents || [];
-      const trimmedDocs = documents.filter((docId) =>
-        subscribedDocs.includes(docId)
+      const trimmedDocs = documents.filter(
+        (docId) => !subscribedDocs.includes(docId)
       );
 
       trimmedDocs.forEach((docId) => {
@@ -157,12 +183,14 @@ export const updateSubscription: SubscribeFunction =
 
       // return one unsubscribe function composed of all
       // unsubscribe functions returned from each `onSnapshot` call
+      // and "old" `listener.unsubscribe` function from store (if one such exists)
+      const oldUnsubscribe = listener.unsubscribe || (() => {});
       listener.unsubscribe = unsubscribeFunctions.reduce(
         (acc, curr) => () => {
           acc();
           curr();
         },
-        () => {}
+        oldUnsubscribe
       );
       listener.documents = [...trimmedDocs, ...subscribedDocs].sort((a, b) =>
         a > b ? 1 : -1
@@ -173,6 +201,14 @@ export const updateSubscription: SubscribeFunction =
     dispatch(updateFirestoreListener(collName, listener));
   };
 
+interface OnSnapshotHandlerHOF<T extends "doc" | "coll"> {
+  (dispatch: Parameters<FirestoreThunk>[0], storeAs: string): (
+    collSnapshot: T extends "doc"
+      ? DocumentSnapshot<DocumentData>
+      : QuerySnapshot<DocumentData>
+  ) => void;
+}
+
 /**
  * A HOF used to create `onSnapshot`'s `onNext` callback function for a collection:
  * a function in charge of updating local store on each subscribed firestore update.
@@ -182,9 +218,8 @@ export const updateSubscription: SubscribeFunction =
  * @param dispatch `store.dispatch`
  * @param storeAs name of collection in local store's `firestore.data`
  */
-const createCollSnapshotHandler =
-  (dispatch: Parameters<FirestoreThunk>[0], storeAs: string) =>
-  (collSnapshot: QuerySnapshot<DocumentData>) => {
+export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
+  (dispatch, storeAs) => (collSnapshot) => {
     let updatedData = {};
     collSnapshot.forEach((doc) => {
       const docId = doc.id;
@@ -206,9 +241,8 @@ const createCollSnapshotHandler =
  * @param dispatch `store.dispatch`
  * @param storeAs name of collection in local store's `firestore.data`
  */
-const createDocSnapshotHandler =
-  (dispatch: Parameters<FirestoreThunk>[0], storeAs: string) =>
-  (docSnapshot: DocumentSnapshot<DocumentData>) => {
+export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
+  (dispatch, storeAs) => (docSnapshot) => {
     const docData = docSnapshot.data();
 
     dispatch(
