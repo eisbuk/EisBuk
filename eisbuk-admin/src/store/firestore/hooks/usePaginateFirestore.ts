@@ -4,10 +4,7 @@ import { collection } from "@firebase/firestore";
 
 import { Collection } from "eisbuk-shared";
 
-import {
-  updateFirestoreListener,
-  updateLocalColl,
-} from "../actions/actionCreators";
+import { updateFirestoreListener, updateLocalColl } from "../actions";
 
 import { getCalendarDay } from "@/store/selectors/app";
 
@@ -21,7 +18,7 @@ import {
   where,
 } from "firebase/firestore";
 import { __organization__ } from "@/lib/constants";
-import { updateCollSnapshot } from "../actions/subscriptionHandlers";
+import { updateCollSnapshot } from "../thunks/handlers";
 
 /**
  * A hook used to paginate firestore subecriptions on each date change

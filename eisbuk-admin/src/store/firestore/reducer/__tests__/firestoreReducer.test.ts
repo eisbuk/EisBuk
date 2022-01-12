@@ -8,7 +8,7 @@ import {
   updateLocalColl,
   deleteFirestoreListener,
   updateFirestoreListener,
-} from "@/store/firestore/actions/actionCreators";
+} from "../../actions";
 
 import { baseAttendance } from "@/__testData__/dataTriggers";
 

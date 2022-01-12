@@ -16,8 +16,8 @@ import { Routes } from "@/enums/routes";
 
 import { LocalStore } from "@/types/store";
 
-import { subscribe } from "../subscriptionHandlers";
-import { updateLocalColl } from "../actionCreators";
+import { subscribe } from "../handlers";
+import { updateLocalColl } from "../../actions";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -91,7 +91,7 @@ describe("Firestore subscription handlers", () => {
         onSnapshotSpy.mockImplementationOnce(() => unsubFunc)
       );
 
-      const unsubscribe = subscribe({
+      const { unsubscribe } = subscribe({
         coll: OrgSubCollection.Bookings,
         currentDate: testDateLuxon,
         dispatch: jest.fn(),

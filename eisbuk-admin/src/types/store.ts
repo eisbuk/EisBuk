@@ -232,7 +232,7 @@ interface FirestorReducerPayload {
   [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>;
   [Action.UpdateFirestoreListener]: {
     collection: CollectionSubscription;
-    listener: FirestoreListener;
+    listener: Partial<FirestoreListener>;
   };
   [Action.DeleteFirestoreListener]: CollectionSubscription;
 }

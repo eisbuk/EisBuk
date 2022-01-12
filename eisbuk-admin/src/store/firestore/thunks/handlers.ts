@@ -30,7 +30,7 @@ import {
   LocalStore,
 } from "@/types/store";
 
-import { updateLocalColl } from "./actionCreators";
+import { updateLocalColl } from "../actions";
 
 import { getOrganization } from "@/lib/getters";
 

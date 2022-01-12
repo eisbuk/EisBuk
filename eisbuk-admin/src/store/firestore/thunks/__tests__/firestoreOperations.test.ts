@@ -4,12 +4,12 @@ import { cleanup } from "@testing-library/react";
 
 import { OrgSubCollection } from "eisbuk-shared";
 
-import * as firestoreSubscriptions from "../subscriptionHandlers";
+import * as firestoreSubscriptions from "../handlers";
 import { addFirestoreListener, removeFirestoreListener } from "../index";
 import {
   deleteFirestoreListener,
   updateFirestoreListener,
-} from "../actionCreators";
+} from "../../actions";
 
 import { CollectionSubscription, FirestoreListener } from "@/types/store";
 

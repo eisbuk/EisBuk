@@ -9,8 +9,8 @@ import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
 
-import { subscribe } from "../subscriptionHandlers";
-import { updateLocalColl } from "../actionCreators";
+import { subscribe } from "../handlers";
+import { updateLocalColl } from "../../actions";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -55,7 +55,7 @@ describe("Firestore subscription handlers", () => {
         onSnapshotSpy.mockImplementationOnce(() => unsubFunc);
       });
       // call the function and it's returned (unsub function)
-      const unsubAll = subscribe({
+      const { unsubscribe: unsubAll } = subscribe({
         currentDate: testDateLuxon,
         dispatch: jest.fn(),
         coll: OrgSubCollection.SlotsByDay,
@@ -107,7 +107,7 @@ describe("Firestore subscription handlers", () => {
         currentDate: testDateLuxon,
         dispatch,
         coll: OrgSubCollection.SlotsByDay,
-      })();
+      });
       const updatedState = (getState() as LocalStore).firestore.data.slotsByDay;
       // the firestore entry should be the same with only test month updated
       expect(updatedState).toEqual({

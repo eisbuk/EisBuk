@@ -9,11 +9,11 @@ import { __organization__ } from "@/lib/constants";
 
 import { getNewStore } from "@/store/createStore";
 
-import { subscribe } from "../subscriptionHandlers";
+import { subscribe } from "../handlers";
 
 import { testDateLuxon } from "@/__testData__/date";
 import { FirestoreData } from "@/types/store";
-import { updateLocalColl } from "../actionCreators";
+import { updateLocalColl } from "../../actions";
 
 // we're using `onSnapshot` spy to test subscriptions to the firestore db
 const onSnapshotSpy = jest.spyOn(firestore, "onSnapshot");

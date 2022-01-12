@@ -9,8 +9,8 @@ import { __organization__ } from "@/lib/constants";
 
 import { LocalStore } from "@/types/store";
 
-import { subscribe } from "../subscriptionHandlers";
-import { updateLocalColl } from "../actionCreators";
+import { subscribe } from "../handlers";
+import { updateLocalColl } from "../../actions";
 
 import { getNewStore } from "@/store/createStore";
 

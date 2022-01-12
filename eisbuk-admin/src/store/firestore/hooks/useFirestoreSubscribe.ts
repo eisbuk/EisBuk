@@ -4,7 +4,7 @@ import { v4 as uuid } from "uuid";
 
 import { CollectionSubscription } from "@/types/store";
 
-import { addFirestoreListener, removeFirestoreListener } from "../actions";
+import { addFirestoreListener, removeFirestoreListener } from "../thunks";
 
 /**
  * A hook used to communicate with `ReduxFirestoreProvider`.

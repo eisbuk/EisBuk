@@ -7,13 +7,13 @@ import { db } from "@/__testSetup__/firestoreSetup";
 
 import { __organization__ } from "@/lib/constants";
 
-import { subscribe } from "../subscriptionHandlers";
+import { subscribe } from "../handlers";
 
 import { getNewStore } from "@/store/createStore";
 
 import { saul, gus, jian } from "@/__testData__/customers";
 import { testDateLuxon } from "@/__testData__/date";
-import { updateLocalColl } from "../actionCreators";
+import { updateLocalColl } from "../../actions";
 
 const customersCollPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
