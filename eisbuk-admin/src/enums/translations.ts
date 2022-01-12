@@ -168,3 +168,12 @@ export enum SlotFormAria {
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
 }
 // #endregion aria-labels
+
+// #region customerActionButtons
+export enum CustomerActionButtons {
+  Delete = "CustomerActionButtons.Delete",
+  Edit = "CustomerActionButtons.Edit",
+  Bookings = "CustomerActionButtons.Bookings",
+  SendEmail = "CustomerActionButtons.SendEmail",
+}
+// #endregion customerActionButtons

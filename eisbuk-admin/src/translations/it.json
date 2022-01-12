@@ -137,5 +137,11 @@
   "BirthdayMenu": {
     "ShowAll": "Mostra Tutti",
     "UpcomingBirthdays": "Prossimi Compleanni"
+  },
+  "CustomerActionButtons": {
+    "Delete": "Eliminare",
+    "Edit": "Modificare",
+    "Bookings": "Prenotazioni",
+    "SendEmail": "Invia Una Email"
   }
 }
