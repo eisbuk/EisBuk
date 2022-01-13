@@ -207,7 +207,8 @@ export type CollectionSubscription =
   | OrgSubCollection.SlotsByDay
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings
-  | OrgSubCollection.Attendance;
+  | OrgSubCollection.Attendance
+  | BookingSubCollection.BookedSlots;
 /**
  * Whitelisted actions for firestore reducer
  */

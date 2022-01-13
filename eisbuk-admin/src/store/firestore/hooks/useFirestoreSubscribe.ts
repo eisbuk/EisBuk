@@ -1,10 +1,14 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useMemo, useRef } from "react";
 import { v4 as uuid } from "uuid";
 
 import { CollectionSubscription } from "@/types/store";
 
 import { addFirestoreListener, removeFirestoreListener } from "../thunks";
+
+import { getCalendarDay } from "@/store/selectors/app";
+
+import { getCollectionPath, getConstraintForColl } from "../utils";
 
 /**
  * A hook used to communicate with `ReduxFirestoreProvider`.
@@ -13,6 +17,7 @@ import { addFirestoreListener, removeFirestoreListener } from "../thunks";
  */
 const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
   const dispatch = useDispatch();
+  const currentDate = useSelector(getCalendarDay);
 
   /**
    * A uuid used to identify the current instance of a hook as a consumer of registered listeners.
@@ -39,7 +44,16 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
     // perform `setCollection` on each new collection (present in new state, but not in the old one)
     newCollections.current.forEach((coll) => {
       if (!oldCollections.current.includes(coll)) {
-        dispatch(addFirestoreListener(coll, consumerId));
+        dispatch(
+          addFirestoreListener(
+            {
+              storeAs: coll,
+              collPath: getCollectionPath(coll),
+              constraint: getConstraintForColl(coll, currentDate),
+            },
+            consumerId
+          )
+        );
       }
     });
 

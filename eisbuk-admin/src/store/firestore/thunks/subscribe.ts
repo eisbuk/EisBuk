@@ -24,15 +24,17 @@ import {
 
 import { getFirestoreListeners } from "@/store/firestore/selectors";
 
-type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
+export type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
   Pick<FirestoreListener, "documents">;
 
+export interface SubscriptionParams {
+  collPath: string;
+  storeAs?: string;
+  constraint: FirestoreListenerConstraint | null;
+}
+
 interface SubscribeFunction {
-  (params: {
-    collPath: string;
-    storeAs?: string;
-    constraint: FirestoreListenerConstraint | null;
-  }): FirestoreThunk;
+  (params: SubscriptionParams): FirestoreThunk;
 }
 
 export const updateSubscription: SubscribeFunction =

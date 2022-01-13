@@ -1,7 +1,9 @@
 import { CollectionSubscription, FirestoreThunk } from "@/types/store";
 
-import { subscribe } from "./handlers";
+import { updateSubscription, SubscriptionParams } from "./subscribe";
 import { updateFirestoreListener, deleteFirestoreListener } from "../actions";
+
+import { getFirestoreListeners } from "../selectors";
 
 /**
  * Sets a listener to active listeners and opens up a subscription to firestore for provided
@@ -13,16 +15,16 @@ import { updateFirestoreListener, deleteFirestoreListener } from "../actions";
  * used to register multiple consumers subscribed to a same listener
  */
 export const addFirestoreListener =
-  (collection: CollectionSubscription, consumerId: string): FirestoreThunk =>
+  (
+    { storeAs, ...subscriptionParams }: Required<SubscriptionParams>,
+    consumerId: string
+  ): FirestoreThunk =>
   async (dispatch, getState) => {
-    const {
-      app: { calendarDay: currentDate },
-      firestore: { listeners },
-    } = getState();
+    const listeners = getFirestoreListeners(getState());
     // check if listener for provided collection exists
-    let listener = listeners[collection];
+    let listener = listeners[storeAs as CollectionSubscription];
     if (listener) {
-      // check if current consumer already regietered with the listener
+      // check if current consumer already registered with the listener
       const consumer = listener.consumers.find(
         (consumer) => consumer === consumerId
       );
@@ -33,11 +35,17 @@ export const addFirestoreListener =
       // if a listener for a collection doesn't exist create a new firestore subscription
       listener = {
         consumers: [consumerId],
-        ...subscribe({ coll: collection, currentDate, dispatch }),
+        // add an empty `unsubscribe` function
+        // to prevent possible crashing if called before the
+        // actual `unsubscribe` function is updated from the `updateSubscription` thunk
+        unsubscribe: () => {},
       };
+      dispatch(updateSubscription({ storeAs, ...subscriptionParams }));
     }
     // save updated listener to Redux store
-    dispatch(updateFirestoreListener(collection, listener));
+    dispatch(
+      updateFirestoreListener(storeAs as CollectionSubscription, listener)
+    );
   };
 
 /**
