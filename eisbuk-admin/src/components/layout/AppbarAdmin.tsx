@@ -59,17 +59,15 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     setAnchorEl(e.currentTarget);
   };
 
-  const handleClose =
-    (action = "") =>
-    () => {
-      switch (action) {
-        case "logout":
-          dispatch(signOut());
-        // eslint-disable-next-line no-fallthrough
-        default:
-          setAnchorEl(null);
-      }
-    };
+  const handleClose = (action = "") => () => {
+    switch (action) {
+      case "logout":
+        dispatch(signOut());
+      // eslint-disable-next-line no-fallthrough
+      default:
+        setAnchorEl(null);
+    }
+  };
   const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
   const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
@@ -147,12 +145,12 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
-          {customers.length > 0 && (
-            <BirthdayMenu
-              customers={customers}
-              onClickShowAll={() => setShowAll(true)}
-            />
-          )}
+
+          <BirthdayMenu
+            customers={customers}
+            onClickShowAll={() => setShowAll(true)}
+          />
+
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}
