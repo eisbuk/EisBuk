@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { Collection } from "eisbuk-shared";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
 
@@ -37,10 +37,11 @@ const AppContent: React.FC = () => {
   const isAuthEmpty = useSelector(getIsAuthEmpty);
 
   const subscribedCollections: CollectionSubscription[] =
-    isAuthLoaded && !isAuthEmpty ? [Collection.Organizations] : [];
+    isAuthLoaded && !isAuthEmpty
+      ? [Collection.Organizations, OrgSubCollection.Customers]
+      : [];
 
   useFirestoreSubscribe(subscribedCollections);
-
   return (
     <BrowserRouter>
       <Switch>
