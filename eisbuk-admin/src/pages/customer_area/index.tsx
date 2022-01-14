@@ -1,8 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { OrgSubCollection } from "eisbuk-shared";
+import { OrgSubCollection, BookingSubCollection } from "eisbuk-shared";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -12,6 +12,8 @@ import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+
 import {
   getBookingsCustomer,
   getBookedSlots,
@@ -20,9 +22,8 @@ import { getSlotsForCustomer } from "@/store/selectors/slots";
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
 
-import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
-
 import { splitSlotsByCustomerRoute } from "./utils";
+import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
 
 /**
  * Customer sub routes:
@@ -34,17 +35,29 @@ import { splitSlotsByCustomerRoute } from "./utils";
  * - renders appropriate sub route with respect to `customerRoute` provided
  */
 const CustomerArea: React.FC = () => {
-  const { customerRoute } = useParams<{
+  const { customerRoute, secretKey } = useParams<{
     secretKey: string;
     customerRoute: CustomerRoute;
   }>();
 
+  // store secret key to local storage
+  // for easier access
+  useEffect(() => {
+    setSecretKey(secretKey);
+
+    return () => {
+      // remove secretKey from local storage on unmount
+      unsetSecretKey();
+    };
+  }, [secretKey]);
+
   useFirestoreSubscribe([
     OrgSubCollection.Bookings,
+    BookingSubCollection.BookedSlots,
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const customerData = useSelector(getBookingsCustomer);
+  const customerData = useSelector(getBookingsCustomer(secretKey));
   const date = useSelector(getCalendarDay);
 
   // only the "book_ice" will use "month" timeframe, the rest will use "week"

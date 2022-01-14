@@ -30,8 +30,10 @@ export default (
     case Action.DeleteFirestoreListener:
       const collectionToDelete =
         action.payload as FirestoreReducerAction<Action.DeleteFirestoreListener>["payload"];
+      // remove the data from the subscribed collection from the store
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [collectionToDelete]: _coll, ...data } = state.data;
+      // remove the listener for a collection from the store
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { [collectionToDelete]: _listener, ...listeners } = state.listeners;
       // return state with listener for collection and the correspoding data removed

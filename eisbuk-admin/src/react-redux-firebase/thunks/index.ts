@@ -1,7 +1,10 @@
 import { CollectionSubscription, FirestoreThunk } from "@/types/store";
 
 import { updateSubscription, SubscriptionParams } from "./subscribe";
-import { updateFirestoreListener, deleteFirestoreListener } from "../actions";
+import {
+  updateFirestoreListener,
+  deleteFirestoreListener,
+} from "@/react-redux-firebase/actions";
 
 import { getFirestoreListeners } from "../selectors";
 

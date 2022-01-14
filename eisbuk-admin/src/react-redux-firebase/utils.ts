@@ -6,10 +6,13 @@ import {
   BookingSubCollection,
 } from "eisbuk-shared";
 
+import { __organization__ } from "@/lib/constants";
+
 import { CollectionSubscription } from "@/types/store";
 
 import { FirestoreListenerConstraint } from "./thunks/subscribe";
-import { __organization__ } from "@/lib/constants";
+
+import { getSecretKey } from "@/utils/localStorage";
 
 export const getConstraintForColl = (
   collection: CollectionSubscription,
@@ -47,9 +50,6 @@ export const getConstraintForColl = (
   return collectionConstraintLookup[collection];
 };
 
-// get secretKey if available
-const getSecretKey = () => window?.location?.pathname.split("/").pop() || "";
-
 export const getCollectionPath = (
   collection: CollectionSubscription
 ): string => {
@@ -57,10 +57,8 @@ export const getCollectionPath = (
     "/"
   );
 
-  const secretKey = getSecretKey();
-
   const collectionPathLookup = {
-    [Collection.Organizations]: organizationPath,
+    [Collection.Organizations]: Collection.Organizations,
 
     [OrgSubCollection.Attendance]: [
       organizationPath,
@@ -70,7 +68,6 @@ export const getCollectionPath = (
     [OrgSubCollection.Bookings]: [
       organizationPath,
       OrgSubCollection.Bookings,
-      secretKey,
     ].join("/"),
 
     [OrgSubCollection.SlotsByDay]: [
@@ -86,7 +83,7 @@ export const getCollectionPath = (
     [BookingSubCollection.BookedSlots]: [
       organizationPath,
       OrgSubCollection.Bookings,
-      secretKey,
+      getSecretKey(),
       BookingSubCollection.BookedSlots,
     ].join("/"),
   };

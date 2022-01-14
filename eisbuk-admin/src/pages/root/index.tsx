@@ -16,7 +16,7 @@ import AttendanceCard from "@/components/atoms/AttendanceCard";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCustomersList } from "@/store/selectors/customers";
-import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();

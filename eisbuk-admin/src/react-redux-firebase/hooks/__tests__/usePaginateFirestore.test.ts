@@ -10,7 +10,7 @@ import useFirestoreSubscribe from "../useFirestoreSubscribe";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { getFirestoreListeners } from "@/store/firestore/selectors";
+import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
 
 import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 import { testHookWithRedux } from "@/__testUtils__/testHooksWithRedux";

@@ -11,9 +11,9 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { getCollectionPath, getConstraintForColl } from "../utils";
 
 /**
- * A hook used to communicate with `ReduxFirestoreProvider`.
- * Adds listeners to `ReduxFirestoreProvider` (and removes them on unmount).
- * @param collections a list of (whitelisted) collections we're adding listeners for
+ * A hook used to create, update and remove firestore subscriptions and update the
+ * `listeners` entries accordingly
+ * @param collections a list of collections we're creating subscriptions for
  */
 const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
   const dispatch = useDispatch();
@@ -37,6 +37,7 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
    * copied in closure, but this way it's able to acces the new (current) value on function run
    */
   const newCollections = useRef<CollectionSubscription[]>([]);
+
   // on each rerender, the current value for collections gets saved to `newCollections` ref
   newCollections.current = collections;
 

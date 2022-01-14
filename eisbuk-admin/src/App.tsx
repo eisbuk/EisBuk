@@ -16,7 +16,7 @@ import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
 
-import useConnectAuthToStore from "@/store/firestore/hooks/useConnectAuthToStore";
+import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
 

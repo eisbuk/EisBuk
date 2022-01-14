@@ -6,7 +6,7 @@ import { OrgSubCollection } from "eisbuk-shared";
 import { getNewStore } from "@/store/createStore";
 
 import { updateSubscription } from "../subscribe";
-import { updateFirestoreListener } from "@/store/firestore/actions";
+import { updateFirestoreListener } from "@/react-redux-firebase/actions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { getAuthTestEnv } from "../__testUtils__/utils";

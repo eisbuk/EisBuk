@@ -21,9 +21,9 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
 
-import usePaginateFirestore from "@/store/firestore/hooks/usePaginateFirestore";
+import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
 
-import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
 

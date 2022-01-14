@@ -8,7 +8,7 @@ import {
   updateLocalColl,
   deleteFirestoreListener,
   updateFirestoreListener,
-} from "../../actions";
+} from "@/react-redux-firebase/actions";
 
 import { baseAttendance } from "@/__testData__/dataTriggers";
 

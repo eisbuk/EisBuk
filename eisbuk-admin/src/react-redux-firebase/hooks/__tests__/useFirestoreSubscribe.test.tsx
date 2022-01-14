@@ -6,9 +6,9 @@ import { getNewStore } from "@/store/createStore";
 
 import useFirestoreSubscribe from "../useFirestoreSubscribe";
 
-import * as listenerThunks from "@/store/firestore/thunks";
+import * as listenerThunks from "@/react-redux-firebase/thunks";
 
-import { getFirestoreListeners } from "@/store/firestore/selectors";
+import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
 
 import { isEmpty } from "@/utils/helpers";
 

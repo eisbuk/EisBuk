@@ -154,12 +154,12 @@ export interface CopyPasteState {
 export interface FirestoreData {
   [Collection.Organizations]: { [organization: string]: OrganizationData };
   [OrgSubCollection.Customers]: { [customerId: string]: Customer };
-  [OrgSubCollection.Bookings]: CustomerBase;
-  [BookingSubCollection.BookedSlots]: {
+  [OrgSubCollection.Bookings]: {
     /** This is @TEMP make this only one entry (without secretKey) when we add 'transform' functionality to firestore subscribe */
-    [secretKey: string]: {
-      [slotId: string]: CustomerBookingEntry;
-    };
+    [secretKey: string]: CustomerBase;
+  };
+  [BookingSubCollection.BookedSlots]: {
+    [slotId: string]: CustomerBookingEntry;
   };
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };

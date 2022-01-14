@@ -30,7 +30,7 @@ import {
   addSlotToClipboard,
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
-import useFirestoreSubscribe from "@/store/firestore/hooks/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();

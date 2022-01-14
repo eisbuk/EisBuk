@@ -20,9 +20,9 @@ import {
 import {
   updateFirestoreListener,
   updateLocalColl,
-} from "@/store/firestore/actions";
+} from "@/react-redux-firebase/actions";
 
-import { getFirestoreListeners } from "@/store/firestore/selectors";
+import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
 
 export type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
   Pick<FirestoreListener, "documents">;
@@ -37,8 +37,23 @@ interface SubscribeFunction {
   (params: SubscriptionParams): FirestoreThunk;
 }
 
+/**
+ * A handler used to create or update firestore subscription.
+ * - if creating a new listener, subscribes to firestore using `onShapshot` with respect to
+ *   `constraint` and updates the listener entry in local store with `unsubscribe` handler returned from `onSnapshot`
+ *   as well as `constraint` (if any)
+ * - if updating an existing listener, checks the listener entry in local store and creates and subscribes to the difference
+ *   from existing subscription (extended `range`, or additional `documents`). After subscription, updates the listener
+ *   listener entry in local store with `unsubscribe` function composed of existing `listener.unsubscribe` function and the
+ *   new `unsubscribe` function returned from new subscription's `onSnapshot`
+ *
+ * @param {string} params.collPath a firestore path to a given collection (i.e. `"organizations/{organziation}/attendance"`)
+ * @param {string} params.storeAs a key for local store `firestore.data` and `firestore.listeners` entry for a collection (most commonly a collection name)
+ * @param constraint `null` (in case of subscribing to an entire collection) or an object containing `range` or `documents` constraint for firestore query
+ * @returns firestore thunk
+ */
 export const updateSubscription: SubscribeFunction =
-  ({ collPath, storeAs, constraint }) =>
+  ({ collPath, storeAs, constraint }: SubscriptionParams): FirestoreThunk =>
   async (dispatch, getState) => {
     // a fallback local store entry name in case `storeAs` is not defined
     const collName: CollectionSubscription = (storeAs ||
@@ -54,7 +69,7 @@ export const updateSubscription: SubscribeFunction =
       getFirestoreListeners(getState())[collName as CollectionSubscription] ||
       ({} as FirestoreListener);
 
-    // subscribe to all
+    // #region nullConstraintSubscription
     if (constraint === null) {
       // if already subscribed to a constrained collection,
       // unsubscribe
@@ -66,10 +81,11 @@ export const updateSubscription: SubscribeFunction =
         createCollSnapshotHandler(dispatch, collName)
       );
     }
+    // #endregion nullConstraintSubscription
 
     const { range, documents } = constraint || {};
 
-    // subscribe to range
+    // #region rangeConstraintSubscription
     if (range) {
       const [rangeProperty, rangeStart, rangeEnd] = range;
       let unsubscribe: Unsubscribe;
@@ -162,8 +178,9 @@ export const updateSubscription: SubscribeFunction =
         listener.range = range;
       }
     }
+    // #endregion rangeConstraintSubscription
 
-    // subscribe to docs
+    // #region documentsConstraintSubscription
     if (documents) {
       const unsubscribeFunctions: Unsubscribe[] = [];
 
@@ -198,6 +215,7 @@ export const updateSubscription: SubscribeFunction =
         a > b ? 1 : -1
       );
     }
+    // #endregion documentsConstraintSubscription
 
     // update listener
     dispatch(updateFirestoreListener(collName, listener));

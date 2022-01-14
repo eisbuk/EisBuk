@@ -9,7 +9,7 @@ import { __organization__ } from "@/lib/constants";
 import { Action } from "@/enums/store";
 
 import { revalidateAdminStatus, updateAuthUser } from "../authOperations";
-import { updateLocalColl } from "@/store/firestore/actions";
+import { updateLocalColl } from "@/react-redux-firebase/actions";
 
 import { getNewStore } from "@/store/createStore";
 
