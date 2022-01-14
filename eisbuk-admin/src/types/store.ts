@@ -156,7 +156,10 @@ export interface FirestoreData {
   [OrgSubCollection.Customers]: { [customerId: string]: Customer };
   [OrgSubCollection.Bookings]: CustomerBase;
   [BookingSubCollection.BookedSlots]: {
-    [slotId: string]: CustomerBookingEntry;
+    /** This is @TEMP make this only one entry (without secretKey) when we add 'transform' functionality to firestore subscribe */
+    [secretKey: string]: {
+      [slotId: string]: CustomerBookingEntry;
+    };
   };
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
