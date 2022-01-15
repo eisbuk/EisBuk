@@ -9,6 +9,8 @@ import Card from "@material-ui/core/Card";
 import CardActions from "@material-ui/core/CardActions";
 import CardContent from "@material-ui/core/CardContent";
 import Dialog from "@material-ui/core/Dialog";
+import Button from "@material-ui/core/Button";
+import IconButton from "@material-ui/core/IconButton";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -38,6 +40,7 @@ import {
 } from "@/store/actions/customerOperations";
 
 import { capitalizeFirst } from "@/utils/helpers";
+
 import {
   __customerDeleteId__,
   __customerEditId__,
@@ -45,7 +48,6 @@ import {
   __sendBookingsEmailId__,
 } from "./__testData__/testIds";
 import { __customersDialogId__ } from "@/__testData__/testIds";
-import Button from "@material-ui/core/Button";
 
 interface Props {
   customer: Customer | null;
@@ -57,97 +59,103 @@ const CustomerDialog: React.FC<Props> = ({ onClose, customer }) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  /**
+   * A render function used to automate rendering of
+   * customer's record values
+   * @param customer
+   */
+  const renderCustomerData = (customer: Customer): JSX.Element => {
+    const renderOrder: (keyof Customer)[] = [
+      "name",
+      "surname",
+      "category",
+      "email",
+      "phone",
+      "birthday",
+      "certificateExpiration",
+      "covidCertificateReleaseDate",
+    ];
+
+    return (
+      <>
+        {renderOrder.map((property) => {
+          /** We're using capitalize first to transform customer property into appropriate i18n key */
+          const translatedLabel = t(CustomerLabel[capitalizeFirst(property)]);
+
+          const value =
+            // if we're rendering category we're applying special formating as
+            // translations of multi-word categories are "-" separeted lowercased words
+            property === "category"
+              ? capitalizeFirst(t(CategoryLabel[customer.category])).replace(
+                  "-",
+                  " "
+                )
+              : customer[property] || "-";
+
+          return (
+            <Typography variant="h6">
+              <span className={classes.bold}>{translatedLabel}: </span>
+              {value}
+            </Typography>
+          );
+        })}
+      </>
+    );
+  };
+
   return (
     <Dialog
+      maxWidth="lg"
       data-testid={__customersDialogId__}
       open={Boolean(customer)}
       onClose={onClose}
     >
       <Card>
         <CardContent className={classes.CardContent}>
-          <Box className={classes.Box}>
-            <EisbukAvatar
-              {...{ ...customer!, className: classes.BiggerAvatar }}
-            />
-            <div className={classes.NameContainer}>
-              <Typography variant="h4" className={classes.Name}>
+          <Box className={classes.topSection}>
+            <EisbukAvatar {...{ ...customer!, className: classes.avatar }} />
+            <div className={classes.nameContainer}>
+              <Typography variant="h4" className={classes.bold}>
                 {customer?.name}
               </Typography>
-              <Typography variant="h4" className={classes.Name}>
-                {customer?.surname}
-              </Typography>
+              <Typography variant="h4">{customer?.surname}</Typography>
+              <CustomerOperationButtons
+                customer={customer!}
+                className={classes.customerOperationsContainer}
+                {...{ onClose }}
+              />
             </div>
           </Box>
           <br />
-          <Typography variant="h6" component="div">
-            <span className={classes.BoldLabel}>
-              {t(CustomerLabel.Category)}:{" "}
-            </span>
-            {capitalizeFirst(
-              t(CategoryLabel[customer?.category || ""])
-            ).replace("-", " ")}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {t(CustomerLabel.Email)}:{" "}
-            </span>
-            {customer?.email}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {" "}
-              {t(CustomerLabel.DateOfBirth)}:{" "}
-            </span>
-            {customer?.birthday}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {" "}
-              {t(CustomerLabel.Phone)}:{" "}
-            </span>
-            {customer?.phone}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {" "}
-              {t(CustomerLabel.CardNumber)}:{" "}
-            </span>
-            {customer?.subscriptionNumber || "-"}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {" "}
-              {t(CustomerLabel.MedicalCertificate)}:{" "}
-            </span>
-            {customer?.certificateExpiration}
-          </Typography>
-          <Typography variant="h6">
-            <span className={classes.BoldLabel}>
-              {" "}
-              {t(CustomerLabel.CovidCertificateReleaseDate)}:{" "}
-            </span>
-            {customer?.covidCertificateReleaseDate}
-          </Typography>
+          {renderCustomerData(customer!)}
         </CardContent>
-        <CardActions className={classes.CardActions}>
-          <ActionButtons customer={customer} onClose={onClose} />
-        </CardActions>
+        <ActionButtons
+          className={classes.actionButtonsContainer}
+          customer={customer!}
+          onClose={onClose}
+        />
       </Card>
     </Dialog>
   );
 };
 
+interface ActionButtonProps {
+  customer: Customer;
+  onClose: () => void;
+  className?: string;
+}
+
 /**
- * Action buttons for customer operations
+ * Action buttons for customer operations, rendered as icon buttons (without text)
  */
-const ActionButtons: React.FC<Omit<Props, "open">> = ({
+const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
   customer,
   onClose,
+  className,
 }) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
-  const history = useHistory();
 
   // delete customer flow
   const [deleteDialog, setDeleteDialog] = useState(false);
@@ -167,6 +175,59 @@ const ActionButtons: React.FC<Omit<Props, "open">> = ({
     onClose();
     dispatch(updateCustomer(customer));
   };
+
+  return (
+    <CardActions {...{ className }}>
+      <IconButton
+        aria-label="delete"
+        onClick={() => setDeleteDialog(true)}
+        data-testid={__customerDeleteId__}
+      >
+        <DeleteIcon />
+      </IconButton>
+      <IconButton
+        aria-label="edit"
+        onClick={openCustomerForm}
+        data-testid={__customerEditId__}
+      >
+        <EditIcon />
+      </IconButton>
+
+      <ConfirmDialog
+        open={deleteDialog}
+        title={deleteDialogPrompt}
+        setOpen={setDeleteDialog}
+        onConfirm={confirmDelete}
+      >
+        {t(Prompt.NonReversible)}
+      </ConfirmDialog>
+
+      <CustomerForm
+        updateCustomer={handleSubmit}
+        open={editCustomer}
+        customer={customer!}
+        onClose={closeCustomerForm}
+      />
+    </CardActions>
+  );
+};
+
+/**
+ * Labeled action buttons to open customer's bookings or send
+ * booking link via sms/email, rendered as icon + text
+ */
+const ActionButtons: React.FC<ActionButtonProps> = ({
+  customer,
+  onClose,
+  className,
+}) => {
+  const { t } = useTranslation();
+
+  const dispatch = useDispatch();
+  const history = useHistory();
+
+  const classes = useStyles();
+
   // redirect to customers `bookings` entry flow
   const bookingsRoute = `${Routes.CustomerArea}/${customer?.secretKey}`;
   const redirectToBookings = () => history.push(bookingsRoute);
@@ -182,27 +243,9 @@ const ActionButtons: React.FC<Omit<Props, "open">> = ({
   };
 
   return (
-    <>
+    <div {...{ className }}>
       <Button
-        color="primary"
-        onClick={() => setDeleteDialog(true)}
-        data-testid={__customerDeleteId__}
-        variant="contained"
-      >
-        <DeleteIcon style={{ paddingRight: "5px" }} />
-        {t(CustomerActionButtons.Delete)}
-      </Button>
-      <Button
-        aria-label="edit"
-        color="primary"
-        onClick={openCustomerForm}
-        data-testid={__customerEditId__}
-        variant="contained"
-      >
-        <EditIcon style={{ paddingRight: "5px" }} />
-        {t(CustomerActionButtons.Edit)}
-      </Button>
-      <Button
+        className={classes.actionButton}
         color="primary"
         onClick={redirectToBookings}
         data-testid={__openBookingsId__}
@@ -212,6 +255,7 @@ const ActionButtons: React.FC<Omit<Props, "open">> = ({
         {t(CustomerActionButtons.Bookings)}
       </Button>
       <Button
+        className={classes.actionButton}
         color="primary"
         onClick={() => setSendMailDialog(true)}
         data-testid={__sendBookingsEmailId__}
@@ -224,14 +268,6 @@ const ActionButtons: React.FC<Omit<Props, "open">> = ({
       </Button>
 
       <ConfirmDialog
-        open={deleteDialog}
-        title={deleteDialogPrompt}
-        setOpen={setDeleteDialog}
-        onConfirm={confirmDelete}
-      >
-        {t(Prompt.NonReversible)}
-      </ConfirmDialog>
-      <ConfirmDialog
         open={sendMailDialog}
         title={t(Prompt.SendEmailTitle)}
         setOpen={setSendMailDialog}
@@ -239,45 +275,51 @@ const ActionButtons: React.FC<Omit<Props, "open">> = ({
       >
         {sendMailPromptMessage}
       </ConfirmDialog>
-      <CustomerForm
-        updateCustomer={handleSubmit}
-        open={editCustomer}
-        customer={customer!}
-        onClose={closeCustomerForm}
-      />
-    </>
+    </div>
   );
 };
 
 const useStyles = makeStyles(() => ({
   CursorPointer: { cursor: "pointer" },
-  CardActions: {
+  actionButtonsContainer: {
+    width: "100%",
+    padding: "1rem",
+    boxSizing: "border-box",
     justifyContent: "center",
   },
   CardContent: {
-    width: "40rem",
     display: "flex",
     flexDirection: "column",
   },
-  BiggerAvatar: {
+  avatar: {
     width: "5rem",
     height: "5rem",
   },
-  Name: {
-    paddingLeft: "1.5rem",
-  },
-  Box: {
+  topSection: {
     display: "flex",
-    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "start",
     marginBottom: "1rem",
   },
-  BoldLabel: {
+  bold: {
     fontWeight: "bold",
   },
-  NameContainer: {
+  nameContainer: {
+    marginLeft: "1rem",
+    position: "relative",
     display: "flex",
     flexDirection: "column",
+  },
+  customerOperationsContainer: {
+    position: "absolute",
+    top: "-1rem",
+    right: "-1rem",
+    transform: "translateX(100%)",
+  },
+  actionButton: {
+    "&:first-child": {
+      marginRight: "5px",
+    },
   },
 }));
 

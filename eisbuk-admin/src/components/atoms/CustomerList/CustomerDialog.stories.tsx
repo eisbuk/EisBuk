@@ -10,8 +10,6 @@ export default {
   component: CustomerDialog,
 } as ComponentMeta<typeof CustomerDialog>;
 
-// const customers = Object.values(customersObj);
-
 export const Default = (): JSX.Element => (
   <CustomerDialog customer={walt} onClose={(): void => {}} />
 );
