@@ -7,8 +7,8 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Customer } from "eisbuk-shared";
 
 import CustomerGridItem from "./CustomerGridItem";
+import CustomerDialog from "../CustomerCard";
 
-import CustomerDialog from "./CustomerDialog";
 import { __customersGridId__ } from "@/__testData__/testIds";
 interface Props {
   customers?: Customer[];

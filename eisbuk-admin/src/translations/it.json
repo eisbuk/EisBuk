@@ -73,13 +73,21 @@
   "ActionButton": {
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
+
     "AddAthlete": "Aggiungi atleta",
     "AddCustomers": "Aggiungi clienti",
+
     "BookInterval": "Prenota",
+
+    "CustomerBookings": "Prenotazioni",
+    "SendBookingsEmail": "Invia email link prenotazioni",
+    "SendBookingsSMS": "Invia SMS link prenotazions",
+
     "Save": "Salva",
     "Next": "Seguente",
     "Cancel": "Annulla"
   },
+  "CustomerActionButtons": {},
 
   "Notification": {
     "Error": "Errore",
@@ -137,11 +145,5 @@
   "BirthdayMenu": {
     "ShowAll": "Mostra Tutti",
     "UpcomingBirthdays": "Prossimi Compleanni"
-  },
-  "CustomerActionButtons": {
-    "Delete": "Eliminare",
-    "Edit": "Modificare",
-    "Bookings": "Prenotazioni",
-    "SendEmail": "Invia Una Email"
   }
 }

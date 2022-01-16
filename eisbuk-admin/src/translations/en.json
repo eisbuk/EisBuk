@@ -73,9 +73,16 @@
   "ActionButton": {
     "CreateSlot": "Create Slot",
     "EditSlot": "Edit Slot",
+
     "AddAthlete": "Add Athlete",
     "AddCustomers": "Add Customers",
+
     "BookInterval": "Book",
+
+    "CustomerBookings": "Bookings",
+    "SendBookingsEmail": "Send bookings link email",
+    "SendBookingsSMS": "Send bookings link SMS",
+
     "Save": "Save",
     "Next": "Next",
     "Cancel": "Cancel"
@@ -137,11 +144,5 @@
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"
-  },
-  "CustomerActionButtons": {
-    "Delete": "Delete",
-    "Edit": "Edit",
-    "Bookings": "Bookings",
-    "SendEmail": "Send Email"
   }
 }
