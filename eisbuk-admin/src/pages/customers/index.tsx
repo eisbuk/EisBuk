@@ -18,6 +18,7 @@ import { ActionButton, NavigationLabel } from "@/enums/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerForm from "@/components/customers/CustomerForm";
+import CustomerGrid from "@/components/atoms/CustomerGrid";
 
 import { updateCustomer } from "@/store/actions/customerOperations";
 
@@ -27,7 +28,6 @@ import useTitle from "@/hooks/useTitle";
 
 import { isEmpty } from "@/utils/helpers";
 import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
-import CustomerGrid from "@/components/atoms/CustomerList/CustomerGrid";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();

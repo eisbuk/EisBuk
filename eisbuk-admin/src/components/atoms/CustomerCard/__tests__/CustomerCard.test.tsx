@@ -15,7 +15,7 @@ import "@/__testSetup__/firestoreSetup";
 import { ActionButton, CustomerFormTitle, Prompt } from "@/enums/translations";
 import { Routes } from "@/enums/routes";
 
-import CustomerDialog from "../CustomerDialog";
+import CustomerCard from "../CustomerCard";
 
 import * as customerActions from "@/store/actions/customerOperations";
 
@@ -65,15 +65,15 @@ jest
   .spyOn(customerActions, "updateCustomer")
   .mockImplementation(mockUpdateCustomerImplementation as any);
 
-describe("Customer Dialog", () => {
+describe("Customer Card", () => {
   afterEach(() => {
     jest.clearAllMocks();
     cleanup();
   });
 
-  describe("Test CustomerDialog", () => {
+  describe("CustomerOperationButtons", () => {
     beforeEach(() => {
-      render(<CustomerDialog onClose={() => {}} customer={saul} />);
+      render(<CustomerCard onClose={() => {}} customer={saul} />);
     });
 
     afterEach(() => {
@@ -126,13 +126,6 @@ describe("Customer Dialog", () => {
         );
       }
     );
-
-    test("should redirect to 'bookings' route for a customer on bookings button click", () => {
-      screen.getByTestId(__openBookingsId__).click();
-      expect(mockHistoryPush).toHaveBeenCalledWith(
-        `${Routes.CustomerArea}/${saul.secretKey}`
-      );
-    });
   });
 
   describe("Test email button", () => {
@@ -141,8 +134,7 @@ describe("Customer Dialog", () => {
       const sendMailSpy = jest
         .spyOn(customerActions, "sendBookingsLink")
         .mockImplementation((payload) => payload as any);
-      render(<CustomerDialog onClose={() => {}} customer={saul} />);
-
+      render(<CustomerCard onClose={() => {}} customer={saul} />);
       screen.getByTestId(__sendBookingsEmailId__).click();
       // the function shouldn't be called before confirmation
       expect(sendMailSpy).not.toHaveBeenCalled();
@@ -157,7 +149,7 @@ describe("Customer Dialog", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { secretKey, ...noSecretKeySaul } = saul;
       render(
-        <CustomerDialog
+        <CustomerCard
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
         />
@@ -173,12 +165,19 @@ describe("Customer Dialog", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { email, ...noEmailSaul } = saul;
       render(
-        <CustomerDialog onClose={() => {}} customer={noEmailSaul as Customer} />
+        <CustomerCard onClose={() => {}} customer={noEmailSaul as Customer} />
       );
-
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
         "disabled",
         true
+      );
+    });
+
+    test("should redirect to 'bookings' route for a customer on bookings button click", () => {
+      render(<CustomerCard onClose={() => {}} customer={saul as Customer} />);
+      screen.getByTestId(__openBookingsId__).click();
+      expect(mockHistoryPush).toHaveBeenCalledWith(
+        `${Routes.CustomerArea}/${saul.secretKey}`
       );
     });
   });

@@ -85,9 +85,16 @@ export enum Prompt {
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
+
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",
+
   BookInterval = "ActionButton.BookInterval",
+
+  CustomerBookings = "ActionButton.CustomerBookings",
+  SendBookingsEmail = "ActionButton.SendBookingsEmail",
+  SendBookingsSMS = "ActionButton.SendBookingsSMS",
+
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
@@ -168,12 +175,3 @@ export enum SlotFormAria {
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
 }
 // #endregion aria-labels
-
-// #region customerActionButtons
-export enum CustomerActionButtons {
-  Delete = "CustomerActionButtons.Delete",
-  Edit = "CustomerActionButtons.Edit",
-  Bookings = "CustomerActionButtons.Bookings",
-  SendEmail = "CustomerActionButtons.SendEmail",
-}
-// #endregion customerActionButtons
