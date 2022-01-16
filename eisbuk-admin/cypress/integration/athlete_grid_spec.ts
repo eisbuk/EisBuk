@@ -9,7 +9,7 @@ import {
 import {
   __customerDeleteId__,
   __customerEditId__,
-} from "../../src/components/atoms/CustomerList/__testData__/testIds";
+} from "@/components/atoms/CustomerCard/__testData__/testIds";
 
 xdescribe("athletes grid", () => {
   beforeEach(() => {
