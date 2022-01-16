@@ -18,6 +18,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import EditIcon from "@material-ui/icons/Edit";
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Mail from "@material-ui/icons/Mail";
+import Close from "@material-ui/icons/Close";
 
 import { Customer } from "eisbuk-shared";
 
@@ -110,10 +111,10 @@ const CustomerDialog: React.FC<Props> = ({ onClose, customer }) => {
       open={Boolean(customer)}
       onClose={onClose}
     >
-      <Card>
-        <CardContent className={classes.CardContent}>
+      <Card className={classes.container}>
+        <CardContent>
           <Box className={classes.topSection}>
-            <EisbukAvatar {...{ ...customer!, className: classes.avatar }} />
+            <EisbukAvatar {...customer!} className={classes.avatar} />
             <div className={classes.nameContainer}>
               <Typography variant="h4" className={classes.bold}>
                 {customer?.name}
@@ -126,7 +127,6 @@ const CustomerDialog: React.FC<Props> = ({ onClose, customer }) => {
               />
             </div>
           </Box>
-          <br />
           {renderCustomerData(customer!)}
         </CardContent>
         <ActionButtons
@@ -134,6 +134,9 @@ const CustomerDialog: React.FC<Props> = ({ onClose, customer }) => {
           customer={customer!}
           onClose={onClose}
         />
+        <IconButton onClick={onClose} className={classes.exitButton}>
+          <Close />
+        </IconButton>
       </Card>
     </Dialog>
   );
@@ -179,18 +182,18 @@ const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
   return (
     <CardActions {...{ className }}>
       <IconButton
-        aria-label="delete"
-        onClick={() => setDeleteDialog(true)}
-        data-testid={__customerDeleteId__}
-      >
-        <DeleteIcon />
-      </IconButton>
-      <IconButton
         aria-label="edit"
         onClick={openCustomerForm}
         data-testid={__customerEditId__}
       >
         <EditIcon />
+      </IconButton>
+      <IconButton
+        aria-label="delete"
+        onClick={() => setDeleteDialog(true)}
+        data-testid={__customerDeleteId__}
+      >
+        <DeleteIcon />
       </IconButton>
 
       <ConfirmDialog
@@ -245,16 +248,17 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
   return (
     <div {...{ className }}>
       <Button
+        startIcon={<DateRangeIcon />}
         className={classes.actionButton}
         color="primary"
         onClick={redirectToBookings}
         data-testid={__openBookingsId__}
         variant="contained"
       >
-        <DateRangeIcon style={{ paddingRight: "5px" }} />
         {t(CustomerActionButtons.Bookings)}
       </Button>
       <Button
+        startIcon={<Mail />}
         className={classes.actionButton}
         color="primary"
         onClick={() => setSendMailDialog(true)}
@@ -263,7 +267,6 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
         // disable button if email or secret key not provided
         disabled={!(customer?.email && customer?.secretKey)}
       >
-        <Mail style={{ paddingRight: "5px" }} />
         {t(CustomerActionButtons.SendEmail)}
       </Button>
 
@@ -280,29 +283,26 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
 };
 
 const useStyles = makeStyles(() => ({
-  CursorPointer: { cursor: "pointer" },
-  actionButtonsContainer: {
-    width: "100%",
-    padding: "1rem",
-    boxSizing: "border-box",
-    justifyContent: "center",
+  bold: {
+    fontWeight: "bold",
   },
-  CardContent: {
-    display: "flex",
-    flexDirection: "column",
+  container: {
+    position: "relative",
   },
-  avatar: {
-    width: "5rem",
-    height: "5rem",
+  exitButton: {
+    position: "absolute",
+    right: "0.5rem",
+    top: "0.5rem",
   },
   topSection: {
     display: "flex",
     alignItems: "center",
     justifyContent: "start",
-    marginBottom: "1rem",
+    marginBottom: "2rem",
   },
-  bold: {
-    fontWeight: "bold",
+  avatar: {
+    width: "5rem",
+    height: "5rem",
   },
   nameContainer: {
     marginLeft: "1rem",
@@ -316,10 +316,14 @@ const useStyles = makeStyles(() => ({
     right: "-1rem",
     transform: "translateX(100%)",
   },
+  actionButtonsContainer: {
+    width: "100%",
+    padding: "1rem",
+    boxSizing: "border-box",
+    justifyContent: "center",
+  },
   actionButton: {
-    "&:first-child": {
-      marginRight: "5px",
-    },
+    marginRight: "0.5rem",
   },
 }));
 
