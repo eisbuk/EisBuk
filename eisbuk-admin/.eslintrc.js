@@ -40,7 +40,8 @@ module.exports = {
   ],
   ignorePatterns: [
     "build/*",
-    "dist",
+    "dist/*",
+    "dev-server-meta/*",
     "functions/*",
     "node_modules/*",
     "reportWebVitals.js",
