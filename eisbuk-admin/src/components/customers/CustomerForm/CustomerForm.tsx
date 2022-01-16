@@ -156,7 +156,7 @@ const CustomerForm: React.FC<Props> = ({
               <DateInput
                 name="birthday"
                 className={classes.field}
-                label={t(CustomerLabel.DateOfBirth)}
+                label={t(CustomerLabel.Birthday)}
                 Icon={Cake}
               />
 
@@ -164,7 +164,7 @@ const CustomerForm: React.FC<Props> = ({
 
               <DateInput
                 name="certificateExpiration"
-                label={t(CustomerLabel.MedicalCertificate)}
+                label={t(CustomerLabel.CertificateExpiration)}
                 className={classes.field}
                 Icon={LocalHospital}
               />
