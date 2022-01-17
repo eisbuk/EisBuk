@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -78,29 +78,8 @@ const DateNavigation: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const reduxDate = useSelector(getCalendarDay);
+  const currentDate = (reduxDate || defaultDate).startOf(jump);
   const dispatch = useDispatch();
-
-  /**
-   * Set default date to redux store on mount.
-   */
-  useEffect(() => {
-    if (defaultDate) {
-      // correct default date to start of timeframe (if not already)
-      const safeDefaultDate = defaultDate.startOf(jump);
-      dispatch(changeCalendarDate(safeDefaultDate));
-    }
-  }, []);
-
-  /**
-   * If switching to "month" view after "week" view,
-   * check and update route date to start of "month" (if not so already)
-   */
-  useEffect(() => {
-    const correctedDate = reduxDate.startOf(jump);
-    if (!reduxDate.equals(correctedDate)) {
-      dispatch(changeCalendarDate(correctedDate));
-    }
-  }, [jump]);
 
   /**
    * Handler we're using for pagination.
@@ -164,7 +143,7 @@ const DateNavigation: React.FC<Props> = ({
             color="inherit"
             className={classes.selectedDate}
           >
-            {createDateTitle(reduxDate, jump)}
+            {createDateTitle(currentDate, jump)}
           </Typography>
           <IconButton
             edge="start"
