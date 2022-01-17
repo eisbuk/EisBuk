@@ -24,7 +24,7 @@ import {
   markAttendance,
 } from "@/store/actions/attendanceOperations";
 
-import { getSlotTimespan } from "@/utils/helpers";
+import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 
 import { ETheme } from "@/themes";
 
@@ -71,7 +71,7 @@ const AttendanceCard: React.FC<Props> = ({
    * memoize the array for lifetime of the component
    */
   const orderedIntervals = useMemo(
-    () => Object.keys(intervals).sort((a, b) => (a < b ? -1 : 1)),
+    () => Object.keys(intervals).sort(comparePeriods),
     [intervals]
   );
 

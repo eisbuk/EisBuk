@@ -24,6 +24,7 @@ import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
 import { __slotId__ } from "./__testData__/testIds";
+import { comparePeriods } from "@/utils/helpers";
 
 export interface SlotCardProps extends SlotInterface {
   /**
@@ -57,7 +58,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   const canClick = Boolean(onClick);
 
-  const intervalStrings = Object.keys(slotData.intervals || {});
+  const intervalStrings = Object.keys(slotData.intervals || {}).sort(
+    comparePeriods
+  );
 
   // calculate start time of first interval and end time of last interval
   // for title string rendering

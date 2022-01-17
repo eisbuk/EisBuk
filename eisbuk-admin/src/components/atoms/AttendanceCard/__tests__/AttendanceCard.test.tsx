@@ -24,6 +24,7 @@ import {
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
+import { comparePeriods } from "@/utils/helpers";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -78,7 +79,7 @@ const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
 
 // interval values we're using across tests
-const intervalKeys = Object.keys(intervals);
+const intervalKeys = Object.keys(intervals).sort(comparePeriods);
 const bookedInterval = intervalKeys[0];
 // we're using different interval then booked for more versatile tests
 const attendedInterval = intervalKeys[1];

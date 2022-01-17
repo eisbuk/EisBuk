@@ -11,6 +11,7 @@ import i18n from "@/__testUtils__/i18n";
 
 import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
+import { comparePeriods } from "@/utils/helpers";
 
 const secretKey = "secret-key";
 
@@ -54,7 +55,7 @@ describe("Booking Card Group ->", () => {
   });
 
   describe("Test booking functionality ->", () => {
-    const intervalKeys = Object.keys(intervals);
+    const intervalKeys = Object.keys(intervals).sort(comparePeriods);
     const bookedInterval = intervalKeys[0];
     const { id: slotId } = baseSlot;
 
