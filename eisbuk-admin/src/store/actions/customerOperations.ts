@@ -122,7 +122,7 @@ export const sendBookingsLink =
         secretKey,
       } = getCustomersRecord(getState())[customerId];
 
-      const subject = "A link to manage your bookings";
+      const subject = "prenotazioni lezioni di Igor Ice Team";
 
       if (!secretKey || !to) {
         // this should be unreachable
@@ -132,9 +132,9 @@ export const sendBookingsLink =
 
       const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${secretKey}`;
 
-      const html = `<p>Dear ${name}</p>
-      <p>Here's a link to manage your bookings with ${getOrganization()}:</p>
-      <p>${bookingsLink}</p>`;
+      const html = `<p>Ciao ${name},</p>
+      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
+      <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
 
       const newEmail: EmailMessage = {
         to,
