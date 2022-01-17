@@ -13,6 +13,7 @@ import { changeCalendarDate } from "@/store/actions/appActions";
 import { __dateNavNextId__ } from "@/__testData__/testIds";
 import { slotsMonth } from "@/__testData__/slots";
 import { testDateLuxon, testDate } from "@/__testData__/date";
+import { comparePeriods } from "@/utils/helpers";
 
 /**
  * Mock function we'll be using to test dispatching to the store
@@ -82,7 +83,9 @@ describe("CustomerSlots", () => {
 
     test("should book given interval of given slot on click", () => {
       // we try booking the first interval of the first slot
-      const testInterval = Object.keys(testSlot.intervals)[0];
+      const testInterval = Object.keys(testSlot.intervals).sort(
+        comparePeriods
+      )[0];
       render(<CustomerSlots slots={slotsMonth} {...{ customerId }} />);
       // we're looking for first interval button
       screen.queryAllByText(ActionButton.BookInterval)[0].click();
