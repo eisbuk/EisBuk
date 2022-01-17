@@ -40,13 +40,24 @@ describe("Date Navigation", () => {
     });
   });
 
-  describe("Test date pagination", () => {
+  describe.only("Test date pagination", () => {
     // fixed date (for consistency), will be used across the block
     const testDateISO = "2021-08-12";
     const testDateDateTime = DateTime.fromISO(testDateISO);
 
     const currentMonthStart = testDateDateTime.startOf("month");
     const currentWeekStart = testDateDateTime.startOf("week");
+
+    test.only("should increment date when 'jump' is week keeping the week day", async () => {
+      mockSelector.mockReturnValueOnce(testDateDateTime);
+      render(<DateNavigation jump="week" />);
+      const incrementButton = screen.getByTestId(__dateNavNextId__);
+      incrementButton.click();
+      const nextWeekDateTime = testDateDateTime.plus({ days: 7 });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        changeCalendarDate(nextWeekDateTime)
+      );
+    });
 
     test("should increment date with respect to 'jump' prop on increment click", async () => {
       mockSelector.mockReturnValueOnce(currentMonthStart);

@@ -77,7 +77,8 @@ const DateNavigation: React.FC<Props> = ({
 
   const { t } = useTranslation();
 
-  const reduxDate = (useSelector(getCalendarDay) || defaultDate).startOf(jump);
+  const reduxDate = useSelector(getCalendarDay);
+  const currentDate = (reduxDate || defaultDate).startOf(jump);
   const dispatch = useDispatch();
 
   /**
@@ -142,7 +143,7 @@ const DateNavigation: React.FC<Props> = ({
             color="inherit"
             className={classes.selectedDate}
           >
-            {createDateTitle(reduxDate, jump)}
+            {createDateTitle(currentDate, jump)}
           </Typography>
           <IconButton
             edge="start"
