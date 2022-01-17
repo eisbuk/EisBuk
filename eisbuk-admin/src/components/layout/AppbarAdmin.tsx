@@ -31,13 +31,12 @@ import { NavigationLabel, AdminAria } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu/BirthdayMenu";
+import BirthdayMenu, { BirthdayDialog } from "@/components/atoms/BirthdayMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
-import BirthdayDialog from "../atoms/BirthdayMenu/BirthdayDialog";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -147,12 +146,12 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               <MenuIcon />
             </Button>
           </Hidden>
-          {customers.length > 0 && (
-            <BirthdayMenu
-              customers={customers}
-              onClickShowAll={() => setShowAll(true)}
-            />
-          )}
+
+          <BirthdayMenu
+            customers={customers}
+            onClickShowAll={() => setShowAll(true)}
+          />
+
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}

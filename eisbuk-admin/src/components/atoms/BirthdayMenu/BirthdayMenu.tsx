@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
@@ -21,14 +21,12 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
-    useState<HTMLElement | null>(null);
-  const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (
-    e
-  ) => {
+  const [
+    birthdaysAnchorEl,
+    setBirthdaysAnchorEl,
+  ] = useState<HTMLElement | null>(null);
+  const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (e) =>
     setBirthdaysAnchorEl(e.currentTarget);
-  };
-
   const handleBirthdaysClose = () => () => {
     setBirthdaysAnchorEl(null);
   };
@@ -37,17 +35,21 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
 
-  const getTodaysBirthdays = (): number =>
-    customers[0].birthday === DateTime.now().toISODate().substring(5)
-      ? customers[0].customers.length
-      : 0;
+  const getTodaysBirthdays = useMemo(
+    (): number =>
+      customers.length > 0 &&
+      customers[0].birthday === DateTime.now().toISODate().substring(5)
+        ? customers[0].customers.length
+        : 0,
+    [customers]
+  );
 
   return (
     <>
       <Badge
         className={classes.badge}
-        color="secondary"
-        badgeContent={getTodaysBirthdays()}
+        color="error"
+        badgeContent={getTodaysBirthdays}
       >
         <IconButton onClick={handleBirthdaysClick}>
           <Cake />
@@ -103,6 +105,9 @@ const useStyles = makeStyles(() => ({
   badge: {
     "& .MuiBadge-anchorOriginTopRightRectangle": {
       transform: "translate(0%, 0%)",
+    },
+    "& .MuiBadge-anchorOriginTopRightRectangle.MuiBadge-invisible": {
+      display: "none",
     },
   },
 }));
