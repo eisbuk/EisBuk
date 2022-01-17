@@ -40,7 +40,7 @@ describe("Date Navigation", () => {
     });
   });
 
-  describe.only("Test date pagination", () => {
+  describe("Test date pagination", () => {
     // fixed date (for consistency), will be used across the block
     const testDateISO = "2021-08-12";
     const testDateDateTime = DateTime.fromISO(testDateISO);
@@ -48,7 +48,7 @@ describe("Date Navigation", () => {
     const currentMonthStart = testDateDateTime.startOf("month");
     const currentWeekStart = testDateDateTime.startOf("week");
 
-    test.only("should increment date when 'jump' is week keeping the week day", async () => {
+    test("should increment date when 'jump' is week keeping the week day", async () => {
       mockSelector.mockReturnValueOnce(testDateDateTime);
       render(<DateNavigation jump="week" />);
       const incrementButton = screen.getByTestId(__dateNavNextId__);
