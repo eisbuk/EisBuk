@@ -31,13 +31,12 @@ import { NavigationLabel, AdminAria } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu/BirthdayMenu";
+import BirthdayMenu, { BirthdayDialog } from "@/components/atoms/BirthdayMenu";
 
 import { signOut } from "@/store/actions/authOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
-import BirthdayDialog from "../atoms/BirthdayMenu/BirthdayDialog";
 
 const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const classes = useStyles();
@@ -59,15 +58,17 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     setAnchorEl(e.currentTarget);
   };
 
-  const handleClose = (action = "") => () => {
-    switch (action) {
-      case "logout":
-        dispatch(signOut());
-      // eslint-disable-next-line no-fallthrough
-      default:
-        setAnchorEl(null);
-    }
-  };
+  const handleClose =
+    (action = "") =>
+    () => {
+      switch (action) {
+        case "logout":
+          dispatch(signOut());
+        // eslint-disable-next-line no-fallthrough
+        default:
+          setAnchorEl(null);
+      }
+    };
   const currentUser = userAuthInfo?.email || userAuthInfo?.phoneNumber || "";
   const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
