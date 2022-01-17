@@ -84,16 +84,23 @@ describe("Date utils", () => {
       expect(isEmpty({ foo: "bar" })).toEqual(false);
     });
   });
-
   describe("`comparePeriods` function", () => {
     test("should return earlier periods first", () => {
-      expect(comparePeriods("13:00-13:30", "13:30-14:00")).toEqual(-1);
-      expect(comparePeriods("13:00-13:30", "12:30-13:00")).toEqual(1);
+      let original = ["13:30-14:00", "13:00-13:30"];
+      let expected = ["13:00-13:30", "13:30-14:00"];
+      expect(original.sort(comparePeriods)).toEqual(expected);
+      original = ["13:00-13:30", "12:30-13:00"];
+      expected = ["12:30-13:00", "13:00-13:30"];
+      expect(original.sort(comparePeriods)).toEqual(expected);
     });
 
     test("should return longer periods (starting at the same time) first", () => {
-      expect(comparePeriods("13:00-14:30", "13:00-14:00")).toEqual(-1);
-      expect(comparePeriods("13:00-13:30", "13:00-14:00")).toEqual(1);
+      let original = ["13:00-14:00", "13:00-14:30"];
+      let expected = ["13:00-14:30", "13:00-14:00"];
+      expect(original.sort(comparePeriods)).toEqual(expected);
+      original = ["13:00-13:30", "13:00-14:00"];
+      expected = ["13:00-14:00", "13:00-13:30"];
+      expect(original.sort(comparePeriods)).toEqual(expected);
     });
   });
 });
