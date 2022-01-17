@@ -48,13 +48,6 @@ describe("Date Navigation", () => {
     const currentMonthStart = testDateDateTime.startOf("month");
     const currentWeekStart = testDateDateTime.startOf("week");
 
-    test("should set the default date as the redux date", () => {
-      render(<DateNavigation defaultDate={currentMonthStart} jump="month" />);
-      expect(mockDispatch).toHaveBeenCalledWith(
-        changeCalendarDate(currentMonthStart)
-      );
-    });
-
     test("should increment date with respect to 'jump' prop on increment click", async () => {
       mockSelector.mockReturnValueOnce(currentMonthStart);
       render(<DateNavigation jump="month" />);
@@ -81,9 +74,6 @@ describe("Date Navigation", () => {
       mockSelector.mockReturnValueOnce(currentWeekStart);
       const nextWeekStart = currentWeekStart.plus({ weeks: 1 });
       renderWithRouter(<DateNavigation defaultDate={currentWeekStart} />);
-      expect(mockDispatch).toHaveBeenCalledWith(
-        changeCalendarDate(currentWeekStart)
-      );
       screen.getByTestId(__dateNavNextId__).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         changeCalendarDate(nextWeekStart)
