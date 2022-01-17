@@ -2,6 +2,8 @@ import { Customer, CustomersByBirthday } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
+import { compareCustomers } from "@/utils/customers";
+
 /**
  * Get a record of all the customers for current organization from firebase store
  * (not an actual firestore query but rather synced local store entry)
@@ -18,10 +20,12 @@ export const getCustomersRecord = (
  * @param state Local Redux Store
  * @returns list of customers
  */
-export const getCustomersList = (state: LocalStore): Customer[] => {
-  const customersInStore = getCustomersRecord(state);
-  return Object.values(customersInStore);
-};
+export const getCustomersList =
+  (sort?: boolean) =>
+  (state: LocalStore): Customer[] => {
+    const customerList = Object.values(getCustomersRecord(state) || {});
+    return sort ? customerList.sort(compareCustomers) : customerList;
+  };
 
 /**
  * Creates a selector that gets a list of all the customers whose birthdays are today
