@@ -2,7 +2,12 @@ import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "eisbuk-shared";
 
-import { capitalizeFirst, getOrgFromLocation, isEmpty } from "@/utils/helpers";
+import {
+  capitalizeFirst,
+  getOrgFromLocation,
+  isEmpty,
+  comparePeriods,
+} from "@/utils/helpers";
 import { isISODay } from "@/utils/date";
 
 describe("Helpers", () => {
@@ -77,6 +82,18 @@ describe("Date utils", () => {
 
       expect(isEmpty(["element"])).toEqual(false);
       expect(isEmpty({ foo: "bar" })).toEqual(false);
+    });
+  });
+
+  describe("`comparePeriods` function", () => {
+    test("should return earlier periods first", () => {
+      expect(comparePeriods("13:00-13:30", "13:30-14:00")).toEqual(-1);
+      expect(comparePeriods("13:00-13:30", "12:30-13:00")).toEqual(1);
+    });
+
+    test("should return longer periods (starting at the same time) first", () => {
+      expect(comparePeriods("13:00-14:30", "13:00-14:00")).toEqual(-1);
+      expect(comparePeriods("13:00-13:30", "13:00-14:00")).toEqual(1);
     });
   });
 });
