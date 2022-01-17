@@ -17,8 +17,8 @@ import { OrgSubCollection } from "eisbuk-shared";
 import { ActionButton, NavigationLabel } from "@/enums/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import CustomerList from "@/components/atoms/CustomerList";
 import CustomerForm from "@/components/customers/CustomerForm";
+import CustomerGrid from "@/components/atoms/CustomerGrid";
 
 import { updateCustomer } from "@/store/actions/customerOperations";
 
@@ -53,13 +53,7 @@ const CustomersPage: React.FC = () => {
       <Grid item xs={12}>
         {
           // (isLoaded(customers) &&
-          !isEmpty(customers) && (
-            <CustomerList
-              {...{ customers }}
-              tableContainerClassName={classes.tableContainer}
-              extended
-            />
-          )
+          !isEmpty(customers) && <CustomerGrid {...{ customers }} />
           // )
         }
         <Fab

@@ -1,174 +1,37 @@
-import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
+import React from "react";
 
-import IconButton from "@material-ui/core/IconButton";
 import TableRow from "@material-ui/core/TableRow";
 import TableCell from "@material-ui/core/TableCell";
 import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import DeleteIcon from "@material-ui/icons/Delete";
-import EditIcon from "@material-ui/icons/Edit";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import Mail from "@material-ui/icons/Mail";
-
 import { Customer } from "eisbuk-shared";
 
-import { Routes } from "@/enums/routes";
-import { CategoryLabel, Prompt } from "@/enums/translations";
-
 import EisbukAvatar from "@/components/users/EisbukAvatar";
-import ConfirmDialog from "@/components/global/ConfirmDialog";
-import CustomerForm from "@/components/customers/CustomerForm";
-
-import {
-  deleteCustomer,
-  sendBookingsLink,
-  updateCustomer,
-} from "@/store/actions/customerOperations";
-
-import { capitalizeFirst } from "@/utils/helpers";
-import {
-  __customerDeleteId__,
-  __customerEditId__,
-  __openBookingsId__,
-  __sendBookingsEmailId__,
-} from "./__testData__/testIds";
 
 interface Props extends Customer {
-  extended?: boolean;
   onClick?: (customer: Customer) => void;
 }
 
 const CustomerListItem: React.FC<Props> = ({
-  extended = false,
   onClick = () => {},
   ...customer
 }) => {
-  const { t } = useTranslation();
   const classes = useStyles();
 
-  const extendedCells = (
-    <>
-      <TableCell>
-        {capitalizeFirst(t(CategoryLabel[customer.category])).replace("-", " ")}
-      </TableCell>
-      <TableCell>{customer.email}</TableCell>
-    </>
-  );
-
-  const handleClick = extended ? () => {} : () => onClick(customer);
+  const handleClick = () => onClick(customer);
 
   return (
-    <TableRow
-      onClick={handleClick}
-      className={extended ? "" : classes.cursorPointer}
-    >
+    <TableRow onClick={handleClick} className={classes.cursorPointer}>
       <TableCell>
         <Box display="flex" flexDirection="row">
-          {extended && <AdditionalButtons {...customer} />}
           <EisbukAvatar {...customer} />
         </Box>
       </TableCell>
       <TableCell>{customer.name}</TableCell>
       <TableCell>{customer.surname}</TableCell>
-      {extended && extendedCells}
     </TableRow>
-  );
-};
-
-/**
- * Action buttons for customer operations, used only on `extended` variant.
- */
-const AdditionalButtons: React.FC<Customer> = (customer) => {
-  const { t } = useTranslation();
-
-  const dispatch = useDispatch();
-  const history = useHistory();
-
-  // delete customer flow
-  const [deleteDialog, setDeleteDialog] = useState(false);
-  const deleteDialogPrompt = `${t(Prompt.DeleteCustomer)} ${customer.name} ${
-    customer.surname
-  }?`;
-  const confirmDelete = () => dispatch(deleteCustomer(customer));
-
-  // edit customer flow
-  const [editCustomer, setEditCustomer] = useState(false);
-  const openCustomerForm = () => setEditCustomer(true);
-  const closeCustomerForm = () => setEditCustomer(false);
-  const handleSubmit = (customer: Customer) =>
-    dispatch(updateCustomer(customer));
-
-  // redirect to customers `bookings` entry flow
-  const bookingsRoute = `${Routes.CustomerArea}/${customer.secretKey}`;
-  const redirectToBookings = () => history.push(bookingsRoute);
-
-  // send booking link flow
-  const [sendMailDialog, setSendMailDialog] = useState(false);
-  const sendMailPromptMessage = `${t(Prompt.ConfirmEmail)} ${customer.email} ?`;
-  const sendBookingsEmail = () => dispatch(sendBookingsLink(customer.id));
-
-  return (
-    <>
-      <IconButton
-        color="primary"
-        onClick={() => setDeleteDialog(true)}
-        data-testid={__customerDeleteId__}
-      >
-        <DeleteIcon />
-      </IconButton>
-      <IconButton
-        aria-label="edit"
-        color="primary"
-        onClick={openCustomerForm}
-        data-testid={__customerEditId__}
-      >
-        <EditIcon />
-      </IconButton>
-      <IconButton
-        color="primary"
-        onClick={redirectToBookings}
-        data-testid={__openBookingsId__}
-      >
-        <DateRangeIcon />
-      </IconButton>
-      <IconButton
-        color="primary"
-        onClick={() => setSendMailDialog(true)}
-        data-testid={__sendBookingsEmailId__}
-        // disable button if email or secret key not provided
-        disabled={!(customer.email && customer.secretKey)}
-      >
-        <Mail />
-      </IconButton>
-
-      <ConfirmDialog
-        open={deleteDialog}
-        title={deleteDialogPrompt}
-        setOpen={setDeleteDialog}
-        onConfirm={confirmDelete}
-      >
-        {t(Prompt.NonReversible)}
-      </ConfirmDialog>
-      <ConfirmDialog
-        open={sendMailDialog}
-        title={t(Prompt.SendEmailTitle)}
-        setOpen={setSendMailDialog}
-        onConfirm={sendBookingsEmail}
-      >
-        {sendMailPromptMessage}
-      </ConfirmDialog>
-      <CustomerForm
-        updateCustomer={handleSubmit}
-        open={editCustomer}
-        customer={customer}
-        onClose={closeCustomerForm}
-      />
-    </>
   );
 };
 

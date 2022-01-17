@@ -22,7 +22,3 @@ export const Default = (): JSX.Element => (
     </Paper>
   </Container>
 );
-
-export const Extended = (): JSX.Element => (
-  <CustomerList {...{ customers }} extended />
-);

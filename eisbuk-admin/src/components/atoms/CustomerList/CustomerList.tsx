@@ -21,7 +21,6 @@ import { __customersListId__ } from "@/__testData__/testIds";
 
 interface Props {
   customers?: Customer[];
-  extended?: boolean;
   onCustomerClick?: (customer: Customer) => void;
   className?: string;
   tableContainerClassName?: string;
@@ -29,7 +28,6 @@ interface Props {
 
 const CustomerList: React.FC<Props> = ({
   customers,
-  extended,
   onCustomerClick = () => {},
   className = "",
   tableContainerClassName,
@@ -37,21 +35,13 @@ const CustomerList: React.FC<Props> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  /** Additional cells render on extended version */
-  const extendedCells = (
-    <>
-      <TableCell>{t(CustomerLabel.Category)}</TableCell>
-      <TableCell>{t(CustomerLabel.Email)}</TableCell>
-    </>
-  );
-
   // search flow
   const [searchString, setSearchString] = useState("");
   const searchRegex = new RegExp(searchString, "i");
 
   return (
     <div className={className}>
-      <SearchField {...{ searchString, setSearchString }} center={!extended} />
+      <SearchField {...{ searchString, setSearchString }} center={false} />
       <TableContainer
         className={tableContainerClassName || classes.tableContainer}
       >
@@ -61,7 +51,6 @@ const CustomerList: React.FC<Props> = ({
               <TableCell></TableCell>
               <TableCell>{t(CustomerLabel.Name)}</TableCell>
               <TableCell>{t(CustomerLabel.Surname)}</TableCell>
-              {extended && extendedCells}
             </TableRow>
           </TableHead>
           <TableBody data-testid={__customersListId__}>
@@ -73,7 +62,7 @@ const CustomerList: React.FC<Props> = ({
                   <CustomerListItem
                     key={customer.id || `temp-key-${i}`}
                     onClick={onCustomerClick}
-                    {...{ ...customer, extended }}
+                    {...customer}
                   />
                 )
             )}

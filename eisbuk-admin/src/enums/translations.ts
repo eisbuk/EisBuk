@@ -58,8 +58,8 @@ export enum CustomerLabel {
   Category = "CustomerLabel.Category",
   Email = "CustomerLabel.Email",
   Phone = "CustomerLabel.Phone",
-  DateOfBirth = "CustomerLabel.DateOfBirth",
-  MedicalCertificate = "CustomerLabel.MedicalCertificate",
+  Birthday = "CustomerLabel.DateOfBirth",
+  CertificateExpiration = "CustomerLabel.MedicalCertificate",
   CardNumber = "CustomerLabel.CardNumber",
   CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
   CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
@@ -85,9 +85,16 @@ export enum Prompt {
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
+
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",
+
   BookInterval = "ActionButton.BookInterval",
+
+  CustomerBookings = "ActionButton.CustomerBookings",
+  SendBookingsEmail = "ActionButton.SendBookingsEmail",
+  SendBookingsSMS = "ActionButton.SendBookingsSMS",
+
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
