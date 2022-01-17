@@ -29,8 +29,13 @@ describe("Auth operations", () => {
     testStore = getNewStore();
     const { dispatch } = testStore;
     dispatch(
-      updateLocalColl(Collection.Organizations, {
-        [__organization__]: { admins: [defaultUser.email] } as OrganizationData,
+      updateLocalColl({
+        collection: Collection.Organizations,
+        data: {
+          [__organization__]: {
+            admins: [defaultUser.email],
+          } as OrganizationData,
+        },
       })
     );
   });

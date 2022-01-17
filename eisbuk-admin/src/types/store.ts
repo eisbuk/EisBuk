@@ -218,22 +218,38 @@ export type CollectionSubscription =
 export type FirestoreAction =
   | Action.UpdateFirestoreListener
   | Action.DeleteFirestoreListener
-  | Action.UpdateLocalCollection;
+  | Action.UpdateLocalCollection
+  | Action.UpdateLocalDocument
+  | Action.DeleteLocalDocument;
 /**
  * A generic used to type the payload we'll recieve from UpdateLocalCollection action
  */
 export interface UpdateFirestoreDataPayload<
   C extends CollectionSubscription | BookingSubCollection.BookedSlots
 > {
-  collection: C;
-  data: FirestoreData[C];
-  merge?: boolean;
+  [Action.UpdateLocalCollection]: {
+    collection: C;
+    data: FirestoreData[C];
+    merge?: boolean;
+  };
+  [Action.UpdateLocalDocument]: {
+    collection: C;
+    data: FirestoreData[C][keyof FirestoreData[C]];
+    id: string;
+  };
+  [Action.DeleteLocalDocument]: {
+    collection: C;
+    id: string;
+  };
 }
+
 /**
  * Record of payloads for each of the firestore reducer actions
  */
 interface FirestorReducerPayload {
-  [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>;
+  [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>[Action.UpdateLocalCollection];
+  [Action.UpdateLocalDocument]: UpdateFirestoreDataPayload<CollectionSubscription>[Action.UpdateLocalDocument];
+  [Action.DeleteLocalDocument]: UpdateFirestoreDataPayload<CollectionSubscription>[Action.DeleteLocalDocument];
   [Action.UpdateFirestoreListener]: {
     collection: CollectionSubscription;
     listener: Partial<FirestoreListener>;

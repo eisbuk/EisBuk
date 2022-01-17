@@ -1,7 +1,8 @@
+import { doc } from "@firebase/firestore";
 import * as firestore from "@firebase/firestore";
 import pRetry from "p-retry";
 
-import { OrgSubCollection } from "eisbuk-shared";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -16,6 +17,8 @@ import {
   testSlots,
   slotsCollPath,
 } from "../__testData__/slots";
+import { __organization__ } from "@/lib/constants";
+import { deleteDoc } from "firebase/firestore";
 
 describe("Firestore subscriptions", () => {
   describe("test subscriptions with range constraint", () => {
@@ -42,6 +45,56 @@ describe("Firestore subscriptions", () => {
         await pRetry(() => {
           expect(getState().firestore.data[OrgSubCollection.Slots]).toEqual(
             expectedSlots
+          );
+        });
+      }
+    );
+
+    testWithEmulator(
+      "should delete entries from local store when deleted from firestore",
+      async () => {
+        const { dispatch, getState } = getNewStore();
+        const db = await getAuthTestEnv(createTestSlots);
+        // mock `getFirestore` to use firestore from RulesTestContext
+        jest
+          .spyOn(firestore, "getFirestore")
+          .mockImplementation(() => db as any);
+        // create test thunk
+        const testThunk = updateSubscription({
+          collPath: slotsCollPath,
+          storeAs: OrgSubCollection.Slots,
+          // to test this out we're subscribing to all slot entries
+          constraint: { range: ["date", testSlots[0].date, testSlots[6].date] },
+        });
+        // run the thunk
+        await testThunk(dispatch, getState);
+        // wait until the slots are in the local store
+        const expectedSlots = testSlots.reduce(
+          (acc, slot) => ({ ...acc, [slot.id]: slot }),
+          {}
+        );
+        await pRetry(() => {
+          expect(getState().firestore.data[OrgSubCollection.Slots]).toEqual(
+            expectedSlots
+          );
+        });
+        // delete one slot from the store
+        const slotRef = doc(
+          db,
+          Collection.Organizations,
+          __organization__,
+          OrgSubCollection.Slots,
+          testSlots[0].id
+        );
+        await deleteDoc(slotRef);
+        // check updated state
+        console.log("Expected docs > ", testSlots.slice(1));
+        const expectedSlots2 = testSlots
+          .slice(1)
+          .reduce((acc, slot) => ({ ...acc, [slot.id]: slot }), {});
+        await pRetry(() => {
+          expect(getState().firestore.data[OrgSubCollection.Slots]).toEqual(
+            expectedSlots2
           );
         });
       }

@@ -18,11 +18,14 @@ import {
 } from "@/types/store";
 
 import {
+  deleteLocalDocument,
   updateFirestoreListener,
-  updateLocalColl,
+  updateLocalDocument,
 } from "@/react-redux-firebase/actions";
 
 import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
+
+import { createGetDocsInStore } from "./utils";
 
 export type FirestoreListenerConstraint = Pick<FirestoreListener, "range"> &
   Pick<FirestoreListener, "documents">;
@@ -65,7 +68,7 @@ export const updateSubscription: SubscribeFunction =
 
     const collRef = collection(getFirestore(), collPath);
 
-    const listener: FirestoreListener =
+    const listener =
       getFirestoreListeners(getState())[collName as CollectionSubscription] ||
       ({} as FirestoreListener);
 
@@ -78,7 +81,11 @@ export const updateSubscription: SubscribeFunction =
       }
       listener.unsubscribe = onSnapshot(
         collRef,
-        createCollSnapshotHandler(dispatch, collName)
+        createCollSnapshotHandler(
+          dispatch,
+          collName,
+          createGetDocsInStore(collName, getState, null)
+        )
       );
     }
     // #endregion nullConstraintSubscription
@@ -105,10 +112,14 @@ export const updateSubscription: SubscribeFunction =
             listener.unsubscribe = onSnapshot(
               query(
                 collRef,
-                where(rangeProperty, ">=", storeRangeEnd),
+                where(rangeProperty, ">=", rangeStart),
                 where(rangeProperty, "<=", rangeEnd)
               ),
-              createCollSnapshotHandler(dispatch, collName)
+              createCollSnapshotHandler(
+                dispatch,
+                collName,
+                createGetDocsInStore(collName, getState, { range })
+              )
             );
             // update listener with the new range
             listener.range = [rangeProperty, rangeStart, rangeEnd];
@@ -122,7 +133,18 @@ export const updateSubscription: SubscribeFunction =
                 where(rangeProperty, ">", storeRangeEnd),
                 where(rangeProperty, "<=", rangeEnd)
               ),
-              createCollSnapshotHandler(dispatch, collName)
+              createCollSnapshotHandler(
+                dispatch,
+                collName,
+                createGetDocsInStore(
+                  collName,
+                  getState,
+                  {
+                    range: [rangeProperty, storeRangeEnd, rangeEnd],
+                  },
+                  [false, true]
+                )
+              )
             );
             oldUnsubscribe = listener.unsubscribe;
             listener.unsubscribe = () => {
@@ -140,7 +162,18 @@ export const updateSubscription: SubscribeFunction =
                 where(rangeProperty, ">=", rangeStart),
                 where(rangeProperty, "<", storeRangeStart)
               ),
-              createCollSnapshotHandler(dispatch, collName)
+              createCollSnapshotHandler(
+                dispatch,
+                collName,
+                createGetDocsInStore(
+                  collName,
+                  getState,
+                  {
+                    range: [rangeProperty, rangeStart, storeRangeStart],
+                  },
+                  [true, false]
+                )
+              )
             );
             oldUnsubscribe = listener.unsubscribe;
             listener.unsubscribe = () => {
@@ -161,7 +194,13 @@ export const updateSubscription: SubscribeFunction =
                 where(rangeProperty, ">=", rangeStart),
                 where(rangeProperty, "<=", rangeEnd)
               ),
-              createCollSnapshotHandler(dispatch, collName)
+              createCollSnapshotHandler(
+                dispatch,
+                collName,
+                createGetDocsInStore(collName, getState, {
+                  range: [rangeProperty, rangeStart, rangeEnd],
+                })
+              )
             );
             listener.range = range;
         }
@@ -173,7 +212,13 @@ export const updateSubscription: SubscribeFunction =
             where(rangeProperty, ">=", rangeStart),
             where(rangeProperty, "<=", rangeEnd)
           ),
-          createCollSnapshotHandler(dispatch, collName)
+          createCollSnapshotHandler(
+            dispatch,
+            collName,
+            createGetDocsInStore(collName, getState, {
+              range: [rangeProperty, rangeStart, rangeEnd],
+            })
+          )
         );
         listener.range = range;
       }
@@ -222,7 +267,11 @@ export const updateSubscription: SubscribeFunction =
   };
 
 interface OnSnapshotHandlerHOF<T extends "doc" | "coll"> {
-  (dispatch: Parameters<FirestoreThunk>[0], storeAs: string): (
+  (
+    dispatch: Parameters<FirestoreThunk>[0],
+    storeAs: string,
+    getDocsInStore?: () => string[]
+  ): (
     collSnapshot: T extends "doc"
       ? DocumentSnapshot<DocumentData>
       : QuerySnapshot<DocumentData>
@@ -237,19 +286,36 @@ interface OnSnapshotHandlerHOF<T extends "doc" | "coll"> {
  * data in local store's `firestore.data.[storeAs]` collection, keyed by doc's id
  * @param dispatch `store.dispatch`
  * @param storeAs name of collection in local store's `firestore.data`
+ * @param getDocsInStore a function with curried range and `store.getState` used to get existing documents in store for appropriate constraint
  */
 export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
-  (dispatch, storeAs) => (collSnapshot) => {
-    let updatedData = {};
+  (dispatch, storeAs, getDocsInStore) => (collSnapshot) => {
+    // we start docs to delete as all of the docs in state (belonging to this constraint)
+    // and remove each doc id as it's updated (leaving us with deleted documents)
+    let docsToDelete = getDocsInStore ? getDocsInStore() : [];
+    /** A @TEMP assertion until the types are more generic */
+    const collection = storeAs as CollectionSubscription;
+
     collSnapshot.forEach((doc) => {
       const docId = doc.id;
-      const entry = doc.data();
-      updatedData = { ...updatedData, [docId]: entry };
+      /** a veery @TEMP fix */
+      const data = doc.data() as never;
+
+      dispatch(
+        updateLocalDocument({
+          collection,
+          data,
+          id: docId,
+        })
+      );
+      // remove updated doc's id from docs to delete
+      docsToDelete = docsToDelete.filter((id) => id !== docId);
     });
 
-    dispatch(
-      updateLocalColl(storeAs as CollectionSubscription, updatedData, true)
-    );
+    // delete all documents which weren't in the updated collection
+    docsToDelete.forEach((id) => {
+      dispatch(deleteLocalDocument({ collection, id }));
+    });
   };
 
 /**
@@ -263,13 +329,17 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
  */
 export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
   (dispatch, storeAs) => (docSnapshot) => {
-    const docData = docSnapshot.data();
+    /** A @TEMP assertion until the types are more generic */
+    const collection = storeAs as CollectionSubscription;
+
+    /** a veery @TEMP fix */
+    const data = docSnapshot.data() as never;
 
     dispatch(
-      updateLocalColl(
-        storeAs as CollectionSubscription,
-        { [docSnapshot.id]: docData } as any,
-        true
-      )
+      updateLocalDocument({
+        collection,
+        id: docSnapshot.id,
+        data,
+      })
     );
   };
