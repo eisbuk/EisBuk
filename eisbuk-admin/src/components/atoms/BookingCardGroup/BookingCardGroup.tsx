@@ -7,6 +7,7 @@ import BookingCard from "../BookingCard";
 
 import { bookInterval, cancelBooking } from "@/store/actions/bookingOperations";
 import { useParams } from "react-router-dom";
+import { comparePeriods } from "@/utils/helpers";
 
 export interface Props extends SlotInterface {
   /**
@@ -81,7 +82,7 @@ const BookingCardGroup: React.FC<Props> = ({
     updateBookingState();
   };
 
-  const intervalKeys = Object.keys(intervals);
+  const intervalKeys = Object.keys(intervals).sort(comparePeriods);
 
   return (
     <>
