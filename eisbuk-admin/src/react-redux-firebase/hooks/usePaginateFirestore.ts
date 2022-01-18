@@ -21,8 +21,9 @@ const usePaginateFirestore = (): void => {
   useEffect(() => {
     Object.keys(listeners).forEach((collection) => {
       const listener = listeners[collection as CollectionSubscription];
-      if (listener) {
-        // if range is set, extend the range and update unsubscribe function
+      if (listener?.documents || listener?.range) {
+        // if constraint is set, extend constraint and update unsubscribe function
+        // if no constraint is set, we're already subscribed to all collection entries
         dispatch(
           updateSubscription({
             storeAs: collection,

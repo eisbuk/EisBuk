@@ -9,6 +9,7 @@ import usePaginateFirestore from "../usePaginateFirestore";
 import useFirestoreSubscribe from "../useFirestoreSubscribe";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
+import * as subscribe from "../../thunks/subscribe";
 
 import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
 
@@ -117,8 +118,8 @@ describe("Firestore subscriptions", () => {
         });
         // paginate to next week
         testHookWithRedux(store, usePaginateFirestore);
-        const nextMonth = startDate.plus({ weeks: 1 });
-        store.dispatch(changeCalendarDate(nextMonth));
+        const nextWeek = startDate.plus({ weeks: 1 });
+        store.dispatch(changeCalendarDate(nextWeek));
         // give some time for listeners to update (which it shouldn't)
         await new Promise<void>((res) => setTimeout(() => res(), 200));
         // no constraints should get updated
@@ -131,6 +132,38 @@ describe("Firestore subscriptions", () => {
             startDocumentRange
           );
         });
+      }
+    );
+
+    testWithMutationObserver(
+      "should not should not update 'null' constrained subscriptions when paginating date",
+      async () => {
+        const updateSubscriptionSpy = jest.spyOn(
+          subscribe,
+          "updateSubscription"
+        );
+        const startDate = DateTime.fromISO("2022-01-01");
+        // set up test state
+        const store = getNewStore();
+        store.dispatch(changeCalendarDate(startDate));
+        // customers are a 'null' constrained subscription: we're subscribing to all entries
+        testHookWithRedux(store, useFirestoreSubscribe, [
+          OrgSubCollection.Customers,
+        ]);
+        // wait for listeners to update
+        await waitFor(() => {
+          const listeners = getFirestoreListeners(store.getState());
+          expect(listeners[OrgSubCollection.Customers]).toBeDefined();
+        });
+        // clear mock for `updateSubscription` as it has already been called
+        updateSubscriptionSpy.mockClear();
+        // paginate to next week
+        testHookWithRedux(store, usePaginateFirestore);
+        const nextWeek = startDate.plus({ weeks: 1 });
+        store.dispatch(changeCalendarDate(nextWeek));
+        // customers are already subscribed to completely
+        // there's no need to update subscription
+        expect(updateSubscriptionSpy).not.toHaveBeenCalled();
       }
     );
   });

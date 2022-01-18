@@ -72,10 +72,12 @@ export const deleteLocalDocument: UpdateFirestoreData<Action.DeleteLocalDocument
 export const updateFirestoreListener = (
   collection: CollectionSubscription,
   listener: Partial<FirestoreListener>
-): FirestoreReducerAction<Action.UpdateFirestoreListener> => ({
-  type: Action.UpdateFirestoreListener,
-  payload: { collection, listener },
-});
+): FirestoreReducerAction<Action.UpdateFirestoreListener> => {
+  return {
+    type: Action.UpdateFirestoreListener,
+    payload: { collection, listener },
+  };
+};
 
 /**
  * An action used to delete the firestore listener from a Redux store,

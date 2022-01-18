@@ -202,7 +202,7 @@ describe("Firestore subscriptions", () => {
             range: ["date", testSlots[0].date, testSlots[2].date],
           })
         );
-        // new unsubsceibe function
+        // new unsubscribe function
         const unsubRange = jest.fn();
         jest.spyOn(firestore, "onSnapshot").mockReturnValue(unsubRange);
         // create test thunk
@@ -275,6 +275,41 @@ describe("Firestore subscriptions", () => {
         getState().firestore.listeners[OrgSubCollection.Slots].unsubscribe();
         expect(oldUnsubscribe).toHaveBeenCalledTimes(1);
         expect(unsubRange).toHaveBeenCalled();
+      }
+    );
+
+    testWithEmulator(
+      "edge case: if the new range is smaller or equal then the one in store, should not dispatch any updates",
+      async () => {
+        const { dispatch, getState } = getNewStore();
+        const db = await getAuthTestEnv(createTestSlots);
+        // mock `getFirestore` to use firestore from RulesTestContext
+        jest
+          .spyOn(firestore, "getFirestore")
+          .mockImplementation(() => db as any);
+        // set "old" `unsubscribe` function to store
+        // as well as non overlapping range
+        dispatch(
+          updateFirestoreListener(OrgSubCollection.Slots as any, {
+            range: ["date", testSlots[1].date, testSlots[6].date],
+          })
+        );
+        // try subscribing to shorter range than already subscribed to
+        const range: [string, string, string] = [
+          "date",
+          testSlots[2].date,
+          testSlots[5].date,
+        ];
+        const testThunk = updateSubscription({
+          collPath: slotsCollPath,
+          storeAs: OrgSubCollection.Slots,
+          constraint: { range },
+        });
+        // run the thunk
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, getState);
+        // no updates to the store should be made
+        expect(mockDispatch).not.toHaveBeenCalled();
       }
     );
   });

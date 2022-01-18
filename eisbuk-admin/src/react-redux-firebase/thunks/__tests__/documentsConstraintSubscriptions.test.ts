@@ -122,5 +122,35 @@ describe("Firestore subscriptions", () => {
         expect(unsubDoc2).toHaveBeenCalled();
       }
     );
+
+    testWithEmulator(
+      "should not dispatch any updates if there are no new documents to subscribe to",
+      async () => {
+        const { dispatch, getState } = getNewStore();
+        const db = await getAuthTestEnv(createTestSlots);
+        // mock `getFirestore` to use firestore from RulesTestContext
+        jest
+          .spyOn(firestore, "getFirestore")
+          .mockImplementation(() => db as any);
+        // set up test state
+        dispatch(
+          updateFirestoreListener(OrgSubCollection.Slots as any, {
+            documents: [testSlots[0].id, testSlots[1].id],
+          })
+        );
+        // try to subscribe to already subscribed document
+        const documents = [testSlots[0].id];
+        const testThunk = updateSubscription({
+          collPath: slotsCollPath,
+          storeAs: OrgSubCollection.Slots,
+          constraint: { documents },
+        });
+        // run the thunk
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, getState);
+        // nothing should be dispatched as there are no new subscriptions
+        expect(mockDispatch).not.toHaveBeenCalled();
+      }
+    );
   });
 });
