@@ -6,7 +6,7 @@ import {
   BookingSubCollection,
 } from "eisbuk-shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { CollectionSubscription } from "@/types/store";
 
@@ -39,7 +39,7 @@ export const getConstraintForColl = (
     CollectionSubscription,
     FirestoreListenerConstraint | null
   > = {
-    [Collection.Organizations]: { documents: [__organization__] },
+    [Collection.Organizations]: { documents: [getOrganization()] },
     [OrgSubCollection.Attendance]: { range },
     [OrgSubCollection.Bookings]: { documents: [getSecretKey()] },
     [OrgSubCollection.SlotsByDay]: { documents },
@@ -53,7 +53,7 @@ export const getConstraintForColl = (
 export const getCollectionPath = (
   collection: CollectionSubscription
 ): string => {
-  const organizationPath = [Collection.Organizations, __organization__].join(
+  const organizationPath = [Collection.Organizations, getOrganization()].join(
     "/"
   );
 
