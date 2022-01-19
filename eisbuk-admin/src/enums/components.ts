@@ -25,4 +25,10 @@ export enum BookingCardVariant {
   Booking = "booking",
   Calendar = "calendar",
 }
+
+export enum BookingDuration {
+  "1h" = "1h",
+  "1.5h" = "1.5h",
+  "2h" = "2h",
+}
 // #endregion BookingCard

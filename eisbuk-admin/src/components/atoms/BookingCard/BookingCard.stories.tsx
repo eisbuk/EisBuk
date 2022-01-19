@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 
+import { SlotType } from "eisbuk-shared";
+
 import BookingCard from "./BookingCard";
 
-import { baseProps } from "./__testData__/dummyData";
 import { BookingCardVariant } from "@/enums/components";
 
 export default {
@@ -17,6 +18,16 @@ export default {
     ),
   ],
 } as ComponentMeta<typeof BookingCard>;
+
+export const baseProps: Parameters<typeof BookingCard>[0] = {
+  date: "2022-01-01",
+  type: SlotType.Ice,
+  interval: {
+    startTime: "09:00",
+    endTime: "10:00",
+  },
+  notes: "",
+};
 
 export const Default = (): JSX.Element => {
   /** We're using this in development to interactively test booked and non booked display */

@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { DateTime } from "luxon";
 
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -16,7 +17,7 @@ import { ActionButton, SlotTypeLabel, DateFormat } from "@/enums/translations";
 
 import { slotsLabels } from "@/config/appConfig";
 
-import { BookingCardVariant } from "@/enums/components";
+import { BookingCardVariant, BookingDuration } from "@/enums/components";
 
 import ProjectIcon from "@/components/global/ProjectIcons";
 
@@ -127,6 +128,11 @@ const BookingCard: React.FC<Props> = ({
     </Button>
   );
 
+  const intervalDuration = calculateIntervalDuration(
+    interval.startTime,
+    interval.endTime
+  );
+
   return (
     <Card
       variant="outlined"
@@ -173,6 +179,13 @@ const BookingCard: React.FC<Props> = ({
               >
                 {t(SlotTypeLabel[type])}
               </Typography>
+              <Typography
+                className={classes.type}
+                key="type"
+                color={slotLabel.color}
+              >
+                {intervalDuration}
+              </Typography>
             </Box>
           </Box>
         </Box>
@@ -181,6 +194,30 @@ const BookingCard: React.FC<Props> = ({
       {variant === BookingCardVariant.Booking && actionButton}
     </Card>
   );
+};
+
+const calculateIntervalDuration = (
+  startTime: string,
+  endTime: string
+): BookingDuration => {
+  const luxonStart = DateTime.fromISO(startTime);
+  const luxonEnd = DateTime.fromISO(endTime);
+  const { hours, minutes } = luxonEnd.diff(luxonStart, ["hours", "minutes"]);
+
+  const hoursDecimal = hours + minutes / 60;
+
+  // since JS is not that famous for float precision
+  // and start/end times might be lower than the "accounting"
+  // duration, we're rounding up on half an hour and doing "greater/lesser"
+  // comparison rather than strict equality
+  switch (true) {
+    case hoursDecimal <= 1:
+      return BookingDuration["1h"];
+    case hoursDecimal <= 1.5:
+      return BookingDuration["1.5h"];
+    default:
+      return BookingDuration["2h"];
+  }
 };
 
 // #region styles

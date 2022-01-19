@@ -1,13 +1,23 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
+import { SlotType } from "eisbuk-shared";
 
 import { ActionButton } from "@/enums/translations";
 
 import BookingCard from "../BookingCard";
 
-import { baseProps } from "../__testData__/dummyData";
-
 import i18n from "@/__testUtils__/i18n";
+import { BookingDuration } from "@/enums/components";
+
+export const baseProps: Parameters<typeof BookingCard>[0] = {
+  date: "2022-01-01",
+  type: SlotType.Ice,
+  interval: {
+    startTime: "09:00",
+    endTime: "10:30",
+  },
+  notes: "",
+};
 
 describe("Interval Card ->", () => {
   afterEach(() => {
@@ -33,6 +43,12 @@ describe("Interval Card ->", () => {
       );
       screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       expect(mockCancelBooking).toHaveBeenCalled();
+    });
+    test("should display duration of the interval", () => {
+      render(
+        <BookingCard {...baseProps} booked cancelBooking={mockCancelBooking} />
+      );
+      screen.getByText(BookingDuration["1.5h"]);
     });
   });
 });
