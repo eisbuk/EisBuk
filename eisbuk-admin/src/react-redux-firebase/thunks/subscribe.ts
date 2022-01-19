@@ -18,9 +18,9 @@ import {
 } from "@/types/store";
 
 import {
-  deleteLocalDocument,
+  deleteLocalDocuments,
   updateFirestoreListener,
-  updateLocalDocument,
+  updateLocalDocuments,
 } from "@/react-redux-firebase/actions";
 
 import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
@@ -242,7 +242,6 @@ export const updateSubscription: SubscribeFunction =
 
       // exit early if there are no new docs to subscribe to
       if (!trimmedDocs.length) return;
-
       trimmedDocs.forEach((docId) => {
         const docRef = doc(collRef, docId);
         const unsubscribe = onSnapshot(
@@ -302,27 +301,29 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
     let docsToDelete = getDocsInStore ? getDocsInStore() : [];
     /** A @TEMP assertion until the types are more generic */
     const collection = storeAs as CollectionSubscription;
-
+    const records: {
+      data: never;
+      id: string;
+    }[] = [];
     collSnapshot.forEach((doc) => {
-      const docId = doc.id;
-      /** a veery @TEMP fix */
-      const data = doc.data() as never;
-
-      dispatch(
-        updateLocalDocument({
-          collection,
-          data,
-          id: docId,
-        })
-      );
+      records.push({
+        id: doc.id,
+        data: doc.data() as never,
+      });
       // remove updated doc's id from docs to delete
-      docsToDelete = docsToDelete.filter((id) => id !== docId);
+      docsToDelete = docsToDelete.filter((id) => id !== doc.id);
     });
+    dispatch(
+      updateLocalDocuments({
+        collection,
+        records,
+      })
+    );
 
     // delete all documents which weren't in the updated collection
-    docsToDelete.forEach((id) => {
-      dispatch(deleteLocalDocument({ collection, id }));
-    });
+    if (docsToDelete.length) {
+      dispatch(deleteLocalDocuments({ collection, ids: docsToDelete }));
+    }
   };
 
 /**
@@ -336,17 +337,17 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
  */
 export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
   (dispatch, storeAs) => (docSnapshot) => {
-    /** A @TEMP assertion until the types are more generic */
-    const collection = storeAs as CollectionSubscription;
-
-    /** a veery @TEMP fix */
-    const data = docSnapshot.data() as never;
-
     dispatch(
-      updateLocalDocument({
-        collection,
-        id: docSnapshot.id,
-        data,
+      updateLocalDocuments({
+        /** A @TEMP assertion until the types are more generic */
+        collection: storeAs as CollectionSubscription,
+        records: [
+          {
+            id: docSnapshot.id,
+            /** a veery @TEMP fix */
+            data: docSnapshot.data() as never,
+          },
+        ],
       })
     );
   };

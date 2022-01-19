@@ -22,9 +22,8 @@ export enum Action {
   Logout = "@@Eisbuk/LOGOUT",
 
   UpdateFirestoreListener = "@@Eisbuk/UPDATE_FIRESTORE_LISTENER",
-  UpdateLocalCollection = "@@Eisbuk/UPDATE_LOCAL_COLLECTION",
-  UpdateLocalDocument = "@@Eisbuk/UPDATE_LOCAL_DOCUMENT",
-  DeleteLocalDocument = "@@Eisbuk/DELETE_LOCAL_DOCUMENT",
+  UpdateLocalDocuments = "@@Eisbuk/UPDATE_LOCAL_DOCUMENTS",
+  DeleteLocalDocuments = "@@Eisbuk/DELETE_LOCAL_DOCUMENTS",
   DeleteFirestoreListener = "@@Eisbuk/DELETE_FIRESTORE_LISTENER",
 }
 /**

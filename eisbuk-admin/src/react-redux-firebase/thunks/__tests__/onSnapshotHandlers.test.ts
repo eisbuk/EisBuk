@@ -49,7 +49,7 @@ describe("Firestore subscriptions", () => {
     );
   });
 
-  describe("createCollSnapshotHandler", () => {
+  describe("createDocSnapshotHandler", () => {
     testWithEmulator(
       "should update the local store on update to subscribed firestore collection",
       async () => {

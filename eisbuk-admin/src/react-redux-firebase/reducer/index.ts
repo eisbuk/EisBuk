@@ -39,54 +39,39 @@ export default (
       // return state with listener for collection and the correspoding data removed
       return { data, listeners };
 
-    case Action.UpdateLocalCollection:
-      const {
-        collection: collectionToUpdate1,
-        data: updatedCollection1,
-        merge,
-      } = action.payload as FirestoreReducerAction<Action.UpdateLocalCollection>["payload"];
+    case Action.UpdateLocalDocuments: {
+      const { collection: collectionToUpdate, records: records } =
+        action.payload as FirestoreReducerAction<Action.UpdateLocalDocuments>["payload"];
+      const recordsToAddOrEdit = {};
+      records.forEach(({ id, data }) => {
+        recordsToAddOrEdit[id] = data;
+      });
       return {
         data: {
           ...state.data,
-          [collectionToUpdate1]: merge
-            ? { ...state.data[collectionToUpdate1], ...updatedCollection1 }
-            : updatedCollection1,
-        },
-        listeners: state.listeners,
-      };
-
-    case Action.UpdateLocalDocument:
-      const {
-        collection: collectionToUpdate2,
-        data: updatedDocument,
-        id: documentToUpdate,
-      } = action.payload as FirestoreReducerAction<Action.UpdateLocalDocument>["payload"];
-      return {
-        data: {
-          ...state.data,
-          [collectionToUpdate2]: {
-            ...state.data[collectionToUpdate2],
-            [documentToUpdate]: updatedDocument,
+          [collectionToUpdate]: {
+            ...state.data[collectionToUpdate],
+            ...recordsToAddOrEdit,
           },
         },
         listeners: state.listeners,
       };
-
-    case Action.DeleteLocalDocument:
-      const { collection: collectionToUpdate3, id: documentToDelete } =
-        action.payload as FirestoreReducerAction<Action.DeleteLocalDocument>["payload"];
-      // copy the collection without the deleted document
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [documentToDelete]: deletedDocument, ...updatedCollection3 } =
-        state.data[collectionToUpdate3] || {};
-      // update state without the deleted document
+    }
+    case Action.DeleteLocalDocuments: {
+      const { collection: collectionToUpdate, ids: documentsToDelete } =
+        action.payload as FirestoreReducerAction<Action.DeleteLocalDocuments>["payload"];
+      // Create a copy of the collection
+      const { ...updatedCollection } = state.data[collectionToUpdate] || {};
+      // Remove deleted documents
+      documentsToDelete.forEach((key) => delete updatedCollection[key]);
       return {
         data: {
           ...state.data,
-          [collectionToUpdate3]: updatedCollection3,
+          [collectionToUpdate]: updatedCollection,
         },
         listeners: state.listeners,
       };
+    }
     default:
       return state;
   }
