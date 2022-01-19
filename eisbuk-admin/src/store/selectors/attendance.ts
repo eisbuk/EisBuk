@@ -5,6 +5,7 @@ import { LocalStore } from "@/types/store";
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
 import { compareCustomers } from "@/utils/customers";
+import { getSlotTimespan } from "@/utils/helpers";
 
 export const getSlotsWithAttendance = (
   state: LocalStore
@@ -32,8 +33,14 @@ export const getSlotsWithAttendance = (
   // exit early if slots day empty
   if (!slotsInDay) return [];
 
-  // ids for all slots in a day
-  const slotIds = Object.keys(slotsInDay);
+  // get ids for all slots in a day sorted by slot's time
+  const joinIdTimestring = Object.keys(slotsInDay).map((id) => ({
+    id,
+    timestring: getSlotTimespan(slotsInDay[id].intervals),
+  }));
+  const slotIds = joinIdTimestring
+    .sort((a, b) => (a.timestring > b.timestring ? 1 : -1))
+    .map(({ id }) => id);
 
   return slotIds.map((slotId) => {
     const slotsAttendance = attendance[slotId].attendances;
