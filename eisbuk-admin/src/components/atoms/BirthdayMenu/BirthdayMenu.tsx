@@ -3,6 +3,8 @@ import React, { useState, useMemo } from "react";
 import { CustomersByBirthday } from "eisbuk-shared";
 
 import Menu from "@material-ui/core/Menu";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
 import IconButton from "@material-ui/core/IconButton";
 import Cake from "@material-ui/icons/Cake";
 import Badge from "@material-ui/core/Badge";
@@ -69,18 +71,18 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
       >
         {customers.slice(0, 3).map((customer) => {
           return (
-            <div key={customer.birthday}>
-              {customer.customers.slice(0, 2).map((cus) => {
-                return (
-                  !cus.deleted &&
-                  cus.birthday && (
-                    <div>
+            <Table key={customer.birthday}>
+              <TableBody>
+                {customer.customers.slice(0, 2).map((cus) => {
+                  return (
+                    !cus.deleted &&
+                    cus.birthday && (
                       <BirthdayMenuItem key={cus.id} customer={cus} />
-                    </div>
-                  )
-                );
-              })}
-            </div>
+                    )
+                  );
+                })}
+              </TableBody>
+            </Table>
           );
         })}
         <div
