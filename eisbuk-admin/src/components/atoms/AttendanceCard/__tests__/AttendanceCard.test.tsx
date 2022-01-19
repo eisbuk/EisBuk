@@ -14,17 +14,22 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
+import { comparePeriods } from "@/utils/helpers";
+
+import {
+  testWithEmulator,
+  testWithMutationObserver,
+} from "@/__testUtils__/envUtils";
 import i18n from "@/__testUtils__/i18n";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 import {
   __attendanceButton__,
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
-import { comparePeriods } from "@/utils/helpers";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -312,6 +317,61 @@ describe("AttendanceCard", () => {
           attendedInterval: intervalKeys[2],
         });
         expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
+      }
+    );
+  });
+
+  // we're testing for an edge case when two users have the app open in their browsers
+  // and both apps should work the same, avoiding dispcrpencies, such as disabling the attendance
+  // button on one if the other has updated attendance
+  /**
+   * This is temporarily skipped as it requires both MutationObserver and firestore emulators
+   * @TODO udpate this when such operations are possible
+   */
+  xdescribe("Test syncronization on multiple views", async () => {
+    testWithEmulator(
+      "should update attendance on both views, without disabling any",
+      async () => {
+        const intervals = {
+          ["09:00-10:00"]: {
+            startTime: "09:00",
+            endTime: "10:00",
+          },
+          ["09:00-10:30"]: {
+            startTime: "09:00",
+            endTime: "10:30",
+          },
+        };
+        const saulWithAttendandce: CustomerWithAttendance = {
+          ...saul,
+          attendedInterval: "09:00-10:00",
+          bookedInterval: "09:00-10:00",
+        };
+        const testProps = {
+          ...baseSlot,
+          intervals,
+          customers: [saulWithAttendandce],
+          allCustomers: [],
+        };
+        // we're rendering two views one to interact with one
+        // for opservation of the updates
+        render(
+          <>
+            <AttendanceCard {...testProps} />
+            <AttendanceCard {...testProps} />
+          </>
+        );
+        const [controlledButton, testButton] =
+          screen.getAllByTestId(__attendanceButton__);
+        // check that both buttons are the same to begin with
+        expect(controlledButton).toHaveTextContent(thumbsUp);
+        expect(testButton).toHaveTextContent(thumbsUp);
+        // update one attendance (boolean) state and expect the other to get updated
+        controlledButton.click();
+        expect(controlledButton).toHaveTextContent(thumbsDown);
+        await waitFor(() => {
+          expect(testButton).toHaveTextContent(thumbsDown);
+        });
       }
     );
   });

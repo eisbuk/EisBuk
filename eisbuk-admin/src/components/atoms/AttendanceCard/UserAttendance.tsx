@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import ListItem from "@material-ui/core/ListItem";
@@ -70,6 +70,21 @@ const UserAttendance: React.FC<Props> = ({
   const [selectedInterval, setSelectedInterval] = useState<string>(
     attendedInterval || bookedInterval!
   );
+
+  /**
+   * In an edge case of some other client (browser or different browser window)
+   * updates the booked interval (or boolean attendance state) we wish to reflect that
+   * update locally as well
+   */
+  useEffect(() => {
+    if (attendedInterval) {
+      setSelectedInterval(attendedInterval);
+      setLocalAttended(true);
+    } else {
+      setSelectedInterval(bookedInterval!);
+      setLocalAttended(false);
+    }
+  }, [attendedInterval]);
 
   /**
    * Debounced version of `markAttendance`. Used to prevent excess server requests
