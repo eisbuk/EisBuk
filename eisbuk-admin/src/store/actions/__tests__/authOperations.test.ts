@@ -9,7 +9,7 @@ import { __organization__ } from "@/lib/constants";
 import { Action } from "@/enums/store";
 
 import { revalidateAdminStatus, updateAuthUser } from "../authOperations";
-import { updateLocalColl } from "@/store/actions/firestoreOperations/actionCreators";
+import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -29,8 +29,10 @@ describe("Auth operations", () => {
     testStore = getNewStore();
     const { dispatch } = testStore;
     dispatch(
-      updateLocalColl(Collection.Organizations, {
-        [__organization__]: { admins: [defaultUser.email] } as OrganizationData,
+      updateLocalDocuments(Collection.Organizations, {
+        [__organization__]: {
+          admins: [defaultUser.email],
+        } as OrganizationData,
       })
     );
   });

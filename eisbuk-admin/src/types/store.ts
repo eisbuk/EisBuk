@@ -22,6 +22,7 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
+import { DocumentData } from "firebase/firestore";
 
 // #region app
 /**
@@ -154,7 +155,10 @@ export interface CopyPasteState {
 export interface FirestoreData {
   [Collection.Organizations]: { [organization: string]: OrganizationData };
   [OrgSubCollection.Customers]: { [customerId: string]: Customer };
-  [OrgSubCollection.Bookings]: CustomerBase;
+  [OrgSubCollection.Bookings]: {
+    /** This is @TEMP make this only one entry (without secretKey) when we add 'transform' functionality to firestore subscribe */
+    [secretKey: string]: CustomerBase;
+  };
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;
   };
@@ -170,9 +174,33 @@ export interface FirestoreListener {
    */
   consumers: string[];
   /**
-   * A function returned from firebase `onSnapshot` listener, used to unsubscribe from particular collection
+   * A function returned from firebase `onSnapshot` listener, used to unsubscribe from particular collection.
+   * When paginating through (adding more subscription entries) this function gets compositioned into a new one,
+   * thus on `unsubscribe()` call we're unsubscribing from all subscriptions for a given collection.
    */
   unsubscribe: Unsubscribe;
+  /**
+   * A range for which we're subscribing.
+   * @example
+   * ```
+   * ["date", "2021-01-01", "2022-01-01"]
+   * // subscribes to
+   * query(
+   *  collectionRef,
+   *  where("date", ">=", "2021-01-01"),
+   *  where("date", "<=", "2022-01-01"),
+   * )
+   * ```
+   */
+  range?: [string, string, string];
+  /**
+   * Document id's we're subscribing to (i.e. `slostByDay` month entries)
+   * @example
+   * ```
+   * ["2021-01", "2021-02"]
+   * ```
+   */
+  documents?: string[];
   /** @TODO add additional meta functionality (for reporting) here */
 }
 /**
@@ -183,30 +211,32 @@ export type CollectionSubscription =
   | OrgSubCollection.SlotsByDay
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings
-  | OrgSubCollection.Attendance;
+  | OrgSubCollection.Attendance
+  | BookingSubCollection.BookedSlots;
 /**
  * Whitelisted actions for firestore reducer
  */
 export type FirestoreAction =
   | Action.UpdateFirestoreListener
   | Action.DeleteFirestoreListener
-  | Action.UpdateLocalCollection;
-/**
- * A generic used to type the payload we'll recieve from UpdateLocalCollection action
- */
-export interface UpdateFirestoreDataPayload<
-  C extends CollectionSubscription | BookingSubCollection.BookedSlots
-> {
-  collection: C;
-  data: FirestoreData[C];
-  merge?: boolean;
-}
+  | Action.UpdateLocalDocuments
+  | Action.DeleteLocalDocuments;
 /**
  * Record of payloads for each of the firestore reducer actions
  */
 interface FirestorReducerPayload {
-  [Action.UpdateLocalCollection]: UpdateFirestoreDataPayload<CollectionSubscription>;
-  [Action.UpdateFirestoreListener]: FirestoreListener;
+  [Action.UpdateLocalDocuments]: {
+    collection: string;
+    data: DocumentData;
+  };
+  [Action.DeleteLocalDocuments]: {
+    collection: string;
+    ids: string[];
+  };
+  [Action.UpdateFirestoreListener]: {
+    collection: CollectionSubscription;
+    listener: Partial<FirestoreListener>;
+  };
   [Action.DeleteFirestoreListener]: CollectionSubscription;
 }
 /**

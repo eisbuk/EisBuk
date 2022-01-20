@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { Store } from "redux";
 import { useSyncExternalStore } from "use-sync-external-store/shim";
 import { onAuthStateChanged, Auth } from "@firebase/auth";
+import { isEmpty } from "lodash";
 
 import { LocalStore } from "@/types/store";
 
@@ -9,7 +10,6 @@ import {
   revalidateAdminStatus,
   updateAuthUser,
 } from "@/store/actions/authOperations";
-import { isEmpty } from "lodash";
 
 /**
  * A hook used to subscribe to firebase auth state changes and

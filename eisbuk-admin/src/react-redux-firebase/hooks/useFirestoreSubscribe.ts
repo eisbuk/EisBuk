@@ -4,19 +4,20 @@ import { v4 as uuid } from "uuid";
 
 import { CollectionSubscription } from "@/types/store";
 
-import {
-  addFirestoreListener,
-  removeFirestoreListener,
-} from "@/store/actions/firestoreOperations";
-import { getCalendarDay } from "../selectors/app";
+import { addFirestoreListener, removeFirestoreListener } from "../thunks";
+
+import { getCalendarDay } from "@/store/selectors/app";
+
+import { getCollectionPath, getConstraintForColl } from "../utils";
 
 /**
- * A hook used to communicate with `ReduxFirestoreProvider`.
- * Adds listeners to `ReduxFirestoreProvider` (and removes them on unmount).
- * @param collections a list of (whitelisted) collections we're adding listeners for
+ * A hook used to create, update and remove firestore subscriptions and update the
+ * `listeners` entries accordingly
+ * @param collections a list of collections we're creating subscriptions for
  */
 const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
   const dispatch = useDispatch();
+  const currentDate = useSelector(getCalendarDay);
 
   /**
    * A uuid used to identify the current instance of a hook as a consumer of registered listeners.
@@ -36,6 +37,7 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
    * copied in closure, but this way it's able to acces the new (current) value on function run
    */
   const newCollections = useRef<CollectionSubscription[]>([]);
+
   // on each rerender, the current value for collections gets saved to `newCollections` ref
   newCollections.current = collections;
 
@@ -43,7 +45,16 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
     // perform `setCollection` on each new collection (present in new state, but not in the old one)
     newCollections.current.forEach((coll) => {
       if (!oldCollections.current.includes(coll)) {
-        dispatch(addFirestoreListener(coll, consumerId));
+        dispatch(
+          addFirestoreListener(
+            {
+              storeAs: coll,
+              collPath: getCollectionPath(coll),
+              constraint: getConstraintForColl(coll, currentDate),
+            },
+            consumerId
+          )
+        );
       }
     });
 
@@ -59,21 +70,6 @@ const useFirestoreSubscribe = (collections: CollectionSubscription[]): void => {
       });
     };
   }, [collections]);
-
-  // #region quickfix
-  /**
-   * This is a temporary solution, and is sub optimal
-   * @TODO Fix ASAP
-   */
-  const date = useSelector(getCalendarDay);
-
-  useEffect(() => {
-    newCollections.current.forEach((coll) => {
-      dispatch(removeFirestoreListener(coll, consumerId));
-      dispatch(addFirestoreListener(coll, consumerId));
-    });
-  }, [date]);
-  // #endregion quickfix
 
   useEffect(() => {
     return () => {

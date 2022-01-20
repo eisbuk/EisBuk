@@ -1,4 +1,4 @@
-import { CustomerBookingEntry } from "eisbuk-shared";
+import { CustomerBase, CustomerBookingEntry } from "eisbuk-shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -7,9 +7,12 @@ import { LocalStore } from "@/types/store";
  * @param state Local Redux Store
  * @returns customer data (Bookings meta)
  */
-export const getBookingsCustomer = (
-  state: LocalStore
-): LocalStore["firestore"]["data"]["bookings"] => state.firestore.data.bookings;
+export const getBookingsCustomer =
+  (secretKey: string) =>
+  (state: LocalStore): CustomerBase | undefined => {
+    const { bookings } = state.firestore.data;
+    return bookings ? bookings[secretKey] : undefined;
+  };
 
 /**
  * Get subscribed slots from state
