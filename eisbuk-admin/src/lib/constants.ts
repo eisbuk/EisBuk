@@ -46,3 +46,5 @@ export const __functionsZone__ = "europe-west6";
 
 // other
 export const __sentryDSN__ = process.env.REACT_APP_SENTRY_DSN;
+export const __sentryEnvironment__ =
+  process.env.REACT_APP_SENTRY_ENVIRONMENT || "development";

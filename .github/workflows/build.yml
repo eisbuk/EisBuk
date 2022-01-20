@@ -38,6 +38,7 @@ jobs:
           REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
           REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
+          REACT_APP_SENTRY_ENVIRONMENT: staging
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
       - name: Deploy preview channel
