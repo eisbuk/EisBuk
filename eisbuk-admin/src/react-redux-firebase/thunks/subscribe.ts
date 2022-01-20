@@ -18,9 +18,9 @@ import {
 } from "@/types/store";
 
 import {
-  deleteLocalDocument,
+  updateLocalDocuments,
+  deleteLocalDocuments,
   updateFirestoreListener,
-  updateLocalDocument,
 } from "@/react-redux-firebase/actions";
 
 import { getFirestoreListeners } from "@/react-redux-firebase/selectors";
@@ -297,6 +297,7 @@ interface OnSnapshotHandlerHOF<T extends "doc" | "coll"> {
  */
 export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
   (dispatch, storeAs, getDocsInStore) => (collSnapshot) => {
+    const updatedDocuments: Record<string, DocumentData> = {};
     // we start docs to delete as all of the docs in state (belonging to this constraint)
     // and remove each doc id as it's updated (leaving us with deleted documents)
     let docsToDelete = getDocsInStore ? getDocsInStore() : [];
@@ -305,24 +306,19 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
 
     collSnapshot.forEach((doc) => {
       const docId = doc.id;
-      /** a veery @TEMP fix */
-      const data = doc.data() as never;
+      const docData = doc.data();
 
-      dispatch(
-        updateLocalDocument({
-          collection,
-          data,
-          id: docId,
-        })
-      );
+      updatedDocuments[docId] = docData;
       // remove updated doc's id from docs to delete
       docsToDelete = docsToDelete.filter((id) => id !== docId);
     });
 
-    // delete all documents which weren't in the updated collection
-    docsToDelete.forEach((id) => {
-      dispatch(deleteLocalDocument({ collection, id }));
-    });
+    dispatch(updateLocalDocuments(collection, updatedDocuments));
+
+    // delete all documents which weren't in the updated collection (if any)
+    if (docsToDelete.length) {
+      dispatch(deleteLocalDocuments(collection, docsToDelete));
+    }
   };
 
 /**
@@ -336,17 +332,13 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
  */
 export const createDocSnapshotHandler: OnSnapshotHandlerHOF<"doc"> =
   (dispatch, storeAs) => (docSnapshot) => {
-    /** A @TEMP assertion until the types are more generic */
-    const collection = storeAs as CollectionSubscription;
+    const docId = docSnapshot.id;
+    const docData = docSnapshot.data();
 
-    /** a veery @TEMP fix */
-    const data = docSnapshot.data() as never;
-
-    dispatch(
-      updateLocalDocument({
-        collection,
-        id: docSnapshot.id,
-        data,
-      })
-    );
+    if (docData) {
+      dispatch(updateLocalDocuments(storeAs, { [docId]: docData }));
+    } else {
+      // if `docData` is undefined the document has been deleted from firestore
+      dispatch(deleteLocalDocuments(storeAs, [docId]));
+    }
   };

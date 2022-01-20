@@ -5,15 +5,14 @@ import { LocalStore } from "@/types/store";
 import firestoreReducer from "../";
 
 import {
-  updateLocalColl,
   deleteFirestoreListener,
   updateFirestoreListener,
-  updateLocalDocument,
-  deleteLocalDocument,
+  updateLocalDocuments,
+  deleteLocalDocuments,
 } from "@/react-redux-firebase/actions";
 
 import { baseAttendance } from "@/__testData__/dataTriggers";
-import { gus, saul } from "@/__testData__/customers";
+import { gus, jian, saul } from "@/__testData__/customers";
 
 const slotId = "slot-id";
 // collection we'll be using throughout the tests
@@ -73,7 +72,7 @@ describe("Firestore reducer", () => {
     });
   });
 
-  describe("Test Action.UpdateLocalCollection", () => {
+  describe("Test Action.UpdateLocalDocuments", () => {
     /**
      * Base attendance with different date (used to test updates to the store)
      */
@@ -84,7 +83,7 @@ describe("Firestore reducer", () => {
       },
     };
 
-    test("should overwrite updated collection in store by default", () => {
+    test("should update only the provided entries, without overwriting the entire state", () => {
       // set up test state
       const initialState: LocalStore["firestore"] = {
         data: {
@@ -96,37 +95,11 @@ describe("Firestore reducer", () => {
         listeners: {},
       };
       // update attendance
-      const updateAction = updateLocalColl({
-        collection: OrgSubCollection.Attendance,
-        data: updatedAttendance,
-      });
+      const updateAction = updateLocalDocuments(
+        OrgSubCollection.Attendance,
+        updatedAttendance
+      );
       const updatedState = firestoreReducer(initialState, updateAction);
-      // since the `merge` param is falsy (undefined), should overwrite the `attendance` entirely
-      expect(updatedState).toEqual({
-        listeners: {},
-        data: { attendance: updatedAttendance },
-      });
-    });
-
-    test("should update only the provided entries, without overwriting the entire state, if 'merge=true'", () => {
-      // set up test state
-      const initialState: LocalStore["firestore"] = {
-        data: {
-          attendance: {
-            ["dummy-slot"]: baseAttendance,
-            [slotId]: baseAttendance,
-          },
-        },
-        listeners: {},
-      };
-      // update attendance
-      const updateAction = updateLocalColl({
-        collection: OrgSubCollection.Attendance,
-        data: updatedAttendance,
-        merge: true,
-      });
-      const updatedState = firestoreReducer(initialState, updateAction);
-      // since the `merge` param is true, should only update the attendance entry keyed by `slotId` (according to test data)
       expect(updatedState).toEqual({
         listeners: {},
         data: {
@@ -136,58 +109,25 @@ describe("Firestore reducer", () => {
     });
   });
 
-  describe("Test Action.UpdateLocalDocument", () => {
-    test("should update the firestore document entry in local store without meddling with the rest of the collection", () => {
+  describe("Test Action.DeleteLocalDocuments", () => {
+    test("should delete the firestore document entries in local store without meddling with the rest of the collection", () => {
       // set up test state
       const initialState: LocalStore["firestore"] = {
         data: {
           customers: {
             [gus.id]: gus,
             [saul.id]: saul,
+            [jian.id]: jian,
           },
         },
         listeners: {},
       };
       // update attendance
-      const updatedSaul = { ...saul, name: "not-saul" };
-      const updateAction = updateLocalDocument({
-        collection: OrgSubCollection.Customers,
-        id: saul.id,
-        data: updatedSaul,
-      });
+      const updateAction = deleteLocalDocuments(OrgSubCollection.Customers, [
+        saul.id,
+        jian.id,
+      ]);
       const updatedState = firestoreReducer(initialState, updateAction);
-      // since the `merge` param is falsy (undefined), should overwrite the `attendance` entirely
-      expect(updatedState).toEqual({
-        data: {
-          customers: {
-            [gus.id]: gus,
-            [saul.id]: updatedSaul,
-          },
-        },
-        listeners: {},
-      });
-    });
-  });
-
-  describe("Test Action.DeleteLocalDocument", () => {
-    test("should delete the firestore document entry in local store without meddling with the rest of the collection", () => {
-      // set up test state
-      const initialState: LocalStore["firestore"] = {
-        data: {
-          customers: {
-            [gus.id]: gus,
-            [saul.id]: saul,
-          },
-        },
-        listeners: {},
-      };
-      // update attendance
-      const updateAction = deleteLocalDocument({
-        collection: OrgSubCollection.Customers,
-        id: saul.id,
-      });
-      const updatedState = firestoreReducer(initialState, updateAction);
-      // since the `merge` param is falsy (undefined), should overwrite the `attendance` entirely
       expect(updatedState).toEqual({
         data: {
           customers: {

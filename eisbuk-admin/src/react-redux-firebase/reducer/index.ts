@@ -27,6 +27,7 @@ export default (
           [collection]: { ...state.listeners[collection], ...listener },
         },
       };
+
     case Action.DeleteFirestoreListener:
       const collectionToDelete =
         action.payload as FirestoreReducerAction<Action.DeleteFirestoreListener>["payload"];
@@ -39,51 +40,40 @@ export default (
       // return state with listener for collection and the correspoding data removed
       return { data, listeners };
 
-    case Action.UpdateLocalCollection:
-      const {
-        collection: collectionToUpdate1,
-        data: updatedCollection1,
-        merge,
-      } = action.payload as FirestoreReducerAction<Action.UpdateLocalCollection>["payload"];
+    case Action.UpdateLocalDocuments:
+      const { collection: collectionToUpdate1, data: updatedCollection1 } =
+        action.payload as FirestoreReducerAction<Action.UpdateLocalDocuments>["payload"];
       return {
         data: {
           ...state.data,
-          [collectionToUpdate1]: merge
-            ? { ...state.data[collectionToUpdate1], ...updatedCollection1 }
-            : updatedCollection1,
-        },
-        listeners: state.listeners,
-      };
-
-    case Action.UpdateLocalDocument:
-      const {
-        collection: collectionToUpdate2,
-        data: updatedDocument,
-        id: documentToUpdate,
-      } = action.payload as FirestoreReducerAction<Action.UpdateLocalDocument>["payload"];
-      return {
-        data: {
-          ...state.data,
-          [collectionToUpdate2]: {
-            ...state.data[collectionToUpdate2],
-            [documentToUpdate]: updatedDocument,
+          [collectionToUpdate1]: {
+            ...state.data[collectionToUpdate1],
+            ...updatedCollection1,
           },
         },
         listeners: state.listeners,
       };
 
-    case Action.DeleteLocalDocument:
-      const { collection: collectionToUpdate3, id: documentToDelete } =
-        action.payload as FirestoreReducerAction<Action.DeleteLocalDocument>["payload"];
-      // copy the collection without the deleted document
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { [documentToDelete]: deletedDocument, ...updatedCollection3 } =
-        state.data[collectionToUpdate3] || {};
-      // update state without the deleted document
+    case Action.DeleteLocalDocuments:
+      const { collection: collectionToUpdate2, ids: documentsToDelete } =
+        action.payload as FirestoreReducerAction<Action.DeleteLocalDocuments>["payload"];
+      // remove documents from local copy of the collection in store
+      const updatedCollection2 = documentsToDelete.reduce(
+        (acc, docId) => {
+          // copy the collection without the deleted document
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { [docId]: deletedDocument, ...otherDocuments } = acc;
+
+          return otherDocuments;
+        },
+        { ...state.data[collectionToUpdate2] }
+      );
+
+      // update state without deleted documents
       return {
         data: {
           ...state.data,
-          [collectionToUpdate3]: updatedCollection3,
+          [collectionToUpdate2]: updatedCollection2,
         },
         listeners: state.listeners,
       };

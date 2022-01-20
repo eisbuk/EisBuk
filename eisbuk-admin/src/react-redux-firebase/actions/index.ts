@@ -1,27 +1,11 @@
-import { BookingSubCollection } from "eisbuk-shared";
-
 import { Action } from "@/enums/store";
 
 import {
   CollectionSubscription,
   FirestoreListener,
   FirestoreReducerAction,
-  UpdateFirestoreDataPayload,
 } from "@/types/store";
-
-interface UpdateFirestoreData<
-  A extends
-    | Action.UpdateLocalCollection
-    | Action.UpdateLocalDocument
-    | Action.DeleteLocalDocument
-> {
-  <C extends CollectionSubscription | BookingSubCollection.BookedSlots>(
-    payload: UpdateFirestoreDataPayload<C>[A]
-  ): {
-    type: A;
-    payload: UpdateFirestoreDataPayload<C>[A];
-  };
-}
+import { DocumentData } from "firebase/firestore";
 
 /**
  * An action creator used to dispatch updates for given collection in local store's `firestore.data`
@@ -30,24 +14,13 @@ interface UpdateFirestoreData<
  * @param merge if true leaves the rest of the collection entry intact and updates only the provided data (non-recursive)
  * @returns Redux action
  */
-export const updateLocalColl: UpdateFirestoreData<Action.UpdateLocalCollection> =
-  ({ collection, data, merge }) => ({
-    type: Action.UpdateLocalCollection,
-    payload: { collection, data, merge },
-  });
-
-/**
- * An action creator used to dispatch updates for given document in a collection in local store's `firestore.data`
- * @param collection of the document to update
- * @param id document `id` of corresponding firestore document, `key` for local store entry
- * @param data updated data entry
- * @returns Redux action
- */
-export const updateLocalDocument: UpdateFirestoreData<Action.UpdateLocalDocument> =
-  ({ collection, id, data }) => ({
-    type: Action.UpdateLocalDocument,
-    payload: { collection, data, id },
-  });
+export const updateLocalDocuments = (
+  collection: string,
+  data: Record<string, DocumentData>
+): FirestoreReducerAction<Action.UpdateLocalDocuments> => ({
+  type: Action.UpdateLocalDocuments,
+  payload: { collection, data },
+});
 
 /**
  * An action creator used to delete given firestore document from corresponding collection in local store's `firestore.data`
@@ -55,11 +28,13 @@ export const updateLocalDocument: UpdateFirestoreData<Action.UpdateLocalDocument
  * @param id document id of the document to delete
  * @returns Redux action
  */
-export const deleteLocalDocument: UpdateFirestoreData<Action.DeleteLocalDocument> =
-  ({ collection, id }) => ({
-    type: Action.DeleteLocalDocument,
-    payload: { collection, id },
-  });
+export const deleteLocalDocuments = (
+  collection: string,
+  ids: string[]
+): FirestoreReducerAction<Action.DeleteLocalDocuments> => ({
+  type: Action.DeleteLocalDocuments,
+  payload: { collection, ids },
+});
 
 /**
  * An action used to update the firestore listener for a provided collection in the Redux store:
