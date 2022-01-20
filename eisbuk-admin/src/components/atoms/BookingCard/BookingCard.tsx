@@ -167,25 +167,29 @@ const BookingCard: React.FC<Props> = ({
               pl={1}
               pr={1}
             >
-              <ProjectIcon
-                className={classes.typeIcon}
-                icon={slotLabel.icon}
-                fontSize="small"
-              />
-              <Typography
-                className={classes.type}
-                key="type"
-                color={slotLabel.color}
-              >
-                {t(SlotTypeLabel[type])}
-              </Typography>
-              <Typography
-                className={classes.type}
-                key="type"
-                color={slotLabel.color}
-              >
-                {intervalDuration}
-              </Typography>
+              <Box className={[classes.boxHalf, classes.flexCenter].join(" ")}>
+                <Typography
+                  className={classes.duration}
+                  key="duration"
+                  color={slotLabel.color}
+                >
+                  {intervalDuration}
+                </Typography>
+              </Box>
+              <Box className={[classes.boxHalf, classes.flexCenter].join(" ")}>
+                <ProjectIcon
+                  className={classes.typeIcon}
+                  icon={slotLabel.icon}
+                  fontSize="small"
+                />
+                <Typography
+                  className={classes.type}
+                  key="type"
+                  color={slotLabel.color}
+                >
+                  {t(SlotTypeLabel[type])}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Box>
@@ -202,21 +206,23 @@ const calculateIntervalDuration = (
 ): BookingDuration => {
   const luxonStart = DateTime.fromISO(startTime);
   const luxonEnd = DateTime.fromISO(endTime);
-  const { hours, minutes } = luxonEnd.diff(luxonStart, ["hours", "minutes"]);
+  const { minutes } = luxonEnd.diff(luxonStart, ["minutes"]);
 
-  const hoursDecimal = hours + minutes / 60;
+  // exit early with catch all if duration greater than expected
+  if (minutes > 120) return BookingDuration["2+h"];
 
-  // since JS is not that famous for float precision
-  // and start/end times might be lower than the "accounting"
-  // duration, we're rounding up on half an hour and doing "greater/lesser"
-  // comparison rather than strict equality
-  switch (true) {
-    case hoursDecimal <= 1:
+  const roundedMinutes = Math.round(minutes / 30) * 30;
+
+  switch (roundedMinutes) {
+    case 60:
       return BookingDuration["1h"];
-    case hoursDecimal <= 1.5:
+    case 90:
       return BookingDuration["1.5h"];
-    default:
+    case 120:
       return BookingDuration["2h"];
+    default:
+      // should not happen in production
+      return BookingDuration["0.5h"];
   }
 };
 
@@ -264,6 +270,9 @@ const useStyles = makeStyles((theme) =>
       boxSizing: "border-box",
       width: "50%",
       marginRight: "auto",
+    },
+    boxHalf: {
+      width: "50%",
     },
     topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
     time: {
@@ -329,6 +338,20 @@ const useStyles = makeStyles((theme) =>
       fontWeight: theme.typography.fontWeightBold,
     },
     deleteButton: {},
+    duration: {
+      width: "2.5rem",
+      height: "1.5rem",
+      border: "none",
+      borderRadius: 4,
+      backgroundColor: theme.palette.primary.main,
+      fontWeight: "bold",
+      fontSize: "0.9rem",
+      color: "white",
+      textAlign: "center",
+      lineHeight: 1,
+      padding: "0.3rem",
+      boxSizing: "border-box",
+    },
   })
 );
 

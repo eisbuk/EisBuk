@@ -19,7 +19,7 @@ export default {
   ],
 } as ComponentMeta<typeof BookingCard>;
 
-export const baseProps: Parameters<typeof BookingCard>[0] = {
+const baseProps: Parameters<typeof BookingCard>[0] = {
   date: "2022-01-01",
   type: SlotType.Ice,
   interval: {
@@ -64,4 +64,25 @@ export const CalendarVariantWithNotes = (): JSX.Element => (
     variant={BookingCardVariant.Calendar}
     notes="Pista 1"
   />
+);
+
+const halfHour = { startTime: "10:00", endTime: "10:30" };
+const fullHour = { startTime: "10:00", endTime: "11:00" };
+const hourAndAHalf = { startTime: "10:00", endTime: "11:30" };
+const twoHours = { startTime: "10:00", endTime: "12:00" };
+const tooLong = { startTime: "10:00", endTime: "12:30" };
+
+export const DifferentDurations = (): JSX.Element => (
+  <>
+    Half hour:
+    <BookingCard {...{ ...baseProps, interval: halfHour }} />
+    Full hour:
+    <BookingCard {...{ ...baseProps, interval: fullHour }} />
+    Hour and a half:
+    <BookingCard {...{ ...baseProps, interval: hourAndAHalf }} />
+    Two hours:
+    <BookingCard {...{ ...baseProps, interval: twoHours }} />
+    Two plus:
+    <BookingCard {...{ ...baseProps, interval: tooLong }} />
+  </>
 );
