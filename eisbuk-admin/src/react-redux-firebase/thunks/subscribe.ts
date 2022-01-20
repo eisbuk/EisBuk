@@ -301,8 +301,6 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
     // we start docs to delete as all of the docs in state (belonging to this constraint)
     // and remove each doc id as it's updated (leaving us with deleted documents)
     let docsToDelete = getDocsInStore ? getDocsInStore() : [];
-    /** A @TEMP assertion until the types are more generic */
-    const collection = storeAs as CollectionSubscription;
 
     collSnapshot.forEach((doc) => {
       const docId = doc.id;
@@ -313,11 +311,11 @@ export const createCollSnapshotHandler: OnSnapshotHandlerHOF<"coll"> =
       docsToDelete = docsToDelete.filter((id) => id !== docId);
     });
 
-    dispatch(updateLocalDocuments(collection, updatedDocuments));
+    dispatch(updateLocalDocuments(storeAs, updatedDocuments));
 
     // delete all documents which weren't in the updated collection (if any)
     if (docsToDelete.length) {
-      dispatch(deleteLocalDocuments(collection, docsToDelete));
+      dispatch(deleteLocalDocuments(storeAs, docsToDelete));
     }
   };
 

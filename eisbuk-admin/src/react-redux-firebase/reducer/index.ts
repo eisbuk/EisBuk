@@ -40,25 +40,26 @@ export default (
       // return state with listener for collection and the correspoding data removed
       return { data, listeners };
 
-    case Action.UpdateLocalDocuments:
-      const { collection: collectionToUpdate1, data: updatedCollection1 } =
+    case Action.UpdateLocalDocuments: {
+      const { collection: collectionToUpdate, data: updatedCollection } =
         action.payload as FirestoreReducerAction<Action.UpdateLocalDocuments>["payload"];
       return {
         data: {
           ...state.data,
-          [collectionToUpdate1]: {
-            ...state.data[collectionToUpdate1],
-            ...updatedCollection1,
+          [collectionToUpdate]: {
+            ...state.data[collectionToUpdate],
+            ...updatedCollection,
           },
         },
         listeners: state.listeners,
       };
+    }
 
-    case Action.DeleteLocalDocuments:
-      const { collection: collectionToUpdate2, ids: documentsToDelete } =
+    case Action.DeleteLocalDocuments: {
+      const { collection: collectionToUpdate, ids: documentsToDelete } =
         action.payload as FirestoreReducerAction<Action.DeleteLocalDocuments>["payload"];
       // remove documents from local copy of the collection in store
-      const updatedCollection2 = documentsToDelete.reduce(
+      const updatedCollection = documentsToDelete.reduce(
         (acc, docId) => {
           // copy the collection without the deleted document
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -66,17 +67,19 @@ export default (
 
           return otherDocuments;
         },
-        { ...state.data[collectionToUpdate2] }
+        { ...state.data[collectionToUpdate] }
       );
 
       // update state without deleted documents
       return {
         data: {
           ...state.data,
-          [collectionToUpdate2]: updatedCollection2,
+          [collectionToUpdate]: updatedCollection,
         },
         listeners: state.listeners,
       };
+    }
+
     default:
       return state;
   }
