@@ -8,7 +8,6 @@ describe("birthday badge", () => {
   beforeEach(() => {
     cy.initAdminApp();
     cy.visit(PrivateRoutes.Athletes);
-    cy.clock(DateTime.fromISO(__staticTestDate__).toMillis());
     cy.getAttrWith("data-testid", "add-athlete").click();
     cy.getAttrWith("name", "name").type(saul.name);
     cy.getAttrWith("name", "surname").type(saul.surname);
