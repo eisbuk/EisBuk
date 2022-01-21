@@ -6,7 +6,11 @@ import "./i18next/i18n";
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 
-import { __sentryDSN__, __sentryEnvironment__ } from "@/lib/constants";
+import {
+  __sentryDSN__,
+  __sentryEnvironment__,
+  __sentryRelease__,
+} from "@/lib/constants";
 
 import App from "@/App";
 
@@ -15,6 +19,7 @@ if (__sentryDSN__) {
   Sentry.init({
     environment: __sentryEnvironment__,
     dsn: __sentryDSN__,
+    release: __sentryRelease__,
     integrations: [
       new Integrations.BrowserTracing({
         beforeNavigate: (context) => {
