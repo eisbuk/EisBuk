@@ -23,6 +23,7 @@ import "./commands";
 import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
 
 import "cypress-mochawesome-reporter/register";
+import addFirebaseCommands from "cypress/plugins/firebasePlugin/commands";
 
 // ***********************************************************
 //
@@ -39,14 +40,6 @@ declare global {
   namespace Cypress {
     interface Chainable {
       /**
-       * Run this command before each test in order to test the app with admin access, it:
-       * - initializes a new `eisbuk` app
-       * - creates a random name organization and adds organization name to local storage
-       * - creates a default organization with given name
-       * - creates/logs-in a default user (admin of default organization)
-       */
-      initAdminApp: (doLogin?: boolean) => Chainable<Element>;
-      /**
        * @param {string} attr A DOM element attribute - e.g [attr=]
        * @param {string} label A value for the attribute - [=label]
        * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
@@ -59,6 +52,8 @@ declare global {
     }
   }
 }
+
+addFirebaseCommands();
 
 // Overrides browser global Date Object to start from the first week of March 2021
 // This means "new Date()" will always return Monday 1st March 2021 in all tests
