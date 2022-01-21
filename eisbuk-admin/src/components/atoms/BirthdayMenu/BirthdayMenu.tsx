@@ -38,16 +38,15 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
 
-  const calculateTimeDiff =
-    DateTime.now().plus({ day: 1 }).startOf("day").toMillis() -
-    DateTime.now().toMillis();
-  const [timeDiff, setTimeDiff] = useState(calculateTimeDiff);
+  const calculateTimeDiff = (now: DateTime) =>
+    now.plus({ day: 1 }).startOf("day").toMillis() - now.toMillis();
+  const [timeDiff, setTimeDiff] = useState(calculateTimeDiff(DateTime.now()));
 
   useEffect(() => {
-    setTimeout(() => {
-      setTimeDiff(calculateTimeDiff);
+    const timeout = setTimeout(() => {
+      setTimeDiff(calculateTimeDiff(DateTime.now()));
     }, timeDiff);
-    return clearTimeout();
+    return () => clearTimeout(timeout);
   }, [timeDiff]);
   const getTodaysBirthdays = useMemo(
     (): number =>
