@@ -55,7 +55,7 @@ export const baseSlot: SlotInterface = {
   date: testDate,
   id: "base-slot-id",
   type: SlotType.Ice,
-  categories: [Category.Competitive, Category.PreCompetitive],
+  categories: [Category.Competitive, Category.Adults],
   intervals,
   notes: "",
 };
