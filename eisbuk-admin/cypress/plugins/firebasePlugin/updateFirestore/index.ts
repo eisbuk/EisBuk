@@ -7,16 +7,16 @@ import updateFirestoreData from "./updateFirestoreData";
 
 interface Payload {
   organization: string;
-  fName: string;
+  files: string[];
 }
 
 const handleFirestoreUpdate: TaskHandler<Payload> = async ({
   organization,
-  fName,
+  files,
 }) => {
   const testFilesDir = path.join(__dirname, "..", "..", "..", "__testData__");
 
-  const docsToUpdate = await readTestData(testFilesDir, fName);
+  const docsToUpdate = await readTestData(testFilesDir, files);
 
   await updateFirestoreData(organization, docsToUpdate);
 

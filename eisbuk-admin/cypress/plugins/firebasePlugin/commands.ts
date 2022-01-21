@@ -36,16 +36,16 @@ declare global {
        */
       initAdminApp: (doLogin?: boolean) => Chainable<Element>;
       /**
-       * A sort of a proxy handler: passes organization and file name back to node environment
-       * process (using `cy.task` API). The file gets read and parsed (JSON)
-       * and firestore gets updated with test data (read from the file)
+       * A sort of a proxy handler: passes organization and file names back to node environment
+       * process (using `cy.task` API). The files get read and parsed (JSON)
+       * and firestore gets updated with combined test data (read from all fo the provided files)
        * @param {string} organization the unique name of the firestore organization used for current test
-       * @param {string} fName the name of the JSON file containing test data
+       * @param {string[]} files an array of names of the JSON files containing test data
        * we wish to update firestore with
        */
       updateFirestore: (
         organization: string,
-        fName: string
+        files: string[]
       ) => Chainable<Element>;
     }
   }
@@ -118,8 +118,8 @@ const addFirebaseCommands = (): void => {
 
   Cypress.Commands.add(
     "updateFirestore",
-    (organization: string, fName: string) => {
-      cy.task("updateFirestore", { organization, fName });
+    (organization: string, files: string[]) => {
+      cy.task("updateFirestore", { organization, files });
     }
   );
 };
