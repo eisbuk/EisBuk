@@ -39,8 +39,19 @@ jobs:
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
           REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
           REACT_APP_SENTRY_ENVIRONMENT: staging
+          REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+        with:
+          environment: staging
+          sourcemaps: "./eisbuk-admin/dist/app"
       - name: Deploy preview channel
         id: deploy
         run: |
