@@ -8,7 +8,7 @@
 // https://on.cypress.io/plugins-guide
 // ***********************************************************
 
-// import { beforeRunHook, afterRunHook } from "cypress-mochawesome-reporter/lib";
+import { beforeRunHook, afterRunHook } from "cypress-mochawesome-reporter/lib";
 import firebasePlugin from "./firebasePlugin";
 
 // This function is called when a project is opened or re-opened (e.g. due to
@@ -19,15 +19,15 @@ import firebasePlugin from "./firebasePlugin";
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 module.exports = (on: Cypress.PluginEvents) => {
-  // on("before:run", async (details) => {
-  //   console.log("override before:run");
-  //   await beforeRunHook(details);
-  // });
+  on("before:run", async (details) => {
+    console.log("override before:run");
+    await beforeRunHook(details);
+  });
 
-  // on("after:run", async () => {
-  //   console.log("override after:run");
-  //   await afterRunHook();
-  // });
+  on("after:run", async () => {
+    console.log("override after:run");
+    await afterRunHook();
+  });
 
   // initilize firebase plugin with commands and handlers
   firebasePlugin(on);
