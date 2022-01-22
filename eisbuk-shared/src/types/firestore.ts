@@ -42,6 +42,24 @@ import {
  */
 export interface OrganizationData {
   admins: string[];
+  /**
+   * String used as `from` when sending email or `sender` when sending SMS.
+   * If not provided, will fall back to organization name
+   */
+  sender?: string;
+  /**
+   * Template for sent SMS messages
+   */
+  smsConfig?: {
+    /**
+     * Full URL (including host and endpoint) of SMS sending service provider.
+     */
+    url?: string;
+    /**
+     * Auth token used to authenticate with SMS sending service provider
+     */
+    authToken?: string;
+  };
   // mailConfig: OrgMailConfig;
 }
 

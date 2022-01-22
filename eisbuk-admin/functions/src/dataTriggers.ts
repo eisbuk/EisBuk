@@ -162,10 +162,8 @@ export const aggregateSlots = functions
         break;
       default:
         // if not change or create: is update
-        const {
-          intervals: newIntervals,
-          ...updatedData
-        } = change.after.data() as Omit<SlotInterface, "id">;
+        const { intervals: newIntervals, ...updatedData } =
+          change.after.data() as Omit<SlotInterface, "id">;
         const { intervals: oldIntervals } = change.before.data() as Omit<
           SlotInterface,
           "id"
