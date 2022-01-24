@@ -2,6 +2,12 @@
 import http from "http";
 import { StringDecoder } from "string_decoder";
 
+const nFlagIndex = process.argv.indexOf("-p");
+const portArg =
+  nFlagIndex === -1 ? undefined : Number(process.argv[nFlagIndex + 1]);
+
+const port = portArg || 3000;
+
 const echoServer = http.createServer(async (req, res) => {
   const report: Record<string, any> = {};
 
@@ -35,7 +41,7 @@ const echoServer = http.createServer(async (req, res) => {
   req.on("end", () => {
     buffer += decoder.end();
 
-    const reqData = JSON.parse(buffer);
+    const reqData = buffer ? JSON.parse(buffer) : "";
 
     report.data = reqData;
 
@@ -47,6 +53,6 @@ const echoServer = http.createServer(async (req, res) => {
   });
 });
 
-echoServer.listen(3000, "localhost", () => {
-  console.log("Listening to port 3000 on localhost");
+echoServer.listen(port, "localhost", () => {
+  console.log(`Listening to port ${port} on localhost`);
 });

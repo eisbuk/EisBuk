@@ -159,6 +159,7 @@ export const sendBookingsLink: SendBookingsLink =
         case SendBookingLinkMethod.SMS:
           handler = CloudFunction.SendSMS;
           to = phone;
+          // strip markup from text message (for SMS)
           message = html.replace(/<\/*[a-z]\/*>/g, "");
       }
 

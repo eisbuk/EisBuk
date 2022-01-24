@@ -1,6 +1,8 @@
 import https from "https";
+import http from "http";
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
+import { StringDecoder } from "string_decoder";
 
 import {
   Collection,
@@ -12,8 +14,7 @@ import {
   OrganizationData,
 } from "eisbuk-shared";
 
-import { checkUser } from "./utils";
-import { StringDecoder } from "string_decoder";
+import { checkUser, createSMSReqOptions } from "./utils";
 
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
@@ -58,6 +59,8 @@ export const sendEmail = functions
 
     return { ...payload, success: true };
   });
+
+type Protocol = "https" | "http";
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
@@ -115,7 +118,10 @@ export const sendSMS = functions
       );
     }
 
-    const options = createSMSReqOptions(smsConfig.url, smsConfig.authToken);
+    const { proto, ...options } = createSMSReqOptions(
+      smsConfig.url,
+      smsConfig.authToken
+    );
 
     const data = new TextEncoder().encode(
       JSON.stringify({
@@ -126,53 +132,26 @@ export const sendSMS = functions
       })
     );
 
-    const res = await postSMS(options, data);
+    const res = await postSMS(proto, options, data);
 
     return { success: true, res };
   });
 
 /**
- * A convenience method used to create SMS request options.
- * Used purely for code readability
- * @param url
- * @param token
- * @returns
- */
-const createSMSReqOptions = (
-  url: string,
-  token: string
-): https.RequestOptions => {
-  // split hostname and endpoint from url
-  let hostname = "";
-  let endpoint = "/";
-  const breakingPoint = url.indexOf("/");
-  if (breakingPoint === -1) {
-    hostname = url;
-  } else {
-    hostname = url.slice(0, breakingPoint);
-    endpoint = url.slice(breakingPoint);
-  }
-
-  return {
-    hostname,
-    path: [endpoint, `token=${token}`].join("?"),
-
-    // a standard part of each SMS post request we're sending
-    headers: { ["Content-Type"]: "application/json" },
-    method: "POST",
-  };
-};
-
-/**
  * A helper function transforming callback structure of request into promise
+ * @param {"http" | "https"} proto request protocol: "http" should be used only for testing
  * @param {RequestOptions} options request options
  * @param {Uint8Array} data serialized request body
  * @returns
  */
-const postSMS = (options: https.RequestOptions, data: Uint8Array) =>
+const postSMS = (
+  proto: Protocol,
+  options: https.RequestOptions,
+  data: Uint8Array
+) =>
   new Promise((resolve, reject) => {
-    // create POST request
-    const req = https.request(options, (res) => {
+    // request handler will be the same regardless of protocol used ("http"/"https")
+    const handleReq = (res: http.IncomingMessage) => {
       const decoder = new StringDecoder("utf-8");
       let resBody = "";
 
@@ -191,7 +170,13 @@ const postSMS = (options: https.RequestOptions, data: Uint8Array) =>
         const resJSON = JSON.parse(resBody);
         resolve(resJSON);
       });
-    });
+    };
+
+    // create a request using provided protocol
+    const req =
+      proto === "http"
+        ? http.request(options, handleReq)
+        : https.request(options, handleReq);
 
     // send request with provided data
     req.write(data);
