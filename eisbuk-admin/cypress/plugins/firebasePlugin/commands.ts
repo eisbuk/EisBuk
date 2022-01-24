@@ -114,6 +114,7 @@ const addFirebaseCommands = (): void => {
         console.log(`Logged out`);
       }
     }
+    return organization;
   });
 
   Cypress.Commands.add(

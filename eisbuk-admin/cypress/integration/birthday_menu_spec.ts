@@ -2,12 +2,16 @@ import { PrivateRoutes } from "@/enums/routes";
 import { __birthdayMenu__ } from "@/__testData__/testIds";
 import { DateTime } from "luxon";
 import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
-import { getOrganization } from "@/lib/getters";
 
 describe("birthday badge", () => {
   beforeEach(() => {
-    cy.initAdminApp();
-    cy.updateFirestore(getOrganization(), ["customers.json"]);
+    cy.initAdminApp()
+      .then((organization) => {
+        return cy.updateFirestore(organization as unknown as string, [
+          "customers.json",
+        ]);
+      })
+      .catch(() => console.error("Failed to initialize Firebase"));
   });
   it("should check for birthday menu rerendering on midnight", () => {
     const time =
