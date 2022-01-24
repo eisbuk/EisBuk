@@ -10,7 +10,7 @@ import AddNew from "@material-ui/icons/AddCircle";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Category, SlotType, Customer, SlotInterface } from "eisbuk-shared";
+import { Customer, SlotInterface } from "eisbuk-shared";
 
 import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
 
@@ -65,6 +65,25 @@ const AttendanceCard: React.FC<Props> = ({
 
   const timeString = getSlotTimespan(intervals);
 
+  // categories and type UI elements
+  const tags = (
+    <>
+      <span className={classes.tagsContainer}>
+        {categories.map((category) => (
+          <span
+            key={category}
+            className={[classes.tag, classes.category].join(" ")}
+          >
+            {i18n.t(CategoryLabel[category])}
+          </span>
+        ))}
+      </span>
+      <span className={[classes.tag, classes.type].join(" ")}>
+        {i18n.t(SlotTypeLabel[type])}
+      </span>
+    </>
+  );
+
   /**
    * We don't need the interval record, but rather a sorted array of interval keys.
    * We're confident interval values won't change inside attendance view so it's ok to
@@ -115,7 +134,7 @@ const AttendanceCard: React.FC<Props> = ({
               {timeString} <b>({attendedCustomers.length})</b>
             </span>
           }
-          secondary={translateAndJoinTags(categories, type)}
+          secondary={tags}
         />
       </ListItem>
       {attendedCustomers.map(
@@ -190,17 +209,6 @@ const AttendanceCard: React.FC<Props> = ({
   );
 };
 
-// #region localUtils
-const translateAndJoinTags = (categories: Category[], type: SlotType) => {
-  const translatedCategories = categories.map((category) =>
-    i18n.t(CategoryLabel[category])
-  );
-  const translatedType = i18n.t(SlotTypeLabel[type]);
-
-  return `${[...translatedCategories, translatedType].join(" ")}`;
-};
-// #endregion localUtils
-
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
   listHeader: {
@@ -223,6 +231,21 @@ const useStyles = makeStyles((theme: ETheme) => ({
     height: 1,
     backgroundColor: theme.palette.primary.dark,
     marginBottom: 5,
+  },
+  tagsContainer: { marginRight: "0.25rem" },
+  tag: {
+    boxSizing: "border-box",
+    padding: "0.125rem 0.5rem",
+    margin: "0 0.125rem",
+    border: "none",
+    borderRadius: 4,
+    color: theme.palette.secondary.contrastText,
+  },
+  category: {
+    background: theme.palette.secondary.dark,
+  },
+  type: {
+    background: theme.palette.secondary.light,
   },
 }));
 // #endregion Styles

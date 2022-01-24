@@ -30,7 +30,7 @@ import {
   addSlotToClipboard,
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
-import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -58,19 +58,15 @@ const SlotsPage: React.FC = () => {
   );
 
   const canClick = Boolean(weekToPaste);
-  const handleSlotClick = ({
-    slot,
-    selected,
-  }: {
-    slot: SlotInterface;
-    selected: boolean;
-  }) => () => {
-    if (selected) {
-      dispatch(deleteSlotFromClipboard(slot.id));
-    } else {
-      dispatch(addSlotToClipboard(slot));
-    }
-  };
+  const handleSlotClick =
+    ({ slot, selected }: { slot: SlotInterface; selected: boolean }) =>
+    () => {
+      if (selected) {
+        dispatch(deleteSlotFromClipboard(slot.id));
+      } else {
+        dispatch(addSlotToClipboard(slot));
+      }
+    };
 
   return (
     <>

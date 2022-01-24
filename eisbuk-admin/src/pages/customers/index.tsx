@@ -25,9 +25,9 @@ import { updateCustomer } from "@/store/actions/customerOperations";
 import { getCustomersList } from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { isEmpty } from "@/utils/helpers";
-import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();

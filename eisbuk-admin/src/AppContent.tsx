@@ -6,6 +6,8 @@ import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
 
+import { CollectionSubscription } from "@/types/store";
+
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
 import LoginRoute from "@/components/auth/LoginRoute";
@@ -19,10 +21,11 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import FirestoreDebug from "@/pages/firestore_debug";
 
-import useFirestoreSubscribe from "@/store/firestore/useFirestoreSubscribe";
+import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
+
+import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
-import { CollectionSubscription } from "./types/store";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -42,6 +45,8 @@ const AppContent: React.FC = () => {
       : [];
 
   useFirestoreSubscribe(subscribedCollections);
+  usePaginateFirestore();
+
   return (
     <BrowserRouter>
       <Switch>
