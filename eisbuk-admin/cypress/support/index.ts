@@ -33,7 +33,7 @@ import addFirebaseCommands from "cypress/plugins/firebasePlugin/commands";
 //
 // All of the commands should extend the following interface:
 //
-//       (...args?: any[]) => Chainable<Element>
+//       (...args?: any[]) => Chainable<R extends any = null>
 //
 // ***********************************************************
 declare global {
@@ -43,6 +43,7 @@ declare global {
        * @param {string} attr A DOM element attribute - e.g [attr=]
        * @param {string} label A value for the attribute - [=label]
        * @param {boolean} strict Default True. False means attribute value can contain label - [*=label]
+       * @returns {Chainable<Element>} a `PromiseLike` yielding found `Element`
        */
       getAttrWith: (
         attr: string,
