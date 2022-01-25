@@ -7,9 +7,7 @@ describe("birthday badge", () => {
   beforeEach(() => {
     // eslint-disable-next-line promise/catch-or-return
     cy.initAdminApp().then((organization) => {
-      return cy.updateFirestore(organization as unknown as string, [
-        "customers.json",
-      ]);
+      return cy.updateFirestore(organization, ["customers.json"]);
     });
   });
   it("should check for birthday menu rerendering on midnight", () => {
