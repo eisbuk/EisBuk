@@ -93,11 +93,8 @@ describe("Customer triggers", () => {
     async () => {
       const saulDocRef = doc(db, customersCollectionPath, saul.id);
       await setDoc(saulDocRef, saul);
-      // wait for `secretKey` to be created
-      const { secretKey } = (await waitForCondition({
-        documentPath: `${customersCollectionPath}/${saul.id}`,
-        condition: (data) => data && data.secretKey,
-      })) as Customer;
+      // the existing `secretKey` should be used
+      const { secretKey } = saul;
       // wait for first round of `bookings` entry updates
       await waitForCondition({
         documentPath: `${bookingsCollectionPath}/${secretKey}`,
