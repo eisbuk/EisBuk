@@ -124,6 +124,7 @@ interface SendBookingsLink {
 export const sendBookingsLink: SendBookingsLink =
   ({ customerId, method }) =>
   async (dispatch, getState) => {
+    console.log("Running");
     try {
       const { email, phone, name, secretKey } = getCustomersRecord(getState())[
         customerId
@@ -143,6 +144,10 @@ export const sendBookingsLink: SendBookingsLink =
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
       <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
 
+      const sms = `Ciao ${name},
+      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
+      ${bookingsLink}`;
+
       let to: string;
       let message: SMSMessage["message"] | EmailMessage["message"];
       let handler: CloudFunction.SendEmail | CloudFunction.SendSMS;
@@ -159,8 +164,7 @@ export const sendBookingsLink: SendBookingsLink =
         case SendBookingLinkMethod.SMS:
           handler = CloudFunction.SendSMS;
           to = phone;
-          // strip markup from text message (for SMS)
-          message = html.replace(/<\/*[a-z]\/*>/g, "");
+          message = sms;
       }
 
       await invokeFunction(handler)({ to, message });
