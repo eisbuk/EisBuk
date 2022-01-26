@@ -264,3 +264,46 @@ export const createAttendanceForBooking = functions
 
     await attendanceRef.set(updatedEntry, { merge: true });
   });
+
+/**
+ * A data trigger used to store `existingSecrets` in organization document,
+ * enabling us to verify existance of secrets in document available to client ("organizations/{organization}")
+ * without storing actual values of secrets, stored in protected document ("secrets/{organization}")
+ *
+ * @example
+ * Creating an `smsAuthToken` and `smtpAuthToken` will create entries in `secrets/test-organization`,
+ * after which the trigger will run and register those secrets in `organizations/test-organization` as such:
+ * ```
+ * {
+ *   ...organizationData,
+ *   existingSecrets: ["authToken", "exampleSecret"]
+ *  }
+ * ```
+ */
+export const registerCreatedOrgSecret = functions
+  .region("europe-west6")
+  .firestore.document(`${Collection.Secrets}/{organization}`)
+  .onWrite(async ({ after }, context) => {
+    // if `after.data()` doesn't exist (the doc was deleted)
+    // fall back to empty record
+    // this shouldn't happen in production
+    const data = after.data() || {};
+
+    const { organization } = context.params as {
+      organization: string;
+    };
+
+    const organizationRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+
+    // update (or create) list with new keys
+    // if deleted (shouldn't happen) the fallback: `Object.keys({})`
+    // will be an empty array which is fine
+    const updatedSecrets = Object.keys(data!);
+    await organizationRef.set(
+      { existingSecrets: updatedSecrets },
+      { merge: true }
+    );
+  });

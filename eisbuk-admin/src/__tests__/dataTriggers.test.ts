@@ -261,4 +261,56 @@ describe("Cloud functions -> Data triggers ->,", () => {
       }
     );
   });
+
+  describe("registerCreatedOrgSecret", () => {
+    testWithEmulator(
+      "should add created secret to organization data document, under 'existingSecrets[secretsDocumentName]'",
+      async () => {
+        // add new slot to trigger adding attendance for given slot
+        const slotRef = doc(db, slotsCollectionPath, slotId);
+        await setDoc(slotRef, baseSlot);
+        // check proper updates triggerd by write to slot
+        const docRes = await waitForCondition({
+          documentPath: `${attendanceCollPath}/${slotId}`,
+          condition: (data) => Boolean(data),
+        });
+        expect(docRes).toEqual(emptyAttendance);
+        // we're manually deleting attendance to test that it won't get created on slot update
+        // the attendance entry for slot shouldn't be edited manually in production
+        const attendanceDocRef = doc(db, attendanceCollPath, slotId);
+        await deleteDoc(attendanceDocRef);
+        // wait for attendance entry to be deleted
+        // update the slot and expect new slot attendance entry not to be created
+        await setDoc(slotRef, {
+          ...baseSlot,
+          intervals: {},
+          categories: [Category.PreCompetitive],
+        });
+        // check the no new entry for slot attendance was created (on update)
+        const slotAttendance = await getDoc(attendanceDocRef);
+        expect(slotAttendance.exists()).toEqual(false);
+      }
+    );
+
+    testWithEmulator(
+      "should delete attendance entry for slot when the slot is deleted",
+      async () => {
+        // we're following the same setup from the test before
+        const slotRef = doc(db, slotsCollectionPath, slotId);
+        await setDoc(slotRef, baseSlot);
+        const attendanceDocPath = `${attendanceCollPath}/${slotId}`;
+        await waitForCondition({
+          documentPath: attendanceDocPath,
+          condition: (data) => Boolean(data),
+        });
+        // delete the slot entry
+        await deleteDoc(slotRef);
+        // expect attendance to be deleted too
+        await waitForCondition({
+          documentPath: attendanceDocPath,
+          condition: (data) => !data,
+        });
+      }
+    );
+  });
 });
