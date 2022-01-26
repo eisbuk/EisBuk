@@ -48,19 +48,18 @@ export interface OrganizationData {
    */
   sender?: string;
   /**
-   * Template for sent SMS messages
+   * Full URL (including host and endpoint) of SMS sending service provider.
    */
-  smsConfig?: {
-    /**
-     * Full URL (including host and endpoint) of SMS sending service provider.
-     */
-    url?: string;
+  smsUrl?: string;
+}
+
+export interface OrganizationSecrets {
+  sms?: {
     /**
      * Auth token used to authenticate with SMS sending service provider
      */
     authToken?: string;
   };
-  // mailConfig: OrgMailConfig;
 }
 
 // #endregion organizations
@@ -287,10 +286,11 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [Collection.EmailQueue]: {
-        [id: string]: EmailMessage;
-      };
+      [OrgSubCollection.Secrets]: OrganizationSecrets;
     };
+  };
+  [Collection.EmailQueue]: {
+    [id: string]: EmailMessage;
   };
 }
 

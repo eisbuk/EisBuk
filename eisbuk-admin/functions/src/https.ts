@@ -12,6 +12,8 @@ import {
   SendEmailErrors,
   SendSMSErrors,
   OrganizationData,
+  OrgSubCollection,
+  OrganizationSecrets,
 } from "eisbuk-shared";
 
 import { checkUser, createSMSReqOptions } from "./utils";
@@ -94,24 +96,31 @@ export const sendSMS = functions
       );
     }
 
-    // get SMS template data
-    const orgSnapshot = await admin
+    const orgRef = admin
       .firestore()
       .collection(Collection.Organizations)
-      .doc(organization!)
-      .get();
+      .doc(organization!);
 
-    const { sender: templateSender, smsConfig } =
+    // get SMS template data
+    const orgSnapshot = await orgRef.get();
+
+    const { sender: templateSender, smsUrl } =
       orgSnapshot.data() as OrganizationData;
 
     // check template
-    if (!smsConfig?.url) {
+    if (!smsUrl) {
       throw new functions.https.HttpsError(
         "not-found",
         SendSMSErrors.NoProviderURL
       );
     }
-    if (!smsConfig?.authToken) {
+
+    // get sms secrets
+    const smsSecrets = (
+      await orgRef.collection(OrgSubCollection.Secrets).doc("sms").get()
+    ).data() as OrganizationSecrets["sms"];
+
+    if (!smsSecrets?.authToken) {
       throw new functions.https.HttpsError(
         "not-found",
         SendSMSErrors.NoAuthToken
@@ -119,8 +128,8 @@ export const sendSMS = functions
     }
 
     const { proto, ...options } = createSMSReqOptions(
-      smsConfig.url,
-      smsConfig.authToken
+      smsUrl,
+      smsSecrets.authToken
     );
 
     const data = new TextEncoder().encode(

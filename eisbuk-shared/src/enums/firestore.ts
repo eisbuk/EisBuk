@@ -16,6 +16,7 @@ export enum OrgSubCollection {
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
+  Secrets = "secrets",
 }
 
 export enum BookingSubCollection {
