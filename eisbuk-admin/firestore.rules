@@ -82,7 +82,6 @@ service cloud.firestore {
     }
     // #endregion helpers
 
-
     match /organizations/{organization} {
       allow read, write: if isAdmin(organization);
       
@@ -190,6 +189,12 @@ service cloud.firestore {
         )
       }
       // #endregion attendance-checks
+    }
+    match /secrets/{organization} {
+      // Admins should be able to write (to update secrets)
+      // but only cloud functions should have (read) access to secrets' values
+      allow write: if isAdmin(organization)
+      allow read: if false
     }
   }
 }

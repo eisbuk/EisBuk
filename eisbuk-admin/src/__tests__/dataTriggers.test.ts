@@ -5,6 +5,7 @@ import {
   Category,
   luxon2ISODate,
   SlotType,
+  OrganizationData,
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
@@ -264,31 +265,43 @@ describe("Cloud functions -> Data triggers ->,", () => {
 
   describe("registerCreatedOrgSecret", () => {
     testWithEmulator(
-      "should add created secret to organization data document, under 'existingSecrets[secretsDocumentName]'",
+      "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
-        // add new slot to trigger adding attendance for given slot
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
-        // check proper updates triggerd by write to slot
-        const docRes = await waitForCondition({
-          documentPath: `${attendanceCollPath}/${slotId}`,
-          condition: (data) => Boolean(data),
-        });
-        expect(docRes).toEqual(emptyAttendance);
-        // we're manually deleting attendance to test that it won't get created on slot update
-        // the attendance entry for slot shouldn't be edited manually in production
-        const attendanceDocRef = doc(db, attendanceCollPath, slotId);
-        await deleteDoc(attendanceDocRef);
-        // wait for attendance entry to be deleted
-        // update the slot and expect new slot attendance entry not to be created
-        await setDoc(slotRef, {
-          ...baseSlot,
-          intervals: {},
-          categories: [Category.PreCompetitive],
-        });
-        // check the no new entry for slot attendance was created (on update)
-        const slotAttendance = await getDoc(attendanceDocRef);
-        expect(slotAttendance.exists()).toEqual(false);
+        // add new secret to trigger registering
+        const orgSecretsRef = doc(db, Collection.Secrets, __organization__);
+        await setDoc(orgSecretsRef, { testSecret: "abc123" });
+        // check proper updates triggerd by write to secrets
+        let existingSecrets = (
+          (await waitForCondition({
+            documentPath: `${Collection.Organizations}/${__organization__}`,
+            condition: (data) => Boolean(data?.existingSecrets),
+          })) as OrganizationData
+        ).existingSecrets;
+        expect(existingSecrets).toEqual(["testSecret"]);
+
+        // add another secret
+        await setDoc(
+          orgSecretsRef,
+          { anotherSecret: "abc234" },
+          { merge: true }
+        );
+        existingSecrets = (
+          (await waitForCondition({
+            documentPath: `${Collection.Organizations}/${__organization__}`,
+            condition: (data) => data?.existingSecrets.length === 2,
+          })) as OrganizationData
+        ).existingSecrets;
+        expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
+
+        // removing one secret should remove it from array (without removing other secrets)
+        await setDoc(orgSecretsRef, { anotherSecret: "abc234" });
+        existingSecrets = (
+          (await waitForCondition({
+            documentPath: `${Collection.Organizations}/${__organization__}`,
+            condition: (data) => data?.existingSecrets.length === 1,
+          })) as OrganizationData
+        ).existingSecrets;
+        expect(existingSecrets).toEqual(["anotherSecret"]);
       }
     );
 

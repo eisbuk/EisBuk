@@ -53,23 +53,25 @@ export interface OrganizationData {
   smsUrl?: string;
   /**
    * Record of flags inticating that given secrets exists
-   * in a given doc
+   * for a given organization
    */
-  existingSecrets?: {
-    [docId: string]: string[];
-  };
-}
-
-export interface OrganizationSecrets {
-  sms?: {
-    /**
-     * Auth token used to authenticate with SMS sending service provider
-     */
-    authToken?: string;
-  };
+  existingSecrets?: string[];
 }
 
 // #endregion organizations
+
+// #region secrets
+/**
+ * An interface of a document containing
+ * secrets for each organization
+ */
+export interface OrganizationSecrets {
+  /**
+   * Auth token used to authenticate with SMS sending service provider
+   */
+  smsAuthToken?: string;
+}
+// #endregion secrets
 
 // #region slots
 
@@ -293,8 +295,10 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [OrgSubCollection.Secrets]: OrganizationSecrets;
     };
+  };
+  [Collection.Secrets]: {
+    [organization: string]: OrganizationSecrets;
   };
   [Collection.EmailQueue]: {
     [id: string]: EmailMessage;
