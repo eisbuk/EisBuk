@@ -85,13 +85,13 @@ export const sendSMS = functions
     if (!to) {
       throw new functions.https.HttpsError(
         "invalid-argument",
-        SendEmailErrors.NoRecipient
+        SendSMSErrors.NoRecipient
       );
     }
     if (!message) {
       throw new functions.https.HttpsError(
         "invalid-argument",
-        SendEmailErrors.NoMsgBody
+        SendSMSErrors.NoMsgBody
       );
     }
 

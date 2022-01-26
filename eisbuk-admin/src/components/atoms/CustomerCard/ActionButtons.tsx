@@ -137,11 +137,11 @@ const getDialogPrompt: GetDialogPrompt = ({ method, email, phone }) => {
   const promptLookup = {
     [SendBookingLinkMethod.Email]: {
       promptTitle: i18n.t(Prompt.SendEmailTitle),
-      promptBody: [i18n.t(Prompt.ConfirmEmail), email, "?"].join(" "),
+      promptBody: i18n.t(Prompt.ConfirmEmail, { email }),
     },
     [SendBookingLinkMethod.SMS]: {
       promptTitle: i18n.t(Prompt.SendSMSTitle),
-      promptBody: [i18n.t(Prompt.ConfirmSMS), phone, "?"].join(" "),
+      promptBody: i18n.t(Prompt.ConfirmSMS, { phone }),
     },
   };
 

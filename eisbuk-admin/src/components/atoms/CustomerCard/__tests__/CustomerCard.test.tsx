@@ -141,8 +141,9 @@ describe("Customer Card", () => {
       // the function shouldn't be called before confirmation
       expect(sendMailSpy).not.toHaveBeenCalled();
       screen.getByText(i18n.t(Prompt.SendEmailTitle) as string);
-      const emailConfirmationMessage = new RegExp(i18n.t(Prompt.ConfirmEmail));
-      screen.getByText(emailConfirmationMessage);
+      screen.getByText(
+        i18n.t(Prompt.ConfirmEmail, { email: saul.email }) as string
+      );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
         customerId: saul.id,
@@ -188,8 +189,9 @@ describe("Customer Card", () => {
       // the function shouldn't be called before confirmation
       expect(sendBookingsSpy).not.toHaveBeenCalled();
       screen.getByText(i18n.t(Prompt.SendSMSTitle) as string);
-      const smsConfirmationMessage = new RegExp(i18n.t(Prompt.ConfirmSMS));
-      screen.getByText(smsConfirmationMessage);
+      screen.getByText(
+        i18n.t(Prompt.ConfirmSMS, { phone: saul.phone }) as string
+      );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
         customerId: saul.id,
