@@ -35,7 +35,8 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
 
-  const date = useSelector(getCalendarDay);
+  const currentDate = useSelector(getCalendarDay);
+  const date = currentDate.startOf("week");
 
   useFirestoreSubscribe([OrgSubCollection.SlotsByDay]);
 
@@ -57,7 +58,7 @@ const SlotsPage: React.FC = () => {
     </SlotOperationButtons>
   );
 
-  const canClick = Boolean(weekToPaste);
+  const canClick = weekToPaste && (weekToPaste.weekStart.toMillis() === date.toMillis());
   const handleSlotClick =
     ({ slot, selected }: { slot: SlotInterface; selected: boolean }) =>
     () => {

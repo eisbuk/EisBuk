@@ -104,11 +104,12 @@ export const getAdminSlots = (state: LocalStore): SlotsByDay => {
   // (as opposed to creating fallback dates and filling them with slots later)
   const slotsByDay = allSlotsInStore ?? {};
 
+  const startCalendarDay = calendarDay.startOf("week");
   // create all dates for a week
   return Array(7)
     .fill(null)
     .reduce((acc, _, i) => {
-      const date = calendarDay.plus({ days: i });
+      const date = startCalendarDay.plus({ days: i });
       const dateISO = luxon2ISODate(date);
       const monthString = dateISO.substr(0, 7);
 
