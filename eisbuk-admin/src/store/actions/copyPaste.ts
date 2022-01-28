@@ -120,7 +120,7 @@ export const copySlotsWeek = (): FirestoreThunk => async (
   const state = getState();
 
   // get week start and date keys
-  const weekStart = state.app.calendarDay;
+  const weekStart = state.app.calendarDay.startOf("week");
   const weekStartISO = luxon2ISODate(weekStart);
   const monthStr = weekStartISO.substr(0, 7);
 
