@@ -26,6 +26,7 @@ import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirest
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
+import AdminPreferencesPage from "./pages/admin_preferences";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -61,6 +62,10 @@ const AppContent: React.FC = () => {
         <PrivateRoute
           path={Routes.AttendancePrintable}
           component={AttendancePrintable}
+        />
+        <PrivateRoute
+          path={PrivateRoutes.AdminPreferences}
+          component={AdminPreferencesPage}
         />
 
         <Route

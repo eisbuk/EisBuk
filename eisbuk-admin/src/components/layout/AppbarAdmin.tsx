@@ -93,6 +93,13 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           >
             <MenuItem onClick={handleClose()}>{currentUser}</MenuItem>
             <MenuItem onClick={handleClose("logout")}>Logout</MenuItem>
+            <MenuItem
+              component={Link}
+              to={PrivateRoutes.AdminPreferences}
+              onClick={handleClose()}
+            >
+              Settings
+            </MenuItem>
           </Menu>
           <Hidden xsDown>
             <ButtonGroup color="secondary" aria-label={t(AdminAria.PageNav)}>
