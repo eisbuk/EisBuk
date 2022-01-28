@@ -9,5 +9,5 @@
             <line x1="8" y1="6" x2="0" y2="14" stroke="currentColor" stroke-width="3px" />
         </g>
         <text x="34" y="64" font-weight="bold" font-size="30px" font-family="sans-serif" fill="currentColor">1H</text>
-    <g/>
+    </g>
 </svg>

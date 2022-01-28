@@ -1,6 +1,5 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { DateTime } from "luxon";
 
 import Box from "@material-ui/core/Box";
 import Card from "@material-ui/core/Card";
@@ -13,13 +12,11 @@ import createStyles from "@material-ui/core/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
-import { ActionButton, SlotTypeLabel, DateFormat } from "@/enums/translations";
+import { ActionButton, DateFormat } from "@/enums/translations";
 
-import { slotsLabels } from "@/config/appConfig";
+import { BookingCardVariant } from "@/enums/components";
 
-import { BookingCardVariant, BookingDuration } from "@/enums/components";
-
-import ProjectIcon from "@/components/global/ProjectIcons";
+import TypeIcon from "./TypeIcon";
 
 import { __bookingCardId__ } from "@/__testData__/testIds";
 
@@ -73,7 +70,6 @@ const BookingCard: React.FC<Props> = ({
   const classes = useStyles();
 
   const { t } = useTranslation();
-  const slotLabel = slotsLabels.types[type];
   const date = fromISO(dateISO);
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
@@ -96,15 +92,16 @@ const BookingCard: React.FC<Props> = ({
     </Box>
   );
 
-  const timeSpan = (
-    <Typography
-      className={[classes.time, classes.flexCenter, classes.boxCenter].join(
-        " "
-      )}
-      component="h2"
-    >
-      <strong>{interval.startTime}</strong> - {interval.endTime}
-    </Typography>
+  /**
+   * Interval timespan and duration icon
+   */
+  const durationBox = (
+    <Box className={classes.durationBox}>
+      <Typography className={classes.time} component="h2">
+        <strong>{interval.startTime}</strong> - {interval.endTime}
+      </Typography>
+      <div style={{ height: "3rem", width: "6rem", border: "1px solid red" }} />
+    </Box>
   );
 
   /**
@@ -128,11 +125,6 @@ const BookingCard: React.FC<Props> = ({
     </Button>
   );
 
-  const intervalDuration = calculateIntervalDuration(
-    interval.startTime,
-    interval.endTime
-  );
-
   return (
     <Card
       variant="outlined"
@@ -141,57 +133,28 @@ const BookingCard: React.FC<Props> = ({
     >
       <CardContent className={classes.content}>
         {variant === BookingCardVariant.Calendar && dateBox}
-        <Box display="flex" flexGrow={1} flexDirection="column">
-          <Box display="flex" flexGrow={1} className={classes.topWrapper}>
-            {timeSpan}
-            {notes && (
-              <Box
-                display="flex"
-                className={classes.notesWrapper}
-                alignItems="center"
-              >
-                <Typography className={classes.notes}>{notes}</Typography>
-              </Box>
-            )}
-          </Box>
-          <Box className={classes.bottomBox}>
-            <Box
-              className={[
-                classes.flexCenter,
-                classes.typeLabel,
-                variant === BookingCardVariant.Booking
-                  ? classes.boxLeft
-                  : classes.boxCenter,
-              ].join(" ")}
-              flexGrow={1}
-              pl={1}
-              pr={1}
-            >
-              <Box className={[classes.boxHalf, classes.flexCenter].join(" ")}>
-                <Typography
-                  className={classes.duration}
-                  key="duration"
-                  color={slotLabel.color}
-                >
-                  {intervalDuration}
-                </Typography>
-              </Box>
-              <Box className={[classes.boxHalf, classes.flexCenter].join(" ")}>
-                <ProjectIcon
-                  className={classes.typeIcon}
-                  icon={slotLabel.icon}
-                  fontSize="small"
-                />
-                <Typography
-                  className={classes.type}
-                  key="type"
-                  color={slotLabel.color}
-                >
-                  {t(SlotTypeLabel[type])}
-                </Typography>
-              </Box>
+        <Box
+          className={[
+            classes.innerBox,
+            ...(variant === BookingCardVariant.Booking
+              ? [classes.bottomPadding]
+              : []),
+          ].join(" ")}
+        >
+          {durationBox}
+          {notes && (
+            <Box className={classes.notesWrapper}>
+              <Typography className={classes.notes}>{notes}</Typography>
             </Box>
-          </Box>
+          )}
+          <TypeIcon
+            className={
+              variant === BookingCardVariant.Booking
+                ? classes.bottomLeft
+                : classes.bottomRight
+            }
+            {...{ type }}
+          />
         </Box>
       </CardContent>
       {(fade || disabled) && fadeOverlay}
@@ -200,36 +163,9 @@ const BookingCard: React.FC<Props> = ({
   );
 };
 
-const calculateIntervalDuration = (
-  startTime: string,
-  endTime: string
-): BookingDuration => {
-  const luxonStart = DateTime.fromISO(startTime);
-  const luxonEnd = DateTime.fromISO(endTime);
-  const { minutes } = luxonEnd.diff(luxonStart, ["minutes"]);
-
-  // exit early with catch all if duration greater than expected
-  if (minutes > 120) return BookingDuration["2+h"];
-
-  const roundedMinutes = Math.round(minutes / 30) * 30;
-
-  switch (roundedMinutes) {
-    case 60:
-      return BookingDuration["1h"];
-    case 90:
-      return BookingDuration["1.5h"];
-    case 120:
-      return BookingDuration["2h"];
-    default:
-      // should not happen in production
-      return BookingDuration["0.5h"];
-  }
-};
-
-// #region styles
-
 const useStyles = makeStyles((theme) =>
   createStyles({
+    // #region mainStyles
     root: {
       position: "relative",
       marginTop: theme.spacing(1),
@@ -244,65 +180,18 @@ const useStyles = makeStyles((theme) =>
         paddingBottom: 0,
       },
     },
-    date: {
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.getContrastText(theme.palette.primary.main),
-      padding: theme.spacing(1),
-      "& .MuiTypography-root:not(.makeStyles-weekday-20)": {
-        lineHeight: 1,
-      },
-    },
-    bottomBox: {
-      height: "2.25rem",
-    },
-    flexCenter: {
+    innerBox: {
+      position: "relative",
+      width: "100%",
       display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
+      alignItems: "stretch",
     },
-    typeLabel: {
-      height: "100%",
-    },
-    boxCenter: {
-      width: "100%",
-    },
-    boxLeft: {
-      boxSizing: "border-box",
-      width: "50%",
-      marginRight: "auto",
-    },
-    boxHalf: {
-      width: "50%",
-    },
-    topWrapper: { borderBottom: `1px solid ${theme.palette.divider}` },
-    time: {
-      boxSizing: "border-box",
-      padding: theme.spacing(1.5),
-      fontSize: theme.typography.h6.fontSize!,
-      color: theme.palette.grey[700],
-      "& strong": {
-        fontSize: theme.typography.h5.fontSize!,
-        color: theme.palette.primary.main,
-        marginRight: "0.25rem",
-      },
-    },
-    notesWrapper: {
-      borderLeft: `1px solid ${theme.palette.divider}`,
-      paddingLeft: theme.spacing(1),
-      width: "100%",
-    },
-    notes: {
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
-      fontWeight: theme.typography.fontWeightBold,
-    },
-    typeIcon: {
-      opacity: 0.5,
-    },
-    type: {
-      textTransform: "uppercase",
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
-      fontWeight: theme.typography.fontWeightBold,
-      fontSize: theme.typography.pxToRem(10),
+    actionButton: {
+      position: "absolute",
+      right: 0,
+      bottom: 0,
+      width: "52%",
+      height: "2.25rem",
     },
     fadeOverlay: {
       position: "absolute",
@@ -313,12 +202,16 @@ const useStyles = makeStyles((theme) =>
       opacity: 0.8,
       background: "white",
     },
-    actionButton: {
-      position: "absolute",
-      right: 0,
-      bottom: 0,
-      width: "50%",
-      height: "2.25rem",
+    // #endregion mainStyles
+
+    // #region dateBoxStyles
+    date: {
+      backgroundColor: theme.palette.primary.main,
+      color: theme.palette.getContrastText(theme.palette.primary.main),
+      padding: theme.spacing(1),
+      "& .MuiTypography-root:not(.makeStyles-weekday-20)": {
+        lineHeight: 1,
+      },
     },
     weekday: {
       textTransform: "uppercase",
@@ -337,24 +230,63 @@ const useStyles = makeStyles((theme) =>
       // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
-    deleteButton: {},
-    duration: {
-      width: "2.5rem",
-      height: "1.5rem",
-      border: "none",
-      borderRadius: 4,
-      backgroundColor: theme.palette.primary.main,
-      fontWeight: "bold",
-      fontSize: "0.9rem",
-      color: "white",
-      textAlign: "center",
-      lineHeight: 1,
-      padding: "0.3rem",
+    // #endregion dateBoxStyles
+
+    // #region durationBoxStyles
+    time: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
       boxSizing: "border-box",
+      fontSize: theme.typography.h6.fontSize!,
+      color: theme.palette.grey[700],
+      "& strong": {
+        fontSize: theme.typography.h5.fontSize!,
+        color: theme.palette.primary.main,
+        marginRight: "0.25rem",
+      },
     },
+    durationBox: {
+      height: "100%",
+      width: "100%",
+      boxSizing: "border-box",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+      padding: theme.spacing(1),
+    },
+    // #endregion durationBoxStyles
+
+    // #region notesStyles
+    notesWrapper: {
+      width: "100%",
+      boxSizing: "border-box",
+      borderLeft: `1px solid ${theme.palette.divider}`,
+      padding: theme.spacing(1),
+    },
+    notes: {
+      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      fontWeight: theme.typography.fontWeightBold,
+    },
+    // #endregion notesStyles
+
+    // #region utilClasses
+    bottomPadding: {
+      paddingBottom: "2.25rem",
+    },
+    bottomRight: {
+      position: "absolute",
+      bottom: "0.5rem",
+      right: "0.5rem",
+    },
+    bottomLeft: {
+      position: "absolute",
+      bottom: "0.5rem",
+      left: "1rem",
+    },
+    // #endregion utilClasses
   })
 );
-
-// #endregion styles
 
 export default BookingCard;
