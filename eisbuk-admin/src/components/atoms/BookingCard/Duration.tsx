@@ -80,14 +80,14 @@ const calculateIntervalDuration = (
 
 const useStyles = makeStyles(() => ({
   icon: {
-    height: "2rem",
-    width: "2rem",
+    height: "3rem",
+    width: "3rem",
   },
   oneHour: {
-    color: "green",
+    color: "#98BF0F",
   },
   halfHour: {
-    color: "red",
+    color: "#98BF0F",
   },
 }));
 

@@ -17,6 +17,7 @@ import { ActionButton, DateFormat } from "@/enums/translations";
 import { BookingCardVariant } from "@/enums/components";
 
 import TypeIcon from "./TypeIcon";
+import Duration from "./Duration";
 
 import { __bookingCardId__ } from "@/__testData__/testIds";
 
@@ -100,7 +101,7 @@ const BookingCard: React.FC<Props> = ({
       <Typography className={classes.time} component="h2">
         <strong>{interval.startTime}</strong> - {interval.endTime}
       </Typography>
-      <div style={{ height: "3rem", width: "6rem", border: "1px solid red" }} />
+      <Duration className={classes.durationIcons} {...interval} />
     </Box>
   );
 
@@ -233,6 +234,16 @@ const useStyles = makeStyles((theme) =>
     // #endregion dateBoxStyles
 
     // #region durationBoxStyles
+    durationBox: {
+      height: "100%",
+      width: "100%",
+      boxSizing: "border-box",
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-evenly",
+      alignItems: "center",
+      padding: theme.spacing(1),
+    },
     time: {
       display: "flex",
       justifyContent: "center",
@@ -246,15 +257,8 @@ const useStyles = makeStyles((theme) =>
         marginRight: "0.25rem",
       },
     },
-    durationBox: {
-      height: "100%",
-      width: "100%",
-      boxSizing: "border-box",
+    durationIcons: {
       display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-evenly",
-      alignItems: "center",
-      padding: theme.spacing(1),
     },
     // #endregion durationBoxStyles
 
@@ -283,7 +287,7 @@ const useStyles = makeStyles((theme) =>
     bottomLeft: {
       position: "absolute",
       bottom: "0.5rem",
-      left: "1rem",
+      left: "2rem",
     },
     // #endregion utilClasses
   })
