@@ -69,7 +69,10 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
   // pick the right action creator with respect to `contextType`
   const copyActionCreator =
     contextType === ButtonContextType.Day ? copySlotsDay : copySlotsWeek;
-  const onCopy = () => dispatch(copyActionCreator(date));
+  const onCopy = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    dispatch(copyActionCreator(date));
+  };
 
   // check if there are slots in clipboard for given `contextType`
   const displayBadge = slotsToCopy && slotsToCopy[contextType!];
