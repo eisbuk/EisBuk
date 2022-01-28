@@ -31,6 +31,6 @@ export enum BookingDuration {
   "1h" = "1h",
   "1.5h" = "1½h",
   "2h" = "2h",
-  "2+h" = "2h+",
+  "2+h" = "2H+",
 }
 // #endregion BookingCard

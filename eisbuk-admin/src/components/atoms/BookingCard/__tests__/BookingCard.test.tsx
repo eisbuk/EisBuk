@@ -6,6 +6,7 @@ import { ActionButton } from "@/enums/translations";
 import { BookingDuration } from "@/enums/components";
 
 import BookingCard from "../BookingCard";
+import { calculateIntervalDuration } from "../Duration";
 
 import i18n from "@/__testUtils__/i18n";
 
@@ -47,61 +48,21 @@ describe("Interval Card ->", () => {
     });
   });
 
-  describe("Test duration display", () => {
-    test("should display duration of the interval", () => {
-      render(<BookingCard {...baseProps} />);
-      screen.getByText(BookingDuration["1.5h"]);
-    });
-
+  describe("Test duration calculation", () => {
     test("should round duration to the nearest half hour", () => {
       // test for 1:01 h duration (should be rounded to 1h)
-      const hourLongInterval = { startTime: "10:00", endTime: "11:01" };
-      render(
-        <BookingCard
-          {...{
-            ...baseProps,
-            interval: hourLongInterval,
-          }}
-        />
+      expect(calculateIntervalDuration("10:00", "11:01")).toEqual(
+        BookingDuration["1h"]
       );
-      screen.getByText(BookingDuration["1h"]);
-      // test for 1:28 h duration (should be rounded to 1.5h)
-      cleanup();
-      const hourAndHalfLongInterval = { startTime: "10:00", endTime: "11:28" };
-      render(
-        <BookingCard
-          {...{
-            ...baseProps,
-            interval: hourAndHalfLongInterval,
-          }}
-        />
+      expect(calculateIntervalDuration("10:00", "11:21")).toEqual(
+        BookingDuration["1.5h"]
       );
-      screen.getByText(BookingDuration["1.5h"]);
     });
 
     test("If duration longer than 2 hours, should display duration as 2+", () => {
-      const extraLongInterval = { startTime: "10:00", endTime: "12:01" };
-      render(
-        <BookingCard
-          {...{
-            ...baseProps,
-            interval: extraLongInterval,
-          }}
-        />
-      );
-      screen.getByText(BookingDuration["2+h"]);
-      // test for 2h straight duration (should be rendered normally)
-      cleanup();
-      const twoHoursStraight = { startTime: "10:00", endTime: "12:00" };
-      render(
-        <BookingCard
-          {...{
-            ...baseProps,
-            interval: twoHoursStraight,
-          }}
-        />
-      );
-      screen.getByText(BookingDuration["2h"]);
+      // test for 1:01 h duration (should be rounded to 1h)
+      const duration = calculateIntervalDuration("10:00", "12:01");
+      expect(duration).toEqual(BookingDuration["2+h"]);
     });
   });
 });

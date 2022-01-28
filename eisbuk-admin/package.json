@@ -139,6 +139,7 @@
   },
   "jest": {
     "moduleNameMapper": {
+      "\\.svg": "<rootDir>/src/__mocks__/svg.ts",
       "@/(.*)": "<rootDir>/src/$1"
     },
     "globalSetup": "<rootDir>/src/__testSetup__/initTests.ts",

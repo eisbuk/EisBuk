@@ -9,6 +9,7 @@ import HalfHourIcon from "@/assets/images/half-hour.svg";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { BookingDuration } from "@/enums/components";
+import { Typography } from "@material-ui/core";
 
 interface DurationProps {
   startTime: string;
@@ -37,12 +38,18 @@ const Duration: React.FC<DurationProps> = ({
     </div>
   );
 
+  const TwoPlusHours = (
+    <Typography className={[classes.icon, classes.twoPlus].join(" ")}>
+      {BookingDuration["2+h"]}
+    </Typography>
+  );
+
   const durationComponents = {
     [BookingDuration["0.5h"]]: [HalfHour],
     [BookingDuration["1h"]]: [OneHour],
     [BookingDuration["1.5h"]]: [OneHour, HalfHour],
     [BookingDuration["2h"]]: [OneHour, OneHour],
-    [BookingDuration["2+h"]]: [OneHour, OneHour],
+    [BookingDuration["2+h"]]: [TwoPlusHours],
   };
 
   return (
@@ -52,7 +59,7 @@ const Duration: React.FC<DurationProps> = ({
   );
 };
 
-const calculateIntervalDuration = (
+export const calculateIntervalDuration = (
   startTime: string,
   endTime: string
 ): BookingDuration => {
@@ -78,7 +85,7 @@ const calculateIntervalDuration = (
   }
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   icon: {
     height: "3rem",
     width: "3rem",
@@ -88,6 +95,11 @@ const useStyles = makeStyles(() => ({
   },
   halfHour: {
     color: "#98BF0F",
+  },
+  twoPlus: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    color: theme.palette.error.main,
   },
 }));
 
