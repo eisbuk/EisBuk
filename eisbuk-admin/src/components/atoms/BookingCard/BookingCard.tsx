@@ -80,7 +80,7 @@ const BookingCard: React.FC<Props> = ({
    * as cards in `booking` view will already be inside date container.
    */
   const dateBox = (
-    <Box className={classes.date} textAlign="center">
+    <Box className={classes.dateBox}>
       <Typography variant="h5" className={classes.weekday}>
         {t(DateFormat.Weekday, { date })}
       </Typography>
@@ -97,11 +97,18 @@ const BookingCard: React.FC<Props> = ({
    * Interval timespan and duration icon
    */
   const durationBox = (
-    <Box className={classes.durationBox}>
+    <Box
+      className={[
+        classes.durationBox,
+        variant === BookingCardVariant.Booking
+          ? classes.flexRow
+          : classes.flexColumn,
+      ].join(" ")}
+    >
       <Typography className={classes.time} component="h2">
         <strong>{interval.startTime}</strong> - {interval.endTime}
       </Typography>
-      <Duration className={classes.durationIcons} {...interval} />
+      <Duration {...interval} />
     </Box>
   );
 
@@ -206,10 +213,14 @@ const useStyles = makeStyles((theme) =>
     // #endregion mainStyles
 
     // #region dateBoxStyles
-    date: {
+    dateBox: {
       backgroundColor: theme.palette.primary.main,
       color: theme.palette.getContrastText(theme.palette.primary.main),
       padding: theme.spacing(1),
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
       "& .MuiTypography-root:not(.makeStyles-weekday-20)": {
         lineHeight: 1,
       },
@@ -239,7 +250,6 @@ const useStyles = makeStyles((theme) =>
       width: "100%",
       boxSizing: "border-box",
       display: "flex",
-      flexDirection: "column",
       justifyContent: "space-evenly",
       alignItems: "center",
       padding: theme.spacing(1),
@@ -257,9 +267,6 @@ const useStyles = makeStyles((theme) =>
         marginRight: "0.25rem",
       },
     },
-    durationIcons: {
-      display: "flex",
-    },
     // #endregion durationBoxStyles
 
     // #region notesStyles
@@ -276,6 +283,12 @@ const useStyles = makeStyles((theme) =>
     // #endregion notesStyles
 
     // #region utilClasses
+    flexColumn: {
+      flexDirection: "column",
+    },
+    flexRow: {
+      flexDirection: "row",
+    },
     bottomPadding: {
       paddingBottom: "2.25rem",
     },

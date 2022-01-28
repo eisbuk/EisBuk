@@ -53,7 +53,7 @@ const Duration: React.FC<DurationProps> = ({
   };
 
   return (
-    <Box {...{ className }}>
+    <Box className={[classes.container, className].join(" ")}>
       {durationComponents[intervalDuration].map((el) => el)}
     </Box>
   );
@@ -86,9 +86,14 @@ export const calculateIntervalDuration = (
 };
 
 const useStyles = makeStyles((theme) => ({
+  container: {
+    width: "8rem",
+    display: "flex",
+    justifyContent: "center",
+  },
   icon: {
-    height: "3rem",
-    width: "3rem",
+    height: "4rem",
+    width: "4rem",
   },
   oneHour: {
     color: "#98BF0F",
