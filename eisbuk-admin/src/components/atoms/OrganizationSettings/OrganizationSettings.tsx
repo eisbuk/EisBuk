@@ -240,7 +240,6 @@ const AdminsField: React.FC<{ enableEdit: boolean; currentUser: string }> = ({
     setValue(filteredAdmins);
   };
   const addAdmin = () => {
-    console.log(admin);
     if (admin === "") return;
     const newAdmins = [...admins, admin];
     setValue(newAdmins);
@@ -256,7 +255,6 @@ const AdminsField: React.FC<{ enableEdit: boolean; currentUser: string }> = ({
 
   return (
     <>
-      {console.log({ enableEdit })}
       <div className={classes.fieldSection}>
         {admins.map((admin, i) => (
           <div
