@@ -90,10 +90,13 @@ const useStyles = makeStyles((theme) => ({
     width: "8rem",
     display: "flex",
     justifyContent: "center",
+    alignItems: "center",
   },
   icon: {
     height: "4rem",
     width: "4rem",
+    display: "flex",
+    alignItems: "center",
   },
   oneHour: {
     color: "#98BF0F",

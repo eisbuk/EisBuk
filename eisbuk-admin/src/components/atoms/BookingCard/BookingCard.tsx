@@ -178,8 +178,11 @@ const useStyles = makeStyles((theme) =>
       position: "relative",
       marginTop: theme.spacing(1),
       marginBottom: theme.spacing(1),
+      height: "100%",
+      maxHeight: "146px",
     },
     content: {
+      height: "100%",
       display: "flex",
       flexDirection: "row",
       padding: 0,
@@ -252,10 +255,13 @@ const useStyles = makeStyles((theme) =>
       display: "flex",
       justifyContent: "space-evenly",
       alignItems: "center",
+      flexWrap: "wrap",
       padding: theme.spacing(1),
     },
     time: {
       display: "flex",
+      whitespace: "no-wrap",
+      flexWrap: "nowrap",
       justifyContent: "center",
       alignItems: "center",
       boxSizing: "border-box",
@@ -300,7 +306,7 @@ const useStyles = makeStyles((theme) =>
     bottomLeft: {
       position: "absolute",
       bottom: "0.5rem",
-      left: "2rem",
+      left: "0.5rem",
     },
     // #endregion utilClasses
   })
