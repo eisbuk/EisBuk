@@ -31,6 +31,7 @@ import {
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -58,7 +59,8 @@ const SlotsPage: React.FC = () => {
     </SlotOperationButtons>
   );
 
-  const canClick = weekToPaste && (weekToPaste.weekStart.toMillis() === date.toMillis());
+  const canClick =
+    weekToPaste && weekToPaste.weekStart.toMillis() === date.toMillis();
   const handleSlotClick =
     ({ slot, selected }: { slot: SlotInterface; selected: boolean }) =>
     () => {
@@ -92,7 +94,13 @@ const SlotsPage: React.FC = () => {
                 </SlotOperationButtons>
               );
 
-              const slotsForDay = Object.values(slotsToShow[dateISO]);
+              const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
+                (a, b) => {
+                  const aTimeString = getSlotTimespan(a.intervals);
+                  const bTimeString = getSlotTimespan(b.intervals);
+                  return comparePeriods(aTimeString, bTimeString);
+                }
+              );
 
               return (
                 <SlotsDayContainer
