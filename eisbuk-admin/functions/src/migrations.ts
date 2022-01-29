@@ -1,4 +1,3 @@
-/* eslint-disable promise/always-return */
 import * as functions from "firebase-functions";
 import {
   WriteBatch,

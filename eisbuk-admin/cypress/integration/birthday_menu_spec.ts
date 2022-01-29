@@ -5,7 +5,6 @@ import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
 
 describe("birthday badge", () => {
   beforeEach(() => {
-    // eslint-disable-next-line promise/catch-or-return
     cy.initAdminApp().then((organization) => {
       return cy.updateFirestore(organization, ["customers.json"]);
     });

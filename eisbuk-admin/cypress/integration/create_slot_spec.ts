@@ -1,6 +1,3 @@
-/* eslint-disable promise/no-nesting */
-/* eslint-disable promise/always-return */
-/* eslint-disable promise/catch-or-return */
 import i18n from "@/__testUtils__/i18n";
 
 import { Category, SlotType } from "eisbuk-shared";
