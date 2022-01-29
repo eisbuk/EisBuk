@@ -11,11 +11,20 @@ import { SlotInterval } from "eisbuk-shared";
  * Presentational component used to move slot time dispay out of main component (for readability).
  * Gets passed start time and subscribed duration (if any).
  */
-const SlotTime: React.FC<SlotInterval> = ({ startTime, endTime }) => {
+const SlotTime: React.FC<SlotInterval & { backgroundColor?: string }> = ({
+  startTime,
+  endTime,
+  backgroundColor = "none",
+}) => {
   const classes = useStyles();
 
   return (
-    <Box p={1} flexShrink={0} className={classes.slotTime}>
+    <Box
+      style={{ backgroundColor }}
+      p={1}
+      flexShrink={0}
+      className={classes.slotTime}
+    >
       <Typography key="start" display="inline" variant="h5" component="h2">
         <strong>{`${startTime} - ${endTime}`}</strong>
       </Typography>
@@ -28,9 +37,6 @@ const useStyles = makeStyles((theme) => ({
     borderRightWidth: 1,
     borderRightColor: theme.palette.divider,
     borderRightStyle: "solid",
-  },
-  endTime: {
-    color: theme.palette.grey[700],
   },
 }));
 
