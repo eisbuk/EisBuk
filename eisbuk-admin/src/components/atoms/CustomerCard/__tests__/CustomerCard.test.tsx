@@ -164,9 +164,7 @@ describe("Customer Card", () => {
     test("should disable the button if email is not provided", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { email, ...noEmailSaul } = saul;
-      render(
-        <CustomerCard onClose={() => {}} customer={noEmailSaul as Customer} />
-      );
+      render(<CustomerCard onClose={() => {}} customer={noEmailSaul} />);
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
         "disabled",
         true
@@ -174,7 +172,7 @@ describe("Customer Card", () => {
     });
 
     test("should redirect to 'bookings' route for a customer on bookings button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul as Customer} />);
+      render(<CustomerCard onClose={() => {}} customer={saul} />);
       screen.getByTestId(__openBookingsId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`
