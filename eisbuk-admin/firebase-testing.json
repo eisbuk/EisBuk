@@ -18,7 +18,8 @@
       "port": 8081
     },
     "ui": {
-      "enabled": true
+      "enabled": true,
+      "port": 4001
     },
     "hosting": {
       "enabled": false,
