@@ -3,8 +3,8 @@ import { DateTime } from "luxon";
 
 import Box from "@material-ui/core/Box";
 
-import OneHourIcon from "@/assets/images/hour.svg";
-import HalfHourIcon from "@/assets/images/half-hour.svg";
+import OneHourIcon from "@/assets/images/HourIcon";
+import HalfHourIcon from "@/assets/images/HalfHourIcon";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -15,25 +15,27 @@ interface DurationProps {
   startTime: string;
   endTime: string;
   className?: string;
+  color?: string;
 }
 
 const Duration: React.FC<DurationProps> = ({
   className,
   startTime,
   endTime,
+  color = "black",
 }) => {
   const classes = useStyles();
 
   const intervalDuration = calculateIntervalDuration(startTime, endTime);
 
   const OneHour = (
-    <div className={[classes.icon, classes.oneHour].join(" ")}>
+    <div className={classes.icon}>
       <OneHourIcon />
     </div>
   );
 
   const HalfHour = (
-    <div className={[classes.icon, classes.halfHour].join(" ")}>
+    <div className={classes.icon}>
       <HalfHourIcon />
     </div>
   );
@@ -53,7 +55,7 @@ const Duration: React.FC<DurationProps> = ({
   };
 
   return (
-    <Box className={[classes.container, className].join(" ")}>
+    <Box style={{ color }} className={[classes.container, className].join(" ")}>
       {durationComponents[intervalDuration].map((el) => el)}
     </Box>
   );
@@ -85,7 +87,7 @@ export const calculateIntervalDuration = (
   }
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     width: "8rem",
     display: "flex",
@@ -98,16 +100,9 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
-  oneHour: {
-    color: "#98BF0F",
-  },
-  halfHour: {
-    color: "#98BF0F",
-  },
   twoPlus: {
     fontSize: "2rem",
     fontWeight: "bold",
-    color: theme.palette.error.main,
   },
 }));
 

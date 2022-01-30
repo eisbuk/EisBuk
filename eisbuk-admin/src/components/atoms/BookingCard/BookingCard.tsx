@@ -13,13 +13,13 @@ import createStyles from "@material-ui/core/styles/createStyles";
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
 import { ActionButton, DateFormat } from "@/enums/translations";
-
 import { BookingCardVariant } from "@/enums/components";
 
 import TypeIcon from "./TypeIcon";
 import Duration from "./Duration";
 
 import { __bookingCardId__ } from "@/__testData__/testIds";
+import { getColorForSlotType } from "@/utils/theme";
 
 export type Props = Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
@@ -75,12 +75,15 @@ const BookingCard: React.FC<Props> = ({
 
   const handleClick = () => (booked ? cancelBooking() : bookInterval());
 
+  // a color assigned (and used throughout) with respect to slot type
+  const typeColor = getColorForSlotType(type);
+
   /**
    * Date box is shown in `calendar` variant, but hidden in `booking` variant
    * as cards in `booking` view will already be inside date container.
    */
   const dateBox = (
-    <Box className={classes.dateBox}>
+    <Box style={{ backgroundColor: typeColor }} className={classes.dateBox}>
       <Typography variant="h5" className={classes.weekday}>
         {t(DateFormat.Weekday, { date })}
       </Typography>
@@ -106,9 +109,10 @@ const BookingCard: React.FC<Props> = ({
       ].join(" ")}
     >
       <Typography className={classes.time} component="h2">
-        <strong>{interval.startTime}</strong> - {interval.endTime}
+        <strong style={{ color: typeColor }}>{interval.startTime}</strong> -{" "}
+        {interval.endTime}
       </Typography>
-      <Duration {...interval} />
+      <Duration color={typeColor} {...interval} />
     </Box>
   );
 
@@ -217,7 +221,6 @@ const useStyles = makeStyles((theme) =>
 
     // #region dateBoxStyles
     dateBox: {
-      backgroundColor: theme.palette.primary.main,
       color: theme.palette.getContrastText(theme.palette.primary.main),
       padding: theme.spacing(1),
       display: "flex",
@@ -269,7 +272,6 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.grey[700],
       "& strong": {
         fontSize: theme.typography.h5.fontSize!,
-        color: theme.palette.primary.main,
         marginRight: "0.25rem",
       },
     },
