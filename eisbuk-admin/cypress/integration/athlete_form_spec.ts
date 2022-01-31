@@ -1,5 +1,3 @@
-/* eslint-disable promise/always-return */
-/* eslint-disable promise/catch-or-return */
 import { PrivateRoutes } from "@/enums/routes";
 
 import { saul } from "@/__testData__/customers";
