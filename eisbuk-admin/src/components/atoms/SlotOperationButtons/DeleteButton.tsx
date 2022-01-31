@@ -108,7 +108,8 @@ export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
    * - If `confirmDialog` prop provided, prompts for confirmation
    * - If no `confirmDialog` prop provided, executes delete immediately
    */
-  const handleClick = () => {
+  const handleClick = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
     if (confirmDialog) {
       setOpenConfirmDialog(true);
     } else {
