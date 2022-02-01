@@ -54,11 +54,6 @@ jest
   .mockImplementation(mockEnqueueSnackbar as any);
 
 /**
- * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
- */
-const mockDispatch = jest.fn();
-
-/**
  * A spy of `getFirebase` function which we're using to make sure
  * all firestore calls get dispatched against test `db`
  */
@@ -67,9 +62,13 @@ const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 const { secretKey } = saul;
 
 // #region testData
-/** Intervals available for booking */
+/**
+ * Intervals available for booking
+ */
 const intervals = Object.keys(baseSlot.intervals);
-/** Existing booked slots in store/firestore */
+/**
+ * Existing booked slots in store/firestore
+ */
 const bookedSlots = {
   ["test-slot-1"]: {
     date: baseSlot.date,
@@ -82,14 +81,12 @@ const bookedSlots = {
 };
 /**
  * Id used for test booking and corresponding slot,
- * as curresponging slot needs to exist in order for booking to be allowed
+ * as corresponging slot needs to exist (in firestore) in order for booking to be allowed
  */
 const bookingId = "booked-slot";
-const testBooking = {
-  date: baseSlot.date,
-  interval: intervals[0],
-};
-/** Test slot compatible with test booking and test customer's (saul) category */
+/**
+ * Test slot compatible with test booking and test customer's (saul) category
+ */
 const testSlot = {
   ...baseSlot,
   id: bookingId,
@@ -124,9 +121,10 @@ describe("Booking Notifications", () => {
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: testBooking.interval,
-          date: testBooking.date,
+          bookedInterval: intervals[0],
+          date: baseSlot.date,
         });
+        const mockDispatch = jest.fn();
         await testThunk(mockDispatch, store.getState);
         // get all `bookedSlots` for customer
         const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
@@ -139,7 +137,10 @@ describe("Booking Notifications", () => {
         const updatedBooking = (
           await firestore.getDoc(updatedBookingRef)
         ).data();
-        expect(updatedBooking).toEqual(testBooking);
+        expect(updatedBooking).toEqual({
+          date: baseSlot.date,
+          interval: intervals[0],
+        });
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           appActions.enqueueNotification({
@@ -164,9 +165,10 @@ describe("Booking Notifications", () => {
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: testBooking.interval,
-          date: testBooking.date,
+          bookedInterval: intervals[0],
+          date: baseSlot.date,
         });
+        const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
@@ -186,10 +188,14 @@ describe("Booking Notifications", () => {
             setupTestBookings({
               db,
               store,
-              bookedSlots: { ...bookedSlots, [bookingId]: testBooking },
+              bookedSlots: {
+                ...bookedSlots,
+                [bookingId]: { date: baseSlot.date, interval: intervals[0] },
+              },
               customer: saul,
             }),
         });
+        const mockDispatch = jest.fn();
         // mock `getFirestore` to return test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // create a thunk curried with test input values
@@ -230,6 +236,7 @@ describe("Booking Notifications", () => {
           secretKey,
           slotId: bookingId,
         });
+        const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }

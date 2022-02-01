@@ -238,7 +238,9 @@ export const setupTestBookings = async ({
         ...acc,
         setDoc(doc(db, bookedSlotsPath, slotId), bookedSlots[slotId]),
       ],
-      [setDoc(doc(db, customerBookingsPath), getCustomerBase(customer))]
+      [
+        setDoc(doc(db, customerBookingsPath), getCustomerBase(customer)),
+      ] as Promise<any>[]
     )
   );
 };
