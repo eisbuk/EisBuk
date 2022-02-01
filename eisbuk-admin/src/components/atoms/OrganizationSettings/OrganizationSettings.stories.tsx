@@ -10,10 +10,7 @@ export default {
 const organization = {
   admins: ["Walt", "Gus"],
   name: "Los Pollos",
-  SMTPServer: "google.com",
-  SMTPPort: "8080",
-  SMTPUsername: "gusfring",
-  SMTPPassword: "gusfring",
+  SMTPURI: "gusfring:password@smtpserver:8080",
   EmailFrom: "gus@lospollos.me",
   NameFrom: "Gustavo",
   EmailTemplate:

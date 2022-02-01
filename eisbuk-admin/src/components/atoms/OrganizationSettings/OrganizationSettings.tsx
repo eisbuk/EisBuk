@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { OrganizationData } from "eisbuk-shared/dist";
-// import { useTranslation } from "react-i18next";
 
-// import { useDispatch } from "react-redux";
 import { Formik, Field, Form, useField } from "formik";
 
 import FormControl from "@material-ui/core/FormControl";
@@ -14,26 +12,68 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { Divider, IconButton, Typography } from "@material-ui/core";
 import clsx from "clsx";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getLocalAuth } from "@/store/selectors/auth";
+import { updateOrganization } from "@/store/actions/organizationOperations";
 
 interface Props {
   organization: OrganizationData;
 }
+
+interface FieldProps {
+  name: string;
+  label: string;
+}
 const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
   const userAuthInfo = useSelector(getLocalAuth);
 
   const [enableEdit, setEnableEdit] = useState(false);
+
   const handleSubmit = (orgData: OrganizationData) => {
-    console.log({ orgData });
-    // useDispatch
+    dispatch(updateOrganization(orgData));
     setEnableEdit(false);
   };
 
   const handleEnableEdit = () => {
+    // on enableEdit being true (clicking cancel)
+    // the form should bring back removed admins
     setEnableEdit(!enableEdit);
   };
+
+  const smtpFields: Partial<FieldProps>[] = [
+    {
+      name: "smtpUri",
+      label: "SMTP URI",
+    },
+  ];
+  const emailFields: Partial<FieldProps>[] = [
+    {
+      name: "emailName",
+      label: "Email Name",
+    },
+    {
+      name: "emailFrom",
+      label: "Email From",
+    },
+    {
+      name: "emailTemplate",
+      label: "Email Template",
+    },
+  ];
+  const smsFields: Partial<FieldProps>[] = [
+    {
+      name: "SmsFrom",
+      label: "SMS From",
+    },
+    {
+      name: "SmsTemplate",
+      label: "SMS Template",
+    },
+  ];
+
   const currentUser = userAuthInfo?.email || "";
   return (
     <>
@@ -41,14 +81,12 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
         <Typography variant="h4">Organization Settings</Typography>
       </div>
       <div className={classes.content}>
-        {/* <Typography variant="h4">Organization Settings</Typography> */}
-
         <Formik
           {...{ initialValues: { ...organization } }}
           onSubmit={handleSubmit}
           validateOnChange={false}
         >
-          {({ errors, isSubmitting, isValidating }) => (
+          {({ errors, isSubmitting, isValidating, values }) => (
             <Form className={classes.form}>
               <FormControl component="fieldset">
                 <h5 className={classes.intervalsTitle}>Admins</h5>
@@ -60,157 +98,96 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
                 <h5 className={classes.intervalsTitle}>SMTP</h5>
 
                 <div className={classes.fieldSection}>
-                  <Field
-                    label="SMTP Server"
-                    name="SMTPServer"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMTPServer"
-                    placeholder="SMTP server here"
-                    variant="outlined"
-                    value={organization.SMTPServer}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="SMTP Port"
-                    name="SMTPPort"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMTPPort"
-                    placeholder="SMTP port here"
-                    variant="outlined"
-                    value={organization.SMTPPort}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="SMTP Port"
-                    name="SMTPPort"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMTPPort"
-                    placeholder="SMTP port here"
-                    variant="outlined"
-                    value={organization.SMTPPort}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="SMTP Username"
-                    name="SMTPUsername"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMTPUsername"
-                    placeholder="SMTP Username here"
-                    variant="outlined"
-                    value={organization.SMTPUsername}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="SMTP Password"
-                    name="SMTPPassword"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMTPPassword"
-                    placeholder="SMTP Password here"
-                    variant="outlined"
-                    value={organization.SMTPPassword}
-                    disabled={!enableEdit}
-                  />
+                  {smtpFields.map((field) => (
+                    <Field
+                      key={field.name}
+                      {...field}
+                      className={classes.field}
+                      as={TextField}
+                      aria-label={field.label}
+                      variant={enableEdit ? "outlined" : "filled"}
+                      disabled={!enableEdit}
+                      value={values[`${field.name}`] || ""}
+                    />
+                  ))}
                 </div>
                 <h5 className={classes.intervalsTitle}>Email</h5>
                 <div className={classes.fieldSection}>
-                  <Field
-                    label="Email From"
-                    name="EmailFrom"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="EmailFrom"
-                    placeholder="Email From here"
-                    variant="outlined"
-                    value={organization.EmailFrom}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="Name From"
-                    name="NameFrom"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="NameFrom"
-                    placeholder="Name From here"
-                    variant="outlined"
-                    value={organization.NameFrom}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="Email Template"
-                    name="EmailTemplate"
-                    className={classes.templateField}
-                    as={TextField}
-                    aria-label="EmailTemplate"
-                    placeholder="Email Template here"
-                    variant="outlined"
-                    multiline
-                    rows="4"
-                    value={organization.EmailTemplate}
-                    disabled={!enableEdit}
-                  />
+                  {emailFields.map((field) => (
+                    <Field
+                      key={field.name}
+                      label={field.label}
+                      name={field.name}
+                      className={
+                        field.name?.includes("Template")
+                          ? classes.templateField
+                          : classes.field
+                      }
+                      as={TextField}
+                      aria-label={field.label}
+                      variant={enableEdit ? "outlined" : "filled"}
+                      disabled={!enableEdit}
+                      multiline={
+                        field.name?.includes("Template") ? true : false
+                      }
+                      rows={field.name?.includes("Template") ? "4" : "1"}
+                      value={values[`${field.name}`] || ""}
+                    />
+                  ))}
                 </div>
                 <h5 className={classes.intervalsTitle}>SMS</h5>
                 <div className={classes.fieldSection}>
-                  <Field
-                    label="SMS From"
-                    name="SMSFrom"
-                    className={classes.field}
-                    as={TextField}
-                    aria-label="SMSFrom"
-                    placeholder="SMS From here"
-                    variant="outlined"
-                    value={organization.SMSFrom}
-                    disabled={!enableEdit}
-                  />
-                  <Field
-                    label="SMS Template"
-                    name="SMSTemplate"
-                    className={classes.templateField}
-                    as={TextField}
-                    aria-label="SMSTemplate"
-                    placeholder="SMS Template here"
-                    variant="outlined"
-                    multiline
-                    rows="4"
-                    value={organization.SMSTemplate}
-                    disabled={!enableEdit}
-                  />
+                  {smsFields.map((field) => (
+                    <Field
+                      key={field.name}
+                      label={field.label}
+                      name={field.name}
+                      className={
+                        field.name?.includes("Template")
+                          ? classes.templateField
+                          : classes.field
+                      }
+                      as={TextField}
+                      aria-label={field.label}
+                      variant={enableEdit ? "outlined" : "filled"}
+                      disabled={!enableEdit}
+                      multiline={
+                        field.name?.includes("Template") ? true : false
+                      }
+                      rows={field.name?.includes("Template") ? "4" : "1"}
+                      value={values[`${field.name}`] || ""}
+                    />
+                  ))}
                 </div>
               </FormControl>
 
               <div className={classes.submitButtonArea}>
-                {!enableEdit && (
-                  <Button
-                    onClick={handleEnableEdit}
-                    variant="contained"
-                    disabled={
-                      Boolean(Object.keys(errors).length) &&
-                      (isSubmitting || isValidating)
-                    }
-                    color="primary"
-                    aria-label={"edit"}
-                  >
-                    {"edit"}
-                  </Button>
-                )}
+                <Button
+                  onClick={handleEnableEdit}
+                  variant="contained"
+                  disabled={
+                    Boolean(Object.keys(errors).length) &&
+                    (isSubmitting || isValidating)
+                  }
+                  color="primary"
+                  aria-label={enableEdit ? "cancel" : "edit"}
+                >
+                  {enableEdit ? "cancel" : "edit"}
+                </Button>
 
                 {enableEdit && (
                   <Button
                     variant="contained"
-                    type="submit"
+                    className={classes.saveButton}
                     disabled={
                       Boolean(Object.keys(errors).length) &&
                       (isSubmitting || isValidating)
                     }
-                    color="primary"
+                    color="secondary"
                     aria-label={"save"}
+                    type="submit"
                   >
-                    {"save"}
+                    save
                   </Button>
                 )}
               </div>
@@ -269,7 +246,7 @@ const AdminsField: React.FC<{ enableEdit: boolean; currentUser: string }> = ({
               onChange={updateAdmin(i)}
               component={TextField}
               value={admin}
-              variant="outlined"
+              variant={enableEdit ? "outlined" : "filled"}
               disabled={!enableEdit || admin === currentUser}
             />
             {enableEdit && admin !== currentUser && (
@@ -292,7 +269,7 @@ const AdminsField: React.FC<{ enableEdit: boolean; currentUser: string }> = ({
             onChange={handleSetAdmin}
             value={admin}
             placeholder="Add admin"
-            variant="outlined"
+            variant={enableEdit ? "outlined" : "filled"}
           />
 
           <Button
@@ -390,6 +367,9 @@ const useStyles = makeStyles((theme) => ({
     background: theme.palette.primary.main,
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.primary.contrastText,
+  },
+  saveButton: {
+    marginLeft: "1rem",
   },
 }));
 // #endregion styles
