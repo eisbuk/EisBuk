@@ -1,5 +1,6 @@
-import { Dispatch } from "redux";
+import { AnyAction, Dispatch, Store } from "redux";
 import { DateTime } from "luxon";
+import { doc, setDoc } from "@firebase/firestore";
 
 import {
   Collection,
@@ -13,15 +14,22 @@ import {
   OrganizationData,
 } from "eisbuk-shared";
 
+import { adminDb } from "@/__testSetup__/firestoreSetup";
+import { TestEnvFirestore } from "@/__testSetup__/getTestEnv";
+
+import { __organization__ } from "@/lib/constants";
+
 import { LocalStore, FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
-import { adminDb } from "@/__testSetup__/firestoreSetup";
+
+import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { createTestStore } from "@/__testUtils__/firestore";
+import { waitForCondition } from "@/__testUtils__/helpers";
+import { getCustomerBase } from "@/__testUtils__/customers";
 
 import { testDateLuxon } from "@/__testData__/date";
-import { waitForCondition } from "@/__testUtils__/helpers";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -31,6 +39,26 @@ type ThunkParams = Parameters<FirestoreThunk>;
 const orgDb = adminDb
   .collection(Collection.Organizations)
   .doc(getOrganization());
+
+/**
+ * A stored path to test organization in firestore
+ */
+const orgPath = [Collection.Organizations, __organization__].join("/");
+/**
+ * A path to `slots` collection in test organization
+ */
+const slotsPath = [orgPath, OrgSubCollection.Slots].join("/");
+
+interface AdminSetupFunction<
+  T extends Record<string, any> = Record<string, never>
+> {
+  (
+    payload: {
+      db: TestEnvFirestore;
+      store: Store<LocalStore, AnyAction>;
+    } & T
+  ): Promise<void>;
+}
 
 /**
  * Set up `organization` data in emulated store and create `getState()` returning redux store
@@ -121,6 +149,22 @@ export const setupTestSlots = async ({
   return [dispatch, getState];
 };
 /**
+ * A @TEMP slot setup helper. Should be used instead of existing `setupTestSlots`
+ * @param param0
+ */
+export const setupTestSlotsTemp: AdminSetupFunction<{
+  slots: Record<string, SlotInterface>;
+}> = async ({ db, store, slots }) => {
+  // aggregate slots (to slotsByDay) and update to store
+  const slotsByDay = aggregateSlots(slots);
+  store.dispatch(updateLocalDocuments(OrgSubCollection.SlotsByDay, slotsByDay));
+  // update slots to firestore
+  const slotIds = Object.keys(slots);
+  await Promise.all(
+    slotIds.map((slotId) => setDoc(doc(db, slotsPath, slotId), slots[slotId]))
+  );
+};
+/**
  * Create `getState()` returning redux store
  * filled with `copyPaste` data
  * @param day entry for `day` in `copyPaste` state
@@ -144,39 +188,59 @@ export const setupCopyPaste = async ({
   return [dispatch, getState];
 };
 /**
- * Set up `bookings` data in emulated store and create `getState()` returning redux store
- * filled with `bookedSlots` for customer
- * @param bookedSlots entry for firestore `bookedSlots` for customer (keyed by provided `secretKey`) we want to set
- * @param secretKey test `secretKey` for customer
- * @returns middleware args (dispatch, setState, { getFirebase } )
+ * Creates a new redux store and new test environment firestore.
+ * Populates both with customer's booking entry, booked slots and
+ * slots created from booked slots data and customer's category
+ * @param {Object} payload
+ * @param {Object} payload.bookedSlots a record of `bookedSlots` for customer
+ * @param {Object} payload.customer customer object
+ * @param {Firestore} payload.db customer object
+ * @param {Store} payload.store customer object
  */
 export const setupTestBookings = async ({
+  db,
+  store,
   bookedSlots,
-  secretKey,
-  dispatch = (value: any) => value,
+  customer,
 }: {
+  db: TestEnvFirestore;
+  store: Store<LocalStore, AnyAction>;
   bookedSlots: Required<CustomerBookings>["bookedSlots"];
-  secretKey: Customer["secretKey"];
-  dispatch?: Dispatch;
-}): Promise<ThunkParams> => {
-  // We're creating an empty store to comply with the type interface
-  const getState = () => createTestStore({});
+  customer: Customer;
+}): Promise<void> => {
+  const { secretKey } = customer;
 
-  // saved ref for customer's `bookings` doc
-  const bookingsRef = orgDb
-    .collection(OrgSubCollection.Bookings)
-    .doc(secretKey);
+  /** Path to customer's bookings */
+  const customerBookingsPath = [
+    Collection.Organizations,
+    __organization__,
+    OrgSubCollection.Bookings,
+    secretKey,
+  ].join("/");
+  /** Path to booked slots collection */
+  const bookedSlotsPath = [
+    customerBookingsPath,
+    BookingSubCollection.BookedSlots,
+  ].join("/");
 
-  // set booked slots to emulated store
-  const bookingsToUpdate = Object.keys(bookedSlots).map((slotId) =>
-    bookingsRef
-      .collection(BookingSubCollection.BookedSlots)
-      .doc(slotId)
-      .set(bookedSlots[slotId])
+  const slotIds = Object.keys(bookedSlots);
+
+  // add booked slots to test store
+  store.dispatch(
+    updateLocalDocuments(BookingSubCollection.BookedSlots, bookedSlots)
   );
-  await Promise.all(bookingsToUpdate);
 
-  return [dispatch, getState];
+  // update firestore starting with creating of `bookings` entry for customer
+  // and adding each booked slot
+  await Promise.all(
+    slotIds.reduce(
+      (acc, slotId) => [
+        ...acc,
+        setDoc(doc(db, bookedSlotsPath, slotId), bookedSlots[slotId]),
+      ],
+      [setDoc(doc(db, customerBookingsPath), getCustomerBase(customer))]
+    )
+  );
 };
 /**
  * Set up `customers` data entry in emulated store and create `getState()` returning redux store
@@ -239,7 +303,7 @@ const aggregateSlots = (slots: Record<string, SlotInterface>) =>
     const slot = slots[slotId];
 
     const { date } = slot;
-    const monthStr = date.substr(0, 7);
+    const monthStr = date.substring(0, 7);
 
     const slotsForMonth = acc[monthStr] || {};
     const slotsForDay = slotsForMonth[date] || {};

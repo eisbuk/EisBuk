@@ -124,7 +124,7 @@ service cloud.firestore {
             // Check date integrity
             bookingData.date == bookedSlot.data.date &&
             // Check interval integrity
-            bookingData.interval in bookedSlot.data.intervals.keys()     
+            bookingData.interval in bookedSlot.data.intervals     
           );
         }
         function checkBookedSlotCategory(slotId) {
