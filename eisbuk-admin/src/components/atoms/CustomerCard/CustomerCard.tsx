@@ -76,7 +76,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
               : customer[property] || "-";
 
           return (
-            <Typography variant="h6">
+            <Typography variant="h6" key={property}>
               <span className={classes.bold}>{translatedLabel}: </span>
               {value}
             </Typography>
