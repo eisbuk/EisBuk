@@ -143,6 +143,8 @@ export const sendSMS = functions
 
     const res = await postSMS(proto, options, data);
 
+    functions.logger.log("SMS POST request successfull, response:", res);
+
     return { success: true, res };
   });
 
