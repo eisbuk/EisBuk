@@ -68,9 +68,9 @@
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
     "NonReversible": "Questa azione non è reversibile",
     "SendEmailTitle": "Conferma email",
-    "ConfirmEmail": "Sei sicuro di voler inviare un'email a:",
+    "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "SendSMSTitle": "Conferma SMS",
-    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a:"
+    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?"
   },
   "ActionButton": {
     "CreateSlot": "Crea Slot",
