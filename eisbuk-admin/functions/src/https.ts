@@ -96,14 +96,14 @@ export const sendSMS = functions
     }
 
     // get SMS template data
-    const { sender: templateSender, smsUrl } =
-      (
+    const { smsSender: templateSender, smsUrl } =
+      ((
         await admin
           .firestore()
           .collection(Collection.Organizations)
           .doc(organization!)
           .get()
-      ).data() || ({} as OrganizationData);
+      ).data() as OrganizationData) || {};
 
     // check template
     if (!smsUrl) {
