@@ -27,81 +27,85 @@ const getBookingsPath = () =>
  * Dispatches booked interval to firestore.
  * Additionally, it cancels booked interval for the same slot if one is already booked.
  */
-export const bookInterval = ({
-  slotId,
-  secretKey,
-  bookedInterval,
-  date,
-}: {
-  slotId: SlotInterface["id"];
-  secretKey: Customer["secretKey"];
-  bookedInterval: string;
-  date: SlotInterface["date"];
-}): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const docRef = doc(
-      db,
-      getBookingsPath(),
-      secretKey,
-      BookingSubCollection.BookedSlots,
-      slotId
-    );
+export const bookInterval =
+  ({
+    slotId,
+    secretKey,
+    bookedInterval,
+    date,
+  }: {
+    slotId: SlotInterface["id"];
+    secretKey: Customer["secretKey"];
+    bookedInterval: string;
+    date: SlotInterface["date"];
+  }): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(
+        db,
+        getBookingsPath(),
+        secretKey,
+        BookingSubCollection.BookedSlots,
+        slotId
+      );
 
-    // update booked interval to firestore
-    await setDoc(docRef, { interval: bookedInterval, date });
+      // update booked interval to firestore
+      await setDoc(docRef, { interval: bookedInterval, date });
 
-    // show success message
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t(NotificationMessage.BookingSuccess),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+      // show success message
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.BookingSuccess),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };
 
 /**
  * Cancels booked inteval of the provided slot for provided customer.
  */
-export const cancelBooking = ({
-  slotId,
-  secretKey,
-}: {
-  slotId: SlotInterface["id"];
-  secretKey: Customer["secretKey"];
-}): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const docRef = doc(
-      db,
-      getBookingsPath(),
-      secretKey,
-      BookingSubCollection.BookedSlots,
-      slotId
-    );
+export const cancelBooking =
+  ({
+    slotId,
+    secretKey,
+  }: {
+    slotId: SlotInterface["id"];
+    secretKey: Customer["secretKey"];
+  }): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(
+        db,
+        getBookingsPath(),
+        secretKey,
+        BookingSubCollection.BookedSlots,
+        slotId
+      );
 
-    // remove the booking from firestore
-    await deleteDoc(docRef);
+      // remove the booking from firestore
+      await deleteDoc(docRef);
 
-    // show success message
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t(NotificationMessage.BookingCanceled),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+      // show success message
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.BookingCanceled),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };

@@ -76,7 +76,7 @@ const getState = () => ({} as any);
  */
 const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
-describe("customerOperations", () => {
+xdescribe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
     await loginDefaultUser();

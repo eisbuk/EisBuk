@@ -1,4 +1,5 @@
 import * as firestore from "@firebase/firestore";
+import i18n from "@/__testUtils__/i18n";
 
 import {
   BookingSubCollection,
@@ -6,7 +7,11 @@ import {
   OrgSubCollection,
 } from "eisbuk-shared";
 
+import { getNewStore } from "@/store/createStore";
+
 import { __organization__ } from "@/lib/constants";
+
+import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
@@ -14,19 +19,16 @@ import { NotificationMessage } from "@/enums/translations";
 import { bookInterval, cancelBooking } from "../bookingOperations";
 import * as appActions from "../appActions";
 
-import {
-  secretKey,
-  bookingId,
-  bookedSlots,
-  testBooking,
-} from "../__testData__/bookingOperations";
-
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll } from "@/__testUtils__/firestore";
-import { setupTestBookings } from "../__testUtils__/firestore";
-import i18n from "@/__testUtils__/i18n";
+import {
+  setupTestBookings,
+  setupTestSlotsTemp as setupTestSlots,
+} from "../__testUtils__/firestore";
 
-const db = firestore.getFirestore();
+import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
+
 const bookingsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
 
 /**
@@ -52,15 +54,45 @@ jest
   .mockImplementation(mockEnqueueSnackbar as any);
 
 /**
- * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
+ * A spy of `getFirebase` function which we're using to make sure
+ * all firestore calls get dispatched against test `db`
  */
-const mockDispatch = jest.fn();
+const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 
+const { secretKey } = saul;
+
+// #region testData
 /**
- * A spy of `getFirebase` function which we're occasionally mocking to throw error
- * for error handling tests
+ * Intervals available for booking
  */
-const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
+const intervals = Object.keys(baseSlot.intervals);
+/**
+ * Existing booked slots in store/firestore
+ */
+const bookedSlots = {
+  ["test-slot-1"]: {
+    date: baseSlot.date,
+    interval: intervals[0],
+  },
+  ["test-slot-2"]: {
+    date: baseSlot.date,
+    interval: intervals[0],
+  },
+};
+/**
+ * Id used for test booking and corresponding slot,
+ * as corresponging slot needs to exist (in firestore) in order for booking to be allowed
+ */
+const bookingId = "booked-slot";
+/**
+ * Test slot compatible with test booking and test customer's (saul) category
+ */
+const testSlot = {
+  ...baseSlot,
+  id: bookingId,
+  categories: [saul.category],
+};
+// #endregion testData
 
 describe("Booking Notifications", () => {
   beforeEach(async () => {
@@ -73,20 +105,27 @@ describe("Booking Notifications", () => {
       "should book selected interval on call and enqueue success notification",
       async () => {
         // set up initial state
-        const thunkArgs = await setupTestBookings({
-          bookedSlots,
-          secretKey,
-          dispatch: mockDispatch,
+        const store = getNewStore();
+        const db = await getTestEnv({
+          auth: false,
+          setup: (db) =>
+            Promise.all([
+              // test slot needs to exist in store in order to be able to book it
+              setupTestSlots({ db, store, slots: { [bookingId]: testSlot } }),
+              setupTestBookings({ db, store, bookedSlots, customer: saul }),
+            ]),
         });
+        // mock `getFirestore` to return test db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
         // create a thunk curried with test input values
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: testBooking.interval,
-          date: testBooking.date,
+          bookedInterval: intervals[0],
+          date: baseSlot.date,
         });
-        // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(...thunkArgs);
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, store.getState);
         // get all `bookedSlots` for customer
         const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
         const bookedSlotsRef = firestore.collection(db, bookedSlotsPath);
@@ -98,7 +137,10 @@ describe("Booking Notifications", () => {
         const updatedBooking = (
           await firestore.getDoc(updatedBookingRef)
         ).data();
-        expect(updatedBooking).toEqual(testBooking);
+        expect(updatedBooking).toEqual({
+          date: baseSlot.date,
+          interval: intervals[0],
+        });
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           appActions.enqueueNotification({
@@ -115,23 +157,19 @@ describe("Booking Notifications", () => {
     testWithEmulator(
       "should enqueue error notification if operation failed",
       async () => {
-        // intentionally cause an error
-        getFirebaseSpy.mockImplementationOnce(() => {
+        // intentionally cause error in the execution
+        getFirestoreSpy.mockImplementationOnce(() => {
           throw new Error();
         });
         // run the thunk
-        const thunkArgs = await setupTestBookings({
-          bookedSlots,
-          secretKey,
-          dispatch: mockDispatch,
-        });
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: testBooking.interval,
-          date: testBooking.date,
+          bookedInterval: intervals[0],
+          date: baseSlot.date,
         });
-        await testThunk(...thunkArgs);
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
@@ -142,18 +180,31 @@ describe("Booking Notifications", () => {
       "should remove selected booking entry and enqueue success notification",
       async () => {
         // set up initial state
-        const thunkArgs = await setupTestBookings({
-          bookedSlots: { ...bookedSlots, [bookingId]: testBooking },
-          secretKey,
-          dispatch: mockDispatch,
+        const store = getNewStore();
+        const db = await getTestEnv({
+          auth: false,
+          setup: (db) =>
+            // simulate the slot already being booked
+            setupTestBookings({
+              db,
+              store,
+              bookedSlots: {
+                ...bookedSlots,
+                [bookingId]: { date: baseSlot.date, interval: intervals[0] },
+              },
+              customer: saul,
+            }),
         });
+        const mockDispatch = jest.fn();
+        // mock `getFirestore` to return test db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
         // create a thunk curried with test input values
         const testThunk = cancelBooking({
           secretKey,
           slotId: bookingId,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(...thunkArgs);
+        await testThunk(mockDispatch, store.getState);
         // get all `bookedSlots` for customer
         const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
         const bookedSlotsRef = firestore.collection(db, bookedSlotsPath);
@@ -177,20 +228,16 @@ describe("Booking Notifications", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause an error
-        getFirebaseSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementationOnce(() => {
           throw new Error();
         });
         // run the thunk
-        const thunkArgs = await setupTestBookings({
-          bookedSlots,
-          secretKey,
-          dispatch: mockDispatch,
-        });
         const testThunk = cancelBooking({
           secretKey,
           slotId: bookingId,
         });
-        await testThunk(...thunkArgs);
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );

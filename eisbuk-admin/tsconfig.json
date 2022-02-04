@@ -6,11 +6,7 @@
     "outDir": "dist",
     "module": "esnext",
     "target": "es5",
-    "lib": [
-      "es6",
-      "dom",
-      "esnext.asynciterable"
-    ],
+    "lib": ["es6", "dom", "esnext.asynciterable"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -39,8 +35,5 @@
     "jest",
     "src/setupTests.ts"
   ],
-  "include": [
-    "src",
-    "./.eslintrc.js"
-  ]
+  "include": ["src", "./.eslintrc.js"]
 }

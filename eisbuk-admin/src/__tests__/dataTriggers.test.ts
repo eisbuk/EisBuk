@@ -1,5 +1,3 @@
-import { deleteDoc, doc, setDoc, getDoc } from "@firebase/firestore";
-
 import {
   BookingSubCollection,
   Collection,
@@ -9,7 +7,7 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { adminDb, db } from "@/__testSetup__/firestoreSetup";
+import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
@@ -66,17 +64,22 @@ describe("Cloud functions -> Data triggers ->,", () => {
         // set up booking entry for customers booking info
         await userBookingRef.set(customerBooking);
         // set up dummy data in the same slot, not to be overwritten
-        const attendanceDocRef = doc(db, attendanceCollPath, slotId);
-        await setDoc(attendanceDocRef, baseAttendance);
-        // add new booking trying to trigger attendance entry
-        const testBookingDocRef = doc(
-          db,
-          bookingsCollectionPath,
-          secretKey,
-          BookingSubCollection.BookedSlots,
-          slotId
+        const attendanceDocRef = getDocumentRef(
+          adminDb,
+          `${attendanceCollPath}/${slotId}`
         );
-        await setDoc(testBookingDocRef, testBooking);
+        await attendanceDocRef.set(baseAttendance);
+        // add new booking trying to trigger attendance entry
+        const testBookingDocRef = getDocumentRef(
+          adminDb,
+          [
+            bookingsCollectionPath,
+            secretKey,
+            BookingSubCollection.BookedSlots,
+            slotId,
+          ].join("/")
+        );
+        await testBookingDocRef.set(testBooking);
         // check proper updates triggerd by write to bookings
         const attendanceDocPath = `${attendanceCollPath}/${slotId}`;
         const docRes = await waitForCondition({
@@ -85,7 +88,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         });
         expect(docRes).toEqual(attendanceWithTestCustomer);
         // test customer's attendnace being removed from slot's attendnace
-        await deleteDoc(testBookingDocRef);
+        await testBookingDocRef.delete();
         const docRes2 = await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => Boolean(data && !data.attendances[customerId]),
@@ -106,8 +109,11 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should create slotsByDay entry for slot on create",
       async () => {
         // add new slot to trigger slot aggregation
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
         // check that the slot has been aggregated to `slotsByDay`
         const expectedSlotsByDay = { [testDate]: { [baseSlot.id]: baseSlot } };
         const slotsByDayEntry = await waitForCondition({
@@ -116,8 +122,11 @@ describe("Cloud functions -> Data triggers ->,", () => {
         });
         expect(slotsByDayEntry).toEqual(expectedSlotsByDay);
         // test adding another slot on different day of the same month
-        const newSlotRef = doc(db, slotsCollectionPath, newSlotId);
-        await setDoc(newSlotRef, newSlot);
+        const newSlotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${newSlotId}`
+        );
+        await newSlotRef.set(newSlot);
         const newSlotsByDayEntry = await waitForCondition({
           documentPath: slotsByDayDocPath,
           condition: (data) => Boolean(data && data[dayAfter]),
@@ -133,8 +142,11 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should update aggregated slotsByDay on slot update",
       async () => {
         // set up test state
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
         await waitForCondition({
           documentPath: slotsByDayDocPath,
           condition: (data) => Boolean(data && data[testDate]),
@@ -146,7 +158,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
           intervals: newIntervals,
           type: SlotType.OffIceDancing,
         };
-        setDoc(slotRef, updatedSlot);
+        slotRef.set(updatedSlot);
         const expectedSlotsByDay = {
           [testDate]: { [baseSlot.id]: updatedSlot },
         };
@@ -163,10 +175,16 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should remove slot from slotsByDay on slot delete",
       async () => {
         // set up test state
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
-        const newSlotRef = doc(db, slotsCollectionPath, newSlotId);
-        await setDoc(newSlotRef, newSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
+        const newSlotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${newSlotId}`
+        );
+        await newSlotRef.set(newSlot);
         await waitForCondition({
           documentPath: slotsByDayDocPath,
           // wait until both slots are aggregated
@@ -174,7 +192,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
             Boolean(data && data[testDate] && data[dayAfter]),
         });
         // test removing of the additional slot
-        await deleteDoc(newSlotRef);
+        await newSlotRef.delete();
         await waitForCondition({
           documentPath: slotsByDayDocPath,
           condition: (data) => Boolean(data && !data[dayAfter][newSlotId]),
@@ -188,8 +206,11 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should create attendance entry for slot (containing only the date) in 'attendance' collection, only on create slot (not on update)",
       async () => {
         // add new slot to trigger adding attendance for given slot
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
         // check proper updates triggerd by write to slot
         const docRes = await waitForCondition({
           documentPath: `${attendanceCollPath}/${slotId}`,
@@ -198,18 +219,21 @@ describe("Cloud functions -> Data triggers ->,", () => {
         expect(docRes).toEqual(emptyAttendance);
         // we're manually deleting attendance to test that it won't get created on slot update
         // the attendance entry for slot shouldn't be edited manually in production
-        const attendanceDocRef = doc(db, attendanceCollPath, slotId);
-        await deleteDoc(attendanceDocRef);
+        const attendanceDocRef = getDocumentRef(
+          adminDb,
+          `${attendanceCollPath}/${slotId}`
+        );
+        await attendanceDocRef.delete();
         // wait for attendance entry to be deleted
         // update the slot and expect new slot attendance entry not to be created
-        await setDoc(slotRef, {
+        await slotRef.set({
           ...baseSlot,
           intervals: {},
           categories: [Category.PreCompetitive],
         });
         // check the no new entry for slot attendance was created (on update)
-        const slotAttendance = await getDoc(attendanceDocRef);
-        expect(slotAttendance.exists()).toEqual(false);
+        const slotAttendance = await attendanceDocRef.get();
+        expect(slotAttendance.exists).toEqual(false);
       }
     );
 
@@ -217,15 +241,18 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should delete attendance entry for slot when the slot is deleted",
       async () => {
         // we're following the same setup from the test before
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
         const attendanceDocPath = `${attendanceCollPath}/${slotId}`;
         await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => Boolean(data),
         });
         // delete the slot entry
-        await deleteDoc(slotRef);
+        await slotRef.delete();
         // expect attendance to be deleted too
         await waitForCondition({
           documentPath: attendanceDocPath,
