@@ -155,7 +155,7 @@ export const sendBookingsLink: SendBookingsLink =
       switch (method) {
         case SendBookingLinkMethod.Email:
           handler = CloudFunction.SendEmail;
-          to = email;
+          to = email!;
           message = {
             subject,
             html,
@@ -163,7 +163,7 @@ export const sendBookingsLink: SendBookingsLink =
           break;
         case SendBookingLinkMethod.SMS:
           handler = CloudFunction.SendSMS;
-          to = phone;
+          to = phone!;
           message = sms;
       }
 

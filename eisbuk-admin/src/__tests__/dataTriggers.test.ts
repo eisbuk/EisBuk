@@ -31,7 +31,7 @@ const slotId = baseSlot.id;
 const customerId = saul.id;
 const secretKey = saul.secretKey;
 const customerBooking = getCustomerBase(saul);
-const testMonth = testDate.substr(0, 7);
+const testMonth = testDate.substring(0, 7);
 
 // document paths
 const orgPath = `${Collection.Organizations}/${__organization__}`;
@@ -268,8 +268,11 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
         // add new secret to trigger registering
-        const orgSecretsRef = doc(db, Collection.Secrets, __organization__);
-        await setDoc(orgSecretsRef, { testSecret: "abc123" });
+        const orgSecretsRef = getDocumentRef(
+          adminDb,
+          `${Collection.Secrets}/${__organization__}`
+        );
+        await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
         let existingSecrets = (
           (await waitForCondition({
@@ -280,11 +283,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         expect(existingSecrets).toEqual(["testSecret"]);
 
         // add another secret
-        await setDoc(
-          orgSecretsRef,
-          { anotherSecret: "abc234" },
-          { merge: true }
-        );
+        await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
         existingSecrets = (
           (await waitForCondition({
             documentPath: `${Collection.Organizations}/${__organization__}`,
@@ -294,7 +293,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
 
         // removing one secret should remove it from array (without removing other secrets)
-        await setDoc(orgSecretsRef, { anotherSecret: "abc234" });
+        await orgSecretsRef.set({ anotherSecret: "abc234" });
         existingSecrets = (
           (await waitForCondition({
             documentPath: `${Collection.Organizations}/${__organization__}`,
@@ -309,15 +308,18 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should delete attendance entry for slot when the slot is deleted",
       async () => {
         // we're following the same setup from the test before
-        const slotRef = doc(db, slotsCollectionPath, slotId);
-        await setDoc(slotRef, baseSlot);
+        const slotRef = getDocumentRef(
+          adminDb,
+          `${slotsCollectionPath}/${slotId}`
+        );
+        await slotRef.set(baseSlot);
         const attendanceDocPath = `${attendanceCollPath}/${slotId}`;
         await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => Boolean(data),
         });
         // delete the slot entry
-        await deleteDoc(slotRef);
+        await slotRef.delete();
         // expect attendance to be deleted too
         await waitForCondition({
           documentPath: attendanceDocPath,
