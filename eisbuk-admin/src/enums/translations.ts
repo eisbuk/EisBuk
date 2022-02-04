@@ -128,6 +128,7 @@ export enum NotificationMessage {
   Removed = "Notification.Removed",
 
   EmailSent = "Notification.EmailSent",
+  SMSSent = "Notification.SMSSent",
 
   Error = "Notification.Error",
 }

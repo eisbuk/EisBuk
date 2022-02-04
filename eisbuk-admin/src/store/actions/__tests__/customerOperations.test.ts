@@ -303,7 +303,7 @@ xdescribe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
-            message: i18n.t(NotificationMessage.EmailSent),
+            message: i18n.t(NotificationMessage.SMSSent),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,

@@ -169,10 +169,15 @@ export const sendBookingsLink: SendBookingsLink =
 
       await invokeFunction(handler)({ to, message });
 
+      const successMessage =
+        method === SendBookingLinkMethod.Email
+          ? i18n.t(NotificationMessage.EmailSent)
+          : i18n.t(NotificationMessage.SMSSent);
+
       dispatch(
         enqueueNotification({
           key: new Date().getTime() + Math.random(),
-          message: i18n.t(NotificationMessage.EmailSent),
+          message: successMessage,
           closeButton: true,
           options: {
             variant: NotifVariant.Success,

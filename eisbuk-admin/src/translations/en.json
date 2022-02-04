@@ -100,6 +100,7 @@
     "Updated": "updated",
     "Removed": "removed",
     "EmailSent": "Email successfully sent",
+    "SMSSent": "SMS successfully sent",
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"
