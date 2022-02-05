@@ -14,7 +14,6 @@ describe("Booking flow", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
-      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
       const afterDueDate = testDateLuxon
         .minus({
           days: 5,
@@ -30,6 +29,28 @@ describe("Booking flow", () => {
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
         "have.attr",
+        "disabled"
+      );
+    });
+
+    it("should allow booking if the booking deadline hasn't passed", () => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
+      const beforeDueDate = testDateLuxon.minus({
+        days: 7,
+      });
+      cy.setClock(beforeDueDate.toMillis());
+      cy.initAdminApp(false).then((organization) =>
+        cy.updateFirestore(organization, ["customers.json", "slots.json"])
+      );
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      // should open next month as starting value for `currentDate` (in store)
+      // default timespan should be "month" as the default customer navigation position is "book_ice"
+      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
+        "not.have.attr",
         "disabled"
       );
     });
