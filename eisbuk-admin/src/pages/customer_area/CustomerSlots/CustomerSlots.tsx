@@ -12,9 +12,15 @@ import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
-import { getIsBookingAllowed } from "@/store/selectors/bookings";
+import {
+  getIsBookingAllowed,
+  getShouldDisplayCountdown,
+} from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
+import Countdown from "@/components/atoms/Countdown";
+import { useTranslation } from "react-i18next";
+import { BookingCountdown } from "@/enums/translations";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -53,6 +59,8 @@ const CustomerSlots: React.FC<Props> = ({
   bookedSlots,
   view = CustomerRoute.BookIce,
 }) => {
+  const { t } = useTranslation();
+
   const slotDates = Object.keys(slots);
 
   // if `view=book_ice` should order slot days mondays first and so on
@@ -67,10 +75,20 @@ const CustomerSlots: React.FC<Props> = ({
 
   const isBookingAllowed = useSelector(getIsBookingAllowed);
 
+  // show countdown if booking deadline is close
+  const { shouldDisplayCountdown, deadline } = useSelector(
+    getShouldDisplayCountdown
+  );
+
+  const countdownMessage = t(BookingCountdown.FirstDeadline, { deadline });
+
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
+          {shouldDisplayCountdown && (
+            <Countdown message={countdownMessage} countdownDate={deadline} />
+          )}
           {orderedDates?.map((date) => {
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
