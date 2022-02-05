@@ -10,7 +10,7 @@ import { saul } from "@/__testData__/customers";
 
 describe("Booking flow", () => {
   describe("Test for not-an-admin", () => {
-    it("should not allow booking past the booking deadline for a given month", () => {
+    it("doesn't allow booking past the booking deadline for a given month", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -33,7 +33,7 @@ describe("Booking flow", () => {
       );
     });
 
-    it("should allow booking if the booking deadline hasn't passed", () => {
+    it("allows booking if the booking deadline hasn't passed", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -53,6 +53,28 @@ describe("Booking flow", () => {
         "not.have.attr",
         "disabled"
       );
+    });
+
+    it("shows a notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
+      const beforeDueDate = testDateLuxon.minus({
+        days: 7,
+      });
+      cy.setClock(beforeDueDate.toMillis());
+      cy.initAdminApp(false).then((organization) =>
+        cy.updateFirestore(organization, ["customers.json", "slots.json"])
+      );
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
+      cy.contains(countdownRegex);
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({ force: true });
+
+      cy.root().contains(countdownRegex).should("not.exist");
     });
   });
 
