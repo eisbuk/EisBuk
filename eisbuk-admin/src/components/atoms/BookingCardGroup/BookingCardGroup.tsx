@@ -16,6 +16,10 @@ export interface Props extends SlotInterface {
    */
   bookedInterval?: string;
   /**
+   * A flag to disable all intervals
+   */
+  disableAll?: boolean;
+  /**
    * Since we can't return an array of JSX elements (but rather a React.Fragment with elements inside),
    * we're providing this option if we wan't to wrap each element in a wrapper (passed from parent component)
    */
@@ -25,6 +29,7 @@ export interface Props extends SlotInterface {
 const BookingCardGroup: React.FC<Props> = ({
   bookedInterval = null,
   intervals,
+  disableAll = false,
   WrapElement = ({ children }) => <>{children}</>,
   ...slotData
 }) => {
@@ -91,7 +96,7 @@ const BookingCardGroup: React.FC<Props> = ({
           <BookingCard
             {...slotData}
             key={interval}
-            disabled={bookedInterval !== localSelected}
+            disabled={disableAll || bookedInterval !== localSelected}
             fade={Boolean(localSelected) && interval !== localSelected}
             interval={intervals[interval]}
             booked={localSelected === interval}

@@ -1,16 +1,20 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DateTime } from "luxon";
+import { useSelector } from "react-redux";
 
 import { SlotInterface } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
+import { LocalStore } from "@/types/store";
+
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
+import BookingCardGroup from "@/components/atoms/BookingCardGroup";
+
+import { getIsBookingAllowed } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
-import { LocalStore } from "@/types/store";
-import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -58,8 +62,13 @@ const CustomerSlots: React.FC<Props> = ({
 
   const paginateBy = view === CustomerRoute.BookIce ? "month" : "week";
 
+  // should open bookings view with next month's slots
+  const defaultDate = useMemo(() => DateTime.now().plus({ months: 1 }), []);
+
+  const isBookingAllowed = useSelector(getIsBookingAllowed);
+
   return (
-    <DateNavigation jump={paginateBy}>
+    <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
           {orderedDates?.map((date) => {
@@ -84,6 +93,7 @@ const CustomerSlots: React.FC<Props> = ({
                             bookedInterval,
                             WrapElement,
                           }}
+                          disableAll={!isBookingAllowed}
                         />
                       );
                     })}
