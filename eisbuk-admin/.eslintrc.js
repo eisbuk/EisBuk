@@ -167,7 +167,7 @@ module.exports = {
 
     // Warn against nested then() or catch() statements
     // If we have nested promises it's for a very good reason
-    "promise/no-nesting": 1,
+    "promise/no-nesting": "off",
 
     // Swotch strings to single quote (offset recommended)
     quotes: "off",

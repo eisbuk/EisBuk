@@ -109,10 +109,8 @@ const addFirebaseCommands = (): void => {
           defaultUser.email,
           defaultUser.password
         );
-        console.log(`Logged in as ${defaultUser.email}`);
       } else {
         await signOut(auth);
-        console.log(`Logged out`);
       }
     }
     return organization;
