@@ -48,5 +48,18 @@ describe("Selectors ->", () => {
       store.dispatch(changeCalendarDate(passableDate));
       expect(getIsBookingAllowed(store.getState())).toEqual(true);
     });
+
+    test("edge case: time difference shouldn't affect the result, just the month difference", () => {
+      // we want to make sure that booking is allowed even if
+      // booking date (redux `currentDate`) - Date.now() < 30 days, but still before due date
+      const allowedDate = DateTime.fromISO("2021-12-26").toMillis();
+      // booking date is not a full month away from "2021-12-26"
+      // but belong to next month, and booking due date for "next month" ("2021-12-27") is not yet passed
+      const bookingDate = DateTime.fromISO("2022-01-01");
+      dateNowSpy.mockReturnValueOnce(allowedDate);
+      const store = getNewStore();
+      store.dispatch(changeCalendarDate(bookingDate));
+      expect(getIsBookingAllowed(store.getState())).toEqual(true);
+    });
   });
 });

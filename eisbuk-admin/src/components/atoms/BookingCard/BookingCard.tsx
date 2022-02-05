@@ -18,8 +18,9 @@ import { BookingCardVariant } from "@/enums/components";
 import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 import Duration from "./Duration";
 
-import { __bookingCardId__ } from "@/__testData__/testIds";
 import { getColorForSlotType } from "@/utils/theme";
+
+import { __bookingCardId__ } from "@/__testData__/testIds";
 
 export type Props = React.HTMLAttributes<HTMLElement> &
   Pick<SlotInterface, "type"> &

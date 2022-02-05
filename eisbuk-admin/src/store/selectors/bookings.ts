@@ -47,9 +47,11 @@ export const getIsBookingAllowed = (state: LocalStore): boolean => {
   // current date corrected by the period of locking
   // the next month
   const correctedDate = actualDate.plus({ days: 5 });
+  const correctedDateMonth = correctedDate.startOf("month");
+  const observedDateMonth = observedDate.startOf("month");
   // if corrected date passed over to next month, the booking is not allowed
   const monthDiff = Math.floor(
-    observedDate.diff(correctedDate, ["months"]).months
+    observedDateMonth.diff(correctedDateMonth, ["months"]).months
   );
   const isLate = monthDiff <= 0;
 
