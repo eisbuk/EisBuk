@@ -143,7 +143,12 @@ export const sendSMS = functions
 
     const res = await postSMS(proto, options, data);
 
-    functions.logger.log("SMS POST request successfull, response:", res);
+    if ("ids" in res) {
+      // A response containg a `res` key is successful
+      functions.logger.log("SMS POST request successfull, response:", res);
+    } else {
+      functions.logger.error("Error with SMS POST, response is:", res);
+    }
 
     return { success: true, res };
   });
