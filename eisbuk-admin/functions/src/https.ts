@@ -96,7 +96,7 @@ export const sendSMS = functions
     }
 
     // get SMS template data
-    const { smsSender: templateSender, smsUrl } =
+    const orgData =
       ((
         await admin
           .firestore()
@@ -104,6 +104,13 @@ export const sendSMS = functions
           .doc(organization!)
           .get()
       ).data() as OrganizationData) || {};
+
+    const smsUrl = orgData.smsUrl;
+    // Non numeric senders must be 11 chars or less
+    const smsSender = (orgData.smsSender || organization!)
+      .toString()
+      .substring(0, 11);
+    functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
 
     // check template
     if (!smsUrl) {
@@ -135,7 +142,7 @@ export const sendSMS = functions
     const data = JSON.stringify({
       message,
       // if sender not provided, fall back to organization name
-      sender: templateSender || organization!,
+      sender: smsSender,
       recipients: [{ msisdn: to }],
     });
     functions.logger.log("Sending POST data:", data);
