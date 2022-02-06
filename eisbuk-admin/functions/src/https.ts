@@ -147,7 +147,7 @@ export const sendSMS = functions
     });
     functions.logger.log("Sending POST data:", data);
 
-    const res = (await postSMS(proto, options, data)) as SMSResponse;
+    const res = await postSMS(proto, options, data);
 
     if ("ids" in res) {
       // A response containg a `res` key is successful
@@ -173,7 +173,7 @@ interface SMSResponse {
  * A helper function transforming callback structure of request into promise
  * @param {"http" | "https"} proto request protocol: "http" should be used only for testing
  * @param {RequestOptions} options request options
- * @param {Uint8Array} data serialized request body
+ * @param {string} data serialized request body
  * @returns
  */
 const postSMS = (
@@ -181,7 +181,7 @@ const postSMS = (
   options: https.RequestOptions,
   data: string
 ) =>
-  new Promise((resolve, reject) => {
+  new Promise<SMSResponse>((resolve, reject) => {
     // request handler will be the same regardless of protocol used ("http"/"https")
     const handleReq = (res: http.IncomingMessage) => {
       const decoder = new StringDecoder("utf-8");
