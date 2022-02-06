@@ -147,7 +147,7 @@ export const sendSMS = functions
     });
     functions.logger.log("Sending POST data:", data);
 
-    const res = await postSMS(proto, options, data);
+    const res = (await postSMS(proto, options, data)) as SMSResponse;
 
     if ("ids" in res) {
       // A response containg a `res` key is successful
@@ -158,6 +158,16 @@ export const sendSMS = functions
 
     return { success: true, res };
   });
+
+interface SMSResponse {
+  ids?: string[];
+  usage?: {
+    currency: string;
+    // eslint-disable-next-line camelcase
+    total_cost: number;
+    countries: Record<string, unknown>;
+  };
+}
 
 /**
  * A helper function transforming callback structure of request into promise
@@ -189,7 +199,7 @@ const postSMS = (
       // resolve promise on successful request
       res.on("end", () => {
         resBody += decoder.end();
-        const resJSON = JSON.parse(resBody);
+        const resJSON: SMSResponse = JSON.parse(resBody);
         resolve(resJSON);
       });
     };
