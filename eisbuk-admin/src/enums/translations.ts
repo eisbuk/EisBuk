@@ -132,6 +132,11 @@ export enum NotificationMessage {
 
   Error = "Notification.Error",
 }
+
+export enum BookingCountdown {
+  FirstDeadline = "BookingCountdown.FirstDeadline",
+  SecondDeadline = "BookingCountdown.SecondDeadline",
+}
 // #endregion notifications
 
 // #region flags
