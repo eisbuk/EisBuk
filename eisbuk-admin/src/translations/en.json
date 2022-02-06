@@ -68,7 +68,9 @@
     "DeleteSlot": "Are you sure you want to delete the",
     "NonReversible": "This action is non-reversible",
     "SendEmailTitle": "Confirm email",
-    "ConfirmEmail": "Are you sure you want to send an email to:"
+    "ConfirmEmail": "Are you sure you want to send an email to: {{ email }}?",
+    "SendSMSTitle": "Confirm SMS",
+    "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?"
   },
   "ActionButton": {
     "CreateSlot": "Create Slot",
@@ -98,6 +100,7 @@
     "Updated": "updated",
     "Removed": "removed",
     "EmailSent": "Email successfully sent",
+    "SMSSent": "SMS successfully sent",
     "SlotAdded": "Slot Added",
     "SlotRemoved": "Slot Removed",
     "SlotUpdated": "Slot Updated"

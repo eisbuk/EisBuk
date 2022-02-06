@@ -750,4 +750,36 @@ describe("Firestore rules", () => {
       }
     );
   });
+
+  describe("Secrets rules", () => {
+    testWithEmulator(
+      "should not allow anybody read/write access to 'secrets', it should only be written to from firebase console",
+      async () => {
+        const db = await getTestEnv({
+          setup: (db) =>
+            setDoc(doc(db, Collection.Secrets, "test-organization"), {
+              smsAuthToken: "test-token",
+            }),
+        });
+        // check read
+        await assertFails(
+          getDoc(doc(db, Collection.Secrets, "test-organization"))
+        );
+        // check write
+        await assertFails(
+          setDoc(
+            doc(db, Collection.Secrets, "test-organization"),
+            {
+              emailAuthToken: "email-test-token",
+            },
+            { merge: true }
+          )
+        );
+        // check delete
+        await assertFails(
+          deleteDoc(doc(db, Collection.Secrets, "test-organization"))
+        );
+      }
+    );
+  });
 });

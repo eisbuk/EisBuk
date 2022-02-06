@@ -42,10 +42,42 @@ import {
  */
 export interface OrganizationData {
   admins: string[];
-  // mailConfig: OrgMailConfig;
+  /**
+   * String used as `sender` when sending SMS.
+   * If not provided, will fall back to organization name
+   */
+  smsSender?: string;
+  /**
+   * String used as `from` when sending Email.
+   * If not provided, will fall back to organization name
+   * @TODO this isn't yet functional, apply when making email per organization
+   */
+  emailSender?: string;
+  /**
+   * Full URL (including host and endpoint) of SMS sending service provider.
+   */
+  smsUrl?: string;
+  /**
+   * Record of flags inticating that given secrets exists
+   * for a given organization
+   */
+  existingSecrets?: string[];
 }
 
 // #endregion organizations
+
+// #region secrets
+/**
+ * An interface of a document containing
+ * secrets for each organization
+ */
+export interface OrganizationSecrets {
+  /**
+   * Auth token used to authenticate with SMS sending service provider
+   */
+  smsAuthToken?: string;
+}
+// #endregion secrets
 
 // #region slots
 
@@ -233,7 +265,7 @@ export type SlotAttendnace = {
 
 // #endregion attendance
 
-// #region emailQueue
+// #region cloudSentMessages
 export interface EmailMessage {
   to: string;
   message: {
@@ -241,7 +273,12 @@ export interface EmailMessage {
     html: string;
   };
 }
-// #endregion emailQueue
+
+export interface SMSMessage {
+  to: string;
+  message: string;
+}
+// #endregion cloudSentMessages
 
 // #region firestoreSchema
 
@@ -264,10 +301,13 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [Collection.EmailQueue]: {
-        [id: string]: EmailMessage;
-      };
     };
+  };
+  [Collection.Secrets]: {
+    [organization: string]: OrganizationSecrets;
+  };
+  [Collection.EmailQueue]: {
+    [id: string]: EmailMessage;
   };
 }
 

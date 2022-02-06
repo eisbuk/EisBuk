@@ -82,7 +82,6 @@ service cloud.firestore {
     }
     // #endregion helpers
 
-
     match /organizations/{organization} {
       allow read, write: if isAdmin(organization);
       
