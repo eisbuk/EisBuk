@@ -8,7 +8,9 @@ import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getIsBookingAllowed, getShouldDisplayCountdown } from "../bookings";
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
-import { BookingSubCollection } from "eisbuk-shared/dist";
+import { BookingSubCollection, OrgSubCollection } from "eisbuk-shared/dist";
+import { getCustomerBase } from "@/__testUtils__/customers";
+import { saul } from "@/__testData__/customers";
 
 const dateNowSpy = jest.spyOn(Date, "now");
 
@@ -21,7 +23,7 @@ describe("Selectors ->", () => {
       expect(getIsBookingAllowed(store.getState())).toEqual(true);
     });
 
-    test("should not allow booking if the latest booking date for the month is passed", () => {
+    test("should not allow booking if the booking deadline for the month is passed", () => {
       // set up test state with non-passable date
       const store = getNewStore();
       // should not be able to book next month (excluding special cases)
@@ -38,13 +40,54 @@ describe("Selectors ->", () => {
       expect(getIsBookingAllowed(store.getState())).toEqual(false);
     });
 
-    test("should allow booking if within reasonable boundaries (the latest booking date hasn't yet passed)", () => {
+    test("should allow booking if within reasonable boundaries (the booking deadline hasn't yet passed)", () => {
       // set up test store with passable date
       const store = getNewStore();
       // slots two months from now should certainly be bookable
       const passableDate = DateTime.now().plus({ months: 2 });
       store.dispatch(changeCalendarDate(passableDate));
       expect(getIsBookingAllowed(store.getState())).toEqual(true);
+    });
+
+    test("should allow booking if customer has an 'extendedDate'", () => {
+      // set up test state with non-passable date
+      const store = getNewStore();
+      const slotsDate = DateTime.fromISO("2022-01-30");
+      store.dispatch(changeCalendarDate(slotsDate));
+      // set customer with `extendedDate` to store
+      store.dispatch(
+        updateLocalDocuments(OrgSubCollection.Bookings, {
+          ["secret-key"]: {
+            ...getCustomerBase(saul),
+            extendedDate: "2021-12-30",
+          },
+        })
+      );
+      // mock current date to be non-passable, but still within boundaries of `extendedDate`
+      const mockDate = DateTime.fromISO("2021-12-27").toMillis();
+      dateNowSpy.mockReturnValueOnce(mockDate);
+      expect(getIsBookingAllowed(store.getState())).toEqual(true);
+    });
+
+    test("edge case: should only allow 'extendedDate' booking for the appropriate month", () => {
+      // set up test state with non-passable date
+      const store = getNewStore();
+      // set customer with `extendedDate` to store
+      store.dispatch(
+        updateLocalDocuments(OrgSubCollection.Bookings, {
+          ["secret-key"]: {
+            ...getCustomerBase(saul),
+            extendedDate: "2021-12-30",
+          },
+        })
+      );
+      const slotsDate = DateTime.fromISO("2021-12-30");
+      store.dispatch(changeCalendarDate(slotsDate));
+      // mock current date is within boundaries of `extendedDate`
+      // but `extendedDate` is not aplicable to the observed month
+      const mockDate = DateTime.fromISO("2021-12-27").toMillis();
+      dateNowSpy.mockReturnValueOnce(mockDate);
+      expect(getIsBookingAllowed(store.getState())).toEqual(false);
     });
 
     test("edge case: time difference shouldn't affect the result, just the month difference", () => {

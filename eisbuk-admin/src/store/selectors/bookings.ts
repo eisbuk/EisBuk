@@ -43,10 +43,10 @@ export const getIsBookingAllowed = (state: LocalStore): boolean => {
   // the slots belonging to this date
   const observedDate = getCalendarDay(state);
   // current date
-  const actualDate = DateTime.now();
+  const now = DateTime.now();
   // current date corrected by the period of locking
   // the next month
-  const correctedDate = actualDate.plus({ days: 5 });
+  const correctedDate = now.plus({ days: 5 });
   const correctedDateMonth = correctedDate.startOf("month");
   const observedDateMonth = observedDate.startOf("month");
   // if corrected date passed over to next month, the booking is not allowed
@@ -55,7 +55,29 @@ export const getIsBookingAllowed = (state: LocalStore): boolean => {
   );
   const isLate = monthDiff <= 0;
 
-  return isAdmin || !isLate;
+  // get extended date (if any)
+  const bookingsInStore = Object.values(state.firestore.data.bookings || {});
+  const { extendedDate } = bookingsInStore[0] || {};
+
+  // check if extended date is aplicable to the observed month:
+  // month of the corrected date (if first deadline has passed)
+  // should be the same as the month of the observed date
+  // if `extendedDate` is aplicable to the given month
+  const isExtendedDateValid = Boolean(extendedDate && monthDiff === 0);
+  const isDateExtended =
+    isExtendedDateValid &&
+    DateTime.fromISO(extendedDate!).endOf("day").diff(now, "milliseconds")
+      .milliseconds > 0;
+
+  if (bookingsInStore.length > 1) {
+    // this shouldnt happen in production and we're working on a way to fix it
+    // this is just a reporting feature in case it happens
+    console.error(
+      "There seem to be multiple entries in 'firestore.data.bookings' part of the local store"
+    );
+  }
+
+  return isAdmin || !isLate || isDateExtended;
 };
 
 export const getShouldDisplayCountdown = (

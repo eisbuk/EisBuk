@@ -168,6 +168,7 @@ export interface CustomerBase {
   name: string;
   surname: string;
   category: Category;
+  extendedDate?: string;
   // eslint-disable-next-line camelcase
 }
 /**
