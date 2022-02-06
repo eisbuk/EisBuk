@@ -96,7 +96,7 @@ export const sendSMS = functions
     }
 
     // get SMS template data
-    const { smsSender: templateSender, smsUrl } =
+    const orgData =
       ((
         await admin
           .firestore()
@@ -104,6 +104,13 @@ export const sendSMS = functions
           .doc(organization!)
           .get()
       ).data() as OrganizationData) || {};
+
+    const smsUrl = orgData.smsUrl;
+    // Non numeric senders must be 11 chars or less
+    const smsSender = (orgData.smsSender || organization!)
+      .toString()
+      .substring(0, 11);
+    functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
 
     // check template
     if (!smsUrl) {
@@ -132,35 +139,49 @@ export const sendSMS = functions
 
     const { proto, ...options } = createSMSReqOptions(smsUrl, authToken);
 
-    const data = new TextEncoder().encode(
-      JSON.stringify({
-        message,
-        // if sender not provided, fall back to organization name
-        sender: templateSender || organization!,
-        recipients: [{ msisdn: to }],
-      })
-    );
+    const data = JSON.stringify({
+      message,
+      // if sender not provided, fall back to organization name
+      sender: smsSender,
+      recipients: [{ msisdn: to }],
+    });
+    functions.logger.log("Sending POST data:", data);
 
     const res = await postSMS(proto, options, data);
 
-    functions.logger.log("SMS POST request successfull, response:", res);
+    if ("ids" in res) {
+      // A response containg a `res` key is successful
+      functions.logger.log("SMS POST request successfull, response:", res);
+    } else {
+      functions.logger.error("Error with SMS POST, response is:", res);
+    }
 
     return { success: true, res };
   });
+
+interface SMSResponse {
+  ids?: string[];
+  usage?: {
+    currency: string;
+    // eslint-disable-next-line camelcase
+    total_cost: number;
+    countries: Record<string, unknown>;
+  };
+}
 
 /**
  * A helper function transforming callback structure of request into promise
  * @param {"http" | "https"} proto request protocol: "http" should be used only for testing
  * @param {RequestOptions} options request options
- * @param {Uint8Array} data serialized request body
+ * @param {string} data serialized request body
  * @returns
  */
 const postSMS = (
   proto: Protocol,
   options: https.RequestOptions,
-  data: Uint8Array
+  data: string
 ) =>
-  new Promise((resolve, reject) => {
+  new Promise<SMSResponse>((resolve, reject) => {
     // request handler will be the same regardless of protocol used ("http"/"https")
     const handleReq = (res: http.IncomingMessage) => {
       const decoder = new StringDecoder("utf-8");
@@ -178,7 +199,7 @@ const postSMS = (
       // resolve promise on successful request
       res.on("end", () => {
         resBody += decoder.end();
-        const resJSON = JSON.parse(resBody);
+        const resJSON: SMSResponse = JSON.parse(resBody);
         resolve(resJSON);
       });
     };
