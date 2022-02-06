@@ -132,14 +132,12 @@ export const sendSMS = functions
 
     const { proto, ...options } = createSMSReqOptions(smsUrl, authToken);
 
-    const data = new TextEncoder().encode(
-      JSON.stringify({
-        message,
-        // if sender not provided, fall back to organization name
-        sender: templateSender || organization!,
-        recipients: [{ msisdn: to }],
-      })
-    );
+    const data = JSON.stringify({
+      message,
+      // if sender not provided, fall back to organization name
+      sender: templateSender || organization!,
+      recipients: [{ msisdn: to }],
+    });
     functions.logger.log("Sending POST data:", data);
 
     const res = await postSMS(proto, options, data);
@@ -164,7 +162,7 @@ export const sendSMS = functions
 const postSMS = (
   proto: Protocol,
   options: https.RequestOptions,
-  data: Uint8Array
+  data: string
 ) =>
   new Promise((resolve, reject) => {
     // request handler will be the same regardless of protocol used ("http"/"https")
