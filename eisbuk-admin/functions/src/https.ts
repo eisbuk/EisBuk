@@ -140,6 +140,7 @@ export const sendSMS = functions
         recipients: [{ msisdn: to }],
       })
     );
+    functions.logger.log("Sending POST data:", data);
 
     const res = await postSMS(proto, options, data);
 
