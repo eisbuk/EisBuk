@@ -14,6 +14,7 @@ import {
   SlotAttendnace,
   SlotInterface,
   SlotInterval,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 /**
@@ -66,15 +67,16 @@ export const addIdAndSecretKey = functions
       );
     }
 
-    const { name, surname, category }: Omit<CustomerBase, "id"> = customerData;
+    const customerBase: CustomerBase = getCustomerBase({
+      ...customerData,
+      id: customerId,
+    });
 
     // create/update booking entry
-    batch.set(orgRef.collection(OrgSubCollection.Bookings).doc(secretKey), {
-      name,
-      surname,
-      category,
-      id: customerId,
-    } as CustomerBase);
+    batch.set(
+      orgRef.collection(OrgSubCollection.Bookings).doc(secretKey),
+      customerBase
+    );
 
     await batch.commit();
   });

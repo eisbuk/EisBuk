@@ -2,7 +2,11 @@ import { DateTime } from "luxon";
 import i18n from "@/i18next/i18n";
 
 import { Routes } from "@/enums/routes";
-import { ActionButton } from "@/enums/translations";
+import {
+  ActionButton,
+  AdminAria,
+  BookingCountdown,
+} from "@/enums/translations";
 
 import { createDateTitle } from "@/components/atoms/DateNavigation/utils";
 
@@ -55,7 +59,7 @@ describe("Booking flow", () => {
       );
     });
 
-    it("shows a notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
+    it("shows a first-deadline notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -70,11 +74,65 @@ describe("Booking flow", () => {
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
       cy.contains(countdownRegex);
+      cy.contains(
+        i18n.t(BookingCountdown.FirstDeadline, {
+          month: testDateLuxon,
+        }) as string
+      );
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
         .click({ force: true });
 
       cy.root().contains(countdownRegex).should("not.exist");
+    });
+
+    it("shows a second-deadline notification and a countdown if in extendedDate period", () => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+      // we're using test date as our `Date.now()`
+      // since our test customer (saul) loaded from `saul_with_extended_date.json`
+      // has an extended date (second deadline) until "2022-01-05", rendering our
+      // `testDate` between first and second deadline
+      cy.setClock(testDateLuxon.toMillis());
+      cy.initAdminApp(false).then((organization) =>
+        cy.updateFirestore(organization, [
+          "saul_with_extended_date.json",
+          "slots.json",
+        ])
+      );
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      // go back one month (since the bookings open for next month by default)
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
+      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
+      // check countdown string
+      const extendedDate = DateTime.fromISO("2022-01-05").endOf("day");
+      const { days, hours, minutes, seconds } = extendedDate.diff(
+        testDateLuxon,
+        ["days", "hours", "minutes", "seconds"]
+      );
+      // create countdown string (from test data) in "dd:hh:mm:ss" format
+      const countdownString = [days, hours, minutes, seconds]
+        .map((t) => `0${Math.floor(t)}`.slice(-2))
+        .join(":");
+      // the UI should contain the countdown to the second deadline
+      cy.contains(countdownString);
+      cy.contains(
+        i18n.t(BookingCountdown.SecondDeadline, {
+          month: testDateLuxon,
+        }) as string
+      );
+      // even after booking a slot for a month, the second-deadline notification
+      // should stay there (until the deadline has passed, or bookings have been `finalized`)
+      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({ force: true });
+      cy.contains(countdownRegex);
+      // additionally, we want to make sure that the second date countdown is there
+      // even if we're looking up the slots in the future (the not-yet-expired bookings)
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
+      cy.contains(countdownRegex);
     });
   });
 

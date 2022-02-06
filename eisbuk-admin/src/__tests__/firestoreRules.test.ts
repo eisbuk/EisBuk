@@ -10,6 +10,7 @@ import {
   OrgSubCollection,
   SlotAttendnace,
   SlotType,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 import { __organization__ } from "@/lib/constants";
@@ -20,7 +21,6 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { baseSlot } from "@/__testData__/slots";
 import { saul } from "@/__testData__/customers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 
 describe("Firestore rules", () => {
   describe("Organization rules", () => {

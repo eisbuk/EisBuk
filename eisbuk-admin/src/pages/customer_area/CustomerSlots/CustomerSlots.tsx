@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { SlotInterface } from "eisbuk-shared";
 
@@ -8,6 +9,7 @@ import { CustomerRoute } from "@/enums/routes";
 
 import { LocalStore } from "@/types/store";
 
+import Countdown from "@/components/atoms/Countdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
@@ -18,9 +20,6 @@ import {
 } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
-import Countdown from "@/components/atoms/Countdown";
-import { useTranslation } from "react-i18next";
-import { BookingCountdown } from "@/enums/translations";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -76,17 +75,15 @@ const CustomerSlots: React.FC<Props> = ({
   const isBookingAllowed = useSelector(getIsBookingAllowed);
 
   // show countdown if booking deadline is close
-  const { shouldDisplayCountdown, deadline } = useSelector(
-    getShouldDisplayCountdown
-  );
+  const { message, deadline, month } = useSelector(getShouldDisplayCountdown);
 
-  const countdownMessage = t(BookingCountdown.FirstDeadline, { deadline });
+  const countdownMessage = message && t(message, { month });
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
-          {shouldDisplayCountdown && (
+          {countdownMessage && (
             <Countdown message={countdownMessage} countdownDate={deadline} />
           )}
           {orderedDates?.map((date) => {

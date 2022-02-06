@@ -1,15 +1,21 @@
 import { DateTime } from "luxon";
 
+import {
+  getCustomerBase,
+  BookingSubCollection,
+  OrgSubCollection,
+} from "eisbuk-shared";
+
 import { Action } from "@/enums/store";
+import { BookingCountdown } from "@/enums/translations";
 
 import { getNewStore } from "@/store/createStore";
 
-import { changeCalendarDate } from "@/store/actions/appActions";
-
 import { getIsBookingAllowed, getShouldDisplayCountdown } from "../bookings";
+
+import { changeCalendarDate } from "@/store/actions/appActions";
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
-import { BookingSubCollection, OrgSubCollection } from "eisbuk-shared/dist";
-import { getCustomerBase } from "@/__testUtils__/customers";
+
 import { saul } from "@/__testData__/customers";
 
 const dateNowSpy = jest.spyOn(Date, "now");
@@ -33,7 +39,7 @@ describe("Selectors ->", () => {
       store.dispatch(changeCalendarDate(slotsDate));
       // mock non-pasable date
       const mockDate = DateTime.fromISO("2021-12-27").toMillis();
-      dateNowSpy.mockReturnValueOnce(mockDate);
+      dateNowSpy.mockReturnValue(mockDate);
       expect(getIsBookingAllowed(store.getState())).toEqual(false);
       // check past month for good measure
       store.dispatch(changeCalendarDate(slotsDate.minus({ months: 2 })));
@@ -65,7 +71,7 @@ describe("Selectors ->", () => {
       );
       // mock current date to be non-passable, but still within boundaries of `extendedDate`
       const mockDate = DateTime.fromISO("2021-12-27").toMillis();
-      dateNowSpy.mockReturnValueOnce(mockDate);
+      dateNowSpy.mockReturnValue(mockDate);
       expect(getIsBookingAllowed(store.getState())).toEqual(true);
     });
 
@@ -86,7 +92,7 @@ describe("Selectors ->", () => {
       // mock current date is within boundaries of `extendedDate`
       // but `extendedDate` is not aplicable to the observed month
       const mockDate = DateTime.fromISO("2021-12-27").toMillis();
-      dateNowSpy.mockReturnValueOnce(mockDate);
+      dateNowSpy.mockReturnValue(mockDate);
       expect(getIsBookingAllowed(store.getState())).toEqual(false);
     });
 
@@ -97,7 +103,7 @@ describe("Selectors ->", () => {
       // booking date is not a full month away from "2021-12-26"
       // but belong to next month, and booking due date for "next month" ("2021-12-27") is not yet passed
       const bookingDate = DateTime.fromISO("2022-01-01");
-      dateNowSpy.mockReturnValueOnce(allowedDate);
+      dateNowSpy.mockReturnValue(allowedDate);
       const store = getNewStore();
       store.dispatch(changeCalendarDate(bookingDate));
       expect(getIsBookingAllowed(store.getState())).toEqual(true);
@@ -105,17 +111,26 @@ describe("Selectors ->", () => {
   });
 
   describe("getShouldDisplayContdown", () => {
-    test("should display countdown if close to booking deadline", () => {
+    test("should display countdown if current date within countdown range (from first deadline)", () => {
       const store = getNewStore();
       // we're testing for two days before the deadline
       // but might enable preferences in the future
       const februaryDeadline = DateTime.fromISO("2022-01-27");
       const testDate = februaryDeadline.minus({ days: 2 });
-      dateNowSpy.mockReturnValueOnce(testDate.toMillis());
-      const { shouldDisplayCountdown } = getShouldDisplayCountdown(
-        store.getState()
-      );
-      expect(shouldDisplayCountdown).toEqual(true);
+      dateNowSpy.mockReturnValue(testDate.toMillis());
+      const expectedRes = {
+        message: BookingCountdown.FirstDeadline,
+        // should countdown to the start of the deadline
+        deadline: februaryDeadline,
+        // should return month currently active for booking ("February")
+        month: DateTime.fromISO("2022-02"),
+      };
+      // test while observing the active month
+      store.dispatch(changeCalendarDate(DateTime.fromISO("2022-02")));
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(expectedRes);
+      // test while observing another month (the countdown should still be there)
+      store.dispatch(changeCalendarDate(DateTime.fromISO("2022-08")));
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(expectedRes);
     });
 
     test("should not display countdown if booking deadline not within countdown range", () => {
@@ -124,24 +139,20 @@ describe("Selectors ->", () => {
       // but might enable preferences in the future
       const februaryDeadline = DateTime.fromISO("2022-01-27");
       const testDate = februaryDeadline.minus({ days: 3 });
-      dateNowSpy.mockReturnValueOnce(testDate.toMillis());
-      const { shouldDisplayCountdown } = getShouldDisplayCountdown(
-        store.getState()
-      );
-      expect(shouldDisplayCountdown).toEqual(false);
+      dateNowSpy.mockReturnValue(testDate.toMillis());
+      const { message } = getShouldDisplayCountdown(store.getState());
+      expect(message).toEqual(undefined);
     });
 
-    test("should not display countdown if passed booking deadline", () => {
+    test("should not display countdown if passed booking deadline (and 'extendedDate' assigned)", () => {
       const store = getNewStore();
       // we're testing for two days before the deadline
       // but might enable preferences in the future
       const februaryDeadline = DateTime.fromISO("2022-01-27");
       const testDate = februaryDeadline.plus({ days: 2 });
-      dateNowSpy.mockReturnValueOnce(testDate.toMillis());
-      const { shouldDisplayCountdown } = getShouldDisplayCountdown(
-        store.getState()
-      );
-      expect(shouldDisplayCountdown).toEqual(false);
+      dateNowSpy.mockReturnValue(testDate.toMillis());
+      const { message } = getShouldDisplayCountdown(store.getState());
+      expect(message).toEqual(undefined);
     });
 
     test("should not display countdown (regardless of deadline being near) if there's at least one slot booked for next month", () => {
@@ -156,21 +167,36 @@ describe("Selectors ->", () => {
           },
         })
       );
-      dateNowSpy.mockReturnValueOnce(testDate.toMillis());
-      const { shouldDisplayCountdown } = getShouldDisplayCountdown(
-        store.getState()
-      );
-      expect(shouldDisplayCountdown).toEqual(false);
+      dateNowSpy.mockReturnValue(testDate.toMillis());
+      const { message } = getShouldDisplayCountdown(store.getState());
+      expect(message).toEqual(undefined);
     });
 
-    test("should return month deadline (for UI usage)", () => {
+    test("should display countdown if in and extended date period", () => {
       const store = getNewStore();
-      const februaryDeadline = DateTime.fromISO("2022-01-27");
-      const testDate = februaryDeadline.minus({ days: 2 });
-      dateNowSpy.mockReturnValueOnce(testDate.toMillis());
-      const res = getShouldDisplayCountdown(store.getState());
-      expect(res.deadline).toEqual(februaryDeadline);
-      expect(res.month).toEqual("2022-02");
+      const extendedDate = "2022-01-05";
+      store.dispatch(
+        updateLocalDocuments(OrgSubCollection.Bookings, {
+          ["secret-key"]: getCustomerBase({ ...saul, extendedDate }),
+        })
+      );
+      // set the date to be between first deadline and `extendedDate`
+      const testDate = DateTime.fromISO("2022-01-01");
+      dateNowSpy.mockReturnValue(testDate.toMillis());
+      const expectedRes = {
+        message: BookingCountdown.SecondDeadline,
+        // deadline should be the very end of the extended date
+        deadline: DateTime.fromISO(extendedDate).endOf("day"),
+        // the month (later interpolated for countdown message) should be
+        // the month of the bookings (still "January, 2022")
+        month: DateTime.fromISO("2022-01"),
+      };
+      // test while observing the current booking month
+      store.dispatch(changeCalendarDate(DateTime.fromISO("2022-01-01")));
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(expectedRes);
+      // the countdown should be shown regardles of which month we're currently observing
+      store.dispatch(changeCalendarDate(DateTime.fromISO("2022-05-01")));
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(expectedRes);
     });
   });
 });

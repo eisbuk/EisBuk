@@ -12,6 +12,7 @@ import {
   BookingSubCollection,
   CustomerLoose,
   OrganizationData,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
@@ -27,7 +28,6 @@ import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { createTestStore } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 
 import { testDateLuxon } from "@/__testData__/date";
 
