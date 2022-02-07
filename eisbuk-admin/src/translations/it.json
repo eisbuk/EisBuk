@@ -107,7 +107,7 @@
   },
 
   "BookingCountdown": {
-    "FirstDeadline": "You don't seem to have any slots booked for \"{{ deadline, MMMM }}\" and the deadline for bookings is getting closer. Please book your slots before the following time expires.",
+    "FirstDeadline": "Non hai ancora nessuna prenotazione per \"{{ deadline, MMMM }}\" e la scadenza per prentare si avvicina. Se lo desideri effettua le tue prenotazioni prima che scada il tempo.",
     "SecondDeadline": ""
   },
 
