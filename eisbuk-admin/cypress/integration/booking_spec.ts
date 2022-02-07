@@ -160,5 +160,22 @@ describe("Booking flow", () => {
         "disabled"
       );
     });
+
+    it("doesn't show booking countdown for admin", () => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+      const beforeDueDate = testDateLuxon.minus({
+        days: 7,
+      });
+      cy.setClock(beforeDueDate.toMillis());
+      cy.initAdminApp().then((organization) =>
+        cy.updateFirestore(organization, ["customers.json", "slots.json"])
+      );
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
+      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
+      cy.root().contains(countdownRegex).should("not.exist");
+    });
   });
 });
