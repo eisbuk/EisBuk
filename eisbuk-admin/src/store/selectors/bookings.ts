@@ -62,6 +62,8 @@ export const getShouldDisplayCountdown = (
   deadline: DateTime;
   month: DateTime;
 } => {
+  const isAdmin = getIsAdmin(state);
+
   const now = DateTime.now().startOf("day");
 
   // we're displaying countdown only if the deadline
@@ -102,7 +104,10 @@ export const getShouldDisplayCountdown = (
   // check if second deadline
   const secondDeadlineCountdown = getIsExtendedPeriod(state);
 
-  if (firstDeadlineCountdown) {
+  if (isAdmin) {
+    // we're not showing the countdown to the admin
+    // so this block is empty (we're leaving countdown message as undefined)
+  } else if (firstDeadlineCountdown) {
     message = BookingCountdown.FirstDeadline;
   } else if (secondDeadlineCountdown) {
     message = BookingCountdown.SecondDeadline;

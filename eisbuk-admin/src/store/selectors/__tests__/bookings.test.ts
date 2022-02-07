@@ -198,5 +198,30 @@ describe("Selectors ->", () => {
       store.dispatch(changeCalendarDate(DateTime.fromISO("2022-05-01")));
       expect(getShouldDisplayCountdown(store.getState())).toEqual(expectedRes);
     });
+
+    test("should not display any countdown for admin", () => {
+      // set up test state to enable extended date
+      // and be authenticated as admin
+      const store = getNewStore();
+      const extendedDate = "2022-01-05";
+      store.dispatch(
+        updateLocalDocuments(OrgSubCollection.Bookings, {
+          ["secret-key"]: getCustomerBase({ ...saul, extendedDate }),
+        })
+      );
+      store.dispatch({ type: Action.UpdateAdminStatus, payload: true });
+      // set the date to be just before the first deadline
+      const countdownDate1 = DateTime.fromISO("2021-12-26");
+      dateNowSpy.mockReturnValue(countdownDate1.toMillis());
+      expect(getShouldDisplayCountdown(store.getState()).message).toEqual(
+        undefined
+      );
+      // check for date within extended period
+      const countdownDate2 = DateTime.fromISO("2022-01-01");
+      dateNowSpy.mockReturnValue(countdownDate2.toMillis());
+      expect(getShouldDisplayCountdown(store.getState()).message).toEqual(
+        undefined
+      );
+    });
   });
 });
