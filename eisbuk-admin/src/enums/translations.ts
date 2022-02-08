@@ -78,11 +78,16 @@ export enum ValidationMessage {
 export enum Prompt {
   DeleteCustomer = "Prompt.DeleteCustomer",
   DeleteSlot = "Prompt.DeleteSlot",
+
   NonReversible = "Prompt.NonReversible",
+
   SendEmailTitle = "Prompt.SendEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
   SendSMSTitle = "Prompt.SendSMSTitle",
   ConfirmSMS = "Prompt.ConfirmSMS",
+
+  FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
+  ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
 }
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
@@ -92,6 +97,7 @@ export enum ActionButton {
   AddCustomers = "ActionButton.AddCustomers",
 
   BookInterval = "ActionButton.BookInterval",
+  FinalizeBookings = "ActionButton.FinalizeBookings",
 
   CustomerBookings = "ActionButton.CustomerBookings",
   SendBookingsEmail = "ActionButton.SendBookingsEmail",

@@ -6,6 +6,7 @@ import {
   ActionButton,
   AdminAria,
   BookingCountdown,
+  Prompt,
 } from "@/enums/translations";
 
 import { createDateTitle } from "@/components/atoms/DateNavigation/utils";
@@ -86,7 +87,7 @@ describe("Booking flow", () => {
       cy.root().contains(countdownRegex).should("not.exist");
     });
 
-    it("shows a second-deadline notification and a countdown if in extendedDate period", () => {
+    it.only("shows a second-deadline notification and a countdown if in extendedDate period", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -133,6 +134,15 @@ describe("Booking flow", () => {
       // even if we're looking up the slots in the future (the not-yet-expired bookings)
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
       cy.contains(countdownRegex);
+      // test button to freeze slots
+      cy.get("button")
+        .contains(i18n.t(ActionButton.FinalizeBookings) as string)
+        .click();
+      cy.contains(i18n.t(Prompt.FinalizeBookingsTitle) as string);
+      cy.contains(i18n.t(Prompt.ConfirmFinalizeBookings) as string);
+      cy.get("button").contains(/yes/i).click({ force: true });
+      // after the bookings are finalized, the countdown should get removed
+      cy.root().contains(countdownRegex).should("not.exist");
     });
   });
 

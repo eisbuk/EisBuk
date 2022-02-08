@@ -13,12 +13,22 @@ import { BookingCountdown } from "@/enums/translations";
  * @param state Local Redux Store
  * @returns customer data (Bookings meta)
  */
-export const getBookingsCustomer =
-  (secretKey: string) =>
-  (state: LocalStore): CustomerBase | undefined => {
-    const { bookings } = state.firestore.data;
-    return bookings ? bookings[secretKey] : undefined;
-  };
+export const getBookingsCustomer = (
+  state: LocalStore
+): CustomerBase | undefined => {
+  // get extended date (if any)
+  const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
+  if (bookingsInStore.length > 1) {
+    /** @TODO */
+    // this shouldn't happen in production and we're working on a way to fix it completely
+    // this is just a reporting feature in case it happens
+    console.error(
+      "There seem to be multiple entries in 'firestore.data.bookings' part of the local store"
+    );
+  }
+
+  return bookingsInStore[0];
+};
 
 /**
  * Get subscribed slots from state
@@ -177,21 +187,10 @@ const getIsExtendedDateApplicable = (state: LocalStore) => {
 };
 
 const getExtendedDate = (state: LocalStore): DateTime | undefined => {
-  // get extended date (if any)
-  const bookingsInStore = Object.values(state.firestore.data.bookings || {});
-  const { extendedDate } = bookingsInStore[0] || {};
+  const { extendedDate } = getBookingsCustomer(state) || {};
 
   // check if extended date exists
   if (!extendedDate) return undefined;
-
-  if (bookingsInStore.length > 1) {
-    /** @TODO */
-    // this shouldn't happen in production and we're working on a way to fix it completely
-    // this is just a reporting feature in case it happens
-    console.error(
-      "There seem to be multiple entries in 'firestore.data.bookings' part of the local store"
-    );
-  }
 
   return DateTime.fromISO(extendedDate).endOf("day");
 };

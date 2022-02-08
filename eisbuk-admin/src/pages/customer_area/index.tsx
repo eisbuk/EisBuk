@@ -57,7 +57,7 @@ const CustomerArea: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const customerData = useSelector(getBookingsCustomer(secretKey));
+  const customerData = useSelector(getBookingsCustomer);
   const date = useSelector(getCalendarDay);
 
   // only the "book_ice" will use "month" timeframe, the rest will use "week"
