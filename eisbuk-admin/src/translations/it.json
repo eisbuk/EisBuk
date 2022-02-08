@@ -66,11 +66,16 @@
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+
     "NonReversible": "Questa azione non è reversibile",
+
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "SendSMSTitle": "Conferma SMS",
-    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?"
+    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
+
+    "FinalizeBookingsTitle": "Finalize Bookings",
+    "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
   },
   "ActionButton": {
     "CreateSlot": "Crea Slot",
@@ -80,6 +85,7 @@
     "AddCustomers": "Aggiungi clienti",
 
     "BookInterval": "Prenota",
+    "FinalizeBookings": "Finalize",
 
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
