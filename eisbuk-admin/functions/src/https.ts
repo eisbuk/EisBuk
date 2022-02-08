@@ -13,6 +13,9 @@ import {
   SendSMSErrors,
   OrganizationData,
   OrganizationSecrets,
+  OrgSubCollection,
+  BookingsErrors,
+  Customer,
 } from "eisbuk-shared";
 
 import { checkUser, createSMSReqOptions } from "./utils";
@@ -213,4 +216,70 @@ const postSMS = (
     // send request with provided data
     req.write(data);
     req.end();
+  });
+
+export const finalizeBookings = functions
+  .region("europe-west6")
+  .https.onCall(async (payload) => {
+    // check payload
+    if (!payload) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        HTTPErrors.NoPayload
+      );
+    }
+
+    const { id, organization, secretKey } =
+      (payload as { id?: string; organization?: string; secretKey?: string }) ||
+      {};
+
+    if (!id) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        BookingsErrors.NoCustomerId
+      );
+    }
+
+    if (!organization) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        HTTPErrors.NoOrganziation
+      );
+    }
+
+    // we check "auth" by matching secretKey and customerId
+    if (!secretKey) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        BookingsErrors.NoSecretKey
+      );
+    }
+
+    const customerRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Customers)
+      .doc(id);
+
+    const customerInStore = await customerRef.get();
+
+    if (!customerInStore.exists) {
+      throw new functions.https.HttpsError(
+        "not-found",
+        BookingsErrors.CustomerNotFound
+      );
+    }
+
+    const { secretKey: existingSecretKey } = customerInStore.data() as Customer;
+
+    if (secretKey !== existingSecretKey) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        BookingsErrors.SecretKeyMismatch
+      );
+    }
+
+    // remove `extendedDate`
+    await customerRef.set({ extendedDate: null }, { merge: true });
   });

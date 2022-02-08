@@ -12,4 +12,6 @@ export enum CloudFunction {
   MigrateToNewDataModel = "migrateToNewDataModel",
   PruneSlotsByDay = "pruneSlotsByDay",
   AddIdsToCustomers = "addIdsToCustomers",
+
+  FinalizeBookings = "finalizeBookings",
 }
