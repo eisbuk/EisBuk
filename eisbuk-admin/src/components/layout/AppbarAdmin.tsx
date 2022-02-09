@@ -200,7 +200,15 @@ type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
-    flexGrow: 1,
+    marginRight: "auto",
+    padding: "0.25rem 0.75rem",
+    cursor: "pointer",
+    display: "block",
+    border: "none",
+    borderRadius: "0.25rem",
+    "&:hover": {
+      boxShadow: `0px 0px 16px ${theme.palette.primary.contrastText}, inset -2px -2px 16px -4px ${theme.palette.primary.contrastText}`,
+    },
   },
   button: {
     margin: theme.spacing(2),
