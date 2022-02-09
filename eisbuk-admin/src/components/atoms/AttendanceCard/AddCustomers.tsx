@@ -91,12 +91,18 @@ const AddCustomersList: React.FC<Props> = ({
 const useStyles = makeStyles((theme) => ({
   container: {
     height: "100%",
-    width: "35vw",
+    width: "90vw",
     position: "relative",
     paddingTop: "4rem",
     paddingBottom: "0",
     backgroundColor: theme.palette.primary.light,
     overflow: "hidden",
+    [theme.breakpoints.up("sm")]: {
+      width: "70vw",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "35vw",
+    },
   },
   title: {
     position: "absolute",
