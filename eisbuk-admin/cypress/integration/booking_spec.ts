@@ -80,6 +80,11 @@ describe("Booking flow", () => {
           month: testDateLuxon,
         }) as string
       );
+      // the "Finalize" button should not be shown in first deadline countdown
+      cy.get("button")
+        .contains(i18n.t(ActionButton.FinalizeBookings) as string)
+        .should("not.exist");
+      cy.pause();
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
         .click({ force: true });
@@ -130,6 +135,7 @@ describe("Booking flow", () => {
         .eq(0)
         .click({ force: true });
       cy.contains(countdownRegex);
+      cy.pause();
       // additionally, we want to make sure that the second date countdown is there
       // even if we're looking up the slots in the future (the not-yet-expired bookings)
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
@@ -139,7 +145,11 @@ describe("Booking flow", () => {
         .contains(i18n.t(ActionButton.FinalizeBookings) as string)
         .click();
       cy.contains(i18n.t(Prompt.FinalizeBookingsTitle) as string);
-      cy.contains(i18n.t(Prompt.ConfirmFinalizeBookings) as string);
+      cy.contains(
+        i18n.t(Prompt.ConfirmFinalizeBookings, {
+          month: testDateLuxon,
+        }) as string
+      );
       cy.get("button").contains(/yes/i).click({ force: true });
       // after the bookings are finalized, the countdown should get removed
       cy.root().contains(countdownRegex).should("not.exist");
@@ -147,7 +157,7 @@ describe("Booking flow", () => {
   });
 
   describe("Test for admin", () => {
-    it("should always allow booking, if admin", () => {
+    it("always allows booking, if admin", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);

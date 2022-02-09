@@ -1,34 +1,24 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
-import { Button } from "@material-ui/core";
-import { httpsCallable, getFunctions } from "@firebase/functions";
-import { getApp } from "@firebase/app";
 
 import { SlotInterface } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
-import { ActionButton, Prompt } from "@/enums/translations";
-import { CloudFunction } from "@/enums/functions";
 
 import { LocalStore } from "@/types/store";
 
-import ConfirmDialog from "@/components/global/ConfirmDialog";
-import Countdown from "@/components/atoms/Countdown";
+import BookingsCountdown from "./BookingsCountdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 import {
-  getBookingsCustomer,
   getIsBookingAllowed,
   getShouldDisplayCountdown,
 } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
-import { getOrganization } from "@/lib/getters";
-import { getSecretKey } from "@/utils/localStorage";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -67,8 +57,6 @@ const CustomerSlots: React.FC<Props> = ({
   bookedSlots,
   view = CustomerRoute.BookIce,
 }) => {
-  const { t } = useTranslation();
-
   const slotDates = Object.keys(slots);
 
   // if `view=book_ice` should order slot days mondays first and so on
@@ -84,49 +72,13 @@ const CustomerSlots: React.FC<Props> = ({
   const isBookingAllowed = useSelector(getIsBookingAllowed);
 
   // show countdown if booking deadline is close
-  const { message, deadline, month } = useSelector(getShouldDisplayCountdown);
-  const { id } = useSelector(getBookingsCustomer) || {};
-  const secretKey = getSecretKey();
-
-  const [finalizeBookings, setFinalizeBookings] = useState(false);
-  const [isBookingFinalized, setIsBookingFinalized] = useState(false);
-  const countdownMessage = message && t(message, { month });
-  const countdownButton = (
-    <>
-      <Button
-        disabled={isBookingFinalized}
-        onClick={() => setFinalizeBookings(true)}
-      >
-        {t(ActionButton.FinalizeBookings)}
-      </Button>
-      <ConfirmDialog
-        open={finalizeBookings}
-        setOpen={setFinalizeBookings}
-        onConfirm={async () => {
-          await httpsCallable(
-            getFunctions(getApp(), "europe-west6"),
-            CloudFunction.FinalizeBookings
-          )({ organization: getOrganization(), id, secretKey });
-          setIsBookingFinalized(true);
-        }}
-        title={t(Prompt.FinalizeBookingsTitle)}
-      >
-        {t(Prompt.ConfirmFinalizeBookings)}
-      </ConfirmDialog>
-    </>
-  );
+  const { message, ...countdownProps } = useSelector(getShouldDisplayCountdown);
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
-          {countdownMessage && (
-            <Countdown
-              message={countdownMessage}
-              countdownDate={deadline}
-              actionButton={countdownButton}
-            />
-          )}
+          {message && <BookingsCountdown {...{ message, ...countdownProps }} />}
           {orderedDates?.map((date) => {
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
