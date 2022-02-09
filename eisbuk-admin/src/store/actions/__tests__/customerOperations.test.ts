@@ -12,10 +12,14 @@ import {
 
 import { Action, NotifVariant } from "@/enums/store";
 
+import { getNewStore } from "@/store/createStore";
+
 import { db } from "@/__testSetup__/firestoreSetup";
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
 import { __organization__ } from "@/lib/constants";
 
+import { SendBookingLinkMethod } from "@/enums/other";
+import { CloudFunction } from "@/enums/functions";
 import { NotificationMessage } from "@/enums/translations";
 
 import {
@@ -37,13 +41,9 @@ import {
   setupTestCustomerTemp,
 } from "../__testUtils__/firestore";
 import i18n from "@/__testUtils__/i18n";
+import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { saul } from "@/__testData__/customers";
-import { loginDefaultUser } from "@/__testUtils__/auth";
-import { SendBookingLinkMethod } from "@/enums/other";
-import { CloudFunction } from "@/enums/functions";
-import { getNewStore } from "@/store/createStore";
-import { DateTime } from "luxon";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -352,7 +352,7 @@ describe("customerOperations", () => {
         // create and run the thunk
         const extendedDate = "2022-01-01";
         getFirestoreSpy.mockReturnValueOnce(db as any);
-        await extendBookingDate(saul.id, DateTime.fromISO(extendedDate))(
+        await extendBookingDate(saul.id, extendedDate)(
           mockDispatch,
           () => ({} as any)
         );
@@ -380,7 +380,7 @@ describe("customerOperations", () => {
         getFirestoreSpy.mockImplementation = () => {
           throw new Error();
         };
-        await extendBookingDate(saul.id, DateTime.fromISO("2022-01-01"))(
+        await extendBookingDate(saul.id, "2022-01-01")(
           mockDispatch,
           () => ({} as any)
         );

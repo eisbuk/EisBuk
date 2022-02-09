@@ -7,7 +7,6 @@ import {
   setDoc,
 } from "@firebase/firestore";
 import i18n from "i18next";
-import { DateTime } from "luxon";
 
 import {
   Collection,
@@ -191,10 +190,8 @@ export const sendBookingsLink: SendBookingsLink =
   };
 
 export const extendBookingDate =
-  (customerId: string, date: DateTime): FirestoreThunk =>
+  (customerId: string, extendedDate: string): FirestoreThunk =>
   async (dispatch) => {
-    const extendedDate = date.toISODate();
-
     try {
       const db = getFirestore();
       await setDoc(

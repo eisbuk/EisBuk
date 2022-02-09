@@ -1,3 +1,5 @@
-import DateInput from "./DateInput";
+import FormikDateInput, { DateInput } from "./DateInput";
 
-export default DateInput;
+export { DateInput };
+
+export default FormikDateInput;

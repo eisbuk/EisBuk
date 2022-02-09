@@ -162,7 +162,6 @@ const useStyles = makeStyles(() => ({
     width: "100%",
     padding: "1rem",
     boxSizing: "border-box",
-    justifyContent: "center",
   },
 }));
 
