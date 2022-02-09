@@ -178,7 +178,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: "1rem",
     boxSizing: "border-box",
-    justifyContent: "center",
   },
   property: {
     width: "100%",

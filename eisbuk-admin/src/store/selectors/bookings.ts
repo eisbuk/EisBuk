@@ -138,7 +138,10 @@ export const getShouldDisplayCountdown = (
  * @param {number} countdownRange (optional) number of days prior to booking deadline when we start showing countdown
  * @returns first day of the corrected month
  */
-const getCorrectedDateMonth = (lockingPeriod: number, countdownRange = 0) => {
+export const getCorrectedDateMonth = (
+  lockingPeriod: number,
+  countdownRange = 0
+): DateTime => {
   // current date
   const now = DateTime.now();
 

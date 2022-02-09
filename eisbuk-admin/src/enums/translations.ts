@@ -85,10 +85,13 @@ export enum Prompt {
   ConfirmEmail = "Prompt.ConfirmEmail",
   SendSMSTitle = "Prompt.SendSMSTitle",
   ConfirmSMS = "Prompt.ConfirmSMS",
+  ExtendBookingDateTitle = "Prompt.ExtendBookingDateTitle",
+  ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
 
   FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
 }
+
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
@@ -102,6 +105,7 @@ export enum ActionButton {
   CustomerBookings = "ActionButton.CustomerBookings",
   SendBookingsEmail = "ActionButton.SendBookingsEmail",
   SendBookingsSMS = "ActionButton.SendBookingsSMS",
+  ExtendBookingDate = "ActionButton.ExtendBookingDate",
 
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",

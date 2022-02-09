@@ -73,6 +73,8 @@
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
+    "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
+    "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
 
     "FinalizeBookingsTitle": "Finalize Bookings",
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
@@ -90,6 +92,7 @@
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
     "SendBookingsSMS": "Invia SMS link prenotazions",
+    "ExtendBookingDate": "Extend booking date",
 
     "Save": "Salva",
     "Next": "Seguente",
