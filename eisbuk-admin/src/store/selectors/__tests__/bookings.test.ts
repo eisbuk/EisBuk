@@ -140,8 +140,7 @@ describe("Selectors ->", () => {
       const februaryDeadline = DateTime.fromISO("2022-01-27");
       const testDate = februaryDeadline.minus({ days: 3 });
       dateNowSpy.mockReturnValue(testDate.toMillis());
-      const { message } = getShouldDisplayCountdown(store.getState());
-      expect(message).toEqual(undefined);
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(false);
     });
 
     test("should not display countdown if passed booking deadline (and 'extendedDate' assigned)", () => {
@@ -151,8 +150,7 @@ describe("Selectors ->", () => {
       const februaryDeadline = DateTime.fromISO("2022-01-27");
       const testDate = februaryDeadline.plus({ days: 2 });
       dateNowSpy.mockReturnValue(testDate.toMillis());
-      const { message } = getShouldDisplayCountdown(store.getState());
-      expect(message).toEqual(undefined);
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(false);
     });
 
     test("should not display countdown (regardless of deadline being near) if there's at least one slot booked for next month", () => {
@@ -168,8 +166,7 @@ describe("Selectors ->", () => {
         })
       );
       dateNowSpy.mockReturnValue(testDate.toMillis());
-      const { message } = getShouldDisplayCountdown(store.getState());
-      expect(message).toEqual(undefined);
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(false);
     });
 
     test("should display countdown if in and extended date period", () => {
@@ -213,15 +210,11 @@ describe("Selectors ->", () => {
       // set the date to be just before the first deadline
       const countdownDate1 = DateTime.fromISO("2021-12-26");
       dateNowSpy.mockReturnValue(countdownDate1.toMillis());
-      expect(getShouldDisplayCountdown(store.getState()).message).toEqual(
-        undefined
-      );
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(false);
       // check for date within extended period
       const countdownDate2 = DateTime.fromISO("2022-01-01");
       dateNowSpy.mockReturnValue(countdownDate2.toMillis());
-      expect(getShouldDisplayCountdown(store.getState()).message).toEqual(
-        undefined
-      );
+      expect(getShouldDisplayCountdown(store.getState())).toEqual(false);
     });
   });
 });
