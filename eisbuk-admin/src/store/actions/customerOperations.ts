@@ -7,6 +7,7 @@ import {
   setDoc,
 } from "@firebase/firestore";
 import i18n from "i18next";
+import { DateTime } from "luxon";
 
 import {
   Collection,
@@ -21,6 +22,8 @@ import {
 import { NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
+import { CloudFunction } from "@/enums/functions";
+import { Routes } from "@/enums/routes";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -31,10 +34,9 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
+import { getCustomersRecord } from "@/store/selectors/customers";
+
 import { createCloudFunctionCaller } from "@/utils/firebase";
-import { CloudFunction } from "@/enums/functions";
-import { getCustomersRecord } from "../selectors/customers";
-import { Routes } from "@/enums/routes";
 
 const getCustomersCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}/${
@@ -173,6 +175,33 @@ export const sendBookingsLink: SendBookingsLink =
         enqueueNotification({
           key: new Date().getTime() + Math.random(),
           message: successMessage,
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };
+
+export const extendBookingDate =
+  (customerId: string, date: DateTime): FirestoreThunk =>
+  async (dispatch) => {
+    const extendedDate = date.toISODate();
+
+    try {
+      const db = getFirestore();
+      await setDoc(
+        doc(db, getCustomersCollPath(), customerId),
+        { extendedDate },
+        { merge: true }
+      );
+
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.BookingDateExtended),
           closeButton: true,
           options: {
             variant: NotifVariant.Success,

@@ -97,19 +97,25 @@
   },
 
   "Notification": {
-    "Error": "Error",
-    "LogoutSuccess": "Logout Successful",
-    "LogoutError": "An error occurred",
     "BookingSuccess": "Successfully booked",
     "BookingCanceled": "Booking canceled",
     "BookingCanceledError": "Error cancelling booking",
+
+    "SlotAdded": "Slot Added",
+    "SlotUpdated": "Slot Updated",
+    "SlotRemoved": "Slot Removed",
+
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+
     "Updated": "updated",
     "Removed": "removed",
+
     "EmailSent": "Email successfully sent",
     "SMSSent": "SMS successfully sent",
-    "SlotAdded": "Slot Added",
-    "SlotRemoved": "Slot Removed",
-    "SlotUpdated": "Slot Updated"
+    "BookingDateExtended": "Booking date extended",
+
+    "Error": "Error"
   },
 
   "BookingCountdown": {

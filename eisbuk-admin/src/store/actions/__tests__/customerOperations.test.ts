@@ -13,12 +13,14 @@ import {
 import { Action, NotifVariant } from "@/enums/store";
 
 import { db } from "@/__testSetup__/firestoreSetup";
+import { getTestEnv } from "@/__testSetup__/getTestEnv";
 import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
 
 import {
   deleteCustomer,
+  extendBookingDate,
   sendBookingsLink,
   updateCustomer,
 } from "../customerOperations";
@@ -30,13 +32,18 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { createTestStore, deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
-import { setupTestCustomer } from "../__testUtils__/firestore";
+import {
+  setupTestCustomer,
+  setupTestCustomerTemp,
+} from "../__testUtils__/firestore";
 import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
+import { getNewStore } from "@/store/createStore";
+import { DateTime } from "luxon";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -80,9 +87,9 @@ const getState = () => ({} as any);
  * A spy of `getFirebase` function which we're occasionally mocking to throw error
  * for error handling tests
  */
-const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
+const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 
-xdescribe("customerOperations", () => {
+describe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
     await loginDefaultUser();
@@ -153,7 +160,7 @@ xdescribe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
-      getFirebaseSpy.mockImplementationOnce(() => {
+      getFirestoreSpy.mockImplementationOnce(() => {
         throw new Error();
       });
       // run thunk
@@ -209,7 +216,7 @@ xdescribe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
-      getFirebaseSpy.mockImplementationOnce(() => {
+      getFirestoreSpy.mockImplementationOnce(() => {
         throw new Error();
       });
       // run thunk
@@ -325,6 +332,58 @@ xdescribe("customerOperations", () => {
           customerId: saul.id,
           method: SendBookingLinkMethod.Email,
         })(mockDispatch, getState);
+        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+      }
+    );
+  });
+
+  describe("extendBookingDate", () => {
+    testWithEmulator(
+      "should add appropriate 'extendedDate' to the customer structure and show success notification",
+      async () => {
+        const store = getNewStore();
+        const db = await getTestEnv({
+          setup: (db) => setupTestCustomerTemp({ db, store, customer: saul }),
+        });
+        // verify that the customer doesn't have an extended date
+        const customerInStore =
+          store.getState().firestore.data.customers![saul.id];
+        expect(customerInStore.extendedDate).toBeFalsy();
+        // create and run the thunk
+        const extendedDate = "2022-01-01";
+        getFirestoreSpy.mockReturnValueOnce(db as any);
+        await extendBookingDate(saul.id, DateTime.fromISO(extendedDate))(
+          mockDispatch,
+          () => ({} as any)
+        );
+        // exteneded date should be created in `customers` entry
+        const updatedCustomer = await getDoc(doc(db, customersPath, saul.id));
+        const data = updatedCustomer.data();
+        expect(data!.extendedDate).toEqual(extendedDate);
+        // check for success notification
+        expect(mockDispatch).toHaveBeenCalledWith(
+          mockEnqueueSnackbar({
+            message: i18n.t(NotificationMessage.BookingDateExtended),
+            closeButton: true,
+            options: {
+              variant: NotifVariant.Success,
+            },
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should show error notification if function call unsuccessful",
+      async () => {
+        // intentionally cause error to test error handling
+        getFirestoreSpy.mockImplementation = () => {
+          throw new Error();
+        };
+        await extendBookingDate(saul.id, DateTime.fromISO("2022-01-01"))(
+          mockDispatch,
+          () => ({} as any)
+        );
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );

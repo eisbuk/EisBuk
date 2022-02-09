@@ -1,6 +1,6 @@
 import { AnyAction, Dispatch, Store } from "redux";
 import { DateTime } from "luxon";
-import { doc, setDoc } from "@firebase/firestore";
+import { doc, setDoc, addDoc, collection } from "@firebase/firestore";
 
 import {
   Collection,
@@ -30,6 +30,8 @@ import { createTestStore } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { testDateLuxon } from "@/__testData__/date";
+import pRetry from "p-retry";
+import { getDoc } from "firebase/firestore";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -48,6 +50,10 @@ const orgPath = [Collection.Organizations, __organization__].join("/");
  * A path to `slots` collection in test organization
  */
 const slotsPath = [orgPath, OrgSubCollection.Slots].join("/");
+/**
+ * A path to `customers` collection in test organization
+ */
+const customersPath = [orgPath, OrgSubCollection.Customers].join("/");
 
 interface AdminSetupFunction<
   T extends Record<string, any> = Record<string, never>
@@ -293,6 +299,47 @@ export const setupTestCustomer = async ({
 
   return [dispatch, getState];
 };
+
+export const setupTestCustomerTemp: AdminSetupFunction<{ customer: Customer }> =
+  async ({ customer, store, db }) => {
+    // try and use `id` from provided customer (if not defined, will be replaced later)
+    let customerId = customer.id;
+
+    if (customerId) {
+      // we're immediately using the `id` (if provided) for document reference
+      await setDoc(doc(db, customersPath, customerId), customer);
+    } else {
+      // we're setting a customer to unspecified doc id (should be assigned by the server/emulator)
+      const newCustomerEntry = await addDoc(
+        collection(db, customersPath),
+        customer
+      );
+      // update `customerId` to a newly created one
+      customerId = newCustomerEntry.id;
+    }
+
+    // halt the execution until customer doc has all data (`id` and `secretKey`), either provided
+    // or added by data trigger
+    const customerEntry = await pRetry(
+      async () => {
+        const customer = (
+          await getDoc(doc(db, customersPath, customerId))
+        ).data();
+        if (customer?.secretKey && customer?.id) {
+          return Promise.resolve(customer);
+        }
+        return Promise.reject(new Error("Updating customer unsuccessful"));
+      },
+      { retries: 5 }
+    );
+
+    // set customer to local store
+    store.dispatch(
+      updateLocalDocuments(OrgSubCollection.Customers, {
+        [customerId]: customerEntry,
+      })
+    );
+  };
 
 /**
  * A helper function used to simulate slot aggregation (creates `slotsByDay` entry).
