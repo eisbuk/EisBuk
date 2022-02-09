@@ -135,6 +135,7 @@ export enum NotificationMessage {
 
   EmailSent = "Notification.EmailSent",
   SMSSent = "Notification.SMSSent",
+  BookingDateExtended = "Notification.BookingdateExtended",
 
   Error = "Notification.Error",
 }

@@ -97,19 +97,25 @@
   },
 
   "Notification": {
-    "Error": "Errore",
-    "LogoutSuccess": "Hai effettuato il logout",
-    "LogoutError": "Si è verificato un errore",
     "BookingSuccess": "Prenotazione effettuata",
     "BookingCanceled": "Prenotazione rimossa",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+
+    "SlotAdded": "Slot Aggiunto",
+    "SlotUpdated": "Slot Aggiornato",
+    "SlotRemoved": "Slot Eliminato",
+
+    "LogoutSuccess": "Hai effettuato il logout",
+    "LogoutError": "Si è verificato un errore",
+
     "Updated": "aggiornato",
     "Removed": "rimosso",
+
     "EmailSent": "Email inviata con successo",
     "SMSSent": "SMS inviato con successo",
-    "SlotAdded": "Slot Aggiunto",
-    "SlotRemoved": "Slot Eliminato",
-    "SlotUpdated": "Slot Aggiornato"
+    "BookingDateExtended": "Booking date extended",
+
+    "Error": "Errore"
   },
 
   "BookingCountdown": {
