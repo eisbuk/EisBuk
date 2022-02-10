@@ -73,6 +73,24 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
   const { t } = useTranslation();
   const [showAll, setShowAll] = useState(false);
 
+  const buttons: { label: string; startIcon: JSX.Element; to: string }[] = [
+    {
+      label: t(NavigationLabel.Attendance),
+      startIcon: <DateRangeIcon />,
+      to: PrivateRoutes.Root,
+    },
+    {
+      label: "Slots",
+      startIcon: <LibraryBooksIcon />,
+      to: PrivateRoutes.Slots,
+    },
+    {
+      label: t(NavigationLabel.Athletes),
+      startIcon: <PeopleIcon />,
+      to: PrivateRoutes.Athletes,
+    },
+  ];
+
   return (
     <>
       <AppBar {...props} position="static">
@@ -96,45 +114,22 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           </Menu>
           <Hidden xsDown>
             <ButtonGroup color="secondary" aria-label={t(AdminAria.PageNav)}>
-              <Button
-                component={Link}
-                to={PrivateRoutes.Root}
-                variant="contained"
-                startIcon={<DateRangeIcon />}
-                disabled={location.pathname === PrivateRoutes.Root}
-                aria-current={
-                  location.pathname === PrivateRoutes.Root ? "page" : "false"
-                }
-              >
-                {t(NavigationLabel.Attendance)}
-              </Button>
-              <Button
-                component={Link}
-                to={PrivateRoutes.Slots}
-                variant="contained"
-                startIcon={<LibraryBooksIcon />}
-                disabled={location.pathname === PrivateRoutes.Slots}
-                aria-current={
-                  location.pathname === PrivateRoutes.Slots ? "page" : "false"
-                }
-              >
-                Slots
-              </Button>
-              <Button
-                component={Link}
-                to={PrivateRoutes.Athletes}
-                variant="contained"
-                startIcon={<PeopleIcon />}
-                disabled={location.pathname === PrivateRoutes.Athletes}
-                aria-current={
-                  location.pathname === PrivateRoutes.Athletes
-                    ? "page"
-                    : "false"
-                }
-              >
-                {t(NavigationLabel.Athletes)}
-              </Button>
+              {buttons.map(({ label, to, startIcon }) => {
+                const disabled = to === location.pathname;
 
+                return (
+                  <Button
+                    className={disabled ? classes.disabledButton : ""}
+                    key={label}
+                    {...{ to, startIcon, disabled }}
+                    component={Link}
+                    variant="contained"
+                    aria-current={location.pathname === to ? "page" : "false"}
+                  >
+                    {label}
+                  </Button>
+                );
+              })}
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>
@@ -151,14 +146,14 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
             customers={customers}
             onClickShowAll={() => setShowAll(true)}
           />
-
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}
             customers={customers}
-          ></BirthdayDialog>
+          />
         </Toolbar>
       </AppBar>
+
       <Hidden smUp>
         <SwipeableDrawer
           anchor="right"
@@ -167,48 +162,27 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           onOpen={() => setDrawerOpen(true)}
         >
           <List className={classes.drawer}>
-            <ListItem
-              button
-              component={Link}
-              to={PrivateRoutes.Root}
-              disabled={location.pathname === PrivateRoutes.Root}
-              aria-current={
-                location.pathname === PrivateRoutes.Root ? "page" : "false"
-              }
-            >
-              <ListItemIcon>
-                <DateRangeIcon />
-              </ListItemIcon>
-              <ListItemText primary={t(NavigationLabel.Attendance)} />
-            </ListItem>
-            <ListItem
-              button
-              component={Link}
-              to={PrivateRoutes.Slots}
-              disabled={location.pathname === PrivateRoutes.Slots}
-              aria-current={
-                location.pathname === PrivateRoutes.Slots ? "page" : "false"
-              }
-            >
-              <ListItemIcon>
-                <LibraryBooksIcon />
-              </ListItemIcon>
-              <ListItemText primary={t(NavigationLabel.Bookings)} />
-            </ListItem>
-            <ListItem
-              button
-              component={Link}
-              to={PrivateRoutes.Athletes}
-              disabled={location.pathname === PrivateRoutes.Athletes}
-              aria-current={
-                location.pathname === PrivateRoutes.Athletes ? "page" : "false"
-              }
-            >
-              <ListItemIcon>
-                <PeopleIcon />
-              </ListItemIcon>
-              <ListItemText primary={t(NavigationLabel.Athletes)} />
-            </ListItem>
+            {buttons.map(({ label, startIcon, to }) => {
+              const disabled = to === location.pathname;
+
+              return (
+                <ListItem
+                  button
+                  key={label}
+                  {...{ to, disabled }}
+                  component={Link}
+                  className={disabled ? classes.disabledButton : ""}
+                  aria-current={location.pathname === to ? "page" : "false"}
+                >
+                  <ListItemIcon
+                    className={disabled ? classes.disabledButton : ""}
+                  >
+                    {startIcon}
+                  </ListItemIcon>
+                  <ListItemText primary={label} />
+                </ListItem>
+              );
+            })}
           </List>
         </SwipeableDrawer>
       </Hidden>
@@ -220,10 +194,28 @@ type Theme = typeof currentTheme;
 
 const useStyles = makeStyles((theme: Theme) => ({
   title: {
-    flexGrow: 1,
+    marginRight: "auto",
+    padding: "0.25rem 0.75rem",
+    cursor: "pointer",
+    display: "block",
+    border: "none",
+    borderRadius: "0.25rem",
+    "&:hover": {
+      boxShadow: `0px 0px 16px ${theme.palette.primary.contrastText}, inset -2px -2px 16px -4px ${theme.palette.primary.contrastText}`,
+    },
   },
   button: {
     margin: theme.spacing(2),
+  },
+  disabledButton: {
+    color: `${theme.palette.primary.main} !important`,
+    opacity: "1 !important",
+    [theme.breakpoints.up("sm")]: {
+      backgroundColor: `${theme.palette.secondary.main} !important`,
+      color: `${theme.palette.primary.contrastText} !important`,
+      boxShadow: `0px 0px 8px 4px ${theme.palette.secondary.contrastText} !important`,
+      zIndex: 1000,
+    },
   },
   drawer: {
     width: 250,
