@@ -3,6 +3,7 @@ import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { getFunctions, httpsCallable } from "@firebase/functions";
 import { getApp } from "@firebase/app";
+import { DateTime } from "luxon";
 
 import Button from "@material-ui/core/Button";
 
@@ -14,17 +15,18 @@ import { CloudFunction } from "@/enums/functions";
 import Countdown from "@/components/atoms/Countdown";
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 
-import {
-  getBookingsCustomer,
-  getShouldDisplayCountdown,
-} from "@/store/selectors/bookings";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 
 import { getOrganization } from "@/lib/getters";
 import { getSecretKey } from "@/utils/localStorage";
 
-type Props = Required<ReturnType<typeof getShouldDisplayCountdown>>;
+export interface BookingsCountdownProps {
+  message: BookingCountdown;
+  deadline: DateTime;
+  month: DateTime;
+}
 
-const BookingsCountdownComponent: React.FC<Props> = ({
+const BookingsCountdownComponent: React.FC<BookingsCountdownProps> = ({
   message,
   month,
   deadline,

@@ -72,13 +72,13 @@ const CustomerSlots: React.FC<Props> = ({
   const isBookingAllowed = useSelector(getIsBookingAllowed);
 
   // show countdown if booking deadline is close
-  const { message, ...countdownProps } = useSelector(getShouldDisplayCountdown);
+  const countdownProps = useSelector(getShouldDisplayCountdown);
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
-          {message && <BookingsCountdown {...{ message, ...countdownProps }} />}
+          {countdownProps && <BookingsCountdown {...countdownProps} />}
           {orderedDates?.map((date) => {
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
