@@ -114,21 +114,17 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           </Menu>
           <Hidden xsDown>
             <ButtonGroup color="secondary" aria-label={t(AdminAria.PageNav)}>
-              {buttons.map(({ label, ...buttonProps }) => {
-                const disabled = buttonProps.to === location.pathname;
+              {buttons.map(({ label, to, startIcon }) => {
+                const disabled = to === location.pathname;
 
                 return (
                   <Button
                     className={disabled ? classes.disabledButton : ""}
                     key={label}
-                    {...{ ...buttonProps, disabled }}
+                    {...{ to, startIcon, disabled }}
                     component={Link}
                     variant="contained"
-                    aria-current={
-                      location.pathname === PrivateRoutes.Root
-                        ? "page"
-                        : "false"
-                    }
+                    aria-current={location.pathname === to ? "page" : "false"}
                   >
                     {label}
                   </Button>
@@ -176,9 +172,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
                   {...{ to, disabled }}
                   component={Link}
                   className={disabled ? classes.disabledButton : ""}
-                  aria-current={
-                    location.pathname === PrivateRoutes.Root ? "page" : "false"
-                  }
+                  aria-current={location.pathname === to ? "page" : "false"}
                 >
                   <ListItemIcon
                     className={disabled ? classes.disabledButton : ""}
