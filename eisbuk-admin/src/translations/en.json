@@ -60,6 +60,7 @@
     "RequiredField": "This field is required",
     "InvalidTime": "Invalid time format (\"HH:mm\")",
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
+    "InvalidPhone": "Please enter a valid phone format: phone number prepended with '+' sign and country code (i.e. +385 99 2222 555)",
     "TimeMismatch": "Start time is greater than end time"
   },
 

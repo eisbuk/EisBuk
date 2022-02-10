@@ -553,12 +553,16 @@ describe("Firestore rules", () => {
             phone: "not-a-number-string",
           })
         );
+        // number needs to be prepended with "+"
+        await assertFails(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            phone: "11 55 66",
+          })
+        );
+        await assertSucceeds(setDoc(doc(db, saulPath), saul));
         // should allow if (optional) `phone` is not provided
         await assertSucceeds(setDoc(doc(db, saulPath), noPhoneSaul));
-        // should allow `phone` string starting with "+" sign
-        await assertSucceeds(
-          setDoc(doc(db, saulPath), { ...saul, phone: `+${saul.phone}` })
-        );
         /** @TODO We might want to require certain length range in the future */
       }
     );

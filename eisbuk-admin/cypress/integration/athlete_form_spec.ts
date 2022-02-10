@@ -1,4 +1,6 @@
 import { PrivateRoutes } from "@/enums/routes";
+import { ValidationMessage } from "@/enums/translations";
+import i18n from "@/i18next/i18n";
 
 import { saul } from "@/__testData__/customers";
 
@@ -20,17 +22,26 @@ describe("add athlete", () => {
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
 
-  it("should enter invalid date format and fail to submit form", () => {
+  it("doesn't allow invalid inputs and displays correct validation messages", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
-    cy.fillInCustomerData({ ...saul, birthday: "12 nov 2021" });
+    cy.fillInCustomerData({
+      ...saul,
+      // enter invalid birthday format
+      birthday: "12 nov 2021",
+      // enter invalid phone number format (should be prepended with '+' sign)
+      phone: "099 1245 555",
+    });
 
     cy.getAttrWith("type", "submit").click();
-    cy.contains(`Invalid date format ("dd/mm/yyyy")`);
+    // check invalid date message
+    cy.contains(i18n.t(ValidationMessage.InvalidDate) as string);
+    // check invalid phone number message
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
   });
 
-  it("should enter different date separators and check that they're replaced with /", () => {
+  it("replaces different date separators ('.' and '-') with '/'", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
@@ -49,7 +60,7 @@ describe("add athlete", () => {
     cy.getAttrWith("value", "12/12/1990");
   });
 
-  it.only("handles edge (passable) cases of input", () => {
+  it("handles edge (passable) cases of input", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 

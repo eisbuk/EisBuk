@@ -48,7 +48,10 @@ const CustomerValidation = Yup.object().shape({
   name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   email: Yup.string().email(i18n.t(ValidationMessage.Email)),
-  phone: Yup.string(),
+  phone: Yup.string().test({
+    test: (input) => !input || /\+[0-9]*/.test(input),
+    message: i18n.t(ValidationMessage.InvalidPhone),
+  }),
   birthday: Yup.string().test({
     test: (input) => !input || isISODay(input),
     message: ValidationMessage.InvalidDate,
