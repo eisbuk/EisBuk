@@ -2,6 +2,10 @@
 
 import { Customer } from "eisbuk-shared";
 
+import i18n from "@/i18next/i18n";
+
+import { ActionButton } from "@/enums/translations";
+
 // ***********************************************************
 //
 // When adding a new Command in command initializing procedure, add the
@@ -41,6 +45,10 @@ declare global {
        */
       fillInCustomerData: (customer: Partial<Customer>) => Chainable<void>;
       /**
+       * Cancels the existing `CustomerForm` ane opens a new one
+       */
+      resetCustomerForm: () => Chainable<void>;
+      /**
        * Similar to `Chainable<Element>.type(input)`:
        * - performs `.clear()` on an element
        * - performs `.type(input)` on an element
@@ -72,6 +80,7 @@ export default (): void => {
     })
   );
 
+  // #region CustomerForm
   Cypress.Commands.add("fillInCustomerData", (customer: Partial<Customer>) => {
     const {
       name,
@@ -117,6 +126,18 @@ export default (): void => {
       cy.getAttrWith("type", "checkbox").check();
     }
   });
+
+  Cypress.Commands.add("resetCustomerForm", () => {
+    // close the form
+    cy.get("button")
+      .contains(i18n.t(ActionButton.Cancel) as string)
+      // use force as button will be detached after click
+      .click({ force: true });
+
+    // open new form
+    cy.getAttrWith("data-testid", "add-athlete").click();
+  });
+  // #region CustomerForm
 
   Cypress.Commands.add(
     "clearAndType",

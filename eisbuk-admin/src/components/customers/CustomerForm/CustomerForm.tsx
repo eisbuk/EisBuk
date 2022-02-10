@@ -49,7 +49,7 @@ const CustomerValidation = Yup.object().shape({
   surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   email: Yup.string().email(i18n.t(ValidationMessage.Email)),
   phone: Yup.string().test({
-    test: (input) => !input || /\+[0-9]*/.test(input),
+    test: (input) => !input || /^(\+|00)[0-9]{9,15}$/.test(input),
     message: i18n.t(ValidationMessage.InvalidPhone),
   }),
   birthday: Yup.string().test({
@@ -124,7 +124,7 @@ const CustomerForm: React.FC<Props> = ({
           onClose();
         }}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, setFieldValue, values }) => (
           <Form autoComplete="off">
             <DialogContent>
               <input
@@ -154,6 +154,9 @@ const CustomerForm: React.FC<Props> = ({
                 name="phone"
                 label={t(CustomerLabel.Phone)}
                 className={classes.field}
+                onBlur={() =>
+                  setFieldValue("phone", values["phone"].replace(/\s/g, ""))
+                }
                 Icon={Phone}
               />
               <DateInput
@@ -216,6 +219,7 @@ interface MyFieldProps extends FieldConfig<string> {
   row?: boolean;
   label?: string;
   className?: string;
+  onBlur?: () => void;
 }
 
 const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {

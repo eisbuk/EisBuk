@@ -560,6 +560,13 @@ describe("Firestore rules", () => {
             phone: "11 55 66",
           })
         );
+        // should accept only number characters
+        await assertFails(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            phone: "foobar+123",
+          })
+        );
         await assertSucceeds(setDoc(doc(db, saulPath), saul));
         // should allow if (optional) `phone` is not provided
         await assertSucceeds(setDoc(doc(db, saulPath), noPhoneSaul));

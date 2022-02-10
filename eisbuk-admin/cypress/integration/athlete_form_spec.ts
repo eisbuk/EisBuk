@@ -22,7 +22,7 @@ describe("add athlete", () => {
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
 
-  it("doesn't allow invalid inputs and displays correct validation messages", () => {
+  it("doesn't allow invalid date input format", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
@@ -30,15 +30,67 @@ describe("add athlete", () => {
       ...saul,
       // enter invalid birthday format
       birthday: "12 nov 2021",
-      // enter invalid phone number format (should be prepended with '+' sign)
-      phone: "099 1245 555",
     });
 
     cy.getAttrWith("type", "submit").click();
     // check invalid date message
     cy.contains(i18n.t(ValidationMessage.InvalidDate) as string);
-    // check invalid phone number message
+  });
+
+  it.only("doesn't allow invalid phone input format", () => {
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+
+    // test phone number without "+" or "00" prepended to it
+    cy.getAttrWith("name", "phone").clearAndType("099 2222 868");
+    cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    cy.resetCustomerForm();
+
+    // test phone number for edge cases
+    cy.getAttrWith("name", "phone").clearAndType("foo +099 2222 868");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    cy.resetCustomerForm();
+
+    cy.getAttrWith("name", "phone").clearAndType("+099 2222 868 foo");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    // test too long and too short phone numbers
+    cy.getAttrWith("name", "phone").clearAndType("+099 2222 86877777777777");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    cy.resetCustomerForm();
+
+    cy.getAttrWith("name", "phone").clearAndType("+099 2222");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    cy.resetCustomerForm();
+
+    // make sure phone number length can't be "cheated" with too much whitespace
+    cy.getAttrWith("name", "phone").clearAndType("+385 099   11");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
+
+    // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
+    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
+      "not.exist"
+    );
+
+    cy.resetCustomerForm();
+
+    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
+      "not.exist"
+    );
   });
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
