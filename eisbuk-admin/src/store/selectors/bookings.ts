@@ -2,11 +2,14 @@ import { DateTime } from "luxon";
 
 import { CustomerBase, CustomerBookingEntry } from "eisbuk-shared";
 
+import { BookingCountdown } from "@/enums/translations";
+
 import { LocalStore } from "@/types/store";
+
+import { BookingsCountdownProps } from "@/pages/customer_area/CustomerSlots/BookingsCountdown";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "./app";
-import { BookingCountdown } from "@/enums/translations";
 
 /**
  * Get customer info for bookings from local store
@@ -72,13 +75,7 @@ export const getIsBookingAllowed = (state: LocalStore): boolean => {
  */
 export const getShouldDisplayCountdown = (
   state: LocalStore
-):
-  | {
-      message: BookingCountdown;
-      deadline: DateTime;
-      month: DateTime;
-    }
-  | false => {
+): BookingsCountdownProps | false => {
   // return early if admin (con countdown is shown)
   const isAdmin = getIsAdmin(state);
   if (isAdmin) {
