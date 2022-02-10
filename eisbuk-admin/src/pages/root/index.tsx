@@ -41,8 +41,8 @@ const DashboardPage: React.FC = () => {
       <AppbarAdmin />
       <DateNavigation extraButtons={printButton} jump="day">
         {() => (
-          <Container maxWidth="md">
-            <List className={classes.root}>
+          <Container className={classes.root} maxWidth="md">
+            <List>
               {attendanceCards.map((attendanceCard) => (
                 <AttendanceCard
                   key={attendanceCard.id}
@@ -58,7 +58,9 @@ const DashboardPage: React.FC = () => {
 };
 
 const useStyles = makeStyles(() => ({
-  root: {},
+  root: {
+    padding: "0.25rem",
+  },
 }));
 
 export default DashboardPage;
