@@ -188,6 +188,7 @@ export const sendBookingsLink: SendBookingsLink =
 export const extendBookingDate =
   (customerId: string, extendedDate: string): FirestoreThunk =>
   async (dispatch) => {
+    console.log("Extending bookig date: ", extendedDate);
     try {
       const db = getFirestore();
       await setDoc(
@@ -205,7 +206,7 @@ export const extendBookingDate =
           },
         })
       );
-    } catch {
+    } catch (error) {
       dispatch(showErrSnackbar);
     }
   };

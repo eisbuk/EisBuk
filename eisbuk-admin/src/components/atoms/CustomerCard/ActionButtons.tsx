@@ -78,7 +78,7 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
   // extend booking flow
   const extendedDate = useRef("");
   const handleExtendBooking = () => {
-    extendBookingDate(customer.id, extendedDate.current);
+    dispatch(extendBookingDate(customer.id, extendedDate.current));
   };
 
   // prompt functionality
