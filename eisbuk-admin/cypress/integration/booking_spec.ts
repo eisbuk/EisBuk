@@ -60,7 +60,8 @@ describe("Booking flow", () => {
       );
     });
 
-    it("shows a first-deadline notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
+    // it("shows a first-deadline notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
+    it("shows a first-deadline notification and a countdown if not in 'extendedDate' period", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -84,15 +85,16 @@ describe("Booking flow", () => {
       cy.get("button")
         .contains(i18n.t(ActionButton.FinalizeBookings) as string)
         .should("not.exist");
-      cy.pause();
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(0)
-        .click({ force: true });
 
-      cy.root().contains(countdownRegex).should("not.exist");
+      /** @TEMP the following logic is testing a functionality we're not using right now */
+      // cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+      //   .eq(0)
+      //   .click({ force: true });
+
+      // cy.root().contains(countdownRegex).should("not.exist");
     });
 
-    it.only("shows a second-deadline notification and a countdown if in extendedDate period", () => {
+    it("shows a second-deadline notification and a countdown if in extendedDate period", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -135,7 +137,6 @@ describe("Booking flow", () => {
         .eq(0)
         .click({ force: true });
       cy.contains(countdownRegex);
-      cy.pause();
       // additionally, we want to make sure that the second date countdown is there
       // even if we're looking up the slots in the future (the not-yet-expired bookings)
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
@@ -151,8 +152,13 @@ describe("Booking flow", () => {
         }) as string
       );
       cy.get("button").contains(/yes/i).click({ force: true });
-      // after the bookings are finalized, the countdown should get removed
-      cy.root().contains(countdownRegex).should("not.exist");
+
+      /**
+       * @TEMP the following logic is testing a functionality we're not using right now:
+       * after `extendedDate` removal the countdown is immediately replaced with first-deadline countdown for the next month
+       */
+      // // after the bookings are finalized, the countdown should get removed
+      // cy.root().contains(countdownRegex).should("not.exist");
     });
   });
 
