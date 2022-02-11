@@ -15,7 +15,7 @@ import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 import {
   getIsBookingAllowed,
-  getShouldDisplayCountdown,
+  getCountdownProps,
 } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
@@ -72,7 +72,7 @@ const CustomerSlots: React.FC<Props> = ({
   const isBookingAllowed = useSelector(getIsBookingAllowed);
 
   // show countdown if booking deadline is close
-  const countdownProps = useSelector(getShouldDisplayCountdown);
+  const countdownProps = useSelector(getCountdownProps);
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>

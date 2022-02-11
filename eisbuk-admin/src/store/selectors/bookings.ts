@@ -11,6 +11,8 @@ import { BookingsCountdownProps } from "@/pages/customer_area/CustomerSlots/Book
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "./app";
 
+import { getMonthDiff } from "@/utils/date";
+
 /**
  * Get customer info for bookings from local store
  * @param state Local Redux Store
@@ -45,160 +47,82 @@ export const getBookedSlots = (
 
 /**
  * A selector used to check if booking is allowed for currently observed slots.
- * This could have been a util, but it is entirely store related so it makes sense to
- * make it a selector
  * @param state redux state
  * @returns {boolean} `true` if admin or period for booking of the slots hasn't passed
  */
 export const getIsBookingAllowed = (state: LocalStore): boolean => {
-  const isAdmin = getIsAdmin(state);
+  // admins should always be able to update bookings slots
+  if (getIsAdmin(state)) return true;
 
   // the date in store, we're observing (and potentionally booking)
   // the slots belonging to this date
   const observedDate = getCalendarDay(state);
-  // current date
-  const correctedDateMonth = getCorrectedDateMonth(5);
+  const bookingMonth = getBookingMonth(getExtendedDate(state));
   // if corrected date passed over to next month, the booking is not allowed
-  const monthDiff = getMonthDiff(observedDate, correctedDateMonth);
-  const isLate = monthDiff <= 0;
-
-  const isExtendedPeriod = getIsExtendedPeriod(state);
-  const isExtendedDateApplicable = getIsExtendedDateApplicable(state);
-
-  return isAdmin || !isLate || (isExtendedPeriod && isExtendedDateApplicable);
+  return getMonthDiff(observedDate, bookingMonth) >= 0;
 };
 
 /**
- * Check if countdown UI should be shown (for either first deadline or the second one)
- * @param state
- * @returns message, deadline and month for notification UI, `false` if no countdown should be shown
+ * Get props for bookings countdown UI
+ * @param state redux state
+ * @returns `undefined` if admin (or should be hidden), otherwise returns an object
+ * containing countdown `message`, booking `month`, and countdown `deadline`
  */
-export const getShouldDisplayCountdown = (
+export const getCountdownProps = (
   state: LocalStore
-): BookingsCountdownProps | false => {
-  // return early if admin (con countdown is shown)
+): BookingsCountdownProps | undefined => {
+  // return early if admin (no countdown is shown)
   const isAdmin = getIsAdmin(state);
   if (isAdmin) {
-    return false;
+    return undefined;
   }
 
-  const now = DateTime.now().startOf("day");
-
-  /**
-   * @TODO this is explicit (fixed) and in the future we want this to be
-   * read from store (as set by admin preferences)
-   */
-  const countdownRange = 2;
-  const lockingPeriod = 5;
-
-  // a month we're counting down for
-  const month = getCorrectedDateMonth(lockingPeriod, countdownRange);
-
-  // check if first deadline
-  const firstDeadline = month.minus({ days: lockingPeriod }).startOf("day");
-  const daysUntilDeadline = firstDeadline.diff(now, ["days"]).days;
-
-  const isFirstDeadline =
-    // we're not showing the first countdown if the customer has booked some slots for a month
-    !checkMonthHasBookedSlots(state, month) &&
-    // we're displaying countdown only if the deadline is
-    // less than `countdownRange` number of days away from current date
-    daysUntilDeadline <= countdownRange &&
-    daysUntilDeadline > 0;
-
-  // check if second deadline
-  const isSecondDeadline = getIsExtendedPeriod(state);
-
-  switch (true) {
-    case isFirstDeadline:
-      return {
-        message: BookingCountdown.FirstDeadline,
-        month,
-        deadline: firstDeadline,
-      };
-    case isSecondDeadline:
-      return {
-        message: BookingCountdown.SecondDeadline,
-        month,
-        deadline: getExtendedDate(state)!,
-      };
-    default:
-      return false;
-  }
-};
-
-/**
- * Gets current date (`DateTime.now()`) corrected
- * by adding bookings `lockingPeriod` and optional `countdownRange`
- * @param {number} lockingPeriod number of days between month booking deadline and month start
- * @param {number} countdownRange (optional) number of days prior to booking deadline when we start showing countdown
- * @returns first day of the corrected month
- */
-const getCorrectedDateMonth = (
-  lockingPeriod: number,
-  countdownRange = 0
-): DateTime => {
-  // current date
-  const now = DateTime.now();
-
-  // current date corrected by the period of locking
-  // the next month
-  return now.plus({ days: lockingPeriod + countdownRange }).startOf("month");
-};
-
-/**
- * Returns a rounded down difference between two months
- */
-const getMonthDiff = (d1: DateTime, d2: DateTime): number => {
-  // correct dates to start of their respective months
-  const cd1 = d1.startOf("month");
-  const cd2 = d2.startOf("month");
-
-  return Math.floor(cd1.diff(cd2.startOf("month"), "months").months);
-};
-
-/**
- * Get's exteneded period from store and check s validity
- * whether it has passed
- * @param state
- * @returns
- */
-const getIsExtendedPeriod = (state: LocalStore): boolean => {
-  // current date
-  const now = DateTime.now();
-
-  // get extended date (if any)
   const extendedDate = getExtendedDate(state);
 
-  // check if extended date exists
-  if (!extendedDate) return false;
+  // first countdown
+  // if extended date is not supplied or has passed the current month deadline is applicable
+  if (!extendedDate || extendedDate.diffNow().milliseconds < 0) {
+    const month = getBookingMonth();
+    // deadline for current month exists in previous month (i.e. "2022-01-26" is deadline for "2022-02")
+    const deadline = getMonthDeadline(month.minus({ months: 1 }));
 
-  // check if extended has passed
-  const extendedDateLuxon = extendedDate;
-  return now.diff(extendedDateLuxon, "milliseconds").milliseconds < 0;
+    /**
+     * @This is a logic for showing of the booking countdown for first deadline only
+     * within certain range before the deadline and if no slots are booked
+     */
+    // const hideCountdown =
+    //   // we're showing first countdown only if no slots for a month have been booked
+    //   checkMonthHasBookedSlots(state, month) ||
+    //   // we're showing first countdown only if current date within countdown range
+    //   deadline.diffNow("days").days > countdownRange;
+
+    // if (hideCountdown) {
+    //   return undefined;
+    // }
+
+    return {
+      message: BookingCountdown.FirstDeadline,
+      month,
+      deadline,
+    };
+  }
+
+  // second countdown
+  // extended date is aplicable
+  return {
+    message: BookingCountdown.SecondDeadline,
+    month: getBookingMonth(extendedDate),
+    deadline: extendedDate,
+  };
 };
 
-/**
- * Checks if extended date is aplicable to currently observed month.
- * This guards from allowing the booking of the passed months if within
- * extended period (for currently booked month)
- * @param state
- * @returns
- */
-const getIsExtendedDateApplicable = (state: LocalStore) => {
-  // the date in store, we're observing (and potentionally booking)
-  // the slots belonging to this date
-  const observedDate = getCalendarDay(state);
+// #region temp
+/** @TEMP should be read from admin preferences in the store */
+const lockingPeriod = 5;
+// const countdownRange = 2;
+// #region temp
 
-  // check if extended date is aplicable to the observed month:
-  // month of the corrected date (if first deadline has passed)
-  // should be the same as the month of the observed date
-  // if `extendedDate` is aplicable to the given month
-  const correctedDate = getCorrectedDateMonth(5);
-  const monthDiff = getMonthDiff(correctedDate, observedDate);
-  return monthDiff === 0;
-};
-
+// #region helpers
 /**
  * A simple selector, retrieves the end of `extendedDate` from store in luxon `DateTime`
  * format, (if exists). Returns `undefined` otherwise.
@@ -214,19 +138,63 @@ const getExtendedDate = (state: LocalStore): DateTime | undefined => {
   return DateTime.fromISO(extendedDate).endOf("day");
 };
 
-/**
- * Check if current customer has at least one slot booked for given
- * month.
- * @param state local store state
- * @param month luxon `DateTime` of month to check
- */
-const checkMonthHasBookedSlots = (state: LocalStore, month: DateTime) => {
-  const monthISO = month.toISODate().substring(0, 7);
-  const bookedSlots = state.firestore.data.bookedSlots || {};
+/** @TEMP not using this logic at the time */
+// /**
+//  * Check if current customer has at least one slot booked for given
+//  * month.
+//  * @param state local store state
+//  * @param month luxon `DateTime` of month to check
+//  */
+// const checkMonthHasBookedSlots = (state: LocalStore, month: DateTime) => {
+//   const monthISO = month.toISODate().substring(0, 7);
+//   const bookedSlots = state.firestore.data.bookedSlots || {};
 
-  return Boolean(
-    Object.values(bookedSlots).find((booking) =>
-      booking.date.includes(monthISO)
-    )
-  );
+//   return Boolean(
+//     Object.values(bookedSlots).find((booking) =>
+//       booking.date.includes(monthISO)
+//     )
+//   );
+// };
+
+/**
+ * Returns deadline for a current month calculated by subtracting
+ * the locking period from month's end
+ * @example
+ * - date = "2022-01-XX"
+ * - daysInMonth = 31 // number of days in January
+ * - lockingPeriod = 5 // days
+ * - 31 - 5 = 26 // the deadline is on the 26th
+ * - deadline = "2022-01-26T23:59:59"
+ * @param lockingPeriod
+ * @returns
+ */
+const getMonthDeadline = (date = DateTime.now()) =>
+  date.endOf("month").minus({ days: lockingPeriod });
+
+/**
+ * Gets first month available for booking with respect to
+ * provided (optional) `extendedDate` and current date
+ * @param extendedDate
+ * @returns
+ */
+const getBookingMonth = (extendedDate?: DateTime): DateTime => {
+  const currentMonthDeadline = getMonthDeadline();
+
+  // if `extendedDate` not provided or has passed, only take current month deadline into account
+  if (!extendedDate || extendedDate.diffNow().milliseconds < 0) {
+    return currentMonthDeadline.diffNow().milliseconds > 0
+      ? // if current month deadline hasn't yet passed, the booking month is, trivially the next month
+        currentMonthDeadline.plus({ months: 1 }).startOf("month")
+      : // if current month deadline has passed, only the month after the next month is available for booking
+        currentMonthDeadline.plus({ months: 2 });
+  }
+
+  return extendedDate.diff(currentMonthDeadline).milliseconds < 0
+    ? // `extendedDate`, for current month is at the start of the current month
+      // i.e. extended date for February is "20XX-02-06"
+      extendedDate.startOf("month")
+    : // `extendedDate` is an extension of current deadline in the same month (for the next month)
+      // i.e. extended date for February is "20XX-01-29" and the deadline for February is "20XX-01-27"
+      extendedDate.plus({ months: 1 }).startOf("month");
 };
+// #endregion helpers

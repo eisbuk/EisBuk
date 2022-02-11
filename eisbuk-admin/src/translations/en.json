@@ -122,7 +122,7 @@
   },
 
   "BookingCountdown": {
-    "FirstDeadline": "You don't seem to have any slots booked for \"{{ month, MMMM }}\" and the deadline for bookings is getting closer. Please book your slots before the following time expires.",
+    "FirstDeadline": "The following countdown shows the amount of time before the bookings for \"{{ month, MMMM }}\" is locked. Please book your slots before the following time expires.",
     "SecondDeadline": "You have been granted an extended date to complete the bookings for \"{{ month, MMMM }}\", please complete the bookings as soon as possible and click \"Finalize bookings\". Your extended date expires in:"
   },
 
