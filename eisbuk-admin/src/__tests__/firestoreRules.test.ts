@@ -606,6 +606,20 @@ describe("Firestore rules", () => {
         await assertSucceeds(setDoc(doc(db, saulPath), noSuspendedSaul));
       }
     );
+    testWithEmulator("should allow `extendedDate` update", async () => {
+      const db = await getTestEnv({
+        setup: (db) => setDoc(doc(db, saulPath), saul),
+      });
+      await assertSucceeds(
+        setDoc(
+          doc(db, saulPath),
+          {
+            extendedDate: "2022-02-01",
+          },
+          { merge: true }
+        )
+      );
+    });
     /** @TODO Add check for card (subscription) number */
   });
 
