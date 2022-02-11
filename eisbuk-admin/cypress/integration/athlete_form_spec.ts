@@ -37,7 +37,7 @@ describe("add athlete", () => {
     cy.contains(i18n.t(ValidationMessage.InvalidDate) as string);
   });
 
-  it.only("doesn't allow invalid phone input format", () => {
+  it("doesn't allow invalid phone input format", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
