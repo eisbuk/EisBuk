@@ -67,7 +67,7 @@ service cloud.firestore {
       return email.matches("[-_\\.a-z0-9A-Z]*@[-_a-z0-9A-Z\\.]*\\.[a-z][a-z]+")
     }
     function checkValidPhoneNumber(phone) {
-      return phone.matches('\\+[0-9]*')
+      return phone.matches('(\\+|00)[0-9]{9,15}')
     }
     // #endregion regex-checks
 
