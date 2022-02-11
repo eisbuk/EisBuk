@@ -576,7 +576,15 @@ describe("Firestore rules", () => {
         );
         // should allow if (optional) `phone` is not provided
         await assertSucceeds(setDoc(doc(db, saulPath), noPhoneSaul));
-        /** @TODO We might want to require certain length range in the future */
+        // check too long and to short phone numbers
+        // current min length is 9 (not counting "+" or "00" prefix)
+        await assertFails(
+          setDoc(doc(db, saulPath), { ...saul, phone: "0038599666" })
+        );
+        // current max length is 15 (not counting "+" or "00" prefix)
+        await assertFails(
+          setDoc(doc(db, saulPath), { ...saul, phone: "003859966881231567" })
+        );
       }
     );
     testWithEmulator(
