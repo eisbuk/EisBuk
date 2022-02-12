@@ -52,7 +52,8 @@
     "MedicalCertificate": "Medical Certificate Expiration",
     "CardNumber": "Card Number",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
-    "CovidCertificateSuspended": "COVID-19 Certificate supsended"
+    "CovidCertificateSuspended": "COVID-19 Certificate supsended",
+    "ExtendedBookingDate": "Extended booking date"
   },
   "Validations": {
     "Email": "Please insert a valid email",

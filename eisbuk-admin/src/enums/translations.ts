@@ -63,6 +63,7 @@ export enum CustomerLabel {
   CardNumber = "CustomerLabel.CardNumber",
   CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
   CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
+  ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
