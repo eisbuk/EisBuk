@@ -23,6 +23,7 @@ import ActionButtons from "./ActionButtons";
 import { capitalizeFirst } from "@/utils/helpers";
 
 import { __customersDialogId__ } from "@/__testData__/testIds";
+import ExtendedDateField from "./ExtendedDateField";
 
 interface Props {
   customer: Customer | null;
@@ -118,6 +119,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
             {...{ onClose }}
           />
           {renderCustomerData(customer!)}
+          <ExtendedDateField customer={customer!} {...{ onClose }} />
         </CardContent>
         <ActionButtons
           className={classes.actionButtonsContainer}

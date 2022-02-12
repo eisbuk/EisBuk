@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -19,26 +19,14 @@ import { SendBookingLinkMethod } from "@/enums/other";
 import { ActionButtonProps } from "./types";
 
 import ConfirmDialog from "@/components/global/ConfirmDialog";
-import { DateInput } from "@/components/atoms/DateInput";
 
-import {
-  extendBookingDate,
-  sendBookingsLink,
-} from "@/store/actions/customerOperations";
+import { sendBookingsLink } from "@/store/actions/customerOperations";
 
 import {
   __openBookingsId__,
   __sendBookingsEmailId__,
   __sendBookingsSMSId__,
 } from "./__testData__/testIds";
-
-type ConfirmDialogProps = Parameters<typeof ConfirmDialog>[0];
-/**
- * Controls different prompt displaying options
- */
-type PromptOptions = Pick<ConfirmDialogProps, "title"> &
-  Pick<ConfirmDialogProps, "children"> &
-  Pick<ConfirmDialogProps, "onConfirm">;
 
 /**
  * Labeled action buttons to open customer's bookings or send
@@ -61,30 +49,18 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
   const redirectToBookings = () => history.push(bookingsRoute);
 
   // send booking link flow
-  const openSendBookingsPrompt = (method: SendBookingLinkMethod) => () =>
-    setPrompt(
-      getSendBookingPrompt({
-        method,
-        email: customer.email,
-        phone: customer.phone,
-        onConfirm: () => handleSendBookingsLink(method),
-      })
-    );
+  const [sendBookingsMethod, setSendBookingsMethod] =
+    useState<SendBookingLinkMethod | null>(null);
+
+  const { promptTitle, promptBody } = getDialogPrompt({
+    method: sendBookingsMethod,
+    email: customer.email,
+    phone: customer.phone,
+  });
+
   const handleSendBookingsLink = (method: SendBookingLinkMethod) => {
     onClose();
     dispatch(sendBookingsLink({ customerId: customer.id, method }));
-  };
-
-  // extend booking flow
-  const extendedDate = useRef("");
-  const handleExtendBooking = () => {
-    dispatch(extendBookingDate(customer.id, extendedDate.current));
-  };
-
-  // prompt functionality
-  const [prompt, setPrompt] = useState<PromptOptions | null>(null);
-  const closePrompt = () => {
-    setPrompt(null);
   };
 
   return (
@@ -103,7 +79,7 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
         startIcon={<Mail />}
         className={classes.actionButton}
         color="primary"
-        onClick={openSendBookingsPrompt(SendBookingLinkMethod.Email)}
+        onClick={() => setSendBookingsMethod(SendBookingLinkMethod.Email)}
         data-testid={__sendBookingsEmailId__}
         variant="contained"
         // disable button if email or secret key not provided
@@ -115,7 +91,7 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
         startIcon={<Phone />}
         className={classes.actionButton}
         color="primary"
-        onClick={openSendBookingsPrompt(SendBookingLinkMethod.SMS)}
+        onClick={() => setSendBookingsMethod(SendBookingLinkMethod.SMS)}
         data-testid={__sendBookingsSMSId__}
         variant="contained"
         // disable button if phone number or secret key not provided
@@ -123,84 +99,54 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
       >
         {t(ActionButton.SendBookingsSMS)}
       </Button>
-      <Button
-        startIcon={<Mail />}
-        className={classes.actionButton}
-        color="primary"
-        onClick={() =>
-          setPrompt({
-            title: t(Prompt.ExtendBookingDateTitle, {
-              customer: `${customer.name} ${customer.surname}`,
-            }),
-            children: (
-              <>
-                {t(Prompt.ExtendBookingDateBody, {
-                  customer: `${customer.name} ${customer.surname}`,
-                })}
-                <DateInput
-                  value={extendedDate.current}
-                  onChange={(value) => {
-                    extendedDate.current = value;
-                  }}
-                />
-              </>
-            ),
-            onConfirm: handleExtendBooking,
-          })
-        }
-        variant="contained"
-        // disable button if phone number or secret key not provided
-      >
-        {t(ActionButton.ExtendBookingDate)}
-      </Button>
 
       <ConfirmDialog
-        open={Boolean(prompt)}
-        setOpen={(open: boolean) => (open ? null : closePrompt())}
-        {...prompt!}
-      />
+        open={Boolean(sendBookingsMethod)}
+        title={promptTitle}
+        setOpen={(open: boolean) => (open ? null : setSendBookingsMethod(null))}
+        onConfirm={() => handleSendBookingsLink(sendBookingsMethod!)}
+      >
+        {promptBody}
+      </ConfirmDialog>
     </div>
   );
 };
 
-interface GetSendBookingPrompt {
+interface GetDialogPrompt {
   (payload: {
     method: SendBookingLinkMethod | null;
     email?: string;
     phone?: string;
-    onConfirm: () => void;
-  }): PromptOptions;
+  }): {
+    promptTitle: string;
+    promptBody: string;
+  };
 }
 
 /**
  * Gets prompt text (title and body) for dialog prompt based on passed method.
- * For type safety, it accepts `null` as `method` (and returns empty strings for `title` and `body`),
+ * For type safety, it accepts `null` as `method` (and returns empty strings for `promptTitle` and `promptBody`),
  * but that should not happen in reality.
  * @param {string | null} param.method "email" or "sms"
  * @param {string} param.email (optional) customer's email
  * @param {string} param.phone (optional) customer's phone
  * @returns
  */
-const getSendBookingPrompt: GetSendBookingPrompt = ({
-  method,
-  email,
-  phone,
-  onConfirm,
-}) => {
-  if (!method) return { title: "", body: "", onConfirm: () => {} };
+const getDialogPrompt: GetDialogPrompt = ({ method, email, phone }) => {
+  if (!method) return { promptTitle: "", promptBody: "" };
 
   const promptLookup = {
     [SendBookingLinkMethod.Email]: {
-      title: i18n.t(Prompt.SendEmailTitle),
-      children: i18n.t(Prompt.ConfirmEmail, { email }),
+      promptTitle: i18n.t(Prompt.SendEmailTitle),
+      promptBody: i18n.t(Prompt.ConfirmEmail, { email }),
     },
     [SendBookingLinkMethod.SMS]: {
-      title: i18n.t(Prompt.SendSMSTitle),
-      children: i18n.t(Prompt.ConfirmSMS, { phone }),
+      promptTitle: i18n.t(Prompt.SendSMSTitle),
+      promptBody: i18n.t(Prompt.ConfirmSMS, { phone }),
     },
   };
 
-  return { ...promptLookup[method], onConfirm };
+  return promptLookup[method];
 };
 
 const useStyles = makeStyles((theme) => ({

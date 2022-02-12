@@ -51,7 +51,8 @@
     "MedicalCertificate": "Scadenza Cert. Medico",
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
-    "CovidCertificateSuspended": "Certificazione verde sospesa"
+    "CovidCertificateSuspended": "Certificazione verde sospesa",
+    "ExtendedBookingDate": "Extended booking date"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
