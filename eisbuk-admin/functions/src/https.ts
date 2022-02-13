@@ -16,138 +16,155 @@ import {
 import { checkUser, createSMSReqOptions, sendRequest } from "./utils";
 
 /**
+ * An object of key-value (string-string) pairs
+ * where the key is a required field and value is an error message to
+ * display if field not present
+ */
+interface RequiredFieldsValidation {
+  [field: string]: string;
+}
+
+const checkRequiredFields = (
+  payload: Record<string, any> | undefined | null,
+  requiredFields: RequiredFieldsValidation
+) => {
+  if (!payload) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      HTTPErrors.NoPayload
+    );
+  }
+
+  Object.keys(requiredFields).forEach((field) => {
+    if (!payload[field]) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        requiredFields[field]
+      );
+    }
+  });
+};
+
+/**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
  */
 export const sendEmail = functions
   .region("europe-west6")
-  .https.onCall(async (payload: Partial<SendMailPayload>, { auth }) => {
-    // check payload
-    if (!payload) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        HTTPErrors.NoPayload
-      );
+  .https.onCall(
+    async ({ organization, ...email }: SendMailPayload, { auth }) => {
+      await checkUser(organization, auth);
+
+      checkRequiredFields(email, {
+        to: SendEmailErrors.NoRecipient,
+        subject: SendEmailErrors.NoSubject,
+        html: SendEmailErrors.NoMsgBody,
+      });
+
+      // add email to firestore, firing data trigger
+      await admin
+        .firestore()
+        .collection(Collection.EmailQueue)
+        .doc()
+        .set(email);
+
+      return { ...email, organization, success: true };
     }
-
-    const { organization, ...email } = payload;
-
-    await checkUser(organization, auth);
-
-    // check payload
-    if (!email.to) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoRecipient
-      );
-    }
-    if (!email.message?.html) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoMsgBody
-      );
-    }
-    if (!email.message?.subject) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoSubject
-      );
-    }
-
-    // add email to firestore, firing data trigger
-    await admin.firestore().collection(Collection.EmailQueue).doc().set(email);
-
-    return { ...payload, success: true };
-  });
+  );
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
  */
 export const sendSMS = functions
   .region("europe-west6")
-  .https.onCall(
-    async ({ organization, to, message }: SendSMSPayload, { auth }) => {
-      await checkUser(organization, auth);
+  .https.onCall(async ({ organization, ...sms }: SendSMSPayload, { auth }) => {
+    await checkUser(organization, auth);
 
-      // get SMS template data
-      const orgData =
-        ((
-          await admin
-            .firestore()
-            .collection(Collection.Organizations)
-            .doc(organization!)
-            .get()
-        ).data() as OrganizationData) || {};
+    // get SMS template data
+    const orgData =
+      ((
+        await admin
+          .firestore()
+          .collection(Collection.Organizations)
+          .doc(organization!)
+          .get()
+      ).data() as OrganizationData) || {};
 
-      const smsUrl = orgData.smsUrl!;
-      // Non numeric senders must be 11 chars or less
-      const smsSender = (orgData.smsSender || organization!)
-        .toString()
-        .substring(0, 11);
-      functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
-
-      // get sms secrets
-      const { smsAuthToken: authToken } =
-        (
-          await admin
-            .firestore()
-            .collection(Collection.Secrets)
-            .doc(organization!)
-            .get()
-        ).data() || ({} as OrganizationSecrets);
-
-      const { proto, ...options } = createSMSReqOptions(
-        "POST",
-        smsUrl,
-        authToken
+    // check template
+    const smsUrl = orgData.smsUrl!;
+    // Non numeric senders must be 11 chars or less
+    const smsSender = (orgData.smsSender || organization!)
+      .toString()
+      .substring(0, 11);
+    functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
+    if (!smsUrl) {
+      throw new functions.https.HttpsError(
+        "not-found",
+        SendSMSErrors.NoProviderURL
       );
-
-      const data = {
-        message,
-        // if sender not provided, fall back to organization name
-        sender: smsSender,
-        recipients: [{ msisdn: to }],
-      };
-      functions.logger.log("Sending POST data:", data);
-
-      const res = await sendRequest<SMSResponse>(proto, options, data);
-
-      if (res && res.ids) {
-        // A response containg a `res` key is successful
-        functions.logger.log("SMS POST request successfull", { response: res });
-      } else {
-        functions.logger.error("Error with SMS POST", { response: res });
-        // if res unsuccessful, throw
-        throw new functions.https.HttpsError(
-          "cancelled",
-          SendSMSErrors.SendingFailed,
-          res
-        );
-      }
-
-      const smsId = res.ids[0];
-
-      const [smsOk, status, errorMessage] = await runWithTimeout(
-        () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
-        { timeout: 6000 }
-      );
-
-      const details = { status, errorMessage };
-
-      if (!smsOk) {
-        functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
-          details,
-        });
-        throw new functions.https.HttpsError(
-          "cancelled",
-          SendSMSErrors.SendingFailed,
-          details
-        );
-      }
-
-      functions.logger.log("SMS message successfully sent, details:", details);
-      return { success: true, details };
     }
-  );
+
+    // get sms secrets
+    const { smsAuthToken: authToken } =
+      (
+        await admin
+          .firestore()
+          .collection(Collection.Secrets)
+          .doc(organization!)
+          .get()
+      ).data() || ({} as OrganizationSecrets);
+
+    const { proto, ...options } = createSMSReqOptions(
+      "POST",
+      smsUrl,
+      authToken
+    );
+
+    const data = {
+      message: sms.message,
+      // if sender not provided, fall back to organization name
+      sender: smsSender,
+      recipients: [{ msisdn: sms.to }],
+    };
+    functions.logger.log("Sending POST data:", data);
+
+    const res = await sendRequest<SMSResponse>(proto, options, data);
+
+    if (res && res.ids) {
+      // A response containg a `res` key is successful
+      functions.logger.log("SMS POST request successfull", { response: res });
+    } else {
+      functions.logger.error("Error with SMS POST", { response: res });
+      // if res unsuccessful, throw
+      throw new functions.https.HttpsError(
+        "cancelled",
+        SendSMSErrors.SendingFailed,
+        res
+      );
+    }
+
+    const smsId = res.ids[0];
+
+    const [smsOk, status, errorMessage] = await runWithTimeout(
+      () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
+      { timeout: 6000 }
+    );
+
+    const details = { status, errorMessage };
+
+    if (!smsOk) {
+      functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
+        details,
+      });
+      throw new functions.https.HttpsError(
+        "cancelled",
+        SendSMSErrors.SendingFailed,
+        details
+      );
+    }
+
+    functions.logger.log("SMS message successfully sent, details:", details);
+    return { success: true, details };
+  });
 
 const checkSMS = async (
   smsId: string,

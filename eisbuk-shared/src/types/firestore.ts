@@ -267,10 +267,8 @@ export type SlotAttendnace = {
 // #region cloudSentMessages
 export interface EmailMessage {
   to: string;
-  message: {
-    subject: string;
-    html: string;
-  };
+  subject: string;
+  html: string;
 }
 
 export interface SMSMessage {
