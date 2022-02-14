@@ -45,16 +45,10 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ organization, message: { html, subject } })
+          )({ organization, html, subject })
         ).rejects.toThrow(HTTPErrors.Unauth);
       }
     );
-
-    testWithEmulator("should reject if no payload provided", async () => {
-      await expect(
-        httpsCallable(functions, CloudFunction.SendEmail)()
-      ).rejects.toThrow(HTTPErrors.NoPayload);
-    });
 
     testWithEmulator(
       "should reject if no value for organziation provided",
@@ -63,7 +57,7 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ to, message: { html, subject } })
+          )({ to, html, subject })
         ).rejects.toThrow(HTTPErrors.Unauth);
       }
     );
@@ -73,7 +67,7 @@ describe("Cloud functions", () => {
         httpsCallable(
           functions,
           CloudFunction.SendEmail
-        )({ organization, message: { html, subject } })
+        )({ organization, html, subject })
       ).rejects.toThrow(SendEmailErrors.NoRecipient);
     });
 
@@ -82,7 +76,7 @@ describe("Cloud functions", () => {
         httpsCallable(
           functions,
           CloudFunction.SendEmail
-        )({ to, organization, message: { subject } })
+        )({ to, organization, subject })
       ).rejects.toThrow(SendEmailErrors.NoMsgBody);
     });
 
@@ -91,7 +85,7 @@ describe("Cloud functions", () => {
         httpsCallable(
           functions,
           CloudFunction.SendEmail
-        )({ to, organization, message: { html } })
+        )({ to, organization, html })
       ).rejects.toThrow(SendEmailErrors.NoSubject);
     });
   });
