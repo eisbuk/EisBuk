@@ -74,11 +74,11 @@
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
-    "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
-    "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
+    "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
+    "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
 
-    "FinalizeBookingsTitle": "Finalize Bookings",
-    "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
+    "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
+    "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
   },
   "ActionButton": {
     "CreateSlot": "Crea Slot",
@@ -88,7 +88,7 @@
     "AddCustomers": "Aggiungi clienti",
 
     "BookInterval": "Prenota",
-    "FinalizeBookings": "Finalize",
+    "FinalizeBookings": "Finito",
 
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
@@ -123,8 +123,8 @@
   },
 
   "BookingCountdownMessage": {
-    "FirstDeadline": "Termine per le prenotazioni in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})",
-    "SecondDeadline": "Termine di prenotazione esteso in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})",
+    "FirstDeadline": "Hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong> (fino al {{ date, dd/MM/yyyy }}) per prenotare il mese di {{ date, MMMM }}.",
+    "SecondDeadline": "Termine di prenotazione per il mese di {{ date, MMMM }} esteso fino al {{ date, dd/MM/yyyy }}: hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong>.",
     "BookingsLocked": "Le prenotazioni per questo periodo sono bloccate"
   },
 
