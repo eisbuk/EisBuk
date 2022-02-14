@@ -19,11 +19,11 @@ import { CategoryLabel, CustomerLabel } from "@/enums/translations";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import CustomerOperationButtons from "./CustomerOperationButtons";
 import ActionButtons from "./ActionButtons";
+import ExtendedDateField from "./ExtendedDateField";
 
 import { capitalizeFirst } from "@/utils/helpers";
 
 import { __customersDialogId__ } from "@/__testData__/testIds";
-import ExtendedDateField from "./ExtendedDateField";
 
 interface Props {
   customer: Customer | null;

@@ -122,9 +122,9 @@
     "Error": "Errore"
   },
 
-  "BookingCountdown": {
-    "FirstDeadline": "Non hai ancora nessuna prenotazione per \"{{ deadline, MMMM }}\" e la scadenza per prentare si avvicina. Se lo desideri effettua le tue prenotazioni prima che scada il tempo.",
-    "SecondDeadline": "You have been granted an extended date to complete the bookings for \"{{ month, MMMM }}\", please complete the bookings as soon as possible and click \"Finalize bookings\". Your extended date expires in:"
+  "BookingCountdownMessage": {
+    "FirstDeadline": "Termine per le prenotazioni in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})",
+    "SecondDeadline": "Termine di prenotazione esteso in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})"
   },
 
   "Flags": {

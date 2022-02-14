@@ -8,7 +8,7 @@ import { CustomerRoute } from "@/enums/routes";
 
 import { LocalStore } from "@/types/store";
 
-import BookingsCountdown from "./BookingsCountdown";
+import BookingsCountdown from "@/components/atoms/BookingsCountdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";

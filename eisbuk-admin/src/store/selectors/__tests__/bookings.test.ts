@@ -7,7 +7,7 @@ import {
 } from "eisbuk-shared";
 
 import { Action } from "@/enums/store";
-import { BookingCountdown } from "@/enums/translations";
+import { BookingCountdownMessage } from "@/enums/translations";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -119,7 +119,7 @@ describe("Selectors ->", () => {
       const testDate = februaryDeadline.minus({ days: 2 });
       dateNowSpy.mockReturnValue(testDate.toMillis());
       const expectedRes = {
-        message: BookingCountdown.FirstDeadline,
+        message: BookingCountdownMessage.FirstDeadline,
         // should countdown to the start of the deadline
         deadline: februaryDeadline,
         // should return month currently active for booking ("February")
@@ -183,7 +183,7 @@ describe("Selectors ->", () => {
       const testDate = DateTime.fromISO("2022-01-01");
       dateNowSpy.mockReturnValue(testDate.toMillis());
       const expectedRes = {
-        message: BookingCountdown.SecondDeadline,
+        message: BookingCountdownMessage.SecondDeadline,
         // deadline should be the very end of the extended date
         deadline: DateTime.fromISO(extendedDate).endOf("day"),
         // the month (later interpolated for countdown message) should be

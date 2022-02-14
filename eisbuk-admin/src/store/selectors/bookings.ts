@@ -2,11 +2,11 @@ import { DateTime } from "luxon";
 
 import { CustomerBase, CustomerBookingEntry } from "eisbuk-shared";
 
-import { BookingCountdown } from "@/enums/translations";
+import { BookingCountdownMessage } from "@/enums/translations";
 
 import { LocalStore } from "@/types/store";
 
-import { BookingsCountdownProps } from "@/pages/customer_area/CustomerSlots/BookingsCountdown";
+import { BookingsCountdownProps } from "@/components/atoms/BookingsCountdown";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "./app";
@@ -101,7 +101,7 @@ export const getCountdownProps = (
     // }
 
     return {
-      message: BookingCountdown.FirstDeadline,
+      message: BookingCountdownMessage.FirstDeadline,
       month,
       deadline,
     };
@@ -110,7 +110,7 @@ export const getCountdownProps = (
   // second countdown
   // extended date is aplicable
   return {
-    message: BookingCountdown.SecondDeadline,
+    message: BookingCountdownMessage.SecondDeadline,
     month: getBookingMonth(extendedDate),
     deadline: extendedDate,
   };

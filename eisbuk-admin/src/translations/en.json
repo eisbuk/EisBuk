@@ -122,9 +122,9 @@
     "Error": "Error"
   },
 
-  "BookingCountdown": {
-    "FirstDeadline": "The following countdown shows the amount of time before the bookings for \"{{ month, MMMM }}\" is locked. Please book your slots before the following time expires.",
-    "SecondDeadline": "You have been granted an extended date to complete the bookings for \"{{ month, MMMM }}\", please complete the bookings as soon as possible and click \"Finalize bookings\". Your extended date expires in:"
+  "BookingCountdownMessage": {
+    "FirstDeadline": "Bookings deadline in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }}) ",
+    "SecondDeadline": "Extended bookings deadline in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }})"
   },
 
   "Flags": {
