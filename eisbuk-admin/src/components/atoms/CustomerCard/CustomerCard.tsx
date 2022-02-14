@@ -76,10 +76,17 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
               : customer[property] || "-";
 
           return (
-            <Typography variant="h6" key={property}>
-              <span className={classes.bold}>{translatedLabel}: </span>
-              {value}
-            </Typography>
+            <>
+              <Typography
+                className={classes.property}
+                variant="h6"
+                key={property}
+              >
+                <span className={classes.bold}>{translatedLabel}: </span>
+                <span className={classes.value}>{value}</span>
+              </Typography>
+              <div className={classes.divider} />
+            </>
           );
         })}
       </>
@@ -88,6 +95,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
 
   return (
     <Dialog
+      className={classes.dialog}
       maxWidth="lg"
       data-testid={__customersDialogId__}
       open={Boolean(customer)}
@@ -102,13 +110,13 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
                 {customer?.name}
               </Typography>
               <Typography variant="h4">{customer?.surname}</Typography>
-              <CustomerOperationButtons
-                customer={customer!}
-                className={classes.customerOperationsContainer}
-                {...{ onClose }}
-              />
             </div>
           </Box>
+          <CustomerOperationButtons
+            customer={customer!}
+            className={classes.customerOperationsContainer}
+            {...{ onClose }}
+          />
           {renderCustomerData(customer!)}
         </CardContent>
         <ActionButtons
@@ -124,7 +132,17 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
   );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
+  dialog: {
+    ["& .MuiCard-root"]: {
+      overflow: "auto",
+    },
+    [theme.breakpoints.down("sm")]: {
+      ["& .MuiDialog-paper"]: {
+        margin: "1rem",
+      },
+    },
+  },
   bold: {
     fontWeight: "bold",
   },
@@ -140,7 +158,6 @@ const useStyles = makeStyles(() => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "start",
-    marginBottom: "2rem",
   },
   avatar: {
     width: "5rem",
@@ -153,16 +170,35 @@ const useStyles = makeStyles(() => ({
     flexDirection: "column",
   },
   customerOperationsContainer: {
-    position: "absolute",
-    top: "-1rem",
-    right: "-1rem",
-    transform: "translateX(100%)",
+    width: "100%",
+    display: "flex",
+    justifyContent: "flex-end",
   },
   actionButtonsContainer: {
     width: "100%",
     padding: "1rem",
     boxSizing: "border-box",
     justifyContent: "center",
+  },
+  property: {
+    width: "100%",
+    display: "block",
+    [theme.breakpoints.up("sm")]: {
+      display: "inline",
+    },
+  },
+  divider: {
+    margin: "1rem 6.125%",
+    width: "82.5%",
+    height: "1px",
+    backgroundColor: "rgba(0,0,0,0.4)",
+  },
+  value: {
+    whiteSpace: "nowrap",
+    display: "block",
+    [theme.breakpoints.up("sm")]: {
+      display: "inline",
+    },
   },
 }));
 

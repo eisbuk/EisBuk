@@ -148,9 +148,13 @@ const getDialogPrompt: GetDialogPrompt = ({ method, email, phone }) => {
   return promptLookup[method];
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   actionButton: {
     marginRight: "0.5rem",
+    [theme.breakpoints.down("sm")]: {
+      width: "80%",
+      margin: "0.5rem 10%",
+    },
   },
 }));
 
