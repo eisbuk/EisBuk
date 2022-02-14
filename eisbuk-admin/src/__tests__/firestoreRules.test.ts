@@ -553,13 +553,38 @@ describe("Firestore rules", () => {
             phone: "not-a-number-string",
           })
         );
+        // number needs to be prepended with "+" or "00"
+        await assertFails(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            phone: "115566774",
+          })
+        );
+        // should accept only number characters
+        await assertFails(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            phone: "foobar+123",
+          })
+        );
+        await assertSucceeds(
+          setDoc(doc(db, saulPath), { ...saul, phone: "+385996688132" })
+        );
+        // should allow `phone` prepended with "00" instead of "+"
+        await assertSucceeds(
+          setDoc(doc(db, saulPath), { ...saul, phone: "00385996688132" })
+        );
         // should allow if (optional) `phone` is not provided
         await assertSucceeds(setDoc(doc(db, saulPath), noPhoneSaul));
-        // should allow `phone` string starting with "+" sign
-        await assertSucceeds(
-          setDoc(doc(db, saulPath), { ...saul, phone: `+${saul.phone}` })
+        // check too long and to short phone numbers
+        // current min length is 9 (not counting "+" or "00" prefix)
+        await assertFails(
+          setDoc(doc(db, saulPath), { ...saul, phone: "0038599666" })
         );
-        /** @TODO We might want to require certain length range in the future */
+        // current max length is 15 (not counting "+" or "00" prefix)
+        await assertFails(
+          setDoc(doc(db, saulPath), { ...saul, phone: "003859966881231567" })
+        );
       }
     );
     testWithEmulator(

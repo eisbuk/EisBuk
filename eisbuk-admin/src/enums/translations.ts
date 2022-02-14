@@ -70,6 +70,7 @@ export enum ValidationMessage {
   RequiredField = "Validations.RequiredField",
   InvalidTime = "Validations.InvalidTime",
   InvalidDate = "Validations.InvalidDate",
+  InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
 }
 // #endregion forms

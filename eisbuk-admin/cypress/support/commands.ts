@@ -1,4 +1,11 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+
+import { Customer } from "eisbuk-shared";
+
+import i18n from "@/i18next/i18n";
+
+import { ActionButton } from "@/enums/translations";
+
 // ***********************************************************
 //
 // When adding a new Command in command initializing procedure, add the
@@ -9,6 +16,7 @@
 //
 //       (...args?: any[]) => Chainable<R extends any = null>
 //
+
 // ***********************************************************
 declare global {
   namespace Cypress {
@@ -28,6 +36,26 @@ declare global {
        * @param {number} millis milliseconds from UNIX epoch, such as it's received from `Date.now()`.
        */
       setClock: (millis: number) => Chainable<Clock>;
+      /**
+       * Helper used to reduce test code redundancy.
+       * Fills in the form for a passed customer.
+       * Each field in customer param is optional, so the function
+       * will only fill fields which are passed in.
+       * @customer customer entry
+       */
+      fillInCustomerData: (customer: Partial<Customer>) => Chainable<void>;
+      /**
+       * Cancels the existing `CustomerForm` ane opens a new one
+       */
+      resetCustomerForm: () => Chainable<void>;
+      /**
+       * Similar to `Chainable<Element>.type(input)`:
+       * - performs `.clear()` on an element
+       * - performs `.type(input)` on an element
+       * - performs `.blur()` after typing in the value
+       * @param {string} input
+       */
+      clearAndType: (input: string) => Chainable<Element>;
     }
   }
 }
@@ -50,5 +78,70 @@ export default (): void => {
       // due to firebase auth being set up to revalidate the token each hour
       return cy.clock(millis, ["Date"]);
     })
+  );
+
+  // #region CustomerForm
+  Cypress.Commands.add("fillInCustomerData", (customer: Partial<Customer>) => {
+    const {
+      name,
+      surname,
+      email,
+      phone,
+      birthday,
+      category,
+      certificateExpiration,
+      covidCertificateReleaseDate,
+      covidCertificateSuspended,
+    } = customer;
+
+    if (name) {
+      cy.getAttrWith("name", "name").type(customer.name);
+    }
+    if (surname) {
+      cy.getAttrWith("name", "surname").type(customer.surname);
+    }
+    if (email) {
+      cy.getAttrWith("name", "email").type(customer.email);
+    }
+    if (phone) {
+      cy.getAttrWith("name", "phone").type(customer.phone);
+    }
+    if (birthday) {
+      cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(birthday);
+    }
+    if (category) {
+      cy.getAttrWith("value", category).check();
+    }
+    if (certificateExpiration) {
+      cy.getAttrWith("placeholder", "dd/mm/yyyy")
+        .eq(1)
+        .type(certificateExpiration);
+    }
+    if (covidCertificateReleaseDate) {
+      cy.getAttrWith("placeholder", "dd/mm/yyyy")
+        .eq(2)
+        .type(covidCertificateReleaseDate);
+    }
+    if (covidCertificateSuspended) {
+      cy.getAttrWith("type", "checkbox").check();
+    }
+  });
+
+  Cypress.Commands.add("resetCustomerForm", () => {
+    // close the form
+    cy.get("button")
+      .contains(i18n.t(ActionButton.Cancel) as string)
+      // use force as button will be detached after click
+      .click({ force: true });
+
+    // open new form
+    cy.getAttrWith("data-testid", "add-athlete").click();
+  });
+  // #region CustomerForm
+
+  Cypress.Commands.add(
+    "clearAndType",
+    { prevSubject: "element" },
+    (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
   );
 };
