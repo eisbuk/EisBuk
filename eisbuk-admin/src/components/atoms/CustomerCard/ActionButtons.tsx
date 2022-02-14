@@ -10,6 +10,7 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import DateRangeIcon from "@material-ui/icons/DateRange";
 import Mail from "@material-ui/icons/Mail";
+import Phone from "@material-ui/icons/Phone";
 
 import { Routes } from "@/enums/routes";
 import { ActionButton, Prompt } from "@/enums/translations";
@@ -87,7 +88,7 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
         {t(ActionButton.SendBookingsEmail)}
       </Button>
       <Button
-        startIcon={<Mail />}
+        startIcon={<Phone />}
         className={classes.actionButton}
         color="primary"
         onClick={() => setSendBookingsMethod(SendBookingLinkMethod.SMS)}

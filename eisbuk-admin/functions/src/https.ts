@@ -95,13 +95,6 @@ export const sendSMS = functions
             .get()
         ).data() || ({} as OrganizationSecrets);
 
-      if (!authToken) {
-        throw new functions.https.HttpsError(
-          "not-found",
-          SendSMSErrors.NoAuthToken
-        );
-      }
-
       const { proto, ...options } = createSMSReqOptions(
         "POST",
         smsUrl,
@@ -120,11 +113,15 @@ export const sendSMS = functions
 
       if (res && res.ids) {
         // A response containg a `res` key is successful
-        functions.logger.log("SMS POST request successfull, response:", res);
+        functions.logger.log("SMS POST request successfull", { response: res });
       } else {
-        functions.logger.error("Error with SMS POST, response is:", res);
+        functions.logger.error("Error with SMS POST", { response: res });
         // if res unsuccessful, throw
-        throw new Error();
+        throw new functions.https.HttpsError(
+          "cancelled",
+          SendSMSErrors.SendingFailed,
+          res
+        );
       }
 
       const smsId = res.ids[0];
@@ -137,7 +134,9 @@ export const sendSMS = functions
       const details = { status, errorMessage };
 
       if (!smsOk) {
-        functions.logger.log(SendSMSErrors.SendingFailed, "Details: ", details);
+        functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
+          details,
+        });
         throw new functions.https.HttpsError(
           "cancelled",
           SendSMSErrors.SendingFailed,
