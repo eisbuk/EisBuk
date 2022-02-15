@@ -13,7 +13,7 @@
     "@sentry/tracing": "^6.16.1",
     "clsx": "^1.1.1",
     "eisbuk-shared": "1.0.0",
-    "firebase": "9.1.1",
+    "firebase": "^9.6.6",
     "firebase-tools": "^9.16.6",
     "firebaseui": "^6.0.0",
     "formik": "^2.1.5",
