@@ -1,8 +1,6 @@
-import https from "https";
-import http from "http";
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
-import { StringDecoder } from "string_decoder";
+import pRetry from "p-retry";
 
 import {
   Collection,
@@ -15,7 +13,7 @@ import {
   OrganizationSecrets,
 } from "eisbuk-shared";
 
-import { checkUser, createSMSReqOptions } from "./utils";
+import { checkUser, createSMSReqOptions, sendRequest } from "./utils";
 
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
@@ -61,104 +59,150 @@ export const sendEmail = functions
     return { ...payload, success: true };
   });
 
-type Protocol = "https" | "http";
-
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
  */
 export const sendSMS = functions
   .region("europe-west6")
-  .https.onCall(async (payload: Partial<SendSMSPayload>, { auth }) => {
-    // check payload
-    if (!payload) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        HTTPErrors.NoPayload
+  .https.onCall(
+    async ({ organization, to, message }: SendSMSPayload, { auth }) => {
+      await checkUser(organization, auth);
+
+      // get SMS template data
+      const orgData =
+        ((
+          await admin
+            .firestore()
+            .collection(Collection.Organizations)
+            .doc(organization!)
+            .get()
+        ).data() as OrganizationData) || {};
+
+      const smsUrl = orgData.smsUrl!;
+      // Non numeric senders must be 11 chars or less
+      const smsSender = (orgData.smsSender || organization!)
+        .toString()
+        .substring(0, 11);
+      functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
+
+      // get sms secrets
+      const { smsAuthToken: authToken } =
+        (
+          await admin
+            .firestore()
+            .collection(Collection.Secrets)
+            .doc(organization!)
+            .get()
+        ).data() || ({} as OrganizationSecrets);
+
+      const { proto, ...options } = createSMSReqOptions(
+        "POST",
+        smsUrl,
+        authToken
       );
-    }
 
-    const { organization, to, message } = payload;
+      const data = {
+        message,
+        // if sender not provided, fall back to organization name
+        sender: smsSender,
+        recipients: [{ msisdn: to }],
+      };
+      functions.logger.log("Sending POST data:", data);
 
-    await checkUser(organization, auth);
+      const res = await sendRequest<SMSResponse>(proto, options, data);
 
-    // check payload validity
-    if (!to) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendSMSErrors.NoRecipient
+      if (res && res.ids) {
+        // A response containg a `res` key is successful
+        functions.logger.log("SMS POST request successfull", { response: res });
+      } else {
+        functions.logger.error("Error with SMS POST", { response: res });
+        // if res unsuccessful, throw
+        throw new functions.https.HttpsError(
+          "cancelled",
+          SendSMSErrors.SendingFailed,
+          res
+        );
+      }
+
+      const smsId = res.ids[0];
+
+      const [smsOk, status, errorMessage] = await runWithTimeout(
+        () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
+        { timeout: 6000 }
       );
+
+      const details = { status, errorMessage };
+
+      if (!smsOk) {
+        functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
+          details,
+        });
+        throw new functions.https.HttpsError(
+          "cancelled",
+          SendSMSErrors.SendingFailed,
+          details
+        );
+      }
+
+      functions.logger.log("SMS message successfully sent, details:", details);
+      return { success: true, details };
     }
-    if (!message) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendSMSErrors.NoMsgBody
-      );
-    }
+  );
 
-    // get SMS template data
-    const orgData =
-      ((
-        await admin
-          .firestore()
-          .collection(Collection.Organizations)
-          .doc(organization!)
-          .get()
-      ).data() as OrganizationData) || {};
+const checkSMS = async (
+  smsId: string,
+  authToken: string
+): Promise<[boolean, string, string | null]> => {
+  const { proto, ...options } = createSMSReqOptions(
+    "GET",
+    `https://gatewayapi.com/rest/mtsms/${smsId}`,
+    authToken
+  );
 
-    const smsUrl = orgData.smsUrl;
-    // Non numeric senders must be 11 chars or less
-    const smsSender = (orgData.smsSender || organization!)
-      .toString()
-      .substring(0, 11);
-    functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
+  // ok sms states (from GatewayAPI), if we get any of these, the sending was success
+  const okStates = ["DELIVERED", "ACCEPTED"];
+  // we're using this function to retry until sms in one of the final states (pass or fail)
+  const finalStates = [...okStates, "SKIPPED", "EXPIRED", "REJECTED"];
 
-    // check template
-    if (!smsUrl) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        SendSMSErrors.NoProviderURL
-      );
-    }
-
-    // get sms secrets
-    const { smsAuthToken: authToken } =
-      (
-        await admin
-          .firestore()
-          .collection(Collection.Secrets)
-          .doc(organization!)
-          .get()
-      ).data() || ({} as OrganizationSecrets);
-
-    if (!authToken) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        SendSMSErrors.NoAuthToken
-      );
-    }
-
-    const { proto, ...options } = createSMSReqOptions(smsUrl, authToken);
-
-    const data = JSON.stringify({
-      message,
-      // if sender not provided, fall back to organization name
-      sender: smsSender,
-      recipients: [{ msisdn: to }],
-    });
-    functions.logger.log("Sending POST data:", data);
-
-    const res = await postSMS(proto, options, data);
-
-    if ("ids" in res) {
-      // A response containg a `res` key is successful
-      functions.logger.log("SMS POST request successfull, response:", res);
-    } else {
-      functions.logger.error("Error with SMS POST, response is:", res);
-    }
-
-    return { success: true, res };
+  const { recipients } = await sendRequest<CheckSMSRes>(proto, {
+    ...options,
   });
 
+  const { dsnstatus: status, dsnerror: errorMessage } = recipients[0];
+
+  if (!finalStates.includes(status)) {
+    throw new Error();
+  }
+
+  const smsOk = okStates.includes(status);
+
+  return [smsOk, status, errorMessage];
+};
+
+/**
+ * A function wrapper used to enforce a timeout on async
+ * operations with possibly long exectution period
+ * @param fn an async function we want to execute within timeout boundary
+ * @returns `fn`'s resolved value
+ */
+const runWithTimeout = async <T extends any>(
+  fn: () => Promise<T>,
+  { timeout } = { timeout: 5000 }
+): Promise<T> => {
+  // set a timeout boundry for a function
+  const timeoutBoundary = setTimeout(() => {
+    throw new functions.https.HttpsError("aborted", HTTPErrors.TimedOut);
+  }, timeout);
+
+  const res = await fn();
+
+  // clear timeout function (the `fn` has resolved within the timeout boundry)
+  clearTimeout(timeoutBoundary);
+
+  return res;
+};
+
+// #region types
 interface SMSResponse {
   ids?: string[];
   usage?: {
@@ -169,48 +213,10 @@ interface SMSResponse {
   };
 }
 
-/**
- * A helper function transforming callback structure of request into promise
- * @param {"http" | "https"} proto request protocol: "http" should be used only for testing
- * @param {RequestOptions} options request options
- * @param {string} data serialized request body
- * @returns
- */
-const postSMS = (
-  proto: Protocol,
-  options: https.RequestOptions,
-  data: string
-) =>
-  new Promise<SMSResponse>((resolve, reject) => {
-    // request handler will be the same regardless of protocol used ("http"/"https")
-    const handleReq = (res: http.IncomingMessage) => {
-      const decoder = new StringDecoder("utf-8");
-      let resBody = "";
-
-      // reject on error (and let the caller handle further)
-      res.on("error", (err) => {
-        reject(err);
-      });
-
-      res.on("data", (d) => {
-        resBody += decoder.write(d);
-      });
-
-      // resolve promise on successful request
-      res.on("end", () => {
-        resBody += decoder.end();
-        const resJSON: SMSResponse = JSON.parse(resBody);
-        resolve(resJSON);
-      });
-    };
-
-    // create a request using provided protocol
-    const req =
-      proto === "http"
-        ? http.request(options, handleReq)
-        : https.request(options, handleReq);
-
-    // send request with provided data
-    req.write(data);
-    req.end();
-  });
+interface CheckSMSRes {
+  recipients: {
+    dsnstatus: string;
+    dsnerror: string;
+  }[];
+}
+// #endregion types

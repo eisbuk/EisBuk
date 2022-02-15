@@ -3,6 +3,8 @@ import * as functions from "firebase-functions";
 import { CallableContext } from "firebase-functions/lib/providers/https";
 import admin from "firebase-admin";
 import http from "http";
+import https from "https";
+import { StringDecoder } from "string_decoder";
 
 import { Collection, HTTPErrors } from "eisbuk-shared";
 
@@ -93,6 +95,7 @@ const throwUnauth = (): never => {
  * @returns
  */
 export const createSMSReqOptions = (
+  method: "GET" | "POST",
   url: string,
   token: string
 ): http.RequestOptions & { proto: "http" | "https" } => {
@@ -129,6 +132,57 @@ export const createSMSReqOptions = (
     port,
     // a standard part of each SMS post request we're sending
     headers: { ["Content-Type"]: "application/json" },
-    method: "POST",
+    method,
   };
 };
+
+/**
+ * A helper function transforming callback structure of request into promise
+ * @param {"http" | "https"} proto request protocol: "http" should be used only for testing
+ * @param {RequestOptions} options request options
+ * @param {Object} data (optional) JSON request body, to be serialized for request payload
+ * @returns
+ */
+export const sendRequest = <
+  Res extends Record<string, any> = Record<string, any>
+>(
+  proto: "http" | "https",
+  options: http.RequestOptions,
+  data?: Record<string, any>
+): Promise<Res> =>
+  new Promise<Res>((resolve, reject) => {
+    // request handler will be the same regardless of protocol used ("http"/"https")
+    const handleReq = (res: http.IncomingMessage) => {
+      const decoder = new StringDecoder("utf-8");
+      let resBody = "";
+
+      // reject on error (and let the caller handle further)
+      res.on("error", (err) => {
+        reject(err);
+      });
+
+      res.on("data", (d) => {
+        resBody += decoder.write(d);
+      });
+
+      // resolve promise on successful request
+      res.on("end", () => {
+        resBody += decoder.end();
+        const resJSON: Res = JSON.parse(resBody);
+        resolve(resJSON);
+      });
+    };
+
+    // create a request using provided protocol
+    const req =
+      proto === "http"
+        ? http.request(options, handleReq)
+        : https.request(options, handleReq);
+
+    // send request with provided data (if any)
+    if (data) {
+      const payload = JSON.stringify(data);
+      req.write(payload);
+    }
+    req.end();
+  });
