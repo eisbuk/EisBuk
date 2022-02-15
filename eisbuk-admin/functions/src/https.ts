@@ -126,9 +126,9 @@ export const sendSMS = functions
 
       const smsId = res.ids[0];
 
-      const [smsOk, status, errorMessage] = await pRetry(
-        () => checkSMS(smsId, authToken),
-        { maxRetryTime: 5000 }
+      const [smsOk, status, errorMessage] = await runWithTimeout(
+        () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
+        { timeout: 6000 }
       );
 
       const details = { status, errorMessage };
@@ -177,6 +177,29 @@ const checkSMS = async (
   const smsOk = okStates.includes(status);
 
   return [smsOk, status, errorMessage];
+};
+
+/**
+ * A function wrapper used to enforce a timeout on async
+ * operations with possibly long exectution period
+ * @param fn an async function we want to execute within timeout boundary
+ * @returns `fn`'s resolved value
+ */
+const runWithTimeout = async <T extends any>(
+  fn: () => Promise<T>,
+  { timeout } = { timeout: 5000 }
+): Promise<T> => {
+  // set a timeout boundry for a function
+  const timeoutBoundary = setTimeout(() => {
+    throw new functions.https.HttpsError("aborted", HTTPErrors.TimedOut);
+  }, timeout);
+
+  const res = await fn();
+
+  // clear timeout function (the `fn` has resolved within the timeout boundry)
+  clearTimeout(timeoutBoundary);
+
+  return res;
 };
 
 // #region types

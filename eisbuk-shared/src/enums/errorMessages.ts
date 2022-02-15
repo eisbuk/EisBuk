@@ -2,6 +2,7 @@
 export enum HTTPErrors {
   NoPayload = "No request payload provided",
   Unauth = "Unathorized",
+  TimedOut = "Function timed out",
 }
 
 export enum SendEmailErrors {
