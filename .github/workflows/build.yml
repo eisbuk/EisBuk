@@ -42,8 +42,12 @@ jobs:
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
+      - name: Check if secrets are available
+        id: has_secret
+        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
       - name: Create Sentry release
         uses: getsentry/action-release@v1
+        if: steps.has_secret.outputs.HAS_SECRETS
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
@@ -54,6 +58,7 @@ jobs:
           sourcemaps: "./eisbuk-admin/dist/app"
       - name: Deploy preview channel
         id: deploy
+        if: steps.has_secret.outputs.HAS_SECRETS
         run: |
           set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
@@ -75,7 +80,7 @@ jobs:
 
       - name: Add preview channel URL to comment on PR
         uses: peter-evans/create-or-update-comment@v1
-        if: ${{ github.event.pull_request.number }}
+        if: github.event.pull_request.number && steps.has_secret.outputs.HAS_SECRETS
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           comment-id: ${{ steps.findcomment.outputs.comment-id }}
@@ -117,8 +122,12 @@ jobs:
           name: JEST Tests
           path: eisbuk-admin/junit.xml
           reporter: jest-junit
+      - name: Check if secrets are available
+        id: has_secret
+        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
       - name: Coveralls
         uses: coverallsapp/github-action@master
+        if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
@@ -208,8 +217,12 @@ jobs:
         run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
         id: results-destination
 
+      - name: Check if secrets are available
+        id: has_secret
+        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+
       - name: Install rclone
-        if: success() || failure()
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
           curl https://rclone.org/install.sh | sudo bash
           mkdir -p ~/.config/rclone
@@ -224,19 +237,19 @@ jobs:
             bucket_policy_only = true
 
       - name: Copy test results to gcloud
-        if: success() || failure()
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
           rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
 
       - name: Print gcloud url to view test results
-        if: success() || failure()
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
           mkdir result_tabs
           echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
           echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html > result_tabs/cypress.md
 
       - name: "Create cypress browser logs summaries"
-        if: success() || failure()
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         # Create summeries
         uses: eisbuk/custom-check-summary@v1
         with:
