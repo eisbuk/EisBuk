@@ -31,11 +31,11 @@ import {
   ActionButton,
 } from "@/enums/translations";
 
+import { defaultCustomerFormValues } from "@/lib/data";
+
 import { SvgComponent } from "@/types/components";
 
 import { currentTheme } from "@/themes";
-
-import { slotsLabelsLists } from "@/config/appConfig";
 
 import DateInput from "@/components/atoms/DateInput";
 import CustomCheckbox from "./CustomCheckbox";
@@ -105,16 +105,7 @@ const CustomerForm: React.FC<Props> = ({
       <Formik
         validateOnChange={false}
         initialValues={{
-          name: "",
-          surname: "",
-          email: "",
-          phone: "",
-          birthday: "",
-          category: slotsLabelsLists[0],
-          certificateExpiration: "",
-          covidCertificateReleaseDate: "",
-          covidCertificateSuspended: false,
-          subscriptionNumber: "",
+          ...defaultCustomerFormValues,
           ...customer,
         }}
         validationSchema={CustomerValidation}

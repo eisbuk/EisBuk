@@ -11,12 +11,23 @@ describe("add athlete", () => {
     cy.initAdminApp();
   });
 
-  // cy.getAttrWith("name", "phone").type("+385 99 112 4564");
-  it("should fill in the customer form and submit it", () => {
+  it("fills in the customer form and submit it", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
     cy.fillInCustomerData(saul);
+
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(`${saul.name} ${saul.surname} update`);
+  });
+
+  it.only("allows customer form submission with minimal fields", () => {
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+
+    cy.getAttrWith("name", "name").type(saul.name);
+    cy.getAttrWith("name", "surname").type(saul.surname);
+    cy.getAttrWith("value", saul.category).check();
 
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);

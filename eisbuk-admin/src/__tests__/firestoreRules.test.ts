@@ -10,9 +10,11 @@ import {
   OrgSubCollection,
   SlotAttendnace,
   SlotType,
+  Customer,
 } from "eisbuk-shared";
 
 import { __organization__ } from "@/lib/constants";
+import { defaultCustomerFormValues } from "@/lib/data";
 
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
@@ -491,6 +493,23 @@ describe("Firestore rules", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { surname, ...noSurnameSaul } = saul;
         await assertFails(setDoc(doc(db, saulPath), noSurnameSaul));
+      }
+    );
+    testWithEmulator(
+      "should allow create/update with empty strings as values of optional strings (as is in CustomerForm in production)",
+      async () => {
+        const db = await getTestEnv({});
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { name, surname, category } = saul;
+        const minimalCustomer: Omit<Omit<Customer, "id">, "secretKey"> = {
+          // customer form uses `customerTemplate` as initial/fallback values
+          // so it's necessary for this to be allowed to submit (with providing basic data ofc)
+          ...defaultCustomerFormValues,
+          name,
+          surname,
+          category,
+        };
+        await assertSucceeds(setDoc(doc(db, saulPath), minimalCustomer));
       }
     );
     testWithEmulator(
