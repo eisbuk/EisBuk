@@ -5,7 +5,8 @@ import { Routes } from "@/enums/routes";
 import {
   ActionButton,
   AdminAria,
-  BookingCountdown,
+  BookingCountdownMessage,
+  NotificationMessage,
   Prompt,
 } from "@/enums/translations";
 
@@ -19,19 +20,25 @@ describe("Booking flow", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
-      const afterDueDate = testDateLuxon
-        .minus({
-          days: 5,
-        })
-        .plus({ hours: 1 });
+      const januaryDeadline = getBookingDeadline(testDateLuxon);
+      const afterDueDate = januaryDeadline.plus({
+        days: 1,
+      });
+      // set current time just after the deadline has passed
       cy.setClock(afterDueDate.toMillis());
       cy.initAdminApp(false).then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
       // default timespan should be "month" as the default customer navigation position is "book_ice"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
+
+      // should show bookings locked message
+      cy.contains(i18n.t(BookingCountdownMessage.BookingsLocked) as string);
+
+      // should not allow slot bookings
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
         "have.attr",
         "disabled"
@@ -42,66 +49,54 @@ describe("Booking flow", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
-      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
-      const beforeDueDate = testDateLuxon.minus({
-        days: 7,
+      const januaryDeadline = getBookingDeadline(testDateLuxon);
+      // test booking the slot in regular circumstances (2 days before the deadline)
+      const beforeDueDate = januaryDeadline.minus({
+        days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
       cy.initAdminApp(false).then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
       // default timespan should be "month" as the default customer navigation position is "book_ice"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
-        "not.have.attr",
-        "disabled"
-      );
-    });
 
-    // it("shows a first-deadline notification and a countdown if the booking deadline is near and removes it if at least one slot gets booked", () => {
-    it("shows a first-deadline notification and a countdown if not in 'extendedDate' period", () => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
-      const beforeDueDate = testDateLuxon.minus({
-        days: 7,
-      });
-      cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp(false).then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
-      cy.contains(countdownRegex);
+      // should display countdown until january deadline
       cy.contains(
-        i18n.t(BookingCountdown.FirstDeadline, {
-          month: testDateLuxon,
-        }) as string
+        getCountdownStringMatch({
+          message: BookingCountdownMessage.FirstDeadline,
+          date: januaryDeadline,
+          // should count down two days (until deadline)
+          days: "02",
+          hours: "00",
+        })
       );
+
       // the "Finalize" button should not be shown in first deadline countdown
       cy.get("button")
         .contains(i18n.t(ActionButton.FinalizeBookings) as string)
         .should("not.exist");
 
-      /** @TEMP the following logic is testing a functionality we're not using right now */
-      // cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-      //   .eq(0)
-      //   .click({ force: true });
-
-      // cy.root().contains(countdownRegex).should("not.exist");
+      // should be able to book slot
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({
+          // force true to avoid detatched error (happening because the button gets rerendered)
+          force: true,
+        });
+      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
     });
 
-    it("shows a second-deadline notification and a countdown if in extendedDate period", () => {
+    it("allows booking if within extended date period", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
       // we're using test date as our `Date.now()`
-      // since our test customer (saul) loaded from `saul_with_extended_date.json`
-      // has an extended date (second deadline) until "2022-01-05", rendering our
-      // `testDate` between first and second deadline
+      // our test customer (saul) loaded from `saul_with_extended_date.json`
+      // has an extended date (second deadline) until "2022-01-05"
       cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp(false).then((organization) =>
         cy.updateFirestore(organization, [
@@ -109,39 +104,35 @@ describe("Booking flow", () => {
           "slots.json",
         ])
       );
+
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // go back one month (since the bookings open for next month by default)
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-      // check countdown string
+
+      // should display countdown until `extendedDate` (and second countdown message)
       const extendedDate = DateTime.fromISO("2022-01-05").endOf("day");
-      const { days, hours, minutes, seconds } = extendedDate.diff(
-        testDateLuxon,
-        ["days", "hours", "minutes", "seconds"]
-      );
-      // create countdown string (from test data) in "dd:hh:mm:ss" format
-      const countdownString = [days, hours, minutes, seconds]
-        .map((t) => `0${Math.floor(t)}`.slice(-2))
-        .join(":");
-      // the UI should contain the countdown to the second deadline
-      cy.contains(countdownString);
       cy.contains(
-        i18n.t(BookingCountdown.SecondDeadline, {
-          month: testDateLuxon,
+        getCountdownStringMatch({
+          message: BookingCountdownMessage.SecondDeadline,
+          date: extendedDate,
+          // our initial time -> "2022-01-01 00:00"
+          // extended date -> "2022-01-05 23:59"
+          // difference 4 days, 23 hours (plus some seconds)
+          days: "04",
+          hours: "23",
         }) as string
       );
-      // even after booking a slot for a month, the second-deadline notification
-      // should stay there (until the deadline has passed, or bookings have been `finalized`)
-      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
+
+      // should be able to book interval
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
-        .click({ force: true });
-      cy.contains(countdownRegex);
-      // additionally, we want to make sure that the second date countdown is there
-      // even if we're looking up the slots in the future (the not-yet-expired bookings)
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
-      cy.contains(countdownRegex);
-      // test button to freeze slots
+        .click({
+          force: true,
+        });
+      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+
+      // should display confirmation dialog finalizing of the bookings
       cy.get("button")
         .contains(i18n.t(ActionButton.FinalizeBookings) as string)
         .click();
@@ -153,12 +144,12 @@ describe("Booking flow", () => {
       );
       cy.get("button").contains(/yes/i).click({ force: true });
 
-      /**
-       * @TEMP the following logic is testing a functionality we're not using right now:
-       * after `extendedDate` removal the countdown is immediately replaced with first-deadline countdown for the next month
-       */
-      // // after the bookings are finalized, the countdown should get removed
-      // cy.root().contains(countdownRegex).should("not.exist");
+      // should lock bookings after "finalize" button click
+      cy.contains(i18n.t(BookingCountdownMessage.BookingsLocked) as string);
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
+        "have.attr",
+        "disabled"
+      );
     });
   });
 
@@ -167,41 +158,95 @@ describe("Booking flow", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
-      // test booking the slot in regular circumstances (min 5 days before start of `testDate` month)
-      const afterDueDate = testDateLuxon
-        .minus({
-          days: 5,
-        })
-        .plus({ hours: 1 });
+      const januaryDeadline = getBookingDeadline(testDateLuxon);
+      const afterDueDate = januaryDeadline.plus({
+        days: 1,
+      });
+      // set current time just after the deadline has passed
       cy.setClock(afterDueDate.toMillis());
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
       // default timespan should be "month" as the default customer navigation position is "book_ice"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
-        "not.have.attr",
-        "disabled"
-      );
+
+      // the bookings locked message is not displayed for admin
+      cy.contains(
+        i18n.t(BookingCountdownMessage.BookingsLocked) as string
+      ).should("not.exist");
+
+      // as tested above,
+      // if not admin, this wouldn't be allowed
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({
+          force: true,
+        });
     });
 
     it("doesn't show booking countdown for admin", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
-      const beforeDueDate = testDateLuxon.minus({
-        days: 7,
+      const januaryDeadline = getBookingDeadline(testDateLuxon);
+      // regular circumstances (2 days before the deadline)
+      const beforeDueDate = januaryDeadline.minus({
+        days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      // should open next month as starting value for `currentDate` (in store)
+      // default timespan should be "month" as the default customer navigation position is "book_ice"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-      const countdownRegex = /[0-9][0-9]:[0-9][0-9]:[0-9][0-9]:[0-9][0-9]/;
-      cy.root().contains(countdownRegex).should("not.exist");
+
+      // should not display countdown message
+      cy.contains(
+        // as tested above
+        // if not admin, this countdown string would be shown
+        getCountdownStringMatch({
+          message: BookingCountdownMessage.FirstDeadline,
+          days: "02",
+          hours: "00",
+          date: januaryDeadline,
+        })
+      ).should("not.exist");
     });
   });
 });
+
+/**
+ * Calculates bookings deadline from provided date,
+ * using (default) locking period of 5 days
+ */
+const getBookingDeadline = (date: DateTime) =>
+  date.minus({ months: 1 }).endOf("month").minus({ days: 5 }).endOf("day");
+
+/**
+ * Get i18n string for countdown without html (`<strong>` tags)
+ */
+const getCountdownStringMatch = ({
+  message,
+  date,
+  days,
+  hours,
+}: {
+  message: BookingCountdownMessage;
+  date: DateTime;
+  days: string;
+  hours: string;
+}) => {
+  const rawString = i18n.t(message, {
+    date,
+    days,
+    hours,
+  }) as string;
+
+  return rawString.replace(/<\/?strong>/g, "");
+};
