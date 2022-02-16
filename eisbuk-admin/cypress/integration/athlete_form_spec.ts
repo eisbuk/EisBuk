@@ -3,6 +3,7 @@ import { ValidationMessage } from "@/enums/translations";
 import i18n from "@/i18next/i18n";
 
 import { saul } from "@/__testData__/customers";
+import { Category } from "eisbuk-shared";
 
 describe("add athlete", () => {
   beforeEach(() => {
@@ -12,6 +13,20 @@ describe("add athlete", () => {
   });
 
   // cy.getAttrWith("name", "phone").type("+385 99 112 4564");
+  it("should fill in the customer form with minimal data and submit it", () => {
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+
+    cy.fillInCustomerData({
+      name: "Saul",
+      surname: "Goodman",
+      category: Category.Competitive,
+    });
+
+    cy.getAttrWith("type", "submit").click();
+    cy.contains(`${saul.name} ${saul.surname} update`);
+  });
+
   it("should fill in the customer form and submit it", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
