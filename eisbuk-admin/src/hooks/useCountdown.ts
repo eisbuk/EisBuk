@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 type CountdownTuple = [string, string, string, string];
 
 interface CountdownFunction {
-  (countdownDate: DateTime): CountdownTuple;
+  (countdownDate: DateTime | null): CountdownTuple | null;
 }
 
 /**
@@ -15,7 +15,7 @@ interface CountdownFunction {
  * countdown values in format: ["dd", "hh", "mm", "ss"]
  */
 const useCountdown: CountdownFunction = (countdownDate) => {
-  const [countdown, setCountdown] = useState<CountdownTuple>(
+  const [countdown, setCountdown] = useState<CountdownTuple | null>(
     getCountdownValues(countdownDate)
   );
 
@@ -38,6 +38,8 @@ const useCountdown: CountdownFunction = (countdownDate) => {
  * Has the same interface (params, return type) as `useCountdown` hook
  */
 const getCountdownValues: CountdownFunction = (countdownDate) => {
+  if (!countdownDate) return null;
+
   const now = DateTime.fromMillis(Date.now());
   const {
     days: rawDays,

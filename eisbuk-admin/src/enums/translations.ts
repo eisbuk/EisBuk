@@ -148,6 +148,7 @@ export enum NotificationMessage {
 export enum BookingCountdownMessage {
   FirstDeadline = "BookingCountdownMessage.FirstDeadline",
   SecondDeadline = "BookingCountdownMessage.SecondDeadline",
+  BookingsLocked = "BookingCountdownMessage.BookingsLocked",
 }
 // #endregion notifications
 

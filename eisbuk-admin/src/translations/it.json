@@ -124,7 +124,8 @@
 
   "BookingCountdownMessage": {
     "FirstDeadline": "Termine per le prenotazioni in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})",
-    "SecondDeadline": "Termine di prenotazione esteso in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})"
+    "SecondDeadline": "Termine di prenotazione esteso in <strong>{{ days }}g {{ hours }}o</strong> ({{ date, dd/MM/yyyy }})",
+    "BookingsLocked": "Le prenotazioni per questo periodo sono bloccate"
   },
 
   "Flags": {

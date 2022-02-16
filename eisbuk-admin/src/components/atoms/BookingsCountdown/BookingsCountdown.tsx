@@ -28,7 +28,7 @@ import { getSecretKey } from "@/utils/localStorage";
 
 export interface BookingsCountdownProps {
   message: BookingCountdownMessage;
-  deadline: DateTime;
+  deadline: DateTime | null;
   month: DateTime;
 }
 
@@ -44,8 +44,13 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   const secretKey = getSecretKey();
 
   // countdown flow
-  const [days, hours] = useCountdown(deadline);
-  const countdownMessage = t(message, { days, hours, date: deadline });
+  const countdown = useCountdown(deadline);
+  const countdownMessage = t(message, {
+    ...(countdown
+      ? // bookings locked message (no deadline, no countdown) doesn't accept any props
+        { days: countdown[0], hours: countdown[1], date: deadline }
+      : {}),
+  });
 
   // finalize bookings flow
   const [finalizeBookings, setFinalizeBookings] = useState(false);
