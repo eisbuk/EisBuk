@@ -63,6 +63,7 @@ export const updateCustomer =
         docRef = doc(customersCollRef);
       }
 
+      console.log("Updating customer with", updatedData);
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({

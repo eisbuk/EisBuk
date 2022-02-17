@@ -60,6 +60,7 @@ service cloud.firestore {
       // if the field is an empty string, we bypass the check
       return (
         !(property in data) ||
+        data[property] == "" ||
         checkValidDate(data[property])
       )
     }
@@ -163,11 +164,13 @@ service cloud.firestore {
           // Check valid email
           (
             !("email" in request.resource.data) || 
+            request.resource.data.email == "" || 
             checkValidEmail(request.resource.data.email)
           ) &&
           // Check valid phone number 
           (
             !("phone" in request.resource.data) || 
+            request.resource.data.phone == "" || 
             checkValidPhoneNumber(request.resource.data.phone)
           ) &&
           // Check release date suspended type

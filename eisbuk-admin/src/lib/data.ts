@@ -20,3 +20,19 @@ export const defaultSlotFormValues: SlotFormValues = {
   notes: "",
 };
 // #endregion SlotForm
+
+// #region CustomerForm
+export const defaultCustomerFormValues = {
+  name: "",
+  surname: "",
+  email: "",
+  phone: "",
+  birthday: "",
+  category: "",
+  certificateExpiration: "",
+  covidCertificateReleaseDate: "",
+  covidCertificateSuspended: false,
+  subscriptionNumber: "",
+};
+
+// #endregion CustomerForm
