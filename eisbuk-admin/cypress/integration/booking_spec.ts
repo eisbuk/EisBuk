@@ -88,6 +88,8 @@ describe("Booking flow", () => {
           force: true,
         });
       cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+      // should change "book" button into "cancel" button
+      cy.contains(i18n.t(ActionButton.Cancel) as string);
     });
 
     it("allows booking if within extended date period", () => {
@@ -152,7 +154,7 @@ describe("Booking flow", () => {
       );
     });
 
-    it.only("disables only the locked bookings if locked/non-locked month overlap shown", () => {
+    it("disables only the locked bookings if locked/non-locked month overlap shown", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
