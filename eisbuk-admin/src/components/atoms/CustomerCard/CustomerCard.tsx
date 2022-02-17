@@ -120,6 +120,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
           />
           {renderCustomerData(customer!)}
           <ExtendedDateField customer={customer!} {...{ onClose }} />
+          <div className={classes.divider} />
         </CardContent>
         <ActionButtons
           className={classes.actionButtonsContainer}
