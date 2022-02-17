@@ -13,12 +13,10 @@ import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
-import {
-  getIsBookingAllowed,
-  getCountdownProps,
-} from "@/store/selectors/bookings";
+import { getCountdownProps } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
+import { getCalendarDay } from "@/store/selectors/app";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -69,10 +67,13 @@ const CustomerSlots: React.FC<Props> = ({
   // should open bookings view with next month's slots
   const defaultDate = useMemo(() => DateTime.now().plus({ months: 1 }), []);
 
-  const isBookingAllowed = useSelector(getIsBookingAllowed);
-
   // show countdown if booking deadline is close
-  const countdownProps = useSelector(getCountdownProps);
+  const currentDate = useSelector(getCalendarDay);
+  const countdownProps = useSelector(
+    // when we have a week (for book off-ice view), spaning over two months
+    // we want to show countdown/bookings-locked message with respect to later date
+    getCountdownProps(currentDate.endOf(paginateBy))
+  );
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
@@ -86,7 +87,7 @@ const CustomerSlots: React.FC<Props> = ({
 
             return (
               <SlotsDayContainer key={date} date={luxonDay}>
-                {({ WrapElement }) => (
+                {({ WrapElement, lockBookings }) => (
                   <>
                     {slotsArray.map((slot) => {
                       const bookedInterval = bookedSlots
@@ -101,7 +102,7 @@ const CustomerSlots: React.FC<Props> = ({
                             bookedInterval,
                             WrapElement,
                           }}
-                          disableAll={!isBookingAllowed}
+                          disableAll={lockBookings}
                         />
                       );
                     })}

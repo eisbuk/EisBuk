@@ -2,6 +2,10 @@ import React from "react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { render } from "@testing-library/react";
 import { Formik, FormikConfig } from "formik";
+import { Store } from "redux";
+import { Provider as ReduxProvider } from "react-redux";
+
+import { getNewStore } from "@/store/createStore";
 
 // #region RouterWrapper
 
@@ -10,9 +14,10 @@ import { Formik, FormikConfig } from "formik";
  * @param props Props to pass onto `MemoryRouter`
  * @returns a wrapper component accepting `children` as props and wrapping them in `MemoryRouter`
  */
-const createRouterWrapper = (props?: MemoryRouterProps): React.FC => ({
-  children,
-}) => <MemoryRouter {...props}>{children}</MemoryRouter>;
+const createRouterWrapper =
+  (props?: MemoryRouterProps): React.FC =>
+  ({ children }) =>
+    <MemoryRouter {...props}>{children}</MemoryRouter>;
 /**
  * Custom render function. We're using this to wrap
  * all of the tests with the memory router, in case component uses router hooks
@@ -38,21 +43,21 @@ type PartialFormikProps = Partial<FormikConfig<Record<string, any>>>;
  * @param props Props to pass onto `Formik` and `updateFormValues` function used to extract current form `values` state
  * @returns a wrapper component accepting `children` as props and wrapping them in `MemoryRouter`
  */
-const createFormikWrapper = (props?: PartialFormikProps): React.FC => ({
-  children,
-}) => {
-  // fallback props in case of not being provided from parent fuction props
-  const fallbackProps = {
-    onSubmit: () => {},
-    initialValues: {},
-  };
+const createFormikWrapper =
+  (props?: PartialFormikProps): React.FC =>
+  ({ children }) => {
+    // fallback props in case of not being provided from parent fuction props
+    const fallbackProps = {
+      onSubmit: () => {},
+      initialValues: {},
+    };
 
-  return (
-    <Formik {...fallbackProps} {...props}>
-      {children}
-    </Formik>
-  );
-};
+    return (
+      <Formik {...fallbackProps} {...props}>
+        {children}
+      </Formik>
+    );
+  };
 /**
  * Custom render function. We're using this to wrap
  * all of the tests with Formik context
@@ -69,3 +74,13 @@ export const renderWithFormik = (
   });
 
 // #endregion FormikWrapper
+
+// #region renderWithRedux
+export const renderWithRedux = (
+  ui: JSX.Element,
+  store: Store<any> = getNewStore()
+): ReturnType<typeof render> =>
+  render(ui, {
+    wrapper: () => <ReduxProvider store={store}>{ui}</ReduxProvider>,
+  });
+// #endRegion renderWithRedux

@@ -32,7 +32,7 @@ export const createDateTitle = (
     // for week and other views we're using standardized format: showing first and last date within the timeframe
     default:
       const startDateString = t(DateFormat.DayMonth, {
-        date: startDate,
+        date: startDate.startOf(jump),
       });
       const endDateString = t(DateFormat.DayMonth, {
         date: startDate.endOf(jump).startOf("day"),

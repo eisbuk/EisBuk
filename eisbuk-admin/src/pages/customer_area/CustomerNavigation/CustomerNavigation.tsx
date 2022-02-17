@@ -126,7 +126,7 @@ const LinkTab: React.FC<LinkTabProps> = ({ customerRoute, ...props }) => {
 
   const label = t(CustomerNavigationLabel[customerRoute]);
 
-  return <Tab {...{ ...props, label }} />;
+  return <Tab aria-label={customerRoute} {...{ ...props, label }} />;
 };
 // #endregion LinkTab
 

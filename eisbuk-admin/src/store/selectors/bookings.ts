@@ -9,7 +9,6 @@ import { LocalStore } from "@/types/store";
 import { BookingsCountdownProps } from "@/components/atoms/BookingsCountdown";
 
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCalendarDay } from "./app";
 
 import { getMonthDiff } from "@/utils/date";
 
@@ -50,22 +49,23 @@ export const getBookedSlots = (
  * @param state redux state
  * @returns {boolean} `true` if admin or period for booking of the slots hasn't passed
  */
-export const getIsBookingAllowed = (state: LocalStore): boolean => {
-  // admins should always be able to update bookings slots
-  if (getIsAdmin(state)) return true;
+export const getIsBookingAllowed =
+  (currentDate: DateTime) =>
+  (state: LocalStore): boolean => {
+    // admins should always be able to update bookings slots
+    if (getIsAdmin(state)) return true;
 
-  const observedDate = getCalendarDay(state);
-  const deadline = getMonthDeadline(observedDate);
+    const deadline = getMonthDeadline(currentDate);
 
-  const extendedDate = getExtendedDate(state);
-  const isExtendedDateAplicable = Boolean(
-    extendedDate &&
-      extendedDate.diffNow().milliseconds > 0 &&
-      getMonthDiff(extendedDate, observedDate) === 0
-  );
+    const extendedDate = getExtendedDate(state);
+    const isExtendedDateAplicable = Boolean(
+      extendedDate &&
+        extendedDate.diffNow().milliseconds > 0 &&
+        getMonthDiff(extendedDate, currentDate) === 0
+    );
 
-  return deadline.diffNow().milliseconds > 0 || isExtendedDateAplicable;
-};
+    return deadline.diffNow().milliseconds > 0 || isExtendedDateAplicable;
+  };
 
 /**
  * Get props for bookings countdown UI
@@ -73,46 +73,45 @@ export const getIsBookingAllowed = (state: LocalStore): boolean => {
  * @returns `undefined` if admin (or should be hidden), otherwise returns an object
  * containing countdown `message`, booking `month`, and countdown `deadline`
  */
-export const getCountdownProps = (
-  state: LocalStore
-): BookingsCountdownProps | undefined => {
-  // return early if admin (no countdown is shown)
-  const isAdmin = getIsAdmin(state);
-  if (isAdmin) {
-    return undefined;
-  }
+export const getCountdownProps =
+  (currentDate: DateTime) =>
+  (state: LocalStore): BookingsCountdownProps | undefined => {
+    // return early if admin (no countdown is shown)
+    const isAdmin = getIsAdmin(state);
+    if (isAdmin) {
+      return undefined;
+    }
 
-  const currentDate = getCalendarDay(state);
-  const month = currentDate.startOf("month");
+    const month = currentDate.startOf("month");
 
-  if (!getIsBookingAllowed(state)) {
-    return {
-      month,
-      deadline: null,
-      message: BookingCountdownMessage.BookingsLocked,
-    };
-  }
+    if (!getIsBookingAllowed(currentDate)(state)) {
+      return {
+        month,
+        deadline: null,
+        message: BookingCountdownMessage.BookingsLocked,
+      };
+    }
 
-  const monthsDeadline = getMonthDeadline(currentDate);
-  const extendedDate = getExtendedDate(state);
+    const monthsDeadline = getMonthDeadline(currentDate);
+    const extendedDate = getExtendedDate(state);
 
-  const isExtendedDateAplicable =
-    extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
+    const isExtendedDateAplicable =
+      extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
 
-  if (isExtendedDateAplicable) {
-    return {
-      month,
-      deadline: extendedDate.endOf("day"),
-      message: BookingCountdownMessage.SecondDeadline,
-    };
-  } else {
-    return {
-      month,
-      deadline: monthsDeadline,
-      message: BookingCountdownMessage.FirstDeadline,
-    };
-  }
-};
+    if (isExtendedDateAplicable) {
+      return {
+        month,
+        deadline: extendedDate.endOf("day"),
+        message: BookingCountdownMessage.SecondDeadline,
+      };
+    } else {
+      return {
+        month,
+        deadline: monthsDeadline,
+        message: BookingCountdownMessage.FirstDeadline,
+      };
+    }
+  };
 
 // #region temp
 /** @TEMP should be read from admin preferences in the store */
