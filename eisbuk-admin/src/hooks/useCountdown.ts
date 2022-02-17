@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { DateTime } from "luxon";
 
 type CountdownTuple = [string, string, string, string];
@@ -19,14 +19,33 @@ const useCountdown: CountdownFunction = (countdownDate) => {
     getCountdownValues(countdownDate)
   );
 
+  // store timeout in a ref to be accessible from multiple functions
+  const timeout = useRef<NodeJS.Timeout | null>(null);
+
+  // clear timeout and reset it to `null`
+  const resetTimeout = () => {
+    if (timeout.current) {
+      clearTimeout(timeout.current);
+      timeout.current = null;
+    }
+  };
+
+  // control 'tick' each second using setTimeout
   useEffect(() => {
     const hourInMillis = 1000;
-    const interval = setTimeout(() => {
+    timeout.current = setTimeout(() => {
       setCountdown(getCountdownValues(countdownDate));
     }, hourInMillis);
 
-    return () => clearTimeout(interval);
-  }, [countdown, countdownDate]);
+    return resetTimeout;
+  }, [countdown]);
+
+  // update the countdown with updated prop for `countdownDate`
+  // reseting timeout in the process
+  useEffect(() => {
+    resetTimeout();
+    setCountdown(getCountdownValues(countdownDate));
+  }, [countdownDate]);
 
   return countdown;
 };
