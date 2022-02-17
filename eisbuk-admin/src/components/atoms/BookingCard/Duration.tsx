@@ -72,19 +72,16 @@ export const calculateIntervalDuration = (
   // exit early with catch all if duration greater than expected
   if (minutes > 120) return BookingDuration["2+h"];
 
-  const roundedMinutes = Math.round(minutes / 30) * 30;
-
-  switch (roundedMinutes) {
-    case 60:
-      return BookingDuration["1h"];
-    case 90:
-      return BookingDuration["1.5h"];
-    case 120:
-      return BookingDuration["2h"];
-    default:
-      // should not happen in production
-      return BookingDuration["0.5h"];
+  if (minutes < 40) {
+    return BookingDuration["0.5h"];
   }
+  if (minutes < 70) {
+    return BookingDuration["1h"];
+  }
+  if (minutes < 90) {
+    return BookingDuration["1.5h"];
+  }
+  return BookingDuration["2h"];
 };
 
 const useStyles = makeStyles(() => ({
