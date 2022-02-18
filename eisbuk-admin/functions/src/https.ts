@@ -12,17 +12,19 @@ import {
   OrganizationSecrets,
 } from "eisbuk-shared";
 
-import { checkUser, createSMSReqOptions, sendRequest } from "./utils";
+import {
+  checkUser,
+  createSMSReqOptions,
+  sendRequest,
+  EisbukHttpsError,
+} from "./utils";
 
 const checkRequiredFields = (
   payload: Record<string, any> | undefined | null,
   requiredFields: string[]
 ) => {
   if (!payload) {
-    throw new functions.https.HttpsError(
-      "invalid-argument",
-      HTTPSErrors.NoPayload
-    );
+    throw new EisbukHttpsError("invalid-argument", HTTPSErrors.NoPayload);
   }
 
   const missingFields: string[] = [];
@@ -34,7 +36,7 @@ const checkRequiredFields = (
   });
 
   if (missingFields.length) {
-    throw new functions.https.HttpsError(
+    throw new EisbukHttpsError(
       "invalid-argument",
       HTTPSErrors.MissingParameter,
       { missingFields }
@@ -73,7 +75,7 @@ export const sendSMS = functions
     await checkUser(organization, auth);
 
     // check payload
-    checkRequiredFields(sms, ["sender", "to"]);
+    checkRequiredFields(sms, ["message", "to"]);
 
     // get SMS template data
     const orgData =
@@ -86,17 +88,14 @@ export const sendSMS = functions
       ).data() as OrganizationData) || {};
 
     // check template
-    const smsUrl = orgData.smsUrl!;
+    const smsUrl = orgData.smsUrl;
     // Non numeric senders must be 11 chars or less
     const smsSender = (orgData.smsSender || organization!)
       .toString()
       .substring(0, 11);
     functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
     if (!smsUrl) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        SendSMSErrors.NoProviderURL
-      );
+      throw new EisbukHttpsError("not-found", SendSMSErrors.NoProviderURL);
     }
 
     // get sms secrets
@@ -129,29 +128,21 @@ export const sendSMS = functions
       // A response containg a `res` key is successful
       functions.logger.log("SMS POST request successfull", { response: res });
     } else {
-      functions.logger.error("Error with SMS POST", { response: res });
       // if res unsuccessful, throw
-      throw new functions.https.HttpsError(
-        "cancelled",
-        SendSMSErrors.SendingFailed,
-        res
-      );
+      throw new EisbukHttpsError("cancelled", SendSMSErrors.SendingFailed, res);
     }
 
     const smsId = res.ids[0];
 
     const [smsOk, status, errorMessage] = await runWithTimeout(
-      () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
+      () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 10000 }),
       { timeout: 6000 }
     );
 
     const details = { status, errorMessage };
 
     if (!smsOk) {
-      functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
-        details,
-      });
-      throw new functions.https.HttpsError(
+      throw new EisbukHttpsError(
         "cancelled",
         SendSMSErrors.SendingFailed,
         details
@@ -162,6 +153,12 @@ export const sendSMS = functions
     return { success: true, details };
   });
 
+/**
+ * Check the state of sent sms with the provider
+ * @param smsId
+ * @param authToken
+ * @returns
+ */
 const checkSMS = async (
   smsId: string,
   authToken: string

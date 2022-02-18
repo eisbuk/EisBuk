@@ -186,3 +186,20 @@ export const sendRequest = <
     }
     req.end();
   });
+
+type ErrorCode = functions.https.FunctionsErrorCode;
+
+/** */
+export class EisbukHttpsError extends functions.https.HttpsError {
+  /**
+   * A wrapper around `functions.https.HttpsError` used to log errors
+   * to the functions console before returning gRPC error to the client
+   * @param code `functions.https.FunctionsErrorCode`
+   * @param message error message
+   * @param details error details
+   */
+  constructor(code: ErrorCode, message: string, details?: unknown) {
+    functions.logger.error(code, message, details);
+    super(code, message, details);
+  }
+}
