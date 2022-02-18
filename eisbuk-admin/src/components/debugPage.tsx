@@ -50,7 +50,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.CreateTestData)}
+          onClick={() =>
+            invokeFunction(CloudFunction.CreateTestData)({ numUsers: 10 })
+          }
           color="primary"
           variant="contained"
         >
