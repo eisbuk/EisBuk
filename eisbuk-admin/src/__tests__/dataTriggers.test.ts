@@ -277,7 +277,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         let existingSecrets = (
           (await waitForCondition({
             documentPath: `${Collection.Organizations}/${__organization__}`,
-            condition: (data) => Boolean(data?.existingSecrets),
+            condition: (data) => Boolean(data?.existingSecrets.length),
           })) as OrganizationData
         ).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret"]);

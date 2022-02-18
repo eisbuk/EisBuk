@@ -383,3 +383,34 @@ export const addIdsToCustomers = functions
       return { success: false };
     }
   });
+
+export const deleteOrphanedBookings = functions
+  .region("europe-west6")
+  .https.onCall(async ({ organization }, { auth }) => {
+    await checkUser(organization, auth);
+
+    const orgRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+
+    // get all customers and bookings
+    const allCustomers = await orgRef
+      .collection(OrgSubCollection.Customers)
+      .get();
+    const customerIds = allCustomers.docs.map(({ id }) => id);
+    const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
+    const allBookings = await bookingsRef.get();
+
+    const batch = admin.firestore().batch();
+    allBookings.forEach((doc) => {
+      const docRef = doc.ref;
+      const { id } = doc.data();
+      // delete only the bookings without corresponding customer
+      if (!customerIds.includes(id)) {
+        batch.delete(docRef);
+      }
+    });
+
+    return batch.commit();
+  });

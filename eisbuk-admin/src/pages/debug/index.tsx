@@ -61,7 +61,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.CreateTestSlots)}
+          onClick={() => invokeFunction(CloudFunction.CreateTestSlots)()}
           color="primary"
           variant="contained"
         >
@@ -70,7 +70,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.MigrateSlotsToPluralCategories)}
+          onClick={() =>
+            invokeFunction(CloudFunction.MigrateSlotsToPluralCategories)()
+          }
           color="primary"
           variant="contained"
         >
@@ -79,7 +81,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.CreateStaleTestData)}
+          onClick={() => invokeFunction(CloudFunction.CreateStaleTestData)()}
           color="primary"
           variant="contained"
         >
@@ -88,7 +90,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.MigrateToNewDataModel)}
+          onClick={() => invokeFunction(CloudFunction.MigrateToNewDataModel)()}
           color="primary"
           variant="contained"
         >
@@ -97,11 +99,20 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={invokeFunction(CloudFunction.AddIdsToCustomers)}
+          onClick={() => invokeFunction(CloudFunction.AddIdsToCustomers)()}
           color="primary"
           variant="contained"
         >
           Add doc ids to customer structures
+        </Button>
+      </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={() => invokeFunction(CloudFunction.DeleteOrphanedBookings)()}
+          color="primary"
+          variant="contained"
+        >
+          Delete orphaned bookings
         </Button>
       </Box>
     </Container>

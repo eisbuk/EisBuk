@@ -1,6 +1,7 @@
 import { httpsCallable } from "@firebase/functions";
+import { getAuth, signOut } from "@firebase/auth";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
+import { Collection, HTTPErrors, OrgSubCollection } from "eisbuk-shared";
 import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
 
 import { getOrganization } from "@/lib/getters";
@@ -26,6 +27,11 @@ import {
   testBookingsByDay,
   unprunedMonth,
 } from "../__testData__/migrations";
+
+import { waitForCondition } from "@/__testUtils__/helpers";
+import { getCustomerBase } from "@/__testUtils__/customers";
+import { loginDefaultUser } from "@/__testUtils__/auth";
+
 import * as customers from "@/__testData__/customers";
 
 const organization = getOrganization();
@@ -43,6 +49,7 @@ const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
 describe("Migrations", () => {
   beforeEach(async () => {
     await deleteAll();
+    await loginDefaultUser();
   });
 
   describe("'migrateToNewDataModel'", () => {
@@ -204,5 +211,45 @@ describe("Migrations", () => {
         });
       }
     );
+  });
+
+  describe("'deleteOrphanedBookings'", () => {
+    testWithEmulator(
+      "should remove bookings without customer entries",
+      async () => {
+        const { saul, jian } = customers;
+        const orgRef = adminDb
+          .collection(Collection.Organizations)
+          .doc(getOrganization());
+        const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
+        const customersRef = orgRef.collection(OrgSubCollection.Customers);
+        // set customer to store (to create a regular booking)
+        await customersRef.doc(saul.id).set(saul);
+        // wait for saul's booking to get created
+        await waitForCondition({
+          condition: (data) => Boolean(data),
+          documentPath: `${Collection.Organizations}/${getOrganization()}/${
+            OrgSubCollection.Bookings
+          }/${saul.secretKey}`,
+        });
+        // add additional bookings (without customer)
+        await bookingsRef.doc(jian.secretKey).set(getCustomerBase(jian));
+        // run migration
+        await invokeFunction(CloudFunction.DeleteOrphanedBookings)();
+        // check results
+        const bookingsColl = await bookingsRef.get();
+        const bookingsDocs = bookingsColl.docs;
+        // only saul's bookings should remain
+        expect(bookingsDocs.length).toEqual(1);
+        expect(bookingsDocs[0].data()).toEqual(getCustomerBase(saul));
+      }
+    );
+
+    testWithEmulator("should not allow calls to non-admin", async () => {
+      await signOut(getAuth());
+      await expect(
+        invokeFunction(CloudFunction.DeleteOrphanedBookings)()
+      ).rejects.toThrow(HTTPErrors.Unauth);
+    });
   });
 });
