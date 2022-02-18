@@ -74,6 +74,7 @@ export const addIdAndSecretKey = functions
       surname,
       category,
       id: customerId,
+      deleted: Boolean(customerData.deleted),
     } as CustomerBase);
 
     await batch.commit();

@@ -102,12 +102,20 @@ describe("Customer triggers", () => {
       });
       // add update to db
       const updatedCategory = Category.Course;
-      const updatedSaul = { ...saul, secretKey, category: updatedCategory };
+      const updatedSaul = {
+        ...saul,
+        secretKey,
+        category: updatedCategory,
+        deleted: true,
+      };
       await setDoc(saulDocRef, updatedSaul);
       // check `bookings` entry updates
       await waitForCondition({
         documentPath: `${bookingsCollectionPath}/${secretKey}`,
-        condition: (data) => Boolean(data && data.category === updatedCategory),
+        condition: (data) =>
+          Boolean(
+            data && data.category === updatedCategory && data.deleted === true
+          ),
       });
     }
   );
