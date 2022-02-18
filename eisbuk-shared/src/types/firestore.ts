@@ -54,10 +54,6 @@ export interface OrganizationData {
    */
   emailSender?: string;
   /**
-   * Full URL (including host and endpoint) of SMS sending service provider.
-   */
-  smsUrl?: string;
-  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */

@@ -11,6 +11,8 @@ import {
   fromISO,
 } from "eisbuk-shared";
 
+import { __functionsZone__ } from "./constants";
+
 import { checkUser } from "./utils";
 
 const CATEGORIES = Object.values(Category);
@@ -96,7 +98,7 @@ const fillDay = async (day: DateTime, organization: string): Promise<void> => {
  * Fills a month worth of days with dummy slots, starting two weeks ago
  */
 export const createTestSlots = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }, context) => {
     await checkUser(organization, context.auth);
 

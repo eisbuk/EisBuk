@@ -23,6 +23,8 @@ import {
   DeprecatedSlotInterface,
 } from "eisbuk-shared/dist/deprecated";
 
+import { __functionsZone__ } from "./constants";
+
 const uuidv4 = v4;
 
 interface Payload {
@@ -34,7 +36,7 @@ interface Payload {
  * Creates entries belonging to deprecated data model, used to test migrations
  */
 export const createOldDataModelEntries = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
     await checkUser(organization, context.auth);
 

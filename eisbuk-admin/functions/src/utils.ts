@@ -203,3 +203,58 @@ export class EisbukHttpsError extends functions.https.HttpsError {
     super(code, message, details);
   }
 }
+
+/**
+ * A function wrapper used to enforce a timeout on async
+ * operations with possibly long exectution period
+ * @param fn an async function we want to execute within timeout boundary
+ * @returns `fn`'s resolved value
+ */
+export const runWithTimeout = async <T extends any>(
+  fn: () => Promise<T>,
+  { timeout } = { timeout: 5000 }
+): Promise<T> => {
+  // set a timeout boundry for a function
+  const timeoutBoundary = setTimeout(() => {
+    throw new functions.https.HttpsError("aborted", HTTPSErrors.TimedOut);
+  }, timeout);
+
+  const res = await fn();
+
+  // clear timeout function (the `fn` has resolved within the timeout boundry)
+  clearTimeout(timeoutBoundary);
+
+  return res;
+};
+
+/**
+ * Checks payload (or any other record structure) for required fields.
+ * Throws error if one or more of the fields aren't present
+ * @param payload record to validate
+ * @param requiredFields array of field names (keys)
+ * @param errorMessage (optional) customer error message on failure, falls back to
+ * `HTTPSErrors.MissingParameter`
+ */
+export const checkRequiredFields = (
+  payload: Record<string, any> | undefined | null,
+  requiredFields: string[],
+  errorMessage: string = HTTPSErrors.MissingParameter
+): void | never => {
+  if (!payload) {
+    throw new EisbukHttpsError("invalid-argument", HTTPSErrors.NoPayload);
+  }
+
+  const missingFields: string[] = [];
+
+  Object.keys(requiredFields).forEach((field) => {
+    if (!payload[field]) {
+      missingFields.push(field);
+    }
+  });
+
+  if (missingFields.length) {
+    throw new EisbukHttpsError("invalid-argument", errorMessage, {
+      missingFields,
+    });
+  }
+};

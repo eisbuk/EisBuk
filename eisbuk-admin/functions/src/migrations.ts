@@ -21,13 +21,15 @@ import {
   DeprecatedSlotType,
 } from "eisbuk-shared/dist/deprecated";
 
+import { __functionsZone__ } from "./constants";
+
 import { checkUser } from "./utils";
 
 /**
  * Migrates slot entries to struct containing plural 'categories' instead of single 'category'
  */
 export const migrateSlotsToPluralCategories = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }, context) => {
     await checkUser(organization, context.auth);
 
@@ -60,7 +62,7 @@ export const migrateSlotsToPluralCategories = functions
  * Deletes all entries in firestore, related to the old data model
  */
 export const migrateToNewDataModel = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }) => {
     try {
       // await checkUser(organization, context.auth);
@@ -288,7 +290,7 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const pruneSlotsByDay = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }) => {
     try {
       const db = admin.firestore();
@@ -352,7 +354,7 @@ export const pruneSlotsByDay = functions
   });
 
 export const addIdsToCustomers = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }) => {
     try {
       const db = admin.firestore();
