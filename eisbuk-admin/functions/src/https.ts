@@ -6,8 +6,7 @@ import {
   Collection,
   SendMailPayload,
   SendSMSPayload,
-  HTTPErrors,
-  SendEmailErrors,
+  HTTPSErrors,
   SendSMSErrors,
   OrganizationData,
   OrganizationSecrets,
@@ -15,34 +14,32 @@ import {
 
 import { checkUser, createSMSReqOptions, sendRequest } from "./utils";
 
-/**
- * An object of key-value (string-string) pairs
- * where the key is a required field and value is an error message to
- * display if field not present
- */
-interface RequiredFieldsValidation {
-  [field: string]: string;
-}
-
 const checkRequiredFields = (
   payload: Record<string, any> | undefined | null,
-  requiredFields: RequiredFieldsValidation
+  requiredFields: string[]
 ) => {
   if (!payload) {
     throw new functions.https.HttpsError(
       "invalid-argument",
-      HTTPErrors.NoPayload
+      HTTPSErrors.NoPayload
     );
   }
 
+  const missingFields: string[] = [];
+
   Object.keys(requiredFields).forEach((field) => {
     if (!payload[field]) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        requiredFields[field]
-      );
+      missingFields.push(field);
     }
   });
+
+  if (missingFields.length) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      HTTPSErrors.MissingParameter,
+      { missingFields }
+    );
+  }
 };
 
 /**
@@ -54,11 +51,7 @@ export const sendEmail = functions
     async ({ organization, ...email }: SendMailPayload, { auth }) => {
       await checkUser(organization, auth);
 
-      checkRequiredFields(email, {
-        to: SendEmailErrors.NoRecipient,
-        subject: SendEmailErrors.NoSubject,
-        html: SendEmailErrors.NoMsgBody,
-      });
+      checkRequiredFields(email, ["to", "subject", "html"]);
 
       // add email to firestore, firing data trigger
       await admin
@@ -78,6 +71,9 @@ export const sendSMS = functions
   .region("europe-west6")
   .https.onCall(async ({ organization, ...sms }: SendSMSPayload, { auth }) => {
     await checkUser(organization, auth);
+
+    // check payload
+    checkRequiredFields(sms, ["sender", "to"]);
 
     // get SMS template data
     const orgData =
@@ -208,7 +204,7 @@ const runWithTimeout = async <T extends any>(
 ): Promise<T> => {
   // set a timeout boundry for a function
   const timeoutBoundary = setTimeout(() => {
-    throw new functions.https.HttpsError("aborted", HTTPErrors.TimedOut);
+    throw new functions.https.HttpsError("aborted", HTTPSErrors.TimedOut);
   }, timeout);
 
   const res = await fn();

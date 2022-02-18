@@ -6,7 +6,7 @@ import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
 
-import { Collection, HTTPErrors } from "eisbuk-shared";
+import { Collection, HTTPSErrors } from "eisbuk-shared";
 
 type Auth = CallableContext["auth"];
 
@@ -82,7 +82,7 @@ const isOrgAdmin = (admins: string[] | undefined, auth: Auth): boolean => {
 const throwUnauth = (): never => {
   throw new functions.https.HttpsError(
     "permission-denied",
-    HTTPErrors.Unauth,
+    HTTPSErrors.Unauth,
     "The function must be called while authenticated with a user that is an admin of the given organization."
   );
 };
