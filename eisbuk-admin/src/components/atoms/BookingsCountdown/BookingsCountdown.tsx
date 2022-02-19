@@ -44,11 +44,12 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   const secretKey = getSecretKey();
 
   // countdown flow
-  const countdown = useCountdown(deadline);
+  const countdown = useCountdown(deadline, "hour");
+  console.log("Countdown", countdown);
   const countdownMessage = t(message, {
     ...(countdown
       ? // bookings locked message (no deadline, no countdown) doesn't accept any props
-        { days: countdown[0], hours: countdown[1], date: deadline }
+        { days: countdown.days, hours: countdown.hours, date: deadline }
       : {}),
   });
 
