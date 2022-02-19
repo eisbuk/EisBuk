@@ -70,8 +70,8 @@ describe("Booking flow", () => {
           message: BookingCountdownMessage.FirstDeadline,
           date: januaryDeadline,
           // should count down two days (until deadline)
-          days: "02",
-          hours: "00",
+          days: 2,
+          hours: 0,
         })
       );
 
@@ -121,8 +121,8 @@ describe("Booking flow", () => {
           // our initial time -> "2022-01-01 00:00"
           // extended date -> "2022-01-05 23:59"
           // difference 4 days, 23 hours (plus some seconds)
-          days: "04",
-          hours: "23",
+          days: 4,
+          hours: 23,
         }) as string
       );
 
@@ -191,8 +191,8 @@ describe("Booking flow", () => {
           message: BookingCountdownMessage.FirstDeadline,
           date: januaryDeadline,
           // should count down two days (until deadline)
-          days: "02",
-          hours: "00",
+          days: 2,
+          hours: 0,
         })
       );
 
@@ -267,8 +267,8 @@ describe("Booking flow", () => {
         // if not admin, this countdown string would be shown
         getCountdownStringMatch({
           message: BookingCountdownMessage.FirstDeadline,
-          days: "02",
-          hours: "00",
+          days: 2,
+          hours: 23,
           date: januaryDeadline,
         })
       ).should("not.exist");
@@ -294,8 +294,8 @@ const getCountdownStringMatch = ({
 }: {
   message: BookingCountdownMessage;
   date: DateTime;
-  days: string;
-  hours: string;
+  days: number;
+  hours: number;
 }) => {
   const rawString = i18n.t(message, {
     date,
