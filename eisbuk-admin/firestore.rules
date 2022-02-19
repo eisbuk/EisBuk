@@ -28,7 +28,7 @@ service cloud.firestore {
       return ["course", "pre-competitive", "competitive", "adults"]
     }
     function getSlotTypes() {
-      return ["ice", "off-ice-gym", "off-ice-dancing"]
+      return ["ice", "off-ice"]
     }
     // #endregion enums
 

@@ -31,12 +31,22 @@ const SlotTypeIcon: React.FC<{ type: SlotType; className?: string }> = ({
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const Icon = iconLookup[type];
+  /** This is @TEMP until all deprecated types are migrated to unified off-ice */
+  const slotType = type.includes("off-ice") ? SlotType.OffIce : type;
+  /** This is @TEMP until all deprecated types are migrated to unified off-ice */
+  console.log("Type", type);
+  console.log("SlotType", slotType);
+
+  const Icon = iconLookup[slotType];
 
   return (
     <Box className={[classes.flexCenter, className].join(" ")}>
       <Icon className={classes.typeIcon} fontSize="small" />
-      <Typography className={classes.type} key="type" color={colorLookup[type]}>
+      <Typography
+        className={classes.type}
+        key="type"
+        color={colorLookup[slotType]}
+      >
         {t(SlotTypeLabel[type])}
       </Typography>
     </Box>
