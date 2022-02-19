@@ -69,7 +69,7 @@ export const deleteAll = async (): Promise<void> => {
   operations.push(deleteAllCollections(org, Object.values(OrgSubCollection)));
 
   // delete secrets
-  const orgSecrets = await adminDb
+  const orgSecrets = adminDb
     .collection(Collection.Secrets)
     .doc(__organization__);
   operations.push(orgSecrets.delete());

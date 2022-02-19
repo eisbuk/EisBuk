@@ -402,15 +402,17 @@ export const deleteOrphanedBookings = functions
     const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
     const allBookings = await bookingsRef.get();
 
-    const batch = admin.firestore().batch();
+    const toDelete: Promise<any>[] = [];
     allBookings.forEach((doc) => {
       const docRef = doc.ref;
       const { id } = doc.data();
       // delete only the bookings without corresponding customer
       if (!customerIds.includes(id)) {
-        batch.delete(docRef);
+        toDelete.push(docRef.delete());
       }
     });
 
-    return batch.commit();
+    await Promise.all(toDelete);
+
+    return { success: true };
   });
