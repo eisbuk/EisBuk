@@ -6,7 +6,6 @@ import Typography from "@material-ui/core/Typography";
 
 import AcUnit from "@material-ui/icons/AcUnit";
 import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
-import FitnessCenter from "@material-ui/icons/FitnessCenter";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import createStyles from "@material-ui/core/styles/createStyles";
@@ -56,10 +55,8 @@ const Icon: React.FC<IconProps> = ({ slotType, ...props }) => {
   switch (slotType) {
     case SlotType.Ice:
       return <AcUnit {...props} />;
-    case SlotType.OffIceDancing:
+    case SlotType.OffIce:
       return <AccessibilityNew {...props} />;
-    case SlotType.OffIceGym:
-      return <FitnessCenter {...props} />;
     default:
       return null;
   }

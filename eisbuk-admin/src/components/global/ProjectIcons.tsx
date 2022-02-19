@@ -2,7 +2,6 @@ import React from "react";
 
 import AcUnit from "@material-ui/icons/AcUnit";
 import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
-import FitnessCenter from "@material-ui/icons/FitnessCenter";
 
 import { SvgProps } from "@/types/components";
 
@@ -23,8 +22,6 @@ const ProjectIcon: React.FC<Props> = ({ icon, ...props }) => {
       return <AcUnit {...props} />;
     case ProjectIcons.AccessibilityNew:
       return <AccessibilityNew {...props} />;
-    case ProjectIcons.FitnessCenter:
-      return <FitnessCenter {...props} />;
     default:
       return null;
   }

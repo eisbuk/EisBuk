@@ -52,16 +52,10 @@ export const slotsLabelsLists: SlotsLabelList = {
       icon: ProjectIcons.AcUnit,
     },
     {
-      id: SlotType.OffIceDancing,
-      label: SlotType.OffIceDancing,
+      id: SlotType.OffIce,
+      label: SlotType.OffIce,
       color: "secondary",
       icon: ProjectIcons.AccessibilityNew,
-    },
-    {
-      id: SlotType.OffIceGym,
-      label: SlotType.OffIceGym,
-      color: "secondary",
-      icon: ProjectIcons.FitnessCenter,
     },
   ],
 };

@@ -147,7 +147,7 @@ describe("Slot operations ->", () => {
         // updates we're applying to slot
         const updates = {
           categories: Object.values(Category),
-          type: SlotType.OffIceDancing,
+          type: SlotType.OffIce,
           intervals: [
             {
               startTime: "09:00",

@@ -157,7 +157,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         const updatedSlot = {
           ...baseSlot,
           intervals: newIntervals,
-          type: SlotType.OffIceDancing,
+          type: SlotType.OffIce,
         };
         slotRef.set(updatedSlot);
         const expectedSlotsByDay = {
