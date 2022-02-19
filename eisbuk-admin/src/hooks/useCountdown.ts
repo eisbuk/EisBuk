@@ -22,8 +22,8 @@ interface CountdownHelper {
  * Counts down to provided `countdownDate`, ticks each second
  * and returns a `CountdownTuple`
  * @param {DateTime} countdownDate date we're counting down to
- * @returns {string[]} tuple of four two-character `string` representations of
- * countdown values in format: ["dd", "hh", "mm", "ss"]
+ * @returns an object of values (number) until the deadline {days, hours, minutes, seconds}
+ * or `null` if no `countdownDate` provided
  */
 const useCountdown: HookInterface = (countdownDate, tick = "second") => {
   const [countdown, setCountdown] = useState<CountdownStruct | null>(
@@ -63,9 +63,7 @@ const useCountdown: HookInterface = (countdownDate, tick = "second") => {
 
 /**
  * Calculates the time difference between `DateTime.now()` and
- * provided `countdownDate`, returns result in `CountdownTuple`
- *
- * Has the same interface (params, return type) as `useCountdown` hook
+ * provided `countdownDate`, returns result in `CountdownStruct`
  */
 const getCountdownValues: CountdownHelper = (countdownDate) => {
   if (!countdownDate) return null;
