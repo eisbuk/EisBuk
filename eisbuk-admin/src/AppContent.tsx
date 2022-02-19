@@ -11,7 +11,6 @@ import { CollectionSubscription } from "@/types/store";
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
 import LoginRoute from "@/components/auth/LoginRoute";
-import DebugPage from "@/components/debugPage";
 
 import DashboardPage from "@/pages/root";
 import AthletesPage from "@/pages/customers";
@@ -19,6 +18,7 @@ import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
+import DebugPage from "@/pages/debug";
 
 import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
 

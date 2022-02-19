@@ -4,7 +4,13 @@ import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
 
-import { Category, Customer, FIRST_NAMES, LAST_NAMES } from "eisbuk-shared";
+import {
+  Category,
+  Customer,
+  FIRST_NAMES,
+  LAST_NAMES,
+  OrgSubCollection,
+} from "eisbuk-shared";
 
 import { checkUser } from "./utils";
 
@@ -21,7 +27,6 @@ interface Payload {
 export const createTestData = functions
   .region("europe-west6")
   .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
-    /** @TODO maybe create new organization if one doesn't exist */
     await checkUser(organization, context.auth);
 
     functions.logger.info(`Creating ${numUsers} test users`);
@@ -77,7 +82,7 @@ const createUsers = async (
       name,
       surname,
       email: toEmail(`${name}.${surname}@example.com`.toLowerCase()),
-      phone: "12345",
+      phone: "+385992211333",
       category: _.sample(Object.values(Category))!,
       certificateExpiration: DateTime.local()
         .plus({ days: _.random(-40, 200) })
@@ -88,7 +93,10 @@ const createUsers = async (
       covidCertificateSuspended: _.sample([true, false])!,
     };
 
-    await org.collection("customers").doc(customer.id).set(customer);
+    await org
+      .collection(OrgSubCollection.Customers)
+      .doc(customer.id)
+      .set(customer);
   });
 };
 
