@@ -1,10 +1,3 @@
-// #region projectIcons
-export enum ProjectIcons {
-  AcUnit = "AcUnit",
-  AccessibilityNew = "AccessibilityNew",
-}
-// #endregion projectIcons
-
 // #region slotOperationButtons
 /**
  * Used to provide context (`slot`/`day`/`week`) to the slot buttons under the SlotOpeartionButtons button group.

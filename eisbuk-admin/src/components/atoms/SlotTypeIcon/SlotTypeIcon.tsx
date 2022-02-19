@@ -1,38 +1,42 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Box, { BoxProps } from "@material-ui/core/Box";
 import Typography from "@material-ui/core/Typography";
+import Box from "@material-ui/core/Box";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import createStyles from "@material-ui/core/styles/createStyles";
 
-import { SlotType } from "eisbuk-shared";
+import AcUnit from "@material-ui/icons/AcUnit";
+import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
 
-import { slotsLabels } from "@/config/appConfig";
+import { SlotType } from "eisbuk-shared";
 
 import { SlotTypeLabel } from "@/enums/translations";
 
-import ProjectIcon from "@/components/global/ProjectIcons";
+const iconLookup = {
+  [SlotType.Ice]: AcUnit,
+  [SlotType.OffIce]: AccessibilityNew,
+};
 
-interface Props extends BoxProps {
-  type: SlotType;
-}
+const colorLookup: Record<SlotType, "primary" | "secondary"> = {
+  [SlotType.Ice]: "primary",
+  [SlotType.OffIce]: "secondary",
+};
 
-const TypeIcon: React.FC<Props> = ({ type, className: rootClasses }) => {
+const SlotTypeIcon: React.FC<{ type: SlotType; className?: string }> = ({
+  type,
+  className = "",
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const slotLabel = slotsLabels.types[type];
+  const Icon = iconLookup[type];
 
   return (
-    <Box className={[rootClasses, classes.flexCenter].join(" ")}>
-      <ProjectIcon
-        className={classes.typeIcon}
-        icon={slotLabel.icon}
-        fontSize="small"
-      />
-      <Typography className={classes.type} key="type" color={slotLabel.color}>
+    <Box className={[classes.flexCenter, className].join(" ")}>
+      <Icon className={classes.typeIcon} fontSize="small" />
+      <Typography className={classes.type} key="type" color={colorLookup[type]}>
         {t(SlotTypeLabel[type])}
       </Typography>
     </Box>
@@ -58,4 +62,4 @@ const useStyles = makeStyles((theme) =>
   })
 );
 
-export default TypeIcon;
+export default SlotTypeIcon;
