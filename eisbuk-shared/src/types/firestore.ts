@@ -49,6 +49,11 @@ export interface OrganizationData {
   smsFrom?: string;
   smsTemplate?: string;
   smtpUri?: string;
+  /**
+   * Record of flags inticating that given secrets exists
+   * for a given organization
+   */
+  existingSecrets?: string[];
 }
 
 // #endregion organizations
