@@ -23,8 +23,10 @@ import SlotOperationButtons, {
 import SlotTime from "./SlotTime";
 import SlotTypeLabel from "./SlotTypeLabel";
 
-import { __slotId__ } from "./__testData__/testIds";
 import { comparePeriods } from "@/utils/helpers";
+import { getColorForSlotType } from "@/utils/theme";
+
+import { __slotId__ } from "./__testData__/testIds";
 
 export interface SlotCardProps extends SlotInterface {
   /**
@@ -62,6 +64,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
     comparePeriods
   );
 
+  // color used to paint slot card with respect to type
+  const typeColor = getColorForSlotType(slotData.type);
+
   // calculate start time of first interval and end time of last interval
   // for title string rendering
   const intervalValues = Object.values(slotData.intervals || {});
@@ -89,7 +94,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
         onClick={onClick}
       >
         <CardContent className={classes.wrapper}>
-          <SlotTime {...{ startTime, endTime }} />
+          <SlotTime backgroundColor={typeColor} {...{ startTime, endTime }} />
           <Box
             display="flex"
             flexGrow={1}
@@ -117,6 +122,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
           <Box display="flex" justifyContent="space-evenly">
             {intervalStrings.map((interval) => (
               <Typography
+                style={{ backgroundColor: typeColor }}
                 key={interval}
                 component="span"
                 variant="body2"
@@ -245,7 +251,6 @@ const useStyles = makeStyles((theme) =>
     },
     intervalTag: {
       margin: "0.25rem",
-      background: theme.palette.primary.main,
       padding: "0.25rem 0.5rem",
       borderRadius: "0.5rem",
       overflow: "hidden",

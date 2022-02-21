@@ -41,6 +41,15 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
    * @param e change event
    */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  /**
+   * An `onBlur` handler used to add "0" prefix to single digit hours, i.e.
+   * `"9:00"` -> `"09:00"`
+   * @param e blur event
+   */
+  const correctTimestring = (e: React.FocusEvent<HTMLInputElement>) => {
     let newValue = e.target.value;
     if (/^[0-9]:[0-9][0-9]/.test(newValue)) {
       newValue = `0${newValue}`;
@@ -80,7 +89,12 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
       >
         -
       </IconButton>
-      <TextField {...props} onChange={handleChange} value={value} />
+      <TextField
+        {...props}
+        onChange={handleChange}
+        onBlur={correctTimestring}
+        value={value}
+      />
       <IconButton
         color="primary"
         onClick={handleClick(1)}

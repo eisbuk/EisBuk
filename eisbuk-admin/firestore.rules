@@ -1,6 +1,7 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // #region auth-checks
     function isAdminByEmail(request, org) {
         return (
           request.auth.token.email != null &&
@@ -20,6 +21,33 @@ service cloud.firestore {
       let org = get(/databases/$(database)/documents/organizations/$(organization));
       return request.auth != null && (isAdminByEmail(request, org) || isAdminByPhone(request, org));
     }
+    // #endregion auth-checks
+
+    // #region enums
+    function getCategories() {
+      return ["course", "pre-competitive", "competitive", "adults"]
+    }
+    function getSlotTypes() {
+      return ["ice", "off-ice-gym", "off-ice-dancing"]
+    }
+    // #endregion enums
+
+    // #region type-checks
+    function checkRequiredString(input) {
+      return (
+        input is string &&
+        input.size() > 0
+      ) 
+    }
+    function checkOptionalBoolean(data, property) {
+      return (
+        !(property in data) ||
+        data[property] is bool
+      )
+    }
+    // #endregion type-checks
+
+    // #region regex-checks
     // we're using this func to check if the required date is a valid ISO string
     function checkValidDate(date) {
       return (
@@ -28,75 +56,142 @@ service cloud.firestore {
       );
     }
     // we're using this func to check if the optional date is a valid ISO string
-    function checkOptionalValidDate(date) {
+    function checkOptionalValidDate(data, property) {
       // if the field is an empty string, we bypass the check
-      return (date == "")
-        || (
-          date is string
-          && date.matches('[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]')
-        );
+      return (
+        !(property in data) ||
+        data[property] == "" ||
+        checkValidDate(data[property])
+      )
     }
+    function checkValidEmail(email) {
+      return email.matches("[-_\\.a-z0-9A-Z]*@[-_a-z0-9A-Z\\.]*\\.[a-z][a-z]+")
+    }
+    function checkValidPhoneNumber(phone) {
+      return phone.matches('(\\+|00)[0-9]{9,15}')
+    }
+    // #endregion regex-checks
+
+    // #region helpers
+    // Check that the date isn't updated or if updated
+    // should be the same as in the existing resource
+    function checkConsistentDate(data, storedData) {
+      return (
+        !("date" in data) ||
+        data.date == storedData.date
+      )
+    }
+    // #endregion helpers
+
     match /organizations/{organization} {
-      allow create, update: if isAdmin(organization);
-      match /{document=**} {
-        // Administrators can read and delete any object in the organization
-        // for complete write (create/update) we're checking the validity of data at document level
-        allow read, delete: if isAdmin(organization);
+      allow read, write: if isAdmin(organization);
+      
+      // #region slot-checks
+      match /slots/{slotId} {
+        // Only admins can read/delete slots
+        allow read, delete: if isAdmin(organization)
+        // Validate data integrity for create/update
+        allow create, update: if isAdmin(organization) &&
+          // check date
+          checkValidDate(request.resource.data.date) &&
+          // check valid type
+          request.resource.data.type in getSlotTypes() &&
+          // check valid categories
+          request.resource.data.categories.hasOnly(getCategories())
+          // @TODO check valid intervals
       }
-      match /emailQueue/{email} {
-        // Administrators can read and delete any object in the organization
-        // for complete write (create/update) we're checking the validity of data at document level
-        allow read, write: if isAdmin(organization);
-      }
-      match /bookings/{secretKey}/bookedSlots/{slotId} {
-        // Anyone with a 'secretKey' can write to 'bookedSlots' for given customer (secretKey)
-        // Here we're checking for valid date when writing to 'bookedSlots' document
-        allow read, delete: if true;
-        allow create, update: if checkValidDate(request.resource.data.date);
-      }
+      // #endregion slot-checks
+
+      // #region slots-by-day-checks
       match /slotsByDay/{document=**} {
         // Everyone has access to all available slots.
         // Security-wise this is equivalent to showing a form that lets unauthenticated
         // users book their slots, as is the current solution.
         allow read: if true;
       }
-      match /attendance/{document=**} {
-        // Only admin can access attendance
-        // No need for date validation as date gets set by data triggers
-        allow read, write: if isAdmin(organization);
+      // #endregion slots-by-day-checks
+
+      // #endregion bookings-checks
+      match /bookings/{secretKey} {
+        // Anybody with 'secretKey' can read from 'bookings'
+        // No one should be able to write to bookings document (it's done through cloud functions)
+        allow read: if true;
+
+        function checkBookingSlot(slotId, bookingData) {
+          let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
+
+          return (
+            // Check date integrity
+            bookingData.date == bookedSlot.data.date &&
+            // Check interval integrity
+            bookingData.interval in bookedSlot.data.intervals     
+          );
+        }
+        function checkBookedSlotCategory(slotId) {
+          let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
+          let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
+          
+          return customer.data.category in bookedSlot.data.categories
+        }
+        match /bookedSlots/{slotId} {
+          // Anybody with secret key should be able to read and write (with valid data) to 'bookedSlots'
+          allow read, delete: if true;
+          // Check data integrity for create/update
+          allow create, update: if (
+            checkBookingSlot(slotId, request.resource.data) &&
+            checkBookedSlotCategory(slotId)  
+          )
+        }
       }
-      // match /attendance/{slotId} {
-      //   allow create, update: if isAdmin(organization) &&
-      //     checkValidDate(request.resource.data.date)
-      // }
+      // #endregion bookings-checks
+      
+      // #region customer-checks
       match /customers/{customerId} {
-        // By recursive rule, admins can read/write to any document
-        // Here we're providing an extra level of safaty by validating
-        // the dates (birthday, certificateExpiration, covidCertificateReleaseDate)
-        // as valid ISO strings
-        allow create, update: if isAdmin(organization)
-          // the following fields are optional
-          // we're checking for date validity only if the field is defined
-          && (
-            !("birthday" in request.resource.data)
-            || request.resource.data.birthday == ""
-            || checkValidDate(request.resource.data.birthday)
-          )
-          && (
-            !("certificateExpiration" in request.resource.data)
-            || checkOptionalValidDate(request.resource.data.certificateExpiration)
-          )
-          && (
-            !("covidCertificateReleaseDate" in request.resource.data)
-            || checkOptionalValidDate(request.resource.data.covidCertificateReleaseDate)
-          )
+        // Only admins can access customer collection
+        allow read, delete: if isAdmin(organization)
+        // Check data integrity 
+        allow create, update: if (
+          isAdmin(organization) &&
+          // Check required fields
+          checkRequiredString(request.resource.data.name) &&
+          checkRequiredString(request.resource.data.surname) &&
+          // Check optional dates
+          checkOptionalValidDate(request.resource.data, "birthday") &&
+          checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
+          checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
+          // Check category
+          request.resource.data.category in getCategories() &&
+          // Check valid email
+          (
+            !("email" in request.resource.data) || 
+            request.resource.data.email == "" || 
+            checkValidEmail(request.resource.data.email)
+          ) &&
+          // Check valid phone number 
+          (
+            !("phone" in request.resource.data) || 
+            request.resource.data.phone == "" || 
+            checkValidPhoneNumber(request.resource.data.phone)
+          ) &&
+          // Check release date suspended type
+          checkOptionalBoolean(request.resource.data, "covidCertificateSuspended")
+        )
+      } 
+      // #region customer-checks
+
+      // #region attendance-checks
+      match /attendance/{slotId} {
+        // Only admin can access attendance
+        // Only read and (conditional) update access are allowed
+        // Everything else gets updated by cloud function
+        allow read: if isAdmin(organization);
+        allow update: if (
+          isAdmin(organization) &&
+          // Check that the date doesn't change
+          checkConsistentDate(request.resource.data, resource.data)
+        )
       }
-      match /slots/{slotId} {
-        // By recursive rule, admins can read/write to any document
-        // Here we're providing an extra level of safaty by validating the date as valid ISO string
-        allow create, update: if isAdmin(organization) &&
-          checkValidDate(request.resource.data.date);
-      }
+      // #endregion attendance-checks
     }
   }
 }

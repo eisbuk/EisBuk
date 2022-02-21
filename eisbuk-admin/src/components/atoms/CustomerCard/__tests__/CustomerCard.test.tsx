@@ -28,7 +28,9 @@ import {
   __customerEditId__,
   __openBookingsId__,
   __sendBookingsEmailId__,
+  __sendBookingsSMSId__,
 } from "../__testData__/testIds";
+import { SendBookingLinkMethod } from "@/enums/other";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -129,7 +131,7 @@ describe("Customer Card", () => {
   });
 
   describe("Test email button", () => {
-    test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id", () => {
+    test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id and method", () => {
       // mock thunk creator to identity function for easier testing
       const sendMailSpy = jest
         .spyOn(customerActions, "sendBookingsLink")
@@ -139,10 +141,14 @@ describe("Customer Card", () => {
       // the function shouldn't be called before confirmation
       expect(sendMailSpy).not.toHaveBeenCalled();
       screen.getByText(i18n.t(Prompt.SendEmailTitle) as string);
-      const emailConfirmationMessage = new RegExp(i18n.t(Prompt.ConfirmEmail));
-      screen.getByText(emailConfirmationMessage);
+      screen.getByText(
+        i18n.t(Prompt.ConfirmEmail, { email: saul.email }) as string
+      );
       screen.getByText("Yes").click();
-      expect(mockDispatch).toHaveBeenCalledWith(saul.id);
+      expect(mockDispatch).toHaveBeenCalledWith({
+        customerId: saul.id,
+        method: SendBookingLinkMethod.Email,
+      });
     });
 
     test("should disable the button if secretKey not defined", () => {
@@ -164,17 +170,67 @@ describe("Customer Card", () => {
     test("should disable the button if email is not provided", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { email, ...noEmailSaul } = saul;
-      render(
-        <CustomerCard onClose={() => {}} customer={noEmailSaul as Customer} />
-      );
+      render(<CustomerCard onClose={() => {}} customer={noEmailSaul} />);
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
         "disabled",
         true
       );
     });
+  });
 
+  describe("Test SMS button", () => {
+    test("should call sendBookingsLink function on sms button click, after confirming with the dialog, passing appropriate customer id and method", () => {
+      // mock thunk creator to identity function for easier testing
+      const sendBookingsSpy = jest
+        .spyOn(customerActions, "sendBookingsLink")
+        .mockImplementation((payload) => payload as any);
+      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      screen.getByTestId(__sendBookingsSMSId__).click();
+      // the function shouldn't be called before confirmation
+      expect(sendBookingsSpy).not.toHaveBeenCalled();
+      screen.getByText(i18n.t(Prompt.SendSMSTitle) as string);
+      screen.getByText(
+        i18n.t(Prompt.ConfirmSMS, { phone: saul.phone }) as string
+      );
+      screen.getByText("Yes").click();
+      expect(mockDispatch).toHaveBeenCalledWith({
+        customerId: saul.id,
+        method: SendBookingLinkMethod.SMS,
+      });
+    });
+
+    test("should disable the button if secretKey not defined", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { secretKey, ...noSecretKeySaul } = saul;
+      render(
+        <CustomerCard
+          onClose={() => {}}
+          customer={noSecretKeySaul as Customer}
+        />
+      );
+
+      expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+
+    test("should disable the button if phone is not provided", () => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { phone, ...noPhoneSaul } = saul;
+      render(
+        <CustomerCard onClose={() => {}} customer={noPhoneSaul as Customer} />
+      );
+      expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(
+        "disabled",
+        true
+      );
+    });
+  });
+
+  describe("Test bookings redirect button", () => {
     test("should redirect to 'bookings' route for a customer on bookings button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul as Customer} />);
+      render(<CustomerCard onClose={() => {}} customer={saul} />);
       screen.getByTestId(__openBookingsId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`

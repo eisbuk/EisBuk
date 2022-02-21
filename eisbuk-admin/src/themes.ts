@@ -8,6 +8,8 @@ import { getOrganization } from "@/lib/getters";
 const base = {
   palette: {
     absent: colors.brown[200],
+    ice: colors.blue[400],
+    offIce: colors.orange[400],
   },
   typography: {
     htmlFontSize: 16,

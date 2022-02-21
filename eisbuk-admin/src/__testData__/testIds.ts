@@ -45,3 +45,7 @@ export const __create100Athletes__ = "create-athletes";
 // #region notificationButton
 export const __notificationButton__ = "notification-button";
 // #endregion notificationButton
+
+// #region birthdayBadge
+export const __birthdayMenu__ = "birthday-menu";
+// #endregion birthdayBadge

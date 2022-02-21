@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
@@ -15,6 +15,7 @@ import { useTranslation } from "react-i18next";
 import { BirthdayMenu as BirthdayEnums } from "@/enums/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 import { DateTime } from "luxon";
+import { __birthdayMenu__ } from "@/__testData__/testIds";
 interface Props {
   customers: CustomersByBirthday[];
   onClickShowAll: () => void;
@@ -37,6 +38,16 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
 
+  const calculateTimeDiff = (now: DateTime) =>
+    now.plus({ day: 1 }).startOf("day").toMillis() - now.toMillis();
+  const [timeDiff, setTimeDiff] = useState(calculateTimeDiff(DateTime.now()));
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setTimeDiff(calculateTimeDiff(DateTime.now()));
+    }, timeDiff);
+    return () => clearTimeout(timeout);
+  }, [timeDiff]);
   const getTodaysBirthdays = useMemo(
     (): number =>
       customers.length > 0 &&
@@ -52,6 +63,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
         className={classes.badge}
         color="error"
         badgeContent={getTodaysBirthdays}
+        data-testid={__birthdayMenu__}
       >
         <IconButton onClick={handleBirthdaysClick}>
           <Cake />

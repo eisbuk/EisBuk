@@ -6,11 +6,13 @@ import {
   Customer,
   OrgSubCollection,
   Category,
+  EmailMessage,
+  SMSMessage,
 } from "eisbuk-shared";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { db, adminDb } from "@/__testSetup__/firestoreSetup";
+import { db } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { NotificationMessage } from "@/enums/translations";
@@ -22,6 +24,8 @@ import {
 } from "../customerOperations";
 import * as appActions from "../appActions";
 
+import * as firebaseUtils from "@/utils/firebase";
+
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { createTestStore, deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
@@ -31,6 +35,8 @@ import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
+import { SendBookingLinkMethod } from "@/enums/other";
+import { CloudFunction } from "@/enums/functions";
 
 const customersPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
 
@@ -76,7 +82,7 @@ const getState = () => ({} as any);
  */
 const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
 
-describe("customerOperations", () => {
+xdescribe("customerOperations", () => {
   beforeEach(async () => {
     await deleteAll();
     await loginDefaultUser();
@@ -229,14 +235,30 @@ describe("customerOperations", () => {
         },
       });
 
+    // mocks we're using to test calling the right cloud function
+    const mockSendMail = jest.fn();
+    const mockSendSMS = jest.fn();
+    jest
+      .spyOn(firebaseUtils, "invokeFunction")
+      .mockImplementation((func) =>
+        func === CloudFunction.SendEmail
+          ? mockSendMail
+          : func === CloudFunction.SendSMS
+          ? mockSendSMS
+          : jest.fn()
+      );
+
     testWithEmulator(
-      "should queue the right mail to email queue in firestore and show success notification",
+      "should call a mail sending cloud function if method = 'email'",
       async () => {
-        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        await sendBookingsLink({
+          customerId: saul.id,
+          method: SendBookingLinkMethod.Email,
+        })(mockDispatch, getState);
         // check results
-        const mailQueue = await adminDb.collection(Collection.EmailQueue).get();
-        expect(mailQueue.docs.length).toEqual(1);
-        const sentMail = mailQueue.docs[0].data();
+        expect(mockSendMail).toHaveBeenCalledTimes(1);
+        const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
+
         expect(sentMail.to).toEqual(saul.email);
         expect(sentMail.message.subject).toBeDefined();
         // we're not matching the complete html of message
@@ -244,10 +266,44 @@ describe("customerOperations", () => {
         const bookingLink = `https://localhost/customer_area/${saul.secretKey}`;
         expect(sentMail.message.html.includes(bookingLink)).toBeTruthy();
         expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
+
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           mockEnqueueSnackbar({
             message: i18n.t(NotificationMessage.EmailSent),
+            closeButton: true,
+            options: {
+              variant: NotifVariant.Success,
+            },
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should call an SMS sending cloud function if method = 'sms'",
+      async () => {
+        await sendBookingsLink({
+          customerId: saul.id,
+          method: SendBookingLinkMethod.SMS,
+        })(mockDispatch, getState);
+        // check results
+        expect(mockSendSMS).toHaveBeenCalledTimes(1);
+        const sentSMS = mockSendSMS.mock.calls[0][0] as SMSMessage;
+
+        expect(sentSMS.to).toEqual(saul.phone);
+        // we're not matching the complete html of message
+        // but are asserting that it contains important parts
+        const bookingLink = `https://localhost/customer_area/${saul.secretKey}`;
+        expect(sentSMS.message.includes(bookingLink)).toBeTruthy();
+        expect(sentSMS.message.includes(saul.name)).toBeTruthy();
+        // the sms should be clean, without markup
+        expect(sentSMS.message.includes("p>")).toBeFalsy();
+
+        // check for success notification
+        expect(mockDispatch).toHaveBeenCalledWith(
+          mockEnqueueSnackbar({
+            message: i18n.t(NotificationMessage.SMSSent),
             closeButton: true,
             options: {
               variant: NotifVariant.Success,
@@ -265,7 +321,10 @@ describe("customerOperations", () => {
           throw new Error();
         };
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        await sendBookingsLink(saul.id)(mockDispatch, getState);
+        await sendBookingsLink({
+          customerId: saul.id,
+          method: SendBookingLinkMethod.Email,
+        })(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );

@@ -33,20 +33,21 @@ declare global {
        * - creates a default organization with given name
        * - creates/logs-in a default user (admin of default organization)
        * @param {boolean} doLogin `true` by default, if `false`, creates an organization but does not log in
+       * @returns {Chainable<string>} a `PromiseLike` which yielding `string` a name of the current organization
        */
-      initAdminApp: (doLogin?: boolean) => Chainable<Element>;
+      initAdminApp: (doLogin?: boolean) => Chainable<string>;
       /**
        * A sort of a proxy handler: passes organization and file names back to node environment
        * process (using `cy.task` API). The files get read and parsed (JSON)
        * and firestore gets updated with combined test data (read from all fo the provided files)
        * @param {string} organization the unique name of the firestore organization used for current test
        * @param {string[]} files an array of names of the JSON files containing test data
-       * we wish to update firestore with
+       * @returns {Chainable<null>} a `PromiseLike` yielding `null` on success
        */
       updateFirestore: (
         organization: string,
         files: string[]
-      ) => Chainable<Element>;
+      ) => Chainable<null>;
     }
   }
 }
@@ -108,12 +109,11 @@ const addFirebaseCommands = (): void => {
           defaultUser.email,
           defaultUser.password
         );
-        console.log(`Logged in as ${defaultUser.email}`);
       } else {
         await signOut(auth);
-        console.log(`Logged out`);
       }
     }
+    return organization;
   });
 
   Cypress.Commands.add(

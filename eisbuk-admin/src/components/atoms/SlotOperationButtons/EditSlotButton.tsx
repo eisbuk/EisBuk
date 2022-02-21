@@ -33,7 +33,10 @@ export const EditSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
 
   const [openForm, setOpenForm] = useState(false);
 
-  const showForm = () => setOpenForm(true);
+  const showForm = (e: React.SyntheticEvent) => {
+    e.stopPropagation();
+    setOpenForm(true);
+  };
   const closeForm = () => setOpenForm(false);
 
   // prevent component from rendering and log error to console (but don't throw)

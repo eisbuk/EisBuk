@@ -162,10 +162,12 @@ module.exports = {
     "promise/always-return": 2,
 
     // Enforces the use of catch() on un-returned promises
-    "promise/catch-or-return": 2,
+    // Disabled for cypress' PromiseLike syntax (no catch method)
+    "promise/catch-or-return": "off",
 
     // Warn against nested then() or catch() statements
-    "promise/no-nesting": 1,
+    // If we have nested promises it's for a very good reason
+    "promise/no-nesting": "off",
 
     // Swotch strings to single quote (offset recommended)
     quotes: "off",

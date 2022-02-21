@@ -1,10 +1,13 @@
 import { CustomerBookings } from "eisbuk-shared";
 
 import { testDate } from "@/__testData__/date";
+import { baseSlot } from "@/__testData__/slots";
+
+const intervals = Object.keys(baseSlot.intervals);
 
 const baseBooking = {
   date: testDate,
-  interval: "09:00-10:00",
+  interval: intervals[0],
 };
 /**
  * Initial bookings within customer's `bookedSlots`. Should not be altered during tests
@@ -22,7 +25,7 @@ export const bookingId = "booked-slot-0";
  */
 export const testBooking = {
   date: testDate,
-  interval: "09:00-11:00",
+  interval: intervals[1],
 };
 /**
  * Secret key of our test customer
