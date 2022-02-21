@@ -42,26 +42,13 @@ import {
  */
 export interface OrganizationData {
   admins: string[];
-  /**
-   * String used as `sender` when sending SMS.
-   * If not provided, will fall back to organization name
-   */
-  smsSender?: string;
-  /**
-   * String used as `from` when sending Email.
-   * If not provided, will fall back to organization name
-   * @TODO this isn't yet functional, apply when making email per organization
-   */
-  emailSender?: string;
-  /**
-   * Full URL (including host and endpoint) of SMS sending service provider.
-   */
-  smsUrl?: string;
-  /**
-   * Record of flags inticating that given secrets exists
-   * for a given organization
-   */
-  existingSecrets?: string[];
+  organizationName?: string;
+  emailNameFrom?: string;
+  emailFrom?: string;
+  emailTemplate?: string;
+  smsFrom?: string;
+  smsTemplate?: string;
+  smtpUri?: string;
 }
 
 // #endregion organizations

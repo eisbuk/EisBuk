@@ -33,7 +33,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const [enableEdit, setEnableEdit] = useState(false);
 
   const handleSubmit = (orgData: OrganizationData) => {
-    dispatch(updateOrganization(orgData, organization.name || ""));
+    dispatch(updateOrganization(orgData, organization.organizationName || ""));
     setEnableEdit(false);
   };
 
@@ -50,8 +50,8 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   ];
   const emailFields: Partial<FieldProps>[] = [
     {
-      name: "emailName",
-      label: "Email Name",
+      name: "emailNameFrom",
+      label: "Email Name From",
     },
     {
       name: "emailFrom",
@@ -64,11 +64,11 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   ];
   const smsFields: Partial<FieldProps>[] = [
     {
-      name: "SmsFrom",
+      name: "smsFrom",
       label: "SMS From",
     },
     {
-      name: "SmsTemplate",
+      name: "smsTemplate",
       label: "SMS Template",
     },
   ];
@@ -77,7 +77,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   return (
     <>
       <div className={classes.title}>
-        <Typography variant="h4">Organization Settings</Typography>
+        <Typography variant="h4">{`${organization.organizationName} Settings`}</Typography>
       </div>
       <div className={classes.content}>
         <Formik
