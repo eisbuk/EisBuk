@@ -33,13 +33,12 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const [enableEdit, setEnableEdit] = useState(false);
 
   const handleSubmit = (orgData: OrganizationData) => {
-    dispatch(updateOrganization(orgData));
+    dispatch(updateOrganization(orgData, organization.name || ""));
     setEnableEdit(false);
   };
 
-  const handleEnableEdit = () => {
-    // on enableEdit being true (clicking cancel)
-    // the form should bring back removed admins
+  const handleEnableEdit = (resetForm: () => void) => {
+    if (enableEdit) resetForm();
     setEnableEdit(!enableEdit);
   };
 
@@ -86,7 +85,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
           onSubmit={handleSubmit}
           validateOnChange={false}
         >
-          {({ errors, isSubmitting, isValidating, values }) => (
+          {({ errors, isSubmitting, isValidating, values, resetForm }) => (
             <Form className={classes.form}>
               <FormControl component="fieldset">
                 <h5 className={classes.intervalsTitle}>Admins</h5>
@@ -163,7 +162,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
 
               <div className={classes.submitButtonArea}>
                 <Button
-                  onClick={handleEnableEdit}
+                  onClick={() => handleEnableEdit(resetForm)}
                   variant="contained"
                   disabled={
                     Boolean(Object.keys(errors).length) &&
@@ -199,23 +198,24 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   );
 };
 
-const AdminsField: React.FC<{ enableEdit: boolean; currentUser: string }> = ({
-  enableEdit,
-  currentUser,
-}) => {
+const AdminsField: React.FC<{
+  enableEdit: boolean;
+  currentUser: string;
+}> = ({ enableEdit, currentUser }) => {
   const [{ value: admins }, , { setValue }] = useField<string[]>("admins");
 
   const classes = useStyles();
   const [admin, setAdmin] = useState("");
-
   const handleSetAdmin = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdmin(e.target.value);
   };
   const removeAdmin = (admin: string) => {
     if (admin === currentUser) return;
+
     const filteredAdmins = admins.filter((a) => a !== admin);
     setValue(filteredAdmins);
   };
+
   const addAdmin = () => {
     if (admin === "") return;
     const newAdmins = [...admins, admin];

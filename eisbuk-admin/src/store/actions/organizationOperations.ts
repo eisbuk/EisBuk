@@ -14,7 +14,7 @@ const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${__organization__}`;
 
 export const updateOrganization =
-  (orgData: OrganizationData): FirestoreThunk =>
+  (orgData: OrganizationData, name: string): FirestoreThunk =>
   async (dispatch) => {
     try {
       const db = getFirestore();
@@ -24,7 +24,7 @@ export const updateOrganization =
       dispatch(
         enqueueNotification({
           key: new Date().getTime() + Math.random(),
-          message: `${orgData.name} ${i18n.t(NotificationMessage.Updated)}`,
+          message: `${name} ${i18n.t(NotificationMessage.Updated)}`,
           options: {
             variant: NotifVariant.Success,
           },
