@@ -3,7 +3,7 @@ import { getAuth, signOut } from "@firebase/auth";
 
 import {
   Collection,
-  HTTPErrors,
+  HTTPSErrors,
   OrgSubCollection,
   SlotType,
 } from "eisbuk-shared";
@@ -263,7 +263,7 @@ describe("Migrations", () => {
       await signOut(getAuth());
       await expect(
         invokeFunction(CloudFunction.DeleteOrphanedBookings)()
-      ).rejects.toThrow(HTTPErrors.Unauth);
+      ).rejects.toThrow(HTTPSErrors.Unauth);
     });
   });
 
