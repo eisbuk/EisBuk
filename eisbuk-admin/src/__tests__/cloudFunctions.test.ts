@@ -1,4 +1,4 @@
-import { httpsCallable } from "@firebase/functions";
+import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { signOut } from "@firebase/auth";
 
 import { HTTPSErrors } from "eisbuk-shared";
@@ -65,9 +65,16 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if no recipient, html or subject provided",
       async () => {
-        await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)({ organization })
-        ).rejects.toThrow(HTTPSErrors.MissingParameter);
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization });
+        } catch (error) {
+          const { code, details } = error as FunctionsError;
+          expect(code).toEqual("functions/invalid-argument");
+          expect(details).toEqual({ missingFields: ["to", "subject", "html"] });
+        }
       }
     );
   });

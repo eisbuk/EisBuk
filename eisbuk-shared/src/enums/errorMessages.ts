@@ -3,7 +3,7 @@ export enum HTTPSErrors {
   NoPayload = "No request payload provided",
   Unauth = "Unathorized",
   TimedOut = "Function timed out",
-  MissingParameter = "One or more required parameters are missing from the payloady",
+  MissingParameter = "One or more required parameters are missing from the payload",
 }
 
 export enum SendSMSErrors {

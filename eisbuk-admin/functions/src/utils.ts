@@ -246,7 +246,7 @@ export const checkRequiredFields = (
 
   const missingFields: string[] = [];
 
-  Object.keys(requiredFields).forEach((field) => {
+  requiredFields.forEach((field) => {
     if (!payload[field]) {
       missingFields.push(field);
     }
