@@ -61,7 +61,9 @@
     "InvalidTime": "Invalid time format (\"HH:mm\")",
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
     "InvalidPhone": "Please enter a valid phone format: phone number prepended with '+' sign and country code (i.e. +385 99 2222 555)",
-    "TimeMismatch": "Start time is greater than end time"
+    "TimeMismatch": "Start time is greater than end time",
+    "InvalidSmsFrom": "Invalid format: Only letter or numbers and no symbols/spaces",
+    "InvalidSmsFromLength": "Invalid format: Maximum 11 characters"
   },
 
   "Prompt": {

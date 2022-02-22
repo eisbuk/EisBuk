@@ -72,6 +72,8 @@ export enum ValidationMessage {
   InvalidDate = "Validations.InvalidDate",
   InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
+  InvalidSmsFrom = "Validations.InvalidSmsFrom",
+  InvalidSmsFromLength = "Validations.InvalidSmsFromLength",
 }
 // #endregion forms
 

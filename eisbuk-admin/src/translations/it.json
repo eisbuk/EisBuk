@@ -61,7 +61,9 @@
     "InvalidTime": "Formato dell'ora non valido (\"HH:mm\")",
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
-    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
+    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
+    "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
+    "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri"
   },
 
   "Prompt": {

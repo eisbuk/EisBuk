@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import * as Yup from "yup";
 import { OrganizationData } from "eisbuk-shared/dist";
 
 import { Formik, Field, Form, useField } from "formik";
+import { ValidationMessage } from "@/enums/translations";
 
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
@@ -15,7 +17,16 @@ import clsx from "clsx";
 import { useDispatch, useSelector } from "react-redux";
 import { getLocalAuth } from "@/store/selectors/auth";
 import { updateOrganization } from "@/store/actions/organizationOperations";
+import i18n from "@/i18next/i18n";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
 
+// #region validations
+const OrganizationValidation = Yup.object().shape({
+  smsFrom: Yup.string()
+    .matches(/^[a-z0-9]+$/, i18n.t(ValidationMessage.InvalidSmsFrom))
+    .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
+});
+// #endregion validations
 interface Props {
   organization: OrganizationData;
 }
@@ -64,10 +75,6 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   ];
   const smsFields: Partial<FieldProps>[] = [
     {
-      name: "smsFrom",
-      label: "SMS From",
-    },
-    {
       name: "smsUrl",
       label: "SMS Url",
     },
@@ -88,6 +95,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
           {...{ initialValues: { ...organization } }}
           onSubmit={handleSubmit}
           validateOnChange={false}
+          validationSchema={OrganizationValidation}
         >
           {({ errors, isSubmitting, isValidating, values, resetForm }) => (
             <Form className={classes.form}>
@@ -140,6 +148,21 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
                 </div>
                 <h5 className={classes.intervalsTitle}>SMS</h5>
                 <div className={classes.fieldSection}>
+                  <div className={classes.smsFromField}>
+                    <Field
+                      key="smsFrom"
+                      label="SMS From"
+                      name="smsFrom"
+                      className={classes.field}
+                      as={TextField}
+                      aria-label="SMS From"
+                      variant={enableEdit ? "outlined" : "filled"}
+                      disabled={!enableEdit}
+                      value={values.smsFrom || ""}
+                      error={errors.smsFrom}
+                    />
+                    {<ErrorMessage>{errors.smsFrom}</ErrorMessage>}
+                  </div>
                   {smsFields.map((field) => (
                     <Field
                       key={field.name}
@@ -374,6 +397,10 @@ const useStyles = makeStyles((theme) => ({
   },
   saveButton: {
     marginLeft: "1rem",
+  },
+  smsFromField: {
+    width: "21rem",
+    marginRight: theme.spacing(2),
   },
 }));
 // #endregion styles
