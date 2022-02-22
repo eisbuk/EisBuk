@@ -50,8 +50,8 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   ];
   const emailFields: Partial<FieldProps>[] = [
     {
-      name: "emailNameFrom",
-      label: "Email Name From",
+      name: "emailSender",
+      label: "Email Sender Name",
     },
     {
       name: "emailFrom",
@@ -66,6 +66,10 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
     {
       name: "smsFrom",
       label: "SMS From",
+    },
+    {
+      name: "smsUrl",
+      label: "SMS Url",
     },
     {
       name: "smsTemplate",
@@ -292,7 +296,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(2),
-    width: "23rem",
+    width: "21rem",
   },
   fieldSection: {
     display: "flex",

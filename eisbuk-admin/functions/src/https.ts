@@ -80,7 +80,7 @@ export const sendSMS = functions
 
       const smsUrl = orgData.smsUrl!;
       // Non numeric senders must be 11 chars or less
-      const smsSender = (orgData.smsSender || organization!)
+      const smsSender = (orgData.smsFrom || organization!)
         .toString()
         .substring(0, 11);
       functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);

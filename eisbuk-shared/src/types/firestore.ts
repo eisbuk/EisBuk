@@ -43,12 +43,21 @@ import {
 export interface OrganizationData {
   admins: string[];
   organizationName?: string;
-  emailNameFrom?: string;
   emailFrom?: string;
+  /**
+   * String used as `from` when sending Email.
+   * If not provided, will fall back to organization name
+   * @TODO this isn't yet functional, apply when making email per organization
+   */
+  emailSender?: string;
   emailTemplate?: string;
+  smtpUri?: string;
   smsFrom?: string;
   smsTemplate?: string;
-  smtpUri?: string;
+  /**
+   * Full URL (including host and endpoint) of SMS sending service provider.
+   */
+  smsUrl?: string;
   /**
    * Record of flags inticating that given secrets exists
    * for a given organization
