@@ -196,7 +196,9 @@ jobs:
           start: yarn emulators:start
           working-directory: eisbuk-admin
           wait-on: http://localhost:8080, http://localhost:5000
-          record: true
+          # skip recording if no 'secrets.CYPRESS_KEY' found
+          # we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
+          record: ${{ secrets.CYPRESS_KEY != 0 }}
           config-file: cypress-ci.json
         env:
           # pass the Dashboard record key as an environment variable
