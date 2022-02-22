@@ -248,12 +248,13 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
             const customerBookingsRef = bookingsRef.doc(secretKey);
 
             // check if customers booking info needs migrating
-            const customerInfo =
-              customerBooking.data() as Partial<DeprecatedBookingsMeta> &
-                Partial<CustomerBase>;
+            const customerInfo = customerBooking.data() as Partial<DeprecatedBookingsMeta> &
+              Partial<CustomerBase>;
             if (customerInfo.customer_id) {
-              const { customer_id: id, ...custoemrData } =
-                customerInfo as DeprecatedBookingsMeta;
+              const {
+                customer_id: id,
+                ...custoemrData
+              } = customerInfo as DeprecatedBookingsMeta;
               const customerBase: CustomerBase = { ...custoemrData, id };
               // queue updates
               batch.set(customerBookingsRef, customerBase);
@@ -404,11 +405,10 @@ export const deleteOrphanedBookings = functions
 
     const toDelete: Promise<any>[] = [];
     allBookings.forEach((doc) => {
-      const docRef = doc.ref;
       const { id } = doc.data();
       // delete only the bookings without corresponding customer
       if (!customerIds.includes(id)) {
-        toDelete.push(docRef.delete());
+        toDelete.push(doc.ref.delete());
       }
     });
 
