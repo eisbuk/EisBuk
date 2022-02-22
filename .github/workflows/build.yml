@@ -196,11 +196,11 @@ jobs:
           start: yarn emulators:start
           working-directory: eisbuk-admin
           wait-on: http://localhost:8080, http://localhost:5000
-          record: true
+          record: ${{ secrets.NON_EXISTING_CYPRESS_KEY != 0 }}
           config-file: cypress-ci.json
         env:
           # pass the Dashboard record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_KEY }}
+          CYPRESS_RECORD_KEY: ${{ secrets.NON_EXISTING_CYPRESS_KEY }}
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
