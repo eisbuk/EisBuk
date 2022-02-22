@@ -168,7 +168,7 @@ export interface CustomerBase {
   name: string;
   surname: string;
   category: Category;
-  // eslint-disable-next-line camelcase
+  deleted?: boolean;
 }
 /**
  * Customer entry in the Firestore DB
@@ -182,7 +182,6 @@ export interface Customer extends CustomerBase {
   covidCertificateReleaseDate?: string;
   covidCertificateSuspended?: boolean;
   subscriptionNumber?: string;
-  deleted?: boolean;
 }
 /**
  * Object with birthday prop and customer prop

@@ -58,12 +58,26 @@ export const createTestStore = ({
  * @param collections to delete
  * @returns
  */
-export const deleteAll = async (): Promise<FirebaseFirestore.WriteResult[]> => {
+export const deleteAll = async (): Promise<void> => {
   const org = adminDb
     .collection(Collection.Organizations)
     .doc(__organization__);
 
-  return deleteAllCollections(org, Object.values(OrgSubCollection));
+  const operations: Promise<any>[] = [];
+
+  // delete org and subcollections
+  operations.push(deleteAllCollections(org, Object.values(OrgSubCollection)));
+
+  // delete secrets
+  const orgSecrets = adminDb
+    .collection(Collection.Secrets)
+    .doc(__organization__);
+  operations.push(orgSecrets.delete());
+
+  // remove `existingSecrets` from organization
+  operations.push(org.set({ existingSecrets: [] }, { merge: true }));
+
+  await Promise.all(operations);
 };
 
 /**
@@ -77,7 +91,7 @@ export const deleteAllCollections = async (
     | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
     | FirebaseFirestore.Firestore,
   collections: string[]
-): Promise<FirebaseFirestore.WriteResult[]> => {
+): Promise<void> => {
   const toDelete: Promise<FirebaseFirestore.WriteResult>[] = [];
 
   for (const coll of collections) {
@@ -88,5 +102,5 @@ export const deleteAllCollections = async (
     });
   }
 
-  return Promise.all(toDelete);
+  await Promise.all(toDelete);
 };

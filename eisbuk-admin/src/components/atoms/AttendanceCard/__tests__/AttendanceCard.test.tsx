@@ -328,7 +328,7 @@ describe("AttendanceCard", () => {
    * This is temporarily skipped as it requires both MutationObserver and firestore emulators
    * @TODO udpate this when such operations are possible
    */
-  xdescribe("Test syncronization on multiple views", async () => {
+  xdescribe("Test syncronization on multiple views", () => {
     testWithEmulator(
       "should update attendance on both views, without disabling any",
       async () => {

@@ -239,7 +239,7 @@ xdescribe("customerOperations", () => {
     const mockSendMail = jest.fn();
     const mockSendSMS = jest.fn();
     jest
-      .spyOn(firebaseUtils, "invokeFunction")
+      .spyOn(firebaseUtils, "createCloudFunctionCaller")
       .mockImplementation((func) =>
         func === CloudFunction.SendEmail
           ? mockSendMail

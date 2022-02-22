@@ -248,12 +248,13 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
             const customerBookingsRef = bookingsRef.doc(secretKey);
 
             // check if customers booking info needs migrating
-            const customerInfo =
-              customerBooking.data() as Partial<DeprecatedBookingsMeta> &
-                Partial<CustomerBase>;
+            const customerInfo = customerBooking.data() as Partial<DeprecatedBookingsMeta> &
+              Partial<CustomerBase>;
             if (customerInfo.customer_id) {
-              const { customer_id: id, ...custoemrData } =
-                customerInfo as DeprecatedBookingsMeta;
+              const {
+                customer_id: id,
+                ...custoemrData
+              } = customerInfo as DeprecatedBookingsMeta;
               const customerBase: CustomerBase = { ...custoemrData, id };
               // queue updates
               batch.set(customerBookingsRef, customerBase);
@@ -382,4 +383,36 @@ export const addIdsToCustomers = functions
       functions.logger.error(err);
       return { success: false };
     }
+  });
+
+export const deleteOrphanedBookings = functions
+  .region("europe-west6")
+  .https.onCall(async ({ organization }, { auth }) => {
+    await checkUser(organization, auth);
+
+    const orgRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+
+    // get all customers and bookings
+    const allCustomers = await orgRef
+      .collection(OrgSubCollection.Customers)
+      .get();
+    const customerIds = allCustomers.docs.map(({ id }) => id);
+    const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
+    const allBookings = await bookingsRef.get();
+
+    const toDelete: Promise<any>[] = [];
+    allBookings.forEach((doc) => {
+      const { id } = doc.data();
+      // delete only the bookings without corresponding customer
+      if (!customerIds.includes(id)) {
+        toDelete.push(doc.ref.delete());
+      }
+    });
+
+    await Promise.all(toDelete);
+
+    return { success: true };
   });
