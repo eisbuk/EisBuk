@@ -15,7 +15,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
 import useTitle from "@/hooks/useTitle";
 
-import { invokeFunction } from "@/utils/firebase";
+import { createCloudFunctionCaller } from "@/utils/firebase";
 
 const auth = getAuth();
 
@@ -25,7 +25,7 @@ const auth = getAuth();
  * @returns
  */
 export const createAdminTestUsers = async (): Promise<void> => {
-  await invokeFunction(CloudFunction.CreateOrganization)();
+  await createCloudFunctionCaller(CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
   try {
     await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
@@ -50,9 +50,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() =>
-            invokeFunction(CloudFunction.CreateTestData)({ numUsers: 10 })
-          }
+          onClick={createCloudFunctionCaller(CloudFunction.CreateTestData, {
+            numUsers: 10,
+          })}
           color="primary"
           variant="contained"
         >
@@ -61,7 +61,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() => invokeFunction(CloudFunction.CreateTestSlots)()}
+          onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
           color="primary"
           variant="contained"
         >
@@ -70,9 +70,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() =>
-            invokeFunction(CloudFunction.MigrateSlotsToPluralCategories)()
-          }
+          onClick={createCloudFunctionCaller(
+            CloudFunction.MigrateSlotsToPluralCategories
+          )}
           color="primary"
           variant="contained"
         >
@@ -81,7 +81,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() => invokeFunction(CloudFunction.CreateStaleTestData)()}
+          onClick={createCloudFunctionCaller(CloudFunction.CreateStaleTestData)}
           color="primary"
           variant="contained"
         >
@@ -90,7 +90,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() => invokeFunction(CloudFunction.MigrateToNewDataModel)()}
+          onClick={createCloudFunctionCaller(
+            CloudFunction.MigrateToNewDataModel
+          )}
           color="primary"
           variant="contained"
         >
@@ -99,7 +101,7 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() => invokeFunction(CloudFunction.AddIdsToCustomers)()}
+          onClick={createCloudFunctionCaller(CloudFunction.AddIdsToCustomers)}
           color="primary"
           variant="contained"
         >
@@ -108,7 +110,9 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={() => invokeFunction(CloudFunction.DeleteOrphanedBookings)()}
+          onClick={createCloudFunctionCaller(
+            CloudFunction.DeleteOrphanedBookings
+          )}
           color="primary"
           variant="contained"
         >

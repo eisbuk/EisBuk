@@ -31,7 +31,7 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
-import { invokeFunction } from "@/utils/firebase";
+import { createCloudFunctionCaller } from "@/utils/firebase";
 import { CloudFunction } from "@/enums/functions";
 import { getCustomersRecord } from "../selectors/customers";
 import { Routes } from "@/enums/routes";
@@ -168,7 +168,7 @@ export const sendBookingsLink: SendBookingsLink =
           message = sms;
       }
 
-      await invokeFunction(handler)({ to, message });
+      await createCloudFunctionCaller(handler, { to, message })();
 
       const successMessage =
         method === SendBookingLinkMethod.Email
