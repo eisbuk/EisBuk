@@ -91,7 +91,7 @@ export const sendSMS = functions
 
     const data = {
       message,
-      sender,
+      smsFrom,
       recipients: [{ msisdn: to }],
     };
     functions.logger.log("Sending POST data:", data);
