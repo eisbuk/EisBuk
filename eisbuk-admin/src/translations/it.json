@@ -123,9 +123,9 @@
   },
 
   "BookingCountdownMessage": {
-    "FirstDeadline": "Hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong> (fino al {{ date, dd/MM/yyyy }}) per prenotare il mese di {{ date, MMMM }}.",
-    "SecondDeadline": "Termine di prenotazione per il mese di {{ date, MMMM }} esteso fino al {{ date, dd/MM/yyyy }}: hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong>.",
-    "BookingsLocked": "Le prenotazioni per questo periodo sono bloccate"
+    "FirstDeadline": "Hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong> (fino al {{ date, dd/MM/yyyy }}) per prenotare il mese di {{ month, MMMM }}.",
+    "SecondDeadline": "Termine di prenotazione per il mese di {{ month, MMMM }} esteso fino al {{ date, dd/MM/yyyy }}: hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong>.",
+    "BookingsLocked": "Le prenotazioni per {{ month, MMMM }} sono bloccate"
   },
 
   "Flags": {

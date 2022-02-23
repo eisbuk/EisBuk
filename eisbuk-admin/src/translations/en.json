@@ -123,9 +123,9 @@
   },
 
   "BookingCountdownMessage": {
-    "FirstDeadline": "Bookings deadline in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }}) ",
-    "SecondDeadline": "Extended bookings deadline in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }})",
-    "BookingsLocked": "Bookings are locked for this period"
+    "FirstDeadline": "Bookings deadline for {{ month, MMMM }} in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }}) ",
+    "SecondDeadline": "Extended bookings deadline for {{ month, MMMM }} in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }})",
+    "BookingsLocked": "Bookings are locked for {{ month, MMMM }}"
   },
 
   "Flags": {
