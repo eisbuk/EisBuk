@@ -1,8 +1,16 @@
 import { httpsCallable } from "@firebase/functions";
 import { getAuth, signOut } from "@firebase/auth";
 
-import { Collection, HTTPErrors, OrgSubCollection } from "eisbuk-shared";
-import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
+import {
+  Collection,
+  HTTPErrors,
+  OrgSubCollection,
+  SlotType,
+} from "eisbuk-shared";
+import {
+  DeprecatedOrgSubCollection,
+  DeprecatedSlotType,
+} from "eisbuk-shared/dist/deprecated";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -33,6 +41,7 @@ import { getCustomerBase } from "@/__testUtils__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import * as customers from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 
 const organization = getOrganization();
 
@@ -256,5 +265,33 @@ describe("Migrations", () => {
         invokeFunction(CloudFunction.DeleteOrphanedBookings)()
       ).rejects.toThrow(HTTPErrors.Unauth);
     });
+  });
+
+  describe("'unifyOffIceLabels'", () => {
+    testWithEmulator(
+      "should replace all 'off-ice-*' slot types with single 'off-ice'",
+      async () => {
+        const slotsRef = orgRef.collection(OrgSubCollection.Slots);
+        // create one slot in firestore entry for each of deprecated types
+        const initialSlotUpdates = Object.values(DeprecatedSlotType).map(
+          (type) =>
+            slotsRef.doc().set({
+              ...baseSlot,
+              id: `${type}-slot`,
+              type,
+            })
+        );
+        await Promise.all(initialSlotUpdates);
+        // run migration
+        await invokeFunction(CloudFunction.UnifyOffIceLabels)();
+        // "ice" slot should be intact, while off-ice-* types should be the same ("off-ice") type
+        const iceSlots = await slotsRef.where("type", "==", SlotType.Ice).get();
+        expect(iceSlots.docs.length).toEqual(1);
+        const offIceSlots = await slotsRef
+          .where("type", "==", SlotType.OffIce)
+          .get();
+        expect(offIceSlots.docs.length).toEqual(2);
+      }
+    );
   });
 });

@@ -21,7 +21,7 @@ import SlotOperationButtons, {
   DeleteButton,
 } from "@/components/atoms/SlotOperationButtons";
 import SlotTime from "./SlotTime";
-import SlotTypeLabel from "./SlotTypeLabel";
+import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 
 import { comparePeriods } from "@/utils/helpers";
 import { getColorForSlotType } from "@/utils/theme";
@@ -118,7 +118,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
           </Box>
         </CardContent>
         <Box className={classes.actionsContainer} flexGrow={1}>
-          <SlotTypeLabel slotType={slotData.type} />
+          <SlotTypeIcon className={classes.typeLabel} type={slotData.type} />
           <Box display="flex" justifyContent="space-evenly">
             {intervalStrings.map((interval) => (
               <Typography
@@ -226,6 +226,9 @@ const useStyles = makeStyles((theme) =>
     },
     categories: {
       padding: 4,
+    },
+    typeLabel: {
+      padding: `0 ${theme.spacing(1)}`,
     },
     category: {
       textTransform: "uppercase",

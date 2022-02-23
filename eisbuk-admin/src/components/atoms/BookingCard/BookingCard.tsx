@@ -15,7 +15,7 @@ import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 import { ActionButton, DateFormat } from "@/enums/translations";
 import { BookingCardVariant } from "@/enums/components";
 
-import TypeIcon from "./TypeIcon";
+import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 import Duration from "./Duration";
 
 import { __bookingCardId__ } from "@/__testData__/testIds";
@@ -159,7 +159,7 @@ const BookingCard: React.FC<Props> = ({
               <Typography className={classes.notes}>{notes}</Typography>
             </Box>
           )}
-          <TypeIcon
+          <SlotTypeIcon
             className={
               variant === BookingCardVariant.Booking
                 ? classes.bottomLeft

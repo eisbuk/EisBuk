@@ -67,7 +67,7 @@ const createSlotSpec = (config = { isMobile: false }) => {
     cy.get("@Slot-Operation-Toggle").click();
     cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
 
-    cy.getAttrWith("aria-label", SlotType.OffIceDancing).click();
+    cy.getAttrWith("aria-label", SlotType.OffIce).click();
 
     cy.getAttrWith("aria-label", t(SlotFormAria.SlotCategory)).should(
       "have.attr",

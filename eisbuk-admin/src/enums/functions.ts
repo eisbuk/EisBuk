@@ -13,4 +13,5 @@ export enum CloudFunction {
   PruneSlotsByDay = "pruneSlotsByDay",
   AddIdsToCustomers = "addIdsToCustomers",
   DeleteOrphanedBookings = "deleteOrphanedBookings",
+  UnifyOffIceLabels = "unifyOffIceLabels",
 }

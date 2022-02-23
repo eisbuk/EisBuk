@@ -19,8 +19,7 @@
 
   "SlotType": {
     "Ice": "ice",
-    "OffIceDancing": "off-ice-danza",
-    "OffIceGym": "off-ice-gym"
+    "OffIce": "off-ice"
   },
   "Category": {
     "Adults": "adulti",

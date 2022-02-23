@@ -35,7 +35,7 @@ const SelectCategories: React.FC = () => {
 
   useEffect(() => {
     // if slot type off_ice, disable all checkboxes and set value for "categories" to all
-    if ([SlotType.OffIceDancing, SlotType.OffIceGym].includes(slotType)) {
+    if (slotType === SlotType.OffIce) {
       setValue(Object.values(Category));
 
       setDisabled(true);

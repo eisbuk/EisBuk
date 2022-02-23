@@ -119,12 +119,10 @@ describe("Firestore rules", () => {
         await assertSucceeds(getDoc(slotRef));
         // check update access
         await assertSucceeds(
-          setDoc(slotRef, { ...baseSlot, type: SlotType.OffIceDancing })
+          setDoc(slotRef, { ...baseSlot, type: SlotType.OffIce })
         );
         // check delete access
-        await assertSucceeds(
-          setDoc(slotRef, { ...baseSlot, type: SlotType.OffIceDancing })
-        );
+        await assertSucceeds(deleteDoc(slotRef));
       }
     );
 
