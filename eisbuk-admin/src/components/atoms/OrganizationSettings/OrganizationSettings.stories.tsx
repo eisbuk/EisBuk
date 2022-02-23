@@ -9,15 +9,13 @@ export default {
 
 const organization = {
   admins: ["Walt", "Gus"],
-  organizationName: "Los Pollos",
+  organizationName: "Los Pollos Hermanos",
   smtpUri: "gusfring:password@smtpserver:8080",
   emailFrom: "gus@lospollos.me",
-  emailSender: "Gustavo",
-  emailTemplate:
-    "This is An Email Template and it needs to be longer than usual to test out multiline fields.",
+  emailNameFrom: "Gustavo",
+  emailTemplate: "\n \n \n",
   smsFrom: "Gus",
-  smsTemplate:
-    "This is An SMS Template and it needs to be even longer than usual to test out multiline fields.",
+  smsTemplate: "\n \n \n",
   smsUrl: "sms url example",
 };
 export const Default = (): JSX.Element => (

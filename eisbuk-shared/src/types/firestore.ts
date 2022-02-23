@@ -49,7 +49,7 @@ export interface OrganizationData {
    * If not provided, will fall back to organization name
    * @TODO this isn't yet functional, apply when making email per organization
    */
-  emailSender?: string;
+  emailNameFrom?: string;
   emailTemplate?: string;
   smtpUri?: string;
   smsFrom?: string;
