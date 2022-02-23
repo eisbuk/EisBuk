@@ -16,6 +16,8 @@ import {
   SlotInterval,
 } from "eisbuk-shared";
 
+import { __functionsZone__ } from "./constants";
+
 /**
  * A type alias for Customer with `secretKey` and `id` optional
  */
@@ -28,7 +30,7 @@ type CustomerWithOptionalIDs = Omit<Omit<Customer, "id">, "secretKey"> &
  * anonymous users who have access to `secretKey`.
  */
 export const addIdAndSecretKey = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
   )
@@ -85,7 +87,7 @@ export const addIdAndSecretKey = functions
  * Doesn't run if slot is only updated.
  */
 export const triggerAttendanceEntryForSlot = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
@@ -128,7 +130,7 @@ export const triggerAttendanceEntryForSlot = functions
  * The cost is one extra write per each update to the slots.
  */
 export const aggregateSlots = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
@@ -220,7 +222,7 @@ export const aggregateSlots = functions
  * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
  */
 export const createAttendanceForBooking = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
@@ -282,7 +284,7 @@ export const createAttendanceForBooking = functions
  * ```
  */
 export const registerCreatedOrgSecret = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .firestore.document(`${Collection.Secrets}/{organization}`)
   .onWrite(async ({ after }, context) => {
     // if `after.data()` doesn't exist (the doc was deleted)

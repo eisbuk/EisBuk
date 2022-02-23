@@ -88,7 +88,6 @@ describe("Firestore subscriptions", () => {
         );
         await deleteDoc(slotRef);
         // check updated state
-        console.log("Expected docs > ", testSlots.slice(1));
         const expectedSlots2 = testSlots
           .slice(1)
           .reduce((acc, slot) => ({ ...acc, [slot.id]: slot }), {});

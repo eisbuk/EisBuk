@@ -54,10 +54,6 @@ export interface OrganizationData {
    */
   emailSender?: string;
   /**
-   * Full URL (including host and endpoint) of SMS sending service provider.
-   */
-  smsUrl?: string;
-  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */
@@ -267,10 +263,8 @@ export type SlotAttendnace = {
 // #region cloudSentMessages
 export interface EmailMessage {
   to: string;
-  message: {
-    subject: string;
-    html: string;
-  };
+  subject: string;
+  html: string;
 }
 
 export interface SMSMessage {

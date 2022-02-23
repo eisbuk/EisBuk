@@ -12,6 +12,8 @@ import {
   OrgSubCollection,
 } from "eisbuk-shared";
 
+import { __functionsZone__ } from "./constants";
+
 import { checkUser } from "./utils";
 
 const uuidv4 = v4;
@@ -25,7 +27,7 @@ interface Payload {
  * Creates users for provided organization
  */
 export const createTestData = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
     await checkUser(organization, context.auth);
 
@@ -40,7 +42,7 @@ export const createTestData = functions
 /**
  * Ping endpoint function
  */
-export const ping = functions.region("europe-west6").https.onCall((data) => {
+export const ping = functions.region(__functionsZone__).https.onCall((data) => {
   functions.logger.info("ping invoked");
   return { pong: true, data: { ...data } };
 });
@@ -49,7 +51,7 @@ export const ping = functions.region("europe-west6").https.onCall((data) => {
  * Creates dummy organizations with two dummy admins
  */
 export const createOrganization = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(({ organization }: Pick<Payload, "organization">) => {
     const db = admin.firestore();
 

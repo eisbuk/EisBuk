@@ -6,7 +6,7 @@ import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
 
-import { Collection, HTTPErrors } from "eisbuk-shared";
+import { Collection, HTTPSErrors } from "eisbuk-shared";
 
 type Auth = CallableContext["auth"];
 
@@ -82,7 +82,7 @@ const isOrgAdmin = (admins: string[] | undefined, auth: Auth): boolean => {
 const throwUnauth = (): never => {
   throw new functions.https.HttpsError(
     "permission-denied",
-    HTTPErrors.Unauth,
+    HTTPSErrors.Unauth,
     "The function must be called while authenticated with a user that is an admin of the given organization."
   );
 };
@@ -186,3 +186,77 @@ export const sendRequest = <
     }
     req.end();
   });
+
+type ErrorCode = functions.https.FunctionsErrorCode;
+
+/** */
+export class EisbukHttpsError extends functions.https.HttpsError {
+  /**
+   * A wrapper around `functions.https.HttpsError` used to log errors
+   * to the functions console before returning gRPC error to the client
+   * @param code `functions.https.FunctionsErrorCode`
+   * @param message error message
+   * @param details error details
+   */
+  constructor(code: ErrorCode, message: string, details?: unknown) {
+    functions.logger.error(code, message, details);
+    super(code, message, details);
+  }
+}
+
+/**
+ * A function wrapper used to enforce a timeout on async
+ * operations with possibly long exectution period
+ * @param fn an async function we want to execute within timeout boundary
+ * @returns `fn`'s resolved value
+ */
+export const runWithTimeout = async <T extends any>(
+  fn: () => Promise<T>,
+  { timeout } = { timeout: 5000 }
+): Promise<T> => {
+  // set a timeout boundry for a function
+  const timeoutBoundary = setTimeout(() => {
+    throw new functions.https.HttpsError("aborted", HTTPSErrors.TimedOut);
+  }, timeout);
+
+  const res = await fn();
+
+  // clear timeout function (the `fn` has resolved within the timeout boundry)
+  clearTimeout(timeoutBoundary);
+
+  return res;
+};
+
+/**
+ * Checks payload (or any other record structure) for required fields.
+ * Throws error if one or more of the fields aren't present
+ * @param payload record to validate
+ * @param requiredFields array of field names (keys)
+ * @param errorMessage (optional) customer error message on failure, falls back to
+ * `HTTPSErrors.MissingParameter`
+ */
+export const checkRequiredFields = (
+  payload: Record<string, any> | undefined | null,
+  requiredFields: string[]
+): void | never => {
+  if (!payload) {
+    throw new EisbukHttpsError("invalid-argument", HTTPSErrors.NoPayload);
+  }
+
+  const missingFields: string[] = [];
+
+  requiredFields.forEach((field) => {
+    if (!payload[field]) {
+      missingFields.push(field);
+    }
+  });
+
+  if (missingFields.length) {
+    const missingFieldsString = missingFields.join(", ");
+    const errorMessage = `${HTTPSErrors.MissingParameter}: ${missingFieldsString}`;
+
+    throw new EisbukHttpsError("invalid-argument", errorMessage, {
+      missingFields,
+    });
+  }
+};

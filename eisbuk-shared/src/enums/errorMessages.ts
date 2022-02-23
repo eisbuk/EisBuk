@@ -1,21 +1,12 @@
 // #region cloudFunctions
-export enum HTTPErrors {
+export enum HTTPSErrors {
   NoPayload = "No request payload provided",
   Unauth = "Unathorized",
   TimedOut = "Function timed out",
-}
-
-export enum SendEmailErrors {
-  NoOrganziation = "No argument for organization provided",
-  NoRecipient = "No recipient email specified",
-  NoMsgBody = "Message body (html) not provided",
-  NoSubject = "No email subject specified",
+  MissingParameter = "One or more required parameters are missing from the payload",
 }
 
 export enum SendSMSErrors {
-  NoRecipient = "No recipient phone number specified",
-  NoMsgBody = "Message body not provided",
-  NoProviderURL = "No URL for SMS sending service provider found, add your SMS service provider URL to 'smsConfig.url' for organization",
   NoAuthToken = "No auth token for SMS sending service provider found, add your SMS service provider auth token 'smsConfig.authToken' for organization",
   SendingFailed = "SMS sending failed on provider's side. Check the details.",
 }

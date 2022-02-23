@@ -1,7 +1,7 @@
-import { httpsCallable } from "@firebase/functions";
+import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { signOut } from "@firebase/auth";
 
-import { HTTPErrors, SendEmailErrors } from "eisbuk-shared";
+import { HTTPSErrors } from "eisbuk-shared";
 
 import { auth, functions } from "@/__testSetup__/firestoreSetup";
 
@@ -45,16 +45,10 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ organization, message: { html, subject } })
-        ).rejects.toThrow(HTTPErrors.Unauth);
+          )({ organization, html, subject })
+        ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
-
-    testWithEmulator("should reject if no payload provided", async () => {
-      await expect(
-        httpsCallable(functions, CloudFunction.SendEmail)()
-      ).rejects.toThrow(HTTPErrors.NoPayload);
-    });
 
     testWithEmulator(
       "should reject if no value for organziation provided",
@@ -63,36 +57,25 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ to, message: { html, subject } })
-        ).rejects.toThrow(HTTPErrors.Unauth);
+          )({ to, html, subject })
+        ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
 
-    testWithEmulator("should reject if no recipient provided", async () => {
-      await expect(
-        httpsCallable(
-          functions,
-          CloudFunction.SendEmail
-        )({ organization, message: { html, subject } })
-      ).rejects.toThrow(SendEmailErrors.NoRecipient);
-    });
-
-    testWithEmulator("should reject if no email body provided", async () => {
-      await expect(
-        httpsCallable(
-          functions,
-          CloudFunction.SendEmail
-        )({ to, organization, message: { subject } })
-      ).rejects.toThrow(SendEmailErrors.NoMsgBody);
-    });
-
-    testWithEmulator("should reject if no subject provided", async () => {
-      await expect(
-        httpsCallable(
-          functions,
-          CloudFunction.SendEmail
-        )({ to, organization, message: { html } })
-      ).rejects.toThrow(SendEmailErrors.NoSubject);
-    });
+    testWithEmulator(
+      "should reject if no recipient, html or subject provided",
+      async () => {
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization });
+        } catch (error) {
+          const { code, details } = error as FunctionsError;
+          expect(code).toEqual("functions/invalid-argument");
+          expect(details).toEqual({ missingFields: ["to", "subject", "html"] });
+        }
+      }
+    );
   });
 });
