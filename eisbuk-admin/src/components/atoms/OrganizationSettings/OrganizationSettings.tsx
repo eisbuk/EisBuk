@@ -69,10 +69,6 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   ];
   const smsFields: Partial<FieldProps>[] = [
     {
-      name: "smsUrl",
-      label: "SMS Url",
-    },
-    {
       name: "smsTemplate",
       label: "SMS Template",
     },
@@ -82,7 +78,9 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   return (
     <>
       <div className={classes.title}>
-        <Typography variant="h4">{`${organization.organizationName} Settings`}</Typography>
+        <Typography variant="h4">{`${
+          organization.organizationName || "Organization"
+        }  Settings`}</Typography>
       </div>
       <div className={classes.content}>
         <Formik
@@ -94,6 +92,20 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
           {({ errors, isSubmitting, isValidating, values, resetForm }) => (
             <Form className={classes.form}>
               <FormControl component="fieldset">
+                <h5 className={classes.sectionTitle}>Name</h5>
+                <Field
+                  key="organizationName"
+                  label="Organization Name"
+                  name="organizationName"
+                  className={classes.field}
+                  as={TextField}
+                  aria-label="Organization Name"
+                  variant={enableEdit ? "outlined" : "filled"}
+                  disabled={!enableEdit}
+                  value={values.organizationName || ""}
+                />
+
+                <Divider />
                 <h5 className={classes.sectionTitle}>Admins</h5>
                 <AdminsField
                   enableEdit={enableEdit}
