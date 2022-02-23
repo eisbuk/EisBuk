@@ -237,8 +237,7 @@ export const runWithTimeout = async <T extends any>(
  */
 export const checkRequiredFields = (
   payload: Record<string, any> | undefined | null,
-  requiredFields: string[],
-  errorMessage: string = HTTPSErrors.MissingParameter
+  requiredFields: string[]
 ): void | never => {
   if (!payload) {
     throw new EisbukHttpsError("invalid-argument", HTTPSErrors.NoPayload);
@@ -253,6 +252,9 @@ export const checkRequiredFields = (
   });
 
   if (missingFields.length) {
+    const missingFieldsString = missingFields.join(", ");
+    const errorMessage = `${HTTPSErrors.MissingParameter}: ${missingFieldsString}`;
+
     throw new EisbukHttpsError("invalid-argument", errorMessage, {
       missingFields,
     });
