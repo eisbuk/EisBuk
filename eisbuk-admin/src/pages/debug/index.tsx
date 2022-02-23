@@ -119,6 +119,15 @@ const DebugPage: React.FC = () => {
           Delete orphaned bookings
         </Button>
       </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={createCloudFunctionCaller(CloudFunction.UnifyOffIceLabels)}
+          color="primary"
+          variant="contained"
+        >
+          Unify off ice labels
+        </Button>
+      </Box>
     </Container>
   );
 };
