@@ -53,16 +53,10 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
     setEnableEdit(!enableEdit);
   };
 
-  const smtpFields: Partial<FieldProps>[] = [
-    {
-      name: "smtpUri",
-      label: "SMTP URI",
-    },
-  ];
   const emailFields: Partial<FieldProps>[] = [
     {
-      name: "emailSender",
-      label: "Email Sender Name",
+      name: "emailNameFrom",
+      label: "Email Name From",
     },
     {
       name: "emailFrom",
@@ -100,29 +94,13 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
           {({ errors, isSubmitting, isValidating, values, resetForm }) => (
             <Form className={classes.form}>
               <FormControl component="fieldset">
-                <h5 className={classes.intervalsTitle}>Admins</h5>
+                <h5 className={classes.sectionTitle}>Admins</h5>
                 <AdminsField
                   enableEdit={enableEdit}
                   currentUser={currentUser}
                 />
                 <Divider />
-                <h5 className={classes.intervalsTitle}>SMTP</h5>
-
-                <div className={classes.fieldSection}>
-                  {smtpFields.map((field) => (
-                    <Field
-                      key={field.name}
-                      {...field}
-                      className={classes.field}
-                      as={TextField}
-                      aria-label={field.label}
-                      variant={enableEdit ? "outlined" : "filled"}
-                      disabled={!enableEdit}
-                      value={values[`${field.name}`] || ""}
-                    />
-                  ))}
-                </div>
-                <h5 className={classes.intervalsTitle}>Email</h5>
+                <h5 className={classes.sectionTitle}>Email</h5>
                 <div className={classes.fieldSection}>
                   {emailFields.map((field) => (
                     <Field
@@ -146,7 +124,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
                     />
                   ))}
                 </div>
-                <h5 className={classes.intervalsTitle}>SMS</h5>
+                <h5 className={classes.sectionTitle}>SMS</h5>
                 <div className={classes.fieldSection}>
                   <div className={classes.smsFromField}>
                     <Field
@@ -325,7 +303,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexFlow: "wrap",
   },
-  intervalsTitle: {
+  sectionTitle: {
     letterSpacing: 1,
     fontSize: theme.typography.pxToRem(18),
     fontFamily: theme.typography.fontFamily,
