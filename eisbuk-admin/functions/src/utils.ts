@@ -252,8 +252,9 @@ export const checkRequiredFields = (
   });
 
   if (missingFields.length) {
-    const missingFieldsString = missingFields.join(", ");
-    const errorMessage = `${HTTPSErrors.MissingParameter}: ${missingFieldsString}`;
+    const errorMessage = `${HTTPSErrors.MissingParameter}: ${missingFields.join(
+      ", "
+    )}`;
 
     throw new EisbukHttpsError("invalid-argument", errorMessage, {
       missingFields,

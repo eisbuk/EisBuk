@@ -84,9 +84,9 @@ describe("Cloud functions", () => {
             CloudFunction.SendEmail
           )({ organization });
         } catch (error) {
-          const { code, details } = error as FunctionsError;
-          expect(code).toEqual("functions/invalid-argument");
-          expect(details).toEqual({ missingFields: ["to", "subject", "html"] });
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: to, subject, html`
+          );
         }
       }
     );
@@ -137,49 +137,22 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should return an error if no payload provided",
       async () => {
-        // run the function
         await expect(
           httpsCallable(functions, CloudFunction.FinalizeBookings)()
-        ).rejects.toThrow(HTTPErrors.NoPayload);
+        ).rejects.toThrow(HTTPSErrors.NoPayload);
       }
     );
 
     testWithEmulator(
-      "should return an error if no organziation provided",
+      "should return an error if no organziation, id or secretKey provided",
       async () => {
-        // run the function
-        await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.FinalizeBookings
-          )({ id: saul.id })
-        ).rejects.toThrow(HTTPErrors.NoOrganziation);
-      }
-    );
-
-    testWithEmulator(
-      "should return an error if no id for customer provided",
-      async () => {
-        // run the function
-        await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.FinalizeBookings
-          )({ organization: getOrganization() })
-        ).rejects.toThrow(BookingsErrors.NoCustomerId);
-      }
-    );
-
-    testWithEmulator(
-      "should return an error if no secretKey provided",
-      async () => {
-        // run the function
-        await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.FinalizeBookings
-          )({ organization: getOrganization(), id: saul.id })
-        ).rejects.toThrow(BookingsErrors.NoSecretKey);
+        try {
+          await httpsCallable(functions, CloudFunction.FinalizeBookings)({});
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: id, organization, secretKey`
+          );
+        }
       }
     );
 
@@ -188,7 +161,6 @@ describe("Cloud functions", () => {
       async () => {
         const saulRef = getDocumentRef(adminDb, saulPath);
         await saulRef.set(saul);
-        // run the function
         await expect(
           httpsCallable(
             functions,
@@ -205,7 +177,6 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should return an error if customer not found",
       async () => {
-        // run the function
         await expect(
           httpsCallable(
             functions,

@@ -138,40 +138,13 @@ export const sendSMS = functions
 export const finalizeBookings = functions
   .region("europe-west6")
   .https.onCall(async (payload) => {
-    // check payload
-    if (!payload) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        HTTPErrors.NoPayload
-      );
-    }
+    checkRequiredFields(payload, ["id", "organization", "secretKey"]);
 
     const { id, organization, secretKey } =
-      (payload as { id?: string; organization?: string; secretKey?: string }) ||
+      (payload as { id: string; organization: string; secretKey: string }) ||
       {};
 
-    if (!id) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        BookingsErrors.NoCustomerId
-      );
-    }
-
-    if (!organization) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        HTTPErrors.NoOrganziation
-      );
-    }
-
-    // we check "auth" by matching secretKey and customerId
-    if (!secretKey) {
-      throw new functions.https.HttpsError(
-        "unauthenticated",
-        BookingsErrors.NoSecretKey
-      );
-    }
-
+    // we check "auth" by matching secretKey with customerId
     const customerRef = admin
       .firestore()
       .collection(Collection.Organizations)
