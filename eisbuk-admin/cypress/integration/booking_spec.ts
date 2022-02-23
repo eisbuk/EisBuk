@@ -72,6 +72,7 @@ describe("Booking flow", () => {
           // should count down two days (until deadline)
           days: 2,
           hours: 0,
+          month: testDateLuxon,
         })
       );
 
@@ -123,6 +124,7 @@ describe("Booking flow", () => {
           // difference 4 days, 23 hours (plus some seconds)
           days: 4,
           hours: 23,
+          month: extendedDate,
         }) as string
       );
 
@@ -193,6 +195,7 @@ describe("Booking flow", () => {
           // should count down two days (until deadline)
           days: 2,
           hours: 0,
+          month: testDateLuxon,
         })
       );
 
@@ -270,6 +273,7 @@ describe("Booking flow", () => {
           days: 2,
           hours: 23,
           date: januaryDeadline,
+          month: testDateLuxon,
         })
       ).should("not.exist");
     });
@@ -291,16 +295,19 @@ const getCountdownStringMatch = ({
   date,
   days,
   hours,
+  month,
 }: {
   message: BookingCountdownMessage;
   date: DateTime;
   days: number;
   hours: number;
+  month: DateTime;
 }) => {
   const rawString = i18n.t(message, {
     date,
     days,
     hours,
+    month,
   }) as string;
 
   return rawString.replace(/<\/?strong>/g, "");
