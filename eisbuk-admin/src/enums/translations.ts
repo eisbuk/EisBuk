@@ -25,8 +25,7 @@ export enum AuthMessage {
 // #region dataEntries
 export const SlotTypeLabel = {
   [SlotType.Ice]: "SlotType.Ice",
-  [SlotType.OffIceDancing]: "SlotType.OffIceDancing",
-  [SlotType.OffIceGym]: "SlotType.OffIceGym",
+  [SlotType.OffIce]: "SlotType.OffIce",
 };
 export const CategoryLabel = {
   [Category.Adults]: "Category.Adults",

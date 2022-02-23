@@ -13,8 +13,8 @@ import {
   OrgSubCollection,
   CustomerLoose,
   CustomerBase,
-  EmailMessage,
   Customer,
+  EmailMessage,
   SMSMessage,
 } from "eisbuk-shared";
 
@@ -31,7 +31,7 @@ import {
   showErrSnackbar,
 } from "@/store/actions/appActions";
 
-import { invokeFunction } from "@/utils/firebase";
+import { createCloudFunctionCaller } from "@/utils/firebase";
 import { CloudFunction } from "@/enums/functions";
 import { getCustomersRecord } from "../selectors/customers";
 import { Routes } from "@/enums/routes";
@@ -125,7 +125,6 @@ interface SendBookingsLink {
 export const sendBookingsLink: SendBookingsLink =
   ({ customerId, method }) =>
   async (dispatch, getState) => {
-    console.log("Running");
     try {
       const { email, phone, name, secretKey } = getCustomersRecord(getState())[
         customerId
@@ -149,31 +148,26 @@ export const sendBookingsLink: SendBookingsLink =
       Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
       ${bookingsLink}`;
 
-      let to: string;
-      let message: SMSMessage["message"] | EmailMessage["message"];
-      let handler: CloudFunction.SendEmail | CloudFunction.SendSMS;
-
-      switch (method) {
-        case SendBookingLinkMethod.Email:
-          handler = CloudFunction.SendEmail;
-          to = email!;
-          message = {
-            subject,
+      const config = {
+        [SendBookingLinkMethod.Email]: {
+          handler: CloudFunction.SendEmail,
+          payload: {
+            to: email,
             html,
-          };
-          break;
-        case SendBookingLinkMethod.SMS:
-          handler = CloudFunction.SendSMS;
-          to = phone!;
-          message = sms;
-      }
+            subject,
+          } as EmailMessage,
+          successMessage: i18n.t(NotificationMessage.EmailSent),
+        },
+        [SendBookingLinkMethod.SMS]: {
+          handler: CloudFunction.SendSMS,
+          payload: { to: phone, message: sms } as SMSMessage,
+          successMessage: i18n.t(NotificationMessage.SMSSent),
+        },
+      };
 
-      await invokeFunction(handler)({ to, message });
+      const { handler, payload, successMessage } = config[method];
 
-      const successMessage =
-        method === SendBookingLinkMethod.Email
-          ? i18n.t(NotificationMessage.EmailSent)
-          : i18n.t(NotificationMessage.SMSSent);
+      await createCloudFunctionCaller(handler, payload)();
 
       dispatch(
         enqueueNotification({

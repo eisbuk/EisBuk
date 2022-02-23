@@ -24,7 +24,7 @@ export const EditFormOffIce = (): JSX.Element => (
   <SlotForm
     date={testDate}
     onClose={() => {}}
-    slotToEdit={{ ...baseSlot, type: SlotType.OffIceDancing }}
+    slotToEdit={{ ...baseSlot, type: SlotType.OffIce }}
     open
   />
 );

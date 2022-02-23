@@ -55,10 +55,6 @@ export interface OrganizationData {
   smsFrom?: string;
   smsTemplate?: string;
   /**
-   * Full URL (including host and endpoint) of SMS sending service provider.
-   */
-  smsUrl?: string;
-  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */
@@ -169,7 +165,7 @@ export interface CustomerBase {
   name: string;
   surname: string;
   category: Category;
-  // eslint-disable-next-line camelcase
+  deleted?: boolean;
 }
 /**
  * Customer entry in the Firestore DB
@@ -183,7 +179,6 @@ export interface Customer extends CustomerBase {
   covidCertificateReleaseDate?: string;
   covidCertificateSuspended?: boolean;
   subscriptionNumber?: string;
-  deleted?: boolean;
 }
 /**
  * Object with birthday prop and customer prop
@@ -269,10 +264,8 @@ export type SlotAttendnace = {
 // #region cloudSentMessages
 export interface EmailMessage {
   to: string;
-  message: {
-    subject: string;
-    html: string;
-  };
+  subject: string;
+  html: string;
 }
 
 export interface SMSMessage {

@@ -24,9 +24,11 @@ export const getCustomerBase = ({
   name,
   surname,
   category,
+  deleted,
 }: Omit<Customer, "secretKey">): CustomerBase => ({
   id,
   name,
   surname,
   category,
+  deleted: Boolean(deleted),
 });

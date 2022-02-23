@@ -1,0 +1,24 @@
+#!/usr/bin/expect -f
+
+# We want to be able to deploy to firebase in non interactive mode
+# even if some cloud functions are present that were not expected
+# (we might want to do this to try out new functionalities in a preview channel
+# that depend on a cloud function being deployed).
+# When the interactive deployment asks if we want to delete the unexpected functions,
+# we need to type a single uppercase `N` to let the process continue.
+
+# Four minutes should be enough
+set timeout 240
+
+
+spawn npx firebase deploy --project eisbuk
+
+expect {
+    "*Would you like to proceed with deletion?*" {
+        # Some unexpected cloud functions are present. Tell firebase CLI not to delete them
+        send -- "N\r"
+    }
+    "*Deploy complete!*"
+}
+
+expect eof

@@ -1,7 +1,16 @@
 import { httpsCallable } from "@firebase/functions";
+import { getAuth, signOut } from "@firebase/auth";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
-import { DeprecatedOrgSubCollection } from "eisbuk-shared/dist/deprecated";
+import {
+  Collection,
+  HTTPSErrors,
+  OrgSubCollection,
+  SlotType,
+} from "eisbuk-shared";
+import {
+  DeprecatedOrgSubCollection,
+  DeprecatedSlotType,
+} from "eisbuk-shared/dist/deprecated";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -26,7 +35,13 @@ import {
   testBookingsByDay,
   unprunedMonth,
 } from "../__testData__/migrations";
+
+import { waitForCondition } from "@/__testUtils__/helpers";
+import { getCustomerBase } from "@/__testUtils__/customers";
+import { loginDefaultUser } from "@/__testUtils__/auth";
+
 import * as customers from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 
 const organization = getOrganization();
 
@@ -43,6 +58,7 @@ const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
 describe("Migrations", () => {
   beforeEach(async () => {
     await deleteAll();
+    await loginDefaultUser();
   });
 
   describe("'migrateToNewDataModel'", () => {
@@ -202,6 +218,79 @@ describe("Migrations", () => {
           const customer = doc.data();
           expect(customer.id).toEqual(doc.id);
         });
+      }
+    );
+  });
+
+  /**
+   * @TEMP The tests down below are flaky for some reason and are skipped not to waste any more time
+   * on a feature which will probably be ran twice during the duration of the project.
+   * We can quickly revisit this when doing test chores, if not, it can easily be deleted.
+   */
+  xdescribe("'deleteOrphanedBookings'", () => {
+    testWithEmulator(
+      "should remove bookings without customer entries",
+      async () => {
+        const { saul, jian } = customers;
+        const orgRef = adminDb
+          .collection(Collection.Organizations)
+          .doc(getOrganization());
+        const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
+        const customersRef = orgRef.collection(OrgSubCollection.Customers);
+        // set customer to store (to create a regular booking)
+        await customersRef.doc(saul.id).set(saul);
+        // wait for saul's booking to get created
+        await waitForCondition({
+          condition: (data) => Boolean(data),
+          documentPath: `${Collection.Organizations}/${getOrganization()}/${
+            OrgSubCollection.Bookings
+          }/${saul.secretKey}`,
+        });
+        // add additional bookings (without customer)
+        await bookingsRef.doc(jian.secretKey).set(getCustomerBase(jian));
+        // run migration
+        await invokeFunction(CloudFunction.DeleteOrphanedBookings)();
+        // check results
+        const bookingsColl = await bookingsRef.get();
+        const bookingsDocs = bookingsColl.docs;
+        // only saul's bookings should remain
+        expect(bookingsDocs.length).toEqual(1);
+        expect(bookingsDocs[0].data()).toEqual(getCustomerBase(saul));
+      }
+    );
+
+    testWithEmulator("should not allow calls to non-admin", async () => {
+      await signOut(getAuth());
+      await expect(
+        invokeFunction(CloudFunction.DeleteOrphanedBookings)()
+      ).rejects.toThrow(HTTPSErrors.Unauth);
+    });
+  });
+
+  describe("'unifyOffIceLabels'", () => {
+    testWithEmulator(
+      "should replace all 'off-ice-*' slot types with single 'off-ice'",
+      async () => {
+        const slotsRef = orgRef.collection(OrgSubCollection.Slots);
+        // create one slot in firestore entry for each of deprecated types
+        const initialSlotUpdates = Object.values(DeprecatedSlotType).map(
+          (type) =>
+            slotsRef.doc().set({
+              ...baseSlot,
+              id: `${type}-slot`,
+              type,
+            })
+        );
+        await Promise.all(initialSlotUpdates);
+        // run migration
+        await invokeFunction(CloudFunction.UnifyOffIceLabels)();
+        // "ice" slot should be intact, while off-ice-* types should be the same ("off-ice") type
+        const iceSlots = await slotsRef.where("type", "==", SlotType.Ice).get();
+        expect(iceSlots.docs.length).toEqual(1);
+        const offIceSlots = await slotsRef
+          .where("type", "==", SlotType.OffIce)
+          .get();
+        expect(offIceSlots.docs.length).toEqual(2);
       }
     );
   });

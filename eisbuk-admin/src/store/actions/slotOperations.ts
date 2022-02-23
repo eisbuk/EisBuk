@@ -52,125 +52,133 @@ export const deleteSlotsWeek = (date: DateTime): void => {
  * Takes in slot values from `SlotForm` for new slot and updates the db.
  * @param payload `SlotForm` values + slot date
  */
-export const createNewSlot = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  {
-    date,
-    intervals: intervalsArr,
-    ...slotData
-  }: SlotFormValues & { date: string }
-): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const slotsCollRef = collection(db, getSlotsCollectionPath());
+export const createNewSlot =
+  (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    {
+      date,
+      intervals: intervalsArr,
+      ...slotData
+    }: SlotFormValues & { date: string }
+  ): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const slotsCollRef = collection(db, getSlotsCollectionPath());
 
-    const intervals = intervalsArr.reduce(
-      (acc, { startTime, endTime }) => ({
-        ...acc,
-        [`${startTime}-${endTime}`]: { startTime, endTime },
-      }),
-      {} as Record<string, SlotInterval>
-    );
+      const intervals = intervalsArr.reduce(
+        (acc, { startTime, endTime }) => ({
+          ...acc,
+          [`${startTime}-${endTime}`]: { startTime, endTime },
+        }),
+        {} as Record<string, SlotInterval>
+      );
 
-    const newSlot: Omit<SlotInterface, "id"> = { ...slotData, date, intervals };
+      const newSlot: Omit<SlotInterface, "id"> = {
+        ...slotData,
+        date,
+        intervals,
+      };
 
-    await addDoc(slotsCollRef, newSlot);
+      await addDoc(slotsCollRef, newSlot);
 
-    // show success notification
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t(NotificationMessage.SlotAdded),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    // show error notification if operation failed
-    dispatch(showErrSnackbar);
-  }
-};
+      // show success notification
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.SlotAdded),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      // show error notification if operation failed
+      dispatch(showErrSnackbar);
+    }
+  };
 
 /**
  * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
  * @param payload `SlotForm` values + slot date
  */
-export const updateSlot = (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  {
-    date,
-    intervals: intervalsArr,
-    id: slotId,
-    ...slotData
-  }: SlotFormValues & { date: string; id: string }
-): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
-
-    const intervals = intervalsArr.reduce(
-      (acc, { startTime, endTime }) => ({
-        ...acc,
-        [`${startTime}-${endTime}`]: { startTime, endTime },
-      }),
-      {} as Record<string, SlotInterval>
-    );
-    const updatedSlot: SlotInterface = {
-      ...slotData,
+export const updateSlot =
+  (
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    {
       date,
-      intervals,
+      intervals: intervalsArr,
       id: slotId,
-    };
+      ...slotData
+    }: SlotFormValues & { date: string; id: string }
+  ): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
 
-    await setDoc(slotDocRef, updatedSlot);
+      const intervals = intervalsArr.reduce(
+        (acc, { startTime, endTime }) => ({
+          ...acc,
+          [`${startTime}-${endTime}`]: { startTime, endTime },
+        }),
+        {} as Record<string, SlotInterval>
+      );
+      const updatedSlot: SlotInterface = {
+        ...slotData,
+        date,
+        intervals,
+        id: slotId,
+      };
 
-    // show success notification
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t(NotificationMessage.SlotUpdated),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    // show error notification if operation failed
-    dispatch(showErrSnackbar);
-  }
-};
+      await setDoc(slotDocRef, updatedSlot);
+
+      // show success notification
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.SlotUpdated),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      // show error notification if operation failed
+      dispatch(showErrSnackbar);
+    }
+  };
 
 /**
  * Deletes slot with given id from firestore and (in effect) local store
  * @param slotId od slot to delete
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-export const deleteSlot = (
-  slotId: SlotInterface["id"]
-): FirestoreThunk => async (dispatch) => {
-  try {
-    const db = getFirestore();
-    const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
+export const deleteSlot =
+  (slotId: SlotInterface["id"]): FirestoreThunk =>
+  async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
 
-    await deleteDoc(slotDocRef);
+      await deleteDoc(slotDocRef);
 
-    // show success notification
-    dispatch(
-      enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t(NotificationMessage.SlotDeleted),
-        closeButton: true,
-        options: {
-          variant: NotifVariant.Success,
-        },
-      })
-    );
-  } catch {
-    // show error notification if operation failed
-    dispatch(showErrSnackbar);
-  }
-};
+      // show success notification
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.SlotDeleted),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch {
+      // show error notification if operation failed
+      dispatch(showErrSnackbar);
+    }
+  };
 // #endregion newOperations

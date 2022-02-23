@@ -239,7 +239,7 @@ xdescribe("customerOperations", () => {
     const mockSendMail = jest.fn();
     const mockSendSMS = jest.fn();
     jest
-      .spyOn(firebaseUtils, "invokeFunction")
+      .spyOn(firebaseUtils, "createCloudFunctionCaller")
       .mockImplementation((func) =>
         func === CloudFunction.SendEmail
           ? mockSendMail
@@ -260,12 +260,12 @@ xdescribe("customerOperations", () => {
         const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
 
         expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.message.subject).toBeDefined();
+        expect(sentMail.subject).toBeDefined();
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
         const bookingLink = `https://localhost/customer_area/${saul.secretKey}`;
-        expect(sentMail.message.html.includes(bookingLink)).toBeTruthy();
-        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
+        expect(sentMail.html.includes(bookingLink)).toBeTruthy();
+        expect(sentMail.html.includes(saul.name)).toBeTruthy();
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

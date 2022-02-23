@@ -11,6 +11,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
+      - name: Install expect
+        run: sudo apt-get -y install expect
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:

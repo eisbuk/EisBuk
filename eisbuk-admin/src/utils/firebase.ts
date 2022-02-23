@@ -13,9 +13,9 @@ const functions = getFunctions(app, "europe-west6");
  * @param functionName function to run
  * @returns function that calls firebase with provided functionName param
  */
-export const invokeFunction =
-  (functionName: CloudFunction) =>
-  async (payload?: Record<string, any>): Promise<void> => {
+export const createCloudFunctionCaller =
+  (functionName: CloudFunction, payload?: Record<string, any>) =>
+  async (): Promise<void> => {
     await httpsCallable(
       functions,
       functionName

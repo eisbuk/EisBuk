@@ -13,11 +13,15 @@ import {
   Collection,
   CustomerBase,
   OrgSubCollection,
+  SlotType,
 } from "eisbuk-shared";
 import {
   DeprecatedOrgSubCollection,
   DeprecatedBookingsMeta,
+  DeprecatedSlotType,
 } from "eisbuk-shared/dist/deprecated";
+
+import { __functionsZone__ } from "./constants";
 
 import { checkUser } from "./utils";
 
@@ -25,7 +29,7 @@ import { checkUser } from "./utils";
  * Migrates slot entries to struct containing plural 'categories' instead of single 'category'
  */
 export const migrateSlotsToPluralCategories = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }, context) => {
     await checkUser(organization, context.auth);
 
@@ -58,7 +62,7 @@ export const migrateSlotsToPluralCategories = functions
  * Deletes all entries in firestore, related to the old data model
  */
 export const migrateToNewDataModel = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }) => {
     try {
       // await checkUser(organization, context.auth);
@@ -285,7 +289,7 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const pruneSlotsByDay = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }) => {
     try {
       const db = admin.firestore();
@@ -349,7 +353,7 @@ export const pruneSlotsByDay = functions
   });
 
 export const addIdsToCustomers = functions
-  .region("europe-west6")
+  .region(__functionsZone__)
   .https.onCall(async ({ organization }) => {
     try {
       const db = admin.firestore();
@@ -382,4 +386,64 @@ export const addIdsToCustomers = functions
       functions.logger.error(err);
       return { success: false };
     }
+  });
+
+export const deleteOrphanedBookings = functions
+  .region("europe-west6")
+  .https.onCall(async ({ organization }, { auth }) => {
+    await checkUser(organization, auth);
+
+    const orgRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+
+    // get all customers and bookings
+    const allCustomers = await orgRef
+      .collection(OrgSubCollection.Customers)
+      .get();
+    const customerIds = allCustomers.docs.map(({ id }) => id);
+    const bookingsRef = orgRef.collection(OrgSubCollection.Bookings);
+    const allBookings = await bookingsRef.get();
+
+    const toDelete: Promise<any>[] = [];
+    allBookings.forEach((doc) => {
+      const { id } = doc.data();
+      // delete only the bookings without corresponding customer
+      if (!customerIds.includes(id)) {
+        toDelete.push(doc.ref.delete());
+      }
+    });
+
+    await Promise.all(toDelete);
+    return { success: true };
+  });
+
+/**
+ * Replaces all deprecated "off-ice-dancing" and "off-ice-gym" slot type entries
+ * with unified "off-ice" type
+ */
+export const unifyOffIceLabels = functions
+  .region("europe-west6")
+  .https.onCall(async ({ organization }) => {
+    const firestore = admin.firestore();
+    const batch = firestore.batch();
+    // get all off-ice-* slots
+    const slotsRef = firestore
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Slots);
+    const offIceSlots = await slotsRef
+      .where("type", "in", [
+        DeprecatedSlotType.OffIceDancing,
+        DeprecatedSlotType.OffIceGym,
+      ])
+      .get();
+    // replace all type entries with unified "off-ice"
+    offIceSlots.forEach((snap) => {
+      const { ref } = snap;
+      batch.set(ref, { type: SlotType.OffIce }, { merge: true });
+    });
+    await batch.commit();
+    return { success: true };
   });

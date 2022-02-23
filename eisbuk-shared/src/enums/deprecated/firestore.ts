@@ -15,3 +15,9 @@ export enum DeprecatedOrgSubCollection {
 export enum DeprecatedBookingSubCollection {
   SubscribedSlots = "subscribedSlots",
 }
+
+export enum DeprecatedSlotType {
+  Ice = "ice",
+  OffIceDancing = "off-ice-dancing",
+  OffIceGym = "off-ice-gym",
+}

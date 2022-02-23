@@ -40,7 +40,7 @@ const prevoiusWeek = {
       ...baseSlot,
       categories: [Category.PreCompetitive],
       id: "slot-1",
-      type: SlotType.OffIceDancing,
+      type: SlotType.OffIce,
     },
   },
   "2021-08-25": {
@@ -48,7 +48,7 @@ const prevoiusWeek = {
       ...baseSlot,
       categories: [Category.Course],
       id: "slot-2",
-      type: SlotType.OffIceGym,
+      type: SlotType.OffIce,
     },
   },
 };
@@ -94,7 +94,7 @@ const currentWeekThisMonthCompetitive = {
       ...baseSlot,
       id: "slot-5",
       categories: [Category.Competitive],
-      type: SlotType.OffIceGym,
+      type: SlotType.OffIce,
     },
   },
 };
@@ -117,7 +117,7 @@ const currentWeekNonCompetitive = {
       ...baseSlot,
       id: "slot-7",
       categories: [Category.PreCompetitive],
-      type: SlotType.OffIceDancing,
+      type: SlotType.OffIce,
     },
   },
 };
@@ -154,7 +154,7 @@ const nextWeekCompetitive = {
       ...baseSlot,
       id: "slot-9",
       categories: [Category.Competitive],
-      type: SlotType.OffIceGym,
+      type: SlotType.OffIce,
     },
   },
 };
@@ -176,7 +176,7 @@ const nextWeekNonCompetitive = {
       ...baseSlot,
       id: "slot-11",
       categories: [Category.PreCompetitive],
-      type: SlotType.OffIceDancing,
+      type: SlotType.OffIce,
     },
   },
 };

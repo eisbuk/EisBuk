@@ -6,149 +6,133 @@ import {
   Collection,
   SendMailPayload,
   SendSMSPayload,
-  HTTPErrors,
-  SendEmailErrors,
   SendSMSErrors,
   OrganizationData,
   OrganizationSecrets,
 } from "eisbuk-shared";
 
-import { checkUser, createSMSReqOptions, sendRequest } from "./utils";
+import { __smsUrl__, __functionsZone__ } from "./constants";
+
+import {
+  checkUser,
+  createSMSReqOptions,
+  sendRequest,
+  EisbukHttpsError,
+  runWithTimeout,
+  checkRequiredFields,
+} from "./utils";
 
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
  */
 export const sendEmail = functions
-  .region("europe-west6")
-  .https.onCall(async (payload: Partial<SendMailPayload>, { auth }) => {
-    // check payload
-    if (!payload) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        HTTPErrors.NoPayload
-      );
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization, ...email }: SendMailPayload, { auth }) => {
+      await checkUser(organization, auth);
+
+      checkRequiredFields(email, ["to", "subject", "html"]);
+
+      // add email to firestore, firing data trigger
+      await admin
+        .firestore()
+        .collection(Collection.EmailQueue)
+        .doc()
+        .set(email);
+
+      return { ...email, organization, success: true };
     }
-
-    const { organization, ...email } = payload;
-
-    await checkUser(organization, auth);
-
-    // check payload
-    if (!email.to) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoRecipient
-      );
-    }
-    if (!email.message?.html) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoMsgBody
-      );
-    }
-    if (!email.message?.subject) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        SendEmailErrors.NoSubject
-      );
-    }
-
-    // add email to firestore, firing data trigger
-    await admin.firestore().collection(Collection.EmailQueue).doc().set(email);
-
-    return { ...payload, success: true };
-  });
+  );
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
  */
 export const sendSMS = functions
-  .region("europe-west6")
-  .https.onCall(
-    async ({ organization, to, message }: SendSMSPayload, { auth }) => {
-      await checkUser(organization, auth);
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization, ...sms }: SendSMSPayload, { auth }) => {
+    await checkUser(organization, auth);
 
-      // get SMS template data
-      const orgData =
-        ((
-          await admin
-            .firestore()
-            .collection(Collection.Organizations)
-            .doc(organization!)
-            .get()
-        ).data() as OrganizationData) || {};
+    // check payload
+    checkRequiredFields(sms, ["message", "to"]);
+    const { message, to } = sms;
 
-      const smsUrl = orgData.smsUrl!;
-      // Non numeric senders must be 11 chars or less
-      const smsFrom = (orgData.smsFrom || organization!)
-        .toString()
-        .substring(0, 11);
-      functions.logger.log(`Got smsFrom: ${smsFrom}, smsUrl: ${smsUrl}`);
+    // get SMS template data
+    const orgData =
+      ((
+        await admin
+          .firestore()
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .get()
+      ).data() as OrganizationData) || {};
 
-      // get sms secrets
-      const { smsAuthToken: authToken } =
-        (
-          await admin
-            .firestore()
-            .collection(Collection.Secrets)
-            .doc(organization!)
-            .get()
-        ).data() || ({} as OrganizationSecrets);
+    // if sender not provided, fall back to organization name
+    const smsFrom = (orgData.smsFrom || organization)
+      .toString()
+      // Non numeric smsFroms must be 11 chars or less
+      .substring(0, 11);
+    functions.logger.log(`Got smsFrom: ${smsFrom}, smsUrl: ${__smsUrl__}`);
 
-      const { proto, ...options } = createSMSReqOptions(
-        "POST",
-        smsUrl,
-        authToken
-      );
+    // get sms secrets
+    const { smsAuthToken: authToken } =
+      (
+        await admin
+          .firestore()
+          .collection(Collection.Secrets)
+          .doc(organization)
+          .get()
+      ).data() || ({} as OrganizationSecrets);
 
-      const data = {
-        message,
-        // if sender not provided, fall back to organization name
-        sender: smsFrom,
-        recipients: [{ msisdn: to }],
-      };
-      functions.logger.log("Sending POST data:", data);
+    const { proto, ...options } = createSMSReqOptions(
+      "POST",
+      __smsUrl__,
+      authToken
+    );
 
-      const res = await sendRequest<SMSResponse>(proto, options, data);
+    const data = {
+      message,
+      sender,
+      recipients: [{ msisdn: to }],
+    };
+    functions.logger.log("Sending POST data:", data);
 
-      if (res && res.ids) {
-        // A response containg a `res` key is successful
-        functions.logger.log("SMS POST request successfull", { response: res });
-      } else {
-        functions.logger.error("Error with SMS POST", { response: res });
-        // if res unsuccessful, throw
-        throw new functions.https.HttpsError(
-          "cancelled",
-          SendSMSErrors.SendingFailed,
-          res
-        );
-      }
+    const res = await sendRequest<SMSResponse>(proto, options, data);
 
-      const smsId = res.ids[0];
-
-      const [smsOk, status, errorMessage] = await runWithTimeout(
-        () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 5000 }),
-        { timeout: 6000 }
-      );
-
-      const details = { status, errorMessage };
-
-      if (!smsOk) {
-        functions.logger.error(SendSMSErrors.SendingFailed, "Details: ", {
-          details,
-        });
-        throw new functions.https.HttpsError(
-          "cancelled",
-          SendSMSErrors.SendingFailed,
-          details
-        );
-      }
-
-      functions.logger.log("SMS message successfully sent, details:", details);
-      return { success: true, details };
+    if (res && res.ids) {
+      // A response containg a `res` key is successful
+      functions.logger.log("SMS POST request successful", { response: res });
+    } else {
+      // if res unsuccessful, throw
+      throw new EisbukHttpsError("cancelled", SendSMSErrors.SendingFailed, res);
     }
-  );
 
+    const smsId = res.ids[0];
+
+    const [smsOk, status, errorMessage] = await runWithTimeout(
+      () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 10000 }),
+      { timeout: 6000 }
+    );
+
+    const details = { status, errorMessage };
+
+    if (!smsOk) {
+      throw new EisbukHttpsError(
+        "cancelled",
+        SendSMSErrors.SendingFailed,
+        details
+      );
+    }
+
+    functions.logger.log("SMS message successfully sent, details:", details);
+    return { success: true, details };
+  });
+
+/**
+ * Check the state of sent sms with the provider
+ * @param smsId
+ * @param authToken
+ * @returns
+ */
 const checkSMS = async (
   smsId: string,
   authToken: string
@@ -177,29 +161,6 @@ const checkSMS = async (
   const smsOk = okStates.includes(status);
 
   return [smsOk, status, errorMessage];
-};
-
-/**
- * A function wrapper used to enforce a timeout on async
- * operations with possibly long exectution period
- * @param fn an async function we want to execute within timeout boundary
- * @returns `fn`'s resolved value
- */
-const runWithTimeout = async <T extends any>(
-  fn: () => Promise<T>,
-  { timeout } = { timeout: 5000 }
-): Promise<T> => {
-  // set a timeout boundry for a function
-  const timeoutBoundary = setTimeout(() => {
-    throw new functions.https.HttpsError("aborted", HTTPErrors.TimedOut);
-  }, timeout);
-
-  const res = await fn();
-
-  // clear timeout function (the `fn` has resolved within the timeout boundry)
-  clearTimeout(timeoutBoundary);
-
-  return res;
 };
 
 // #region types

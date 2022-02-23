@@ -51,7 +51,7 @@
     "test:quicktest": "echo Running tests with no emulators support && yarn jest --watch --env=jest-environment-jsdom-sixteen src",
     "test": "echo 'Running all tests; using emulators.' && yarn test:emulators",
     "deploy:eisbuk": "firebase deploy --project eisbuk --only hosting:eisbuk",
-    "deploy:production": "firebase deploy --project eisbuk --only hosting:igorice; firebase deploy --project eisbuk --except hosting",
+    "deploy:production": "./deploy-firebase.expect",
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
