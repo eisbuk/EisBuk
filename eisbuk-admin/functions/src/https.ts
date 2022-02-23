@@ -80,10 +80,10 @@ export const sendSMS = functions
 
       const smsUrl = orgData.smsUrl!;
       // Non numeric senders must be 11 chars or less
-      const smsSender = (orgData.smsFrom || organization!)
+      const smsFrom = (orgData.smsFrom || organization!)
         .toString()
         .substring(0, 11);
-      functions.logger.log(`Got smsSender: ${smsSender}, smsUrl: ${smsUrl}`);
+      functions.logger.log(`Got smsFrom: ${smsFrom}, smsUrl: ${smsUrl}`);
 
       // get sms secrets
       const { smsAuthToken: authToken } =
@@ -104,7 +104,7 @@ export const sendSMS = functions
       const data = {
         message,
         // if sender not provided, fall back to organization name
-        sender: smsSender,
+        sender: smsFrom,
         recipients: [{ msisdn: to }],
       };
       functions.logger.log("Sending POST data:", data);
