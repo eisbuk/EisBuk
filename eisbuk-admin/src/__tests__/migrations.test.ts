@@ -3,7 +3,7 @@ import { getAuth, signOut } from "@firebase/auth";
 
 import {
   Collection,
-  HTTPSErrors,
+  HTTPErrors,
   OrgSubCollection,
   SlotType,
 } from "eisbuk-shared";
