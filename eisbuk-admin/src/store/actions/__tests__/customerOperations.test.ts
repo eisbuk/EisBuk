@@ -247,11 +247,11 @@ describe("customerOperations", () => {
     const mockSendSMS = jest.fn();
     jest
       .spyOn(firebaseUtils, "createCloudFunctionCaller")
-      .mockImplementation((func) =>
+      .mockImplementation((func, payload) =>
         func === CloudFunction.SendEmail
-          ? mockSendMail
+          ? () => mockSendMail(payload)
           : func === CloudFunction.SendSMS
-          ? mockSendSMS
+          ? () => mockSendSMS(payload)
           : jest.fn()
       );
 
