@@ -22,7 +22,6 @@ import { NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
-import { Routes } from "@/enums/routes";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -120,16 +119,22 @@ interface SendBookingsLink {
   (payload: {
     customerId: Customer["id"];
     method: SendBookingLinkMethod;
+    bookingsLink: string;
   }): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ customerId, method }) =>
+  ({ customerId, method, bookingsLink }) =>
   async (dispatch, getState) => {
     try {
       const { email, phone, name, secretKey } = getCustomersRecord(getState())[
         customerId
       ];
+
+      console.log("Email:", email);
+      console.log("Phone:", phone);
+      console.log("Name:", name);
+      console.log("SecretKey:", secretKey);
 
       const subject = "prenotazioni lezioni di Igor Ice Team";
 
@@ -139,7 +144,7 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
-      const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${secretKey}`;
+      console.log("Bookings link:", bookingsLink);
 
       const html = `<p>Ciao ${name},</p>
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
@@ -148,6 +153,8 @@ export const sendBookingsLink: SendBookingsLink =
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
       ${bookingsLink}`;
+
+      console.log("SMS:", sms);
 
       const config = {
         [SendBookingLinkMethod.Email]: {
@@ -168,6 +175,9 @@ export const sendBookingsLink: SendBookingsLink =
 
       const { handler, payload, successMessage } = config[method];
 
+      console.log("Handler", handler);
+      console.log("Payload", JSON.stringify(payload, null, 2));
+
       await createCloudFunctionCaller(handler, payload)();
 
       dispatch(
@@ -180,7 +190,8 @@ export const sendBookingsLink: SendBookingsLink =
           },
         })
       );
-    } catch {
+    } catch (error) {
+      console.error(error);
       dispatch(showErrSnackbar);
     }
   };

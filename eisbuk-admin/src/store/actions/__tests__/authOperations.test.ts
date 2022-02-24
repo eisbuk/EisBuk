@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment node
  */
 
 import { User } from "@firebase/auth";
@@ -46,7 +46,6 @@ describe("Auth operations", () => {
       const { dispatch, getState } = testStore;
       const testThunk = updateAuthUser(testUser);
       await testThunk(dispatch, getState);
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { userData, isLoaded } = getState().auth;
       expect(userData).toEqual(testUser);
       expect(isLoaded).toEqual(true);

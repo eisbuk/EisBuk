@@ -58,9 +58,12 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
     phone: customer.phone,
   });
 
+  const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${customer?.secretKey}`;
   const handleSendBookingsLink = (method: SendBookingLinkMethod) => {
     onClose();
-    dispatch(sendBookingsLink({ customerId: customer.id, method }));
+    dispatch(
+      sendBookingsLink({ customerId: customer.id, method, bookingsLink })
+    );
   };
 
   return (

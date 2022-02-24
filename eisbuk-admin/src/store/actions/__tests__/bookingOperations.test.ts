@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
@@ -13,8 +13,6 @@ import {
 
 import { getNewStore } from "@/store/createStore";
 
-import { __organization__ } from "@/lib/constants";
-
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
 import { Action, NotifVariant } from "@/enums/store";
@@ -24,16 +22,15 @@ import { bookInterval, cancelBooking } from "../bookingOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { deleteAll } from "@/__testUtils__/firestore";
-import {
-  setupTestBookings,
-  setupTestSlotsTemp as setupTestSlots,
-} from "../__testUtils__/firestore";
+import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
+import { getOrganization } from "@/lib/getters";
 
-const bookingsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
+const bookingsCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Bookings}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -99,9 +96,8 @@ const testSlot = {
 // #endregion testData
 
 describe("Booking Notifications", () => {
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    await deleteAll();
   });
 
   describe("'bookInterval'", () => {
@@ -120,7 +116,7 @@ describe("Booking Notifications", () => {
             ]),
         });
         // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        getFirestoreSpy.mockReturnValue(db as any);
         // create a thunk curried with test input values
         const testThunk = bookInterval({
           secretKey,
@@ -129,6 +125,7 @@ describe("Booking Notifications", () => {
           date: baseSlot.date,
         });
         const mockDispatch = jest.fn();
+        jest.spyOn(firestore, "getFirestore").mockReturnValueOnce(db as any);
         await testThunk(mockDispatch, store.getState);
         // get all `bookedSlots` for customer
         const bookedSlotsPath = `${bookingsCollectionPath}/${secretKey}/${BookingSubCollection.BookedSlots}`;
@@ -158,6 +155,7 @@ describe("Booking Notifications", () => {
       }
     );
 
+    // testWithEmulator(
     testWithEmulator(
       "should enqueue error notification if operation failed",
       async () => {
