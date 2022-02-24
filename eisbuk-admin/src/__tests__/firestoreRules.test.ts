@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import pRetry from "p-retry";

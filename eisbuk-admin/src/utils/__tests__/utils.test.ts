@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "eisbuk-shared";

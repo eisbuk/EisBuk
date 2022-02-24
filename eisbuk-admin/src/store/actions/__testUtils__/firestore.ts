@@ -1,7 +1,7 @@
 import { AnyAction, Dispatch, Store } from "redux";
-import { DateTime } from "luxon";
 import { doc, setDoc, addDoc, collection, getDoc } from "@firebase/firestore";
 import pRetry from "p-retry";
+import { v4 as uuid } from "uuid";
 
 import {
   Collection,
@@ -28,10 +28,12 @@ import { getOrganization } from "@/lib/getters";
 
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
-import { createTestStore } from "@/__testUtils__/firestore";
-import { waitForCondition } from "@/__testUtils__/helpers";
+import {
+  setSlotDayToClipboard,
+  setSlotWeekToClipboard,
+} from "@/store/actions/copyPaste";
 
-import { testDateLuxon } from "@/__testData__/date";
+import { createTestStore } from "@/__testUtils__/firestore";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -113,46 +115,11 @@ export const setupTestAttendance: AdminSetupFunction<{
 
   await Promise.all(updates);
 };
-
 /**
- * Set up `slots` data in emulated store and create `getState()` returning redux store
- * filled with `slots` data as `slotsByDay`
- * @param slots entry for firestore slots we want to set
- * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
- * @param date optional date (in case we want to explicitly set the date for testing), defaults to `testDateLuxon`
- * @returns middleware args (dispatch, setState, { getFirebase } )
+ * Set up `slots` data in emulated store and populate redux store
+ * with given `slots` data in `slotsByDay` format
  */
-export const setupTestSlots = async ({
-  slots,
-  dispatch = (value: any) => value,
-  date = testDateLuxon,
-}: {
-  slots: Record<string, SlotInterface>;
-  dispatch?: Dispatch;
-  date?: DateTime;
-}): Promise<ThunkParams> => {
-  // transform slots to `slotsByDay` store entry struct:
-  // get keys (month, day) from `slot.date` and organize accordingly
-  const slotsByDay = aggregateSlots(slots);
-
-  // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ data: { slotsByDay }, date });
-
-  // set desired values to emulated db
-  const slotsColl = orgDb.collection(OrgSubCollection.Slots);
-
-  const updates = Object.keys(slots).map((slotId) =>
-    slotsColl.doc(slotId).set(slots[slotId])
-  );
-
-  await Promise.all(updates);
-
-  return [dispatch, getState];
-};
-/**
- * A @TEMP slot setup helper. Should be used instead of existing `setupTestSlots`
- */
-export const setupTestSlotsTemp: AdminSetupFunction<{
+export const setupTestSlots: AdminSetupFunction<{
   slots: Record<string, SlotInterface>;
 }> = async ({ db, store, slots }) => {
   // aggregate slots (to slotsByDay) and update to store
@@ -172,20 +139,17 @@ export const setupTestSlotsTemp: AdminSetupFunction<{
  * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
  * @returns middleware args (dispatch, setState, { getFirebase } )
  */
-export const setupCopyPaste = async ({
-  day = null,
-  week = null,
-  dispatch = (value: any) => value,
-}: {
+export const setupCopyPaste: AdminSetupFunction<{
   day?: LocalStore["copyPaste"]["day"];
   week?: LocalStore["copyPaste"]["week"];
-  dispatch?: Dispatch;
-}): Promise<ThunkParams> => {
-  const copyPaste = { day, week };
+}> = async ({ day, week, store }) => {
   // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ copyPaste });
-
-  return [dispatch, getState];
+  if (day) {
+    store.dispatch(setSlotDayToClipboard(day));
+  }
+  if (week) {
+    store.dispatch(setSlotWeekToClipboard(week));
+  }
 };
 /**
  * Creates a new redux store and new test environment firestore.
@@ -245,53 +209,27 @@ export const setupTestBookings = async ({
   );
 };
 /**
- * Set up `customers` data entry in emulated store and create `getState()` returning redux store
- * filled with same `customers` data
- * @param customer we want to set to firestore (optionally we can omit this and just return thunk args)
- * @param secretKey test `secretKey` for customer
- * @returns middleware args (dispatch, setState, { getFirebase } )
+ * Set up `customers` data entry in emulated store in redux store
  */
-export const setupTestCustomer = async ({
-  customer,
-  dispatch = (value: any) => value,
-}: {
+export const setupTestCustomer: AdminSetupFunction<{
   customer: CustomerLoose;
-  dispatch?: Dispatch;
-}): Promise<ThunkParams> => {
-  const customersRef = orgDb.collection(OrgSubCollection.Customers);
+}> = async ({ customer, db, store }) => {
+  const customersRef = collection(db, customersPath);
 
-  // try and use `id` from provided customer (if not defined, will be replaced later)
-  let customerId = customer.id;
+  // id customer id or secretKey not provided, generate locally
+  const id = customer.id || uuid();
+  const secretKey = customer.secretKey || uuid();
+  const customerEntry = { ...customer, id, secretKey };
 
-  if (customerId) {
-    // we're immediately using the `id` (if provided) for document reference
-    await customersRef.doc(customerId).set(customer);
-  } else {
-    // we're setting a customer to unspecified doc id (should be assigned by the server/emulator)
-    await customersRef.doc().set(customer);
-    // update `customerId` to a newly created one
-    customerId = (await customersRef.get()).docs[0].id;
-  }
+  // udpate firestore
+  await setDoc(doc(customersRef, id), customerEntry);
 
-  // halt the execution until customer doc has all data (`id` and `secretKey`), either provided
-  // or added by data trigger
-  const customerEntry = (await waitForCondition({
-    documentPath: `${Collection.Organizations}/${getOrganization()}/${
-      OrgSubCollection.Customers
-    }/${customerId}`,
-    condition: (data) => data && data.id && data.secretKey,
-  })) as Customer;
-
-  const getState = () =>
-    createTestStore({
-      data: {
-        customers: {
-          [customerId as string]: customerEntry,
-        },
-      },
-    });
-
-  return [dispatch, getState];
+  // set customer to the store
+  store.dispatch(
+    updateLocalDocuments(OrgSubCollection.Customers, {
+      [id]: customerEntry,
+    })
+  );
 };
 
 export const setupTestCustomerTemp: AdminSetupFunction<{ customer: Customer }> =

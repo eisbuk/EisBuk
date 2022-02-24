@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { signOut } from "@firebase/auth";
 

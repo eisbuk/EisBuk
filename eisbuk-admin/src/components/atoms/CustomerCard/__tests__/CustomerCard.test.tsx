@@ -150,6 +150,7 @@ describe("Customer Card", () => {
       );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
+        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
         customerId: saul.id,
         method: SendBookingLinkMethod.Email,
       });
@@ -198,6 +199,7 @@ describe("Customer Card", () => {
       );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
+        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
         customerId: saul.id,
         method: SendBookingLinkMethod.SMS,
       });

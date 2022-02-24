@@ -1,9 +1,9 @@
 import {
   RulesTestContext,
   initializeTestEnvironment,
+  RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
 import { setDoc, doc } from "@firebase/firestore";
-import { v4 as uuid } from "uuid";
 
 import { Collection } from "eisbuk-shared";
 
@@ -12,10 +12,16 @@ import { defaultUser } from "@/__testSetup__/envData";
 import { __organization__ } from "@/lib/constants";
 
 export type TestEnvFirestore = ReturnType<RulesTestContext["firestore"]>;
+export type ExtendedTestEnvFirestore = TestEnvFirestore & {
+  testEnv: RulesTestEnvironment;
+};
 export type TestEnvSetup = (db: TestEnvFirestore) => Promise<void | void[]>;
 
 interface GetTestEnv {
-  (params: { setup?: TestEnvSetup; auth?: boolean }): Promise<TestEnvFirestore>;
+  (params: {
+    setup?: TestEnvSetup;
+    auth?: boolean;
+  }): Promise<ExtendedTestEnvFirestore>;
 }
 
 /**
@@ -33,8 +39,10 @@ export const getTestEnv: GetTestEnv = async ({
   setup = async () => {},
 }) => {
   // create a unique project id for each test to run in pristine environment
-  const projectId = uuid();
+  const projectId = "eisbuk";
   const testEnv = await initializeTestEnvironment({ projectId });
+  // clear firestore to prevent leaking of data from other tests (as project id turned out flaky at times)
+  await testEnv.clearFirestore();
   // we're generating an auth context using our `defaultUser`
   // in compliance with our `firestore.rules`, the `defaultUser` needs to be stored
   // as organization's admin in firestore for a complete `isAdmin` functionality
@@ -47,9 +55,13 @@ export const getTestEnv: GetTestEnv = async ({
     await setup(db);
   });
   // return test context with respect to `auth`
-  return auth
+  const db = auth
     ? testEnv
         .authenticatedContext(defaultUser.email, { email: defaultUser.email })
         .firestore()
     : testEnv.unauthenticatedContext().firestore();
+
+  db["testEnv"] = testEnv;
+
+  return db as ExtendedTestEnvFirestore;
 };

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { doc } from "@firebase/firestore";
 
 import { Collection } from "eisbuk-shared";

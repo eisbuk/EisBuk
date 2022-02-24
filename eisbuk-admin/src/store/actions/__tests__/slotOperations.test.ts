@@ -1,5 +1,5 @@
 /**
- * @jest-environment jsdom
+ * @jest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
@@ -11,9 +11,11 @@ import {
   SlotType,
 } from "eisbuk-shared";
 
-import { db } from "@/__testSetup__/firestoreSetup";
+import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
-import { __organization__ } from "@/lib/constants";
+import { getNewStore } from "@/store/createStore";
+
+import { getOrganization } from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
@@ -23,7 +25,6 @@ import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
-import { deleteAll } from "@/__testUtils__/firestore";
 
 import i18n from "@/__testUtils__/i18n";
 import { loginDefaultUser } from "@/__testUtils__/auth";
@@ -35,7 +36,9 @@ import {
   testSlot,
 } from "../__testData__/slotOperations";
 
-const slotsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Slots}`;
+const slotsCollectionPath = `${Collection.Organizations}/${getOrganization()}/${
+  OrgSubCollection.Slots
+}`;
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -68,11 +71,15 @@ const mockDispatch = jest.fn();
  * A spy of `getFirebase` function which we're occasionally mocking to throw error
  * for error handling tests
  */
-const getFirebaseSpy = jest.spyOn(firestore, "getFirestore");
+const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
+
+/**
+ * Passing this for typesafety where the actual `store.getState` isn't needed
+ */
+const dummyGetState = () => ({} as any);
 
 describe("Slot operations ->", () => {
   beforeEach(async () => {
-    await deleteAll();
     await loginDefaultUser();
     jest.clearAllMocks();
   });
@@ -82,13 +89,14 @@ describe("Slot operations ->", () => {
       "should add new slot to firestore (with generated uuid) and show success notification",
       async () => {
         // set up initial state
-        const thunkArgs = await setupTestSlots({
-          slots: initialSlots,
-          dispatch: mockDispatch,
+        const store = getNewStore();
+        const db = await getTestEnv({
+          setup: (db) => setupTestSlots({ db, store, slots: initialSlots }),
         });
-        // create a thunk curried with test input values
-        const testThunk = createNewSlot(testFormValues);
-        await testThunk(...thunkArgs);
+        // make sure test uses the test firestore db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
+        // run the thunk
+        await createNewSlot(testFormValues)(mockDispatch, store.getState);
         const slotsCollRef = firestore.collection(db, slotsCollectionPath);
         const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
         // check that the new slot was created
@@ -119,16 +127,11 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
-        getFirebaseSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementationOnce(() => {
           throw new Error();
         });
-        // run thunk
-        const thunkArgs = await setupTestSlots({
-          slots: initialSlots,
-          dispatch: mockDispatch,
-        });
-        const testThunk = createNewSlot(testFormValues);
-        await testThunk(...thunkArgs);
+        // run the thunk
+        await createNewSlot(testFormValues)(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
@@ -139,15 +142,19 @@ describe("Slot operations ->", () => {
     testWithEmulator(
       "should edit an existing slot in firestore and show succes notification",
       async () => {
-        const slotId = "test-slot";
         // set up initial state
-        const thunkArgs = await setupTestSlots({
-          slots: {
-            ...initialSlots,
-            [slotId]: { ...testSlot, id: slotId },
-          },
-          dispatch: mockDispatch,
+        const slotId = "test-slot";
+        const store = getNewStore();
+        const db = await getTestEnv({
+          setup: (db) =>
+            setupTestSlots({
+              db,
+              store,
+              slots: { ...initialSlots, [slotId]: { ...testSlot, id: slotId } },
+            }),
         });
+        // make sure test uses the test firestore db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
         // updates we're applying to slot
         const updates = {
           categories: Object.values(Category),
@@ -159,13 +166,12 @@ describe("Slot operations ->", () => {
             },
           ],
         };
-        // create a thunk curried with updated form values
-        const testThunk = updateSlot({
+        // run the thunk
+        await updateSlot({
           ...testFormValues,
           ...updates,
           id: slotId,
-        });
-        await testThunk(...thunkArgs);
+        })(mockDispatch, store.getState);
         // check that the slot is properly updated
         const slotDocRef = firestore.doc(db, slotsCollectionPath, slotId);
         const testSlotInFS = (await firestore.getDoc(slotDocRef)).data();
@@ -194,19 +200,14 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
-        getFirebaseSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementationOnce(() => {
           throw new Error();
         });
-        // run thunk
-        const thunkArgs = await setupTestSlots({
-          slots: initialSlots,
-          dispatch: mockDispatch,
-        });
-        const testThunk = updateSlot({
+        // run the failing thunk
+        await updateSlot({
           ...testFormValues,
           id: "slot",
-        });
-        await testThunk(...thunkArgs);
+        })(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
@@ -217,18 +218,21 @@ describe("Slot operations ->", () => {
     testWithEmulator(
       "should delete slot from firestore and show succes notification",
       async () => {
-        const slotId = "test-slot";
         // set up initial state
-        const thunkArgs = await setupTestSlots({
-          slots: {
-            ...initialSlots,
-            [slotId]: { ...testSlot, id: slotId },
-          },
-          dispatch: mockDispatch,
+        const slotId = "test-slot";
+        const store = getNewStore();
+        const db = await getTestEnv({
+          setup: (db) =>
+            setupTestSlots({
+              db,
+              store,
+              slots: { ...initialSlots, [slotId]: { ...testSlot, id: slotId } },
+            }),
         });
-        // create a thunk curried with slot id
-        const testThunk = deleteSlot(slotId);
-        await testThunk(...thunkArgs);
+        // make sure test uses the test firestore db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
+        // run the thunk
+        await deleteSlot(slotId)(mockDispatch, store.getState);
         // check that the slot was deleted from db
         const slotsCollRef = firestore.collection(db, slotsCollectionPath);
         const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
@@ -250,18 +254,11 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
-        getFirebaseSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementationOnce(() => {
           throw new Error();
         });
-        // run thunk-slot";
-        // set up initial state
-        const thunkArgs = await setupTestSlots({
-          slots: initialSlots,
-          dispatch: mockDispatch,
-        });
-        // create a thunk curried with slot id
-        const testThunk = deleteSlot("id");
-        await testThunk(...thunkArgs);
+        // run the failing thunk
+        await deleteSlot("id")(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }

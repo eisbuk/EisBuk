@@ -31,7 +31,6 @@ export const __withEmulators__ = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
  */
 export const testWithEmulator: TestClosure = (...args) => {
   if (__withEmulators__) {
-    /** @TEMP disable tests with emulators */
     test(...args);
   } else {
     xtest(...args);
