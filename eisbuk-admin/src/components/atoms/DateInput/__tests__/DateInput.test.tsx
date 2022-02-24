@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { screen, fireEvent } from "@testing-library/react";
 import * as formik from "formik";

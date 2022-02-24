@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import * as firestore from "@firebase/firestore";
 import i18n from "@/__testUtils__/i18n";
 

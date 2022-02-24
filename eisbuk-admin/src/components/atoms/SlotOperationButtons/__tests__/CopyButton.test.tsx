@@ -1,6 +1,7 @@
 /**
- * @jest-envirnoment jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";

@@ -6,9 +6,6 @@ module.exports = {
     ...hq.get("jest"),
     "\\.svg": "<rootDir>/src/__mocks__/svg.ts",
   },
-  // transform: {
-  //   "\\.tsx?$": ["esbuild-jest"],
-  // },
   globalSetup: "<rootDir>/src/__testSetup__/initTests.ts",
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",

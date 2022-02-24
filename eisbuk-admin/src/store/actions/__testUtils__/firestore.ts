@@ -1,6 +1,7 @@
 import { AnyAction, Dispatch, Store } from "redux";
 import { DateTime } from "luxon";
-import { doc, setDoc, addDoc, collection } from "@firebase/firestore";
+import { doc, setDoc, addDoc, collection, getDoc } from "@firebase/firestore";
+import pRetry from "p-retry";
 
 import {
   Collection,
@@ -13,6 +14,7 @@ import {
   CustomerLoose,
   OrganizationData,
   getCustomerBase,
+  SlotAttendnace,
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
@@ -30,8 +32,6 @@ import { createTestStore } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { testDateLuxon } from "@/__testData__/date";
-import pRetry from "p-retry";
-import { getDoc } from "firebase/firestore";
 
 type ThunkParams = Parameters<FirestoreThunk>;
 
@@ -54,6 +54,10 @@ const slotsPath = [orgPath, OrgSubCollection.Slots].join("/");
  * A path to `customers` collection in test organization
  */
 const customersPath = [orgPath, OrgSubCollection.Customers].join("/");
+/*
+ * A path to `slots` collection in test organization
+ */
+const attendancePath = [orgPath, OrgSubCollection.Attendance].join("/");
 
 interface AdminSetupFunction<
   T extends Record<string, any> = Record<string, never>
@@ -93,32 +97,23 @@ export const setupTestOrganziation = async ({
 };
 
 /**
- * Set up `attendance` data in emulated store and create `getState()` returning redux store
- * filled with `attendance` data as well
- * @param attendance entry for firestore attendance we want to set
- * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
- * @returns middleware args (dispatch, setState )
+ * Set up `attendance` data in emulated store and populate local collection accordingly
  */
-export const setupTestAttendance = async ({
-  attendance,
-  dispatch = (value: any) => value,
-}: {
-  attendance: LocalStore["firestore"]["data"]["attendance"];
-  dispatch?: Dispatch;
-}): Promise<ThunkParams> => {
-  // create `getState` state to return store populated with desired values
-  const getState = () => createTestStore({ data: { attendance } });
+export const setupTestAttendance: AdminSetupFunction<{
+  attendance: Record<string, SlotAttendnace>;
+}> = async ({ attendance, db, store }) => {
+  // set attendance to store
+  store.dispatch(updateLocalDocuments(OrgSubCollection.Attendance, attendance));
 
   // set desired values to emulated db
-  const attendanceColl = orgDb.collection(OrgSubCollection.Attendance);
-  const updates = Object.keys(attendance!).map((slotId) =>
-    attendanceColl.doc(slotId).set(attendance![slotId])
+  const attendanceCollRef = collection(db, attendancePath);
+  const updates = Object.keys(attendance).map((slotId) =>
+    setDoc(doc(attendanceCollRef, slotId), attendance[slotId])
   );
 
   await Promise.all(updates);
-
-  return [dispatch, getState];
 };
+
 /**
  * Set up `slots` data in emulated store and create `getState()` returning redux store
  * filled with `slots` data as `slotsByDay`
@@ -156,7 +151,6 @@ export const setupTestSlots = async ({
 };
 /**
  * A @TEMP slot setup helper. Should be used instead of existing `setupTestSlots`
- * @param param0
  */
 export const setupTestSlotsTemp: AdminSetupFunction<{
   slots: Record<string, SlotInterface>;
