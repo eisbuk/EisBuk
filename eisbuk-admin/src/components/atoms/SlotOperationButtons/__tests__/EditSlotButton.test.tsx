@@ -1,6 +1,7 @@
 /**
- * @jest-envirnoment jest-environment-jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import React from "react";
 import {
   screen,

@@ -1,6 +1,7 @@
 /**
- * @jest-environment jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import React, { useContext } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";

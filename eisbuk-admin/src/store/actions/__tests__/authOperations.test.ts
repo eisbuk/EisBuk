@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { User } from "@firebase/auth";
 
 import { Collection, OrganizationData } from "eisbuk-shared";
