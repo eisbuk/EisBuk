@@ -22,8 +22,6 @@ import {
 
 import { ButtonContextType } from "@/enums/components";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
-
 import {
   __newSlotButtonId__,
   __slotFormId__,
@@ -66,18 +64,15 @@ describe("SlotOperationButtons", () => {
       screen.getByTestId(__slotFormId__);
     });
 
-    testWithMutationObserver(
-      "should close 'SlotForm' on forms 'onClose' trigger",
-      async () => {
-        // open form
-        screen.getByTestId(__newSlotButtonId__).click();
-        // should close form
-        screen.getByTestId(__cancelFormId__).click();
-        await waitForElementToBeRemoved(() =>
-          screen.queryByTestId(__slotFormId__)
-        );
-      }
-    );
+    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
+      // open form
+      screen.getByTestId(__newSlotButtonId__).click();
+      // should close form
+      screen.getByTestId(__cancelFormId__).click();
+      await waitForElementToBeRemoved(() =>
+        screen.queryByTestId(__slotFormId__)
+      );
+    });
   });
 
   describe("'NewSlotButton' edge cases/error handling test", () => {
