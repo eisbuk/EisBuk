@@ -51,7 +51,8 @@
     "MedicalCertificate": "Scadenza Cert. Medico",
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
-    "CovidCertificateSuspended": "Certificazione verde sospesa"
+    "CovidCertificateSuspended": "Certificazione verde sospesa",
+    "ExtendedBookingDate": "Extended booking date"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -66,11 +67,18 @@
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+
     "NonReversible": "Questa azione non è reversibile",
+
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "SendSMSTitle": "Conferma SMS",
-    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?"
+    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
+    "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
+    "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
+
+    "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
+    "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
   },
   "ActionButton": {
     "CreateSlot": "Crea Slot",
@@ -80,10 +88,12 @@
     "AddCustomers": "Aggiungi clienti",
 
     "BookInterval": "Prenota",
+    "FinalizeBookings": "Finito",
 
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
     "SendBookingsSMS": "Invia SMS link prenotazions",
+    "ExtendBookingDate": "Extend booking date",
 
     "Save": "Salva",
     "Next": "Seguente",
@@ -91,19 +101,31 @@
   },
 
   "Notification": {
-    "Error": "Errore",
-    "LogoutSuccess": "Hai effettuato il logout",
-    "LogoutError": "Si è verificato un errore",
     "BookingSuccess": "Prenotazione effettuata",
     "BookingCanceled": "Prenotazione rimossa",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+
+    "SlotAdded": "Slot Aggiunto",
+    "SlotUpdated": "Slot Aggiornato",
+    "SlotRemoved": "Slot Eliminato",
+
+    "LogoutSuccess": "Hai effettuato il logout",
+    "LogoutError": "Si è verificato un errore",
+
     "Updated": "aggiornato",
     "Removed": "rimosso",
+
     "EmailSent": "Email inviata con successo",
     "SMSSent": "SMS inviato con successo",
-    "SlotAdded": "Slot Aggiunto",
-    "SlotRemoved": "Slot Eliminato",
-    "SlotUpdated": "Slot Aggiornato"
+    "BookingDateExtended": "Booking date extended",
+
+    "Error": "Errore"
+  },
+
+  "BookingCountdownMessage": {
+    "FirstDeadline": "Hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong> (fino al {{ date, dd/MM/yyyy }}) per prenotare il mese di {{ month, MMMM }}.",
+    "SecondDeadline": "Termine di prenotazione per il mese di {{ month, MMMM }} esteso fino al {{ date, dd/MM/yyyy }}: hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong>.",
+    "BookingsLocked": "Le prenotazioni per {{ month, MMMM }} sono bloccate"
   },
 
   "Flags": {
@@ -144,6 +166,7 @@
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
   },
+
   "BirthdayMenu": {
     "ShowAll": "Mostra Tutti",
     "UpcomingBirthdays": "Prossimi Compleanni"

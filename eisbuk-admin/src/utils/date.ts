@@ -11,3 +11,16 @@ import { DateTime } from "luxon";
  */
 export const isISODay = (string?: string): boolean =>
   string ? string.length === 10 && DateTime.fromISO(string).isValid : false;
+
+/**
+ * @param d1
+ * @param d2
+ * @returns rounded down (monthly) difference between two months (d1 - d2)
+ */
+export const getMonthDiff = (d1: DateTime, d2: DateTime): number => {
+  // correct dates to start of their respective months
+  const cd1 = d1.startOf("month");
+  const cd2 = d2.startOf("month");
+
+  return Math.floor(cd1.diff(cd2.startOf("month"), "months").months);
+};

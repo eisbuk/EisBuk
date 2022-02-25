@@ -62,6 +62,7 @@ export enum CustomerLabel {
   CardNumber = "CustomerLabel.CardNumber",
   CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
   CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
+  ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -78,12 +79,20 @@ export enum ValidationMessage {
 export enum Prompt {
   DeleteCustomer = "Prompt.DeleteCustomer",
   DeleteSlot = "Prompt.DeleteSlot",
+
   NonReversible = "Prompt.NonReversible",
+
   SendEmailTitle = "Prompt.SendEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
   SendSMSTitle = "Prompt.SendSMSTitle",
   ConfirmSMS = "Prompt.ConfirmSMS",
+  ExtendBookingDateTitle = "Prompt.ExtendBookingDateTitle",
+  ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
+
+  FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
+  ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
 }
+
 export enum ActionButton {
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
@@ -92,10 +101,12 @@ export enum ActionButton {
   AddCustomers = "ActionButton.AddCustomers",
 
   BookInterval = "ActionButton.BookInterval",
+  FinalizeBookings = "ActionButton.FinalizeBookings",
 
   CustomerBookings = "ActionButton.CustomerBookings",
   SendBookingsEmail = "ActionButton.SendBookingsEmail",
   SendBookingsSMS = "ActionButton.SendBookingsSMS",
+  ExtendBookingDate = "ActionButton.ExtendBookingDate",
 
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
@@ -129,8 +140,15 @@ export enum NotificationMessage {
 
   EmailSent = "Notification.EmailSent",
   SMSSent = "Notification.SMSSent",
+  BookingDateExtended = "Notification.BookingdateExtended",
 
   Error = "Notification.Error",
+}
+
+export enum BookingCountdownMessage {
+  FirstDeadline = "BookingCountdownMessage.FirstDeadline",
+  SecondDeadline = "BookingCountdownMessage.SecondDeadline",
+  BookingsLocked = "BookingCountdownMessage.BookingsLocked",
 }
 // #endregion notifications
 

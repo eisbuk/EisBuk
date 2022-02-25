@@ -221,6 +221,7 @@ jobs:
 
       - name: Check if secrets are available
         id: has_secret
+        if: success() || failure()
         run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
 
       - name: Install rclone

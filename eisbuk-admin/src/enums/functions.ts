@@ -3,6 +3,8 @@ export enum CloudFunction {
   SendEmail = "sendEmail",
   SendSMS = "sendSMS",
 
+  FinalizeBookings = "finalizeBookings",
+
   CreateTestData = "createTestData",
   CreateOrganization = "createOrganization",
   CreateTestSlots = "createTestSlots",

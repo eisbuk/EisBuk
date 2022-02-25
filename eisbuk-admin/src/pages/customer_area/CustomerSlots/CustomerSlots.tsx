@@ -1,16 +1,22 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { DateTime } from "luxon";
+import { useSelector } from "react-redux";
 
 import { SlotInterface } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
 
+import { LocalStore } from "@/types/store";
+
+import BookingsCountdown from "@/components/atoms/BookingsCountdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
+import BookingCardGroup from "@/components/atoms/BookingCardGroup";
+
+import { getCountdownProps } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
-import { LocalStore } from "@/types/store";
-import BookingCardGroup from "@/components/atoms/BookingCardGroup";
+import { getCalendarDay } from "@/store/selectors/app";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -58,10 +64,22 @@ const CustomerSlots: React.FC<Props> = ({
 
   const paginateBy = view === CustomerRoute.BookIce ? "month" : "week";
 
+  // should open bookings view with next month's slots
+  const defaultDate = useMemo(() => DateTime.now().plus({ months: 1 }), []);
+
+  // show countdown if booking deadline is close
+  const currentDate = useSelector(getCalendarDay);
+  const countdownProps = useSelector(
+    // when we have a week (for book off-ice view), spaning over two months
+    // we want to show countdown/bookings-locked message with respect to later date
+    getCountdownProps(currentDate.endOf(paginateBy))
+  );
+
   return (
-    <DateNavigation jump={paginateBy}>
+    <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
+          {countdownProps && <BookingsCountdown {...countdownProps} />}
           {orderedDates?.map((date) => {
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
@@ -69,7 +87,7 @@ const CustomerSlots: React.FC<Props> = ({
 
             return (
               <SlotsDayContainer key={date} date={luxonDay}>
-                {({ WrapElement }) => (
+                {({ WrapElement, lockBookings }) => (
                   <>
                     {slotsArray.map((slot) => {
                       const bookedInterval = bookedSlots
@@ -84,6 +102,7 @@ const CustomerSlots: React.FC<Props> = ({
                             bookedInterval,
                             WrapElement,
                           }}
+                          disableAll={lockBookings}
                         />
                       );
                     })}

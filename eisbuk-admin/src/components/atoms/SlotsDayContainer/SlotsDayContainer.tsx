@@ -9,6 +9,8 @@ import Typography from "@material-ui/core/Typography";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { DateFormat } from "@/enums/translations";
+import { getIsBookingAllowed } from "@/store/selectors/bookings";
+import { useSelector } from "react-redux";
 
 /**
  * Wrapper function we're using to wrap each child element (for styling).
@@ -22,7 +24,7 @@ type ElementWrapper = React.FC;
  * A render function we're accepting as `children` and passing the element wrapper to.
  */
 interface RenderFunction {
-  (params: { WrapElement: ElementWrapper }): JSX.Element;
+  (params: { WrapElement: ElementWrapper; lockBookings: boolean }): JSX.Element;
 }
 
 interface Props {
@@ -62,6 +64,10 @@ const SlotsDayContainer: React.FC<Props> = ({
   const { t } = useTranslation();
   const classes = useStyles();
 
+  // used only for /customer_area
+  // let the render prop function know if bookings for a day should be disabled
+  const lockBookings = !useSelector(getIsBookingAllowed(date));
+
   const WrapElement: ElementWrapper = ({ children }) => (
     <Grid item xs={12} md={6} lg={4} xl={3}>
       {children}
@@ -77,7 +83,7 @@ const SlotsDayContainer: React.FC<Props> = ({
         {showAdditionalButtons && additionalButtons}
       </ListSubheader>
       <Grid className={classes.slotListContainer} container spacing={1}>
-        {render({ WrapElement })}
+        {render({ WrapElement, lockBookings })}
       </Grid>
     </>
   );
