@@ -21,8 +21,6 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
-
 import {
   __editSlotButtonId__,
   __slotFormId__,
@@ -64,18 +62,15 @@ describe("SlotOperationButtons", () => {
       screen.getByText(new RegExp(notes));
     });
 
-    testWithMutationObserver(
-      "should close 'SlotForm' on forms 'onClose' trigger",
-      async () => {
-        // open form
-        screen.getByTestId(__editSlotButtonId__).click();
-        // should close form
-        screen.getByTestId(__cancelFormId__).click();
-        await waitForElementToBeRemoved(() =>
-          screen.queryByTestId(__slotFormId__)
-        );
-      }
-    );
+    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
+      // open form
+      screen.getByTestId(__editSlotButtonId__).click();
+      // should close form
+      screen.getByTestId(__cancelFormId__).click();
+      await waitForElementToBeRemoved(() =>
+        screen.queryByTestId(__slotFormId__)
+      );
+    });
   });
 
   describe("'EditSlotButton' edge cases/error handling test", () => {

@@ -19,8 +19,6 @@ import AttendnaceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
-
 import {
   baseAttendanceCard,
   intervalStrings as intervals,
@@ -77,78 +75,64 @@ describe("AttendanceCard ->", () => {
     };
     const saulWithAttendance = { ...saul, ...customerAttendance };
 
-    testWithMutationObserver(
-      'should open customers list on add customers button click and close on "x" button click',
-      async () => {
-        render(<AttendnaceCard {...baseAttendanceCard} />);
-        const customerList = screen.queryByTestId(__customersListId__);
-        expect(customerList).toBeNull();
-        screen.getByTestId(__addCustomersButtonId__).click();
-        screen.getByTestId(__customersListId__);
-        screen.getByTestId(__closeCustomersListId__).click();
-        await waitForElementToBeRemoved(() =>
-          screen.getByTestId(__customersListId__)
-        );
-      }
-    );
+    test('should open customers list on add customers button click and close on "x" button click', async () => {
+      render(<AttendnaceCard {...baseAttendanceCard} />);
+      const customerList = screen.queryByTestId(__customersListId__);
+      expect(customerList).toBeNull();
+      screen.getByTestId(__addCustomersButtonId__).click();
+      screen.getByTestId(__customersListId__);
+      screen.getByTestId(__closeCustomersListId__).click();
+      await waitForElementToBeRemoved(() =>
+        screen.getByTestId(__customersListId__)
+      );
+    });
 
-    testWithMutationObserver(
-      "should close customers list on esc button press",
-      async () => {
-        render(<AttendnaceCard {...baseAttendanceCard} />);
-        const customerList = screen.queryByTestId(__customersListId__);
-        expect(customerList).toBeNull();
-        screen.getByTestId(__addCustomersButtonId__).click();
-        screen.getByTestId(__customersListId__);
-        fireEvent.keyDown(screen.getByTestId(__customersListId__), {
-          key: "Escape",
-          code: "Escape",
-          keyCode: 27,
-          charCode: 27,
-        });
-        await waitForElementToBeRemoved(() =>
-          screen.getByTestId(__customersListId__)
-        );
-      }
-    );
+    test("should close customers list on esc button press", async () => {
+      render(<AttendnaceCard {...baseAttendanceCard} />);
+      const customerList = screen.queryByTestId(__customersListId__);
+      expect(customerList).toBeNull();
+      screen.getByTestId(__addCustomersButtonId__).click();
+      screen.getByTestId(__customersListId__);
+      fireEvent.keyDown(screen.getByTestId(__customersListId__), {
+        key: "Escape",
+        code: "Escape",
+        keyCode: 27,
+        charCode: 27,
+      });
+      await waitForElementToBeRemoved(() =>
+        screen.getByTestId(__customersListId__)
+      );
+    });
 
-    testWithMutationObserver(
-      "should close customer list on clicking outside modal",
-      async () => {
-        render(<AttendnaceCard {...baseAttendanceCard} />);
-        const customerList = screen.queryByTestId(__customersListId__);
-        expect(customerList).toBeNull();
-        screen.getByTestId(__addCustomersButtonId__).click();
-        screen.getByTestId(__customersListId__);
-        const dialogContainer = screen.getByRole("presentation");
-        fireEvent.click(dialogContainer.children[0]);
+    test("should close customer list on clicking outside modal", async () => {
+      render(<AttendnaceCard {...baseAttendanceCard} />);
+      const customerList = screen.queryByTestId(__customersListId__);
+      expect(customerList).toBeNull();
+      screen.getByTestId(__addCustomersButtonId__).click();
+      screen.getByTestId(__customersListId__);
+      const dialogContainer = screen.getByRole("presentation");
+      fireEvent.click(dialogContainer.children[0]);
 
-        await waitForElementToBeRemoved(() =>
-          screen.getByTestId(__customersListId__)
-        );
-      }
-    );
+      await waitForElementToBeRemoved(() =>
+        screen.getByTestId(__customersListId__)
+      );
+    });
 
-    testWithMutationObserver(
-      "should close when there are no more customers to show",
-      async () => {
-        render(<AttendnaceCard {...baseAttendanceCard} />);
-        screen.getByTestId(__addCustomersButtonId__).click();
-        // click on each customer (expecting it to be removed)
-        baseAttendanceCard.allCustomers.forEach((customer) => {
-          const customerOnScreen = screen.queryByText(
-            new RegExp(customer.name)
-          );
-          if (customerOnScreen) {
-            customerOnScreen.click();
-          }
-        });
-        // the modal should close
-        await waitForElementToBeRemoved(() =>
-          screen.getByTestId(__customersListId__)
-        );
-      }
-    );
+    test("should close when there are no more customers to show", async () => {
+      render(<AttendnaceCard {...baseAttendanceCard} />);
+      screen.getByTestId(__addCustomersButtonId__).click();
+      // click on each customer (expecting it to be removed)
+      baseAttendanceCard.allCustomers.forEach((customer) => {
+        const customerOnScreen = screen.queryByText(new RegExp(customer.name));
+        if (customerOnScreen) {
+          customerOnScreen.click();
+        }
+      });
+      // the modal should close
+      await waitForElementToBeRemoved(() =>
+        screen.getByTestId(__customersListId__)
+      );
+    });
 
     test("should render all customers for slot's category who haven't booked already (when open)", () => {
       const waltRegex = new RegExp(walt.name);

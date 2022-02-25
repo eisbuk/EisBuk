@@ -29,7 +29,6 @@ import SlotForm from "../SlotForm";
 
 import * as slotOperations from "@/store/actions/slotOperations";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 import i18n from "@/__testUtils__/i18n";
 
 import {
@@ -166,47 +165,44 @@ xdescribe("SlotForm ->", () => {
 
     const mockOnClose = jest.fn();
 
-    testWithMutationObserver(
-      "should call on submit with set values and close the form",
-      async () => {
-        render(<SlotForm {...baseProps} onClose={mockOnClose} />);
-        // values for submit we're filling out as we go and expecting on submit
-        let submitValues = {
-          ...defaultSlotFormValues,
-          date: testDate,
-        };
-        // select `adults` category
-        screen
-          .getByText(i18n.t(CategoryLabel[Category.Adults]) as string)
-          .click();
-        submitValues = { ...submitValues, categories: [Category.Adults] };
-        // select slot type `ice`
-        screen.getByText(i18n.t(SlotTypeLabel[SlotType.Ice]) as string).click();
-        submitValues = { ...submitValues, type: SlotType.Ice };
-        // fill interval
-        const [startTime1, endTime1] = screen.getAllByRole("textbox");
-        await userEvent.type(startTime1, "15:00");
-        await userEvent.type(endTime1, "16:30");
-        submitValues = {
-          ...submitValues,
-          intervals: [{ startTime: "15:00", endTime: "16:30" }],
-        };
-        // add new (default) interval
-        screen.getByText(i18n.t(SlotFormLabel.AddInterval) as string).click();
-        submitValues = {
-          ...submitValues,
-          intervals: [...submitValues.intervals, defaultInterval],
-        };
-        // submit form
-        screen.getByText(createSlotLabel).click();
-        // create mock action for form submission
-        const mockCreateAction = mockCreateImplementation(submitValues);
-        await waitFor(() => {
-          expect(mockDispatch).toHaveBeenCalledWith(mockCreateAction);
-          expect(mockOnClose).toHaveBeenCalled();
-        });
-      }
-    );
+    test("should call on submit with set values and close the form", async () => {
+      render(<SlotForm {...baseProps} onClose={mockOnClose} />);
+      // values for submit we're filling out as we go and expecting on submit
+      let submitValues = {
+        ...defaultSlotFormValues,
+        date: testDate,
+      };
+      // select `adults` category
+      screen
+        .getByText(i18n.t(CategoryLabel[Category.Adults]) as string)
+        .click();
+      submitValues = { ...submitValues, categories: [Category.Adults] };
+      // select slot type `ice`
+      screen.getByText(i18n.t(SlotTypeLabel[SlotType.Ice]) as string).click();
+      submitValues = { ...submitValues, type: SlotType.Ice };
+      // fill interval
+      const [startTime1, endTime1] = screen.getAllByRole("textbox");
+      await userEvent.type(startTime1, "15:00");
+      await userEvent.type(endTime1, "16:30");
+      submitValues = {
+        ...submitValues,
+        intervals: [{ startTime: "15:00", endTime: "16:30" }],
+      };
+      // add new (default) interval
+      screen.getByText(i18n.t(SlotFormLabel.AddInterval) as string).click();
+      submitValues = {
+        ...submitValues,
+        intervals: [...submitValues.intervals, defaultInterval],
+      };
+      // submit form
+      screen.getByText(createSlotLabel).click();
+      // create mock action for form submission
+      const mockCreateAction = mockCreateImplementation(submitValues);
+      await waitFor(() => {
+        expect(mockDispatch).toHaveBeenCalledWith(mockCreateAction);
+        expect(mockOnClose).toHaveBeenCalled();
+      });
+    });
 
     test("should call 'onClose' on cancel button click", () => {
       render(<SlotForm {...baseProps} onClose={mockOnClose} />);
@@ -214,56 +210,42 @@ xdescribe("SlotForm ->", () => {
       expect(mockOnClose).toHaveBeenCalled();
     });
 
-    testWithMutationObserver(
-      "should call 'updateSlot' on submit, if passed 'slotToEdit'",
-      async () => {
-        render(
-          <SlotForm
-            {...baseProps}
-            onClose={mockOnClose}
-            slotToEdit={baseSlot}
-          />
-        );
-        // trigger submit
-        screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
-        // create mock action for form submission
-        const mockUpdateAction = mockUpdateImplementation({
-          ...testFormValues,
-          date: testDate,
-          id: baseSlot.id,
-        });
-        await waitFor(() =>
-          expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
-        );
-      }
-    );
+    test("should call 'updateSlot' on submit, if passed 'slotToEdit'", async () => {
+      render(
+        <SlotForm {...baseProps} onClose={mockOnClose} slotToEdit={baseSlot} />
+      );
+      // trigger submit
+      screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
+      // create mock action for form submission
+      const mockUpdateAction = mockUpdateImplementation({
+        ...testFormValues,
+        date: testDate,
+        id: baseSlot.id,
+      });
+      await waitFor(() =>
+        expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
+      );
+    });
 
-    testWithMutationObserver(
-      "should update slot with deleted interval (if any)",
-      async () => {
-        render(
-          <SlotForm
-            {...baseProps}
-            onClose={mockOnClose}
-            slotToEdit={baseSlot}
-          />
-        );
-        // delete first interval
-        screen.getAllByTestId(__deleteIntervalId__)[0].click();
-        // trigger submit
-        screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
-        // create mock action for form submission
-        const mockUpdateAction = mockUpdateImplementation({
-          ...testFormValues,
-          date: testDate,
-          id: baseSlot.id,
-          intervals: testFormValues.intervals.filter((_, i) => i !== 0),
-        });
-        await waitFor(() =>
-          expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
-        );
-      }
-    );
+    test("should update slot with deleted interval (if any)", async () => {
+      render(
+        <SlotForm {...baseProps} onClose={mockOnClose} slotToEdit={baseSlot} />
+      );
+      // delete first interval
+      screen.getAllByTestId(__deleteIntervalId__)[0].click();
+      // trigger submit
+      screen.getByText(i18n.t(ActionButton.EditSlot) as string).click();
+      // create mock action for form submission
+      const mockUpdateAction = mockUpdateImplementation({
+        ...testFormValues,
+        date: testDate,
+        id: baseSlot.id,
+        intervals: testFormValues.intervals.filter((_, i) => i !== 0),
+      });
+      await waitFor(() =>
+        expect(mockDispatch).toHaveBeenCalledWith(mockUpdateAction)
+      );
+    });
   });
 
   describe("Test validation errors ->", () => {
@@ -271,51 +253,35 @@ xdescribe("SlotForm ->", () => {
       render(<SlotForm {...baseProps} />);
     });
 
-    testWithMutationObserver(
-      "should show error if no categories are selected",
-      async () => {
-        screen.getByText(createSlotLabel).click();
-        await screen.findByText(
-          i18n.t(ValidationMessage.RequiredEntry) as string
-        );
-      }
-    );
+    test("should show error if no categories are selected", async () => {
+      screen.getByText(createSlotLabel).click();
+      await screen.findByText(
+        i18n.t(ValidationMessage.RequiredEntry) as string
+      );
+    });
 
-    testWithMutationObserver(
-      "should show error if time input empty",
-      async () => {
-        const [startTime] = screen.getAllByRole("textbox");
-        fireEvent.change(startTime, { target: { value: "" } });
-        screen.getByText(createSlotLabel).click();
-        await screen.findByText(
-          i18n.t(ValidationMessage.RequiredField) as string
-        );
-      }
-    );
+    test("should show error if time input empty", async () => {
+      const [startTime] = screen.getAllByRole("textbox");
+      fireEvent.change(startTime, { target: { value: "" } });
+      screen.getByText(createSlotLabel).click();
+      await screen.findByText(
+        i18n.t(ValidationMessage.RequiredField) as string
+      );
+    });
 
-    testWithMutationObserver(
-      'should show error if one of the time input doesn\'t follow "HH:mm" format',
-      async () => {
-        const [startTime] = screen.getAllByRole("textbox");
-        userEvent.type(startTime, "not_time_string");
-        screen.getByText(createSlotLabel).click();
-        await screen.findByText(
-          i18n.t(ValidationMessage.InvalidTime) as string
-        );
-      }
-    );
+    test('should show error if one of the time input doesn\'t follow "HH:mm" format', async () => {
+      const [startTime] = screen.getAllByRole("textbox");
+      userEvent.type(startTime, "not_time_string");
+      screen.getByText(createSlotLabel).click();
+      await screen.findByText(i18n.t(ValidationMessage.InvalidTime) as string);
+    });
 
-    testWithMutationObserver(
-      "should show error if startTime > endTime",
-      async () => {
-        const [startTime, endTime] = screen.getAllByRole("textbox");
-        userEvent.type(startTime, "15:00");
-        userEvent.type(endTime, "07:00");
-        screen.getByText(createSlotLabel).click();
-        await screen.findByText(
-          i18n.t(ValidationMessage.TimeMismatch) as string
-        );
-      }
-    );
+    test("should show error if startTime > endTime", async () => {
+      const [startTime, endTime] = screen.getAllByRole("textbox");
+      userEvent.type(startTime, "15:00");
+      userEvent.type(endTime, "07:00");
+      screen.getByText(createSlotLabel).click();
+      await screen.findByText(i18n.t(ValidationMessage.TimeMismatch) as string);
+    });
   });
 });
