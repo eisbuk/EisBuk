@@ -64,7 +64,9 @@ describe("Firestore rules", () => {
           setup: (db) =>
             setDoc(
               doc(db, Collection.Organizations, "different-organization"),
-              { admins: ["different-admin"] }
+              {
+                admins: ["different-admin"],
+              }
             ),
         });
         const orgRef = doc(
