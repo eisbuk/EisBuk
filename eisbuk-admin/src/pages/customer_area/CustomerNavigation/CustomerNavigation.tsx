@@ -2,15 +2,15 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 
-import AppBar from "@material-ui/core/AppBar";
-import Container from "@material-ui/core/Container";
-import Tabs from "@material-ui/core/Tabs";
-import Tab, { TabProps } from "@material-ui/core/Tab";
+import AppBar from "@mui/material/AppBar";
+import Container from "@mui/material/Container";
+import Tabs from "@mui/material/Tabs";
+import Tab, { TabProps } from "@mui/material/Tab";
 
-import EventNoteIcon from "@material-ui/icons/EventNote";
-import PersonPinIcon from "@material-ui/icons/PersonPin";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import PersonPinIcon from "@mui/icons-material/PersonPin";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { CustomerRoute } from "@/enums/routes";
 

@@ -2,7 +2,7 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
 
-import Cake from "@material-ui/icons/Cake";
+import Cake from "@mui/icons-material/Cake";
 
 import DateInput from "./DateInput";
 

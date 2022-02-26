@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import Dialog, { DialogProps } from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
+import Dialog, { DialogProps } from "@mui/material/Dialog";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import Close from "@material-ui/icons/Close";
+import Close from "@mui/icons-material/Close";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "eisbuk-shared";
 
@@ -74,6 +74,7 @@ const AddCustomersList: React.FC<Props> = ({
           className={classes.closeButton}
           onClick={() => onClose()}
           data-testid={__closeCustomersListId__}
+          size="large"
         >
           <Close />
         </IconButton>

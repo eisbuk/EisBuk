@@ -4,15 +4,15 @@ import { useDispatch } from "react-redux";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import FormControl from "@mui/material/FormControl";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { SlotInterface, SlotInterval, SlotType, fromISO } from "eisbuk-shared";
 

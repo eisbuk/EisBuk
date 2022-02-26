@@ -1,9 +1,9 @@
 import DateNavigation from "@/components/atoms/DateNavigation";
 import React from "react";
 
-import Grid from "@material-ui/core/Grid";
+import Grid from "@mui/material/Grid";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { SlotsById } from "eisbuk-shared";
 

@@ -1,10 +1,17 @@
-import createTheme, { Theme } from "@material-ui/core/styles/createTheme";
-import responsiveFontSizes from "@material-ui/core/styles/responsiveFontSizes";
+import {
+  adaptV4Theme,
+  createTheme,
+  Theme,
+  responsiveFontSizes,
+} from "@mui/material/styles";
 
-import * as colors from "@material-ui/core/colors";
+import * as colors from "@mui/material/colors";
 
 import { getOrganization } from "@/lib/getters";
 
+declare module "@mui/styles/defaultTheme" {
+  type DefaultTheme = Theme
+}
 const base = {
   palette: {
     absent: colors.brown[200],
@@ -83,11 +90,10 @@ const getCurrentOrganizationSettings = () => {
       };
   }
 };
-
 export const organizationInfo = getCurrentOrganizationSettings();
 
 export const currentTheme = responsiveFontSizes(
-  createTheme(organizationInfo.theme)
+  createTheme(adaptV4Theme(organizationInfo.theme))
 );
 
 /**

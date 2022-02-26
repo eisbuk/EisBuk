@@ -2,14 +2,14 @@ import React, { useState, useMemo, useEffect } from "react";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
-import Menu from "@material-ui/core/Menu";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import IconButton from "@material-ui/core/IconButton";
-import Cake from "@material-ui/icons/Cake";
-import Badge from "@material-ui/core/Badge";
+import Menu from "@mui/material/Menu";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import IconButton from "@mui/material/IconButton";
+import Cake from "@mui/icons-material/Cake";
+import Badge from "@mui/material/Badge";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useTranslation } from "react-i18next";
 import { BirthdayMenu as BirthdayEnums } from "@/enums/translations";
@@ -24,10 +24,8 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
-  const [
-    birthdaysAnchorEl,
-    setBirthdaysAnchorEl,
-  ] = useState<HTMLElement | null>(null);
+  const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
+    useState<HTMLElement | null>(null);
   const handleBirthdaysClick: React.MouseEventHandler<HTMLSpanElement> = (e) =>
     setBirthdaysAnchorEl(e.currentTarget);
   const handleBirthdaysClose = () => () => {
@@ -65,7 +63,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
         badgeContent={getTodaysBirthdays}
         data-testid={__birthdayMenu__}
       >
-        <IconButton onClick={handleBirthdaysClick}>
+        <IconButton onClick={handleBirthdaysClick} size="large">
           <Cake />
         </IconButton>
       </Badge>
@@ -117,10 +115,10 @@ const useStyles = makeStyles(() => ({
   pointerCursor: { cursor: "pointer" },
 
   badge: {
-    "& .MuiBadge-anchorOriginTopRightRectangle": {
+    "& .MuiBadge-anchorOriginTopRightRectangular": {
       transform: "translate(0%, 0%)",
     },
-    "& .MuiBadge-anchorOriginTopRightRectangle.MuiBadge-invisible": {
+    "& .MuiBadge-anchorOriginTopRightRectangular.MuiBadge-invisible": {
       display: "none",
     },
   },

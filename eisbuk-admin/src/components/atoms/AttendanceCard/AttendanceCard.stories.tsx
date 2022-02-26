@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import List from "@material-ui/core/List";
+import List from "@mui/material/List";
 
 import AttendanceCard from "./AttendanceCard";
 

@@ -1,14 +1,14 @@
 import React from "react";
 import _ from "lodash";
 
-import Avatar from "@material-ui/core/Avatar";
-import Paper from "@material-ui/core/Paper";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import Avatar from "@mui/material/Avatar";
+import Paper from "@mui/material/Paper";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
-import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { organizationInfo } from "@/themes";
 
@@ -67,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
   image: {
     backgroundRepeat: "no-repeat",
     backgroundColor:
-      theme.palette.type === "light"
+      theme.palette.mode === "light"
         ? theme.palette.grey[50]
         : theme.palette.grey[900],
     backgroundSize: "contain",

@@ -1,12 +1,12 @@
 import React from "react";
 
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import IconButton from "@material-ui/core/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import IconButton from "@mui/material/Button";
 
-import Left from "@material-ui/icons/ChevronLeft";
-import Right from "@material-ui/icons/ChevronRight";
+import Left from "@mui/icons-material/ChevronLeft";
+import Right from "@mui/icons-material/ChevronRight";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 
@@ -57,6 +57,7 @@ const IntervalPicker: React.FC<Props> = ({
         onClick={handleClick(-1)}
         disabled={intervalIndex === 0}
         data-testid={__prevIntervalButtonId__}
+        size="large"
       >
         <Left />
       </IconButton>
@@ -65,6 +66,7 @@ const IntervalPicker: React.FC<Props> = ({
         onClick={handleClick(1)}
         disabled={intervalIndex === numIntervals - 1}
         data-testid={__nextIntervalButtonId__}
+        size="large"
       >
         <Right />
       </IconButton>

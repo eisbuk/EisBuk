@@ -1,10 +1,10 @@
 import React from "react";
 
-import TableRow from "@material-ui/core/TableRow";
-import TableCell from "@material-ui/core/TableCell";
-import Box from "@material-ui/core/Box";
+import TableRow from "@mui/material/TableRow";
+import TableCell from "@mui/material/TableCell";
+import Box from "@mui/material/Box";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "eisbuk-shared";
 

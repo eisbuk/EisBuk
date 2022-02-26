@@ -1,16 +1,16 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@material-ui/core/Box";
-import Typography from "@material-ui/core/Typography";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Dialog from "@material-ui/core/Dialog";
-import IconButton from "@material-ui/core/IconButton";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Dialog from "@mui/material/Dialog";
+import IconButton from "@mui/material/IconButton";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import Close from "@material-ui/icons/Close";
+import Close from "@mui/icons-material/Close";
 
 import { Customer } from "eisbuk-shared";
 
@@ -124,7 +124,11 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
           customer={customer!}
           onClose={onClose}
         />
-        <IconButton onClick={onClose} className={classes.exitButton}>
+        <IconButton
+          onClick={onClose}
+          className={classes.exitButton}
+          size="large"
+        >
           <Close />
         </IconButton>
       </Card>
@@ -137,7 +141,7 @@ const useStyles = makeStyles((theme) => ({
     ["& .MuiCard-root"]: {
       overflow: "auto",
     },
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       ["& .MuiDialog-paper"]: {
         margin: "1rem",
       },

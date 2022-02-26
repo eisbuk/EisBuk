@@ -1,15 +1,15 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 
 import OneHourIcon from "@/assets/images/HourIcon";
 import HalfHourIcon from "@/assets/images/HalfHourIcon";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { BookingDuration } from "@/enums/components";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 interface DurationProps {
   startTime: string;

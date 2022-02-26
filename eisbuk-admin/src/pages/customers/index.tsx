@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import Fab from "@material-ui/core/Fab";
-import Grid from "@material-ui/core/Grid";
-// import LinearProgress from "@material-ui/core/LinearProgress";
+import Fab from "@mui/material/Fab";
+import Grid from "@mui/material/Grid";
+// import LinearProgress from "@mui/material/LinearProgress";
 
-import AddIcon from "@material-ui/icons/Add";
+import AddIcon from "@mui/icons-material/Add";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 

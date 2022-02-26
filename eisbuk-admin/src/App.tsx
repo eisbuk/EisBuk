@@ -1,16 +1,12 @@
 import React from "react";
-// import LuxonUtils from "@date-io/luxon";
 import { SnackbarProvider } from "notistack";
 import { Provider as ReduxProvider } from "react-redux";
 import { getAuth } from "@firebase/auth";
 
-import CssBaseline from "@material-ui/core/CssBaseline";
-// import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
+import CssBaseline from "@mui/material/CssBaseline";
 import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateAdapter from "@mui/lab/AdapterLuxon";
-import { ThemeProvider } from "@material-ui/core/styles";
-
-// import makeStyles from "@material-ui/core/styles/makeStyles";
+import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 
 import { store } from "@/store";
 
@@ -23,23 +19,23 @@ import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthTo
 import { currentTheme } from "@/themes";
 
 const App: React.FC = () => {
-  // const classes = useStyles();
-
   // connect auth to store to recieve firebase SDK's auth updates
   // through redux store
   useConnectAuthToStore(getAuth(), store);
 
   return (
     <ReduxProvider store={store}>
-      <ThemeProvider theme={currentTheme}>
-        <LocalizationProvider dateAdapter={DateAdapter}>
-          <SnackbarProvider maxSnack={3}>
-            <Notifier />
-            <CssBaseline />
-            <AppContent />
-          </SnackbarProvider>
-        </LocalizationProvider>
-      </ThemeProvider>
+      <StyledEngineProvider injectFirst>
+        <ThemeProvider theme={currentTheme}>
+          <LocalizationProvider dateAdapter={DateAdapter}>
+            <SnackbarProvider maxSnack={3}>
+              <Notifier />
+              <CssBaseline />
+              <AppContent />
+            </SnackbarProvider>
+          </LocalizationProvider>
+        </ThemeProvider>
+      </StyledEngineProvider>
     </ReduxProvider>
   );
 };

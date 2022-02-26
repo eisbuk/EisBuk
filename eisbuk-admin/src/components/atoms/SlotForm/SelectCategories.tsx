@@ -2,11 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
-import Box from "@material-ui/core/Box";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { SlotType, Category } from "eisbuk-shared";
 
@@ -94,7 +94,7 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
     <FormControlLabel
       control={<Checkbox {...field} />}
       disabled={disabled}
-      label={t(CategoryLabel[category])}
+      label={`${t(CategoryLabel[category])}`}
       role="checkbox"
       aria-label={t(CategoryLabel[category])}
     />
