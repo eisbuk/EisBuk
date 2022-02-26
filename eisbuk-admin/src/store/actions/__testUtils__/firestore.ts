@@ -1,6 +1,5 @@
-import { AnyAction, Dispatch, Store } from "redux";
-import { doc, setDoc, addDoc, collection, getDoc } from "@firebase/firestore";
-import pRetry from "p-retry";
+import { AnyAction, Store } from "redux";
+import { doc, setDoc, collection } from "@firebase/firestore";
 import { v4 as uuid } from "uuid";
 
 import {
@@ -12,19 +11,15 @@ import {
   Customer,
   BookingSubCollection,
   CustomerLoose,
-  OrganizationData,
   getCustomerBase,
   SlotAttendnace,
 } from "eisbuk-shared";
 
-import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { TestEnvFirestore } from "@/__testSetup__/getTestEnv";
 
 import { __organization__ } from "@/lib/constants";
 
-import { LocalStore, FirestoreThunk } from "@/types/store";
-
-import { getOrganization } from "@/lib/getters";
+import { LocalStore } from "@/types/store";
 
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
@@ -32,17 +27,6 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "@/store/actions/copyPaste";
-
-import { createTestStore } from "@/__testUtils__/firestore";
-
-type ThunkParams = Parameters<FirestoreThunk>;
-
-/**
- * Saved organization ref in db, to reduce excess typing
- */
-const orgDb = adminDb
-  .collection(Collection.Organizations)
-  .doc(getOrganization());
 
 /**
  * A stored path to test organization in firestore
@@ -71,32 +55,6 @@ interface AdminSetupFunction<
     } & T
   ): Promise<void>;
 }
-
-/**
- * Set up `organization` data in emulated store and create `getState()` returning redux store
- * filled with `attendance` data as well
- * @param attendance entry for firestore attendance we want to set
- * @param dispatch an optional mock dispatch function (in case we want to test dispatching)
- * @returns middleware args (dispatch, setState )
- */
-export const setupTestOrganziation = async ({
-  organization,
-  dispatch = (value: any) => value,
-}: {
-  organization: OrganizationData;
-  dispatch?: Dispatch;
-}): Promise<ThunkParams> => {
-  // create `getState` state to return store populated with desired values
-  const getState = () =>
-    createTestStore({
-      data: { organizations: { [getOrganization()]: organization } },
-    });
-
-  // set desired values to emulated db
-  await orgDb.set(organization);
-
-  return [dispatch, getState];
-};
 
 /**
  * Set up `attendance` data in emulated store and populate local collection accordingly
@@ -231,47 +189,6 @@ export const setupTestCustomer: AdminSetupFunction<{
     })
   );
 };
-
-export const setupTestCustomerTemp: AdminSetupFunction<{ customer: Customer }> =
-  async ({ customer, store, db }) => {
-    // try and use `id` from provided customer (if not defined, will be replaced later)
-    let customerId = customer.id;
-
-    if (customerId) {
-      // we're immediately using the `id` (if provided) for document reference
-      await setDoc(doc(db, customersPath, customerId), customer);
-    } else {
-      // we're setting a customer to unspecified doc id (should be assigned by the server/emulator)
-      const newCustomerEntry = await addDoc(
-        collection(db, customersPath),
-        customer
-      );
-      // update `customerId` to a newly created one
-      customerId = newCustomerEntry.id;
-    }
-
-    // halt the execution until customer doc has all data (`id` and `secretKey`), either provided
-    // or added by data trigger
-    const customerEntry = await pRetry(
-      async () => {
-        const customer = (
-          await getDoc(doc(db, customersPath, customerId))
-        ).data();
-        if (customer?.secretKey && customer?.id) {
-          return Promise.resolve(customer);
-        }
-        return Promise.reject(new Error("Updating customer unsuccessful"));
-      },
-      { retries: 5 }
-    );
-
-    // set customer to local store
-    store.dispatch(
-      updateLocalDocuments(OrgSubCollection.Customers, {
-        [customerId]: customerEntry,
-      })
-    );
-  };
 
 /**
  * A helper function used to simulate slot aggregation (creates `slotsByDay` entry).
