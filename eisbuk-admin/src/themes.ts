@@ -10,7 +10,8 @@ import * as colors from "@mui/material/colors";
 import { getOrganization } from "@/lib/getters";
 
 declare module "@mui/styles/defaultTheme" {
-  type DefaultTheme = Theme
+  // eslint-disable-next-line @typescript-eslint/no-empty-interface
+  interface DefaultTheme extends Theme {}
 }
 const base = {
   palette: {
