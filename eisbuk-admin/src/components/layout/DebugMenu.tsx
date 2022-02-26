@@ -28,28 +28,25 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(e.currentTarget);
   };
 
-  /** @TEMP below, needs to be typed with cloud functions */
-  const handleClose = (
-    functionName?: CloudFunction,
-    params?: any
-  ) => async () => {
-    setAnchorEl(null);
-    if (functionName) {
-      try {
-        const res = await httpsCallable(
-          functions,
-          functionName
-        )({
-          ...params,
-          organization: getOrganization(),
-        });
+  const handleClose =
+    (functionName?: CloudFunction, params?: any) => async () => {
+      setAnchorEl(null);
+      if (functionName) {
+        try {
+          const res = await httpsCallable(
+            functions,
+            functionName
+          )({
+            ...params,
+            organization: getOrganization(),
+          });
 
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
+          console.log(res.data);
+        } catch (err) {
+          console.error(err);
+        }
       }
-    }
-  };
+    };
 
   return (
     <>
