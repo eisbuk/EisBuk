@@ -91,7 +91,7 @@ const getState = () => ({} as any);
  */
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 
-describe("customerOperations", () => {
+xdescribe("customerOperations", () => {
   beforeEach(async () => {
     await loginDefaultUser();
   });
