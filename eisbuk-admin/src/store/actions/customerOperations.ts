@@ -63,7 +63,6 @@ export const updateCustomer =
         docRef = doc(customersCollRef);
       }
 
-      console.log("Updating customer with", updatedData);
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
@@ -131,11 +130,6 @@ export const sendBookingsLink: SendBookingsLink =
         customerId
       ];
 
-      console.log("Email:", email);
-      console.log("Phone:", phone);
-      console.log("Name:", name);
-      console.log("SecretKey:", secretKey);
-
       const subject = "prenotazioni lezioni di Igor Ice Team";
 
       if (!secretKey) {
@@ -144,8 +138,6 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
-      console.log("Bookings link:", bookingsLink);
-
       const html = `<p>Ciao ${name},</p>
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
       <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
@@ -153,8 +145,6 @@ export const sendBookingsLink: SendBookingsLink =
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
       ${bookingsLink}`;
-
-      console.log("SMS:", sms);
 
       const config = {
         [SendBookingLinkMethod.Email]: {
@@ -175,9 +165,6 @@ export const sendBookingsLink: SendBookingsLink =
 
       const { handler, payload, successMessage } = config[method];
 
-      console.log("Handler", handler);
-      console.log("Payload", JSON.stringify(payload, null, 2));
-
       await createCloudFunctionCaller(handler, payload)();
 
       dispatch(
@@ -191,7 +178,6 @@ export const sendBookingsLink: SendBookingsLink =
         })
       );
     } catch (error) {
-      console.error(error);
       dispatch(showErrSnackbar);
     }
   };
@@ -199,7 +185,6 @@ export const sendBookingsLink: SendBookingsLink =
 export const extendBookingDate =
   (customerId: string, extendedDate: string): FirestoreThunk =>
   async (dispatch) => {
-    console.log("Extending bookig date: ", extendedDate);
     try {
       const db = getFirestore();
       await setDoc(

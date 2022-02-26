@@ -39,10 +39,7 @@ import * as firebaseUtils from "@/utils/firebase";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { createTestStore } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
-import {
-  setupTestCustomer,
-  setupTestCustomerTemp,
-} from "../__testUtils__/firestore";
+import { setupTestCustomer } from "../__testUtils__/firestore";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 import i18n from "@/__testUtils__/i18n";
 
@@ -341,7 +338,7 @@ describe("customerOperations", () => {
       async () => {
         const store = getNewStore();
         const db = await getTestEnv({
-          setup: (db) => setupTestCustomerTemp({ db, store, customer: saul }),
+          setup: (db) => setupTestCustomer({ db, store, customer: saul }),
         });
         // verify that the customer doesn't have an extended date
         const customerInStore =
@@ -375,7 +372,7 @@ describe("customerOperations", () => {
       "should show error notification if function call unsuccessful",
       async () => {
         // intentionally cause error to test error handling
-        getFirestoreSpy.mockImplementation = () => {
+        getFirestoreSpy.mockImplementationOnce = () => {
           throw new Error();
         };
         await extendBookingDate(saul.id, "2022-01-01")(
