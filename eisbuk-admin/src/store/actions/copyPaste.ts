@@ -17,7 +17,6 @@ import { Action } from "@/enums/store";
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
 import { showErrSnackbar } from "./appActions";
-import { getDocs } from "firebase/firestore";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -170,9 +169,6 @@ export const pasteSlotsDay =
       const slotsCollRef = collection(db, getSlotsCollectionPath());
       const batch = writeBatch(db);
 
-      const docs1 = await getDocs(slotsCollRef);
-      console.log("Docs:", docs1.docs.length);
-
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
         const newSlotRef = doc(slotsCollRef);
@@ -180,9 +176,6 @@ export const pasteSlotsDay =
       });
 
       await batch.commit();
-
-      const docs = await getDocs(slotsCollRef);
-      console.log("Docs:", docs.docs.length);
     } catch {
       dispatch(showErrSnackbar);
     }

@@ -34,8 +34,6 @@ const SlotTypeIcon: React.FC<{ type: SlotType; className?: string }> = ({
   /** This is @TEMP until all deprecated types are migrated to unified off-ice */
   const slotType = type.includes("off-ice") ? SlotType.OffIce : type;
   /** This is @TEMP until all deprecated types are migrated to unified off-ice */
-  console.log("Type", type);
-  console.log("SlotType", slotType);
 
   const Icon = iconLookup[slotType];
 
