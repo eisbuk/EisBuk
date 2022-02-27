@@ -46,6 +46,7 @@ export enum SlotFormTitle {
 }
 export enum SlotFormLabel {
   Type = "SlotForm.Type",
+  Categories = "SlotForm.Categories",
   Intervals = "SlotForm.Intervals",
   AddInterval = "SlotForm.AddInterval",
   StartTime = "SlotForm.StartTime",
