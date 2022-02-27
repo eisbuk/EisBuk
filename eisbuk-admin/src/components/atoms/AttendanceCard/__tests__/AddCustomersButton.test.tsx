@@ -128,17 +128,15 @@ describe("AttendanceCard ->", () => {
     testWithMutationObserver(
       "should close when there are no more customers to show",
       async () => {
-        render(<AttendnaceCard {...baseAttendanceCard} />);
+        const { rerender } = render(<AttendnaceCard {...baseAttendanceCard} />);
         screen.getByTestId(__addCustomersButtonId__).click();
-        // click on each customer (expecting it to be removed)
-        baseAttendanceCard.allCustomers.forEach((customer) => {
-          const customerOnScreen = screen.queryByText(
-            new RegExp(customer.name)
-          );
-          if (customerOnScreen) {
-            customerOnScreen.click();
-          }
-        });
+        // we're rerendering the component without the customers to test this behavior
+        // as customer update will come from outside the component
+        rerender(
+          <AttendnaceCard
+            {...{ ...baseAttendanceCard, allCustomers: [], customers: [] }}
+          />
+        );
         // the modal should close
         await waitForElementToBeRemoved(() =>
           screen.getByTestId(__customersListId__)
@@ -175,18 +173,6 @@ describe("AttendanceCard ->", () => {
       );
       screen.getByTestId(__addCustomersButtonId__).click();
       expect(screen.queryByText(waltRegex)).toBeNull();
-    });
-
-    test("should remove customer from list and add to attended customers on click", () => {
-      render(<AttendnaceCard {...baseAttendanceCard} />);
-      screen.getByTestId(__addCustomersButtonId__).click();
-      const customerList = screen.getByTestId(__customersListId__);
-      // should have two customers: walt and saul (both `course`, none attended)
-      expect(customerList.children.length).toEqual(3);
-      const waltRegex = new RegExp(walt.name);
-      screen.getByText(waltRegex).click();
-      // should remove walt from add customer list
-      expect(customerList.children.length).toEqual(2);
     });
 
     test("should dispatch update to firestore with default interval as attended interval on adding customer", () => {
