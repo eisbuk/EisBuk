@@ -15,62 +15,66 @@ import { checkUser } from "./utils";
  */
 export const pruneSlotsByDay = functions
   .region(__functionsZone__)
-  .https.onCall(async ({ organization }: { organization: string }) => {
-    try {
-      const db = admin.firestore();
-      const batch = db.batch();
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      await checkUser(organization, auth);
 
-      const slotsByDayRef = db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.SlotsByDay);
+      try {
+        const db = admin.firestore();
+        const batch = db.batch();
 
-      const slotsByDay = await slotsByDayRef.get();
+        const slotsByDayRef = db
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.SlotsByDay);
 
-      if (slotsByDay.empty) {
-        functions.logger.log("No 'slotsByDay' found");
-        return { success: true };
-      }
+        const slotsByDay = await slotsByDayRef.get();
 
-      slotsByDay.forEach((monthSnapshot) => {
-        const monthRef = slotsByDayRef.doc(monthSnapshot.id);
-
-        const monthEntry = monthSnapshot.data();
-        const dates = Object.keys(monthEntry);
-
-        // a countdown counter, starting from num days and decremented on each day entry deletion
-        // used to determine whether to update the month record with deleted entries or delete the record altogether
-        let nonEmptySlots = dates.length;
-
-        // updated month record with delete sentinels as values for days to delete
-        const updatedRecord = dates.reduce((acc, date) => {
-          const dayEntry = monthEntry[date];
-          if (!Object.values(dayEntry).length) {
-            nonEmptySlots--;
-            return { ...acc, [date]: FieldValue.delete() };
-          }
-          return { ...acc, [date]: dayEntry };
-        }, {} as Record<string, FieldValue>);
-
-        // if there are non empty slots, update the record with deleted entries
-        // if there are no slots in the entire month, delete the month entry altogether
-        if (nonEmptySlots) {
-          batch.set(monthRef, updatedRecord, { merge: true });
-        } else {
-          batch.delete(monthRef);
+        if (slotsByDay.empty) {
+          functions.logger.log("No 'slotsByDay' found");
+          return { success: true };
         }
-      });
 
-      await batch.commit();
+        slotsByDay.forEach((monthSnapshot) => {
+          const monthRef = slotsByDayRef.doc(monthSnapshot.id);
 
-      functions.logger.log("Successfully pruned 'slotsByDay'");
+          const monthEntry = monthSnapshot.data();
+          const dates = Object.keys(monthEntry);
 
-      return { success: true };
-    } catch (error) {
-      functions.logger.error(error);
-      return { success: false };
+          // a countdown counter, starting from num days and decremented on each day entry deletion
+          // used to determine whether to update the month record with deleted entries or delete the record altogether
+          let nonEmptySlots = dates.length;
+
+          // updated month record with delete sentinels as values for days to delete
+          const updatedRecord = dates.reduce((acc, date) => {
+            const dayEntry = monthEntry[date];
+            if (!Object.values(dayEntry).length) {
+              nonEmptySlots--;
+              return { ...acc, [date]: FieldValue.delete() };
+            }
+            return { ...acc, [date]: dayEntry };
+          }, {} as Record<string, FieldValue>);
+
+          // if there are non empty slots, update the record with deleted entries
+          // if there are no slots in the entire month, delete the month entry altogether
+          if (nonEmptySlots) {
+            batch.set(monthRef, updatedRecord, { merge: true });
+          } else {
+            batch.delete(monthRef);
+          }
+        });
+
+        await batch.commit();
+
+        functions.logger.log("Successfully pruned 'slotsByDay'");
+
+        return { success: true };
+      } catch (error) {
+        functions.logger.error(error);
+        return { success: false };
+      }
     }
-  });
+  );
 
 /**
  * Deletes old bookings without corresponding customers
@@ -112,7 +116,9 @@ export const deleteOrphanedBookings = functions
  */
 export const unifyOffIceLabels = functions
   .region("europe-west6")
-  .https.onCall(async ({ organization }) => {
+  .https.onCall(async ({ organization }, { auth }) => {
+    checkUser(organization, auth);
+
     const firestore = admin.firestore();
     const batch = firestore.batch();
     // get all off-ice-* slots

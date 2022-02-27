@@ -1,4 +1,4 @@
-import { httpsCallable } from "@firebase/functions";
+import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { getAuth, signOut } from "@firebase/auth";
 
 import {
@@ -71,6 +71,17 @@ describe("Migrations", () => {
         expect(pruningMonth.data()).toEqual(prunedMonth);
       }
     );
+
+    testWithEmulator("should not allow access to unauth users", async () => {
+      await signOut(getAuth());
+      try {
+        await invokeFunction(CloudFunction.PruneSlotsByDay)();
+      } catch (err) {
+        expect((err as FunctionsError).code).toEqual(
+          "functions/permission-denied"
+        );
+      }
+    });
   });
 
   /**
@@ -144,5 +155,16 @@ describe("Migrations", () => {
         expect(offIceSlots.docs.length).toEqual(2);
       }
     );
+
+    testWithEmulator("should not allow access to unauth users", async () => {
+      await signOut(getAuth());
+      try {
+        await invokeFunction(CloudFunction.UnifyOffIceLabels)();
+      } catch (err) {
+        expect((err as FunctionsError).code).toEqual(
+          "functions/permission-denied"
+        );
+      }
+    });
   });
 });
