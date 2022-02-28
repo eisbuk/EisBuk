@@ -18,7 +18,7 @@
     "firebase-tools": "^9.16.6",
     "firebaseui": "^6.0.0",
     "formik": "^2.1.5",
-    "formik-material-ui": "^3.0.1",
+    "formik-mui": "^4.0.0-alpha.3",
     "i18next-http-backend": "^1.2.6",
     "luxon": "^2.0.2",
     "moment": "^2.27.0",

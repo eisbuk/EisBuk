@@ -3,7 +3,7 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { Formik, Form, FastField, FieldConfig } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 
 import { InputProps } from "@mui/material";
 import Button from "@mui/material/Button";

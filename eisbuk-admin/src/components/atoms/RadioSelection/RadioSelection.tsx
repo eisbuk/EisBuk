@@ -1,6 +1,6 @@
 import React from "react";
 import { useField, FieldAttributes, Field } from "formik";
-import { RadioGroup } from "formik-material-ui";
+import { RadioGroup } from "formik-mui";
 
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
