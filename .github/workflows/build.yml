@@ -128,6 +128,8 @@ jobs:
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
+        env:
+          COVERALLS_DEBUG: "True"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
