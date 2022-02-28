@@ -15,5 +15,6 @@ module.exports = {
     "!dist/**",
     "!**/node_modules/**",
   ],
+  coveragePathIgnorePatterns: ["node_modules", ".*\\.stories\\.tsx"],
   testTimeout: 10000,
 };
