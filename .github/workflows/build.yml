@@ -123,11 +123,12 @@ jobs:
           path: eisbuk-admin/junit.xml
           reporter: jest-junit
       - name: Check if secrets are available
+        if: success() || failure() # Do not run on cancelled; run in all other cases
         id: has_secret
         run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
       - name: Coveralls
         uses: coverallsapp/github-action@master
-        if: steps.has_secret.outputs.HAS_SECRETS
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
