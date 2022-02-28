@@ -36,6 +36,7 @@
   },
   "SlotForm": {
     "Type": "Type",
+    "Categories": "Categories",
     "Intervals": "Intervals",
     "AddInterval": "Add Interval",
     "StartTime": "Start Time",
@@ -51,7 +52,8 @@
     "MedicalCertificate": "Medical Certificate Expiration",
     "CardNumber": "Card Number",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
-    "CovidCertificateSuspended": "COVID-19 Certificate supsended"
+    "CovidCertificateSuspended": "COVID-19 Certificate supsended",
+    "ExtendedBookingDate": "Extended booking date"
   },
   "Validations": {
     "Email": "Please insert a valid email",
@@ -68,11 +70,18 @@
   "Prompt": {
     "DeleteCustomer": "Are you sure you want to remove",
     "DeleteSlot": "Are you sure you want to delete the",
+
     "NonReversible": "This action is non-reversible",
+
     "SendEmailTitle": "Confirm email",
     "ConfirmEmail": "Are you sure you want to send an email to: {{ email }}?",
     "SendSMSTitle": "Confirm SMS",
-    "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?"
+    "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?",
+    "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
+    "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
+
+    "FinalizeBookingsTitle": "Finalize Bookings",
+    "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
   },
   "ActionButton": {
     "CreateSlot": "Create Slot",
@@ -82,10 +91,12 @@
     "AddCustomers": "Add Customers",
 
     "BookInterval": "Book",
+    "FinalizeBookings": "Finalize",
 
     "CustomerBookings": "Bookings",
     "SendBookingsEmail": "Send bookings link email",
     "SendBookingsSMS": "Send bookings link SMS",
+    "ExtendBookingDate": "Extend booking date",
 
     "Save": "Save",
     "Next": "Next",
@@ -93,19 +104,31 @@
   },
 
   "Notification": {
-    "Error": "Error",
-    "LogoutSuccess": "Logout Successful",
-    "LogoutError": "An error occurred",
     "BookingSuccess": "Successfully booked",
     "BookingCanceled": "Booking canceled",
     "BookingCanceledError": "Error cancelling booking",
+
+    "SlotAdded": "Slot Added",
+    "SlotUpdated": "Slot Updated",
+    "SlotRemoved": "Slot Removed",
+
+    "LogoutSuccess": "Logout Successful",
+    "LogoutError": "An error occurred",
+
     "Updated": "updated",
     "Removed": "removed",
+
     "EmailSent": "Email successfully sent",
     "SMSSent": "SMS successfully sent",
-    "SlotAdded": "Slot Added",
-    "SlotRemoved": "Slot Removed",
-    "SlotUpdated": "Slot Updated"
+    "BookingDateExtended": "Booking date extended",
+
+    "Error": "Error"
+  },
+
+  "BookingCountdownMessage": {
+    "FirstDeadline": "Bookings deadline for {{ month, MMMM }} in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }}) ",
+    "SecondDeadline": "Extended bookings deadline for {{ month, MMMM }} in <strong>{{ days }}d {{ hours }}h</strong> ({{ date, dd/MM/yyyy }})",
+    "BookingsLocked": "Bookings are locked for {{ month, MMMM }}"
   },
 
   "Flags": {
@@ -146,6 +169,7 @@
     "ConfirmCreateSlot": "Confirm slot creation",
     "ConfirmEditSlot": "Confirm slot edits"
   },
+
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"

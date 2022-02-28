@@ -115,16 +115,17 @@ jobs:
         run: yarn
       - name: Run tests
         run: yarn --cwd eisbuk-admin test:emulators:ci
+      - name: Check if secrets are available
+        id: has_secret
+        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
       - name: Test Report
         uses: dorny/test-reporter@v1
-        if: success() || failure() # Do not run on cancelled; run in all other cases
+        # Do not run on cancelled or if secrets are not available; run in all other cases
+        if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
         with:
           name: JEST Tests
           path: eisbuk-admin/junit.xml
           reporter: jest-junit
-      - name: Check if secrets are available
-        id: has_secret
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -221,6 +222,7 @@ jobs:
 
       - name: Check if secrets are available
         id: has_secret
+        if: success() || failure()
         run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
 
       - name: Install rclone

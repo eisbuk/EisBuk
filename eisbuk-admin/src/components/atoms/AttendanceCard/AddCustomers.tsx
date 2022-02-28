@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
 import Dialog, { DialogProps } from "@material-ui/core/Dialog";
@@ -31,34 +31,15 @@ const AddCustomersList: React.FC<Props> = ({
   const classes = useStyles();
   const { t } = useTranslation();
 
-  /**
-   * Intermmediate state for customers added, for more responsive UI (before server confirms)
-   */
-
-  const [addedCustomers, setAddedCustomers] = useState<Customer["id"][]>([]);
-
-  /**
-   * Clear recently added customer each time we close the dialog.
-   * We're confident that the filtered customers will get confirmed from the server (passing customers already filtered)
-   * and this way we're not keeping garbage.
-   */
-  useEffect(() => {
-    if (dialogProps.open) {
-      setAddedCustomers([]);
-    }
-  }, [dialogProps.open]);
-
   const handleCustomerClick = (customer: Customer) => {
-    setAddedCustomers([...addedCustomers, customer.id]);
     onAddCustomer(customer);
   };
 
-  const filteredCustomers = customers.filter(
-    (customer) => !addedCustomers.includes(customer.id) && !customer.deleted
-  );
+  const filteredCustomers = customers.filter((customer) => !customer.deleted);
 
   // control closing of the modal when the list is empty
   useEffect(() => {
+    console.log("Filtered customers", filteredCustomers.length);
     if (!filteredCustomers || !filteredCustomers.length) {
       onClose();
     }

@@ -166,6 +166,7 @@ export interface CustomerBase {
   surname: string;
   category: Category;
   deleted?: boolean;
+  extendedDate?: string;
 }
 /**
  * Customer entry in the Firestore DB
