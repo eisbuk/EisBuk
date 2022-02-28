@@ -36,6 +36,7 @@
   },
   "SlotForm": {
     "Type": "Tipo",
+    "Categories": "Categorie",
     "Intervals": "Intervalli",
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",

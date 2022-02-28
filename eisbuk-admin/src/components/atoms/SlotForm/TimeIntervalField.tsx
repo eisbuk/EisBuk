@@ -64,6 +64,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         aria-label={t(SlotFormAria.IntervalEnd)}
       />
       <IconButton
+        className={classes.deleteButton}
         data-testid={__deleteIntervalId__}
         aria-label={t(SlotFormAria.DeleteInterval)}
         color="primary"
@@ -83,8 +84,13 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
       position: "relative",
-      display: "flex",
-      justifyContent: "space-evenly",
+      flexDirection: "column",
+      width: "100%",
+      [theme.breakpoints.up("sm")]: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+      },
     },
     error: {
       position: "absolute",
@@ -100,6 +106,19 @@ const useStyles = makeStyles((theme) =>
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
+    },
+    dateInput: {
+      [theme.breakpoints.down("sm")]: {
+        width: "100%",
+      },
+    },
+    deleteButton: {
+      [theme.breakpoints.down("sm")]: {
+        position: "absolute",
+        top: "50%",
+        transform: "translate(0, -50%)",
+        right: 0,
+      },
     },
     dark: {
       backgroundColor: theme.palette.grey[50],
