@@ -134,6 +134,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
+          base-path: eisbuk-admin/
       - name: Create file with gcloud cretentials
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         # To make sure the file contents are not manipulated by the github infrastructure
