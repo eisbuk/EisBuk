@@ -7,7 +7,7 @@
   "CustomerNavigation": {
     "BookIce": "Prenota Ice",
     "BookOffIce": "Prenota Off-Ice",
-    "Calendar": "Calendario"
+    "Calendar": "Riepilogo"
   },
 
   "Authorization": {
@@ -93,8 +93,8 @@
 
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
-    "SendBookingsSMS": "Invia SMS link prenotazions",
-    "ExtendBookingDate": "Extend booking date",
+    "SendBookingsSMS": "Invia SMS link prenotazioni",
+    "ExtendBookingDate": "Estendi data di prenotazione",
 
     "Save": "Salva",
     "Next": "Seguente",
