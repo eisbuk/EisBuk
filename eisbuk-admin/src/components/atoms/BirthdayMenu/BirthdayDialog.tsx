@@ -46,7 +46,6 @@ const BirthdayDialog: React.FC<Props> = ({
                 : t(DateFormat.DayMonth, {
                     date: DateTime.fromISO(`2021-${customer.birthday}`),
                   });
-            //   console.log(DateTime.fromISO(customer.birthday));
 
             return (
               <div key={customer.birthday}>

@@ -25,7 +25,6 @@ import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirest
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
-import { DateTime } from "luxon";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -46,8 +45,6 @@ const AppContent: React.FC = () => {
 
   useFirestoreSubscribe(subscribedCollections);
   usePaginateFirestore();
-
-  console.log("Date:", DateTime.now().toISODate());
 
   return (
     <BrowserRouter>

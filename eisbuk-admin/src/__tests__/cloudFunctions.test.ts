@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { signOut } from "@firebase/auth";
 
@@ -31,7 +35,7 @@ describe("Cloud functions", () => {
   });
 
   describe("ping", () => {
-    testWithEmulator("should respond if pinged", async (done) => {
+    testWithEmulator("should respond if pinged", async () => {
       const result = await httpsCallable(
         functions,
         CloudFunction.Ping
@@ -39,7 +43,6 @@ describe("Cloud functions", () => {
         foo: "bar",
       });
       expect(result).toEqual({ data: { pong: true, data: { foo: "bar" } } });
-      done();
     });
   });
 
