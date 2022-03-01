@@ -39,7 +39,6 @@ const AddCustomersList: React.FC<Props> = ({
 
   // control closing of the modal when the list is empty
   useEffect(() => {
-    console.log("Filtered customers", filteredCustomers.length);
     if (!filteredCustomers || !filteredCustomers.length) {
       onClose();
     }
