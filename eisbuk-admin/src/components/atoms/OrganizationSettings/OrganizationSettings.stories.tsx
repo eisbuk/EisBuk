@@ -9,8 +9,7 @@ export default {
 
 const organization = {
   admins: ["Walt", "Gus"],
-  organizationName: "Los Pollos Hermanos",
-  smtpUri: "gusfring:password@smtpserver:8080",
+  displayName: "Los Pollos Hermanos",
   emailFrom: "gus@lospollos.me",
   emailNameFrom: "Gustavo",
   emailTemplate: "\n \n \n",
