@@ -34,6 +34,7 @@ interface Props {
 interface FieldProps {
   name: string;
   label: string;
+  multiline: boolean;
 }
 const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const classes = useStyles();
@@ -44,7 +45,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const [enableEdit, setEnableEdit] = useState(false);
 
   const handleSubmit = (orgData: OrganizationData) => {
-    dispatch(updateOrganization(orgData, organization.organizationName || ""));
+    dispatch(updateOrganization(orgData));
     setEnableEdit(false);
   };
 
@@ -53,24 +54,28 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
     setEnableEdit(!enableEdit);
   };
 
-  const emailFields: Partial<FieldProps>[] = [
+  const emailFields: FieldProps[] = [
     {
       name: "emailNameFrom",
       label: "Email Name From",
+      multiline: false,
     },
     {
       name: "emailFrom",
       label: "Email From",
+      multiline: false,
     },
     {
       name: "emailTemplate",
       label: "Email Template",
+      multiline: true,
     },
   ];
-  const smsFields: Partial<FieldProps>[] = [
+  const smsFields: FieldProps[] = [
     {
       name: "smsTemplate",
       label: "SMS Template",
+      multiline: true,
     },
   ];
 
@@ -79,7 +84,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
     <>
       <div className={classes.title}>
         <Typography variant="h4">{`${
-          organization.organizationName || "Organization"
+          organization.displayName || "Organization"
         }  Settings`}</Typography>
       </div>
       <div className={classes.content}>
@@ -94,15 +99,15 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
               <FormControl component="fieldset">
                 <h5 className={classes.sectionTitle}>Name</h5>
                 <Field
-                  key="organizationName"
+                  key="displayName"
                   label="Organization Name"
-                  name="organizationName"
+                  name="displayName"
                   className={classes.field}
                   as={TextField}
                   aria-label="Organization Name"
                   variant={enableEdit ? "outlined" : "filled"}
                   disabled={!enableEdit}
-                  value={values.organizationName || ""}
+                  value={values.displayName || ""}
                 />
 
                 <Divider />
@@ -128,9 +133,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
                       aria-label={field.label}
                       variant={enableEdit ? "outlined" : "filled"}
                       disabled={!enableEdit}
-                      multiline={
-                        field.name?.includes("Template") ? true : false
-                      }
+                      multiline={field.multiline}
                       rows={field.name?.includes("Template") ? "4" : "1"}
                       value={values[`${field.name}`] || ""}
                     />
@@ -167,9 +170,7 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
                       aria-label={field.label}
                       variant={enableEdit ? "outlined" : "filled"}
                       disabled={!enableEdit}
-                      multiline={
-                        field.name?.includes("Template") ? true : false
-                      }
+                      multiline={field.multiline}
                       rows={field.name?.includes("Template") ? "4" : "1"}
                       value={values[`${field.name}`] || ""}
                     />
@@ -327,14 +328,12 @@ const useStyles = makeStyles((theme) => ({
   },
   adminFieldGroup: {
     display: "flex",
-    // marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: "12.5rem",
   },
   disabledAdminFieldGroup: {
     display: "flex",
-    // marginTop: theme.spacing(2),
     marginBottom: theme.spacing(1),
     marginRight: theme.spacing(2),
     width: "11rem",
