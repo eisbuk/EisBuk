@@ -166,7 +166,7 @@ jobs:
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
-          rclone copy eisbuk-admin/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage
+          rclone copy eisbuk-admin/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
       - name: Print gcloud url to view test results
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
@@ -282,16 +282,17 @@ jobs:
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
-          rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/
-          rclone copy eisbuk-admin/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress
+          rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
+          rclone copy eisbuk-admin/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
 
       - name: Print gcloud url to view test results
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
           mkdir result_tabs
           echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
-          echo Coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
-          echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html > result_tabs/cypress.md
+          echo Check out coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
+          echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
+          echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
 
       - name: "Create cypress browser logs summaries"
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
