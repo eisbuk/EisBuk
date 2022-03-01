@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "Shared code for eisbuk packages (frontend and cloud functions backend)",
   "private": true,
-  "main": "dist/index.js",
-  "types": "dist",
+  "main": "src/index.js",
+  "types": "src",
   "devDependencies": {
     "@google-cloud/firestore": "^4.13.2",
     "@types/luxon": "^2.0.5"
