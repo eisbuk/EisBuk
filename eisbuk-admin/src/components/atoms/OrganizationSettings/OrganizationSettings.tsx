@@ -2,23 +2,27 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { OrganizationData } from "eisbuk-shared/dist";
 
-import { Formik, Field, Form, useField } from "formik";
+import { Formik, Field, Form } from "formik";
 import { ValidationMessage } from "@/enums/translations";
 
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
-import Cancel from "@material-ui/icons/Cancel";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-import { Divider, IconButton, Typography } from "@material-ui/core";
-import clsx from "clsx";
+import { Divider, Typography } from "@material-ui/core";
 import { useDispatch, useSelector } from "react-redux";
 import { getLocalAuth } from "@/store/selectors/auth";
 import { updateOrganization } from "@/store/actions/organizationOperations";
 import i18n from "@/i18next/i18n";
-import ErrorMessage from "@/components/atoms/ErrorMessage";
+
+import Fields from "./OrganizationFields";
+import AdminsField from "./AdminsField";
+
+interface Props {
+  organization: OrganizationData;
+}
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -27,15 +31,6 @@ const OrganizationValidation = Yup.object().shape({
     .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
 });
 // #endregion validations
-interface Props {
-  organization: OrganizationData;
-}
-
-interface FieldProps {
-  name: string;
-  label: string;
-  multiline: boolean;
-}
 const OrganizationSettings: React.FC<Props> = ({ organization }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -54,31 +49,6 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
     setEnableEdit(!enableEdit);
   };
 
-  const emailFields: FieldProps[] = [
-    {
-      name: "emailNameFrom",
-      label: "Email Name From",
-      multiline: false,
-    },
-    {
-      name: "emailFrom",
-      label: "Email From",
-      multiline: false,
-    },
-    {
-      name: "emailTemplate",
-      label: "Email Template",
-      multiline: true,
-    },
-  ];
-  const smsFields: FieldProps[] = [
-    {
-      name: "smsTemplate",
-      label: "SMS Template",
-      multiline: true,
-    },
-  ];
-
   const currentUser = userAuthInfo?.email || "";
   return (
     <>
@@ -95,211 +65,70 @@ const OrganizationSettings: React.FC<Props> = ({ organization }) => {
           validationSchema={OrganizationValidation}
         >
           {({ errors, isSubmitting, isValidating, values, resetForm }) => (
-            <Form className={classes.form}>
-              <FormControl component="fieldset">
-                <h5 className={classes.sectionTitle}>Name</h5>
-                <Field
-                  key="displayName"
-                  label="Organization Name"
-                  name="displayName"
-                  className={classes.field}
-                  as={TextField}
-                  aria-label="Organization Name"
-                  variant={enableEdit ? "outlined" : "filled"}
-                  disabled={!enableEdit}
-                  value={values.displayName || ""}
-                />
+            <>
+              <h5 className={classes.sectionTitle}>Admins</h5>
+              <AdminsField enableEdit={enableEdit} currentUser={currentUser} />
+              <Divider />
 
-                <Divider />
-                <h5 className={classes.sectionTitle}>Admins</h5>
-                <AdminsField
-                  enableEdit={enableEdit}
-                  currentUser={currentUser}
-                />
-                <Divider />
-                <h5 className={classes.sectionTitle}>Email</h5>
-                <div className={classes.fieldSection}>
-                  {emailFields.map((field) => (
-                    <Field
-                      key={field.name}
-                      label={field.label}
-                      name={field.name}
-                      className={
-                        field.name?.includes("Template")
-                          ? classes.templateField
-                          : classes.field
-                      }
-                      as={TextField}
-                      aria-label={field.label}
-                      variant={enableEdit ? "outlined" : "filled"}
-                      disabled={!enableEdit}
-                      multiline={field.multiline}
-                      rows={field.name?.includes("Template") ? "4" : "1"}
-                      value={values[`${field.name}`] || ""}
-                    />
-                  ))}
-                </div>
-                <h5 className={classes.sectionTitle}>SMS</h5>
-                <div className={classes.fieldSection}>
-                  <div className={classes.smsFromField}>
-                    <Field
-                      key="smsFrom"
-                      label="SMS From"
-                      name="smsFrom"
-                      className={classes.field}
-                      as={TextField}
-                      aria-label="SMS From"
-                      variant={enableEdit ? "outlined" : "filled"}
-                      disabled={!enableEdit}
-                      value={values.smsFrom || ""}
-                      error={errors.smsFrom}
-                    />
-                    {<ErrorMessage>{errors.smsFrom}</ErrorMessage>}
-                  </div>
-                  {smsFields.map((field) => (
-                    <Field
-                      key={field.name}
-                      label={field.label}
-                      name={field.name}
-                      className={
-                        field.name?.includes("Template")
-                          ? classes.templateField
-                          : classes.field
-                      }
-                      as={TextField}
-                      aria-label={field.label}
-                      variant={enableEdit ? "outlined" : "filled"}
-                      disabled={!enableEdit}
-                      multiline={field.multiline}
-                      rows={field.name?.includes("Template") ? "4" : "1"}
-                      value={values[`${field.name}`] || ""}
-                    />
-                  ))}
-                </div>
-              </FormControl>
+              <Form className={classes.form}>
+                <FormControl component="fieldset">
+                  <h5 className={classes.sectionTitle}>Name</h5>
+                  <Field
+                    key="displayName"
+                    label="Organization Name"
+                    name="displayName"
+                    className={classes.field}
+                    as={TextField}
+                    aria-label="Organization Name"
+                    variant={enableEdit ? "outlined" : "filled"}
+                    disabled={!enableEdit}
+                    value={values.displayName || ""}
+                  />
 
-              <div className={classes.submitButtonArea}>
-                <Button
-                  onClick={() => handleEnableEdit(resetForm)}
-                  variant="contained"
-                  disabled={
-                    Boolean(Object.keys(errors).length) &&
-                    (isSubmitting || isValidating)
-                  }
-                  color="primary"
-                  aria-label={enableEdit ? "cancel" : "edit"}
-                >
-                  {enableEdit ? "cancel" : "edit"}
-                </Button>
+                  <Divider />
 
-                {enableEdit && (
+                  <Fields
+                    enableEdit={enableEdit}
+                    values={values}
+                    errors={errors}
+                  />
+                </FormControl>
+
+                <div className={classes.submitButtonArea}>
                   <Button
+                    onClick={() => handleEnableEdit(resetForm)}
                     variant="contained"
-                    className={classes.saveButton}
                     disabled={
                       Boolean(Object.keys(errors).length) &&
                       (isSubmitting || isValidating)
                     }
-                    color="secondary"
-                    aria-label={"save"}
-                    type="submit"
+                    color="primary"
+                    aria-label={enableEdit ? "cancel" : "edit"}
                   >
-                    save
+                    {enableEdit ? "cancel" : "edit"}
                   </Button>
-                )}
-              </div>
-            </Form>
+
+                  {enableEdit && (
+                    <Button
+                      variant="contained"
+                      className={classes.saveButton}
+                      disabled={
+                        Boolean(Object.keys(errors).length) &&
+                        (isSubmitting || isValidating)
+                      }
+                      color="secondary"
+                      aria-label={"save"}
+                      type="submit"
+                    >
+                      save
+                    </Button>
+                  )}
+                </div>
+              </Form>
+            </>
           )}
         </Formik>
       </div>
-    </>
-  );
-};
-
-const AdminsField: React.FC<{
-  enableEdit: boolean;
-  currentUser: string;
-}> = ({ enableEdit, currentUser }) => {
-  const [{ value: admins }, , { setValue }] = useField<string[]>("admins");
-
-  const classes = useStyles();
-  const [admin, setAdmin] = useState("");
-  const handleSetAdmin = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAdmin(e.target.value);
-  };
-  const removeAdmin = (admin: string) => {
-    if (admin === currentUser) return;
-
-    const filteredAdmins = admins.filter((a) => a !== admin);
-    setValue(filteredAdmins);
-  };
-
-  const addAdmin = () => {
-    if (admin === "") return;
-    const newAdmins = [...admins, admin];
-    setValue(newAdmins);
-    setAdmin("");
-  };
-
-  const updateAdmin =
-    (i: number) => (e: React.ChangeEvent<HTMLInputElement>) => {
-      const adminsCopy = [...admins];
-      adminsCopy[i] = e.target.value;
-      setValue(adminsCopy);
-    };
-
-  return (
-    <>
-      <div className={classes.fieldSection}>
-        {admins.map((admin, i) => (
-          <div
-            key={admin}
-            className={clsx({
-              [classes.adminFieldGroup]: enableEdit,
-              [classes.disabledAdminFieldGroup]: !enableEdit,
-            })}
-          >
-            <Field
-              name={`admins[${i}]`}
-              onChange={updateAdmin(i)}
-              component={TextField}
-              value={admin}
-              variant={enableEdit ? "outlined" : "filled"}
-              disabled={!enableEdit || admin === currentUser}
-            />
-            {enableEdit && admin !== currentUser && (
-              <IconButton
-                type="button"
-                className={classes.closeButton}
-                onClick={() => removeAdmin(admin)}
-              >
-                <Cancel />
-              </IconButton>
-            )}
-          </div>
-        ))}
-      </div>
-      {enableEdit && (
-        <div className={classes.addAdmin}>
-          <Field
-            name={`newAdmin`}
-            component={TextField}
-            onChange={handleSetAdmin}
-            value={admin}
-            placeholder="Add admin"
-            variant={enableEdit ? "outlined" : "filled"}
-          />
-
-          <Button
-            onClick={addAdmin}
-            color="primary"
-            variant="contained"
-            className={classes.addAdminButton}
-          >
-            Add
-          </Button>
-        </div>
-      )}
     </>
   );
 };
