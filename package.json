@@ -18,7 +18,6 @@
     "@typescript-eslint/parser": "^4.30.0"
   },
   "scripts": {
-    "prepare": "husky install && yarn --cwd eisbuk-shared build"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
@@ -35,6 +34,7 @@
   "workspaces": {
     "packages": [
       "eisbuk-shared",
+      "eisbuk-admin/functions",
       "eisbuk-admin"
     ],
     "nohoist": [

@@ -1,0 +1,41 @@
+#!/bin/expect
+spawn telnet localhost 25
+
+# echo -ne "\0silvio\0foobar" | base64
+# AHNpbHZpbwBmb29iYXI=
+expect "220 "
+AUTH PLAIN AHVzZXJuYW1lAHBhc3N3b3Jk
+expect "220 "
+
+send "MAIL FROM:silvio@gropen.net\r"
+expect "250"
+send "RCPT TO:silviot@gmail.com\r"
+expect "250"
+send "DATA\r"
+expect "354"
+send "From: \"Segreteria Igor Ice Team\" <silvio@gropen.net>
+Subject: Le tue prenotazioni
+Date: Wed, 02 Jul 2008 15:08:43 +0000
+Ciao Silvio,
+Ti mandiamo qui il link per gestire le tue prenotazioni:
+
+https://igorice.web.app/customer_area/c36028bf-e8fc-4767-a89a-c8e44c6dc1e1/book_ice
+
+Speriamo di vederti presto!
+
+---
+
+Cari atleti e genitori,
+
+Siamo in attesa del termine dei lavori di ristrutturazione che si stanno svolgendo agli impianti del nostro PalaTazzoli, che dovrebbero terminare entro fine Settembre.
+Fino ad allora tutte le attività si svolgeranno presso l’Impianto Massari a partire dal 10 Settembre. 
+Nei prossimi giorni sarà nostra premura comunicarvi gli orari provvisori di inizio stagione e vi terremo aggiornati sullo stato di avanzamento lavori!
+Restate connessi 🙂
+Un saluto a tutti,
+Igor Ice Team
+
+
+.
+"
+expect "250"
+send "QUIT\r"

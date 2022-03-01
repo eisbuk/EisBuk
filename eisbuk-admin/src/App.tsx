@@ -1,45 +1,64 @@
-import { useState } from 'react'
-import logo from './logo.svg'
-import './App.css'
+import React from "react";
+import LuxonUtils from "@date-io/luxon";
+import { SnackbarProvider } from "notistack";
+import { Provider as ReduxProvider } from "react-redux";
+import { getAuth } from "@firebase/auth";
 
-function App() {
-  const [count, setCount] = useState(0)
+import CssBaseline from "@material-ui/core/CssBaseline";
+import MuiPickersUtilsProvider from "@material-ui/pickers/MuiPickersUtilsProvider";
+import { ThemeProvider } from "@material-ui/core/styles";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { store } from "@/store";
+
+import AppContent from "@/AppContent";
+
+import Notifier from "@/components/Notifier";
+
+import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
+
+import { currentTheme } from "@/themes";
+
+const App: React.FC = () => {
+  const classes = useStyles();
+
+  // connect auth to store to recieve firebase SDK's auth updates
+  // through redux store
+  useConnectAuthToStore(getAuth(), store);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type="button" onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className="App-link"
-            href="https://vitejs.dev/guide/features.html"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
-  )
-}
+    <ReduxProvider store={store}>
+      <ThemeProvider theme={currentTheme}>
+        <MuiPickersUtilsProvider utils={LuxonUtils}>
+          <SnackbarProvider className={classes.root} maxSnack={3}>
+            <Notifier />
+            <CssBaseline />
+            <AppContent />
+          </SnackbarProvider>
+        </MuiPickersUtilsProvider>
+      </ThemeProvider>
+    </ReduxProvider>
+  );
+};
 
-export default App
+// #region styles
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(0.75, 0),
+
+    /**
+     * This is, hopefully, temporary workaround to a
+     * bug in notistack that causes snackbars to be unclickable.
+     * Notistack v.1.0.10 fixes that bug, however,
+     * it only works with materialUI v^5, which is in pre-release currently.
+     * The bug is caused by the root class not having the 'pointerEvents'
+     * property set to 'all', 'root' class here overrides that.
+     * @TODO upgade MUI, notistack and remove this when MUI v5 becomes the LTS
+     */
+    pointerEvents: "all",
+  },
+}));
+// #region styles
+
+export default App;
