@@ -9,6 +9,7 @@ import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
 
 import "cypress-mochawesome-reporter/register";
 import addFirebaseCommands from "cypress/plugins/firebasePlugin/commands";
+import "@cypress/code-coverage/support";
 
 // add firebase-related commands (from firebasePlugin)
 addFirebaseCommands();

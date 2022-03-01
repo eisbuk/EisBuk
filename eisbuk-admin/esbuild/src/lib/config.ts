@@ -6,8 +6,10 @@ import svgr from "esbuild-plugin-svgr";
  * A base esbuild config file shared between both `build` and `serve`
  * scripts.
  */
+const subdir = process.env.USE_INSTRUMENTED ? "instrumented" : "src";
+
 const config: BuildOptions = {
-  entryPoints: [path.join(process.cwd(), "src", "index.tsx")],
+  entryPoints: [path.join(process.cwd(), subdir, "index.tsx")],
   plugins: [svgr()],
   bundle: true,
   write: true,
