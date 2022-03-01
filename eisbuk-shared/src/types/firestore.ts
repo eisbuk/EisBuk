@@ -41,18 +41,35 @@ import {
  * Organization data record included in each organization (other than nested collections)
  */
 export interface OrganizationData {
+  /**
+   * List of admins
+   */
   admins: string[];
-  organizationName?: string;
-  emailFrom?: string;
+  /**
+   * Organization name
+   */
+  displayName?: string;
   /**
    * String used as `from` when sending Email.
    * If not provided, will fall back to organization name
    * @TODO this isn't yet functional, apply when making email per organization
    */
+  emailFrom?: string;
+  /**
+   * Name to use when sending emails ( the name part in Name <email@example.com>)
+   */
   emailNameFrom?: string;
+  /**
+   * Template for reminder emails
+   */
   emailTemplate?: string;
-  smtpUri?: string;
+  /**
+   * Caller ID to use when sending out SMSs
+   */
   smsFrom?: string;
+  /**
+   * Template for reminder SMSs
+   */
   smsTemplate?: string;
   /**
    * Record of flags inticating that given secrets exists
