@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 
 import { LocalStore, Notification } from "@/types/store";
-import { getOrganization } from "@/lib/getters";
 import { OrganizationData } from "eisbuk-shared/dist";
 
 // #region notifications
@@ -22,10 +21,12 @@ export const getNotifications = (state: LocalStore): Notification[] =>
 export const getCalendarDay = (state: LocalStore): DateTime =>
   state.app.calendarDay;
 
-/**
- * Get Organization
- * @param state Local Redux State
- * @returns Organization
- */
-export const getOrganizationSettings = (state: LocalStore): OrganizationData =>
-  state.firestore.data.organizations![getOrganization()];
+export const getOrganizationSettings = (
+  state: LocalStore
+): OrganizationData => {
+  if (Object.values(state.firestore.data.organizations || {}).length > 1) {
+    console.error("More than one organization are in store");
+  }
+
+  return Object.values(state.firestore.data.organizations || {})[0];
+};
