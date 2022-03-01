@@ -135,6 +135,8 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           path-to-lcov: eisbuk-admin/coverage/lcov.info
           base-path: eisbuk-admin/
+          flag-name: run-${{ matrix.test_number }}
+          parallel: true
       - name: Create file with gcloud cretentials
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         # To make sure the file contents are not manipulated by the github infrastructure
@@ -246,6 +248,18 @@ jobs:
           # pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: steps.has_secret.outputs.HAS_SECRETS
+        env:
+          COVERALLS_DEBUG: "True"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: eisbuk-admin/coverage/lcov.info
+          base-path: eisbuk-admin/
+          flag-name: run-${{ matrix.test_number }}
+          parallel: true
+
       - name: Create file with gcloud cretentials
         if: success() || failure()
         # To make sure the file contents are not manipulated by the github infrastructure
@@ -302,3 +316,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_DIR: result_tabs
           SUMMARY_TITLE: "Cypress results"
+
+  finish:
+    needs:
+      - cypress-run
+      - test_v14
+    runs-on: ubuntu-latest
+    steps:
+      - name: Finalize Coveralls
+        uses: coverallsapp/github-action@master
+        if: steps.has_secret.outputs.HAS_SECRETS
+        env:
+          COVERALLS_DEBUG: "True"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: eisbuk-admin/coverage/lcov.info
+          parallel-finished: true
