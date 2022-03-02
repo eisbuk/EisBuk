@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import { Field, Form, useField } from "formik";
+import { useTranslation } from "react-i18next";
 
 import FormControl from "@material-ui/core/FormControl";
 import TextField from "@material-ui/core/TextField";
@@ -11,12 +12,16 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { IconButton } from "@material-ui/core";
 
+import { ActionButton, OrganizationLabel } from "@/enums/translations";
+
 const AdminsField: React.FC<{
   currentUser: string;
 }> = ({ currentUser }) => {
   const [{ value: admins }, , { setValue }] = useField<string[]>("admins");
 
   const classes = useStyles();
+  const { t } = useTranslation();
+
   const [admin, setAdmin] = useState("");
   const handleSetAdmin = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAdmin(e.target.value);
@@ -47,7 +52,7 @@ const AdminsField: React.FC<{
 
   return (
     <Form onSubmit={(e) => addAdmin(e)}>
-      <h5 className={classes.sectionTitle}>Admins</h5>
+      <h5 className={classes.sectionTitle}>{t(OrganizationLabel.Admins)}</h5>
       <FormControl>
         <div className={classes.fieldSection}>
           {admins.map((admin, i) => (
@@ -75,11 +80,11 @@ const AdminsField: React.FC<{
         {
           <div className={classes.addAdmin}>
             <Field
-              name={`newAdmin`}
+              name="newAdmin"
               component={TextField}
               onChange={handleSetAdmin}
               value={admin}
-              placeholder="Add admin"
+              placeholder={t(OrganizationLabel.AddNewAdmin)}
               variant="outlined"
             />
 
@@ -89,7 +94,7 @@ const AdminsField: React.FC<{
               className={classes.addAdminButton}
               type="submit"
             >
-              Add
+              {t(ActionButton.Add)}
             </Button>
           </div>
         }

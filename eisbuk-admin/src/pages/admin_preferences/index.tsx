@@ -2,13 +2,14 @@ import React from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form } from "formik";
+import { useTranslation } from "react-i18next";
 
 import FormControl from "@material-ui/core/FormControl";
 import Button from "@material-ui/core/Button";
 
 import { OrganizationData } from "eisbuk-shared";
 
-import { ValidationMessage } from "@/enums/translations";
+import { ActionButton, ValidationMessage } from "@/enums/translations";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
@@ -28,11 +29,11 @@ interface Props {
 }
 const smsFields = [
   {
-    name: "smsFrom",
+    name: "SmsFrom",
     label: "SMS From",
   },
   {
-    name: "smsTemplate",
+    name: "SmsTemplate",
     label: "SMS Template",
     multiline: true,
   },
@@ -40,20 +41,20 @@ const smsFields = [
 
 const emailFields = [
   {
-    name: "emailNameFrom",
+    name: "EmailNameFrom",
     label: "Email Name From",
   },
   {
-    name: "emailFrom",
+    name: "EmailFrom",
     label: "Email From",
   },
   {
-    name: "emailTemplate",
+    name: "EmailTemplate",
     label: "Email Template",
     multiline: true,
   },
 ];
-const nameField = [{ name: "Organization Name", label: "displayName" }];
+const nameField = [{ name: "DisplayName", label: "Organization Name" }];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -63,6 +64,7 @@ const OrganizationValidation = Yup.object().shape({
 });
 // #endregion validations
 const OrganizationSettings: React.FC<Props> = () => {
+  const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
   const organization = useSelector(getOrganizationSettings);
@@ -106,7 +108,7 @@ const OrganizationSettings: React.FC<Props> = () => {
                     disabled={isSubmitting || isValidating}
                     color="primary"
                   >
-                    cancel
+                    {t(ActionButton.Cancel)}
                   </Button>
                   <Button
                     variant="contained"
@@ -116,7 +118,7 @@ const OrganizationSettings: React.FC<Props> = () => {
                     aria-label={"save"}
                     type="submit"
                   >
-                    save
+                    {t(ActionButton.Save)}
                   </Button>
                 </div>
               </Form>

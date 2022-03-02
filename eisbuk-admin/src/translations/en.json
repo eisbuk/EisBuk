@@ -55,6 +55,16 @@
     "CovidCertificateSuspended": "COVID-19 Certificate supsended",
     "ExtendedBookingDate": "Extended booking date"
   },
+  "OrganizationLabel": {
+    "EmailNameFrom": "Email Name From",
+    "EmailFrom": "Email From",
+    "EmailTemplate": "Email Template",
+    "SmsFrom": "SMS From",
+    "SmsTemplate": "SMS Template",
+    "DisplayName": "Organization Name",
+    "Admins": "Admins",
+    "AddNewAdmin": "Add New Admin"
+  },
   "Validations": {
     "Email": "Please insert a valid email",
     "RequiredEntry": "At least one value is required",
@@ -63,7 +73,7 @@
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
     "InvalidPhone": "Please enter a valid phone format: phone number prepended with '+' sign and country code (i.e. +385 99 2222 555)",
     "TimeMismatch": "Start time is greater than end time",
-    "InvalidSmsFrom": "Invalid format: Only letter or numbers and no symbols/spaces",
+    "InvalidSmsFrom": "Invalid format: Only letters are allowed",
     "InvalidSmsFromLength": "Invalid format: Maximum 11 characters"
   },
 
@@ -100,7 +110,8 @@
 
     "Save": "Save",
     "Next": "Next",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "Add": "Add"
   },
 
   "Notification": {
