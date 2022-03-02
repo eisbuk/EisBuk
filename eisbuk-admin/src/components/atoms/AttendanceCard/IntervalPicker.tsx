@@ -55,7 +55,7 @@ const IntervalPicker: React.FC<Props> = ({
     <ButtonGroup className={classes.container} disabled={disabled}>
       <IconButton
         onClick={handleClick(-1)}
-        disabled={intervalIndex === 0}
+        disabled={disabled || intervalIndex === 0}
         data-testid={__prevIntervalButtonId__}
         size="large"
       >
@@ -64,7 +64,7 @@ const IntervalPicker: React.FC<Props> = ({
       <IntervalUI {...{ attendedInterval, bookedInterval }} />
       <IconButton
         onClick={handleClick(1)}
-        disabled={intervalIndex === numIntervals - 1}
+        disabled={disabled || intervalIndex === numIntervals - 1}
         data-testid={__nextIntervalButtonId__}
         size="large"
       >
