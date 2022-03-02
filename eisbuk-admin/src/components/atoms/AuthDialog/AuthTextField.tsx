@@ -29,7 +29,7 @@ const AuthTextField: React.FC<
 
 const useStyles = makeStyles(() => ({
   container: {
-    padding: "20px 0",
+    padding: "4px 0 20px 0",
     width: "100%",
   },
   textField: {
