@@ -1,7 +1,6 @@
 import React from "react";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { DateTime } from "luxon";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
