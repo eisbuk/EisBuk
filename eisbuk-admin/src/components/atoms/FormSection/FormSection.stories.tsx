@@ -11,26 +11,23 @@ export default {
 
 const emailFields = [
   {
-    name: "emailNameFrom",
-    label: "Email Name From",
+    name: "EmailNameFrom",
   },
   {
-    name: "emailFrom",
-    label: "Email From",
+    name: "EmailFrom",
   },
   {
-    name: "emailTemplate",
-    label: "Email Template",
+    name: "EmailTemplate",
     multiline: true,
   },
 ];
 
-const initialValues = { emailNameFrom: "", emailFrom: "", emailTemplate: "" };
+const initialValues = { EmailNameFrom: "", EmailFrom: "", EmailTemplate: "" };
 
 export const Default = (): JSX.Element => (
   <Formik {...{ initialValues }} onSubmit={() => {}}>
     <div style={{ width: "50rem", display: "flex", flexDirection: "column" }}>
-      <FormSection name="email" content={emailFields} />
+      <FormSection name="Email" content={emailFields} />
     </div>
   </Formik>
 );
