@@ -1,7 +1,7 @@
 import React from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { Formik, Form } from "formik";
+import { Formik, Form, FormikHelpers } from "formik";
 import { useTranslation } from "react-i18next";
 
 import FormControl from "@material-ui/core/FormControl";
@@ -55,7 +55,7 @@ const nameField = [{ name: "DisplayName" }];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
-  smsFrom: Yup.string()
+  SmsFrom: Yup.string()
     .matches(/^[a-z0-9]+$/, i18n.t(ValidationMessage.InvalidSmsFrom))
     .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
 });
@@ -67,8 +67,11 @@ const OrganizationSettings: React.FC<Props> = () => {
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
 
-  const handleSubmit = (orgData: OrganizationData) => {
-    dispatch(updateOrganization(orgData));
+  const handleSubmit = (
+    orgData: OrganizationData,
+    actions: FormikHelpers<OrganizationData>
+  ) => {
+    dispatch(updateOrganization(orgData, actions.setSubmitting));
   };
 
   const currentUser = userAuthInfo?.email || "";
@@ -83,7 +86,7 @@ const OrganizationSettings: React.FC<Props> = () => {
       <div className={classes.content}>
         <Formik
           {...{ initialValues: { ...organization } }}
-          onSubmit={handleSubmit}
+          onSubmit={(values, actions) => handleSubmit(values, actions)}
           validateOnChange={false}
           validationSchema={OrganizationValidation}
         >

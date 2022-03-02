@@ -14,7 +14,10 @@ const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${__organization__}`;
 
 export const updateOrganization =
-  (orgData: OrganizationData): FirestoreThunk =>
+  (
+    orgData: OrganizationData,
+    setSubmitting: (isSubmitting: boolean) => void
+  ): FirestoreThunk =>
   async (dispatch) => {
     try {
       const db = getFirestore();
@@ -31,6 +34,7 @@ export const updateOrganization =
           closeButton: true,
         })
       );
+      setSubmitting(false);
     } catch (error) {
       dispatch(showErrSnackbar);
     }
