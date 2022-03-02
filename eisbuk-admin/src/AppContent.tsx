@@ -1,6 +1,7 @@
 import React from "react";
 import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
+import { DateTime } from "luxon";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
 
@@ -19,14 +20,13 @@ import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
+import AdminPreferencesPage from "@/pages/admin_preferences";
 
 import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
-import AdminPreferencesPage from "./pages/admin_preferences";
-import { DateTime } from "luxon";
 
 /**
  * All of the App content (including routes) wrapper.

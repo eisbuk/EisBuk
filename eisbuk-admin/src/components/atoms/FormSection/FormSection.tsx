@@ -1,7 +1,7 @@
 import React from "react";
-import { OrganizationData } from "eisbuk-shared/dist";
 
-import { Field, FormikErrors } from "formik";
+import { Field, useFormikContext } from "formik";
+import { useTranslation } from "react-i18next";
 
 import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
@@ -9,96 +9,49 @@ import Divider from "@material-ui/core/Divider";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
+import { OrganizationLabel } from "@/enums/translations";
 
-interface Props {
-  enableEdit: boolean;
-  values: OrganizationData;
-  errors: FormikErrors<OrganizationData>;
-}
 interface FieldProps {
   name: string;
   label: string;
-  multiline: boolean;
-  isValidated: boolean;
+  multiline?: boolean;
 }
-const smsFields: FieldProps[] = [
-  {
-    name: "smsFrom",
-    label: "SMS From",
-    multiline: false,
-    isValidated: true,
-  },
-  {
-    name: "smsTemplate",
-    label: "SMS Template",
-    multiline: true,
 
-    isValidated: false,
-  },
-];
+interface Props {
+  name?: string;
+  content: FieldProps[];
+}
 
-const emailFields: FieldProps[] = [
-  {
-    name: "emailNameFrom",
-    label: "Email Name From",
-    multiline: false,
-    isValidated: false,
-  },
-  {
-    name: "emailFrom",
-    label: "Email From",
-    multiline: false,
-    isValidated: false,
-  },
-  {
-    name: "emailTemplate",
-    label: "Email Template",
-    multiline: true,
-
-    isValidated: false,
-  },
-];
-const sections = [
-  { name: "Email", content: emailFields },
-  { name: "SMS", content: smsFields },
-];
-
-const Fields: React.FC<Props> = ({ enableEdit, values, errors }) => {
+const FormSection: React.FC<Props> = ({ name, content }) => {
   const classes = useStyles();
+  const { t } = useTranslation();
+
+  const { errors } = useFormikContext();
+
   return (
-    <>
-      {sections.map(({ name, content }) => (
-        <div key={name}>
-          <h5 className={classes.sectionTitle}>{name}</h5>
-          <div className={classes.fieldSection}>
-            {content.map((field) => (
-              <div key={field.name}>
-                <Field
-                  label={field.label}
-                  name={field.name}
-                  className={
-                    field.name?.includes("Template")
-                      ? classes.templateField
-                      : classes.field
-                  }
-                  as={TextField}
-                  aria-label={field.label}
-                  variant={enableEdit ? "outlined" : "filled"}
-                  disabled={!enableEdit}
-                  multiline={field.multiline}
-                  rows={field.name?.includes("Template") ? "4" : "1"}
-                  value={values[`${field.name}`] || ""}
-                />
-                {<ErrorMessage>{errors.smsFrom}</ErrorMessage>}
-              </div>
-            ))}
+    <div>
+      {name && <h5 className={classes.sectionTitle}>{name}</h5>}
+      <div className={classes.fieldSection}>
+        {content.map(({ name, multiline }) => (
+          <div key={name}>
+            <Field
+              label={t(OrganizationLabel[name])}
+              name={name}
+              className={multiline ? classes.templateField : classes.field}
+              as={TextField}
+              variant="outlined"
+              multiline={multiline}
+              {...(multiline ? { rows: "4" } : {})}
+            />
+            {<ErrorMessage>{errors[name]}</ErrorMessage>}
           </div>
-          <Divider />
-        </div>
-      ))}
-    </>
+        ))}
+      </div>
+      <Divider />
+    </div>
   );
 };
+
 // #region styles
 const useStyles = makeStyles((theme) => ({
   field: {
@@ -188,4 +141,4 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 // #endregion styles
-export default Fields;
+export default FormSection;

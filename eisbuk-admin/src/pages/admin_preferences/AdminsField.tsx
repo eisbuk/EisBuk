@@ -10,12 +10,10 @@ import Cancel from "@material-ui/icons/Cancel";
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { IconButton } from "@material-ui/core";
-import clsx from "clsx";
 
 const AdminsField: React.FC<{
-  enableEdit: boolean;
   currentUser: string;
-}> = ({ enableEdit, currentUser }) => {
+}> = ({ currentUser }) => {
   const [{ value: admins }, , { setValue }] = useField<string[]>("admins");
 
   const classes = useStyles();
@@ -32,7 +30,9 @@ const AdminsField: React.FC<{
 
   const addAdmin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (admin === "") return;
+    // should not add empty strings or duplicate entries
+    if (admins.includes(admin) || admin === "") return;
+
     const newAdmins = [...admins, admin];
     setValue(newAdmins);
     setAdmin("");
@@ -47,25 +47,20 @@ const AdminsField: React.FC<{
 
   return (
     <Form onSubmit={(e) => addAdmin(e)}>
+      <h5 className={classes.sectionTitle}>Admins</h5>
       <FormControl>
         <div className={classes.fieldSection}>
           {admins.map((admin, i) => (
-            <div
-              key={admin}
-              className={clsx({
-                [classes.adminFieldGroup]: enableEdit,
-                [classes.disabledAdminFieldGroup]: !enableEdit,
-              })}
-            >
+            <div key={admin} className={classes.adminFieldGroup}>
               <Field
                 name={`admins[${i}]`}
                 onChange={updateAdmin(i)}
                 component={TextField}
                 value={admin}
-                variant={enableEdit ? "outlined" : "filled"}
-                disabled={!enableEdit || admin === currentUser}
+                variant="outlined"
+                disabled={admin === currentUser}
               />
-              {enableEdit && admin !== currentUser && (
+              {admin !== currentUser && (
                 <IconButton
                   type="button"
                   className={classes.closeButton}
@@ -77,7 +72,7 @@ const AdminsField: React.FC<{
             </div>
           ))}
         </div>
-        {enableEdit && (
+        {
           <div className={classes.addAdmin}>
             <Field
               name={`newAdmin`}
@@ -85,7 +80,7 @@ const AdminsField: React.FC<{
               onChange={handleSetAdmin}
               value={admin}
               placeholder="Add admin"
-              variant={enableEdit ? "outlined" : "filled"}
+              variant="outlined"
             />
 
             <Button
@@ -97,7 +92,7 @@ const AdminsField: React.FC<{
               Add
             </Button>
           </div>
-        )}
+        }
       </FormControl>
     </Form>
   );
