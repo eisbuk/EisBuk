@@ -13,7 +13,6 @@ import { OrganizationLabel } from "@/enums/translations";
 
 interface FieldProps {
   name: string;
-  label: string;
   multiline?: boolean;
 }
 
