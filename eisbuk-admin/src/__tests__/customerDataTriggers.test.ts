@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { collection, doc, setDoc, getDocs } from "@firebase/firestore";
 
 import {

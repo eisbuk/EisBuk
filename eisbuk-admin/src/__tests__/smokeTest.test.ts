@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { setDoc, doc } from "@firebase/firestore";
 import { signInWithEmailAndPassword, signOut } from "@firebase/auth";
 

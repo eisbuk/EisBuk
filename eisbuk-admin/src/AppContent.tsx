@@ -48,8 +48,6 @@ const AppContent: React.FC = () => {
   useFirestoreSubscribe(subscribedCollections);
   usePaginateFirestore();
 
-  console.log("Date:", DateTime.now().toISODate());
-
   return (
     <BrowserRouter>
       <Switch>
