@@ -53,7 +53,7 @@ const db = getFirestore();
 
 const functions = getFunctions(firebase, "europe-west6");
 console.log(`Functions region > ${functions.region}`);
-
+console.log('Is dev', __isDev__);
 if (__isDev__) {
   console.warn(
     "Using local emulated Database (localhost:8080) instead of " +

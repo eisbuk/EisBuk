@@ -50,6 +50,10 @@ module.exports = {
     "plopfile.js",
     "setupTests.js",
     "coverage",
+    // If we don't exclude vite config file we get
+    // The file does not match your project config: eisbuk-admin/vite.config.ts.
+    // The file must be included in at least one of the projects provided
+    "vite.config.ts",
   ],
   rules: {
     // Remove rule for props to require quotes
