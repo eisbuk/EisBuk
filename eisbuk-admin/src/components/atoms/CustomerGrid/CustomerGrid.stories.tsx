@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import Paper from "@material-ui/core/Paper";
+import Paper from "@mui/material/Paper";
 
 import * as customersObj from "@/__testData__/customers";
 import CustomerGrid from "./CustomerGrid";

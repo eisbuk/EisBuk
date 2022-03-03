@@ -4,12 +4,12 @@ import { useTranslation } from "react-i18next";
 
 import { luxon2ISODate, OrgSubCollection } from "eisbuk-shared";
 
-import Container from "@material-ui/core/Container";
-import IconButton from "@material-ui/core/IconButton";
+import Container from "@mui/material/Container";
+import IconButton from "@mui/material/IconButton";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import PrintIcon from "@material-ui/icons/Print";
+import PrintIcon from "@mui/icons-material/Print";
 
 import { NavigationLabel } from "@/enums/translations";
 
@@ -45,7 +45,7 @@ const DashboardPage: React.FC = () => {
    * `Ctrl` + `P` print shortcut.
    */
   const printButton = (
-    <IconButton onClick={() => window.print()}>
+    <IconButton onClick={() => window.print()} size="large">
       <PrintIcon />
     </IconButton>
   );

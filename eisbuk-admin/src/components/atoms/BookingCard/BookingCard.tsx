@@ -1,14 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Box from "@material-ui/core/Box";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Button from "@material-ui/core/Button";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
@@ -241,18 +241,15 @@ const useStyles = makeStyles((theme) =>
     weekday: {
       textTransform: "uppercase",
       fontSize: theme.typography.pxToRem(20),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
     day: {
       fontSize: theme.typography.h2.fontSize,
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
     month: {
       textTransform: "uppercase",
       fontSize: theme.typography.pxToRem(13),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
     // #endregion dateBoxStyles
@@ -292,7 +289,6 @@ const useStyles = makeStyles((theme) =>
       padding: theme.spacing(1),
     },
     notes: {
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
     // #endregion notesStyles

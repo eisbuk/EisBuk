@@ -3,9 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 import { useTranslation } from "react-i18next";
 
-import Button from "@material-ui/core/Button";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import Button from "@mui/material/Button";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 import { signOut } from "@/store/actions/authOperations";
 

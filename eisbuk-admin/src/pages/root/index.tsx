@@ -2,11 +2,11 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import Container from "@material-ui/core/Container";
-import List from "@material-ui/core/List";
-import IconButton from "@material-ui/core/IconButton";
-import PrintIcon from "@material-ui/icons/Print";
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import Container from "@mui/material/Container";
+import List from "@mui/material/List";
+import IconButton from "@mui/material/IconButton";
+import PrintIcon from "@mui/icons-material/Print";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { OrgSubCollection } from "eisbuk-shared";
 
@@ -31,7 +31,7 @@ const DashboardPage: React.FC = () => {
   const allCustomers = useSelector(getCustomersList(true));
 
   const printButton = (
-    <IconButton component={Link} to="/attendance_printable">
+    <IconButton component={Link} to="/attendance_printable" size="large">
       <PrintIcon />
     </IconButton>
   );

@@ -2,10 +2,10 @@ import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import IconButton from "@material-ui/core/IconButton";
-import Badge from "@material-ui/core/Badge";
+import IconButton from "@mui/material/IconButton";
+import Badge from "@mui/material/Badge";
 
-import FileCopyIcon from "@material-ui/icons/FileCopy";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
 
 import { ButtonContextType } from "@/enums/components";
 import { AdminAria, DateFormat } from "@/enums/translations";
