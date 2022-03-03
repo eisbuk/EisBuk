@@ -1,9 +1,9 @@
 import React, { useState, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from "@mui/material/IconButton";
 
-import AddCircleOutlineIcon from "@material-ui/icons/AddCircleOutline";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import { luxon2ISODate } from "eisbuk-shared";
 

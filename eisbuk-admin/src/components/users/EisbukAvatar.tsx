@@ -2,12 +2,12 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import Avatar from "@material-ui/core/Avatar";
-import Badge from "@material-ui/core/Badge";
+import Avatar from "@mui/material/Avatar";
+import Badge from "@mui/material/Badge";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import * as colors from "@material-ui/core/colors";
+import * as colors from "@mui/material/colors";
 
 import { Category, Customer } from "eisbuk-shared";
 

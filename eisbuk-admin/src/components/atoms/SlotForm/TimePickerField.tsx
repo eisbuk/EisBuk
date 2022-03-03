@@ -2,11 +2,11 @@ import React from "react";
 import { useField } from "formik";
 import { DateTime } from "luxon";
 
-import TextField, { TextFieldProps } from "@material-ui/core/TextField";
-import Box from "@material-ui/core/Box";
-import IconButton from "@material-ui/core/IconButton";
+import TextField, { TextFieldProps } from "@mui/material/TextField";
+import Box from "@mui/material/Box";
+import IconButton from "@mui/material/IconButton";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 
@@ -86,6 +86,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
         color="primary"
         onClick={handleClick(-1)}
         data-testid={__decrementId__}
+        size="large"
       >
         -
       </IconButton>
@@ -99,6 +100,7 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
         color="primary"
         onClick={handleClick(1)}
         data-testid={__incrementId__}
+        size="large"
       >
         +
       </IconButton>
