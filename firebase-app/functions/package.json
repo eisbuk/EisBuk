@@ -31,7 +31,7 @@
     "p-retry": "^4.6.1",
     "@types/p-retry": "^3.0.1",
     "retry": "~0.13.1",
-    "@google-cloud/firestore": "~5.0.2"
+    "@google-cloud/firestore": "^4.13.2"
   },
   "devDependencies": {
     "@firebase/testing": "^0.20.11",

@@ -21,7 +21,7 @@ importers:
   ../../firebase-app/functions:
     specifiers:
       '@firebase/testing': ^0.20.11
-      '@google-cloud/firestore': ~5.0.2
+      '@google-cloud/firestore': ^4.13.2
       '@types/luxon': ^2.0.5
       '@types/p-retry': ^3.0.1
       '@types/uuid': ^8.3.0
@@ -52,7 +52,7 @@ importers:
       webpack-cli: ^4.7.2
       webpack-node-externals: ^3.0.0
     dependencies:
-      '@google-cloud/firestore': 5.0.2
+      '@google-cloud/firestore': 4.15.1
       '@types/p-retry': 3.0.1
       eisbuk-shared: link:../../eisbuk-shared
       firebase: 8.10.1
@@ -842,19 +842,6 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
-
-  /@google-cloud/firestore/5.0.2:
-    resolution: {integrity: sha512-xlGcNYaW0nvUMzNn2+pLfbEBVt6oysVqtM89faMgZWkWfEtvIQGS0h5PRdLlcqufNzRCX3yIGv29Pb+03ys+VA==}
-    engines: {node: '>=10.10.0'}
-    dependencies:
-      fast-deep-equal: 3.1.3
-      functional-red-black-tree: 1.0.1
-      google-gax: 2.30.0
-      protobufjs: 6.11.2
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
-    dev: false
 
   /@google-cloud/paginator/3.0.7:
     resolution: {integrity: sha512-jJNutk0arIQhmpUUQJPJErsojqo834KcyB6X7a1mxuic8i1tKXxde8E69IZxNZawRIlZdIK2QY4WALvlK5MzYQ==}
