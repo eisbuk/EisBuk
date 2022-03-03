@@ -1,12 +1,8 @@
 import React from "react";
 
-import bubblesBackground from "@/assets/images/Bubble-20s-1920px.svg";
+import Bubbles from "@/assets/images/Bubble-20s-1920px.svg";
 
 const loginImageStyle = {
-  backgroundImage: `url(${bubblesBackground})`,
-  backgroundRepeat: "no-repeat",
-  backgroundSize: "cover",
-  backgroundPosition: "center",
   height: "100vh",
 };
 
@@ -14,6 +10,10 @@ const loginImageStyle = {
  * Shows LoadingScreen
  * @returns
  */
-const Loading: React.FC = () => <div style={loginImageStyle} />;
+const Loading: React.FC = () => (
+  <div style={loginImageStyle}>
+    <Bubbles />
+  </div>
+);
 
 export default Loading;
