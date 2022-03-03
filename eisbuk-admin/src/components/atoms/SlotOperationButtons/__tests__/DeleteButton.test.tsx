@@ -1,6 +1,7 @@
 /**
- * @jest-envirnoment jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import React from "react";
 import {
   screen,
@@ -24,8 +25,6 @@ import {
   __noSlotToDelete,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 
 import {
   __deleteButtonId__,
@@ -188,16 +187,11 @@ describe("SlotOperationButtons", () => {
       expect(mockDispatch).toHaveBeenCalledWith(mockWeekDelAction);
     });
 
-    testWithMutationObserver(
-      'should close the dialog on negative confirmation ("No")',
-      async () => {
-        screen.getByTestId(__deleteButtonId__).click();
-        screen.getByTestId(__confirmDialogNoId__).click();
-        await waitForElementToBeRemoved(() =>
-          screen.getByText(testDialog.title)
-        );
-      }
-    );
+    test('should close the dialog on negative confirmation ("No")', async () => {
+      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(__confirmDialogNoId__).click();
+      await waitForElementToBeRemoved(() => screen.getByText(testDialog.title));
+    });
   });
 
   describe("'DeleteButton' edge cases/error handling test", () => {

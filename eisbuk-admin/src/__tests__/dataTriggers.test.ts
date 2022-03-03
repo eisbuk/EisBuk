@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import {
   BookingSubCollection,
   Collection,
@@ -6,13 +10,13 @@ import {
   luxon2ISODate,
   SlotType,
   OrganizationData,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll, deleteAllCollections } from "@/__testUtils__/firestore";
 
@@ -274,32 +278,26 @@ describe("Cloud functions -> Data triggers ->,", () => {
         );
         await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
-        let existingSecrets = (
-          (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
-            condition: (data) => Boolean(data?.existingSecrets.length),
-          })) as OrganizationData
-        ).existingSecrets;
+        let existingSecrets = ((await waitForCondition({
+          documentPath: `${Collection.Organizations}/${__organization__}`,
+          condition: (data) => Boolean(data?.existingSecrets.length),
+        })) as OrganizationData).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret"]);
 
         // add another secret
         await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
-        existingSecrets = (
-          (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
-            condition: (data) => data?.existingSecrets.length === 2,
-          })) as OrganizationData
-        ).existingSecrets;
+        existingSecrets = ((await waitForCondition({
+          documentPath: `${Collection.Organizations}/${__organization__}`,
+          condition: (data) => data?.existingSecrets.length === 2,
+        })) as OrganizationData).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
 
         // removing one secret should remove it from array (without removing other secrets)
         await orgSecretsRef.set({ anotherSecret: "abc234" });
-        existingSecrets = (
-          (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
-            condition: (data) => data?.existingSecrets.length === 1,
-          })) as OrganizationData
-        ).existingSecrets;
+        existingSecrets = ((await waitForCondition({
+          documentPath: `${Collection.Organizations}/${__organization__}`,
+          condition: (data) => data?.existingSecrets.length === 1,
+        })) as OrganizationData).existingSecrets;
         expect(existingSecrets).toEqual(["anotherSecret"]);
       }
     );

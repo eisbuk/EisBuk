@@ -28,19 +28,19 @@ const Duration: React.FC<DurationProps> = ({
 
   const intervalDuration = calculateIntervalDuration(startTime, endTime);
 
-  const OneHour = (
+  const OneHour = () => (
     <div className={classes.icon}>
       <OneHourIcon />
     </div>
   );
 
-  const HalfHour = (
+  const HalfHour = () => (
     <div className={classes.icon}>
       <HalfHourIcon />
     </div>
   );
 
-  const TwoPlusHours = (
+  const TwoPlusHours = () => (
     <Typography className={[classes.icon, classes.twoPlus].join(" ")}>
       {BookingDuration["2+h"]}
     </Typography>
@@ -56,7 +56,9 @@ const Duration: React.FC<DurationProps> = ({
 
   return (
     <Box style={{ color }} className={[classes.container, className].join(" ")}>
-      {durationComponents[intervalDuration].map((el) => el)}
+      {durationComponents[intervalDuration].map((Element, i) => (
+        <Element key={`${intervalDuration}-${i}`} />
+      ))}
     </Box>
   );
 };

@@ -2,6 +2,10 @@ import React from "react";
 import { MemoryRouter, MemoryRouterProps } from "react-router-dom";
 import { render } from "@testing-library/react";
 import { Formik, FormikConfig } from "formik";
+import { Store } from "redux";
+import { Provider as ReduxProvider } from "react-redux";
+
+import { getNewStore } from "@/store/createStore";
 
 // #region RouterWrapper
 
@@ -69,3 +73,13 @@ export const renderWithFormik = (
   });
 
 // #endregion FormikWrapper
+
+// #region renderWithRedux
+export const renderWithRedux = (
+  ui: JSX.Element,
+  store: Store<any> = getNewStore()
+): ReturnType<typeof render> =>
+  render(ui, {
+    wrapper: () => <ReduxProvider store={store}>{ui}</ReduxProvider>,
+  });
+// #endRegion renderWithRedux

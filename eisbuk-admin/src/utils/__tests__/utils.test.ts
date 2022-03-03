@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "eisbuk-shared";
@@ -7,8 +11,8 @@ import {
   getOrgFromLocation,
   isEmpty,
   comparePeriods,
-} from "@/utils/helpers";
-import { isISODay } from "@/utils/date";
+} from "../helpers";
+import { isISODay } from "../date";
 
 describe("Helpers", () => {
   describe("`capitalizeFirst` function", () => {
@@ -84,6 +88,7 @@ describe("Date utils", () => {
       expect(isEmpty({ foo: "bar" })).toEqual(false);
     });
   });
+
   describe("`comparePeriods` function", () => {
     test("should return earlier periods first", () => {
       let original = ["13:30-14:00", "13:00-13:30"];

@@ -8,11 +8,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
-import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 
 import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, SlotType, fromISO } from "eisbuk-shared";
 
@@ -25,6 +26,7 @@ import {
   ActionButton,
   SlotTypeLabel,
   SlotFormAria,
+  SlotFormLabel,
 } from "@/enums/translations";
 
 import RadioSelection from "@/components/atoms/RadioSelection";
@@ -139,7 +141,11 @@ const SlotForm: React.FC<Props> = ({
   }));
 
   return (
-    <Dialog open={Boolean(open)} onClose={onClose}>
+    <Dialog
+      className={classes.container}
+      open={Boolean(open)}
+      onClose={onClose}
+    >
       <DialogTitle>{title}</DialogTitle>
       <Formik
         {...{ initialValues, validationSchema }}
@@ -149,23 +155,24 @@ const SlotForm: React.FC<Props> = ({
         {({ errors, isSubmitting, isValidating }) => (
           <Form data-testid={__slotFormId__}>
             <DialogContent>
-              <FormControl component="fieldset">
-                <RadioSelection
-                  options={typeOptions}
-                  name="type"
-                  aria-label={t(SlotFormAria.SlotType)}
-                />
-                <SelectCategories />
-                <SlotIntervals />
-                <Field
-                  name="notes"
-                  className={classes.field}
-                  as={TextField}
-                  label="Notes"
-                  multiline
-                  aria-label={t(SlotFormAria.SlotNotes)}
-                />
-              </FormControl>
+              <Typography className={classes.typeTitle}>
+                {t(SlotFormLabel.Type)}
+              </Typography>
+              <RadioSelection
+                options={typeOptions}
+                name="type"
+                aria-label={t(SlotFormAria.SlotType)}
+              />
+              <SelectCategories />
+              <SlotIntervals />
+              <Field
+                name="notes"
+                className={[classes.field, classes.notesInput].join(" ")}
+                as={TextField}
+                label="Notes"
+                multiline
+                aria-label={t(SlotFormAria.SlotNotes)}
+              />
             </DialogContent>
             <DialogActions>
               <Button
@@ -203,12 +210,37 @@ const SlotForm: React.FC<Props> = ({
 };
 
 // #region styles
-const useStyles = makeStyles((theme) => ({
-  field: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(0),
-  },
-}));
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    container: {
+      "& .MuiDialog-paper": {
+        [theme.breakpoints.down("sm")]: {
+          margin: 0,
+          width: "100%",
+        },
+      },
+    },
+    typeTitle: {
+      letterSpacing: 1,
+      fontSize: theme.typography.pxToRem(18),
+      fontWeight: theme.typography.fontWeightBold,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.primary.light,
+      [theme.breakpoints.up("sm")]: {
+        display: "none",
+      },
+    },
+    field: {
+      marginTop: theme.spacing(1),
+      marginBottom: theme.spacing(0),
+    },
+    notesInput: {
+      [theme.breakpoints.down("sm")]: {
+        margin: theme.spacing(2),
+      },
+    },
+  })
+);
 // #endregion styles
 
 export default SlotForm;

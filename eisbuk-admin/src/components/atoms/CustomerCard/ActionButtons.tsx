@@ -49,8 +49,10 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
   const redirectToBookings = () => history.push(bookingsRoute);
 
   // send booking link flow
-  const [sendBookingsMethod, setSendBookingsMethod] =
-    useState<SendBookingLinkMethod | null>(null);
+  const [
+    sendBookingsMethod,
+    setSendBookingsMethod,
+  ] = useState<SendBookingLinkMethod | null>(null);
 
   const { promptTitle, promptBody } = getDialogPrompt({
     method: sendBookingsMethod,
@@ -58,9 +60,12 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
     phone: customer.phone,
   });
 
+  const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${customer?.secretKey}`;
   const handleSendBookingsLink = (method: SendBookingLinkMethod) => {
     onClose();
-    dispatch(sendBookingsLink({ customerId: customer.id, method }));
+    dispatch(
+      sendBookingsLink({ customerId: customer.id, method, bookingsLink })
+    );
   };
 
   return (

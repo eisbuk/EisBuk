@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { httpsCallable } from "@firebase/functions";
 import { getAuth, signOut } from "@firebase/auth";
 
@@ -6,6 +10,7 @@ import {
   HTTPSErrors,
   OrgSubCollection,
   SlotType,
+  getCustomerBase,
 } from "eisbuk-shared";
 import {
   DeprecatedOrgSubCollection,
@@ -37,7 +42,6 @@ import {
 } from "../__testData__/migrations";
 
 import { waitForCondition } from "@/__testUtils__/helpers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import * as customers from "@/__testData__/customers";

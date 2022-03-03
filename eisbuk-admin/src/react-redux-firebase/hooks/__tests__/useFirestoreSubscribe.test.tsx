@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import { OrgSubCollection } from "eisbuk-shared";
 
 import { CollectionSubscription } from "@/types/store";

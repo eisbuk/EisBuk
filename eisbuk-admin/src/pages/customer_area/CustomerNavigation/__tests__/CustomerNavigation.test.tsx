@@ -1,6 +1,7 @@
 /**
- * @jest-environment jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { useLocation } from "react-router-dom";

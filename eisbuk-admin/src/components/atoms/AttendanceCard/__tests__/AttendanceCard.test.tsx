@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
@@ -16,10 +20,7 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
 import { comparePeriods } from "@/utils/helpers";
 
-import {
-  testWithEmulator,
-  testWithMutationObserver,
-} from "@/__testUtils__/envUtils";
+import { testWithEmulator } from "@/__testUtils__/envUtils";
 import i18n from "@/__testUtils__/i18n";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
@@ -261,20 +262,17 @@ describe("AttendanceCard", () => {
       expect(nextButton).toHaveProperty("disabled", true);
     });
 
-    testWithMutationObserver(
-      "should dispatch 'markAttendance' on change of interval",
-      async () => {
-        screen.getByTestId(__nextIntervalButtonId__).click();
-        const mockDispatchAction = mockMarkAttImplementation({
-          slotId,
-          customerId,
-          attendedInterval: intervalKeys[2],
-        });
-        await waitFor(() =>
-          expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction)
-        );
-      }
-    );
+    test("should dispatch 'markAttendance' on change of interval", async () => {
+      screen.getByTestId(__nextIntervalButtonId__).click();
+      const mockDispatchAction = mockMarkAttImplementation({
+        slotId,
+        customerId,
+        attendedInterval: intervalKeys[2],
+      });
+      await waitFor(() =>
+        expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction)
+      );
+    });
 
     test("should display booked interval when customer marked as absent", () => {
       // initial state -> intervals are different, two interval strings are shown
@@ -288,37 +286,34 @@ describe("AttendanceCard", () => {
   });
 
   describe("Test debounce", () => {
-    testWithMutationObserver(
-      "should only dispatch interval update once if changes are to close to each other",
-      async () => {
-        render(
-          <AttendanceCard
-            {...baseAttendanceCard}
-            customers={[
-              { ...saul, bookedInterval, attendedInterval: bookedInterval },
-            ]}
-          />
-        );
-        // we're testing with first interval as initial
-        const nextButton = screen.getByTestId(__nextIntervalButtonId__);
-        // selectedInterval -> interval[1]
-        nextButton.click();
-        expect(mockDispatch).toHaveBeenCalledTimes(0);
-        await hold(200);
-        expect(mockDispatch).toHaveBeenCalledTimes(0);
-        // selectedInterval -> interval[2]
-        nextButton.click();
-        await hold(1000);
-        expect(mockDispatch).toHaveBeenCalledTimes(1);
-        // final interval = interval[2]
-        const mockDispatchAction = mockMarkAttImplementation({
-          slotId,
-          customerId,
-          attendedInterval: intervalKeys[2],
-        });
-        expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
-      }
-    );
+    test("should only dispatch interval update once if changes are to close to each other", async () => {
+      render(
+        <AttendanceCard
+          {...baseAttendanceCard}
+          customers={[
+            { ...saul, bookedInterval, attendedInterval: bookedInterval },
+          ]}
+        />
+      );
+      // we're testing with first interval as initial
+      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      // selectedInterval -> interval[1]
+      nextButton.click();
+      expect(mockDispatch).toHaveBeenCalledTimes(0);
+      await hold(200);
+      expect(mockDispatch).toHaveBeenCalledTimes(0);
+      // selectedInterval -> interval[2]
+      nextButton.click();
+      await hold(1000);
+      expect(mockDispatch).toHaveBeenCalledTimes(1);
+      // final interval = interval[2]
+      const mockDispatchAction = mockMarkAttImplementation({
+        slotId,
+        customerId,
+        attendedInterval: intervalKeys[2],
+      });
+      expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
+    });
   });
 
   // we're testing for an edge case when two users have the app open in their browsers
@@ -361,8 +356,9 @@ describe("AttendanceCard", () => {
             <AttendanceCard {...testProps} />
           </>
         );
-        const [controlledButton, testButton] =
-          screen.getAllByTestId(__attendanceButton__);
+        const [controlledButton, testButton] = screen.getAllByTestId(
+          __attendanceButton__
+        );
         // check that both buttons are the same to begin with
         expect(controlledButton).toHaveTextContent(thumbsUp);
         expect(testButton).toHaveTextContent(thumbsUp);

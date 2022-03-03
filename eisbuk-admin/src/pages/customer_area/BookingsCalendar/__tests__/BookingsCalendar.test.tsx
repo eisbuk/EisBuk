@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { screen, render } from "@testing-library/react";
 import * as reactRedux from "react-redux";

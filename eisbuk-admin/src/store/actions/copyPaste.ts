@@ -178,6 +178,7 @@ export const pasteSlotsDay = (newDate: DateTime): FirestoreThunk => async (
       const newSlotRef = doc(slotsCollRef);
       batch.set(newSlotRef, { ...slotData, date });
     });
+
     await batch.commit();
   } catch {
     dispatch(showErrSnackbar);
