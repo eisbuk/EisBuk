@@ -226,7 +226,6 @@ const useStyles = makeStyles((theme) =>
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
-
       [theme.breakpoints.up("sm")]: {
         display: "none",
       },

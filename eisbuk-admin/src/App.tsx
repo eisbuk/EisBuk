@@ -40,23 +40,4 @@ const App: React.FC = () => {
   );
 };
 
-// #region styles
-// const useStyles = makeStyles((theme) => ({
-//   root: {
-//     margin: theme.spacing(0.75, 0),
-
-/**
- * This is, hopefully, temporary workaround to a
- * bug in notistack that causes snackbars to be unclickable.
- * Notistack v.1.0.10 fixes that bug, however,
- * it only works with materialUI v^5, which is in pre-release currently.
- * The bug is caused by the root class not having the 'pointerEvents'
- * property set to 'all', 'root' class here overrides that.
- * @TODO upgade MUI, notistack and remove this when MUI v5 becomes the LTS
- */
-//     pointerEvents: "all",
-//   },
-// }));
-// #region styles
-
 export default App;
