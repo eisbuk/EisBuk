@@ -6,7 +6,7 @@ module.exports = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-a11y",
-    "storybook-addon-material-ui",
+    "storybook-addon-material-ui5",
   ],
   webpackFinal: (config) => {
     const src = path.resolve(process.cwd(), "src");

@@ -4,16 +4,16 @@ import { useDispatch } from "react-redux";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 
-import Typography from "@material-ui/core/Typography";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogActions from "@material-ui/core/DialogActions";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
+import Typography from "@mui/material/Typography";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, SlotType, fromISO } from "eisbuk-shared";
 
@@ -223,11 +223,9 @@ const useStyles = makeStyles((theme) =>
     typeTitle: {
       letterSpacing: 1,
       fontSize: theme.typography.pxToRem(18),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
-
       [theme.breakpoints.up("sm")]: {
         display: "none",
       },

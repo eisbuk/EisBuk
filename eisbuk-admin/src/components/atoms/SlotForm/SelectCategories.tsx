@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotType, Category } from "eisbuk-shared";
 
@@ -104,7 +104,7 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
       className={classes.categoryCheckbox}
       control={<Checkbox {...field} />}
       disabled={disabled}
-      label={t(CategoryLabel[category])}
+      label={`${t(CategoryLabel[category])}`}
       role="checkbox"
       aria-label={t(CategoryLabel[category])}
     />
@@ -118,7 +118,6 @@ const useStyles = makeStyles((theme) =>
     categoriesTitle: {
       letterSpacing: 1,
       fontSize: theme.typography.pxToRem(18),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
