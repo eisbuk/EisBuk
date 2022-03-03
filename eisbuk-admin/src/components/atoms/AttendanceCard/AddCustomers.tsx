@@ -13,7 +13,10 @@ import { Customer } from "eisbuk-shared";
 
 import { ActionButton } from "@/enums/translations";
 
-import { __closeCustomersListId__ } from "./__testData__/testIds";
+import {
+  __addCustomersDialogId__,
+  __closeCustomersListId__,
+} from "./__testData__/testIds";
 import CustomerList from "../CustomerList";
 
 interface Props extends Omit<DialogProps, "onClose"> {
@@ -45,7 +48,12 @@ const AddCustomersList: React.FC<Props> = ({
   }, [filteredCustomers]);
 
   return (
-    <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
+    <Dialog
+      data-testid={__addCustomersDialogId__}
+      onClose={onClose}
+      {...dialogProps}
+      maxWidth="md"
+    >
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(ActionButton.AddCustomers)}
