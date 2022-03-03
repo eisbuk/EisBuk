@@ -47,7 +47,7 @@
     "emulators:start": "bash -c '(trap \"kill 0\" SIGINT; ./functions/build_scripts/watch.js & firebase emulators:start --project eisbuk)'",
     "build": "vite build",
     "build:test": "NODE_ENV=test vite build",
-    "start": "node esbuild/bundler.js --mode serve",
+    "start": "vite",
     "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app NODE_ENV=production node esbuild/bundler.js --mode serve",
     "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app NODE_ENV=production node esbuild/bundler.js --mode serve",
     "start:staging": "REACT_APP_EISBUK_SITE=eisbuk.web.app NODE_ENV=production DEPLOY_STAGE=staging node esbuild/bundler.js --mode serve",
