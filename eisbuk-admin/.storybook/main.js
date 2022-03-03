@@ -7,7 +7,7 @@ module.exports = {
     "@storybook/addon-essentials",
     "@storybook/preset-create-react-app",
     "@storybook/addon-a11y",
-    "storybook-addon-material-ui",
+    "storybook-addon-material-ui5",
   ],
   babel: async (options) => ({
     ...options,
