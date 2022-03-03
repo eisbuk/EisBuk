@@ -1,6 +1,7 @@
 /**
- * @jest-environment jest-environment-jsdom-sixteen
+ * @jest-environment jsdom
  */
+
 import "@testing-library/jest-dom";
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";

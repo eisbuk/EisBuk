@@ -1,4 +1,4 @@
-import { Customer, CustomerBase } from "eisbuk-shared";
+import { Customer } from "eisbuk-shared";
 
 /**
  * A helper function used to remove `id` and `secretKey`
@@ -13,22 +13,3 @@ export const stripIdAndSecretKey = ({
   secretKey: _secretKey,
   ...customer
 }: Customer): Omit<Omit<Customer, "id">, "secretKey"> => customer;
-/**
- * A helper function used to strip excess customer data
- * and create customer base data (used to test `booking` entry for customer)
- * @param customer customer entry (without `secretKey` for convenient testing)
- * @returns customer base structure
- */
-export const getCustomerBase = ({
-  id,
-  name,
-  surname,
-  category,
-  deleted,
-}: Omit<Customer, "secretKey">): CustomerBase => ({
-  id,
-  name,
-  surname,
-  category,
-  deleted: Boolean(deleted),
-});

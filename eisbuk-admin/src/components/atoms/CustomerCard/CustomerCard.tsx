@@ -19,6 +19,7 @@ import { CategoryLabel, CustomerLabel } from "@/enums/translations";
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import CustomerOperationButtons from "./CustomerOperationButtons";
 import ActionButtons from "./ActionButtons";
+import ExtendedDateField from "./ExtendedDateField";
 
 import { capitalizeFirst } from "@/utils/helpers";
 
@@ -118,6 +119,8 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
             {...{ onClose }}
           />
           {renderCustomerData(customer!)}
+          <ExtendedDateField customer={customer!} {...{ onClose }} />
+          <div className={classes.divider} />
         </CardContent>
         <ActionButtons
           className={classes.actionButtonsContainer}
@@ -182,7 +185,6 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     padding: "1rem",
     boxSizing: "border-box",
-    justifyContent: "center",
   },
   property: {
     width: "100%",

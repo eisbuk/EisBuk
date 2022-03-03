@@ -18,10 +18,12 @@ import { BookingCardVariant } from "@/enums/components";
 import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 import Duration from "./Duration";
 
-import { __bookingCardId__ } from "@/__testData__/testIds";
 import { getColorForSlotType } from "@/utils/theme";
 
-export type Props = Pick<SlotInterface, "type"> &
+import { __bookingCardId__ } from "@/__testData__/testIds";
+
+export type Props = React.HTMLAttributes<HTMLElement> &
+  Pick<SlotInterface, "type"> &
   Pick<SlotInterface, "date"> &
   Pick<SlotInterface, "notes"> & {
     /**
@@ -122,6 +124,10 @@ const BookingCard: React.FC<Props> = ({
    */
   const fadeOverlay = <div className={classes.fadeOverlay} />;
 
+  const buttonLabel = t(
+    booked ? ActionButton.Cancel : ActionButton.BookInterval
+  );
+
   /**
    * Action button for `bookInterval`/`cancelBooking`
    */
@@ -132,8 +138,9 @@ const BookingCard: React.FC<Props> = ({
       onClick={handleClick}
       color={booked ? "secondary" : "primary"}
       variant="contained"
+      aria-label={buttonLabel}
     >
-      {t(booked ? ActionButton.Cancel : ActionButton.BookInterval)}
+      {buttonLabel}
     </Button>
   );
 

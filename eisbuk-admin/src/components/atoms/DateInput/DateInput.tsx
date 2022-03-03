@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
@@ -20,21 +20,21 @@ interface Props {
   className?: string;
 }
 
-const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
+interface DateInputProps extends Omit<Props, "name"> {
+  error?: string;
+  onChange: (value: string) => void;
+  value?: string;
+}
+
+export const DateInput: React.FC<DateInputProps> = ({
+  Icon,
+  label,
+  className,
+  onChange,
+  value: inputValue = "",
+  error,
+}) => {
   const { t } = useTranslation();
-
-  const [{ value = "" }, { error = "" }, { setValue }] = useField<
-    string | undefined
-  >(name);
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
-
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const isoDate = dateToISO(e.target.value);
-    setValue(isoDate);
-  };
 
   const InputProps = Icon
     ? {
@@ -45,6 +45,27 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
         ),
       }
     : {};
+
+  const [value, setValue] = useState(inputValue);
+
+  useEffect(() => {
+    if (inputValue !== value) {
+      setValue(inputValue);
+    }
+  }, [inputValue]);
+
+  useEffect(() => {
+    onChange(value);
+  }, [value]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setValue(e.target.value);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const isoDate = dateToISO(e.target.value);
+    setValue(isoDate);
+  };
 
   return (
     <>
@@ -63,6 +84,19 @@ const DateInput: React.FC<Props> = ({ name, Icon, label, className }) => {
       <ErrorMessage>{error}</ErrorMessage>
     </>
   );
+};
+
+/**
+ *
+ * @param param0
+ * @returns
+ */
+const FormikDateInput: React.FC<Props> = ({ name, ...props }) => {
+  const [{ value = "" }, { error = "" }, { setValue }] = useField<
+    string | undefined
+  >(name);
+
+  return <DateInput {...{ ...props, value, error }} onChange={setValue} />;
 };
 
 /**
@@ -98,4 +132,4 @@ const twoDigits = (value: string) =>
     useGrouping: false,
   });
 
-export default DateInput;
+export default FormikDateInput;

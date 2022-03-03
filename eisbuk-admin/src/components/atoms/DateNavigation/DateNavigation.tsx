@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
@@ -78,8 +78,20 @@ const DateNavigation: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const reduxDate = useSelector(getCalendarDay);
-  const currentDate = (reduxDate || defaultDate).startOf(jump);
+  const currentDate = reduxDate.startOf(jump);
   const dispatch = useDispatch();
+
+  /**
+   * Set redux calendar date if "default date" has been specified.
+   * This should be ran only once (when the component loads), or each
+   * time a component reloads with different props (`defaultDate`),
+   * meaning it has been rendered in different page views
+   */
+  useEffect(() => {
+    if (defaultDate) {
+      dispatch(changeCalendarDate(defaultDate));
+    }
+  }, [defaultDate]);
 
   /**
    * Handler we're using for pagination.

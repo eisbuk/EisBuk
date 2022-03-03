@@ -187,7 +187,6 @@ const CustomerForm: React.FC<Props> = ({
                 {t(ActionButton.Cancel)}
               </Button>
               <Button
-                // onClick={() => console.log("Click")}
                 type="submit"
                 disabled={isSubmitting}
                 variant="contained"

@@ -5,44 +5,9 @@ module.exports = {
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
-    "@storybook/preset-create-react-app",
     "@storybook/addon-a11y",
     "storybook-addon-material-ui5",
   ],
-  babel: async (options) => ({
-    ...options,
-    plugins: [
-      ...options.plugins,
-      [
-        "babel-plugin-import",
-        {
-          libraryName: "@material-ui/core",
-          // Use "'libraryDirectory': ''," if your bundler does not support ES modules
-          libraryDirectory: "esm",
-          camel2DashComponentName: false,
-        },
-        "core",
-      ],
-      [
-        "babel-plugin-import",
-        {
-          libraryName: "@material-ui/icons",
-          // Use "'libraryDirectory': ''," if your bundler does not support ES modules
-          libraryDirectory: "esm",
-          camel2DashComponentName: false,
-        },
-        "icons",
-      ],
-      [
-        "@babel/transform-runtime",
-        {
-          helpers: false,
-          regenerator: true,
-        },
-      ],
-    ],
-    presets: [...options.presets, "@babel/preset-env", "@babel/preset-react"],
-  }),
   webpackFinal: (config) => {
     const src = path.resolve(process.cwd(), "src");
 
@@ -52,6 +17,23 @@ module.exports = {
       ...config.resolve.alias,
       "@": src,
     };
+
+    // we want to use SVGR loader for svgs
+    const svgrRule = {
+      test: /\.svg$/i,
+      enforce: "pre",
+      loader: require.resolve("@svgr/webpack"),
+    };
+
+    // if fileloader exists, exclude for '.svg'
+    const fileLoaderRule = config.module.rules.find((rule) =>
+      rule.test.test(".svg")
+    );
+    if (fileLoaderRule) {
+      fileLoaderRule.exclude = /\.svg$/;
+    }
+
+    config.module.rules.push(svgrRule);
 
     return config;
   },

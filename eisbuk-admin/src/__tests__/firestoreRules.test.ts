@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import pRetry from "p-retry";
@@ -11,6 +15,7 @@ import {
   SlotAttendnace,
   SlotType,
   Customer,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 import { __organization__ } from "@/lib/constants";
@@ -22,7 +27,6 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { baseSlot } from "@/__testData__/slots";
 import { saul } from "@/__testData__/customers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 
 describe("Firestore rules", () => {
   describe("Organization rules", () => {
@@ -60,7 +64,9 @@ describe("Firestore rules", () => {
           setup: (db) =>
             setDoc(
               doc(db, Collection.Organizations, "different-organization"),
-              { admins: ["different-admin"] }
+              {
+                admins: ["different-admin"],
+              }
             ),
         });
         const orgRef = doc(
@@ -648,6 +654,20 @@ describe("Firestore rules", () => {
         await assertSucceeds(setDoc(doc(db, saulPath), noSuspendedSaul));
       }
     );
+    testWithEmulator("should allow `extendedDate` update", async () => {
+      const db = await getTestEnv({
+        setup: (db) => setDoc(doc(db, saulPath), saul),
+      });
+      await assertSucceeds(
+        setDoc(
+          doc(db, saulPath),
+          {
+            extendedDate: "2022-02-01",
+          },
+          { merge: true }
+        )
+      );
+    });
     /** @TODO Add check for card (subscription) number */
   });
 

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import {
   BookingSubCollection,
   Collection,
@@ -6,13 +10,13 @@ import {
   luxon2ISODate,
   SlotType,
   OrganizationData,
+  getCustomerBase,
 } from "eisbuk-shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { __organization__ } from "@/lib/constants";
 
 import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
-import { getCustomerBase } from "@/__testUtils__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { deleteAll, deleteAllCollections } from "@/__testUtils__/firestore";
 

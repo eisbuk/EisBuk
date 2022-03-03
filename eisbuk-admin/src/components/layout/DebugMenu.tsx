@@ -28,7 +28,6 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(e.currentTarget);
   };
 
-  /** @TEMP below, needs to be typed with cloud functions */
   const handleClose =
     (functionName?: CloudFunction, params?: any) => async () => {
       setAnchorEl(null);

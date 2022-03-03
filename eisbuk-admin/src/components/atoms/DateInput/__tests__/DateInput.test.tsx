@@ -1,10 +1,17 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { screen, fireEvent } from "@testing-library/react";
 import * as formik from "formik";
+import * as yup from "yup";
+import i18n from "@/__testUtils__/i18n";
 
 import DateInput from "../DateInput";
 
 import { renderWithFormik } from "@/__testUtils__/wrappers";
+import { ValidationMessage } from "@/enums/translations";
 
 /**
  * A spy function we're using to mock different values passed
@@ -14,14 +21,6 @@ import { renderWithFormik } from "@/__testUtils__/wrappers";
 const useFieldSpy = jest.spyOn(formik, "useField");
 
 const mockSetValue = jest.fn();
-
-const mockT = jest.fn();
-
-jest.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: mockT }),
-}));
-
-mockT.mockImplementation((label: string) => label as any);
 
 /**
  * A name of our input field we'll be using throughout the tests
@@ -109,20 +108,23 @@ describe("Date Input", () => {
   });
 
   describe("Test error displaying", () => {
-    const testError = "test_error";
+    const testError = ValidationMessage.InvalidDate;
+    // it appears that in newer versions of Formik, the `initialErrors`
+    // get invalidated if they're not set by `validationSchema`
+    // therefore we're providing the error as `validationSchema` error
+    // rather than `initialErrors`
+    const validationSchema = yup.object().shape({
+      date: yup.string().test({ message: testError, test: () => false }),
+    });
 
     beforeEach(() => {
       renderWithFormik(<DateInput {...{ name }} />, {
-        initialErrors: { [name]: testError },
+        validationSchema,
       });
     });
 
-    test("should display error message", () => {
-      screen.getByText(testError);
-    });
-
-    test("should translate error message if possible", () => {
-      expect(mockT).toHaveBeenCalledWith(testError);
+    test("should display error message (translated if possible)", async () => {
+      await screen.findByText(i18n.t(testError) as string);
     });
   });
 });

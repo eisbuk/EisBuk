@@ -24,8 +24,8 @@ const HalfHourIcon: React.FC<Props> = ({
     >
       <defs>
         <linearGradient id={gradientId} gradientTransform="rotate(0)">
-          <stop offset="20%" stop-color="white" />
-          <stop offset="80%" stop-color={color} />
+          <stop offset="20%" stopColor="white" />
+          <stop offset="80%" stopColor={color} />
         </linearGradient>
       </defs>
       <circle
@@ -33,7 +33,7 @@ const HalfHourIcon: React.FC<Props> = ({
         cy="55"
         r="35"
         stroke="black"
-        stroke-width="2"
+        strokeWidth="2"
         fill={`url('#${gradientId}')`}
       />
       <circle
@@ -42,8 +42,8 @@ const HalfHourIcon: React.FC<Props> = ({
         cy="55"
         r="48"
         stroke={color}
-        stroke-width="6"
-        stroke-dasharray="150"
+        strokeWidth="6"
+        strokeDasharray="150"
         fill="none"
       />
       <circle
@@ -51,20 +51,20 @@ const HalfHourIcon: React.FC<Props> = ({
         cy="55"
         r="48"
         stroke={color}
-        stroke-width="2"
-        stroke-dasharray="6"
+        strokeWidth="2"
+        strokeDasharray="6"
         fill="none"
       />
       <g transform="translate(60, 110) rotate(-180)">
-        <line x1="0" y1="0" x2="8" y2="8" stroke={color} stroke-width="3px" />
-        <line x1="8" y1="6" x2="0" y2="14" stroke={color} stroke-width="3px" />
+        <line x1="0" y1="0" x2="8" y2="8" stroke={color} strokeWidth="3px" />
+        <line x1="8" y1="6" x2="0" y2="14" stroke={color} strokeWidth="3px" />
       </g>
       <text
         x="31"
         y="65"
-        font-weight="bold"
-        font-size="30px"
-        font-family="sans-serif"
+        fontWeight="bold"
+        fontSize="30px"
+        fontFamily="sans-serif"
         fill={textColor}
       >
         ½H
