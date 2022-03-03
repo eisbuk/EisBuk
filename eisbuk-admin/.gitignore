@@ -1,0 +1,52 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# dev-server
+/dev-server-meta
+
+# testing
+/coverage
+
+# production
+/build
+/dist
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env.staging.local
+
+
+# Firebase cache
+.firebase/
+.emulators-data
+
+# Firebase log files
+firebase*.log
+firestore*.log
+ui-debug.log
+
+# Misc. .log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+build-storybook.log*
+eslint.log
+
+# IDE specific
+.vscode
+
+# Test result files
+junit.xml
+coverage
+
+# Built app
+/dist
+/build

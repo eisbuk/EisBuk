@@ -1,0 +1,62 @@
+{
+  "customers": {
+    "saul": {
+      "name": "Saul",
+      "surname": "Goodman",
+      "certificateExpiration": "2001-01-01",
+      "id": "saul",
+      "email": "saul@better.call",
+      "phone": "123456777",
+      "birthday": "2001-01-01",
+      "covidCertificateReleaseDate": "2021-01-01",
+      "covidCertificateSuspended": true,
+      "category": "competitive",
+      "secretKey": "123445",
+      "subscriptionNumber": ""
+    },
+
+    "walt": {
+      "id": "walt",
+      "name": "Walter",
+      "surname": "White",
+      "certificateExpiration": "2001-01-01",
+      "category": "competitive",
+      "email": "walt@im_the_one_who.knocks",
+      "phone": "123456777",
+      "birthday": "2002-01-01",
+      "covidCertificateReleaseDate": "2021-01-01",
+      "covidCertificateSuspended": false,
+      "secretKey": "000001",
+      "subscriptionNumber": ""
+    },
+
+    "gus": {
+      "id": "gus",
+      "name": "Gustavo",
+      "surname": "Fring",
+      "certificateExpiration": "2001-01-01",
+      "category": "course",
+      "email": "gus@lospollos.me",
+      "phone": "123456777",
+      "birthday": "2001-01-01",
+      "covidCertificateReleaseDate": "2021-01-01",
+      "covidCertificateSuspended": false,
+      "secretKey": "000002",
+      "subscriptionNumber": ""
+    },
+    "mike": {
+      "id": "mike",
+      "name": "Mike",
+      "surname": "Ehrmantraut",
+      "certificateExpiration": "2001-01-01",
+      "category": "course",
+      "email": "mike@lospollos.me",
+      "phone": "123456777",
+      "birthday": "2021-03-02",
+      "covidCertificateReleaseDate": "2021-01-01",
+      "covidCertificateSuspended": false,
+      "secretKey": "000002",
+      "subscriptionNumber": ""
+    }
+  }
+}

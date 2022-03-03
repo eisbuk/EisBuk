@@ -1,0 +1,4 @@
+501606 execve("/home/silvio/.nvm/versions/node/v14.17.5/bin/npx", ["npx", "firebase", "deploy", "--project", "eisbuk", "--only", "functions"], 0x7ffd9e7ba060 /* 84 vars */) = 0
+501606 execve("/home/silvio/opt/diode/node", ["node", "/home/silvio/.nvm/versions/node/"..., "firebase", "deploy", "--project", "eisbuk", "--only", "functions"], 0x7ffc8bafc2a8 /* 84 vars */) = -1 ENOENT (No such file or directory)
+501606 execve("/home/silvio/.deno/bin/node", ["node", "/home/silvio/.nvm/versions/node/"..., "firebase", "deploy", "--project", "eisbuk", "--only", "functions"], 0x7ffc8bafc2a8 /* 84 vars */) = -1 ENOENT (No such file or directory)
+501606 execve("/home/silvio/.nvm/versions/node/v14.17.5/bin/node", ["node", "/home/silvio/.nvm/versions/node/"..., "firebase", "deploy", "--project", "eisbuk", "--only", "functions"], 0x7ffc8bafc2a8 /* 84 vars */ <detached ...>

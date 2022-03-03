@@ -1,0 +1,175 @@
+{
+  "NavigationLabel": {
+    "Attendance": "Presenze",
+    "Athletes": "Atleti",
+    "Bookings": "Prenotazioni"
+  },
+  "CustomerNavigation": {
+    "BookIce": "Prenota Ice",
+    "BookOffIce": "Prenota Off-Ice",
+    "Calendar": "Riepilogo"
+  },
+
+  "Authorization": {
+    "NotAuthorized": "Non sei autorizzato ad accedere.",
+    "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "LoggedInWith": "Hai effettuato l'accesso con:",
+    "TryAgain": "Esci e riprova con un altro utente"
+  },
+
+  "SlotType": {
+    "Ice": "ice",
+    "OffIce": "off-ice"
+  },
+  "Category": {
+    "Adults": "adulti",
+    "PreCompetitive": "pre-agonismo",
+    "Competitive": "agonismo",
+    "Course": "corso"
+  },
+
+  "FormTitle": {
+    "NewCustomer": "Nuovo Atleta",
+    "EditCustomer": "Modifica Atleta",
+    "NewSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot"
+  },
+  "SlotForm": {
+    "Type": "Tipo",
+    "Categories": "Categorie",
+    "Intervals": "Intervalli",
+    "AddInterval": "Aggiungi Intervallo",
+    "StartTime": "Ora di inizio",
+    "EndTime": "Ora di fine"
+  },
+  "CustomerLabel": {
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "Category": "Categoria",
+    "Email": "Email",
+    "Phone": "Telefono",
+    "DateOfBirth": "Data di nascita",
+    "MedicalCertificate": "Scadenza Cert. Medico",
+    "CardNumber": "Numero Tessera",
+    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
+    "CovidCertificateSuspended": "Certificazione verde sospesa",
+    "ExtendedBookingDate": "Extended booking date"
+  },
+  "Validations": {
+    "Email": "Inserisci una email valida",
+    "RequiredEntry": "È richiesto almeno un valore",
+    "RequiredField": "Questo campo è obbligatorio",
+    "InvalidTime": "Formato dell'ora non valido (\"HH:mm\")",
+    "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
+    "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
+    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
+  },
+
+  "Prompt": {
+    "DeleteCustomer": "Sei sicuro di voler rimuovere",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+
+    "NonReversible": "Questa azione non è reversibile",
+
+    "SendEmailTitle": "Conferma email",
+    "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
+    "SendSMSTitle": "Conferma SMS",
+    "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
+    "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
+    "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
+
+    "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
+    "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
+  },
+  "ActionButton": {
+    "CreateSlot": "Crea Slot",
+    "EditSlot": "Modifica Slot",
+
+    "AddAthlete": "Aggiungi atleta",
+    "AddCustomers": "Aggiungi clienti",
+
+    "BookInterval": "Prenota",
+    "FinalizeBookings": "Finito",
+
+    "CustomerBookings": "Prenotazioni",
+    "SendBookingsEmail": "Invia email link prenotazioni",
+    "SendBookingsSMS": "Invia SMS link prenotazioni",
+    "ExtendBookingDate": "Estendi data di prenotazione",
+
+    "Save": "Salva",
+    "Next": "Seguente",
+    "Cancel": "Annulla"
+  },
+
+  "Notification": {
+    "BookingSuccess": "Prenotazione effettuata",
+    "BookingCanceled": "Prenotazione rimossa",
+    "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+
+    "SlotAdded": "Slot Aggiunto",
+    "SlotUpdated": "Slot Aggiornato",
+    "SlotRemoved": "Slot Eliminato",
+
+    "LogoutSuccess": "Hai effettuato il logout",
+    "LogoutError": "Si è verificato un errore",
+
+    "Updated": "aggiornato",
+    "Removed": "rimosso",
+
+    "EmailSent": "Email inviata con successo",
+    "SMSSent": "SMS inviato con successo",
+    "BookingDateExtended": "Booking date extended",
+
+    "Error": "Errore"
+  },
+
+  "BookingCountdownMessage": {
+    "FirstDeadline": "Hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong> (fino al {{ date, dd/MM/yyyy }}) per prenotare il mese di {{ month, MMMM }}.",
+    "SecondDeadline": "Termine di prenotazione per il mese di {{ month, MMMM }} esteso fino al {{ date, dd/MM/yyyy }}: hai ancora <strong>{{ days }} giorni e {{ hours }} ore</strong>.",
+    "BookingsLocked": "Le prenotazioni per {{ month, MMMM }} sono bloccate"
+  },
+
+  "Flags": {
+    "Deleted": "cancellato"
+  },
+
+  "Date": {
+    "Weekday": "{{ date, EEE }}",
+    "Day": "{{ date, d }}",
+    "Month": "{{ date, MMMM }}",
+    "Full": "{{ date, EEEE d MMMM }}",
+    "DayMonth": "{{ date, d MMMM }}",
+    "MonthYear": "{{ date, MMMM yyyy }}",
+    "Time": "{{date, HH:mm}}",
+    "Placeholder": "gg/mm/aaaa",
+    "Today": "Oggi"
+  },
+
+  "AdminAria": {
+    "PageNav": "Navigazione",
+    "SeePastDates": "Indietro",
+    "SeeFutureDates": "Avanti",
+    "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
+    "CopySlots": "Copia slot",
+    "PasteSlots": "Incolla slot",
+    "CreateSlots": "Crea nuovo slot"
+  },
+
+  "SlotFormAria": {
+    "SlotCategory": "Categoria",
+    "SlotType": "Tipo di slot",
+    "AddInterval": "Aggiungi intervallo",
+    "IntervalStart": "Inizio intervallo",
+    "IntervalEnd": "Fine intervallo",
+    "DeleteInterval": "Elimina intervallo",
+    "SlotNotes": "Note slot",
+    "CancelSlot": "Annulla creazione dello slot",
+    "ConfirmCreateSlot": "Conferma creazione dello slot",
+    "ConfirmEditSlot": "Conferma modifiche allo slot"
+  },
+
+  "BirthdayMenu": {
+    "ShowAll": "Mostra Tutti",
+    "UpcomingBirthdays": "Prossimi Compleanni"
+  }
+}

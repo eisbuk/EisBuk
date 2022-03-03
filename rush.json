@@ -397,6 +397,10 @@
       "packageName": "eisbuk-shared",
       "projectFolder": "eisbuk-shared"
     },
+    {
+      "packageName": "eisbuk-admin",
+      "projectFolder": "eisbuk-admin"
+    },
 
     // {
     //   /**
