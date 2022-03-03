@@ -1,0 +1,12 @@
+# installations
+node_modules
+
+# err logs
+yarn-error.logs
+ui-debug.log
+
+# webpack config is not needed as we're already uploading bundled file
+webpack
+
+# we're ignoring /src folder as we only need the bundled index.js
+src

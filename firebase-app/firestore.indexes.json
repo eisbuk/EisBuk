@@ -1,0 +1,19 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "slots",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "category", "order": "ASCENDING" },
+        { "fieldPath": "date", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "data",
+      "fieldPath": "start",
+      "indexes": [{ "queryScope": "COLLECTION_GROUP", "order": "DESCENDING" }]
+    }
+  ]
+}
