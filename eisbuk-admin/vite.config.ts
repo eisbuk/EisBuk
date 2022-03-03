@@ -31,10 +31,8 @@ export default defineConfig(({ command, mode }) => {
         "STORYBOOK_IS_STORYBOOK": "true"
       })
     ],
-    ssr: {
-      external: [
-        '@firebase/app',
-      ]
-    }
+    build:{
+      chunkSizeWarningLimit: 2000
+    },
   };
 })

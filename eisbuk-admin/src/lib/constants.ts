@@ -14,7 +14,7 @@ export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 // env info variable (production, test, etc)
 export const __isDev__ = process.env.NODE_ENV !== "production";
 // check for explicit "test" environment
-debugger
+
 export const __isTest__ = process.env.NODE_ENV === "test";
 
 // organization constants
