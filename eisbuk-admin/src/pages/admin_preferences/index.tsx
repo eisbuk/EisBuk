@@ -4,16 +4,17 @@ import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
 import { useTranslation } from "react-i18next";
 
-import FormControl from "@material-ui/core/FormControl";
-import Button from "@material-ui/core/Button";
+import FormControl from "@mui/material/FormControl";
+import Button from "@mui/material/Button";
 
 import { OrganizationData } from "eisbuk-shared";
 
 import { ActionButton, ValidationMessage } from "@/enums/translations";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import { Divider, Typography } from "@material-ui/core";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
 import { updateOrganization } from "@/store/actions/organizationOperations";
 import i18n from "@/i18next/i18n";
 

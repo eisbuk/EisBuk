@@ -3,10 +3,10 @@ import React from "react";
 import { Field, useFormikContext } from "formik";
 import { useTranslation } from "react-i18next";
 
-import TextField from "@material-ui/core/TextField";
-import Divider from "@material-ui/core/Divider";
+import TextField from "@mui/material/TextField";
+import Divider from "@mui/material/Divider";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 import { OrganizationLabel } from "@/enums/translations";

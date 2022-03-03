@@ -3,14 +3,14 @@ import React, { useState } from "react";
 import { Field, Form, useField } from "formik";
 import { useTranslation } from "react-i18next";
 
-import FormControl from "@material-ui/core/FormControl";
-import TextField from "@material-ui/core/TextField";
-import Button from "@material-ui/core/Button";
-import Cancel from "@material-ui/icons/Cancel";
+import FormControl from "@mui/material/FormControl";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Cancel from "@mui/icons-material/Cancel";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import { IconButton } from "@material-ui/core";
+import IconButton from "@mui/material/IconButton";
 
 import { ActionButton, OrganizationLabel } from "@/enums/translations";
 
