@@ -1,5 +1,7 @@
 import React from "react";
 
+import Typography from "@material-ui/core/Typography";
+
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ThemeProvider } from "@material-ui/core";
 
@@ -18,6 +20,15 @@ const Header: React.FC = ({ children }) => {
     );
 
   return <div className={classes.authHeader}>{content}</div>;
+};
+/** Styled text message */
+const TextMessage: React.FC = ({ children }) => {
+  const classes = useStyles();
+  return (
+    <Typography className={classes.authMessage} variant="body1">
+      {children}
+    </Typography>
+  );
 };
 /** Styled component used as auth dialog content container */
 const Content: React.FC = ({ children }) => {
@@ -39,6 +50,7 @@ type RenderFunction = React.FC<{
   Header: React.FC;
   Content: React.FC;
   Footer: React.FC;
+  TextMessage: React.FC;
 }>;
 
 const AuthContainer: React.FC<{
@@ -47,11 +59,11 @@ const AuthContainer: React.FC<{
   children: RenderFunction;
 }> = ({ children, ...props }) => (
   <ThemeProvider theme={defaultTheme}>
-    <div {...props}>{children({ Header, Content, Footer })}</div>
+    <div {...props}>{children({ Header, Content, Footer, TextMessage })}</div>
   </ThemeProvider>
 );
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   authHeader: {
     padding: "24px 24px 0 24px",
   },
@@ -67,6 +79,15 @@ const useStyles = makeStyles(() => ({
   },
   authFooter: {
     padding: "0 24px 24px 24px",
+  },
+  authMessage: {
+    display: "block",
+    // we want to keep the paddings (24px on each side)
+    // on small screens, we want to leave the 24px around the container
+    width: 312,
+    [theme.breakpoints.down("sm")]: {
+      width: "100%",
+    },
   },
 }));
 
