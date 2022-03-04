@@ -1,9 +1,10 @@
 import React from "react";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
+import { Typography } from "@material-ui/core";
 
 interface Props {
-  variant: "empty" | "fill";
+  variant: "empty" | "fill" | "text";
   onClick: () => void;
 }
 
@@ -13,6 +14,14 @@ export const ActionButton: React.FC<Props> = ({
   variant,
 }) => {
   const classes = useStyles();
+
+  if (variant === "text") {
+    return (
+      <button className={classes.text}>
+        <Typography variant="body2">{children}</Typography>
+      </button>
+    );
+  }
 
   return (
     <button
@@ -34,6 +43,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 8,
     display: "flex",
     justifyContent: "flex-end",
+    alignItems: "center",
   },
   button: {
     display: "inline-block",
@@ -53,6 +63,15 @@ const useStyles = makeStyles((theme) => ({
     textDecoration: "none",
     verticalAlign: "middle",
     cursor: "pointer",
+  },
+  text: {
+    color: theme.palette.info.main,
+    border: "none",
+    background: "none",
+    ["&:hover"]: {
+      textDecoration: "underline",
+      cursor: "pointer",
+    },
   },
   empty: {
     background: "none",
