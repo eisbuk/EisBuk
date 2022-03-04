@@ -33,18 +33,7 @@ export const ActionButton: React.FC<Props> = ({
   );
 };
 
-export const ActionButtonContainer: React.FC = ({ children }) => {
-  const classes = useStyles();
-  return <div className={classes.buttonsContainer}>{children}</div>;
-};
-
 const useStyles = makeStyles((theme) => ({
-  buttonsContainer: {
-    paddingTop: 8,
-    display: "flex",
-    justifyContent: "flex-end",
-    alignItems: "center",
-  },
   button: {
     display: "inline-block",
     height: 36,

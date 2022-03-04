@@ -1,7 +1,5 @@
 import React from "react";
 
-import Typography from "@material-ui/core/Typography";
-
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ThemeProvider } from "@material-ui/core";
 
@@ -24,21 +22,27 @@ const Header: React.FC = ({ children }) => {
 /** Styled text message */
 const TextMessage: React.FC = ({ children }) => {
   const classes = useStyles();
-  return (
-    <Typography className={classes.authMessage} variant="body1">
-      {children}
-    </Typography>
-  );
+  return <div className={classes.textMessage}>{children}</div>;
 };
+
 /** Styled component used as auth dialog content container */
 const Content: React.FC = ({ children }) => {
   const classes = useStyles();
   return <div className={classes.authContent}>{children}</div>;
 };
+/** Styled container for action buttons */
+export const ActionButtons: React.FC = ({ children }) => {
+  const classes = useStyles();
+  return <div className={classes.actionButtons}>{children}</div>;
+};
 /** Styled component used as auth dialog footer container */
 const Footer: React.FC = ({ children }) => {
   const classes = useStyles();
-  return <div className={classes.authFooter}>{children}</div>;
+  return (
+    <div className={classes.authFooter}>
+      <div>{children}</div>
+    </div>
+  );
 };
 
 /**
@@ -51,6 +55,7 @@ type RenderFunction = React.FC<{
   Content: React.FC;
   Footer: React.FC;
   TextMessage: React.FC;
+  ActionButtons: React.FC;
 }>;
 
 const AuthContainer: React.FC<{
@@ -59,7 +64,9 @@ const AuthContainer: React.FC<{
   children: RenderFunction;
 }> = ({ children, ...props }) => (
   <ThemeProvider theme={defaultTheme}>
-    <div {...props}>{children({ Header, Content, Footer, TextMessage })}</div>
+    <div {...props}>
+      {children({ Header, Content, Footer, TextMessage, ActionButtons })}
+    </div>
   </ThemeProvider>
 );
 
@@ -74,20 +81,25 @@ const useStyles = makeStyles((theme) => ({
     paddingBottom: 16,
     margin: 0,
   },
-  authContent: {
+  textMessage: {
+    width: 360,
     padding: "0 24px",
-  },
-  authFooter: {
-    padding: "0 24px 24px 24px",
-  },
-  authMessage: {
-    display: "block",
-    // we want to keep the paddings (24px on each side)
-    // on small screens, we want to leave the 24px around the container
-    width: 312,
     [theme.breakpoints.down("sm")]: {
       width: "100%",
     },
+  },
+  authContent: {
+    padding: "0 24px",
+  },
+  actionButtons: {
+    padding: "8px 24px 24px",
+    display: "flex",
+    justifyContent: "flex-end",
+    alignItems: "center",
+  },
+  authFooter: {
+    padding: "0 24px 24px 24px",
+    display: "flex",
   },
 }));
 
