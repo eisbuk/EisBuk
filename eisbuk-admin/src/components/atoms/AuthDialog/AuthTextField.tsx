@@ -1,5 +1,10 @@
-import React from "react";
-import { FastField, FieldConfig, useField } from "formik";
+import React, { useState } from "react";
+import { Field, FieldConfig, useField } from "formik";
+
+import { InputProps } from "@material-ui/core";
+
+import VisibilityOff from "@material-ui/icons/VisibilityOff";
+import Visibility from "@material-ui/icons/Visibility";
 
 import { TextField, TextFieldProps } from "formik-material-ui";
 
@@ -7,22 +12,48 @@ import makeStyles from "@material-ui/core/styles/makeStyles";
 
 const AuthTextField: React.FC<
   FieldConfig<string> & Pick<TextFieldProps, "label">
-> = ({ name, ...props }) => {
+> = ({ name, type: typeProp, ...props }) => {
   const classes = useStyles();
 
   const [, { error }] = useField(name);
+  // in case of password, we're using type
+  // to control hiding/displaying ot the text
+  const [showText, setShowText] = useState(false);
+  const type = showText ? "text" : typeProp || "text";
+
+  const togglePasswordVisibility = () => setShowText(!showText);
+
+  const InputProps: InputProps =
+    typeProp === "password"
+      ? // show password visibility button only for password
+        {
+          endAdornment: (
+            <button
+              className={classes.showPasswordButton}
+              onClick={togglePasswordVisibility}
+            >
+              {showText ? <VisibilityOff /> : <Visibility />}
+            </button>
+          ),
+        }
+      : {};
 
   return (
     <>
       <div className={classes.container}>
-        <FastField
+        <Field
           className={classes.textField}
-          {...{ name, ...props }}
+          {...{
+            name,
+            ...props,
+            type,
+            InputProps,
+          }}
           component={TextField}
           onBlur={() => {}}
         />
       </div>
-      <div>{error}</div>
+      <div className={classes.errorContainer}>{error}</div>
     </>
   );
 };
@@ -34,6 +65,19 @@ const useStyles = makeStyles(() => ({
   },
   textField: {
     width: "100%",
+    position: "relative",
+  },
+  showPasswordButton: {
+    position: "absolute",
+    right: 0,
+    top: "50%",
+    transform: "translate(0, -50%)",
+    background: "none",
+    border: "none",
+    outline: "none",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
   },
   errorContainer: {
     width: "100%",
