@@ -1,33 +1,33 @@
-import React from "react";
+import React, { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 import { Typography } from "@material-ui/core";
 
-interface Props {
+interface Props
+  extends DetailedHTMLProps<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   variant: "empty" | "fill" | "text";
-  onClick: () => void;
 }
 
 export const ActionButton: React.FC<Props> = ({
-  onClick,
   children,
   variant,
+  ...props
 }) => {
   const classes = useStyles();
 
   if (variant === "text") {
     return (
-      <button className={classes.text}>
+      <button className={classes.text} {...props}>
         <Typography variant="body2">{children}</Typography>
       </button>
     );
   }
 
   return (
-    <button
-      className={[classes.button, classes[variant]].join(" ")}
-      onClick={onClick}
-    >
+    <button className={[classes.button, classes[variant]].join(" ")} {...props}>
       {children}
     </button>
   );

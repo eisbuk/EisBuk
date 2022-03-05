@@ -10,53 +10,52 @@ import { TextField, TextFieldProps } from "formik-material-ui";
 
 import makeStyles from "@material-ui/core/styles/makeStyles";
 
-const AuthTextField: React.FC<
-  FieldConfig<string> & Pick<TextFieldProps, "label">
-> = ({ name, type: typeProp, ...props }) => {
-  const classes = useStyles();
+const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
+  ({ name, type: typeProp, ...props }) => {
+    const classes = useStyles();
 
-  const [, { error }] = useField(name);
-  // in case of password, we're using type
-  // to control hiding/displaying ot the text
-  const [showText, setShowText] = useState(false);
-  const type = showText ? "text" : typeProp || "text";
+    const [, { error }] = useField(name);
+    // in case of password, we're using type
+    // to control hiding/displaying ot the text
+    const [showText, setShowText] = useState(false);
+    const type = showText ? "text" : typeProp || "text";
 
-  const togglePasswordVisibility = () => setShowText(!showText);
+    const togglePasswordVisibility = () => setShowText(!showText);
 
-  const InputProps: InputProps =
-    typeProp === "password"
-      ? // show password visibility button only for password
-        {
-          endAdornment: (
-            <button
-              className={classes.showPasswordButton}
-              onClick={togglePasswordVisibility}
-            >
-              {showText ? <VisibilityOff /> : <Visibility />}
-            </button>
-          ),
-        }
-      : {};
+    const InputProps: InputProps =
+      typeProp === "password"
+        ? // show password visibility button only for password
+          {
+            endAdornment: (
+              <button
+                className={classes.showPasswordButton}
+                onClick={togglePasswordVisibility}
+              >
+                {showText ? <VisibilityOff /> : <Visibility />}
+              </button>
+            ),
+          }
+        : {};
 
-  return (
-    <>
-      <div className={classes.container}>
-        <Field
-          className={classes.textField}
-          {...{
-            name,
-            ...props,
-            type,
-            InputProps,
-          }}
-          component={TextField}
-          onBlur={() => {}}
-        />
-      </div>
-      <div className={classes.errorContainer}>{error}</div>
-    </>
-  );
-};
+    return (
+      <>
+        <div className={classes.container}>
+          <Field
+            className={classes.textField}
+            {...{
+              name,
+              ...props,
+              type,
+              InputProps,
+            }}
+            component={TextField}
+            onBlur={() => {}}
+          />
+        </div>
+        <div className={classes.errorContainer}>{error}</div>
+      </>
+    );
+  };
 
 const useStyles = makeStyles(() => ({
   container: {
