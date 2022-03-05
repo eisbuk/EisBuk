@@ -9,8 +9,11 @@ import "@testing-library/jest-dom";
 import * as auth from "@firebase/auth";
 
 import { PrivateRoutes } from "@/enums/routes";
+import { ActionButton, AuthMessage, AuthTitle } from "@/enums/translations";
 
 import EmailFlow from "../EmailFlow";
+
+import i18n from "@/__testUtils__/i18n";
 
 // mock `getAuth` to always return a string
 // (rather than an object) for easier mocking/testing
@@ -48,10 +51,10 @@ describe("AuthDialog", () => {
         .spyOn(auth, "fetchSignInMethodsForEmail")
         .mockImplementationOnce((() => {}) as any);
       // should call on cancel on 'cancel' button click
-      screen.getByText(/cancel/i).click();
+      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       expect(mockOnCancel).toHaveBeenCalled();
       // "submit" email to check if user exists or should be created
-      screen.getByText(/next/i).click();
+      screen.getByText(i18n.t(ActionButton.Next) as string).click();
       await waitFor(() =>
         expect(mockVerifyEmail).toHaveBeenCalledWith(mockAuth, "test@eisbuk.it")
       );
@@ -64,7 +67,7 @@ describe("AuthDialog", () => {
       const mockVerifyEmail = jest
         .spyOn(auth, "fetchSignInMethodsForEmail")
         .mockImplementationOnce((() => Promise.resolve(["password"])) as any);
-      screen.getByText(/next/i).click();
+      screen.getByText(i18n.t(ActionButton.Next) as string).click();
       const passwordInput = await screen.findByLabelText("Password");
       userEvent.type(passwordInput, "test00");
       const emailSigninMock = jest
@@ -72,7 +75,7 @@ describe("AuthDialog", () => {
         .mockImplementation(() =>
           Promise.resolve({ user: { refreshToken: "fake-token" } } as any)
         );
-      screen.getByText(/^signin$/i).click();
+      screen.getByText(i18n.t(ActionButton.SignIn) as string).click();
       await waitFor(() =>
         expect(emailSigninMock).toHaveBeenCalledWith(
           mockAuth,
@@ -93,12 +96,12 @@ describe("AuthDialog", () => {
       jest
         .spyOn(auth, "fetchSignInMethodsForEmail")
         .mockImplementationOnce((() => Promise.resolve(["password"])) as any);
-      screen.getByText(/next/i).click();
+      screen.getByText(i18n.t(ActionButton.Next) as string).click();
       await screen.findByLabelText("Password");
-      screen.getByText(/trouble signing in/i).click();
-      await screen.findByText(/recover password/i);
-      await screen.findByText(/Get instructions/i);
-      screen.getByText(/send/i).click();
+      screen.getByText(i18n.t(ActionButton.TroubleSigningIn) as string).click();
+      await screen.findByText(i18n.t(AuthTitle.RecoverPassword) as string);
+      await screen.findByText(i18n.t(AuthMessage.RecoverPassword) as string);
+      screen.getByText(i18n.t(ActionButton.Send) as string).click();
       const resetPasswordSpy = jest
         .spyOn(auth, "sendPasswordResetEmail")
         .mockImplementation(() => Promise.resolve());
@@ -108,10 +111,14 @@ describe("AuthDialog", () => {
           "test@eisbuk.it"
         )
       );
-      await screen.findByText(/check your email/i);
-      await screen.findByText(/follow the instructions sent/i);
+      await screen.findByText(i18n.t(AuthTitle.CheckYourEmail) as string);
+      await screen.findByText(
+        i18n.t(AuthMessage.CheckYourEmail, {
+          email: "test@eisbuk.it",
+        }) as string
+      );
       // check done button call
-      screen.getByText(/done/i).click();
+      screen.getByText(i18n.t(ActionButton.Done) as string).click();
       expect(mockOnCancel).toHaveBeenCalled();
     });
 
@@ -124,7 +131,7 @@ describe("AuthDialog", () => {
         .spyOn(auth, "fetchSignInMethodsForEmail")
         // return empty sign in method array (signaling the email not registered)
         .mockImplementationOnce((() => Promise.resolve([])) as any);
-      screen.getByText(/next/i).click();
+      screen.getByText(i18n.t(ActionButton.Next) as string).click();
       const nameInput = await screen.findByLabelText(/first & last name/i);
       const passwordInput = await screen.findByLabelText("Password");
       userEvent.type(nameInput, "Saul Goodman");

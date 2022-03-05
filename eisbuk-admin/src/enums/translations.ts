@@ -13,14 +13,23 @@ export enum CustomerNavigationLabel {
 }
 // #endregion navigation
 
-// #region authorization
+// #region auth
 export enum AuthMessage {
   NotAuthorized = "Authorization.NotAuthorized",
   AdminsOnly = "Authorization.AdminsOnly",
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
+  RecoverPassword = "Authorization.RecoverPassword",
+  CheckYourEmail = "Authorization.CheckYourEmail",
 }
-// #endregion authorization
+export enum AuthTitle {
+  SignInWithEmail = "AuthTitle.SignInWithEmail",
+  SignIn = "AuthTitle.SignIn",
+  CreateAccount = "AuthTitle.CreateAccount",
+  RecoverPassword = "AuthTitle.RecoverPassword",
+  CheckYourEmail = "AuthTitle.CheckYourEmail",
+}
+// #endregion auth
 
 // #region dataEntries
 export const SlotTypeLabel = {
@@ -95,6 +104,9 @@ export enum Prompt {
 }
 
 export enum ActionButton {
+  SignIn = "ActionButton.SignIn",
+  TroubleSigningIn = "ActionButton.TroubleSigningIn",
+
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
 
@@ -112,7 +124,9 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
-  ShowAll = "ActionButton",
+  ShowAll = "ActionButton.ShowAll",
+  Done = "ActionButton.Done",
+  Send = "ActionButton.Send",
 }
 // #endregion dialog
 

@@ -14,7 +14,16 @@
     "NotAuthorized": "You are not authorized to login",
     "AdminsOnly": "This space is reserved for administrators",
     "LoggedInWith": "You are logged in with:",
-    "TryAgain": "Log out and try again with a different user"
+    "TryAgain": "Log out and try again with a different user",
+    "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
+    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password"
+  },
+  "AuthTitle": {
+    "SignInWithEmail": "Sign in with email",
+    "SignIn": "Sign in",
+    "CreateAccount": "Create account",
+    "RecoverPassword": "Recover password",
+    "CheckYourEmail": "Check your email"
   },
 
   "SlotType": {
@@ -82,6 +91,9 @@
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
   },
   "ActionButton": {
+    "SignIn": "Signin",
+    "TroubleSigningIn": "Trouble signing in?",
+
     "CreateSlot": "Create Slot",
     "EditSlot": "Edit Slot",
 
@@ -98,7 +110,10 @@
 
     "Save": "Save",
     "Next": "Next",
-    "Cancel": "Cancel"
+    "Cancel": "Cancel",
+    "ShowAll": "ShowAll",
+    "Done": "Done",
+    "Send": "Send"
   },
 
   "Notification": {

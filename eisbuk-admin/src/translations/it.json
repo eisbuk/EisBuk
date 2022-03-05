@@ -14,7 +14,16 @@
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
     "LoggedInWith": "Hai effettuato l'accesso con:",
-    "TryAgain": "Esci e riprova con un altro utente"
+    "TryAgain": "Esci e riprova con un altro utente",
+    "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
+    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password"
+  },
+  "AuthTitle": {
+    "SignInWithEmail": "Sign in with email",
+    "SignIn": "Sign in",
+    "CreateAccount": "Create account",
+    "RecoverPassword": "Recover password",
+    "CheckYourEmail": "Check your email"
   },
 
   "SlotType": {
@@ -82,6 +91,9 @@
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
   },
   "ActionButton": {
+    "SignIn": "Signin",
+    "TroubleSigningIn": "Trouble signing in?",
+
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
 
@@ -98,7 +110,10 @@
 
     "Save": "Salva",
     "Next": "Seguente",
-    "Cancel": "Annulla"
+    "Cancel": "Annulla",
+    "ShowAll": "ShowAll",
+    "Done": "Done",
+    "Send": "Send"
   },
 
   "Notification": {

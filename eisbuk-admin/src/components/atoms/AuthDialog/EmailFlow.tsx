@@ -8,11 +8,18 @@ import {
   sendPasswordResetEmail,
 } from "@firebase/auth";
 import { useHistory } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+import {
+  ActionButton as ActionButtonLabel,
+  AuthMessage,
+  AuthTitle,
+} from "@/enums/translations";
+import { PrivateRoutes } from "@/enums/routes";
 
 import AuthContainer from "./AuthContainer";
 import AuthTextField from "./AuthTextField";
 import ActionButton from "./ActionButton";
-import { PrivateRoutes } from "@/enums/routes";
 import AuthTypography from "./AuthTypography";
 
 /**
@@ -20,19 +27,19 @@ import AuthTypography from "./AuthTypography";
  */
 enum AuthStep {
   /** Initial view (only email prompt) */
-  Email = "email",
+  SignInWithEmail = "SignInWithEmail",
   /** Sign in view (after email verified as registered) */
-  SignIn = "signin",
+  SignIn = "SignIn",
   /** Sign up view (after email verified as valid, but not registered) */
-  SignUp = "Signup",
+  CreateAccount = "CreateAccount",
   /** Help message (after `Trouble signing in?` click) */
-  Help = "help",
+  RecoverPassword = "RecoverPassword",
   /** 'Check your email' message (after sending reset password email) */
-  CheckYourEmail = "checkYourEmail",
+  CheckYourEmail = "CheckYourEmail",
 }
 
 interface ActionButtonParams {
-  label: string;
+  label: ActionButtonLabel;
   variant: "empty" | "fill" | "text";
   type?: "reset" | "submit";
   nextStep?: AuthStep;
@@ -57,8 +64,10 @@ interface Props {
 }
 
 const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
-  const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.Email);
   const history = useHistory();
+  const { t } = useTranslation();
+
+  const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.SignInWithEmail);
 
   // #region form
   const initialValues = { email: "", password: "", name: "" };
@@ -66,12 +75,12 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 
   // #region continueHandlers
   const submitHandlers = {} as Record<AuthStep, SubmitHandler>;
-  submitHandlers[AuthStep.Email] = async ({ email }) => {
+  submitHandlers[AuthStep.SignInWithEmail] = async ({ email }) => {
     const signInMethods = await fetchSignInMethodsForEmail(getAuth(), email);
     if (signInMethods.includes("password")) {
       setAuthStep(AuthStep.SignIn);
     } else {
-      setAuthStep(AuthStep.SignUp);
+      setAuthStep(AuthStep.CreateAccount);
     }
   };
   submitHandlers[AuthStep.SignIn] = async ({ email, password }) => {
@@ -80,7 +89,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
       history.push(PrivateRoutes.Root);
     }
   };
-  submitHandlers[AuthStep.SignUp] = async ({ email, password }) => {
+  submitHandlers[AuthStep.CreateAccount] = async ({ email, password }) => {
     const res = await createUserWithEmailAndPassword(
       getAuth(),
       email,
@@ -90,7 +99,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
       history.push(PrivateRoutes.Root);
     }
   };
-  submitHandlers[AuthStep.Help] = async ({ email }) => {
+  submitHandlers[AuthStep.RecoverPassword] = async ({ email }) => {
     await sendPasswordResetEmail(getAuth(), email);
     setAuthStep(AuthStep.CheckYourEmail);
   };
@@ -98,23 +107,24 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   submitHandlers[AuthStep.CheckYourEmail] = async () => {};
   // #region continueHandlers
 
-  const message =
-    authStep === AuthStep.Help
-      ? "Get instructions sent to this email that explain how to reset your password"
-      : authStep === AuthStep.CheckYourEmail
-      ? "Follow the instructions sent to <email-here> to recover your password"
-      : null;
+  const message = [AuthStep.RecoverPassword, AuthStep.CheckYourEmail].includes(
+    authStep
+  )
+    ? AuthMessage[authStep]
+    : null;
 
   return (
     <AuthContainer>
       {({ Header, Content, ActionButtons, TextMessage }) => (
         <Formik onSubmit={submitHandlers[authStep]} {...{ initialValues }}>
-          {() => (
+          {({ values: { email } }) => (
             <Form onReset={onCancel}>
-              <Header>{titleLookup[authStep]}</Header>
+              <Header>{t(AuthTitle[authStep])}</Header>
               {message && (
                 <TextMessage>
-                  <AuthTypography variant="body1">{message}</AuthTypography>
+                  <AuthTypography variant="body1">
+                    {t(message, { email })}
+                  </AuthTypography>
                 </TextMessage>
               )}
 
@@ -142,7 +152,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
                           : {}),
                       }}
                     >
-                      {label}
+                      {t(label)}
                     </ActionButton>
                   )
                 )}
@@ -156,81 +166,77 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 };
 
 // #region stepContentLookups
-const titleLookup = {
-  [AuthStep.Email]: "Sign in with email",
-  [AuthStep.SignIn]: "Sign in",
-  [AuthStep.SignUp]: "Create account",
-  [AuthStep.Help]: "Recover password",
-  [AuthStep.CheckYourEmail]: "Check your email",
-};
-
 const fieldsLookup: Record<AuthStep, AuthFieldParams[] | null> = {
-  [AuthStep.Email]: [{ name: "email", label: "Email", type: "email" }],
+  [AuthStep.SignInWithEmail]: [
+    { name: "email", label: "Email", type: "email" },
+  ],
   [AuthStep.SignIn]: [
     { name: "email", label: "Email", type: "email" },
     { name: "password", label: "Password", type: "password" },
   ],
-  [AuthStep.SignUp]: [
+  [AuthStep.CreateAccount]: [
     { name: "email", label: "Email", type: "email" },
     { name: "name", label: "First & last name", type: "text" },
     { name: "password", label: "Password", type: "password" },
   ],
-  [AuthStep.Help]: [{ name: "email", label: "Email", type: "email" }],
+  [AuthStep.RecoverPassword]: [
+    { name: "email", label: "Email", type: "email" },
+  ],
   [AuthStep.CheckYourEmail]: null,
 };
 
 const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
-  [AuthStep.Email]: [
+  [AuthStep.SignInWithEmail]: [
     {
-      label: "Cancel",
+      label: ActionButtonLabel.Cancel,
       variant: "empty",
       type: "reset",
     },
     {
-      label: "Next",
+      label: ActionButtonLabel.Next,
       variant: "fill",
       type: "submit",
     },
   ],
   [AuthStep.SignIn]: [
     {
-      label: "Trouble signing in?",
+      label: ActionButtonLabel.TroubleSigningIn,
       variant: "text",
-      nextStep: AuthStep.Help,
+      nextStep: AuthStep.RecoverPassword,
     },
     {
-      label: "Signin",
+      label: ActionButtonLabel.SignIn,
       variant: "fill",
       type: "submit",
     },
   ],
-  [AuthStep.SignUp]: [
+  [AuthStep.CreateAccount]: [
     {
-      label: "Cancel",
+      label: ActionButtonLabel.Cancel,
       variant: "empty",
       type: "reset",
     },
     {
-      label: "Save",
+      label: ActionButtonLabel.Save,
       variant: "fill",
       type: "submit",
     },
   ],
-  [AuthStep.Help]: [
+  [AuthStep.RecoverPassword]: [
     {
-      label: "Cancel",
+      label: ActionButtonLabel.Cancel,
       variant: "empty",
       type: "reset",
     },
     {
-      label: "Send",
+      label: ActionButtonLabel.Send,
       variant: "fill",
       type: "submit",
     },
   ],
   [AuthStep.CheckYourEmail]: [
     {
-      label: "Done",
+      label: ActionButtonLabel.Done,
       variant: "fill",
       type: "reset",
     },
