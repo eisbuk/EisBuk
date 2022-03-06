@@ -9,11 +9,13 @@ import {
 } from "@firebase/auth";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import * as yup from "yup";
 
 import {
   ActionButton as ActionButtonLabel,
   AuthMessage,
   AuthTitle,
+  ValidationMessage,
 } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
 
@@ -71,6 +73,10 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 
   // #region form
   const initialValues = { email: "", password: "", name: "" };
+
+  const validationSchema = yup.object().shape({
+    email: yup.string().email(t(ValidationMessage.Email)),
+  });
   // #endregion form
 
   // #region continueHandlers
@@ -116,7 +122,10 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   return (
     <AuthContainer>
       {({ Header, Content, ActionButtons, TextMessage }) => (
-        <Formik onSubmit={submitHandlers[authStep]} {...{ initialValues }}>
+        <Formik
+          onSubmit={submitHandlers[authStep]}
+          {...{ initialValues, validationSchema }}
+        >
           {({ values: { email } }) => (
             <Form onReset={onCancel}>
               <Header>{t(AuthTitle[authStep])}</Header>

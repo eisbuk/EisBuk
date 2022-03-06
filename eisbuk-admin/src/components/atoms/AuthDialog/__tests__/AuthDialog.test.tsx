@@ -9,7 +9,12 @@ import "@testing-library/jest-dom";
 import * as auth from "@firebase/auth";
 
 import { PrivateRoutes } from "@/enums/routes";
-import { ActionButton, AuthMessage, AuthTitle } from "@/enums/translations";
+import {
+  ActionButton,
+  AuthMessage,
+  AuthTitle,
+  ValidationMessage,
+} from "@/enums/translations";
 
 import EmailFlow from "../EmailFlow";
 
@@ -155,6 +160,22 @@ describe("AuthDialog", () => {
       expect(mockVerifyEmail).toHaveBeenCalledTimes(1);
       // should redirect to  private route "/"
       expect(mockHistoryPush).toHaveBeenCalledWith(PrivateRoutes.Root);
+    });
+
+    test("should validate email before submitting", async () => {
+      const mockVerifyEmail = jest
+        .spyOn(auth, "fetchSignInMethodsForEmail")
+        .mockImplementation((() => {}) as any);
+      render(<EmailFlow />);
+      userEvent.type(
+        screen.getByLabelText("Email"),
+        "not-a-valid-email-string"
+      );
+      screen.getByText(i18n.t(ActionButton.Next) as string).click();
+      await screen.findByText(i18n.t(ValidationMessage.Email) as string);
+      // `fetchSigninMe0thodsForEmail` (mocked by `mockVerifyEmail`)
+      // is our `onSubmit` handler and should not be called (on failed form validation)
+      expect(mockVerifyEmail).not.toHaveBeenCalled();
     });
   });
 });

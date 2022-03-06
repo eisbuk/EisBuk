@@ -1,5 +1,9 @@
 import React, { useState } from "react";
-import { Field, FieldConfig, useField } from "formik";
+import {
+  Field,
+  FieldConfig,
+  // useField
+} from "formik";
 
 import { InputProps } from "@material-ui/core";
 
@@ -14,7 +18,7 @@ const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
   ({ name, type: typeProp, ...props }) => {
     const classes = useStyles();
 
-    const [, { error }] = useField(name);
+    // const [, { error }] = useField(name);
     // in case of password, we're using type
     // to control hiding/displaying ot the text
     const [showText, setShowText] = useState(false);
@@ -52,7 +56,7 @@ const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
             onBlur={() => {}}
           />
         </div>
-        <div className={classes.errorContainer}>{error}</div>
+        {/* <div className={classes.errorContainer}>{error}</div> */}
       </>
     );
   };
