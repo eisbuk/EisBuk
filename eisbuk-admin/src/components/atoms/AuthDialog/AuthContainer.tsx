@@ -1,7 +1,9 @@
 import React from "react";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
 import { ThemeProvider } from "@material-ui/core";
+import Paper from "@material-ui/core/Paper";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
 
 import { muiDefault as defaultTheme } from "@/themes";
 
@@ -64,9 +66,9 @@ const AuthContainer: React.FC<{
   children: RenderFunction;
 }> = ({ children, ...props }) => (
   <ThemeProvider theme={defaultTheme}>
-    <div {...props}>
+    <Paper elevation={4} {...props}>
       {children({ Header, Content, Footer, TextMessage, ActionButtons })}
-    </div>
+    </Paper>
   </ThemeProvider>
 );
 

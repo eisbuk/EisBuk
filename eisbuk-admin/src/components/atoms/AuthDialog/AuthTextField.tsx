@@ -34,6 +34,7 @@ const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
               <button
                 className={classes.showPasswordButton}
                 onClick={togglePasswordVisibility}
+                type="button"
               >
                 {showText ? <VisibilityOff /> : <Visibility />}
               </button>

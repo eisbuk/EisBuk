@@ -50,7 +50,7 @@ const SignInSide: React.FC = () => {
           <Avatar className={classes.avatar}>
             <LockOutlinedIcon />
           </Avatar>
-          <Typography component="h1" variant="h5">
+          <Typography className={classes.orgName} component="h1" variant="h5">
             {organizationInfo.name}
           </Typography>
           <AuthDialog />
@@ -82,6 +82,9 @@ const useStyles = makeStyles((theme) => ({
   avatar: {
     margin: theme.spacing(1),
     backgroundColor: theme.palette.secondary.main,
+  },
+  orgName: {
+    marginBottom: theme.spacing(4),
   },
 }));
 
