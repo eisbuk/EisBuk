@@ -59,12 +59,12 @@ describe("Date Navigation", () => {
         <DateNavigation showToggle extraButtons={extraButtons} />
       );
       const numButtonsBeforeToggle = screen.queryAllByRole("button").length;
-      expect(numButtonsBeforeToggle).toEqual(2);
+      expect(numButtonsBeforeToggle).toEqual(3);
       // we're expecting two initial buttons (arrows) and no additional buttons
       screen.getByRole("checkbox").click();
       const numButtonsAfterToggle = screen.queryAllByRole("button").length;
-      // we're expecting two initial buttons (arrows) and two additional (extra buttons)
-      expect(numButtonsAfterToggle).toEqual(4);
+      // we're expecting two initial buttons (arrows) and two additional (extra buttons) plus calendar picker button
+      expect(numButtonsAfterToggle).toEqual(5);
     });
 
     test("if 'showToggle == false', should show 'extraButtons' immediately", () => {
@@ -79,8 +79,8 @@ describe("Date Navigation", () => {
       );
       renderWithRouter(<DateNavigation extraButtons={extraButtons} />);
       const numButtonsBeforeToggle = screen.queryAllByRole("button").length;
-      // expect all four buttons (arrows and test buttons) to be rendered immediately
-      expect(numButtonsBeforeToggle).toEqual(4);
+      // expect all four buttons (arrows and test buttons) to be rendered immediately plus calendar picker button
+      expect(numButtonsBeforeToggle).toEqual(5);
     });
   });
 });
