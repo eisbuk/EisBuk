@@ -1,5 +1,5 @@
 import React from "react";
-import { DateTime } from "luxon";
+import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch } from "react-redux";
 
 import IconButton from "@mui/material/IconButton";
@@ -14,9 +14,13 @@ import { __calendarPickerButtonId__ } from "@/__testData__/testIds";
 
 interface Props {
   currentDate: DateTime;
+  /**
+   * Value for next/prev timeframe start time calculation
+   */
+  jump?: DateTimeUnit;
 }
 
-const DateSwitcher: React.FC<Props> = ({ currentDate }) => {
+const DateSwitcher: React.FC<Props> = ({ currentDate, jump }) => {
   const dispatch = useDispatch();
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -27,6 +31,9 @@ const DateSwitcher: React.FC<Props> = ({ currentDate }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const disableNonMondays = (day: DateTime) =>
+    jump === "week" ? !day.startOf("week").equals(day) : false;
 
   return (
     <>
@@ -40,6 +47,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate }) => {
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
         <CalendarPicker
+          shouldDisableDate={disableNonMondays}
           date={currentDate}
           onChange={(currentDate) => {
             dispatch(changeCalendarDate(currentDate!));

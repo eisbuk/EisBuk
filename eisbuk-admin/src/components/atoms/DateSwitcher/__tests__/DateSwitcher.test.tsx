@@ -53,5 +53,24 @@ describe("Date Switcher", () => {
         changeCalendarDate(nexDayDateTime)
       );
     });
+
+    test("should disable picking non-mondays on slots view", () => {
+      render(
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DateSwitcher currentDate={testDateDateTime} jump="week" />
+        </LocalizationProvider>
+      );
+
+      const calendarPickerButton = screen.getByTestId(
+        __calendarPickerButtonId__
+      );
+      calendarPickerButton.click();
+
+      const nonMonday = testDateDateTime.startOf("week").plus({ days: 1 });
+
+      const dayToClick = screen.getByLabelText(nonMonday.toFormat("DD"));
+
+      expect(dayToClick).toBeDisabled();
+    });
   });
 });

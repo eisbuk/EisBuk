@@ -171,7 +171,7 @@ const DateNavigation: React.FC<Props> = ({
           >
             <ChevronRightIcon />
           </IconButton>
-          <DateSwitcher currentDate={currentDate} />
+          <DateSwitcher currentDate={currentDate} jump={jump} />
           {showExtraButtons && extraButtons}
           {showToggle && toggleButton}
         </Toolbar>
