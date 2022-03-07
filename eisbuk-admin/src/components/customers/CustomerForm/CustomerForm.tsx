@@ -3,24 +3,24 @@ import * as Yup from "yup";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 import { Formik, Form, FastField, FieldConfig } from "formik";
-import { TextField } from "formik-material-ui";
+import { TextField } from "formik-mui";
 
-import { InputProps } from "@material-ui/core";
-import Button from "@material-ui/core/Button";
-import Dialog from "@material-ui/core/Dialog";
-import DialogActions from "@material-ui/core/DialogActions";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import InputAdornment from "@material-ui/core/InputAdornment";
+import { InputProps } from "@mui/material";
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import InputAdornment from "@mui/material/InputAdornment";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import Email from "@material-ui/icons/Email";
-import Phone from "@material-ui/icons/Phone";
-import Cake from "@material-ui/icons/Cake";
-import LocalHospital from "@material-ui/icons/LocalHospital";
-import Payment from "@material-ui/icons/Payment";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import Email from "@mui/icons-material/Email";
+import Phone from "@mui/icons-material/Phone";
+import Cake from "@mui/icons-material/Cake";
+import LocalHospital from "@mui/icons-material/LocalHospital";
+import Payment from "@mui/icons-material/Payment";
 
 import { Category, Customer } from "eisbuk-shared";
 

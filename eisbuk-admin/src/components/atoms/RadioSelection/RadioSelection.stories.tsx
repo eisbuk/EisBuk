@@ -2,9 +2,9 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
 
-import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
-import Typography from "@material-ui/core/Typography";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
+import Typography from "@mui/material/Typography";
 
 import { SlotType } from "eisbuk-shared";
 

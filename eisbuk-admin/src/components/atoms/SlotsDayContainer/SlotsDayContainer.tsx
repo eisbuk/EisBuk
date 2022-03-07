@@ -2,11 +2,11 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
-import ListSubheader from "@material-ui/core/ListSubheader";
-import Grid from "@material-ui/core/Grid";
-import Typography from "@material-ui/core/Typography";
+import ListSubheader from "@mui/material/ListSubheader";
+import Grid from "@mui/material/Grid";
+import Typography from "@mui/material/Typography";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { DateFormat } from "@/enums/translations";
 import { getIsBookingAllowed } from "@/store/selectors/bookings";

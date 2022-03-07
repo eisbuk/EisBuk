@@ -3,16 +3,16 @@ import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import Toolbar from "@material-ui/core/Toolbar";
-import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import Switch from "@material-ui/core/Switch";
+import Toolbar from "@mui/material/Toolbar";
+import AppBar, { AppBarProps } from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
 
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
@@ -147,6 +147,7 @@ const DateNavigation: React.FC<Props> = ({
             aria-label={t(AdminAria.SeePastDates)}
             data-testid={__dateNavPrevId__}
             onClick={paginate("decrement")}
+            size="large"
           >
             <ChevronLeftIcon />
           </IconButton>
@@ -164,6 +165,7 @@ const DateNavigation: React.FC<Props> = ({
             aria-label={t(AdminAria.SeeFutureDates)}
             data-testid={__dateNavNextId__}
             onClick={paginate("increment")}
+            size="large"
           >
             <ChevronRightIcon />
           </IconButton>
