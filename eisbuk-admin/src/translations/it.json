@@ -18,6 +18,12 @@
     "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
     "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password"
   },
+  "AuthError": {
+    "NetworkError": "A network error has occurred",
+    "EmailNotFount": "That email address doesn't match an existing account",
+    "InvalidPassword": "The email and password you entered don't match",
+    "Unknown": "Unknown error"
+  },
   "AuthTitle": {
     "SignInWithEmail": "Sign in with email",
     "SignIn": "Sign in",
@@ -113,7 +119,8 @@
     "Cancel": "Annulla",
     "ShowAll": "ShowAll",
     "Done": "Done",
-    "Send": "Send"
+    "Send": "Send",
+    "Dismiss": "Dismiss"
   },
 
   "Notification": {

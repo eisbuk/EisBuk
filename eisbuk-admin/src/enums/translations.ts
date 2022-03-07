@@ -22,6 +22,12 @@ export enum AuthMessage {
   RecoverPassword = "Authorization.RecoverPassword",
   CheckYourEmail = "Authorization.CheckYourEmail",
 }
+export enum AuthError {
+  NETWORK_ERROR = "AuthError.NetworkError",
+  EMAIL_NOT_FOUND = "AuthError.EmailNotFound",
+  INVALID_PASSWORD = "AuthError.InvalidPassword",
+  UNKNOWN = "AuthError.Unknown",
+}
 export enum AuthTitle {
   SignInWithEmail = "AuthTitle.SignInWithEmail",
   SignIn = "AuthTitle.SignIn",
@@ -127,6 +133,7 @@ export enum ActionButton {
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
   Send = "ActionButton.Send",
+  Dismiss = "ActionButton.Dismiss",
 }
 // #endregion dialog
 

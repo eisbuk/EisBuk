@@ -64,15 +64,20 @@ const AuthContainer: React.FC<{
   style?: React.CSSProperties;
   className?: string;
   children: RenderFunction;
-}> = ({ children, ...props }) => (
-  <ThemeProvider theme={defaultTheme}>
-    <Paper elevation={4} {...props}>
-      {children({ Header, Content, Footer, TextMessage, ActionButtons })}
-    </Paper>
-  </ThemeProvider>
-);
+}> = ({ children, ...props }) => {
+  const classes = useStyles();
+
+  return (
+    <ThemeProvider theme={defaultTheme}>
+      <Paper className={classes.container} elevation={4} {...props}>
+        {children({ Header, Content, Footer, TextMessage, ActionButtons })}
+      </Paper>
+    </ThemeProvider>
+  );
+};
 
 const useStyles = makeStyles((theme) => ({
+  container: { position: "relative" },
   authHeader: {
     padding: "24px 24px 0 24px",
   },
