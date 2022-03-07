@@ -1,15 +1,15 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import Box from "@material-ui/core/Box";
+import Box from "@mui/material/Box";
 
 import OneHourIcon from "@/assets/images/HourIcon";
 import HalfHourIcon from "@/assets/images/HalfHourIcon";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { BookingDuration } from "@/enums/components";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 
 interface DurationProps {
   startTime: string;
@@ -28,19 +28,19 @@ const Duration: React.FC<DurationProps> = ({
 
   const intervalDuration = calculateIntervalDuration(startTime, endTime);
 
-  const OneHour = (
+  const OneHour = () => (
     <div className={classes.icon}>
       <OneHourIcon />
     </div>
   );
 
-  const HalfHour = (
+  const HalfHour = () => (
     <div className={classes.icon}>
       <HalfHourIcon />
     </div>
   );
 
-  const TwoPlusHours = (
+  const TwoPlusHours = () => (
     <Typography className={[classes.icon, classes.twoPlus].join(" ")}>
       {BookingDuration["2+h"]}
     </Typography>
@@ -56,7 +56,9 @@ const Duration: React.FC<DurationProps> = ({
 
   return (
     <Box style={{ color }} className={[classes.container, className].join(" ")}>
-      {durationComponents[intervalDuration].map((el) => el)}
+      {durationComponents[intervalDuration].map((Element, i) => (
+        <Element key={`${intervalDuration}-${i}`} />
+      ))}
     </Box>
   );
 };

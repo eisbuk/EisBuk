@@ -2,12 +2,12 @@ import React from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from "@mui/material/IconButton";
 
-import DeleteIcon from "@material-ui/icons/Delete";
+import DeleteIcon from "@mui/icons-material/Delete";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import TimePickerField from "./TimePickerField";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
@@ -64,10 +64,12 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
         aria-label={t(SlotFormAria.IntervalEnd)}
       />
       <IconButton
+        className={classes.deleteButton}
         data-testid={__deleteIntervalId__}
         aria-label={t(SlotFormAria.DeleteInterval)}
         color="primary"
         onClick={onDelete}
+        size="large"
       >
         <DeleteIcon />
       </IconButton>
@@ -83,8 +85,13 @@ const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
       position: "relative",
-      display: "flex",
-      justifyContent: "space-evenly",
+      flexDirection: "column",
+      width: "100%",
+      [theme.breakpoints.up("sm")]: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+      },
     },
     error: {
       position: "absolute",
@@ -96,10 +103,22 @@ const useStyles = makeStyles((theme) =>
     },
     intervalTitles: {
       fontSize: theme.typography.pxToRem(17),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,
+    },
+    dateInput: {
+      [theme.breakpoints.down("sm")]: {
+        width: "100%",
+      },
+    },
+    deleteButton: {
+      [theme.breakpoints.down("sm")]: {
+        position: "absolute",
+        top: "50%",
+        transform: "translate(0, -50%)",
+        right: 0,
+      },
     },
     dark: {
       backgroundColor: theme.palette.grey[50],

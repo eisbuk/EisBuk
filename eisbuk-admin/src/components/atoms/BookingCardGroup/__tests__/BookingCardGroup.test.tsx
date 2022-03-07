@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
@@ -85,14 +89,6 @@ describe("Booking Card Group ->", () => {
         secretKey,
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockCancelAction);
-    });
-
-    test("should disable all buttons while the state is syncing (bookedInterval and localSelected are in discrepency)", () => {
-      // the `bookedInterval` prop has athe value of the first interval, this way we're setting i to  null
-      screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
-      screen.getAllByRole("button").forEach((button) => {
-        expect(button).toHaveProperty("disabled", true);
-      });
     });
   });
 });

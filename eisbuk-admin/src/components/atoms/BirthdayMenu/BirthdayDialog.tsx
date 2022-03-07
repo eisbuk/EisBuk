@@ -1,13 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Dialog, { DialogProps } from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
+import Dialog, { DialogProps } from "@mui/material/Dialog";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import Close from "@material-ui/icons/Close";
+import Close from "@mui/icons-material/Close";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { CustomersByBirthday } from "eisbuk-shared";
 
@@ -34,7 +34,11 @@ const BirthdayDialog: React.FC<Props> = ({
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(BirthdayMenu.UpcomingBirthdays)}
         </Typography>
-        <IconButton className={classes.closeButton} onClick={() => onClose()}>
+        <IconButton
+          className={classes.closeButton}
+          onClick={() => onClose()}
+          size="large"
+        >
           <Close />
         </IconButton>
 
@@ -46,7 +50,6 @@ const BirthdayDialog: React.FC<Props> = ({
                 : t(DateFormat.DayMonth, {
                     date: DateTime.fromISO(`2021-${customer.birthday}`),
                   });
-            //   console.log(DateTime.fromISO(customer.birthday));
 
             return (
               <div key={customer.birthday}>

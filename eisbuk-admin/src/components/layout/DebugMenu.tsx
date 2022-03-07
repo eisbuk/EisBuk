@@ -3,11 +3,11 @@ import React, { useState } from "react";
 import { getApp } from "@firebase/app";
 import { getFunctions, httpsCallable } from "@firebase/functions";
 
-import Button from "@material-ui/core/Button";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@mui/material/Button";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
-import BugReportIcon from "@material-ui/icons/BugReport";
+import BugReportIcon from "@mui/icons-material/BugReport";
 
 import { getOrganization } from "@/lib/getters";
 import { __functionsZone__ } from "@/lib/constants";
@@ -28,28 +28,25 @@ const DebugMenu: React.FC = () => {
     setAnchorEl(e.currentTarget);
   };
 
-  /** @TEMP below, needs to be typed with cloud functions */
-  const handleClose = (
-    functionName?: CloudFunction,
-    params?: any
-  ) => async () => {
-    setAnchorEl(null);
-    if (functionName) {
-      try {
-        const res = await httpsCallable(
-          functions,
-          functionName
-        )({
-          ...params,
-          organization: getOrganization(),
-        });
+  const handleClose =
+    (functionName?: CloudFunction, params?: any) => async () => {
+      setAnchorEl(null);
+      if (functionName) {
+        try {
+          const res = await httpsCallable(
+            functions,
+            functionName
+          )({
+            ...params,
+            organization: getOrganization(),
+          });
 
-        console.log(res.data);
-      } catch (err) {
-        console.error(err);
+          console.log(res.data);
+        } catch (err) {
+          console.error(err);
+        }
       }
-    }
-  };
+    };
 
   return (
     <>

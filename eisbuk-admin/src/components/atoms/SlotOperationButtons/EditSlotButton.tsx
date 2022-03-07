@@ -1,8 +1,8 @@
 import React, { useState, useContext } from "react";
 
-import IconButton from "@material-ui/core/IconButton";
+import IconButton from "@mui/material/IconButton";
 
-import CreateIcon from "@material-ui/icons/Create";
+import CreateIcon from "@mui/icons-material/Create";
 
 import { ButtonContextType } from "@/enums/components";
 

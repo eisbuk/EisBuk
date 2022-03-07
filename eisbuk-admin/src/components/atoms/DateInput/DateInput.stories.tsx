@@ -1,8 +1,9 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
+import * as yup from "yup";
 
-import Cake from "@material-ui/icons/Cake";
+import Cake from "@mui/icons-material/Cake";
 
 import DateInput from "./DateInput";
 
@@ -28,11 +29,14 @@ export const WithIcon = (): JSX.Element => (
     <DateInput name="date" Icon={Cake} />
   </Formik>
 );
-const error = {
-  date: "invalid",
-};
 export const WithError = (): JSX.Element => (
-  <Formik initialValues={{}} initialErrors={error} onSubmit={() => {}}>
+  <Formik
+    initialValues={{}}
+    validationSchema={yup.object().shape({
+      date: yup.string().test({ message: "invalid", test: () => false }),
+    })}
+    onSubmit={() => {}}
+  >
     <DateInput name="date" Icon={Cake} />
   </Formik>
 );

@@ -1,3 +1,7 @@
+/**
+ * @jest-environment jsdom
+ */
+
 import React from "react";
 import {
   cleanup,
@@ -20,7 +24,6 @@ import CustomerCard from "../CustomerCard";
 
 import * as customerActions from "@/store/actions/customerOperations";
 
-import { testWithMutationObserver } from "@/__testUtils__/envUtils";
 import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
@@ -98,36 +101,33 @@ describe("Customer Card", () => {
       );
     });
 
-    testWithMutationObserver(
-      "should open 'CustomerForm' on edit click and dispatch 'updateCustomer' with updated values on submit",
-      async () => {
-        const newName = "Jimmy";
-        const newSurname = "McGill";
+    test("should open 'CustomerForm' on edit click and dispatch 'updateCustomer' with updated values on submit", async () => {
+      const newName = "Jimmy";
+      const newSurname = "McGill";
 
-        screen.getByTestId(__customerEditId__).click();
-        // check proper rendering of confirm delete dialog message
-        screen.getByText(
-          `${i18n.t(CustomerFormTitle.EditCustomer)} (${saul.name} ${
-            saul.surname
-          })`
-        );
-        // update customer
-        const [nameInput, surnameInput] = screen.getAllByRole("textbox");
-        fireEvent.change(nameInput, { target: { value: newName } });
-        fireEvent.change(surnameInput, { target: { value: newSurname } });
-        // submit form
-        screen.getByText(i18n.t(ActionButton.Save) as string).click();
-        await waitFor(() =>
-          expect(mockDispatch).toHaveBeenCalledWith(
-            mockUpdateCustomerImplementation({
-              ...saul,
-              name: newName,
-              surname: newSurname,
-            })
-          )
-        );
-      }
-    );
+      screen.getByTestId(__customerEditId__).click();
+      // check proper rendering of confirm delete dialog message
+      screen.getByText(
+        `${i18n.t(CustomerFormTitle.EditCustomer)} (${saul.name} ${
+          saul.surname
+        })`
+      );
+      // update customer
+      const [nameInput, surnameInput] = screen.getAllByRole("textbox");
+      fireEvent.change(nameInput, { target: { value: newName } });
+      fireEvent.change(surnameInput, { target: { value: newSurname } });
+      // submit form
+      screen.getByText(i18n.t(ActionButton.Save) as string).click();
+      await waitFor(() =>
+        expect(mockDispatch).toHaveBeenCalledWith(
+          mockUpdateCustomerImplementation({
+            ...saul,
+            name: newName,
+            surname: newSurname,
+          })
+        )
+      );
+    });
   });
 
   describe("Test email button", () => {
@@ -146,6 +146,7 @@ describe("Customer Card", () => {
       );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
+        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
         customerId: saul.id,
         method: SendBookingLinkMethod.Email,
       });
@@ -194,6 +195,7 @@ describe("Customer Card", () => {
       );
       screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith({
+        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
         customerId: saul.id,
         method: SendBookingLinkMethod.SMS,
       });

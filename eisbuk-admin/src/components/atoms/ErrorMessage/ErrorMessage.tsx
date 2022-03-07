@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface Props extends Omit<React.HTMLAttributes<HTMLElement>, "translate"> {
   as?: keyof JSX.IntrinsicElements;

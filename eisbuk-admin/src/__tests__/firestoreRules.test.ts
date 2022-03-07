@@ -1,3 +1,7 @@
+/**
+ * @jest-environment node
+ */
+
 import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import pRetry from "p-retry";
@@ -60,7 +64,9 @@ describe("Firestore rules", () => {
           setup: (db) =>
             setDoc(
               doc(db, Collection.Organizations, "different-organization"),
-              { admins: ["different-admin"] }
+              {
+                admins: ["different-admin"],
+              }
             ),
         });
         const orgRef = doc(

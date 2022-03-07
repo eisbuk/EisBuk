@@ -1,8 +1,8 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import Container from "@material-ui/core/Container";
-import Paper from "@material-ui/core/Paper";
+import Container from "@mui/material/Container";
+import Paper from "@mui/material/Paper";
 
 import CustomerList from "./CustomerList";
 

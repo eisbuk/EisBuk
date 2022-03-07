@@ -22,7 +22,6 @@ import { NotifVariant } from "@/enums/store";
 import { NotificationMessage } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
-import { Routes } from "@/enums/routes";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -64,7 +63,6 @@ export const updateCustomer =
         docRef = doc(customersCollRef);
       }
 
-      console.log("Updating customer with", updatedData);
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
@@ -120,11 +118,12 @@ interface SendBookingsLink {
   (payload: {
     customerId: Customer["id"];
     method: SendBookingLinkMethod;
+    bookingsLink: string;
   }): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ customerId, method }) =>
+  ({ customerId, method, bookingsLink }) =>
   async (dispatch, getState) => {
     try {
       const { email, phone, name, secretKey } = getCustomersRecord(getState())[
@@ -138,8 +137,6 @@ export const sendBookingsLink: SendBookingsLink =
         // (email button should be disabled in case secret key or email are not provided)
         throw new Error();
       }
-
-      const bookingsLink = `https://${window.location.hostname}${Routes.CustomerArea}/${secretKey}`;
 
       const html = `<p>Ciao ${name},</p>
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
@@ -180,7 +177,7 @@ export const sendBookingsLink: SendBookingsLink =
           },
         })
       );
-    } catch {
+    } catch (error) {
       dispatch(showErrSnackbar);
     }
   };
@@ -188,7 +185,6 @@ export const sendBookingsLink: SendBookingsLink =
 export const extendBookingDate =
   (customerId: string, extendedDate: string): FirestoreThunk =>
   async (dispatch) => {
-    console.log("Extending bookig date: ", extendedDate);
     try {
       const db = getFirestore();
       await setDoc(

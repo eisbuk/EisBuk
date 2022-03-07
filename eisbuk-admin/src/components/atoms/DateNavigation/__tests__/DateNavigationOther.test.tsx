@@ -1,11 +1,11 @@
 /**
- * @jest-environment jsdom-sixteen
+ * @jest-environment jsdom
  */
 
 import React from "react";
 import { screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 import { DateTime } from "luxon";
 import * as reactRedux from "react-redux";
 

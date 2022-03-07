@@ -2,15 +2,21 @@ import React, { useState, useEffect } from "react";
 import { useField } from "formik";
 import { useTranslation } from "react-i18next";
 
-import Box from "@material-ui/core/Box";
-import Checkbox from "@material-ui/core/Checkbox";
-import FormControlLabel from "@material-ui/core/FormControlLabel";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
+import Checkbox from "@mui/material/Checkbox";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotType, Category } from "eisbuk-shared";
 
-import { CategoryLabel, SlotFormAria } from "@/enums/translations";
+import {
+  CategoryLabel,
+  SlotFormAria,
+  SlotFormLabel,
+} from "@/enums/translations";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 // #region main
@@ -48,12 +54,13 @@ const SelectCategories: React.FC = () => {
     <>
       <Box
         className={classes.container}
-        display="flex"
-        flexWrap="wrap"
         role="group"
         aria-label={t(SlotFormAria.SlotCategory)}
         aria-disabled={disabled}
       >
+        <Typography className={classes.categoriesTitle}>
+          {t(SlotFormLabel.Categories)}
+        </Typography>
         {Object.values(Category).map((category) => (
           <CategoryCheckbox {...{ category, disabled, key: category }} />
         ))}
@@ -83,6 +90,8 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
 }) => {
   const { t } = useTranslation();
 
+  const classes = useCheckboxStyles();
+
   // create field values from Formik
   const [field] = useField({
     name: "categories",
@@ -92,9 +101,10 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
 
   return (
     <FormControlLabel
+      className={classes.categoryCheckbox}
       control={<Checkbox {...field} />}
       disabled={disabled}
-      label={t(CategoryLabel[category])}
+      label={`${t(CategoryLabel[category])}`}
       role="checkbox"
       aria-label={t(CategoryLabel[category])}
     />
@@ -103,23 +113,48 @@ export const CategoryCheckbox: React.FC<CategoryCheckboxProps> = ({
 
 // #endregion CategoryCheckbox
 
-const useStyles = makeStyles((theme) => ({
-  container: {
-    position: "relative",
-    display: "flex",
-    justifyContent: "space-evenly",
-    paddingBottom: theme.spacing(1),
-  },
-  error: {
-    position: "absolute",
-    bottom: 0,
-    left: "50%",
-    witdh: "80%",
-    whitespace: "normal",
-    transform: "translateX(-50%)",
-    fontSize: 14,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.error.dark,
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    categoriesTitle: {
+      letterSpacing: 1,
+      fontSize: theme.typography.pxToRem(18),
+      fontWeight: theme.typography.fontWeightBold,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.primary.light,
+
+      [theme.breakpoints.up("sm")]: {
+        display: "none",
+      },
+    },
+    container: {
+      position: "relative",
+      [theme.breakpoints.up("sm")]: {
+        display: "flex",
+        flexWrap: "wrap",
+        justifyContent: "start",
+        paddingBottom: theme.spacing(1),
+      },
+    },
+    error: {
+      position: "absolute",
+      bottom: 0,
+      left: "50%",
+      witdh: "80%",
+      whitespace: "normal",
+      transform: "translateX(-50%)",
+      fontSize: 14,
+      fontFamily: theme.typography.fontFamily,
+      color: theme.palette.error.dark,
+    },
+  })
+);
+
+const useCheckboxStyles = makeStyles((theme) => ({
+  categoryCheckbox: {
+    [theme.breakpoints.down("sm")]: {
+      display: "block",
+      marginLeft: "1rem",
+    },
   },
 }));
 
