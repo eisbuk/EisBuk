@@ -24,6 +24,8 @@ import { __toggleId__ } from "./__testData__/testData";
 
 import { AdminAria } from "@/enums/translations";
 
+import DateSwitcher from "@/components/atoms/DateSwitcher/DateSwitcher";
+
 import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
 
 /**
@@ -169,6 +171,7 @@ const DateNavigation: React.FC<Props> = ({
           >
             <ChevronRightIcon />
           </IconButton>
+          <DateSwitcher currentDate={currentDate} />
           {showExtraButtons && extraButtons}
           {showToggle && toggleButton}
         </Toolbar>

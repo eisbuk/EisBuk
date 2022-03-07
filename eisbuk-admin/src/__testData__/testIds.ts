@@ -22,6 +22,10 @@ export const __dateNavNextId__ = "date-navigation-next-page";
 export const __dateNavPrevId__ = "date-navigation-previous-page";
 // #endregion DateNavigation
 
+// #region DateSwitcher
+export const __calendarPickerButtonId__ = "calendar-picker-button";
+// #endregion DateSwitcher
+
 // #region BookingCard
 export const __bookingCardId__ = "booking-interval-card";
 // #endregion BookingCard
