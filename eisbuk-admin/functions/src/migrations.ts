@@ -2,8 +2,7 @@ import * as functions from "firebase-functions";
 import { FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 
-import { Collection, OrgSubCollection, SlotType } from "eisbuk-shared";
-import { DeprecatedSlotType } from "eisbuk-shared/dist/deprecated";
+import { Collection, OrgSubCollection } from "eisbuk-shared";
 
 import { __functionsZone__ } from "./constants";
 
@@ -107,36 +106,5 @@ export const deleteOrphanedBookings = functions
     });
 
     await Promise.all(toDelete);
-    return { success: true };
-  });
-
-/**
- * Replaces all deprecated "off-ice-dancing" and "off-ice-gym" slot type entries
- * with unified "off-ice" type
- */
-export const unifyOffIceLabels = functions
-  .region("europe-west6")
-  .https.onCall(async ({ organization }, { auth }) => {
-    checkUser(organization, auth);
-
-    const firestore = admin.firestore();
-    const batch = firestore.batch();
-    // get all off-ice-* slots
-    const slotsRef = firestore
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Slots);
-    const offIceSlots = await slotsRef
-      .where("type", "in", [
-        DeprecatedSlotType.OffIceDancing,
-        DeprecatedSlotType.OffIceGym,
-      ])
-      .get();
-    // replace all type entries with unified "off-ice"
-    offIceSlots.forEach((snap) => {
-      const { ref } = snap;
-      batch.set(ref, { type: SlotType.OffIce }, { merge: true });
-    });
-    await batch.commit();
     return { success: true };
   });

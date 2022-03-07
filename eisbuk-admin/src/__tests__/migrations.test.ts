@@ -9,10 +9,8 @@ import {
   Collection,
   HTTPSErrors,
   OrgSubCollection,
-  SlotType,
   getCustomerBase,
 } from "eisbuk-shared";
-import { DeprecatedSlotType } from "eisbuk-shared/dist/deprecated";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -35,7 +33,6 @@ import { waitForCondition } from "@/__testUtils__/helpers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import * as customers from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
 
 const organization = getOrganization();
 
@@ -130,45 +127,6 @@ describe("Migrations", () => {
       await expect(
         invokeFunction(CloudFunction.DeleteOrphanedBookings)()
       ).rejects.toThrow(HTTPSErrors.Unauth);
-    });
-  });
-
-  describe("'unifyOffIceLabels'", () => {
-    testWithEmulator(
-      "should replace all 'off-ice-*' slot types with single 'off-ice'",
-      async () => {
-        const slotsRef = orgRef.collection(OrgSubCollection.Slots);
-        // create one slot in firestore entry for each of deprecated types
-        const initialSlotUpdates = Object.values(DeprecatedSlotType).map(
-          (type) =>
-            slotsRef.doc().set({
-              ...baseSlot,
-              id: `${type}-slot`,
-              type,
-            })
-        );
-        await Promise.all(initialSlotUpdates);
-        // run migration
-        await invokeFunction(CloudFunction.UnifyOffIceLabels)();
-        // "ice" slot should be intact, while off-ice-* types should be the same ("off-ice") type
-        const iceSlots = await slotsRef.where("type", "==", SlotType.Ice).get();
-        expect(iceSlots.docs.length).toEqual(1);
-        const offIceSlots = await slotsRef
-          .where("type", "==", SlotType.OffIce)
-          .get();
-        expect(offIceSlots.docs.length).toEqual(2);
-      }
-    );
-
-    testWithEmulator("should not allow access to unauth users", async () => {
-      await signOut(getAuth());
-      try {
-        await invokeFunction(CloudFunction.UnifyOffIceLabels)();
-      } catch (err) {
-        expect((err as FunctionsError).code).toEqual(
-          "functions/permission-denied"
-        );
-      }
     });
   });
 });
