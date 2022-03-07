@@ -104,6 +104,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
             <Box className={classes.categories} display="flex">
               {slotData.categories.map((category) => (
                 <Typography
+                  style={{
+                    backgroundColor: getColorForSlotType(slotData.type),
+                  }}
                   className={classes.category}
                   color="textSecondary"
                   key={category}
@@ -226,16 +229,21 @@ const useStyles = makeStyles((theme) =>
     },
     categories: {
       padding: 4,
+      display: "flex",
+      flexWrap: "wrap",
     },
     typeLabel: {
       padding: `0 ${theme.spacing(1)}`,
     },
     category: {
       textTransform: "uppercase",
+      whitespace: "nowrap",
+      border: "none",
+      borderRadius: 8,
       fontWeight: theme.typography.fontWeightBold,
       fontSize: theme.typography.pxToRem(10),
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      margin: `${theme.spacing(0.5)} ${theme.spacing(0.5)}`,
+      padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
     },
     notes: {
       fontWeight: theme.typography.fontWeightBold,
