@@ -252,13 +252,12 @@ const enqueueBookingsMigrations: EnqueueMigration = async ({
             const customerBookingsRef = bookingsRef.doc(secretKey);
 
             // check if customers booking info needs migrating
-            const customerInfo = customerBooking.data() as Partial<DeprecatedBookingsMeta> &
-              Partial<CustomerBase>;
+            const customerInfo =
+              customerBooking.data() as Partial<DeprecatedBookingsMeta> &
+                Partial<CustomerBase>;
             if (customerInfo.customer_id) {
-              const {
-                customer_id: id,
-                ...custoemrData
-              } = customerInfo as DeprecatedBookingsMeta;
+              const { customer_id: id, ...custoemrData } =
+                customerInfo as DeprecatedBookingsMeta;
               const customerBase: CustomerBase = { ...custoemrData, id };
               // queue updates
               batch.set(customerBookingsRef, customerBase);

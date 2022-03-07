@@ -19,6 +19,7 @@ import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
+import AdminPreferencesPage from "@/pages/admin_preferences";
 
 import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
 
@@ -60,6 +61,10 @@ const AppContent: React.FC = () => {
         <PrivateRoute
           path={Routes.AttendancePrintable}
           component={AttendancePrintable}
+        />
+        <PrivateRoute
+          path={PrivateRoutes.AdminPreferences}
+          component={AdminPreferencesPage}
         />
 
         <Route
