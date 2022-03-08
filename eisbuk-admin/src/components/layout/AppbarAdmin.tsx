@@ -22,6 +22,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import DateRangeIcon from "@mui/icons-material/DateRange";
 import MenuIcon from "@mui/icons-material/Menu";
+import IconButton from "@mui/material/IconButton";
 
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -140,24 +141,27 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>
-          <Hidden smUp>
-            <Button
-              onClick={() => setDrawerOpen(drawerOpen ? false : true)}
-              aria-label={t(AdminAria.PageNav)}
-            >
-              <MenuIcon />
-            </Button>
-          </Hidden>
 
           <BirthdayMenu
             customers={customers}
             onClickShowAll={() => setShowAll(true)}
           />
+
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}
             customers={customers}
           />
+
+          <Hidden smUp>
+            <IconButton
+              className={classes.hamburger}
+              onClick={() => setDrawerOpen(drawerOpen ? false : true)}
+              aria-label={t(AdminAria.PageNav)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Hidden>
         </Toolbar>
       </AppBar>
 
@@ -214,6 +218,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     margin: theme.spacing(2),
   },
+  hamburger: { color: "rgba(0, 0, 0, 0.54)", width: 48, height: 48 },
   disabledButton: {
     color: `${theme.palette.primary.main} !important`,
     opacity: "1 !important",
