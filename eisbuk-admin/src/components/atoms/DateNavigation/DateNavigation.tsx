@@ -141,6 +141,7 @@ const DateNavigation: React.FC<Props> = ({
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (jump === "month") return;
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -165,7 +166,9 @@ const DateNavigation: React.FC<Props> = ({
           <Typography
             variant="h6"
             color="inherit"
-            className={classes.selectedDate}
+            className={`${classes.selectedDate} ${
+              jump !== "month" && classes.pointerCursor
+            }`}
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
@@ -207,8 +210,10 @@ const useStyles = makeStyles((theme) => ({
   },
   selectedDate: {
     width: "15rem",
-    cursor: "pointer",
     textAlign: "center",
+  },
+  pointerCursor: {
+    cursor: "pointer",
   },
   prev: {
     flexGrow: 1,
