@@ -5,6 +5,7 @@ import i18n from "i18next";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemText from "@mui/material/ListItemText";
+import Divider from "@mui/material/Divider";
 
 import AddNew from "@mui/icons-material/AddCircle";
 
@@ -29,7 +30,6 @@ import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 import { ETheme } from "@/themes";
 
 import { __addCustomersButtonId__ } from "./__testData__/testIds";
-import Divider from "@mui/material/Divider";
 
 export interface Props extends SlotInterface {
   /**

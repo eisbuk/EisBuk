@@ -70,42 +70,11 @@ const DebugPage: React.FC = () => {
       </Box>
       <Box my={4} color="secondary.main">
         <Button
-          onClick={createCloudFunctionCaller(
-            CloudFunction.MigrateSlotsToPluralCategories
-          )}
+          onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
           color="primary"
           variant="contained"
         >
-          Migrate slots to plural categories
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.CreateStaleTestData)}
-          color="primary"
-          variant="contained"
-        >
-          Create old data model entries
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(
-            CloudFunction.MigrateToNewDataModel
-          )}
-          color="primary"
-          variant="contained"
-        >
-          Migrate to new data model
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.AddIdsToCustomers)}
-          color="primary"
-          variant="contained"
-        >
-          Add doc ids to customer structures
+          Prune slots by day
         </Button>
       </Box>
       <Box my={4} color="secondary.main">
@@ -117,15 +86,6 @@ const DebugPage: React.FC = () => {
           variant="contained"
         >
           Delete orphaned bookings
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.UnifyOffIceLabels)}
-          color="primary"
-          variant="contained"
-        >
-          Unify off ice labels
         </Button>
       </Box>
     </Container>
