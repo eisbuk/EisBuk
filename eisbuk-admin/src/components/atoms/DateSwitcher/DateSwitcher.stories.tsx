@@ -16,6 +16,11 @@ const defaultDate = DateTime.fromISO(defaultDateISO);
 
 export const Default = (): JSX.Element => (
   <LocalizationProvider dateAdapter={AdapterDateFns}>
-    <DateSwitcher currentDate={defaultDate} />
+    <DateSwitcher
+      currentDate={defaultDate}
+      open={true}
+      anchorEl={null}
+      handleClose={() => {}}
+    />
   </LocalizationProvider>
 );

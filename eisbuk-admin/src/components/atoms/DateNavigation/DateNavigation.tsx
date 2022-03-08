@@ -138,6 +138,15 @@ const DateNavigation: React.FC<Props> = ({
    */
   const showExtraButtons = toggleState || !showToggle;
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <AppBar {...props} position="sticky">
@@ -157,9 +166,19 @@ const DateNavigation: React.FC<Props> = ({
             variant="h6"
             color="inherit"
             className={classes.selectedDate}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
           >
             {createDateTitle(currentDate, jump)}
           </Typography>
+          <DateSwitcher
+            currentDate={currentDate}
+            jump={jump}
+            anchorEl={anchorEl}
+            open={open}
+            handleClose={handleClose}
+          />
           <IconButton
             edge="start"
             className={classes.next}
@@ -171,7 +190,6 @@ const DateNavigation: React.FC<Props> = ({
           >
             <ChevronRightIcon />
           </IconButton>
-          <DateSwitcher currentDate={currentDate} jump={jump} />
           {showExtraButtons && extraButtons}
           {showToggle && toggleButton}
         </Toolbar>
@@ -188,7 +206,8 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 0,
   },
   selectedDate: {
-    flexGrow: 6,
+    width: "15rem",
+    cursor: "pointer",
     textAlign: "center",
   },
   prev: {

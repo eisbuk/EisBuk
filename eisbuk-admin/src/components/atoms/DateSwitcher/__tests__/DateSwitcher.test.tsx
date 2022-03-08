@@ -14,7 +14,6 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { testDateLuxon } from "@/__testData__/date";
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { DateTime } from "luxon";
-import { __calendarPickerButtonId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
@@ -28,7 +27,12 @@ describe("Date Switcher", () => {
     test("should render component", () => {
       render(
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateSwitcher currentDate={testDateDateTime} />
+          <DateSwitcher
+            currentDate={testDateDateTime}
+            open={true}
+            anchorEl={null}
+            handleClose={() => {}}
+          />
         </LocalizationProvider>
       );
     });
@@ -36,14 +40,14 @@ describe("Date Switcher", () => {
     test("should change calendar day to picked date", () => {
       render(
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateSwitcher currentDate={testDateDateTime} />
+          <DateSwitcher
+            currentDate={testDateDateTime}
+            open={true}
+            anchorEl={null}
+            handleClose={() => {}}
+          />
         </LocalizationProvider>
       );
-
-      const calendarPickerButton = screen.getByTestId(
-        __calendarPickerButtonId__
-      );
-      calendarPickerButton.click();
 
       const nexDayDateTime = testDateDateTime.plus({ days: 1 });
 
@@ -57,14 +61,15 @@ describe("Date Switcher", () => {
     test("should disable picking non-mondays on slots view", () => {
       render(
         <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DateSwitcher currentDate={testDateDateTime} jump="week" />
+          <DateSwitcher
+            currentDate={testDateDateTime}
+            jump="week"
+            open={true}
+            anchorEl={null}
+            handleClose={() => {}}
+          />
         </LocalizationProvider>
       );
-
-      const calendarPickerButton = screen.getByTestId(
-        __calendarPickerButtonId__
-      );
-      calendarPickerButton.click();
 
       const nonMonday = testDateDateTime.startOf("week").plus({ days: 1 });
 
