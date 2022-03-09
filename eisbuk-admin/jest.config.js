@@ -1,9 +1,6 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
-const hq = require("alias-hq");
-
 module.exports = {
   moduleNameMapper: {
-    ...hq.get("jest"),
+    "@/(.*)": "<rootDir>/src/$1",
     "\\.svg": "<rootDir>/src/__mocks__/svg.ts",
     "@mui/styles/makeStyles": "<rootDir>/src/__mocks__/makeStyles.ts",
   },
