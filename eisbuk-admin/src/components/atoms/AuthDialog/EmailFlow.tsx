@@ -6,6 +6,7 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
+  AuthErrorCodes,
 } from "@firebase/auth";
 import { useHistory } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -20,9 +21,11 @@ import {
 import { PrivateRoutes } from "@/enums/routes";
 
 import AuthContainer from "./AuthContainer";
+import AuthErrorDialog from "./AuthErrorDialog";
 import AuthTextField from "./AuthTextField";
 import ActionButton from "./ActionButton";
 import AuthTypography from "./AuthTypography";
+import useAuthFlow from "@/hooks/useAuthFlow";
 
 /**
  * Enum containing values for all possible views of email auth flow
@@ -65,17 +68,40 @@ interface Props {
   onCancel?: () => void;
 }
 
+const fieldErrorMap = {
+  [AuthErrorCodes.INVALID_PASSWORD]: "password",
+};
+
 const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   const history = useHistory();
   const { t } = useTranslation();
 
   const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.SignInWithEmail);
 
+  const { dialogError, removeDialogError, handleSubmit } =
+    useAuthFlow<CompleteFormValues>(fieldErrorMap);
+
   // #region form
   const initialValues = { email: "", password: "", name: "" };
 
   const validationSchema = yup.object().shape({
-    email: yup.string().email(t(ValidationMessage.Email)),
+    email: yup
+      .string()
+      .required(t(ValidationMessage.RequiredField))
+      .email(t(ValidationMessage.Email)),
+    ...(authStep === AuthStep.CreateAccount
+      ? {
+          name: yup.string().required(t(ValidationMessage.RequiredField)),
+          password: yup
+            .string()
+            .required(t(ValidationMessage.RequiredField))
+            .min(6, t(ValidationMessage.WeakPassword, { min: 6 })),
+        }
+      : authStep === AuthStep.SignIn
+      ? {
+          password: yup.string().required(t(ValidationMessage.RequiredField)),
+        }
+      : {}),
   });
   // #endregion form
 
@@ -96,14 +122,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     }
   };
   submitHandlers[AuthStep.CreateAccount] = async ({ email, password }) => {
-    const res = await createUserWithEmailAndPassword(
-      getAuth(),
-      email,
-      password
-    );
-    if (res.user.refreshToken) {
-      history.push(PrivateRoutes.Root);
-    }
+    await createUserWithEmailAndPassword(getAuth(), email, password);
   };
   submitHandlers[AuthStep.RecoverPassword] = async ({ email }) => {
     await sendPasswordResetEmail(getAuth(), email);
@@ -122,53 +141,60 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   return (
     <AuthContainer>
       {({ Header, Content, ActionButtons, TextMessage }) => (
-        <Formik
-          onSubmit={submitHandlers[authStep]}
-          {...{ initialValues, validationSchema }}
-        >
-          {({ values: { email } }) => (
-            <Form onReset={onCancel}>
-              <Header>{t(AuthTitle[authStep])}</Header>
-              {message && (
-                <TextMessage>
-                  <AuthTypography variant="body1">
-                    {t(message, { email })}
-                  </AuthTypography>
-                </TextMessage>
-              )}
-
-              <Content>
-                {fieldsLookup[authStep]?.map((fieldProps) => (
-                  <AuthTextField
-                    {...fieldProps}
-                    key={fieldProps.name}
-                    id={fieldProps.name}
-                  />
-                ))}
-              </Content>
-
-              <ActionButtons>
-                {actionButtonLookup[authStep].map(
-                  ({ nextStep, label, ...buttonProps }) => (
-                    <ActionButton
-                      key={label}
-                      {...{
-                        ...buttonProps,
-                        // add onClick handler only if nextStep specified
-                        // (otherwise actions are controlled through `onSubmit`/`onReset`)
-                        ...(nextStep
-                          ? { onClick: () => setAuthStep(nextStep) }
-                          : {}),
-                      }}
-                    >
-                      {t(label)}
-                    </ActionButton>
-                  )
+        <>
+          <AuthErrorDialog
+            message={dialogError || ""}
+            open={Boolean(dialogError)}
+            onClose={removeDialogError}
+          />
+          <Formik
+            onSubmit={handleSubmit(submitHandlers[authStep])}
+            {...{ initialValues, validationSchema }}
+          >
+            {({ values: { email } }) => (
+              <Form onReset={onCancel}>
+                <Header>{t(AuthTitle[authStep])}</Header>
+                {message && (
+                  <TextMessage>
+                    <AuthTypography variant="body1">
+                      {t(message, { email })}
+                    </AuthTypography>
+                  </TextMessage>
                 )}
-              </ActionButtons>
-            </Form>
-          )}
-        </Formik>
+
+                <Content>
+                  {fieldsLookup[authStep]?.map((fieldProps) => (
+                    <AuthTextField
+                      {...fieldProps}
+                      key={fieldProps.name}
+                      id={fieldProps.name}
+                    />
+                  ))}
+                </Content>
+
+                <ActionButtons>
+                  {actionButtonLookup[authStep].map(
+                    ({ nextStep, label, ...buttonProps }) => (
+                      <ActionButton
+                        key={label}
+                        {...{
+                          ...buttonProps,
+                          // add onClick handler only if nextStep specified
+                          // (otherwise actions are controlled through `onSubmit`/`onReset`)
+                          ...(nextStep
+                            ? { onClick: () => setAuthStep(nextStep) }
+                            : {}),
+                        }}
+                      >
+                        {t(label)}
+                      </ActionButton>
+                    )
+                  )}
+                </ActionButtons>
+              </Form>
+            )}
+          </Formik>
+        </>
       )}
     </AuthContainer>
   );

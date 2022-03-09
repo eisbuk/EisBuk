@@ -22,10 +22,10 @@ export enum AuthMessage {
   RecoverPassword = "Authorization.RecoverPassword",
   CheckYourEmail = "Authorization.CheckYourEmail",
 }
-export enum AuthError {
+export enum AuthErrorMessage {
   NETWORK_ERROR = "AuthError.NetworkError",
-  EMAIL_NOT_FOUND = "AuthError.EmailNotFound",
-  INVALID_PASSWORD = "AuthError.InvalidPassword",
+  "auth/user-not-found" = "AuthError.EmailNotFound",
+  "auth/wrong-password" = "AuthError.InvalidPassword",
   UNKNOWN = "AuthError.Unknown",
 }
 export enum AuthTitle {
@@ -88,6 +88,7 @@ export enum ValidationMessage {
   InvalidDate = "Validations.InvalidDate",
   InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
+  WeakPassword = "Validations.WeakPassword",
 }
 // #endregion forms
 

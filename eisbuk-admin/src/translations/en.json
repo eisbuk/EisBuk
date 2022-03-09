@@ -20,7 +20,7 @@
   },
   "AuthError": {
     "NetworkError": "A network error has occurred",
-    "EmailNotFount": "That email address doesn't match an existing account",
+    "EmailNotFound": "That email address doesn't match an existing account",
     "InvalidPassword": "The email and password you entered don't match",
     "Unknown": "Unknown error"
   },
@@ -77,7 +77,8 @@
     "InvalidTime": "Invalid time format (\"HH:mm\")",
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
     "InvalidPhone": "Please enter a valid phone format: phone number prepended with '+' sign and country code (i.e. +385 99 2222 555)",
-    "TimeMismatch": "Start time is greater than end time"
+    "TimeMismatch": "Start time is greater than end time",
+    "WeakPassword": "Password should contain at least {{ min }} characters"
   },
 
   "Prompt": {

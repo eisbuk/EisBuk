@@ -56,6 +56,11 @@ declare global {
        * @param {string} input
        */
       clearAndType: (input: string) => Chainable<Element>;
+      /**
+       * A convenience method to avoid typing `get("button").contains(<label>)` each time
+       * @param {string} label button label
+       */
+      getButton: (label: string) => Chainable<Element>;
     }
   }
 }
@@ -143,5 +148,9 @@ export default (): void => {
     "clearAndType",
     { prevSubject: "element" },
     (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
+  );
+
+  Cypress.Commands.add("getButton", (label: string) =>
+    cy.get("button").contains(label)
   );
 };

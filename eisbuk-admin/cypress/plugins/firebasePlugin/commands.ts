@@ -48,6 +48,10 @@ declare global {
         organization: string,
         files: string[]
       ) => Chainable<null>;
+      /**
+       * Sign out of firestore
+       */
+      signOut: () => Chainable<void>;
     }
   }
 }
@@ -122,6 +126,10 @@ const addFirebaseCommands = (): void => {
       cy.task("updateFirestore", { organization, files });
     }
   );
+
+  Cypress.Commands.add("signOut", () => {
+    signOut(getAuth());
+  });
 };
 
 export default addFirebaseCommands;

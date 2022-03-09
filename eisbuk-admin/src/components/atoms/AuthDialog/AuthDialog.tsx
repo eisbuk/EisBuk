@@ -1,5 +1,6 @@
 import React, {
-  useState, //  useCallback
+  // useCallback,
+  useState,
 } from "react";
 // import * as firebaseui from "firebaseui";
 // import { getApp } from "@firebase/app";
@@ -13,6 +14,10 @@ import React, {
 
 // import styles necessary for firebase ui elements
 import "firebaseui/dist/firebaseui.css";
+// import { Form, Formik } from "formik";
+// import AuthTextField from "./AuthTextField";
+// import ActionButton from "./ActionButton";
+// import AuthErrorDialog from "./AuthErrorDialog";
 
 import AuthButton from "./AuthButton";
 import AuthContainer from "./AuthContainer";
