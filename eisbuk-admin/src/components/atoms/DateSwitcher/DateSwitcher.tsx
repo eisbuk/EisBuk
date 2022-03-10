@@ -16,6 +16,8 @@ interface Props extends MenuProps {
 
 const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
   const dispatch = useDispatch();
+  const start = currentDate.startOf("week");
+  const end = currentDate.endOf("week");
 
   return (
     <>
@@ -25,7 +27,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
           onChange={(currentDate) => {
             dispatch(changeCalendarDate(currentDate!));
           }}
-          renderDay={renderWeekPickerDay(currentDate)}
+          renderDay={renderWeekPickerDay(currentDate, start, end)}
         />
       </Menu>
     </>
@@ -33,7 +35,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
 };
 
 const renderWeekPickerDay =
-  (currentDate: DateTime) =>
+  (currentDate: DateTime, start: DateTime, end: DateTime) =>
   (
     date: DateTime,
     selectedDates: (DateTime | null)[],
@@ -42,9 +44,6 @@ const renderWeekPickerDay =
     if (!currentDate) {
       return <PickersDay {...pickersDayProps} />;
     }
-
-    const start = currentDate.startOf("week");
-    const end = currentDate.endOf("week");
 
     const dayIsBetween = date > start && date < end;
     const isFirstDay = date.equals(start);
