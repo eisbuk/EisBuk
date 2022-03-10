@@ -2,12 +2,13 @@ import React from "react";
 import { DateTime } from "luxon";
 import { useDispatch } from "react-redux";
 
+import Menu, { MenuProps } from "@mui/material/Menu";
 import { CalendarPicker } from "@mui/lab";
+import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay";
+
+import { styled } from "@mui/material/styles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-import Menu, { MenuProps } from "@mui/material/Menu";
-import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay/PickersDay";
-import { styled } from "@mui/material/styles";
 
 interface Props extends MenuProps {
   currentDate: DateTime;
