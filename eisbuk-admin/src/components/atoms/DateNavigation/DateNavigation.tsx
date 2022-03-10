@@ -26,7 +26,11 @@ import { AdminAria } from "@/enums/translations";
 
 import DateSwitcher from "@/components/atoms/DateSwitcher/DateSwitcher";
 
-import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import {
+  __currentDateId__,
+  __dateNavNextId__,
+  __dateNavPrevId__,
+} from "@/__testData__/testIds";
 
 /**
  * A render function passed as child for render prop usage
@@ -172,6 +176,7 @@ const DateNavigation: React.FC<Props> = ({
             aria-haspopup="true"
             aria-expanded={open ? "true" : undefined}
             onClick={handleClick}
+            data-testid={__currentDateId__}
           >
             {createDateTitle(currentDate, jump)}
           </Typography>

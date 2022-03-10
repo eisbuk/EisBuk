@@ -9,6 +9,7 @@ import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay";
 import { styled } from "@mui/material/styles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
+import { __calendarMenuId__ } from "@/__testData__/testIds";
 
 interface Props extends MenuProps {
   currentDate: DateTime;
@@ -21,7 +22,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
 
   return (
     <>
-      <Menu {...MenuProps}>
+      <Menu data-testId={__calendarMenuId__} {...MenuProps}>
         <CalendarPicker
           date={currentDate}
           onChange={(currentDate) => {
