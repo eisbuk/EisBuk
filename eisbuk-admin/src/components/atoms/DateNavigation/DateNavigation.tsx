@@ -177,10 +177,9 @@ const DateNavigation: React.FC<Props> = ({
           </Typography>
           <DateSwitcher
             currentDate={currentDate}
-            jump={jump}
             anchorEl={anchorEl}
             open={open}
-            handleClose={handleClose}
+            onClose={handleClose}
           />
           <IconButton
             edge="start"

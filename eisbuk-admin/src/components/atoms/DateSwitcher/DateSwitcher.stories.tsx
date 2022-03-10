@@ -11,8 +11,7 @@ export default {
 } as ComponentMeta<typeof DateSwitcher>;
 
 // we're using a standardized date not to fallback to current date and produce false positives with chromatic
-const defaultDateISO = "2021-03-01";
-const defaultDate = DateTime.fromISO(defaultDateISO);
+const defaultDate = DateTime.fromISO("2021-03-01");
 
 export const Default = (): JSX.Element => (
   <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -20,7 +19,7 @@ export const Default = (): JSX.Element => (
       currentDate={defaultDate}
       open={true}
       anchorEl={null}
-      handleClose={() => {}}
+      onClose={() => {}}
     />
   </LocalizationProvider>
 );

@@ -5,30 +5,21 @@ import { useDispatch } from "react-redux";
 import { CalendarPicker } from "@mui/lab";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-import Menu from "@mui/material/Menu";
+import Menu, { MenuProps } from "@mui/material/Menu";
 import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay/PickersDay";
 import { styled } from "@mui/material/styles";
 
-interface Props {
+interface Props extends MenuProps {
   currentDate: DateTime;
-  anchorEl: null | HTMLElement;
-  open: boolean;
-  handleClose: () => void;
 }
 
-const DateSwitcher: React.FC<Props> = ({
-  currentDate,
-  anchorEl,
-  open,
-  handleClose,
-}) => {
+const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
   const dispatch = useDispatch();
 
   return (
     <>
-      <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+      <Menu {...MenuProps}>
         <CalendarPicker
-          // shouldDisableDate={disableNonMondays}
           date={currentDate}
           onChange={(currentDate) => {
             dispatch(changeCalendarDate(currentDate!));
