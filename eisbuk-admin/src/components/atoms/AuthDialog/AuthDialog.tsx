@@ -1,55 +1,21 @@
-import React, {
-  // useCallback,
-  useState,
-} from "react";
-// import * as firebaseui from "firebaseui";
-// import { getApp } from "@firebase/app";
-// import {
-//   getAuth,
-//   GoogleAuthProvider,
-//   EmailAuthProvider,
-//   PhoneAuthProvider,
-//   // RecaptchaVerifier,
-// } from "@firebase/auth";
+import React, { useEffect, useState } from "react";
+import {
+  GoogleAuthProvider,
+  getAuth,
+  signInWithRedirect,
+} from "@firebase/auth";
+import { useTranslation } from "react-i18next";
 
-// import styles necessary for firebase ui elements
 import "firebaseui/dist/firebaseui.css";
-// import { Form, Formik } from "formik";
-// import AuthTextField from "./AuthTextField";
-// import ActionButton from "./ActionButton";
-// import AuthErrorDialog from "./AuthErrorDialog";
+
+import makeStyles from "@material-ui/core/styles/makeStyles";
+
+import { AuthTitle } from "@/enums/translations";
 
 import AuthButton from "./AuthButton";
 import AuthContainer from "./AuthContainer";
 import EmailFlow from "./EmailFlow";
 import PhoneFlow from "./PhoneFlow";
-import { AuthTitle } from "@/enums/translations";
-import { useTranslation } from "react-i18next";
-
-// const auth = getAuth(getApp());
-
-// const ui = new firebaseui.auth.AuthUI(auth);
-
-// const uiConfig: firebaseui.auth.Config = {
-//   signInOptions: [
-//     /**
-//      * Phone auth is temporarily removed as it seems to be incompatible with Firebase v9
-//      * @TODO investigate further and/or implement our own solution if necessary
-//      */
-//     {
-//       provider: PhoneAuthProvider.PROVIDER_ID,
-//       // The default selected country.
-//       defaultCountry: "IT",
-//       recaptchaParameters: {
-//         type: "image", // 'audio'
-//         size: "invisible", // 'invisible' or 'compact'
-//         badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-//       },
-//     },
-//     GoogleAuthProvider.PROVIDER_ID,
-//     EmailAuthProvider.PROVIDER_ID,
-//   ],
-// };
 
 enum AuthFlow {
   Email = "email",
@@ -57,21 +23,19 @@ enum AuthFlow {
   Google = "google",
 }
 
-/**
- * An auth dialog we're using instead of `StyledFirebaseAuth`. It
- * utilizes `firebaseui` components with auth loaded internally and the
- * login flow handled by `firebaseui`
- * @returns
- */
 const AuthDialog: React.FC = () => {
   const { t } = useTranslation();
-  // const initAuthUI = useCallback((node: Element | null) => {
-  //   if (node) {
-  //     ui.start(node, uiConfig);
-  //   }
-  // }, []);
+  const classes = useStyles();
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
+
+  // control login with google flow
+  useEffect(() => {
+    if (authFlow === AuthFlow.Google) {
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(getAuth(), provider);
+    }
+  }, [authFlow]);
 
   switch (authFlow) {
     case AuthFlow.Email:
@@ -85,27 +49,29 @@ const AuthDialog: React.FC = () => {
         <AuthContainer>
           {({ Content }) => (
             <Content>
-              {buttons.map(({ authFlow, label, ...button }) => (
-                <ul className="firebaseui-idp-list">
+              <ul className={classes.buttonsContainer}>
+                {buttons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
                     {...button}
                     label={t(label)}
                     onClick={() => setAuthFlow(authFlow)}
                   />
-                </ul>
-              ))}
+                ))}
+              </ul>
             </Content>
           )}
         </AuthContainer>
       );
   }
-
-  // return (
-  //   <>
-  //     <div style={{ border: "1px solid red" }} ref={initAuthUI} />
-  //   </>
-  // );
 };
+
+const useStyles = makeStyles(() => ({
+  buttonsContainer: {
+    listStyle: "none",
+    margin: "1rem 0",
+    padding: 0,
+  },
+}));
 
 export const buttons = [
   {
