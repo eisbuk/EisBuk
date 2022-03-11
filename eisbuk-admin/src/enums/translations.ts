@@ -19,8 +19,10 @@ export enum AuthMessage {
   AdminsOnly = "Authorization.AdminsOnly",
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
+
   RecoverPassword = "Authorization.RecoverPassword",
   CheckYourEmail = "Authorization.CheckYourEmail",
+  SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {
   NETWORK_ERROR = "AuthError.NetworkError",

@@ -15,8 +15,10 @@
     "AdminsOnly": "This space is reserved for administrators",
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
+
     "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
-    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password"
+    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
   "AuthError": {
     "NetworkError": "A network error has occurred",

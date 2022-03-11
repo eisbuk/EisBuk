@@ -180,8 +180,10 @@ describe("login", () => {
       });
     });
 
-    it("sends login code to user and loggs in on successful code entry", () => {
+    it.only("sends login code to user and loggs in on successful code entry", () => {
       cy.contains(t(AuthTitle.SignInWithPhone));
+      // should display data rates warning
+      cy.contains(t(AuthMessage.SMSDataRatesMayApply));
       cy.getAttrWith("type", "phone").type(defaultUser.phone);
       cy.getButton(t(ActionButton.Verify)).click();
       cy.contains(t(AuthTitle.EnterCode));
@@ -211,7 +213,7 @@ describe("login", () => {
       cy.contains(t(ValidationMessage.RequiredField));
     });
 
-    it.only("shows error message on wrong code", () => {
+    it("shows error message on wrong code", () => {
       cy.getAttrWith("type", "phone").clearAndType(defaultUser.phone);
       cy.getButton(t(ActionButton.Verify)).click();
       cy.getAttrWith("id", "code").type("wrong-code");

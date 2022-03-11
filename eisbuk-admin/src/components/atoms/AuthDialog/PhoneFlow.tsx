@@ -9,7 +9,11 @@ import {
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import { AuthTitle, ValidationMessage } from "@/enums/translations";
+import {
+  AuthMessage,
+  AuthTitle,
+  ValidationMessage,
+} from "@/enums/translations";
 
 import AuthContainer from "./AuthContainer";
 import AuthTextField from "./AuthTextField";
@@ -93,6 +97,11 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
     await window.confirmationResult.confirm(code);
   };
 
+  const footerMessage =
+    authStep === PhoneAuthStep.PhoneInput
+      ? t(AuthMessage.SMSDataRatesMayApply)
+      : undefined;
+
   return (
     <AuthContainer>
       {({ Header, Content, Footer, ActionButtons }) => (
@@ -121,10 +130,11 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 </ActionButton>
               </ActionButtons>
               <Footer>
-                <AuthTypography variant="caption">
-                  By tapping Verify, an SMS may be sent. Message & data rates
-                  may apply.
-                </AuthTypography>
+                {footerMessage && (
+                  <AuthTypography variant="caption">
+                    {footerMessage}
+                  </AuthTypography>
+                )}
               </Footer>
             </Form>
           )}
