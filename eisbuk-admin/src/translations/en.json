@@ -22,14 +22,19 @@
     "NetworkError": "A network error has occurred",
     "EmailNotFound": "That email address doesn't match an existing account",
     "InvalidPassword": "The email and password you entered don't match",
+    "InvalidVerificationCode": "The code you've entered is invalid, please enter the correct code",
     "Unknown": "Unknown error"
   },
   "AuthTitle": {
     "SignInWithEmail": "Sign in with email",
+    "SignInWithPhone": "Sign in with phone",
+    "SignInWithGoogle": "Sign in with Google",
+
     "SignIn": "Sign in",
     "CreateAccount": "Create account",
     "RecoverPassword": "Recover password",
-    "CheckYourEmail": "Check your email"
+    "CheckYourEmail": "Check your email",
+    "EnterCode": "Enter Code"
   },
 
   "SlotType": {
@@ -121,7 +126,9 @@
     "ShowAll": "ShowAll",
     "Done": "Done",
     "Send": "Send",
-    "Dismiss": "Dismiss"
+    "Dismiss": "Dismiss",
+    "Submit": "Submit",
+    "Verify": "Verify"
   },
 
   "Notification": {

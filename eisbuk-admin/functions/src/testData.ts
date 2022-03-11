@@ -6,6 +6,7 @@ import { v4 } from "uuid";
 
 import {
   Category,
+  Collection,
   Customer,
   FIRST_NAMES,
   LAST_NAMES,
@@ -59,8 +60,35 @@ export const createOrganization = functions
       .collection("organizations")
       .doc(organization)
       .set({
-        admins: ["test@eisbuk.it", "+39123"],
+        admins: ["test@eisbuk.it", "+3912345678"],
       });
+  });
+
+export const createDefaultUser = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }: Pick<Payload, "organization">) => {
+    const defaultEmail = "test@eisbuk.it";
+    const defaultPhone = "+3912345678";
+
+    const auth = admin.auth();
+    const firestore = admin.firestore();
+
+    // create a default user if one doesn't exist
+    try {
+      await auth.createUser({
+        email: defaultEmail,
+        phoneNumber: defaultPhone,
+        password: "test00",
+      });
+    } catch (err) {
+      functions.logger.error(err);
+    }
+    await firestore
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .set({ admins: [defaultEmail, defaultPhone] });
+
+    return { organization };
   });
 
 /**

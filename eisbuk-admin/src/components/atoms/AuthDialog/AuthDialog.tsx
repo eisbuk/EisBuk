@@ -22,6 +22,9 @@ import "firebaseui/dist/firebaseui.css";
 import AuthButton from "./AuthButton";
 import AuthContainer from "./AuthContainer";
 import EmailFlow from "./EmailFlow";
+import PhoneFlow from "./PhoneFlow";
+import { AuthTitle } from "@/enums/translations";
+import { useTranslation } from "react-i18next";
 
 // const auth = getAuth(getApp());
 
@@ -61,6 +64,7 @@ enum AuthFlow {
  * @returns
  */
 const AuthDialog: React.FC = () => {
+  const { t } = useTranslation();
   // const initAuthUI = useCallback((node: Element | null) => {
   //   if (node) {
   //     ui.start(node, uiConfig);
@@ -73,15 +77,19 @@ const AuthDialog: React.FC = () => {
     case AuthFlow.Email:
       return <EmailFlow onCancel={() => setAuthFlow(null)} />;
 
+    case AuthFlow.Phone:
+      return <PhoneFlow onCancel={() => setAuthFlow(null)} />;
+
     default:
       return (
         <AuthContainer>
           {({ Content }) => (
             <Content>
-              {buttons.map(({ authFlow, ...button }) => (
+              {buttons.map(({ authFlow, label, ...button }) => (
                 <ul className="firebaseui-idp-list">
                   <AuthButton
                     {...button}
+                    label={t(label)}
                     onClick={() => setAuthFlow(authFlow)}
                   />
                 </ul>
@@ -103,21 +111,21 @@ export const buttons = [
   {
     color: "#ffff",
     backgroundColor: "#02bd7e",
-    label: "Sign in with phone",
+    label: AuthTitle.SignInWithPhone,
     icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/phone.svg",
     authFlow: AuthFlow.Phone,
   },
   {
     color: "#757575",
     backgroundColor: "#ffffff",
-    label: "Sign in with Google",
+    label: AuthTitle.SignInWithGoogle,
     icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
     authFlow: AuthFlow.Google,
   },
   {
     color: "#ffff",
     backgroundColor: "#db4437",
-    label: "Sign in with email",
+    label: AuthTitle.SignInWithEmail,
     icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
     authFlow: AuthFlow.Email,
   },

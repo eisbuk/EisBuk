@@ -5,12 +5,12 @@ import { TaskHandler } from "../types";
 import readTestData from "./readTestData";
 import updateFirestoreData from "./updateFirestoreData";
 
-interface Payload {
+interface UpdateFirestorePayload {
   organization: string;
   files: string[];
 }
 
-const handleFirestoreUpdate: TaskHandler<Payload> = async ({
+const handleFirestoreUpdate: TaskHandler<UpdateFirestorePayload> = async ({
   organization,
   files,
 }) => {

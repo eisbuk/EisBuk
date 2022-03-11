@@ -42,6 +42,7 @@ import CustomCheckbox from "./CustomCheckbox";
 import RadioSelection from "@/components/atoms/RadioSelection";
 
 import { isISODay } from "@/utils/date";
+import { isValidPhoneNumber } from "@/utils/helpers";
 
 // #region validations
 const CustomerValidation = Yup.object().shape({
@@ -49,7 +50,7 @@ const CustomerValidation = Yup.object().shape({
   surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   email: Yup.string().email(i18n.t(ValidationMessage.Email)),
   phone: Yup.string().test({
-    test: (input) => !input || /^(\+|00)[0-9]{9,15}$/.test(input),
+    test: (input) => !input || isValidPhoneNumber(input),
     message: i18n.t(ValidationMessage.InvalidPhone),
   }),
   birthday: Yup.string().test({

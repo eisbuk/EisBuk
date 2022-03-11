@@ -7,9 +7,9 @@ import { PrivateRoutes } from "@/enums/routes";
 import {
   ActionButton,
   AdminAria,
-  AuthError,
   AuthMessage,
   AuthTitle,
+  AuthErrorMessage,
   ValidationMessage,
 } from "@/enums/translations";
 
@@ -23,8 +23,11 @@ describe("login", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization but don't sign in
-    cy.initAdminApp(false);
-    cy.visit(PrivateRoutes.Root);
+    cy.initAdminApp().then(() => cy.visit(PrivateRoutes.Root));
+  });
+
+  afterEach(() => {
+    cy.signOut();
   });
 
   describe("Email login", () => {
@@ -33,10 +36,6 @@ describe("login", () => {
       cy.getButton(t(AuthTitle.SignInWithEmail)).click({
         force: true,
       });
-    });
-
-    afterEach(() => {
-      cy.signOut();
     });
 
     it("loggs in with existing email", () => {
@@ -99,21 +98,21 @@ describe("login", () => {
       cy.getAttrWith("type", "email").clearAndType("non@existing.com");
       cy.getAttrWith("type", "password").type(defaultUser.password);
       cy.getButton(t(ActionButton.SignIn)).click();
-      cy.contains(t(AuthError[AuthErrorCodes.USER_DELETED]));
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED]));
 
       cy.contains("Dismiss").click();
-      cy.contains(t(AuthError[AuthErrorCodes.USER_DELETED])).should(
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED])).should(
         "not.exist"
       );
 
       // check trying to send password recovery email to non-registered email
       cy.getButton(t(ActionButton.TroubleSigningIn)).click();
       cy.getButton(t(ActionButton.Send)).click();
-      cy.contains(t(AuthError[AuthErrorCodes.USER_DELETED]));
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED]));
 
       // start over
       cy.contains("Dismiss").click();
-      cy.contains(t(AuthError[AuthErrorCodes.USER_DELETED])).should(
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED])).should(
         "not.exist"
       );
       cy.getButton(t(ActionButton.Cancel)).click();
@@ -124,7 +123,7 @@ describe("login", () => {
       cy.getButton(t(ActionButton.Next)).click();
       cy.getAttrWith("type", "password").type("invalid-password");
       cy.getButton(t(ActionButton.SignIn)).click();
-      cy.contains(t(AuthError[AuthErrorCodes.INVALID_PASSWORD]));
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_PASSWORD]));
     });
 
     it("validates the form before submiting", () => {
@@ -169,7 +168,55 @@ describe("login", () => {
       // this will fail anyhow on email-password mismatch
       cy.getAttrWith("type", "password").type("weak");
       cy.getButton(t(ActionButton.SignIn)).click();
-      cy.contains(t(AuthError[AuthErrorCodes.INVALID_PASSWORD]));
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_PASSWORD]));
+    });
+  });
+
+  describe("Phone login", () => {
+    beforeEach(() => {
+      // start email auth flow
+      cy.getButton(t(AuthTitle.SignInWithPhone)).click({
+        force: true,
+      });
+    });
+
+    it("sends login code to user and loggs in on successful code entry", () => {
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.getAttrWith("type", "phone").type(defaultUser.phone);
+      cy.getButton(t(ActionButton.Verify)).click();
+      cy.contains(t(AuthTitle.EnterCode));
+      cy.getRecaptchaCode(defaultUser.phone).then((code) => {
+        cy.getAttrWith("id", "code").type(code);
+        return cy.getButton(t(ActionButton.Submit)).click();
+      });
+      // on successful login, should show admin nav bar (among other things)
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("validates input fields", () => {
+      // phone number is required
+      cy.getButton(t(ActionButton.Verify)).click();
+      cy.contains(t(ValidationMessage.RequiredField));
+      // phone number should be a valid phone number
+      cy.getAttrWith("type", "phone").type("not-a-number");
+      cy.getButton(t(ActionButton.Verify)).click();
+      cy.contains(t(ValidationMessage.InvalidPhone));
+
+      cy.getAttrWith("type", "phone").clearAndType(defaultUser.phone);
+      cy.getButton(t(ActionButton.Verify)).click();
+
+      // sms code is required
+      cy.contains(t(AuthTitle.EnterCode));
+      cy.getButton(t(ActionButton.Submit)).click();
+      cy.contains(t(ValidationMessage.RequiredField));
+    });
+
+    it.only("shows error message on wrong code", () => {
+      cy.getAttrWith("type", "phone").clearAndType(defaultUser.phone);
+      cy.getButton(t(ActionButton.Verify)).click();
+      cy.getAttrWith("id", "code").type("wrong-code");
+      cy.getButton(t(ActionButton.Submit)).click();
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
     });
   });
 });

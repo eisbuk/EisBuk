@@ -26,14 +26,19 @@ export enum AuthErrorMessage {
   NETWORK_ERROR = "AuthError.NetworkError",
   "auth/user-not-found" = "AuthError.EmailNotFound",
   "auth/wrong-password" = "AuthError.InvalidPassword",
+  "auth/invalid-verification-code" = "AuthError.InvalidVerificationCode",
   UNKNOWN = "AuthError.Unknown",
 }
 export enum AuthTitle {
   SignInWithEmail = "AuthTitle.SignInWithEmail",
+  SignInWithPhone = "AuthTitle.SignInWithPhone",
+  SignInWithGoogle = "AuthTitle.SignInWithGoogle",
+
   SignIn = "AuthTitle.SignIn",
   CreateAccount = "AuthTitle.CreateAccount",
   RecoverPassword = "AuthTitle.RecoverPassword",
   CheckYourEmail = "AuthTitle.CheckYourEmail",
+  EnterCode = "AuthTitle.EnterCode",
 }
 // #endregion auth
 
@@ -135,6 +140,8 @@ export enum ActionButton {
   Done = "ActionButton.Done",
   Send = "ActionButton.Send",
   Dismiss = "ActionButton.Dismiss",
+  Submit = "ActionButton.Submit",
+  Verify = "ActionButton.Verify",
 }
 // #endregion dialog
 
