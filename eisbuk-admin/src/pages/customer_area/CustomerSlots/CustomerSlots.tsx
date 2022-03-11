@@ -62,7 +62,7 @@ const CustomerSlots: React.FC<Props> = ({
   const orderedDates =
     view === CustomerRoute.BookIce ? orderByWeekDay(slotDates) : slotDates;
 
-  const paginateBy = view === CustomerRoute.BookIce ? "month" : "week";
+  const paginateBy = "month";
 
   // should open bookings view with next month's slots
   const defaultDate = useMemo(() => DateTime.now().plus({ months: 1 }), []);
