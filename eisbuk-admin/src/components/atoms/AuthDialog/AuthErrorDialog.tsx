@@ -45,6 +45,7 @@ const AuthErrorDialog: React.FC<Props> = ({
 const useStyles = makeStyles(() => ({
   container: {
     position: "absolute",
+    zIndex: 1000,
     top: 0,
     left: "10%",
     right: "10%",

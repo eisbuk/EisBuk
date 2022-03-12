@@ -68,6 +68,8 @@ describe("login", () => {
     it("sends a password reset email on demand", () => {
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Next));
+      // wait until on second step (to prevent flaky button queries)
+      cy.getAttrWith("type", "password");
       cy.clickButton(t(ActionButton.TroubleSigningIn));
       // help step
       cy.contains(t(AuthTitle.RecoverPassword));
