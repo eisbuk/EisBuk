@@ -1,5 +1,5 @@
 import React from "react";
-import { muiTheme } from "storybook-addon-material-ui";
+import { muiTheme } from "storybook-addon-material-ui5";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 

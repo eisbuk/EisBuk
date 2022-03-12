@@ -8,6 +8,7 @@ describe("birthday badge", () => {
     cy.initAdminApp().then((organization) => {
       return cy.updateFirestore(organization, ["customers.json"]);
     });
+    cy.signIn();
   });
   it("should check for birthday menu rerendering on midnight", () => {
     const time =

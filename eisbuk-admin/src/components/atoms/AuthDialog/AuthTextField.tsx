@@ -5,14 +5,14 @@ import {
   // useField
 } from "formik";
 
-import { InputProps } from "@material-ui/core";
+import { InputProps } from "@mui/material";
 
-import VisibilityOff from "@material-ui/icons/VisibilityOff";
-import Visibility from "@material-ui/icons/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import Visibility from "@mui/icons-material/Visibility";
 
-import { TextField, TextFieldProps } from "formik-material-ui";
+import { TextField, TextFieldProps } from "formik-mui";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
   ({ name, type: typeProp, ...props }) => {

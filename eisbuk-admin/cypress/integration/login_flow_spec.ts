@@ -33,20 +33,16 @@ describe("login", () => {
   describe("Email login", () => {
     beforeEach(() => {
       // start email auth flow
-      cy.getButton(t(AuthTitle.SignInWithEmail)).click({
-        force: true,
-      });
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
     });
 
     it("loggs in with existing email", () => {
       cy.contains(t(AuthTitle.SignInWithEmail));
       cy.getAttrWith("type", "email").type(defaultUser.email);
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.SignIn));
       cy.getAttrWith("type", "password").type(defaultUser.password);
-      cy.getButton(t(ActionButton.SignIn)).click({
-        force: true,
-      });
+      cy.clickButton(t(ActionButton.SignIn));
       // on successful login, should show admin nav bar (among other things)
       cy.getAttrWith("aria-label", t(AdminAria.PageNav));
     });
@@ -59,24 +55,24 @@ describe("login", () => {
       const newEmail = `${randomString}@email.com`;
 
       cy.getAttrWith("type", "email").type(newEmail);
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.CreateAccount));
       cy.getAttrWith("id", "name").type("Slim Shady");
       /** Name should be required */
       cy.getAttrWith("type", "password").type("non-relevant-password");
-      cy.getButton(t(ActionButton.Save)).click();
+      cy.clickButton(t(ActionButton.Save));
       // user is registered, but not added as an admin yet - should redirect to unauthorized page
       cy.contains(t(AuthMessage.NotAuthorized));
     });
 
     it("sends a password reset email on demand", () => {
       cy.getAttrWith("type", "email").type(defaultUser.email);
-      cy.getButton(t(ActionButton.Next)).click();
-      cy.getButton(t(ActionButton.TroubleSigningIn)).click();
+      cy.clickButton(t(ActionButton.Next));
+      cy.clickButton(t(ActionButton.TroubleSigningIn));
       // help step
       cy.contains(t(AuthTitle.RecoverPassword));
       cy.contains(t(AuthMessage.RecoverPassword));
-      cy.getButton(t(ActionButton.Send)).click();
+      cy.clickButton(t(ActionButton.Send));
       // mail sent step
       cy.contains(t(AuthTitle.CheckYourEmail));
       cy.contains(
@@ -84,7 +80,7 @@ describe("login", () => {
           email: defaultUser.email,
         })
       );
-      cy.getButton(t(ActionButton.Done)).click();
+      cy.clickButton(t(ActionButton.Done));
       // should return to first step
       cy.contains("Sign in with phone");
       cy.contains("Sign in with Google");
@@ -94,10 +90,10 @@ describe("login", () => {
     it("displays error messages for errors received from auth SDK (if any)", () => {
       // check trying to sign in with non-existing password
       cy.getAttrWith("type", "email").type(defaultUser.email);
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.getAttrWith("type", "email").clearAndType("non@existing.com");
       cy.getAttrWith("type", "password").type(defaultUser.password);
-      cy.getButton(t(ActionButton.SignIn)).click();
+      cy.clickButton(t(ActionButton.SignIn));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED]));
 
       cy.contains("Dismiss").click();
@@ -106,8 +102,8 @@ describe("login", () => {
       );
 
       // check trying to send password recovery email to non-registered email
-      cy.getButton(t(ActionButton.TroubleSigningIn)).click();
-      cy.getButton(t(ActionButton.Send)).click();
+      cy.clickButton(t(ActionButton.TroubleSigningIn));
+      cy.clickButton(t(ActionButton.Send));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED]));
 
       // start over
@@ -115,34 +111,34 @@ describe("login", () => {
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.USER_DELETED])).should(
         "not.exist"
       );
-      cy.getButton(t(ActionButton.Cancel)).click();
+      cy.clickButton(t(ActionButton.Cancel));
 
       // check mismatched password
-      cy.getButton(t(AuthTitle.SignInWithEmail)).click();
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
       cy.getAttrWith("type", "email").type(defaultUser.email);
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.getAttrWith("type", "password").type("invalid-password");
-      cy.getButton(t(ActionButton.SignIn)).click();
+      cy.clickButton(t(ActionButton.SignIn));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_PASSWORD]));
     });
 
     it("validates the form before submiting", () => {
       // email is required
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.contains(t(ValidationMessage.RequiredField));
       // email should be a valid email string
       cy.getAttrWith("type", "email").type("invalid-email@string");
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.contains(t(ValidationMessage.Email));
 
       // move to create user flow
       cy.getAttrWith("type", "email").clearAndType("valid-email@gmail.com");
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.CreateAccount)).click();
 
       // name is a required field
       cy.getAttrWith("type", "password").type("any-password");
-      cy.getButton(t(ActionButton.Save)).click();
+      cy.clickButton(t(ActionButton.Save));
       // the following error is displayed for "name" field
       cy.contains(t(ValidationMessage.RequiredField));
       cy.getAttrWith("id", "name").type("Slim Shady");
@@ -155,19 +151,19 @@ describe("login", () => {
       cy.contains(t(ValidationMessage.WeakPassword, { min: 6 })).click();
 
       // reset the flow
-      cy.getButton(t(ActionButton.Cancel)).click();
+      cy.clickButton(t(ActionButton.Cancel));
 
       // check sign in flow
-      cy.getButton(t(AuthTitle.SignInWithEmail)).click();
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
       cy.getAttrWith("type", "email").type(defaultUser.email);
-      cy.getButton(t(ActionButton.Next)).click();
+      cy.clickButton(t(ActionButton.Next));
       // password is required
-      cy.getButton(t(ActionButton.SignIn)).click();
+      cy.clickButton(t(ActionButton.SignIn));
       cy.contains(t(ValidationMessage.RequiredField));
       // password should pass even if less than 6 characters (even though password like that won't exist in backend)
       // this will fail anyhow on email-password mismatch
       cy.getAttrWith("type", "password").type("weak");
-      cy.getButton(t(ActionButton.SignIn)).click();
+      cy.clickButton(t(ActionButton.SignIn));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_PASSWORD]));
     });
   });
@@ -175,21 +171,19 @@ describe("login", () => {
   describe("Phone login", () => {
     beforeEach(() => {
       // start email auth flow
-      cy.getButton(t(AuthTitle.SignInWithPhone)).click({
-        force: true,
-      });
+      cy.clickButton(t(AuthTitle.SignInWithPhone));
     });
 
-    it.only("sends login code to user and loggs in on successful code entry", () => {
+    it("sends login code to user and loggs in on successful code entry", () => {
       cy.contains(t(AuthTitle.SignInWithPhone));
       // should display data rates warning
       cy.contains(t(AuthMessage.SMSDataRatesMayApply));
       cy.getAttrWith("type", "phone").type(defaultUser.phone);
-      cy.getButton(t(ActionButton.Verify)).click();
+      cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(AuthTitle.EnterCode));
       cy.getRecaptchaCode(defaultUser.phone).then((code) => {
         cy.getAttrWith("id", "code").type(code);
-        return cy.getButton(t(ActionButton.Submit)).click();
+        return cy.clickButton(t(ActionButton.Submit));
       });
       // on successful login, should show admin nav bar (among other things)
       cy.getAttrWith("aria-label", t(AdminAria.PageNav));
@@ -197,27 +191,27 @@ describe("login", () => {
 
     it("validates input fields", () => {
       // phone number is required
-      cy.getButton(t(ActionButton.Verify)).click();
+      cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(ValidationMessage.RequiredField));
       // phone number should be a valid phone number
       cy.getAttrWith("type", "phone").type("not-a-number");
-      cy.getButton(t(ActionButton.Verify)).click();
+      cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(ValidationMessage.InvalidPhone));
 
       cy.getAttrWith("type", "phone").clearAndType(defaultUser.phone);
-      cy.getButton(t(ActionButton.Verify)).click();
+      cy.clickButton(t(ActionButton.Verify));
 
       // sms code is required
       cy.contains(t(AuthTitle.EnterCode));
-      cy.getButton(t(ActionButton.Submit)).click();
+      cy.clickButton(t(ActionButton.Submit));
       cy.contains(t(ValidationMessage.RequiredField));
     });
 
     it("shows error message on wrong code", () => {
       cy.getAttrWith("type", "phone").clearAndType(defaultUser.phone);
-      cy.getButton(t(ActionButton.Verify)).click();
+      cy.clickButton(t(ActionButton.Verify));
       cy.getAttrWith("id", "code").type("wrong-code");
-      cy.getButton(t(ActionButton.Submit)).click();
+      cy.clickButton(t(ActionButton.Submit));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
     });
   });

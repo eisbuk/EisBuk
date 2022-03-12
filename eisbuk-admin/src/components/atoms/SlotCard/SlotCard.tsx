@@ -3,13 +3,13 @@ import clsx from "clsx";
 import { useTranslation } from "react-i18next";
 import i18n from "i18next";
 
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "eisbuk-shared";
 
@@ -104,6 +104,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
             <Box className={classes.categories} display="flex">
               {slotData.categories.map((category) => (
                 <Typography
+                  style={{
+                    backgroundColor: getColorForSlotType(slotData.type),
+                  }}
                   className={classes.category}
                   color="textSecondary"
                   key={category}
@@ -226,20 +229,23 @@ const useStyles = makeStyles((theme) =>
     },
     categories: {
       padding: 4,
+      display: "flex",
+      flexWrap: "wrap",
     },
     typeLabel: {
       padding: `0 ${theme.spacing(1)}`,
     },
     category: {
       textTransform: "uppercase",
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
+      whitespace: "nowrap",
+      border: "none",
+      borderRadius: 8,
       fontWeight: theme.typography.fontWeightBold,
       fontSize: theme.typography.pxToRem(10),
-      paddingLeft: theme.spacing(1),
-      paddingRight: theme.spacing(1),
+      margin: `${theme.spacing(0.5)} ${theme.spacing(0.5)}`,
+      padding: `${theme.spacing(0.25)} ${theme.spacing(1)}`,
     },
     notes: {
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
     },
     actionsContainer: {

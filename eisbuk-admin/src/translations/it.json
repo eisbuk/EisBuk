@@ -77,6 +77,16 @@
     "CovidCertificateSuspended": "Certificazione verde sospesa",
     "ExtendedBookingDate": "Extended booking date"
   },
+  "OrganizationLabel": {
+    "EmailNameFrom": "Nome Email Da",
+    "EmailFrom": "Email Da",
+    "EmailTemplate": "Modello Di Email",
+    "SmsFrom": "SMS Da",
+    "SmsTemplate": "Modello Di SMS",
+    "DisplayName": "Nome Dell'Organizzazione",
+    "Admins": "Amministrat(rici/ori)",
+    "AddNewAdmin": "Aggiungi Nuovo Amministratore"
+  },
   "Validations": {
     "Email": "Inserisci una email valida",
     "RequiredEntry": "È richiesto almeno un valore",
@@ -85,7 +95,9 @@
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
-    "WeakPassword": "Password should contain at least {{ min }} characters"
+    "WeakPassword": "Password should contain at least {{ min }} characters",
+    "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
+    "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri"
   },
 
   "Prompt": {

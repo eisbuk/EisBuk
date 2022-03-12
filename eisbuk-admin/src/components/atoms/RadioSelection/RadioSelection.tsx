@@ -1,16 +1,16 @@
 import React from "react";
 import { useField, FieldAttributes, Field } from "formik";
-import { RadioGroup } from "formik-material-ui";
+import { RadioGroup } from "formik-mui";
 
-import FormControlLabel from "@material-ui/core/FormControlLabel";
-import Radio from "@material-ui/core/Radio";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Radio from "@mui/material/Radio";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 type Props = Omit<FieldAttributes<any>, "options"> & {
-  options: { value: string; label: string; }[];
+  options: { value: string; label: string }[];
 };
 
 /**

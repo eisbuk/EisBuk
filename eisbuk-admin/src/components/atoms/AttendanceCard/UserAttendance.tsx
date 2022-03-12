@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import ListItem from "@material-ui/core/ListItem";
-import ListItemAvatar from "@material-ui/core/ListItemAvatar";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
-import Button from "@material-ui/core/Button";
+import ListItem from "@mui/material/ListItem";
+import ListItemAvatar from "@mui/material/ListItemAvatar";
+import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
+import ListItemText from "@mui/material/ListItemText";
+import Button from "@mui/material/Button";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { CustomerWithAttendance } from "@/types/components";
 

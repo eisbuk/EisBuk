@@ -96,6 +96,18 @@ export enum ValidationMessage {
   InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
   WeakPassword = "Validations.WeakPassword",
+  InvalidSmsFrom = "Validations.InvalidSmsFrom",
+  InvalidSmsFromLength = "Validations.InvalidSmsFromLength",
+}
+export enum OrganizationLabel {
+  EmailNameFrom = "OrganizationLabel.EmailNameFrom",
+  EmailFrom = "OrganizationLabel.EmailFrom",
+  EmailTemplate = "OrganizationLabel.EmailTemplate",
+  SmsFrom = "OrganizationLabel.SmsFrom",
+  SmsTemplate = "OrganizationLabel.SmsTemplate",
+  DisplayName = "OrganizationLabel.DisplayName",
+  Admins = "OrganizationLabel.Admins",
+  AddNewAdmin = "OrganizationLabel.AddNewAdmin",
 }
 // #endregion forms
 
@@ -144,6 +156,7 @@ export enum ActionButton {
   Dismiss = "ActionButton.Dismiss",
   Submit = "ActionButton.Submit",
   Verify = "ActionButton.Verify",
+  Add = "ActionButton.Add",
 }
 // #endregion dialog
 

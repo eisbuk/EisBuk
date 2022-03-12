@@ -1,9 +1,9 @@
 import React from "react";
 
-import { ThemeProvider } from "@material-ui/core";
-import Paper from "@material-ui/core/Paper";
+import { ThemeProvider } from "@mui/material";
+import Paper from "@mui/material/Paper";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { muiDefault as defaultTheme } from "@/themes";
 

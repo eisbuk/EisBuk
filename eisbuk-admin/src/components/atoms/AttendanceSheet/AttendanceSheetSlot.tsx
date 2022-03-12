@@ -1,13 +1,13 @@
 import React from "react";
 
-import TableBody from "@material-ui/core/TableBody";
-import TableRow from "@material-ui/core/TableRow";
-import Table from "@material-ui/core/Table";
-import TableCell from "@material-ui/core/TableCell";
-import TableHead from "@material-ui/core/TableHead";
+import TableBody from "@mui/material/TableBody";
+import TableRow from "@mui/material/TableRow";
+import Table from "@mui/material/Table";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface } from "eisbuk-shared";
 

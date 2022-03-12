@@ -2,11 +2,9 @@ import { BuildOptions } from "esbuild";
 import path from "path";
 import svgr from "esbuild-plugin-svgr";
 
-/**
- * A base esbuild config file shared between both `build` and `serve`
- * scripts.
- */
 const config: BuildOptions = {
+  // we're using this (default) entry point in most cases
+  // if different `entryPoints` is needed we override this when calling `build` function
   entryPoints: [path.join(process.cwd(), "src", "index.tsx")],
   plugins: [svgr()],
   bundle: true,

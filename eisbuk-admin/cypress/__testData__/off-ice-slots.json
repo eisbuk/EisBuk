@@ -3,7 +3,7 @@
     "slot-1": {
       "date": "2021-12-30",
       "id": "slot-1",
-      "type": "off-ice-gym",
+      "type": "off-ice",
       "categories": ["competitive", "adults"],
       "intervals": {
         "09:00-10:00": {
@@ -16,7 +16,7 @@
     "slot-2": {
       "date": "2022-01-01",
       "id": "slot-2",
-      "type": "off-ice-gym",
+      "type": "off-ice",
       "categories": ["competitive", "adults"],
       "intervals": {
         "09:00-10:00": {

@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import i18n from "i18next";
 
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import Mail from "@material-ui/icons/Mail";
-import Phone from "@material-ui/icons/Phone";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import Mail from "@mui/icons-material/Mail";
+import Phone from "@mui/icons-material/Phone";
 
 import { Routes } from "@/enums/routes";
 import { ActionButton, Prompt } from "@/enums/translations";
@@ -155,7 +155,7 @@ const getDialogPrompt: GetDialogPrompt = ({ method, email, phone }) => {
 const useStyles = makeStyles((theme) => ({
   actionButton: {
     marginRight: "0.5rem",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       width: "80%",
       margin: "0.5rem 10%",
     },

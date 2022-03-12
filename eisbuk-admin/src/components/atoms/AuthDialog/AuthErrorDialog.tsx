@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import Typography from "@material-ui/core/Typography";
+import Typography from "@mui/material/Typography";
+
+import makeStyles from "@mui/styles/makeStyles";
 
 import { ActionButton } from "@/enums/translations";
 

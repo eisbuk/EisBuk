@@ -8,7 +8,7 @@ import { useTranslation } from "react-i18next";
 
 import "firebaseui/dist/firebaseui.css";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { AuthTitle } from "@/enums/translations";
 
