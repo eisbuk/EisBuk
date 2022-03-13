@@ -156,7 +156,10 @@ describe("Booking flow", () => {
       );
     });
 
-    it("disables only the locked bookings if locked/non-locked month overlap shown", () => {
+    /**
+     * @TODO make sure this test is necessary
+     */
+    it("enable booking in unlocked month and disable booking in locked month ", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -178,16 +181,8 @@ describe("Booking flow", () => {
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // switch to book off-ice
       cy.getAttrWith("aria-label", CustomerRoute.BookOffIce).click();
-      // move back (from the end of January, to first week in January)
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates))
-        .click()
-        .click()
-        .click()
-        .click();
-      cy.contains(createDateTitle(testDateLuxon, "week", i18n.t));
+      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
-      // if showing slots belonging to different months (as is the case in this test)
-      // should display countdown with respect to later month
       cy.contains(
         getCountdownStringMatch({
           message: BookingCountdownMessage.FirstDeadline,
@@ -199,14 +194,18 @@ describe("Booking flow", () => {
         })
       );
 
+      // should allow booking of second slot (belonging to January 2022)
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).click({
+        force: true,
+      });
+
+      // move back to December
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
+
       // should disable the booking first slot (blonging to December 2021)
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
         .eq(0)
         .should("have.attr", "disabled");
-      // should allow booking of second slot (belonging to January 2022)
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(1)
-        .click({ force: true });
       cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
     });
   });
