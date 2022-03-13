@@ -3,7 +3,6 @@ import {
   GoogleAuthProvider,
   getAuth,
   signInWithRedirect,
-  signInWithEmailLink,
   isSignInWithEmailLink,
 } from "@firebase/auth";
 import { useTranslation } from "react-i18next";
@@ -20,8 +19,6 @@ import EmailFlow from "./EmailFlow";
 import EmailLinkFlow from "./EmailLinkFlow";
 import PhoneFlow from "./PhoneFlow";
 
-import { getEmailForSignIn, unsetEmailForSignIn } from "@/utils/localStorage";
-
 enum AuthFlow {
   Email = "email",
   EmailLink = "email-link",
@@ -35,15 +32,15 @@ const AuthDialog: React.FC = () => {
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
 
+  // redirect to login-with-email-link if site visited by login link
   useEffect(() => {
     if (isSignInWithEmailLink(getAuth(), window.location.href)) {
-      const email = getEmailForSignIn();
-      console.log("Sign in link", window.location.href);
-      if (email) {
-        console.log("Sign in email:", email);
-        signInWithEmailLink(getAuth(), window.location.href);
-        unsetEmailForSignIn();
-      }
+      setAuthFlow(AuthFlow.EmailLink);
+      // const email = getEmailForSignIn();
+      // if (email) {
+      //   signInWithEmailLink(getAuth(), email, window.location.href);
+      //   unsetEmailForSignIn();
+      // }
     }
   }, []);
 

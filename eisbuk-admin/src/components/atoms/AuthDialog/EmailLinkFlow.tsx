@@ -1,12 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Formik, Form, FormikConfig } from "formik";
 import {
   getAuth,
   ActionCodeSettings,
   sendSignInLinkToEmail,
+  signInWithEmailLink,
+  isSignInWithEmailLink,
 } from "@firebase/auth";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
+
+import { __isDev__ } from "@/lib/constants";
 
 import {
   ActionButton as ActionButtonLabel,
@@ -23,7 +27,11 @@ import AuthTypography from "./AuthTypography";
 
 import useAuthFlow from "@/hooks/useAuthFlow";
 
-import { setEmailForSignIn } from "@/utils/localStorage";
+import {
+  getEmailForSignIn,
+  setEmailForSignIn,
+  unsetEmailForSignIn,
+} from "@/utils/localStorage";
 
 /**
  * Enum containing values for all possible views of email auth flow
@@ -31,8 +39,10 @@ import { setEmailForSignIn } from "@/utils/localStorage";
 enum AuthStep {
   /** Initial view (email prompt) */
   SendLink = "SignInWithEmail",
-  /** 'Check your email' message (after sending reset password email) */
+  /** 'Check your email' message (after sending sign link) */
   CheckYourEmail = "CheckYourEmail",
+  /** 'Confirm email' prompt (if isSignInWithEmaiLink, but email doesn't exist in local storage) */
+  ConfirmEmail = "ConfirmEmail",
 }
 
 interface ActionButtonParams {
@@ -66,6 +76,24 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   const { dialogError, removeDialogError, handleSubmit } =
     useAuthFlow<CompleteFormValues>({});
 
+  // check if site visited by sign in link
+
+  // redirect to login-with-email-link if site visited by login link
+  const handleSignInWithEmailLink = async (email: string) => {
+    await signInWithEmailLink(getAuth(), email, window.location.href);
+    unsetEmailForSignIn();
+  };
+  useEffect(() => {
+    if (isSignInWithEmailLink(getAuth(), window.location.href)) {
+      const email = getEmailForSignIn();
+      if (email) {
+        handleSignInWithEmailLink(email);
+      } else {
+        setAuthStep(AuthStep.ConfirmEmail);
+      }
+    }
+  }, []);
+
   // #region form
   const initialValues = { email: "" };
 
@@ -82,20 +110,23 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   submitHandlers[AuthStep.SendLink] = async ({ email }) => {
     const auth = getAuth();
     const { host } = window.location;
+    const proto = __isDev__ ? "http" : "https";
     const actionCodeSettings: ActionCodeSettings = {
       handleCodeInApp: true,
-      url: `http://${host}/login`,
+      url: `${proto}://${host}/login`,
     };
-    console.log("Link: ", actionCodeSettings.url);
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     setEmailForSignIn(email);
+    setAuthStep(AuthStep.CheckYourEmail);
   };
   // add an empty function for 'check email' step as there is no `onSubmit` for this step
   submitHandlers[AuthStep.CheckYourEmail] = async () => {};
+  submitHandlers[AuthStep.ConfirmEmail] = ({ email }) => {
+    handleSignInWithEmailLink(email);
+  };
   // #region continueHandlers
 
-  const message =
-    authStep === AuthStep.CheckYourEmail ? AuthMessage[authStep] : null;
+  const message = messageLookup[authStep];
 
   return (
     <AuthContainer>
@@ -163,6 +194,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 const fieldsLookup: Record<AuthStep, AuthFieldParams[] | null> = {
   [AuthStep.SendLink]: [{ name: "email", label: "Email", type: "email" }],
   [AuthStep.CheckYourEmail]: null,
+  [AuthStep.ConfirmEmail]: [{ name: "email", label: "Email", type: "email" }],
 };
 
 const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
@@ -185,6 +217,18 @@ const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
       type: "reset",
     },
   ],
+  [AuthStep.ConfirmEmail]: [
+    {
+      label: ActionButtonLabel.Verify,
+      variant: "fill",
+      type: "submit",
+    },
+  ],
+};
+
+const messageLookup = {
+  [AuthStep.CheckYourEmail]: AuthMessage.CheckSignInEmail,
+  [AuthStep.ConfirmEmail]: AuthMessage.ConfirmSignInEmail,
 };
 // #endregion stepContentLookups
 

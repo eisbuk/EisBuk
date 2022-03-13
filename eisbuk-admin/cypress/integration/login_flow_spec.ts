@@ -78,7 +78,7 @@ describe("login", () => {
       // mail sent step
       cy.contains(t(AuthTitle.CheckYourEmail));
       cy.contains(
-        t(AuthMessage.CheckYourEmail, {
+        t(AuthMessage.CheckPasswordRecoverEmail, {
           email: defaultUser.email,
         })
       );
@@ -219,15 +219,55 @@ describe("login", () => {
   });
 
   describe("Email link login", () => {
-    /**
-     * @TODO testing email links doesn't really work with cypress for some reason.
-     * It would be good to try and make it work (if at all possible) for future features.
-     */
-    xit("logs in using link sent via email", () => {
+    beforeEach(() => {
       cy.clickButton(t(AuthTitle.SignInWithEmailLink));
+    });
+
+    it("logs in using link sent via email", () => {
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Send));
+      // should show check your email message on successful send
+      cy.contains(t(AuthTitle.CheckYourEmail));
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+      // should return to auth screen on "Done" button click
+      cy.clickButton(t(ActionButton.Done));
+
+      // check email-sent link validity and finalization of the flow
       cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("creates a new user if email not registered", () => {
+      // since auth service is shared amongst all organizations
+      // we're creating a new email each time to ensure the current email
+      // is not yet registered (by any previous tests)
+      const randomString = uuid().slice(0, 10);
+      const newEmail = `${randomString}@email.com`;
+
+      cy.getAttrWith("type", "email").type(newEmail);
+      cy.clickButton(t(ActionButton.Send));
+      cy.getSigninLink(newEmail).then((link) => cy.visit(link));
+      // user is registered, but not added as an admin yet - should redirect to unauthorized page
+      cy.contains(t(AuthMessage.NotAuthorized));
+    });
+
+    it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      cy.contains(t(AuthTitle.CheckYourEmail));
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // expect the email confirmation prompt on sign in link click
+      cy.clearLocalStorage();
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ConfirmEmail));
+      cy.contains(t(AuthMessage.ConfirmSignInEmail));
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Verify));
     });
   });
 });

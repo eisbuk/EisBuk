@@ -132,11 +132,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   submitHandlers[AuthStep.CheckYourEmail] = async () => {};
   // #region continueHandlers
 
-  const message = [AuthStep.RecoverPassword, AuthStep.CheckYourEmail].includes(
-    authStep
-  )
-    ? AuthMessage[authStep]
-    : null;
+  const message = messageLookup[authStep];
 
   return (
     <AuthContainer>
@@ -276,6 +272,11 @@ const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
       type: "reset",
     },
   ],
+};
+
+const messageLookup = {
+  [AuthStep.CheckYourEmail]: AuthMessage.CheckPasswordRecoverEmail,
+  [AuthStep.RecoverPassword]: AuthMessage.RecoverPassword,
 };
 // #endregion stepContentLookups
 

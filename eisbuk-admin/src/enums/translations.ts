@@ -21,7 +21,9 @@ export enum AuthMessage {
   TryAgain = "Authorization.TryAgain",
 
   RecoverPassword = "Authorization.RecoverPassword",
-  CheckYourEmail = "Authorization.CheckYourEmail",
+  CheckPasswordRecoverEmail = "Authorization.CheckPasswordRecoverEmail",
+  CheckSignInEmail = "Authorization.CheckSignInEmail",
+  ConfirmSignInEmail = "Authorization.ConfirmSignInEmail",
   SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {
@@ -41,6 +43,7 @@ export enum AuthTitle {
   CreateAccount = "AuthTitle.CreateAccount",
   RecoverPassword = "AuthTitle.RecoverPassword",
   CheckYourEmail = "AuthTitle.CheckYourEmail",
+  ConfirmEmail = "AuthTitle.ConfirmEmail",
   EnterCode = "AuthTitle.EnterCode",
 }
 // #endregion auth

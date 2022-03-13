@@ -17,7 +17,9 @@
     "TryAgain": "Log out and try again with a different user",
 
     "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
-    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "CheckPasswordRecoverEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication",
+    "ConfirmSignInEmail": "Please confirm the email used to sign in",
     "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
   "AuthError": {
@@ -37,6 +39,7 @@
     "CreateAccount": "Create account",
     "RecoverPassword": "Recover password",
     "CheckYourEmail": "Check your email",
+    "ConfirmEmail": "Confirm email",
     "EnterCode": "Enter Code"
   },
 
