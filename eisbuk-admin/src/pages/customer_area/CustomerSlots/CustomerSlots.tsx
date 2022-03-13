@@ -38,7 +38,7 @@ interface Props {
   /**
    * Controls view of slots with respect to view:
    * - if `book_ice` show month and group slots by day of the week
-   * - if `book_off_ice` show a week of slots and show days in order
+   * - if `book_off_ice` show month of slots and show days in order
    */
   view?: CustomerRoute.BookIce | CustomerRoute.BookOffIce;
 }
@@ -46,7 +46,7 @@ interface Props {
 /**
  * A component used by `customers` page to render the slots available for booking.
  * - `book_ice` - would be passed slots of type `"ice"`, shows a month and orders days to show all Mondays first, then all Tuesdays, and so on
- * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "off_ice_gym"`, shows a week and orders days in regular weekly order
+ * - `book_ice` - would be passed slots of type `"off_ice_dancing" | "off_ice_gym"`, shows a month and orders days in regular weekly order
  *
  * **note: slots passed are controlled outside the component, only the displaying/pagination is controlled within the component**
  */
@@ -58,7 +58,7 @@ const CustomerSlots: React.FC<Props> = ({
   const slotDates = Object.keys(slots);
 
   // if `view=book_ice` should order slot days mondays first and so on
-  // if `view=book_off_ice` display week in standard order
+  // if `view=book_off_ice` display in standard order
   const orderedDates =
     view === CustomerRoute.BookIce ? orderByWeekDay(slotDates) : slotDates;
 
@@ -72,7 +72,7 @@ const CustomerSlots: React.FC<Props> = ({
   const countdownProps = useSelector(
     // when we have a week (for book off-ice view), spaning over two months
     // we want to show countdown/bookings-locked message with respect to later date
-    getCountdownProps(currentDate.endOf(paginateBy))
+    getCountdownProps(currentDate)
   );
 
   return (
@@ -81,6 +81,7 @@ const CustomerSlots: React.FC<Props> = ({
         <>
           {countdownProps && <BookingsCountdown {...countdownProps} />}
           {orderedDates?.map((date) => {
+            console.log({ orderedDates });
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
             const slotsArray = Object.values(slostForDay);
