@@ -27,6 +27,7 @@
     "EmailNotFound": "That email address doesn't match an existing account",
     "InvalidPassword": "The email and password you entered don't match",
     "InvalidVerificationCode": "The code you've entered is invalid, please enter the correct code",
+    "InvalidEmail": "Wrong email. Please enter the email you used to receive the sign in link.",
     "Unknown": "Unknown error"
   },
   "AuthTitle": {
@@ -36,6 +37,7 @@
     "SignInWithGoogle": "Sign in with Google",
 
     "SignIn": "Sign in",
+    "SendSignInLink": "Send sign in link",
     "CreateAccount": "Create account",
     "RecoverPassword": "Recover password",
     "CheckYourEmail": "Check your email",

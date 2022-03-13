@@ -31,6 +31,7 @@ export enum AuthErrorMessage {
   "auth/user-not-found" = "AuthError.EmailNotFound",
   "auth/wrong-password" = "AuthError.InvalidPassword",
   "auth/invalid-verification-code" = "AuthError.InvalidVerificationCode",
+  "auth/invalid-email" = "AuthError.InvalidEmail",
   UNKNOWN = "AuthError.Unknown",
 }
 export enum AuthTitle {
@@ -40,6 +41,7 @@ export enum AuthTitle {
   SignInWithGoogle = "AuthTitle.SignInWithGoogle",
 
   SignIn = "AuthTitle.SignIn",
+  SendSignInLink = "AuthTitle.SendSignInLink",
   CreateAccount = "AuthTitle.CreateAccount",
   RecoverPassword = "AuthTitle.RecoverPassword",
   CheckYourEmail = "AuthTitle.CheckYourEmail",

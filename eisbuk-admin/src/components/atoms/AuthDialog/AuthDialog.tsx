@@ -36,11 +36,6 @@ const AuthDialog: React.FC = () => {
   useEffect(() => {
     if (isSignInWithEmailLink(getAuth(), window.location.href)) {
       setAuthFlow(AuthFlow.EmailLink);
-      // const email = getEmailForSignIn();
-      // if (email) {
-      //   signInWithEmailLink(getAuth(), email, window.location.href);
-      //   unsetEmailForSignIn();
-      // }
     }
   }, []);
 

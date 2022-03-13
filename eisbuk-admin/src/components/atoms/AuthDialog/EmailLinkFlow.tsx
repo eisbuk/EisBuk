@@ -6,6 +6,7 @@ import {
   sendSignInLinkToEmail,
   signInWithEmailLink,
   isSignInWithEmailLink,
+  AuthErrorCodes,
 } from "@firebase/auth";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
@@ -38,7 +39,7 @@ import {
  */
 enum AuthStep {
   /** Initial view (email prompt) */
-  SendLink = "SignInWithEmail",
+  SendSignInLink = "SendSignInLink",
   /** 'Check your email' message (after sending sign link) */
   CheckYourEmail = "CheckYourEmail",
   /** 'Confirm email' prompt (if isSignInWithEmaiLink, but email doesn't exist in local storage) */
@@ -68,13 +69,17 @@ interface Props {
   onCancel?: () => void;
 }
 
+const fieldErrorMap = {
+  [AuthErrorCodes.INVALID_EMAIL]: "email",
+};
+
 const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   const { t } = useTranslation();
 
-  const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.SendLink);
+  const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.SendSignInLink);
 
   const { dialogError, removeDialogError, handleSubmit } =
-    useAuthFlow<CompleteFormValues>({});
+    useAuthFlow<CompleteFormValues>(fieldErrorMap);
 
   // check if site visited by sign in link
 
@@ -107,7 +112,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 
   // #region continueHandlers
   const submitHandlers = {} as Record<AuthStep, SubmitHandler>;
-  submitHandlers[AuthStep.SendLink] = async ({ email }) => {
+  submitHandlers[AuthStep.SendSignInLink] = async ({ email }) => {
     const auth = getAuth();
     const { host } = window.location;
     const proto = __isDev__ ? "http" : "https";
@@ -121,9 +126,8 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   };
   // add an empty function for 'check email' step as there is no `onSubmit` for this step
   submitHandlers[AuthStep.CheckYourEmail] = async () => {};
-  submitHandlers[AuthStep.ConfirmEmail] = ({ email }) => {
+  submitHandlers[AuthStep.ConfirmEmail] = ({ email }) =>
     handleSignInWithEmailLink(email);
-  };
   // #region continueHandlers
 
   const message = messageLookup[authStep];
@@ -192,13 +196,13 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 
 // #region stepContentLookups
 const fieldsLookup: Record<AuthStep, AuthFieldParams[] | null> = {
-  [AuthStep.SendLink]: [{ name: "email", label: "Email", type: "email" }],
+  [AuthStep.SendSignInLink]: [{ name: "email", label: "Email", type: "email" }],
   [AuthStep.CheckYourEmail]: null,
   [AuthStep.ConfirmEmail]: [{ name: "email", label: "Email", type: "email" }],
 };
 
 const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
-  [AuthStep.SendLink]: [
+  [AuthStep.SendSignInLink]: [
     {
       label: ActionButtonLabel.Cancel,
       variant: "empty",
