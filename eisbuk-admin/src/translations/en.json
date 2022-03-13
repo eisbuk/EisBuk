@@ -29,6 +29,7 @@
   },
   "AuthTitle": {
     "SignInWithEmail": "Sign in with email",
+    "SignInWithEmailLink": "Sign in with email link",
     "SignInWithPhone": "Sign in with phone",
     "SignInWithGoogle": "Sign in with Google",
 

@@ -33,6 +33,7 @@ export enum AuthErrorMessage {
 }
 export enum AuthTitle {
   SignInWithEmail = "AuthTitle.SignInWithEmail",
+  SignInWithEmailLink = "AuthTitle.SignInWithEmailLink",
   SignInWithPhone = "AuthTitle.SignInWithPhone",
   SignInWithGoogle = "AuthTitle.SignInWithGoogle",
 

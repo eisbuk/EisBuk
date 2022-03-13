@@ -217,4 +217,17 @@ describe("login", () => {
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
     });
   });
+
+  describe("Email link login", () => {
+    /**
+     * @TODO testing email links doesn't really work with cypress for some reason.
+     * It would be good to try and make it work (if at all possible) for future features.
+     */
+    xit("logs in using link sent via email", () => {
+      cy.clickButton(t(AuthTitle.SignInWithEmailLink));
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+    });
+  });
 });
