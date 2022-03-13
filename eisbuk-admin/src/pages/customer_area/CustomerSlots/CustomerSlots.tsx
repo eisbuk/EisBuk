@@ -15,7 +15,7 @@ import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 import { getCountdownProps } from "@/store/selectors/bookings";
 
-import { orderByWeekDay } from "./utils";
+import { orderByWeekDay, orderByDate } from "./utils";
 import { getCalendarDay } from "@/store/selectors/app";
 
 interface SlotsByDay {
@@ -60,7 +60,9 @@ const CustomerSlots: React.FC<Props> = ({
   // if `view=book_ice` should order slot days mondays first and so on
   // if `view=book_off_ice` display in standard order
   const orderedDates =
-    view === CustomerRoute.BookIce ? orderByWeekDay(slotDates) : slotDates;
+    view === CustomerRoute.BookIce
+      ? orderByWeekDay(slotDates)
+      : orderByDate(slotDates);
 
   const paginateBy = "month";
 
