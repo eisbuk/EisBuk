@@ -69,11 +69,7 @@ const CustomerSlots: React.FC<Props> = ({
 
   // show countdown if booking deadline is close
   const currentDate = useSelector(getCalendarDay);
-  const countdownProps = useSelector(
-    // when we have a week (for book off-ice view), spaning over two months
-    // we want to show countdown/bookings-locked message with respect to later date
-    getCountdownProps(currentDate)
-  );
+  const countdownProps = useSelector(getCountdownProps(currentDate));
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
