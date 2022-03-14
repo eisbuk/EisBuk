@@ -20,7 +20,12 @@ export const __deleteButtonId__ = "delete-button";
 // #region DateNavigation
 export const __dateNavNextId__ = "date-navigation-next-page";
 export const __dateNavPrevId__ = "date-navigation-previous-page";
+export const __currentDateId__ = "current-date";
 // #endregion DateNavigation
+
+// #region DateSwitcher
+export const __calendarMenuId__ = "calendar-menu";
+// #endregion DateSwitcher
 
 // #region BookingCard
 export const __bookingCardId__ = "booking-interval-card";
