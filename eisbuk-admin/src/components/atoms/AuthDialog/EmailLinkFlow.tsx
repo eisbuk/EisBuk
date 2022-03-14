@@ -19,11 +19,12 @@ import {
   AuthTitle,
   ValidationMessage,
 } from "@/enums/translations";
+import { EmailLinkAuthStep } from "@/enums/authSteps";
 
 import AuthContainer from "./AuthContainer";
 import AuthErrorDialog from "./AuthErrorDialog";
-import AuthTextField from "./AuthTextField";
-import ActionButton from "./ActionButton";
+import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
+import ActionButton, { ActionButtonLookup } from "./ActionButton";
 import AuthTypography from "./AuthTypography";
 
 import useAuthFlow from "@/hooks/useAuthFlow";
@@ -33,31 +34,6 @@ import {
   setEmailForSignIn,
   unsetEmailForSignIn,
 } from "@/utils/localStorage";
-
-/**
- * Enum containing values for all possible views of email auth flow
- */
-enum AuthStep {
-  /** Initial view (email prompt) */
-  SendSignInLink = "SendSignInLink",
-  /** 'Check your email' message (after sending sign link) */
-  CheckYourEmail = "CheckYourEmail",
-  /** 'Confirm email' prompt (if isSignInWithEmaiLink, but email doesn't exist in local storage) */
-  ConfirmEmail = "ConfirmEmail",
-}
-
-interface ActionButtonParams {
-  label: ActionButtonLabel;
-  variant: "empty" | "fill" | "text";
-  type?: "reset" | "submit";
-  nextStep?: AuthStep;
-}
-
-interface AuthFieldParams {
-  name: string;
-  label: string;
-  type: "email" | "password" | "text";
-}
 
 interface CompleteFormValues {
   email: string;
@@ -76,7 +52,9 @@ const fieldErrorMap = {
 const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   const { t } = useTranslation();
 
-  const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.SendSignInLink);
+  const [authStep, setAuthStep] = useState<EmailLinkAuthStep>(
+    EmailLinkAuthStep.SendSignInLink
+  );
 
   const { dialogError, removeDialogError, handleSubmit } =
     useAuthFlow<CompleteFormValues>(fieldErrorMap);
@@ -94,7 +72,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
       if (email) {
         handleSignInWithEmailLink(email);
       } else {
-        setAuthStep(AuthStep.ConfirmEmail);
+        setAuthStep(EmailLinkAuthStep.ConfirmSignInEmail);
       }
     }
   }, []);
@@ -111,8 +89,8 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   // #endregion form
 
   // #region continueHandlers
-  const submitHandlers = {} as Record<AuthStep, SubmitHandler>;
-  submitHandlers[AuthStep.SendSignInLink] = async ({ email }) => {
+  const submitHandlers = {} as Record<EmailLinkAuthStep, SubmitHandler>;
+  submitHandlers[EmailLinkAuthStep.SendSignInLink] = async ({ email }) => {
     const auth = getAuth();
     const { host } = window.location;
     const proto = __isDev__ ? "http" : "https";
@@ -122,15 +100,16 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     };
     await sendSignInLinkToEmail(auth, email, actionCodeSettings);
     setEmailForSignIn(email);
-    setAuthStep(AuthStep.CheckYourEmail);
+    setAuthStep(EmailLinkAuthStep.CheckSignInEmail);
   };
   // add an empty function for 'check email' step as there is no `onSubmit` for this step
-  submitHandlers[AuthStep.CheckYourEmail] = async () => {};
-  submitHandlers[AuthStep.ConfirmEmail] = ({ email }) =>
+  submitHandlers[EmailLinkAuthStep.CheckSignInEmail] = async () => {};
+  submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail] = ({ email }) =>
     handleSignInWithEmailLink(email);
   // #region continueHandlers
 
-  const message = messageLookup[authStep];
+  const title = titleLookup[authStep] || AuthTitle[authStep];
+  const message = AuthMessage[authStep];
 
   return (
     <AuthContainer>
@@ -147,7 +126,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
           >
             {({ values: { email } }) => (
               <Form onReset={onCancel}>
-                <Header>{t(AuthTitle[authStep])}</Header>
+                <Header>{t(title)}</Header>
                 {message && (
                   <TextMessage>
                     <AuthTypography variant="body1">
@@ -167,7 +146,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
                 </Content>
 
                 <ActionButtons>
-                  {actionButtonLookup[authStep].map(
+                  {actionButtonLookup[authStep]?.map(
                     ({ nextStep, label, ...buttonProps }) => (
                       <ActionButton
                         key={label}
@@ -195,14 +174,22 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 };
 
 // #region stepContentLookups
-const fieldsLookup: Record<AuthStep, AuthFieldParams[] | null> = {
-  [AuthStep.SendSignInLink]: [{ name: "email", label: "Email", type: "email" }],
-  [AuthStep.CheckYourEmail]: null,
-  [AuthStep.ConfirmEmail]: [{ name: "email", label: "Email", type: "email" }],
+const titleLookup = {
+  [EmailLinkAuthStep.CheckSignInEmail]: AuthTitle.CheckYourEmail,
+  [EmailLinkAuthStep.ConfirmSignInEmail]: AuthTitle.ConfirmEmail,
 };
 
-const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
-  [AuthStep.SendSignInLink]: [
+const fieldsLookup: AuthTextFieldLookup<EmailLinkAuthStep> = {
+  [EmailLinkAuthStep.SendSignInLink]: [
+    { name: "email", label: "Email", type: "email" },
+  ],
+  [EmailLinkAuthStep.ConfirmSignInEmail]: [
+    { name: "email", label: "Email", type: "email" },
+  ],
+};
+
+const actionButtonLookup: ActionButtonLookup<EmailLinkAuthStep> = {
+  [EmailLinkAuthStep.SendSignInLink]: [
     {
       label: ActionButtonLabel.Cancel,
       variant: "empty",
@@ -214,25 +201,25 @@ const actionButtonLookup: Record<AuthStep, ActionButtonParams[]> = {
       type: "submit",
     },
   ],
-  [AuthStep.CheckYourEmail]: [
+  [EmailLinkAuthStep.CheckSignInEmail]: [
     {
       label: ActionButtonLabel.Done,
       variant: "fill",
       type: "reset",
     },
   ],
-  [AuthStep.ConfirmEmail]: [
+  [EmailLinkAuthStep.ConfirmSignInEmail]: [
+    {
+      label: ActionButtonLabel.Cancel,
+      variant: "empty",
+      type: "reset",
+    },
     {
       label: ActionButtonLabel.Verify,
       variant: "fill",
       type: "submit",
     },
   ],
-};
-
-const messageLookup = {
-  [AuthStep.CheckYourEmail]: AuthMessage.CheckSignInEmail,
-  [AuthStep.ConfirmEmail]: AuthMessage.ConfirmSignInEmail,
 };
 // #endregion stepContentLookups
 

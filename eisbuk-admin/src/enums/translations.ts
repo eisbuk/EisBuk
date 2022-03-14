@@ -20,10 +20,12 @@ export enum AuthMessage {
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
 
-  RecoverPassword = "Authorization.RecoverPassword",
+  RecoverEmailPassword = "Authorization.RecoverEmailPassword",
   CheckPasswordRecoverEmail = "Authorization.CheckPasswordRecoverEmail",
+
   CheckSignInEmail = "Authorization.CheckSignInEmail",
   ConfirmSignInEmail = "Authorization.ConfirmSignInEmail",
+
   SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {

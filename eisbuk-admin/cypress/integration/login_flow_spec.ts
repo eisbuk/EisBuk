@@ -74,7 +74,7 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.TroubleSigningIn));
       // help step
       cy.contains(t(AuthTitle.RecoverPassword));
-      cy.contains(t(AuthMessage.RecoverPassword));
+      cy.contains(t(AuthMessage.RecoverEmailPassword));
       cy.clickButton(t(ActionButton.Send));
       // mail sent step
       cy.contains(t(AuthTitle.CheckYourEmail));
@@ -219,7 +219,7 @@ describe("login", () => {
     });
   });
 
-  describe("Email link login", () => {
+  describe.only("Email link login", () => {
     beforeEach(() => {
       cy.clickButton(t(AuthTitle.SignInWithEmailLink));
     });
