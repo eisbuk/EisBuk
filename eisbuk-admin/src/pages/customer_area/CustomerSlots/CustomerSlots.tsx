@@ -79,7 +79,6 @@ const CustomerSlots: React.FC<Props> = ({
         <>
           {countdownProps && <BookingsCountdown {...countdownProps} />}
           {orderedDates?.map((date) => {
-            console.log({ orderedDates });
             const luxonDay = DateTime.fromISO(date);
             const slostForDay = slots[date] || {};
             const slotsArray = Object.values(slostForDay);
