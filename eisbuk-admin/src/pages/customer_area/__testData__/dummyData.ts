@@ -55,10 +55,6 @@ export const dummySlotsSplitByRoute = {
       ["slot-4"]: { ...baseSlot, id: "slot-4", type: SlotType.OffIce },
       ["slot-5"]: { ...baseSlot, id: "slot-5", type: SlotType.OffIce },
     },
-    "2021-03-04": {},
-    "2021-03-05": {},
-    "2021-03-06": {},
-    "2021-03-07": {},
   },
   [CustomerRoute.Calendar]: {
     ["slot-0"]: { ...baseSlot, id: "slot-0", type: SlotType.Ice },
