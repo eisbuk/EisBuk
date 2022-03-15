@@ -210,3 +210,9 @@ export enum SlotFormAria {
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
 }
 // #endregion aria-labels
+
+// #region alerts
+export enum Alerts {
+  NoSlots = "Alerts.NoSlots",
+}
+// #endregion alerts
