@@ -16,27 +16,27 @@
     "LoggedInWith": "Hai effettuato l'accesso con:",
     "TryAgain": "Esci e riprova con un altro utente",
 
-    "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
-    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password",
-    "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
+    "RecoverPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
+    "CheckYourEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
+    "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
-    "NetworkError": "A network error has occurred",
-    "EmailNotFound": "That email address doesn't match an existing account",
-    "InvalidPassword": "The email and password you entered don't match",
-    "InvalidVerificationCode": "The code you've entered is invalid, please enter the correct code",
-    "Unknown": "Unknown error"
+    "NetworkError": "Si è verificato un errore di rete",
+    "EmailNotFound": "Nessun utente registrato con questa mail",
+    "InvalidPassword": "Errore nella mail o nella password",
+    "InvalidVerificationCode": "Il codice inserito non è valido. Si prega di riprovare",
+    "Unknown": "Errore sconosciuto"
   },
   "AuthTitle": {
-    "SignInWithEmail": "Sign in with email",
-    "SignInWithPhone": "Sign in with phone",
-    "SignInWithGoogle": "Sign in with Google",
+    "SignInWithEmail": "Accedi con la email",
+    "SignInWithPhone": "Accedi con il telefono",
+    "SignInWithGoogle": "Accedi con Google",
 
-    "SignIn": "Sign in",
-    "CreateAccount": "Create account",
-    "RecoverPassword": "Recover password",
-    "CheckYourEmail": "Check your email",
-    "EnterCode": "Enter Code"
+    "SignIn": "Accedi",
+    "CreateAccount": "Crea un account",
+    "RecoverPassword": "Recupera password",
+    "CheckYourEmail": "Controlla la email",
+    "EnterCode": "Inserisci il codice"
   },
 
   "SlotType": {
@@ -75,7 +75,7 @@
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
     "CovidCertificateSuspended": "Certificazione verde sospesa",
-    "ExtendedBookingDate": "Extended booking date"
+    "ExtendedBookingDate": "Estendi scadenza prenotazioni"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",
@@ -117,8 +117,8 @@
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
   },
   "ActionButton": {
-    "SignIn": "Signin",
-    "TroubleSigningIn": "Trouble signing in?",
+    "SignIn": "Accedi",
+    "TroubleSigningIn": "Problemi con l'accesso?",
 
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
