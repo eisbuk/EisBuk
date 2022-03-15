@@ -1,10 +1,14 @@
 import React, { useMemo } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
+
+import Alert from "@mui/material/Alert";
 
 import { SlotInterface } from "eisbuk-shared";
 
 import { CustomerRoute } from "@/enums/routes";
+import { Alerts } from "@/enums/translations";
 
 import { LocalStore } from "@/types/store";
 
@@ -14,9 +18,9 @@ import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 
 import { getCountdownProps } from "@/store/selectors/bookings";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import { orderByWeekDay, orderByDate } from "./utils";
-import { getCalendarDay } from "@/store/selectors/app";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -57,6 +61,8 @@ const CustomerSlots: React.FC<Props> = ({
 }) => {
   const slotDates = Object.keys(slots);
 
+  const { t } = useTranslation();
+
   // if `view=book_ice` should order slot days mondays first and so on
   // if `view=book_off_ice` display in standard order
   const orderedDates =
@@ -77,39 +83,45 @@ const CustomerSlots: React.FC<Props> = ({
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
-          {countdownProps && <BookingsCountdown {...countdownProps} />}
-          {orderedDates?.map((date) => {
-            console.log({ orderedDates });
-            const luxonDay = DateTime.fromISO(date);
-            const slostForDay = slots[date] || {};
-            const slotsArray = Object.values(slostForDay);
+          {!Object.keys(slots).length ? (
+            <Alert severity="info">{t(Alerts.NoSlots, { currentDate })}</Alert>
+          ) : (
+            <>
+              {countdownProps && <BookingsCountdown {...countdownProps} />}
+              {orderedDates?.map((date) => {
+                console.log({ orderedDates });
+                const luxonDay = DateTime.fromISO(date);
+                const slostForDay = slots[date] || {};
+                const slotsArray = Object.values(slostForDay);
 
-            return (
-              <SlotsDayContainer key={date} date={luxonDay}>
-                {({ WrapElement, lockBookings }) => (
-                  <>
-                    {slotsArray.map((slot) => {
-                      const bookedInterval = bookedSlots
-                        ? bookedSlots[slot.id]?.interval
-                        : undefined;
+                return (
+                  <SlotsDayContainer key={date} date={luxonDay}>
+                    {({ WrapElement, lockBookings }) => (
+                      <>
+                        {slotsArray.map((slot) => {
+                          const bookedInterval = bookedSlots
+                            ? bookedSlots[slot.id]?.interval
+                            : undefined;
 
-                      return (
-                        <BookingCardGroup
-                          key={slot.id}
-                          {...{
-                            ...slot,
-                            bookedInterval,
-                            WrapElement,
-                          }}
-                          disableAll={lockBookings}
-                        />
-                      );
-                    })}
-                  </>
-                )}
-              </SlotsDayContainer>
-            );
-          })}
+                          return (
+                            <BookingCardGroup
+                              key={slot.id}
+                              {...{
+                                ...slot,
+                                bookedInterval,
+                                WrapElement,
+                              }}
+                              disableAll={lockBookings}
+                            />
+                          );
+                        })}
+                      </>
+                    )}
+                  </SlotsDayContainer>
+                );
+              })}
+            </>
+          )}
         </>
       )}
     </DateNavigation>
