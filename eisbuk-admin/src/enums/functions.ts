@@ -7,6 +7,7 @@ export enum CloudFunction {
 
   CreateTestData = "createTestData",
   CreateOrganization = "createOrganization",
+  CreateDefaultUser = "createDefaultUser",
   CreateTestSlots = "createTestSlots",
 
   PruneSlotsByDay = "pruneSlotsByDay",
