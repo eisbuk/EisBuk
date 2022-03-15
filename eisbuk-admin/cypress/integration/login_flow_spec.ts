@@ -219,7 +219,7 @@ describe("login", () => {
     });
   });
 
-  describe.only("Email link login", () => {
+  describe("Email link login", () => {
     beforeEach(() => {
       cy.clickButton(t(AuthTitle.SignInWithEmailLink));
     });
