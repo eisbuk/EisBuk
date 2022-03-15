@@ -16,7 +16,7 @@
     "eisbuk-shared": "1.0.0",
     "firebase": "9.1.1",
     "firebase-tools": "^9.16.6",
-    "firebaseui": "^6.0.0",
+    "firebaseui": "^6.0.1",
     "formik": "^2.1.5",
     "formik-mui": "^4.0.0-alpha.3",
     "i18next-http-backend": "^1.2.6",

@@ -37,7 +37,9 @@ export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
 
 // production only env variables
-export const __authDomain__ = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
+export const __authDomain__ = __isDev__
+  ? "localhost"
+  : process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
 export const __storageBucket__ = process.env.REACT_APP_FIREBASE_STORAGE_BUCKET;
 export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;
 
