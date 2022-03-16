@@ -14,11 +14,11 @@ import { organizationInfo } from "@/themes";
 
 import AuthDialog from "@/components/atoms/AuthDialog";
 
-import FigureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
-import FigureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
-import FigureSkatingSilhouette from "@/assets/images/login/figure-skating-silhouette.svg";
-import GirlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
-import IceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
+import { ReactComponent as FigureSkatingSilhouetteCouple } from "@/assets/images/login/figure-skating-silhouette-couple.svg";
+import { ReactComponent as FigureSkatingSilhouetteSkirt } from "@/assets/images/login/figure-skating-silhouette-skirt.svg";
+import { ReactComponent as FigureSkatingSilhouette } from "@/assets/images/login/figure-skating-silhouette.svg";
+import { ReactComponent as GirlIceSkating } from "@/assets/images/login/girl-ice-skating-silhouette.svg";
+import { ReactComponent as IceSkatingSilhouette } from "@/assets/images/login/ice-skating-silhouette.svg";
 
 const loginBackgrounds = [
   <FigureSkatingSilhouetteCouple />,
