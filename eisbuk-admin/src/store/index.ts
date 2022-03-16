@@ -32,9 +32,9 @@ const fbConfig: FirebaseOptions = {
   projectId: __projectId__,
   apiKey: __firebaseApiKey__,
   appId: __firebaseAppId__,
+  authDomain: __authDomain__,
   // additional production-only config data
   ...(!__isDev__ && {
-    authDomain: __authDomain__,
     storageBucket: __storageBucket__,
     measurementId: __measurementId__,
   }),

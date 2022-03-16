@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
 
@@ -17,6 +17,7 @@ import { getCountdownProps } from "@/store/selectors/bookings";
 
 import { orderByWeekDay } from "./utils";
 import { getCalendarDay } from "@/store/selectors/app";
+import { BookingCountdownMessage } from "@/enums/translations";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -71,7 +72,22 @@ const CustomerSlots: React.FC<Props> = ({
 
   // show countdown if booking deadline is close
   const currentDate = useSelector(getCalendarDay);
-  const countdownProps = useSelector(getCountdownProps(currentDate));
+  const selectorCountdownProps = useSelector(getCountdownProps(currentDate));
+
+  // control local booking finalized to disable 'finalize' buttons on all instances of second countdown
+  const [isBookingFinalized, setIsBookingFinalized] = useState(false);
+
+  // all props passed down to BookingsCountdown:
+  // including countdown props from selector and 'finalize' button local state
+  const countdownProps = selectorCountdownProps
+    ? {
+        ...selectorCountdownProps,
+        isBookingFinalized,
+        setIsBookingFinalized,
+      }
+    : // fall back to `null` if `selectorFromCountdownProps` not defined
+      // and prevent showing of countdown messages
+      null;
 
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
@@ -109,6 +125,10 @@ const CustomerSlots: React.FC<Props> = ({
               </SlotsDayContainer>
             );
           })}
+          {countdownProps?.message ===
+            BookingCountdownMessage.SecondDeadline && (
+            <BookingsCountdown {...countdownProps} />
+          )}
         </>
       )}
     </DateNavigation>

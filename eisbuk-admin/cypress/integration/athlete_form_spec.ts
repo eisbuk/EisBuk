@@ -9,6 +9,7 @@ describe("add athlete", () => {
     // Initialize app, create default user,
     // create default organization, sign in as admin
     cy.initAdminApp();
+    cy.signIn();
   });
 
   it("fills in the customer form and submit it", () => {

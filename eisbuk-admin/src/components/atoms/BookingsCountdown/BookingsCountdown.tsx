@@ -30,12 +30,18 @@ export interface BookingsCountdownProps {
   message: BookingCountdownMessage;
   deadline: DateTime | null;
   month: DateTime;
+  // we're lifting the state of locally finalized booking
+  // to be able to disable 'finalize' buttons on multiple instances of the component
+  isBookingFinalized?: boolean;
+  setIsBookingFinalized?: (isFinalized: boolean) => void;
 }
 
 const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   message,
   month,
   deadline,
+  isBookingFinalized,
+  setIsBookingFinalized = () => {},
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -59,7 +65,6 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
 
   // finalize bookings flow
   const [finalizeBookings, setFinalizeBookings] = useState(false);
-  const [isBookingFinalized, setIsBookingFinalized] = useState(false);
 
   const handleFinalize = async () => {
     setIsBookingFinalized(true);

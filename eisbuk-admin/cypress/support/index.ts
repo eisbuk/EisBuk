@@ -30,3 +30,8 @@ beforeEach(() => {
   );
   cy.stub(reactI18next, "useTranslation").callsFake(() => i18n.t);
 });
+
+afterEach(() => {
+  // auth from previous tests shouldn't affect the following tests
+  cy.signOut();
+});

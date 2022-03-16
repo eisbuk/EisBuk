@@ -1,55 +1,100 @@
-import React, { useCallback } from "react";
-import * as firebaseui from "firebaseui";
-import { getApp } from "@firebase/app";
+import React, { useEffect, useState } from "react";
 import {
-  getAuth,
-  // PhoneAuthProvider,
   GoogleAuthProvider,
-  EmailAuthProvider,
+  getAuth,
+  signInWithRedirect,
 } from "@firebase/auth";
+import { useTranslation } from "react-i18next";
 
-// import styles necessary for firebase ui elements
 import "firebaseui/dist/firebaseui.css";
 
-const auth = getAuth(getApp());
+import makeStyles from "@mui/styles/makeStyles";
 
-const ui = new firebaseui.auth.AuthUI(auth);
+import { AuthTitle } from "@/enums/translations";
 
-const uiConfig: firebaseui.auth.Config = {
-  signInOptions: [
-    /**
-     * Phone auth is temporarily removed as it seems to be incompatible with Firebase v9
-     * @TODO investigate further and/or implement our own solution if necessary
-     */
-    // {
-    //   provider: PhoneAuthProvider.PROVIDER_ID,
-    //   // The default selected country.
-    //   defaultCountry: "IT",
-    //   recaptchaParameters: {
-    //     type: "image", // 'audio'
-    //     size: "invisible", // 'invisible' or 'compact'
-    //     badge: "bottomleft", // 'bottomright' or 'inline' applies to invisible.
-    //   },
-    // },
-    GoogleAuthProvider.PROVIDER_ID,
-    EmailAuthProvider.PROVIDER_ID,
-  ],
-};
+import AuthButton from "./AuthButton";
+import AuthContainer from "./AuthContainer";
+import EmailFlow from "./EmailFlow";
+import PhoneFlow from "./PhoneFlow";
 
-/**
- * An auth dialog we're using instead of `StyledFirebaseAuth`. It
- * utilizes `firebaseui` components with auth loaded internally and the
- * login flow handled by `firebaseui`
- * @returns
- */
+enum AuthFlow {
+  Email = "email",
+  Phone = "phone",
+  Google = "google",
+}
+
 const AuthDialog: React.FC = () => {
-  const initAuthUI = useCallback((node: Element | null) => {
-    if (node) {
-      ui.start(node, uiConfig);
-    }
-  }, []);
+  const { t } = useTranslation();
+  const classes = useStyles();
 
-  return <div ref={initAuthUI} />;
+  const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
+
+  // control login with google flow
+  useEffect(() => {
+    if (authFlow === AuthFlow.Google) {
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(getAuth(), provider);
+    }
+  }, [authFlow]);
+
+  switch (authFlow) {
+    case AuthFlow.Email:
+      return <EmailFlow onCancel={() => setAuthFlow(null)} />;
+
+    case AuthFlow.Phone:
+      return <PhoneFlow onCancel={() => setAuthFlow(null)} />;
+
+    default:
+      return (
+        <AuthContainer>
+          {({ Content }) => (
+            <Content>
+              <ul className={classes.buttonsContainer}>
+                {buttons.map(({ authFlow, label, ...button }) => (
+                  <AuthButton
+                    {...button}
+                    label={t(label)}
+                    onClick={() => setAuthFlow(authFlow)}
+                  />
+                ))}
+              </ul>
+            </Content>
+          )}
+        </AuthContainer>
+      );
+  }
 };
+
+const useStyles = makeStyles(() => ({
+  buttonsContainer: {
+    listStyle: "none",
+    margin: "1rem 0",
+    padding: 0,
+  },
+}));
+
+export const buttons = [
+  {
+    color: "#ffff",
+    backgroundColor: "#02bd7e",
+    label: AuthTitle.SignInWithPhone,
+    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/phone.svg",
+    authFlow: AuthFlow.Phone,
+  },
+  {
+    color: "#757575",
+    backgroundColor: "#ffffff",
+    label: AuthTitle.SignInWithGoogle,
+    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
+    authFlow: AuthFlow.Google,
+  },
+  {
+    color: "#ffff",
+    backgroundColor: "#db4437",
+    label: AuthTitle.SignInWithEmail,
+    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
+    authFlow: AuthFlow.Email,
+  },
+];
 
 export default AuthDialog;

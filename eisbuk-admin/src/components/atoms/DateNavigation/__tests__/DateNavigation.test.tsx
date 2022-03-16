@@ -16,7 +16,12 @@ import { renderWithRouter } from "@/__testUtils__/wrappers";
 import i18n from "@/__testUtils__/i18n";
 
 import { testDateLuxon } from "@/__testData__/date";
-import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import {
+  __calendarMenuId__,
+  __currentDateId__,
+  __dateNavNextId__,
+  __dateNavPrevId__,
+} from "@/__testData__/testIds";
 import { DateFormat } from "@/enums/translations";
 
 // import { __toggleId__ } from "./testData";
@@ -119,6 +124,12 @@ describe("Date Navigation", () => {
       screen.getByText(
         i18n.t(DateFormat.Full, { date: testDateLuxon }) as string
       );
+    });
+    test("should disable calendar on views paginated by month", () => {
+      renderWithRouter(<DateNavigation jump="month" />);
+      screen.getByTestId(__currentDateId__).click();
+      const calendarMenu = screen.queryByTestId(__calendarMenuId__);
+      expect(calendarMenu).toBeNull();
     });
   });
 });
