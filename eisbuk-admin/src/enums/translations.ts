@@ -13,14 +13,36 @@ export enum CustomerNavigationLabel {
 }
 // #endregion navigation
 
-// #region authorization
+// #region auth
 export enum AuthMessage {
   NotAuthorized = "Authorization.NotAuthorized",
   AdminsOnly = "Authorization.AdminsOnly",
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
+
+  RecoverPassword = "Authorization.RecoverPassword",
+  CheckYourEmail = "Authorization.CheckYourEmail",
+  SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
-// #endregion authorization
+export enum AuthErrorMessage {
+  NETWORK_ERROR = "AuthError.NetworkError",
+  "auth/user-not-found" = "AuthError.EmailNotFound",
+  "auth/wrong-password" = "AuthError.InvalidPassword",
+  "auth/invalid-verification-code" = "AuthError.InvalidVerificationCode",
+  UNKNOWN = "AuthError.Unknown",
+}
+export enum AuthTitle {
+  SignInWithEmail = "AuthTitle.SignInWithEmail",
+  SignInWithPhone = "AuthTitle.SignInWithPhone",
+  SignInWithGoogle = "AuthTitle.SignInWithGoogle",
+
+  SignIn = "AuthTitle.SignIn",
+  CreateAccount = "AuthTitle.CreateAccount",
+  RecoverPassword = "AuthTitle.RecoverPassword",
+  CheckYourEmail = "AuthTitle.CheckYourEmail",
+  EnterCode = "AuthTitle.EnterCode",
+}
+// #endregion auth
 
 // #region dataEntries
 export const SlotTypeLabel = {
@@ -73,6 +95,19 @@ export enum ValidationMessage {
   InvalidDate = "Validations.InvalidDate",
   InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
+  WeakPassword = "Validations.WeakPassword",
+  InvalidSmsFrom = "Validations.InvalidSmsFrom",
+  InvalidSmsFromLength = "Validations.InvalidSmsFromLength",
+}
+export enum OrganizationLabel {
+  EmailNameFrom = "OrganizationLabel.EmailNameFrom",
+  EmailFrom = "OrganizationLabel.EmailFrom",
+  EmailTemplate = "OrganizationLabel.EmailTemplate",
+  SmsFrom = "OrganizationLabel.SmsFrom",
+  SmsTemplate = "OrganizationLabel.SmsTemplate",
+  DisplayName = "OrganizationLabel.DisplayName",
+  Admins = "OrganizationLabel.Admins",
+  AddNewAdmin = "OrganizationLabel.AddNewAdmin",
 }
 // #endregion forms
 
@@ -95,6 +130,9 @@ export enum Prompt {
 }
 
 export enum ActionButton {
+  SignIn = "ActionButton.SignIn",
+  TroubleSigningIn = "ActionButton.TroubleSigningIn",
+
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
 
@@ -112,7 +150,13 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
-  ShowAll = "ActionButton",
+  ShowAll = "ActionButton.ShowAll",
+  Done = "ActionButton.Done",
+  Send = "ActionButton.Send",
+  Dismiss = "ActionButton.Dismiss",
+  Submit = "ActionButton.Submit",
+  Verify = "ActionButton.Verify",
+  Add = "ActionButton.Add",
 }
 // #endregion dialog
 

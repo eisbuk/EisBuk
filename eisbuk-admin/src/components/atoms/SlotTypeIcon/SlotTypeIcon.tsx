@@ -1,14 +1,14 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 
-import Typography from "@material-ui/core/Typography";
-import Box from "@material-ui/core/Box";
+import Typography from "@mui/material/Typography";
+import Box from "@mui/material/Box";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 
-import AcUnit from "@material-ui/icons/AcUnit";
-import AccessibilityNew from "@material-ui/icons/AccessibilityNew";
+import AcUnit from "@mui/icons-material/AcUnit";
+import AccessibilityNew from "@mui/icons-material/AccessibilityNew";
 
 import { SlotType } from "eisbuk-shared";
 
@@ -31,20 +31,12 @@ const SlotTypeIcon: React.FC<{ type: SlotType; className?: string }> = ({
   const { t } = useTranslation();
   const classes = useStyles();
 
-  /** This is @TEMP until all deprecated types are migrated to unified off-ice */
-  const slotType = type.includes("off-ice") ? SlotType.OffIce : type;
-  /** This is @TEMP until all deprecated types are migrated to unified off-ice */
-
-  const Icon = iconLookup[slotType];
+  const Icon = iconLookup[type];
 
   return (
     <Box className={[classes.flexCenter, className].join(" ")}>
       <Icon className={classes.typeIcon} fontSize="small" />
-      <Typography
-        className={classes.type}
-        key="type"
-        color={colorLookup[slotType]}
-      >
+      <Typography className={classes.type} key="type" color={colorLookup[type]}>
         {t(SlotTypeLabel[type])}
       </Typography>
     </Box>
@@ -58,7 +50,6 @@ const useStyles = makeStyles((theme) =>
     },
     type: {
       textTransform: "uppercase",
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
       fontSize: theme.typography.pxToRem(10),
     },

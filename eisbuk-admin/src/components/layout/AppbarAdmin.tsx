@@ -4,26 +4,27 @@ import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
-import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
-import Button from "@material-ui/core/Button";
-import ButtonGroup from "@material-ui/core/ButtonGroup";
-import Hidden from "@material-ui/core/Hidden";
-import List from "@material-ui/core/List";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import SwipeableDrawer from "@material-ui/core/SwipeableDrawer";
-import ListItem from "@material-ui/core/ListItem";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import ListItemText from "@material-ui/core/ListItemText";
+import AppBar, { AppBarProps } from "@mui/material/AppBar";
+import Button from "@mui/material/Button";
+import ButtonGroup from "@mui/material/ButtonGroup";
+import Hidden from "@mui/material/Hidden";
+import List from "@mui/material/List";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
+import Toolbar from "@mui/material/Toolbar";
+import Typography from "@mui/material/Typography";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import ListItem from "@mui/material/ListItem";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
 
-import PeopleIcon from "@material-ui/icons/People";
-import LibraryBooksIcon from "@material-ui/icons/LibraryBooks";
-import DateRangeIcon from "@material-ui/icons/DateRange";
-import MenuIcon from "@material-ui/icons/Menu";
+import PeopleIcon from "@mui/icons-material/People";
+import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
+import DateRangeIcon from "@mui/icons-material/DateRange";
+import MenuIcon from "@mui/icons-material/Menu";
+import IconButton from "@mui/material/IconButton";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
 
@@ -111,8 +112,15 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
           >
             <MenuItem onClick={handleClose()}>{currentUser}</MenuItem>
             <MenuItem onClick={handleClose("logout")}>Logout</MenuItem>
+            <MenuItem
+              component={Link}
+              to={PrivateRoutes.AdminPreferences}
+              onClick={handleClose()}
+            >
+              Settings
+            </MenuItem>
           </Menu>
-          <Hidden xsDown>
+          <Hidden smDown>
             <ButtonGroup color="secondary" aria-label={t(AdminAria.PageNav)}>
               {buttons.map(({ label, to, startIcon }) => {
                 const disabled = to === location.pathname;
@@ -133,24 +141,27 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
               {organizationInfo.name === "DEV" && <DebugMenu />}
             </ButtonGroup>
           </Hidden>
-          <Hidden smUp>
-            <Button
-              onClick={() => setDrawerOpen(drawerOpen ? false : true)}
-              aria-label={t(AdminAria.PageNav)}
-            >
-              <MenuIcon />
-            </Button>
-          </Hidden>
 
           <BirthdayMenu
             customers={customers}
             onClickShowAll={() => setShowAll(true)}
           />
+
           <BirthdayDialog
             open={showAll}
             onClose={() => setShowAll(false)}
             customers={customers}
           />
+
+          <Hidden smUp>
+            <IconButton
+              className={classes.hamburger}
+              onClick={() => setDrawerOpen(drawerOpen ? false : true)}
+              aria-label={t(AdminAria.PageNav)}
+            >
+              <MenuIcon />
+            </IconButton>
+          </Hidden>
         </Toolbar>
       </AppBar>
 
@@ -207,6 +218,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   button: {
     margin: theme.spacing(2),
   },
+  hamburger: { color: "rgba(0, 0, 0, 0.54)", width: 48, height: 48 },
   disabledButton: {
     color: `${theme.palette.primary.main} !important`,
     opacity: "1 !important",

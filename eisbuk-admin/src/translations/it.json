@@ -14,7 +14,29 @@
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
     "LoggedInWith": "Hai effettuato l'accesso con:",
-    "TryAgain": "Esci e riprova con un altro utente"
+    "TryAgain": "Esci e riprova con un altro utente",
+
+    "RecoverPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
+    "CheckYourEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
+    "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
+  },
+  "AuthError": {
+    "NetworkError": "Si è verificato un errore di rete",
+    "EmailNotFound": "Nessun utente registrato con questa mail",
+    "InvalidPassword": "Errore nella mail o nella password",
+    "InvalidVerificationCode": "Il codice inserito non è valido. Si prega di riprovare",
+    "Unknown": "Errore sconosciuto"
+  },
+  "AuthTitle": {
+    "SignInWithEmail": "Accedi con la email",
+    "SignInWithPhone": "Accedi con il telefono",
+    "SignInWithGoogle": "Accedi con Google",
+
+    "SignIn": "Accedi",
+    "CreateAccount": "Crea un account",
+    "RecoverPassword": "Recupera password",
+    "CheckYourEmail": "Controlla la email",
+    "EnterCode": "Inserisci il codice"
   },
 
   "SlotType": {
@@ -53,7 +75,17 @@
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
     "CovidCertificateSuspended": "Certificazione verde sospesa",
-    "ExtendedBookingDate": "Extended booking date"
+    "ExtendedBookingDate": "Estendi scadenza prenotazioni"
+  },
+  "OrganizationLabel": {
+    "EmailNameFrom": "Nome Email Da",
+    "EmailFrom": "Email Da",
+    "EmailTemplate": "Modello Di Email",
+    "SmsFrom": "SMS Da",
+    "SmsTemplate": "Modello Di SMS",
+    "DisplayName": "Nome Dell'Organizzazione",
+    "Admins": "Amministrat(rici/ori)",
+    "AddNewAdmin": "Aggiungi Nuovo Amministratore"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -62,7 +94,10 @@
     "InvalidTime": "Formato dell'ora non valido (\"HH:mm\")",
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
-    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine"
+    "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
+    "WeakPassword": "Password should contain at least {{ min }} characters",
+    "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
+    "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri"
   },
 
   "Prompt": {
@@ -82,6 +117,9 @@
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
   },
   "ActionButton": {
+    "SignIn": "Accedi",
+    "TroubleSigningIn": "Problemi con l'accesso?",
+
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
 
@@ -98,7 +136,13 @@
 
     "Save": "Salva",
     "Next": "Seguente",
-    "Cancel": "Annulla"
+    "Cancel": "Annulla",
+    "ShowAll": "ShowAll",
+    "Done": "Done",
+    "Send": "Send",
+    "Dismiss": "Dismiss",
+    "Submit": "Submit",
+    "Verify": "Verify"
   },
 
   "Notification": {

@@ -1,10 +1,10 @@
 import React from "react";
-import makeStyles from "@material-ui/core/styles/makeStyles";
-import createStyles from "@material-ui/core/styles/createStyles";
+import makeStyles from "@mui/styles/makeStyles";
+import createStyles from "@mui/styles/createStyles";
 import { useTranslation } from "react-i18next";
 import { useField } from "formik";
 
-import Button from "@material-ui/core/Button";
+import Button from "@mui/material/Button";
 
 import { SlotInterval } from "eisbuk-shared";
 
@@ -62,7 +62,6 @@ const useStyles = makeStyles((theme) =>
     intervalsTitle: {
       letterSpacing: 1,
       fontSize: theme.typography.pxToRem(18),
-      // @ts-expect-error - fontWeightBold has the wrong type for some reason
       fontWeight: theme.typography.fontWeightBold,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.primary.light,

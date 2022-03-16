@@ -8,8 +8,8 @@ import {
   getAuth,
   connectAuthEmulator,
   signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
   signOut,
+  UserCredential,
 } from "@firebase/auth";
 import {
   initializeFirestore,
@@ -31,11 +31,10 @@ declare global {
        * - initializes a new `eisbuk` app
        * - creates a random name organization and adds organization name to local storage
        * - creates a default organization with given name
-       * - creates/logs-in a default user (admin of default organization)
-       * @param {boolean} doLogin `true` by default, if `false`, creates an organization but does not log in
+       * - creates a default user (admin of organization)
        * @returns {Chainable<string>} a `PromiseLike` which yielding `string` a name of the current organization
        */
-      initAdminApp: (doLogin?: boolean) => Chainable<string>;
+      initAdminApp: () => Chainable<string>;
       /**
        * A sort of a proxy handler: passes organization and file names back to node environment
        * process (using `cy.task` API). The files get read and parsed (JSON)
@@ -48,6 +47,23 @@ declare global {
         organization: string,
         files: string[]
       ) => Chainable<null>;
+      /**
+       * Retrieve recaptcha code from auth emulator
+       * @param {string} phone phone number we're using to register
+       * @returns {Chainable<number>} a `PromiseLike` yielding code string on success
+       */
+      getRecaptchaCode: (
+        phone: string,
+        projectId?: string
+      ) => Chainable<string>;
+      /**
+       * Sign into of firebase with default user
+       */
+      signIn: () => Chainable<UserCredential>;
+      /**
+       * Sign out of firebase
+       */
+      signOut: () => Chainable<void>;
     }
   }
 }
@@ -75,10 +91,9 @@ connectFunctionsEmulator(functions, "localhost", 5001);
  */
 const addFirebaseCommands = (): void => {
   /**
-   * Set up app for testing and log in as default admin
-   * @param {boolean} doLogin - whether to log in as default admin
+   * Set up app for testing
    */
-  Cypress.Commands.add("initAdminApp", async (doLogin = true) => {
+  Cypress.Commands.add("initAdminApp", async () => {
     // create a random organization name in order to run each test
     // against it's own organization, using the same db without conflicts
     const organization = uuidv4();
@@ -89,30 +104,9 @@ const addFirebaseCommands = (): void => {
     // create a default organization (containing the default user as an admin)
     await httpsCallable(
       functions,
-      CloudFunction.CreateOrganization
+      CloudFunction.CreateDefaultUser
     )({ organization });
 
-    // Always create a user (and maybe log them out)
-    try {
-      await createUserWithEmailAndPassword(
-        auth,
-        defaultUser.email,
-        defaultUser.password
-      );
-      if (!doLogin) {
-        await signOut(auth);
-      }
-    } catch (error) {
-      if (doLogin) {
-        await signInWithEmailAndPassword(
-          auth,
-          defaultUser.email,
-          defaultUser.password
-        );
-      } else {
-        await signOut(auth);
-      }
-    }
     return organization;
   });
 
@@ -121,6 +115,18 @@ const addFirebaseCommands = (): void => {
     (organization: string, files: string[]) => {
       cy.task("updateFirestore", { organization, files });
     }
+  );
+
+  Cypress.Commands.add(
+    "getRecaptchaCode",
+    (phone: string, projectId = "eisbuk") =>
+      cy.task("getRecaptchaCode", { phone, projectId })
+  );
+
+  Cypress.Commands.add("signOut", () => signOut(getAuth()));
+
+  Cypress.Commands.add("signIn", () =>
+    signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password)
   );
 };
 

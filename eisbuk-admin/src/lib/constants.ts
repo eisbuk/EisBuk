@@ -14,7 +14,6 @@ export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 // env info variable (production, test, etc)
 export const __isDev__ = process.env.NODE_ENV !== "production";
 // check for explicit "test" environment
-debugger
 export const __isTest__ = process.env.NODE_ENV === "test";
 
 // organization constants
@@ -38,7 +37,9 @@ export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
 
 // production only env variables
-export const __authDomain__ = process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
+export const __authDomain__ = __isDev__
+  ? "localhost"
+  : process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
 export const __storageBucket__ = process.env.REACT_APP_FIREBASE_STORAGE_BUCKET;
 export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;
 

@@ -56,6 +56,12 @@ declare global {
        * @param {string} input
        */
       clearAndType: (input: string) => Chainable<Element>;
+      /**
+       * A convenience method to avoid typing `get("button").contains(<label>).click()` each time.
+       * Always uses `click({ force: true })` to avoid failing on buttons detatched after click.
+       * @param {string} label button label
+       */
+      clickButton: (label: string) => Chainable<Element>;
     }
   }
 }
@@ -143,5 +149,9 @@ export default (): void => {
     "clearAndType",
     { prevSubject: "element" },
     (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
+  );
+
+  Cypress.Commands.add("clickButton", (label: string) =>
+    cy.get("button").contains(label).click({ force: true })
   );
 };

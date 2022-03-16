@@ -2,10 +2,10 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
-import TableContainer from "@material-ui/core/TableContainer";
-import Paper from "@material-ui/core/Paper";
+import TableContainer from "@mui/material/TableContainer";
+import Paper from "@mui/material/Paper";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { DateFormat, NavigationLabel } from "@/enums/translations";
 

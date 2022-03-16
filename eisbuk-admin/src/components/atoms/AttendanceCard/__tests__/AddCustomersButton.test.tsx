@@ -26,6 +26,7 @@ import {
 import { saul, walt } from "@/__testData__/customers";
 import {
   __addCustomersButtonId__,
+  __addCustomersDialogId__,
   __closeCustomersListId__,
 } from "../__testData__/testIds";
 import { __customersListId__ } from "@/__testData__/testIds";
@@ -110,7 +111,7 @@ describe("AttendanceCard ->", () => {
       expect(customerList).toBeNull();
       screen.getByTestId(__addCustomersButtonId__).click();
       screen.getByTestId(__customersListId__);
-      const dialogContainer = screen.getByRole("presentation");
+      const dialogContainer = screen.getByTestId(__addCustomersDialogId__);
       fireEvent.click(dialogContainer.children[0]);
 
       await waitForElementToBeRemoved(() =>

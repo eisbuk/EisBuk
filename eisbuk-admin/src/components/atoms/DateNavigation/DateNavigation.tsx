@@ -3,16 +3,16 @@ import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 
-import Toolbar from "@material-ui/core/Toolbar";
-import AppBar, { AppBarProps } from "@material-ui/core/AppBar";
-import IconButton from "@material-ui/core/IconButton";
-import Typography from "@material-ui/core/Typography";
-import Switch from "@material-ui/core/Switch";
+import Toolbar from "@mui/material/Toolbar";
+import AppBar, { AppBarProps } from "@mui/material/AppBar";
+import IconButton from "@mui/material/IconButton";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
 
-import ChevronLeftIcon from "@material-ui/icons/ChevronLeft";
-import ChevronRightIcon from "@material-ui/icons/ChevronRight";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
@@ -24,7 +24,13 @@ import { __toggleId__ } from "./__testData__/testData";
 
 import { AdminAria } from "@/enums/translations";
 
-import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import DateSwitcher from "@/components/atoms/DateSwitcher/DateSwitcher";
+
+import {
+  __currentDateId__,
+  __dateNavNextId__,
+  __dateNavPrevId__,
+} from "@/__testData__/testIds";
 
 /**
  * A render function passed as child for render prop usage
@@ -136,6 +142,16 @@ const DateNavigation: React.FC<Props> = ({
    */
   const showExtraButtons = toggleState || !showToggle;
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (jump === "month") return;
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <AppBar {...props} position="sticky">
@@ -147,16 +163,29 @@ const DateNavigation: React.FC<Props> = ({
             aria-label={t(AdminAria.SeePastDates)}
             data-testid={__dateNavPrevId__}
             onClick={paginate("decrement")}
+            size="large"
           >
             <ChevronLeftIcon />
           </IconButton>
           <Typography
             variant="h6"
             color="inherit"
-            className={classes.selectedDate}
+            className={`${classes.selectedDate} ${
+              jump !== "month" && classes.pointerCursor
+            }`}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+            data-testid={__currentDateId__}
           >
             {createDateTitle(currentDate, jump)}
           </Typography>
+          <DateSwitcher
+            currentDate={currentDate}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+          />
           <IconButton
             edge="start"
             className={classes.next}
@@ -164,6 +193,7 @@ const DateNavigation: React.FC<Props> = ({
             aria-label={t(AdminAria.SeeFutureDates)}
             data-testid={__dateNavNextId__}
             onClick={paginate("increment")}
+            size="large"
           >
             <ChevronRightIcon />
           </IconButton>
@@ -183,8 +213,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 0,
   },
   selectedDate: {
-    flexGrow: 6,
+    width: "15rem",
     textAlign: "center",
+  },
+  pointerCursor: {
+    cursor: "pointer",
   },
   prev: {
     flexGrow: 1,

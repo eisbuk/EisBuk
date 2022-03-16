@@ -22,4 +22,12 @@ const bundler = outputFiles[0].text;
 // and processes the args from 3rd on
 // here we're adding additional arg (call to a child process), so
 // we're slicing one arg from this process
-fork("-e", [bundler, ...process.argv.slice(1)]);
+const child = fork("-e", [bundler, ...process.argv.slice(1)], {
+  detached: false,
+});
+
+child.on("close", (code) => {
+  // Our exit code should be the same as the bundler
+  // TODO the bundler exits with code 0 even in case of errors
+  process.exitCode = code;
+});

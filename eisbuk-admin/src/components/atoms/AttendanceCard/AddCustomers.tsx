@@ -1,19 +1,22 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
-import Dialog, { DialogProps } from "@material-ui/core/Dialog";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
+import Dialog, { DialogProps } from "@mui/material/Dialog";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
 
-import Close from "@material-ui/icons/Close";
+import Close from "@mui/icons-material/Close";
 
-import makeStyles from "@material-ui/core/styles/makeStyles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "eisbuk-shared";
 
 import { ActionButton } from "@/enums/translations";
 
-import { __closeCustomersListId__ } from "./__testData__/testIds";
+import {
+  __addCustomersDialogId__,
+  __closeCustomersListId__,
+} from "./__testData__/testIds";
 import CustomerList from "../CustomerList";
 
 interface Props extends Omit<DialogProps, "onClose"> {
@@ -45,7 +48,12 @@ const AddCustomersList: React.FC<Props> = ({
   }, [filteredCustomers]);
 
   return (
-    <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
+    <Dialog
+      data-testid={__addCustomersDialogId__}
+      onClose={onClose}
+      {...dialogProps}
+      maxWidth="md"
+    >
       <div className={classes.container}>
         <Typography variant="h6" component="h2" className={classes.title}>
           {t(ActionButton.AddCustomers)}
@@ -54,6 +62,7 @@ const AddCustomersList: React.FC<Props> = ({
           className={classes.closeButton}
           onClick={() => onClose()}
           data-testid={__closeCustomersListId__}
+          size="large"
         >
           <Close />
         </IconButton>

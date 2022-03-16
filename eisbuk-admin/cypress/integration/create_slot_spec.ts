@@ -10,27 +10,11 @@ const t = i18n.t;
 const createSlotSpec = (config = { isMobile: false }) => {
   beforeEach(() => {
     cy.initAdminApp();
+    cy.signIn();
     cy.visit(PrivateRoutes.Root);
     cy.getAttrWith("aria-label", t(AdminAria.PageNav)).as("Page-Nav");
     if (config.isMobile) {
       cy.get("@Page-Nav").click();
-    } else {
-      cy.get("@Page-Nav").within(() => {
-        // TODO we should not be doing assertions in a beforeEach
-        // function. These assertions should be moved to their own
-        // test, maybe called "navigation".
-        cy.getAttrWith("href", PrivateRoutes.Root)
-          .should("have.attr", "aria-disabled", "true")
-          .and("have.attr", "aria-current", "page");
-
-        cy.getAttrWith("href", PrivateRoutes.Slots)
-          .should("have.attr", "aria-disabled", "false")
-          .and("have.attr", "aria-current", "false");
-
-        cy.getAttrWith("href", PrivateRoutes.Athletes)
-          .should("have.attr", "aria-disabled", "false")
-          .and("have.attr", "aria-current", "false");
-      });
     }
     cy.getAttrWith("href", PrivateRoutes.Slots).click();
 
