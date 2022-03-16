@@ -27,13 +27,3 @@ export const orderByWeekDay = (dates: string[]): string[] =>
     )
     // flatten the dates (get array of dates ordered, but not grouped by week day)
     .reduce((acc, weekDay) => [...acc, ...weekDay], [] as string[]);
-
-/**
- * Takes an array of dates, sort them by date
- * @param dates unsorted array of ISO dates
- * @returns sorted array of dates (ISO)
- */
-export const orderByDate = (dates: string[]): string[] =>
-  dates.sort(
-    (a, b) => DateTime.fromISO(a).toMillis() - DateTime.fromISO(b).toMillis()
-  );
