@@ -63,7 +63,7 @@ const CustomerSlots: React.FC<Props> = ({
   const orderedDates =
     view === CustomerRoute.BookIce
       ? orderByWeekDay(slotDates)
-      : { ...slotDates }.sort();
+      : [...slotDates].sort();
 
   const paginateBy = "month";
 
