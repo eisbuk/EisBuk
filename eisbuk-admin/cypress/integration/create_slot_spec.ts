@@ -10,6 +10,7 @@ const t = i18n.t;
 const createSlotSpec = (config = { isMobile: false }) => {
   beforeEach(() => {
     cy.initAdminApp();
+    cy.signIn();
     cy.visit(PrivateRoutes.Root);
     cy.getAttrWith("aria-label", t(AdminAria.PageNav)).as("Page-Nav");
     if (config.isMobile) {

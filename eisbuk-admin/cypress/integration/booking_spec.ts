@@ -26,7 +26,7 @@ describe("Booking flow", () => {
       });
       // set current time just after the deadline has passed
       cy.setClock(afterDueDate.toMillis());
-      cy.initAdminApp(false).then((organization) =>
+      cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
 
@@ -55,7 +55,7 @@ describe("Booking flow", () => {
         days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp(false).then((organization) =>
+      cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
 
@@ -101,7 +101,7 @@ describe("Booking flow", () => {
       // our test customer (saul) loaded from `saul_with_extended_date.json`
       // has an extended date (second deadline) until "2022-01-05"
       cy.setClock(testDateLuxon.toMillis());
-      cy.initAdminApp(false).then((organization) =>
+      cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, [
           "saul_with_extended_date.json",
           "slots.json",
@@ -170,7 +170,7 @@ describe("Booking flow", () => {
         days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp(false).then((organization) =>
+      cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, [
           "customers.json",
           // load off-ice slots, belonging to the end-of-december start-of-january week
@@ -224,6 +224,7 @@ describe("Booking flow", () => {
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+      cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
@@ -257,6 +258,7 @@ describe("Booking flow", () => {
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["customers.json", "slots.json"])
       );
+      cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)

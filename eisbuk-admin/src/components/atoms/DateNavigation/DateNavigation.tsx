@@ -24,7 +24,13 @@ import { __toggleId__ } from "./__testData__/testData";
 
 import { AdminAria } from "@/enums/translations";
 
-import { __dateNavNextId__, __dateNavPrevId__ } from "@/__testData__/testIds";
+import DateSwitcher from "@/components/atoms/DateSwitcher/DateSwitcher";
+
+import {
+  __currentDateId__,
+  __dateNavNextId__,
+  __dateNavPrevId__,
+} from "@/__testData__/testIds";
 
 /**
  * A render function passed as child for render prop usage
@@ -136,6 +142,16 @@ const DateNavigation: React.FC<Props> = ({
    */
   const showExtraButtons = toggleState || !showToggle;
 
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (jump === "month") return;
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <AppBar {...props} position="sticky">
@@ -154,10 +170,22 @@ const DateNavigation: React.FC<Props> = ({
           <Typography
             variant="h6"
             color="inherit"
-            className={classes.selectedDate}
+            className={`${classes.selectedDate} ${
+              jump !== "month" && classes.pointerCursor
+            }`}
+            aria-haspopup="true"
+            aria-expanded={open ? "true" : undefined}
+            onClick={handleClick}
+            data-testid={__currentDateId__}
           >
             {createDateTitle(currentDate, jump)}
           </Typography>
+          <DateSwitcher
+            currentDate={currentDate}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+          />
           <IconButton
             edge="start"
             className={classes.next}
@@ -185,8 +213,11 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 0,
   },
   selectedDate: {
-    flexGrow: 6,
+    width: "15rem",
     textAlign: "center",
+  },
+  pointerCursor: {
+    cursor: "pointer",
   },
   prev: {
     flexGrow: 1,

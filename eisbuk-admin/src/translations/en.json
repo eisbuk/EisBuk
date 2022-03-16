@@ -14,7 +14,29 @@
     "NotAuthorized": "You are not authorized to login",
     "AdminsOnly": "This space is reserved for administrators",
     "LoggedInWith": "You are logged in with:",
-    "TryAgain": "Log out and try again with a different user"
+    "TryAgain": "Log out and try again with a different user",
+
+    "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
+    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
+  },
+  "AuthError": {
+    "NetworkError": "A network error has occurred",
+    "EmailNotFound": "That email address doesn't match an existing account",
+    "InvalidPassword": "The email and password you entered don't match",
+    "InvalidVerificationCode": "The code you've entered is invalid, please enter the correct code",
+    "Unknown": "Unknown error"
+  },
+  "AuthTitle": {
+    "SignInWithEmail": "Sign in with email",
+    "SignInWithPhone": "Sign in with phone",
+    "SignInWithGoogle": "Sign in with Google",
+
+    "SignIn": "Sign in",
+    "CreateAccount": "Create account",
+    "RecoverPassword": "Recover password",
+    "CheckYourEmail": "Check your email",
+    "EnterCode": "Enter Code"
   },
 
   "SlotType": {
@@ -73,6 +95,7 @@
     "InvalidDate": "Invalid date format (\"dd/mm/yyyy\")",
     "InvalidPhone": "Please enter a valid phone format: phone number prepended with '+' sign and country code (i.e. +385 99 2222 555)",
     "TimeMismatch": "Start time is greater than end time",
+    "WeakPassword": "Password should contain at least {{ min }} characters",
     "InvalidSmsFrom": "Invalid format: Only letters are allowed",
     "InvalidSmsFromLength": "Invalid format: Maximum 11 characters"
   },
@@ -94,6 +117,9 @@
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
   },
   "ActionButton": {
+    "SignIn": "Signin",
+    "TroubleSigningIn": "Trouble signing in?",
+
     "CreateSlot": "Create Slot",
     "EditSlot": "Edit Slot",
 
@@ -111,6 +137,12 @@
     "Save": "Save",
     "Next": "Next",
     "Cancel": "Cancel",
+    "ShowAll": "ShowAll",
+    "Done": "Done",
+    "Send": "Send",
+    "Dismiss": "Dismiss",
+    "Submit": "Submit",
+    "Verify": "Verify",
     "Add": "Add"
   },
 

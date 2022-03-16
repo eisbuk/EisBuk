@@ -66,7 +66,7 @@ export const development = {
   },
 };
 
-export const available = [igorice, eisbuk, development];
+export const muiDefault = createTheme({});
 
 /**
  * Gets theme settings for current organization
