@@ -14,7 +14,7 @@ import CustomerSlots from "../CustomerSlots";
 import * as bookingActions from "@/store/actions/bookingOperations";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { __dateNavNextId__ } from "@/__testData__/testIds";
+import { __dateNavNextId__, __noSlotsDateId__ } from "@/__testData__/testIds";
 import { slotsMonth } from "@/__testData__/slots";
 import { testDateLuxon, testDate } from "@/__testData__/date";
 import { comparePeriods } from "@/utils/helpers";
@@ -59,6 +59,14 @@ describe("CustomerSlots", () => {
         changeCalendarDate(expectedDate)
       );
     });
+  });
+  test("should show alert message when there are no slots available for the whole month in ice", () => {
+    render(<CustomerSlots slots={{}} view={CustomerRoute.BookIce} />);
+    screen.getByTestId(__noSlotsDateId__);
+  });
+  test("should show alert message when there are no slots available for the whole month in off-ice", () => {
+    render(<CustomerSlots slots={{}} view={CustomerRoute.BookOffIce} />);
+    screen.getByTestId(__noSlotsDateId__);
   });
 
   describe("Test interval booking actions", () => {

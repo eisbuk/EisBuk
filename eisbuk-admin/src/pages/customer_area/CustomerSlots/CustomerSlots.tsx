@@ -21,6 +21,7 @@ import { getCountdownProps } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { orderByWeekDay, orderByDate } from "./utils";
+import { __noSlotsDateId__ } from "@/__testData__/testIds";
 
 interface SlotsByDay {
   [dayISO: string]: {
@@ -103,7 +104,9 @@ const CustomerSlots: React.FC<Props> = ({
       {() => (
         <>
           {!Object.keys(slots).length ? (
-            <Alert severity="info">{t(Alerts.NoSlots, { currentDate })}</Alert>
+            <Alert data-testid={__noSlotsDateId__} severity="info">
+              {t(Alerts.NoSlots, { currentDate })}
+            </Alert>
           ) : (
             <>
               {countdownProps && <BookingsCountdown {...countdownProps} />}
