@@ -152,6 +152,10 @@ export default (): void => {
   );
 
   Cypress.Commands.add("clickButton", (label: string) =>
-    cy.get("button").contains(label).click({ force: true })
+    cy
+      // first assure the button is rendered
+      .contains(label)
+      // click the button
+      .then(() => cy.get("button").contains(label).click({ force: true }))
   );
 };
