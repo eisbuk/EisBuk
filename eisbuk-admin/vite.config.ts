@@ -26,7 +26,6 @@ export default defineConfig({
       REACT_APP_SENTRY_DSN: "",
       REACT_APP_SENTRY_ENVIRONMENT: "",
       REACT_APP_SENTRY_RELEASE: "",
-      STORYBOOK_IS_STORYBOOK: "true",
     }),
     svgr(),
   ],
