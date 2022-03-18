@@ -3,6 +3,7 @@ import {
   GoogleAuthProvider,
   getAuth,
   signInWithRedirect,
+  isSignInWithEmailLink,
 } from "@firebase/auth";
 import { useTranslation } from "react-i18next";
 
@@ -15,10 +16,12 @@ import { AuthTitle } from "@/enums/translations";
 import AuthButton from "./AuthButton";
 import AuthContainer from "./AuthContainer";
 import EmailFlow from "./EmailFlow";
+import EmailLinkFlow from "./EmailLinkFlow";
 import PhoneFlow from "./PhoneFlow";
 
 enum AuthFlow {
   Email = "email",
+  EmailLink = "email-link",
   Phone = "phone",
   Google = "google",
 }
@@ -28,6 +31,13 @@ const AuthDialog: React.FC = () => {
   const classes = useStyles();
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
+
+  // redirect to login-with-email-link if site visited by login link
+  useEffect(() => {
+    if (isSignInWithEmailLink(getAuth(), window.location.href)) {
+      setAuthFlow(AuthFlow.EmailLink);
+    }
+  }, []);
 
   // control login with google flow
   useEffect(() => {
@@ -40,6 +50,9 @@ const AuthDialog: React.FC = () => {
   switch (authFlow) {
     case AuthFlow.Email:
       return <EmailFlow onCancel={() => setAuthFlow(null)} />;
+
+    case AuthFlow.EmailLink:
+      return <EmailLinkFlow onCancel={() => setAuthFlow(null)} />;
 
     case AuthFlow.Phone:
       return <PhoneFlow onCancel={() => setAuthFlow(null)} />;
@@ -94,6 +107,13 @@ export const buttons = [
     label: AuthTitle.SignInWithEmail,
     icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
     authFlow: AuthFlow.Email,
+  },
+  {
+    color: "#ffff",
+    backgroundColor: "rgba(0,0,0,0.8)",
+    label: `${AuthTitle.SignInWithEmailLink}`,
+    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
+    authFlow: AuthFlow.EmailLink,
   },
 ];
 
