@@ -3,17 +3,14 @@
   "version": "1.0.0",
   "description": "Shared code for eisbuk packages (frontend and cloud functions backend)",
   "private": true,
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
   "exports": {
     ".": {
-      "require": "./dist/index.js",
-      "default": "./src/index.ts"
-    },
-    "./dist/deprecated": {
-      "require": "./dist/cjs/deprecated.js",
-      "default": "./src/index.ts"
+      "require": "./dist/index.cjs.js",
+      "import": "./dist/index.es.js"
     }
   },
-  "main": "src/index.ts",
   "types": "dist",
   "devDependencies": {
     "@google-cloud/firestore": "^4.13.2",
