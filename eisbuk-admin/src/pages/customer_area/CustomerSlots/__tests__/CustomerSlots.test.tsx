@@ -48,13 +48,13 @@ describe("CustomerSlots", () => {
       );
     });
 
-    test("should paginate by week if 'view=\"book_off_ice\"'", () => {
+    test("should paginate by month if 'view=\"book_off_ice\"'", () => {
       render(
         <CustomerSlots slots={slotsMonth} view={CustomerRoute.BookOffIce} />
       );
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
-      const expectedDate = testDateLuxon.plus({ weeks: 1 });
+      const expectedDate = testDateLuxon.plus({ months: 1 });
       expect(mockDispatch).toHaveBeenCalledWith(
         changeCalendarDate(expectedDate)
       );

@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
   },
   slotListContainer: {
+    minHeight: "10rem",
     paddingBottom: theme.spacing(2),
     marginBottom: theme.spacing(0.5),
     borderBottomStyle: "solid",

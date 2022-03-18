@@ -7,26 +7,21 @@ import { AdminAria, SlotFormAria } from "@/enums/translations";
 
 const t = i18n.t;
 
-const createSlotSpec = (config = { isMobile: false }) => {
+const createSlotSpec = () => {
   beforeEach(() => {
     cy.initAdminApp();
     cy.signIn();
-    cy.visit(PrivateRoutes.Root);
-    cy.getAttrWith("aria-label", t(AdminAria.PageNav)).as("Page-Nav");
-    if (config.isMobile) {
-      cy.get("@Page-Nav").click();
-    }
-    cy.getAttrWith("href", PrivateRoutes.Slots).click();
+    cy.visit(PrivateRoutes.Slots);
 
-    cy.getAttrWith("aria-label", t(AdminAria.ToggleSlotOperations)).as(
-      "Slot-Operation-Toggle"
-    );
+    cy.getAttrWith("type", "checkbox").click();
+    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false)
+      .eq(0)
+      // we're doing force: true here since the button isn't visible
+      // due to cypress' weird scrolling behaviour
+      .click({ force: true });
   });
 
   it("fills in slot form and submits it", () => {
-    cy.get("@Slot-Operation-Toggle").click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
-
     cy.getAttrWith("aria-label", SlotType.Ice).click();
     cy.getAttrWith("aria-label", Category.Competitive).click();
 
@@ -48,9 +43,6 @@ const createSlotSpec = (config = { isMobile: false }) => {
   });
 
   it("creates an off-ice slot", () => {
-    cy.get("@Slot-Operation-Toggle").click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
-
     cy.getAttrWith("aria-label", SlotType.OffIce).click();
 
     cy.getAttrWith("aria-label", t(SlotFormAria.SlotCategory)).should(
@@ -72,9 +64,6 @@ const createSlotSpec = (config = { isMobile: false }) => {
   });
 
   it("creates a multi-interval slot", () => {
-    cy.get("@Slot-Operation-Toggle").click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
-
     cy.getAttrWith("aria-label", SlotType.Ice).click();
     cy.getAttrWith("aria-label", Category.Competitive).click();
 
@@ -103,9 +92,6 @@ const createSlotSpec = (config = { isMobile: false }) => {
   });
 
   it("shows 'invalid time format' validation error", () => {
-    cy.visit(PrivateRoutes.Slots);
-    cy.getAttrWith("type", "checkbox").click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
     cy.getAttrWith("value", SlotType.Ice).check();
     cy.getAttrWith("value", Category.Competitive).check();
 
@@ -117,8 +103,6 @@ const createSlotSpec = (config = { isMobile: false }) => {
   });
 
   it("shows validation error for inconsistent period start/end", () => {
-    cy.getAttrWith("type", "checkbox").click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false).eq(0).click();
     cy.getAttrWith("value", SlotType.Ice).check();
     cy.getAttrWith("value", Category.Competitive).check();
 
@@ -137,7 +121,5 @@ const iphoneSe2 = {
   viewportWidth: 375,
 };
 
-describe("Create slot (mobile)", iphoneSe2, () =>
-  createSlotSpec({ isMobile: true })
-);
+describe("Create slot (mobile)", iphoneSe2, createSlotSpec);
 describe("Create slot (desktop)", createSlotSpec);
