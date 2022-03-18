@@ -77,8 +77,6 @@ const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
           // if error message not defined for a particular error code, fall back to unknown error
           t(AuthErrorMessage[error.code] || AuthErrorMessage.UNKNOWN);
 
-        console.log("Error code", error.code);
-
         // check if the error message should be set as a field error or dialog
         const invalidField = fieldErrorMap[error.code] as string | undefined;
         if (invalidField) {
