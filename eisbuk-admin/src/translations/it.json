@@ -18,12 +18,12 @@
 
     "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
     "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
-    "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication",
-    "ConfirmSignInEmail": "Please confirm the email used to sign in",
+    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare",
+    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
-    "InvalidEmail": "Wrong email. Please enter the email you used to receive the sign in link.",
+    "InvalidEmail": "Email non trovata. Controlla che la mail inserita sia quella usata per l'iscrizione.",
     "NetworkError": "Si è verificato un errore di rete",
     "EmailNotFound": "Nessun utente registrato con questa mail",
     "InvalidPassword": "Errore nella mail o nella password",
