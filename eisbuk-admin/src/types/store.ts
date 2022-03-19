@@ -7,6 +7,7 @@ import { Unsubscribe } from "@firebase/firestore";
 import { User } from "@firebase/auth";
 
 import {
+  AuthStatus,
   BookingSubCollection,
   Collection,
   Customer,
@@ -98,9 +99,8 @@ export type AuthReducerAction<A extends AuthAction> =
 /**
  * `authInfoEisbuuk` portion of the local store
  */
-export interface AuthState {
+export interface AuthState extends AuthStatus {
   userData: User | null;
-  isAdmin: boolean;
   isEmpty: boolean;
   isLoaded: boolean;
 }

@@ -9,6 +9,17 @@ export interface SendSMSPayload extends SMSMessage {
   organization: string;
 }
 
+// #region queryAuthStatus
+/**
+ * Payload of `queryAuthStatus` cloud function
+ */
+export interface QueryAuthStatusPayload {
+  /** Current organization */
+  organization: string;
+  /** String used to authenticate user, either email or phone */
+  authString: string;
+}
+
 /**
  * Auth status of an authenticated user. Returned by
  * `queryAuthStatus` cloud function and stored to `auth`
@@ -27,3 +38,4 @@ export interface AuthStatus {
    */
   bookingsSecretKey?: string;
 }
+// #endregion queryAuthStatus
