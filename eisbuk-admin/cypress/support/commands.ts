@@ -60,8 +60,9 @@ declare global {
        * A convenience method to avoid typing `get("button").contains(<label>).click()` each time.
        * Always uses `click({ force: true })` to avoid failing on buttons detatched after click.
        * @param {string} label button label
+       * @param {number} eq optional element index (if multiple elements found)
        */
-      clickButton: (label: string) => Chainable<Element>;
+      clickButton: (label: string, eq?: number) => Chainable<Element>;
     }
   }
 }
@@ -151,7 +152,13 @@ export default (): void => {
     (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
   );
 
-  Cypress.Commands.add("clickButton", (label: string) =>
-    cy.get("button").contains(label).click({ force: true })
-  );
+  Cypress.Commands.add("clickButton", (label: string, eq = 0) => {
+    cy
+      // include ':contains()' in the selector to retry the assertion until the element is found
+      // and prevent assertions on wrong buttons (in a render race condition kind of way)
+      .get(`button:contains(${label})`)
+      // if multiple elements found, get the specified 'eq' or fall back to first element found
+      .eq(eq)
+      .click({ force: true });
+  });
 };

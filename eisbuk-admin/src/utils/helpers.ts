@@ -141,4 +141,4 @@ export const comparePeriods = (first: string, second: string): number => {
  * Check if the phone string is a valid phone number
  */
 export const isValidPhoneNumber = (phone?: string): boolean =>
-  !phone ? false : /^(\+|00)[0-9]{9,15}$/.test(phone);
+  !phone ? false : /^(\+|00)[0-9]{9,16}$/.test(phone.replace(/\s/g, ""));
