@@ -68,7 +68,7 @@ const slotsByDay = {
 /**
  * Simulated attendance redux entries
  */
-const attendance: LocalStore["firestore"]["data"]["attendance"] = {
+export const attendance: LocalStore["firestore"]["data"]["attendance"] = {
   ["slot-0"]: {
     date: testDate,
     attendances: {
