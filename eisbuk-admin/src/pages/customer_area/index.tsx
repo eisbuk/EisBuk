@@ -60,8 +60,8 @@ const CustomerArea: React.FC = () => {
   const customerData = useSelector(getBookingsCustomer);
   const date = useSelector(getCalendarDay);
 
-  // only the "book_ice" will use "month" timeframe, the rest will use "week"
-  const timeframe = customerRoute === CustomerRoute.BookIce ? "month" : "week";
+  // only the "calendar" will use "week" timeframe, the rest will use "month"
+  const timeframe = customerRoute === CustomerRoute.Calendar ? "week" : "month";
 
   // get slots from store for apropriate timespan
   const slotsSelector = useMemo(

@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Field,
-  FieldConfig,
-  // useField
-} from "formik";
+import { Field, FieldConfig } from "formik";
 
 import { InputProps } from "@mui/material";
 
@@ -14,53 +10,58 @@ import { TextField, TextFieldProps } from "formik-mui";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-const AuthTextField: React.FC<FieldConfig<string> & Partial<TextFieldProps>> =
-  ({ name, type: typeProp, ...props }) => {
-    const classes = useStyles();
+export type AuthTextFieldProps = FieldConfig<string> & Partial<TextFieldProps>;
 
-    // const [, { error }] = useField(name);
-    // in case of password, we're using type
-    // to control hiding/displaying ot the text
-    const [showText, setShowText] = useState(false);
-    const type = showText ? "text" : typeProp || "text";
+export type AuthTextFieldLookup<I extends string> = Partial<
+  Record<I, Array<AuthTextFieldProps & Record<string, any>>>
+>;
 
-    const togglePasswordVisibility = () => setShowText(!showText);
+const AuthTextField: React.FC<AuthTextFieldProps> = ({
+  name,
+  type: typeProp,
+  ...props
+}) => {
+  const classes = useStyles();
 
-    const InputProps: InputProps =
-      typeProp === "password"
-        ? // show password visibility button only for password
-          {
-            endAdornment: (
-              <button
-                className={classes.showPasswordButton}
-                onClick={togglePasswordVisibility}
-                type="button"
-              >
-                {showText ? <VisibilityOff /> : <Visibility />}
-              </button>
-            ),
-          }
-        : {};
+  const [showText, setShowText] = useState(false);
+  const type = showText ? "text" : typeProp || "text";
 
-    return (
-      <>
-        <div className={classes.container}>
-          <Field
-            className={classes.textField}
-            {...{
-              name,
-              ...props,
-              type,
-              InputProps,
-            }}
-            component={TextField}
-            onBlur={() => {}}
-          />
-        </div>
-        {/* <div className={classes.errorContainer}>{error}</div> */}
-      </>
-    );
-  };
+  const togglePasswordVisibility = () => setShowText(!showText);
+
+  const InputProps: InputProps =
+    typeProp === "password"
+      ? // show password visibility button only for password
+        {
+          endAdornment: (
+            <button
+              className={classes.showPasswordButton}
+              onClick={togglePasswordVisibility}
+              type="button"
+            >
+              {showText ? <VisibilityOff /> : <Visibility />}
+            </button>
+          ),
+        }
+      : {};
+
+  return (
+    <>
+      <div className={classes.container}>
+        <Field
+          className={classes.textField}
+          {...{
+            name,
+            ...props,
+            type,
+            InputProps,
+          }}
+          component={TextField}
+          onBlur={() => {}}
+        />
+      </div>
+    </>
+  );
+};
 
 const useStyles = makeStyles(() => ({
   container: {

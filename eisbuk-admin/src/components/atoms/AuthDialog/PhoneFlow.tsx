@@ -13,27 +13,24 @@ import {
   AuthMessage,
   AuthTitle,
   ValidationMessage,
+  ActionButton as ActionButtonLabel,
 } from "@/enums/translations";
+import { PhoneAuthStep } from "@/enums/authSteps";
 
 import AuthContainer from "./AuthContainer";
-import AuthTextField from "./AuthTextField";
 import AuthTypography from "./AuthTypography";
-import ActionButton from "./ActionButton";
+import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
+import ActionButton, { ActionButtonLookup } from "./ActionButton";
+import AuthErrorDialog from "./AuthErrorDialog";
 
 import { isValidPhoneNumber } from "@/utils/helpers";
 import useAuthFlow from "@/hooks/useAuthFlow";
-import AuthErrorDialog from "./AuthErrorDialog";
 
 declare global {
   interface Window {
     recaptchaVerifier: RecaptchaVerifier;
     confirmationResult: ConfirmationResult;
   }
-}
-
-enum PhoneAuthStep {
-  PhoneInput = "phone-input",
-  SMSCode = "sms-code",
 }
 
 interface FullFormValues {
@@ -49,7 +46,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
 }) => {
   const { t } = useTranslation();
 
-  const [authStep, setAuthStep] = useState(PhoneAuthStep.PhoneInput);
+  const [authStep, setAuthStep] = useState(PhoneAuthStep.SignInWithPhone);
 
   const { handleSubmit, dialogError, removeDialogError } =
     useAuthFlow<FullFormValues>({});
@@ -82,7 +79,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   }, []);
 
   const submitHandlers = {} as Record<PhoneAuthStep, SubmitHandler>;
-  submitHandlers[PhoneAuthStep.PhoneInput] = async ({ phone }) => {
+  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone }) => {
     const verifier = window;
     await verifier.recaptchaVerifier.verify();
     const res = await signInWithPhoneNumber(
@@ -97,10 +94,9 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
     await window.confirmationResult.confirm(code);
   };
 
-  const footerMessage =
-    authStep === PhoneAuthStep.PhoneInput
-      ? t(AuthMessage.SMSDataRatesMayApply)
-      : undefined;
+  const title = titleLookup[authStep] || AuthTitle[authStep];
+
+  const footerMessage = footerMessageLookup[authStep];
 
   return (
     <AuthContainer>
@@ -116,23 +112,25 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 message={dialogError || ""}
                 onClose={removeDialogError}
               />
-              <Header>{t(titleLookup[authStep])}</Header>
+              <Header>{t(title)}</Header>
               <Content>
-                <AuthTextField {...inputFieldLookup[authStep]} />
+                {fieldsLookup[authStep]?.map((inputProps) => (
+                  <AuthTextField {...inputProps} />
+                ))}
               </Content>
               <ActionButtons>
-                <ActionButton
-                  id={buttonIdLookup[authStep]}
-                  variant="fill"
-                  type="submit"
-                >
-                  {buttonLabelLookup[authStep]}
-                </ActionButton>
+                {actionButtonLookup[authStep]?.map(
+                  ({ label, ...buttonProps }) => (
+                    <ActionButton key={label} {...buttonProps}>
+                      {t(label)}
+                    </ActionButton>
+                  )
+                )}
               </ActionButtons>
               <Footer>
                 {footerMessage && (
                   <AuthTypography variant="caption">
-                    {footerMessage}
+                    {t(footerMessage)}
                   </AuthTypography>
                 )}
               </Footer>
@@ -144,32 +142,75 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   );
 };
 
-const buttonIdLookup = {
-  [PhoneAuthStep.PhoneInput]: "submit-phone",
-  [PhoneAuthStep.SMSCode]: "submit-code",
-};
-
+/**
+ * A lookup containing only the title strings different from the auth step itself,
+ * i.e. `"SMSCode"` step has title `"AuthTitle.EnterCode"` (and is listed in this lookup).
+ * If no "special" title, for auth step, specified in this lookup, the title will simply be the same string used to
+ * designate the auth step, i.e. `"SignInWithPhone"` will simply be `"AuthTitle.SignInWithPhone"`
+ */
 const titleLookup = {
-  [PhoneAuthStep.PhoneInput]: AuthTitle.SignInWithPhone,
   [PhoneAuthStep.SMSCode]: AuthTitle.EnterCode,
 };
-const buttonLabelLookup = {
-  [PhoneAuthStep.PhoneInput]: "Verify",
-  [PhoneAuthStep.SMSCode]: "Submit",
+
+/**
+ * A lookup of input fields rendered for each auth step
+ */
+const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
+  [PhoneAuthStep.SignInWithPhone]: [
+    {
+      name: "phone",
+      id: "phone",
+      label: "Phone",
+      type: "phone",
+    },
+  ],
+  [PhoneAuthStep.SMSCode]: [
+    {
+      name: "code",
+      id: "code",
+      label: "SMS Code",
+      type: "text",
+    },
+  ],
 };
-const inputFieldLookup = {
-  [PhoneAuthStep.PhoneInput]: {
-    name: "phone",
-    id: "phone",
-    label: "Phone",
-    type: "phone",
-  },
-  [PhoneAuthStep.SMSCode]: {
-    name: "code",
-    id: "code",
-    label: "SMS Code",
-    type: "text",
-  },
+
+/**
+ * A lookup of action buttons for each auth step
+ */
+const actionButtonLookup: ActionButtonLookup<PhoneAuthStep> = {
+  [PhoneAuthStep.SignInWithPhone]: [
+    {
+      label: ActionButtonLabel.Cancel,
+      variant: "empty",
+      type: "reset",
+    },
+    {
+      label: ActionButtonLabel.Verify,
+      variant: "fill",
+      type: "submit",
+      id: "submit-phone",
+    },
+  ],
+  [PhoneAuthStep.SMSCode]: [
+    {
+      label: ActionButtonLabel.Cancel,
+      variant: "empty",
+      type: "reset",
+    },
+    {
+      label: ActionButtonLabel.Submit,
+      variant: "fill",
+      type: "submit",
+    },
+  ],
+};
+
+/**
+ * Footer message for each auth step, if not defined,
+ * no message is shown
+ */
+const footerMessageLookup = {
+  [PhoneAuthStep.SignInWithPhone]: AuthMessage.SMSDataRatesMayApply,
 };
 
 export default PhoneFlow;
