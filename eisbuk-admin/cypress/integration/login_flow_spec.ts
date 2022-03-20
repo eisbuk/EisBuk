@@ -69,7 +69,7 @@ describe("login", () => {
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
       // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("sends a password reset email on demand", () => {
@@ -287,7 +287,7 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Send));
       cy.getSigninLink(newEmail).then((link) => cy.visit(link));
       // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
@@ -401,7 +401,7 @@ describe("login", () => {
       cy.contains(`${saul.name} ${saul.surname}`);
     });
 
-    it("redirects to unauth page if user not admin, nor a registered customer", () => {
+    it("redirects to non-registered page if user not admin, nor a registered customer", () => {
       const email = "new-user@gmail.com";
       const password = "password";
       cy.addAuthUser({ email, password });

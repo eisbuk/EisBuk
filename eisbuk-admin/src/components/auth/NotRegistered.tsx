@@ -7,6 +7,9 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
+import { AuthMessage } from "@/enums/translations";
+import { Routes } from "@/enums/routes";
+
 import { signOut } from "@/store/actions/authOperations";
 
 import figureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
@@ -15,8 +18,8 @@ import figureSkatingSilhouette from "@/assets/images/login/figure-skating-silhou
 import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.svg";
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
-import { getLocalAuth } from "@/store/selectors/auth";
-import { AuthMessage } from "@/enums/translations";
+import { getLocalAuth, getIsAuthEmpty } from "@/store/selectors/auth";
+import { Redirect } from "react-router-dom";
 
 // #region backgroundImages
 const backgrounds = [
@@ -50,11 +53,10 @@ interface Props {
  */
 const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
-  // this is asserted as non-null as it shouldn't be render
-  // if user is not authentidated (user data doesn't exist)
-  // but only if user is authenticated and not admin
-  const userAuthData = useSelector(getLocalAuth)!;
+  const userAuthData = useSelector(getLocalAuth);
+  const isAuthEmpty = useSelector(getIsAuthEmpty);
 
   const background = _.isNil(backgroundIndex)
     ? _.sample(backgrounds)
@@ -66,25 +68,27 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   };
 
   const logOut = () => dispatch(signOut());
-  const { t } = useTranslation();
 
   return (
-    <Paper style={style}>
-      <Typography component="h1" variant="h2">
-        {t(AuthMessage.NotRegistered)}
-      </Typography>
-      <Typography component="h2" variant="h4">
-        {t(AuthMessage.ContactAdminsForRegistration)}
-      </Typography>
-      <Typography component="h2" variant="h5">
-        {t(AuthMessage.LoggedInWith)}{" "}
-        <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
-      </Typography>
+    <>
+      {isAuthEmpty && <Redirect to={Routes.Login} />}
+      <Paper style={style}>
+        <Typography component="h1" variant="h2">
+          {t(AuthMessage.NotRegistered)}
+        </Typography>
+        <Typography component="h2" variant="h4">
+          {t(AuthMessage.ContactAdminsForRegistration)}
+        </Typography>
+        <Typography component="h2" variant="h5">
+          {t(AuthMessage.LoggedInWith)}{" "}
+          <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
+        </Typography>
 
-      <Button variant="contained" onClick={logOut}>
-        {t(AuthMessage.TryAgain)}
-      </Button>
-    </Paper>
+        <Button variant="contained" onClick={logOut}>
+          {t(AuthMessage.TryAgain)}
+        </Button>
+      </Paper>
+    </>
   );
 };
 

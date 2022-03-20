@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, BrowserRouter, Redirect } from "react-router-dom";
+import { Route, Switch, BrowserRouter } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "eisbuk-shared";
@@ -26,11 +26,7 @@ import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirest
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
-import {
-  getIsAuthEmpty,
-  getIsAdmin,
-  getIsAuthLoaded,
-} from "@/store/selectors/auth";
+import { getIsAdmin } from "@/store/selectors/auth";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -42,8 +38,6 @@ import {
  */
 const AppContent: React.FC = () => {
   const isAdmin = useSelector(getIsAdmin);
-  const isAuthEmpty = useSelector(getIsAuthEmpty);
-  const isAuthLoaded = useSelector(getIsAuthLoaded);
 
   const subscribedCollections: CollectionSubscription[] = isAdmin
     ? [Collection.Organizations, OrgSubCollection.Customers]
@@ -54,7 +48,6 @@ const AppContent: React.FC = () => {
 
   return (
     <BrowserRouter>
-      {isAuthLoaded && isAuthEmpty && <Redirect to={Routes.Login} />}
       <Switch>
         <LoginRoute path={Routes.Login} component={LoginPage} />
         <PrivateRoute
