@@ -33,7 +33,7 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
     case Boolean(secretKey):
       return <Redirect to={`${Routes.CustomerArea}/${secretKey}`} />;
     default:
-      return <Redirect to={Routes.Unauthorized} />;
+      return <Redirect to={Routes.NotRegistered} />;
   }
 };
 

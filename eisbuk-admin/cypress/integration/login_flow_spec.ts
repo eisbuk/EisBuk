@@ -298,7 +298,7 @@ describe("login", () => {
   });
 
   describe("Login redirect", () => {
-    it.only("Redirects to customer bookings page on customer (non-admin) login", () => {
+    it("Redirects to customer bookings page on customer (non-admin) login", () => {
       const password = "password";
       cy.addAuthUser({ email: saul.email, password });
       // log in saul, who is not an admin, but exists in customers collection
@@ -313,7 +313,7 @@ describe("login", () => {
       cy.contains(`${saul.name} ${saul.surname}`);
     });
 
-    it.only("redirects to unauth page if user not admin, nor a registered customer", () => {
+    it("redirects to unauth page if user not admin, nor a registered customer", () => {
       const email = "new-user@gmail.com";
       const password = "password";
       cy.addAuthUser({ email, password });
@@ -326,7 +326,8 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.SignIn));
       // on successful login, should redirect to unauth page
       // the user is not admin and doesn't exist in customers collection
-      cy.contains(t(AuthMessage.NotAuthorized));
+      cy.contains(t(AuthMessage.NotRegistered));
+      cy.contains(t(AuthMessage.ContactAdminsForRegistration));
     });
   });
 });

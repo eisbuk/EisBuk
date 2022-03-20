@@ -12,7 +12,9 @@
 
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
+    "NotRegistered": "You are not registered yet",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "ContactAdminsForRegistration": "Contact the organization admin(s) to get registered as a customer",
     "LoggedInWith": "Hai effettuato l'accesso con:",
     "TryAgain": "Esci e riprova con un altro utente",
 

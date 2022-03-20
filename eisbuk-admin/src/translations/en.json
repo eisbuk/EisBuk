@@ -11,8 +11,10 @@
   },
 
   "Authorization": {
-    "NotAuthorized": "You are not authorized to login",
+    "NotAuthorized": "Access not authorized",
+    "NotRegistered": "You are not registered yet",
     "AdminsOnly": "This space is reserved for administrators",
+    "ContactAdminsForRegistration": "Contact the organization admin(s) to get registered as a customer",
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
 
