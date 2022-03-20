@@ -9,6 +9,17 @@ export interface SendSMSPayload extends SMSMessage {
   organization: string;
 }
 
+/**
+ * Payload passed to `createUser` cloud function (for testing)
+ */
+export type CreateAuthUserPayload = Partial<{
+  email: string;
+  phoneNumber: string;
+  password: string;
+  organization: string;
+  isAdmin: boolean;
+}>;
+
 // #region queryAuthStatus
 /**
  * Payload of `queryAuthStatus` cloud function

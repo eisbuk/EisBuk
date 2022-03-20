@@ -15,9 +15,8 @@ const functions = getFunctions(app, "europe-west6");
  */
 export const createCloudFunctionCaller =
   (functionName: CloudFunction, payload?: Record<string, any>) =>
-  async (): Promise<void> => {
-    await httpsCallable(
+  async (): Promise<any> =>
+    httpsCallable(
       functions,
       functionName
     )({ ...payload, organization: getOrganization() });
-  };
