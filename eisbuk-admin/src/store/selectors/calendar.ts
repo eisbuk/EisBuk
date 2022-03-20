@@ -7,7 +7,7 @@ interface calendarSlot {
 export const getCalendarData = (state: LocalStore): calendarSlot => {
   const {
     firestore: {
-      data: { slotsByDay: allSlotsInStore },
+      data: { slotsByDay: allSlotsInStore, attendance = {} },
     },
   } = state;
 
@@ -19,16 +19,21 @@ export const getCalendarData = (state: LocalStore): calendarSlot => {
     },
     {}
   );
+  const bookedDates = Object.values(attendance).reduce((acc, _) => {
+    const bookedIntervals = Object.values(_.attendances).filter(
+      (customerAttendance) => customerAttendance.bookedInterval
+    );
+    return bookedIntervals.length ? { ...acc, [_.date]: "booked" } : acc;
+  }, {});
 
-  console.log(Object.keys(flattenedSlotsByDay));
-  return Object.keys(flattenedSlotsByDay).reduce((acc, _) => {
-    /**
-     * @TODO get booked slots from attendance.bookedinterval
-     */
-
-    return {
-      ...acc,
-      [_]: "slots",
-    };
-  }, {} as calendarSlot);
+  const datesWithSlots: calendarSlot = Object.keys(flattenedSlotsByDay).reduce(
+    (acc, _) => {
+      return {
+        ...acc,
+        [_]: "slots",
+      };
+    },
+    {}
+  );
+  return { ...datesWithSlots, ...bookedDates };
 };

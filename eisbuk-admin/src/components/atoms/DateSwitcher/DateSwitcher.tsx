@@ -65,7 +65,9 @@ const renderWeekPickerDay =
       <Badge
         key={date.toString()}
         overlap="circular"
-        badgeContent={hasSlots ? "🌚" : ""}
+        variant="dot"
+        color={hasSlots === "slots" ? "secondary" : "success"}
+        invisible={!hasSlots}
       >
         <CustomPickersDay
           {...pickersDayProps}
