@@ -31,6 +31,14 @@ export const getIsAuthEmpty = (state: LocalStore): boolean =>
 export const getIsAdmin = (state: LocalStore): boolean => state.auth.isAdmin;
 
 /**
+ * Get secretKey for customer's bookings from store (if any)
+ * @param state Local Redux Store
+ * @returns secretKey if it exists, undefined if it doesn't
+ */
+export const getBookingsSecretKey = (state: LocalStore): string | undefined =>
+  state.auth.bookingsSecretKey;
+
+/**
  * Get boolean representing auth load state (set to true when initial auth is loaded)
  * @param state Local Redux Store
  * @returns true is current user is admin (boolean)

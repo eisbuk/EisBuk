@@ -1,9 +1,8 @@
 // import { CollectionReference, getFirestore } from "@firebase/firestore";
 import { getAuth, User } from "@firebase/auth";
-import { httpsCallable, getFunctions } from "@firebase/functions";
 import i18n from "i18next";
 
-import { AuthStatus, QueryAuthStatusPayload } from "eisbuk-shared";
+import { AuthStatus } from "eisbuk-shared";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -13,6 +12,7 @@ import { CloudFunction } from "@/enums/functions";
 import { AuthReducerAction, FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification } from "@/store/actions/appActions";
+import { createCloudFunctionCaller } from "@/utils/firebase";
 
 /**
  * Creates firestore async thunk:
@@ -64,10 +64,10 @@ export const checkAuthStatus = async (
     return { isAdmin: false };
   }
 
-  const res = await httpsCallable<QueryAuthStatusPayload, AuthStatus>(
-    getFunctions(),
-    CloudFunction.QueryAuthStatus
-  )({ organization, authString });
+  const res = await createCloudFunctionCaller(CloudFunction.QueryAuthStatus, {
+    organization,
+    authString,
+  })();
 
   return res.data;
 };
