@@ -1,14 +1,17 @@
 import React from "react";
 import { DateTime } from "luxon";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import Menu, { MenuProps } from "@mui/material/Menu";
 import { CalendarPicker } from "@mui/lab";
+import Badge from "@mui/material/Badge";
 import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay";
 
 import { styled } from "@mui/material/styles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
+import { getCalendarData } from "@/store/selectors/calendar";
+
 import { __calendarMenuId__ } from "@/__testData__/testIds";
 
 interface Props extends MenuProps {
@@ -19,16 +22,18 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
   const dispatch = useDispatch();
   const start = currentDate.startOf("week");
   const end = currentDate.endOf("week");
+  const calendarData = useSelector(getCalendarData);
 
   return (
     <>
-      <Menu data-testId={__calendarMenuId__} {...MenuProps}>
+      <Menu data-testid={__calendarMenuId__} {...MenuProps}>
+        {console.log({ calendarData })}
         <CalendarPicker
           date={currentDate}
           onChange={(currentDate) => {
             dispatch(changeCalendarDate(currentDate!));
           }}
-          renderDay={renderWeekPickerDay(currentDate, start, end)}
+          renderDay={renderWeekPickerDay(currentDate, start, end, calendarData)}
         />
       </Menu>
     </>
@@ -36,7 +41,12 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
 };
 
 const renderWeekPickerDay =
-  (currentDate: DateTime, start: DateTime, end: DateTime) =>
+  (
+    currentDate: DateTime,
+    start: DateTime,
+    end: DateTime,
+    calendarData: { [dayInISO: string]: string }
+  ) =>
   (
     date: DateTime,
     selectedDates: (DateTime | null)[],
@@ -49,15 +59,23 @@ const renderWeekPickerDay =
     const dayIsBetween = date > start && date < end;
     const isFirstDay = date.equals(start);
     const isLastDay = date.endOf("day").equals(end);
+    const hasSlots = calendarData[date.toISO().substring(0, 10)];
 
     return (
-      <CustomPickersDay
-        {...pickersDayProps}
-        disableMargin
-        dayIsBetween={dayIsBetween}
-        isFirstDay={isFirstDay}
-        isLastDay={isLastDay}
-      />
+      <Badge
+        key={date.toString()}
+        overlap="circular"
+        badgeContent={hasSlots ? "🌚" : ""}
+      >
+        <CustomPickersDay
+          {...pickersDayProps}
+          disableMargin
+          dayIsBetween={dayIsBetween}
+          isFirstDay={isFirstDay}
+          isLastDay={isLastDay}
+          showDaysOutsideCurrentMonth
+        />
+      </Badge>
     );
   };
 
