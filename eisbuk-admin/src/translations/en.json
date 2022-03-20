@@ -12,9 +12,9 @@
 
   "Authorization": {
     "NotAuthorized": "Access not authorized",
-    "NotRegistered": "You are not registered yet",
+    "NotRegistered": "Not registered",
     "AdminsOnly": "This space is reserved for administrators",
-    "ContactAdminsForRegistration": "Contact the organization admin(s) to get registered as a customer",
+    "ContactAdminsForRegistration": "The {{ authMethod }} {{ authString }} was not found in our registry. Please try a different authentication method or get in touch at {{ organizationEmail }}",
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
 

@@ -327,7 +327,13 @@ describe("login", () => {
       // on successful login, should redirect to unauth page
       // the user is not admin and doesn't exist in customers collection
       cy.contains(t(AuthMessage.NotRegistered));
-      cy.contains(t(AuthMessage.ContactAdminsForRegistration));
+      cy.contains(
+        t(AuthMessage.ContactAdminsForRegistration, {
+          authString: email,
+          authMethod: "email",
+          organizationEmail: "test@email.com",
+        })
+      );
     });
   });
 });
