@@ -21,6 +21,10 @@ jest.mock("@firebase/functions", () => ({
   // is the only usage of `httpsCallable` in `authOperations` package
   httpsCallable: () => mockQueryAuthStatus,
 }));
+jest.mock("@firebase/app", () => ({
+  ...jest.requireActual("@firebase/app"),
+  getApp: jest.fn(),
+}));
 
 describe("Auth operations", () => {
   afterEach(() => {
