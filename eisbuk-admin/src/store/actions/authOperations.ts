@@ -1,4 +1,3 @@
-// import { CollectionReference, getFirestore } from "@firebase/firestore";
 import { getAuth, User } from "@firebase/auth";
 import i18n from "i18next";
 
@@ -49,10 +48,9 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
 };
 
 /**
- * Checks admin status locally (against organization in local store)
- * @param authString email or phone for which to check against organization's admins
- * @param orgsInStore organizations in local store against which to check
- * @returns isAdmin
+ * Dispatches a cloud function to determine auth status for user
+ * @param authString email or phone for which to check auth status
+ * @returns promise resolving to auth status object `{isAdmin, bookingsSecretKey?}`
  */
 export const checkAuthStatus = async (
   authString: string
@@ -73,8 +71,8 @@ export const checkAuthStatus = async (
 };
 /**
  * An update user callback, called by firestore's `onAuthStateChanged`.
- * Gets passed a new user, determines the `isAuthenticated` and `isAdmin` state,
- * dispatches the updates to store.
+ * Gets passed a new user, determines the auth status (`isAdmin`, `bookingsSecretKey`),
+ * updates the auth state in redux store
  * @param user new user (if authenticated) or null if not authenticated as a user in our firebase auth record
  * @returns a firestore thunk dispatching appropriate updates to the store
  */

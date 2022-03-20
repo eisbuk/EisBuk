@@ -68,7 +68,7 @@ describe("login", () => {
       // Name should be required
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
       cy.contains(t(AuthMessage.NotRegistered));
     });
 
@@ -256,7 +256,7 @@ describe("login", () => {
       cy.getAttrWith("type", "email").type(newEmail);
       cy.clickButton(t(ActionButton.Send));
       cy.getSigninLink(newEmail).then((link) => cy.visit(link));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
       cy.contains(t(AuthMessage.NotRegistered));
     });
 
@@ -324,7 +324,7 @@ describe("login", () => {
       cy.contains(t(AuthTitle.SignIn));
       cy.getAttrWith("type", "password").type(password);
       cy.clickButton(t(ActionButton.SignIn));
-      // on successful login, should redirect to unauth page
+      // on successful login, should redirect to not-registered page
       // the user is not admin and doesn't exist in customers collection
       cy.contains(t(AuthMessage.NotRegistered));
       cy.contains(
