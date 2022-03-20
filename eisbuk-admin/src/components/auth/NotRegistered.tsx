@@ -69,6 +69,17 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
 
   const logOut = () => dispatch(signOut());
 
+  let authMethod;
+  let authString;
+  const organizationEmail = "test@email.com";
+  if (userAuthData?.email) {
+    authMethod = "email";
+    authString = userAuthData.email;
+  } else if (userAuthData?.phoneNumber) {
+    authMethod = "phone";
+    authString = userAuthData.phoneNumber;
+  }
+
   return (
     <>
       {isAuthEmpty && <Redirect to={Routes.Login} />}
@@ -77,11 +88,11 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
           {t(AuthMessage.NotRegistered)}
         </Typography>
         <Typography component="h2" variant="h4">
-          {t(AuthMessage.ContactAdminsForRegistration)}
-        </Typography>
-        <Typography component="h2" variant="h5">
-          {t(AuthMessage.LoggedInWith)}{" "}
-          <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
+          {t(AuthMessage.ContactAdminsForRegistration, {
+            authMethod,
+            authString,
+            organizationEmail,
+          })}
         </Typography>
 
         <Button variant="contained" onClick={logOut}>
