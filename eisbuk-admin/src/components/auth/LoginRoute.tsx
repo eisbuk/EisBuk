@@ -10,6 +10,7 @@ import {
   getIsAuthEmpty,
   getIsAuthLoaded,
 } from "@/store/selectors/auth";
+import Loading from "./Loading";
 
 /**
  * Login route, checks for auth, if auth not provided, renders passed route props (LoginComponent)
@@ -25,7 +26,7 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
 
   switch (true) {
     case !isAuthLoaded:
-      return null;
+      return <Loading />;
     case isAuthEmpty:
       return <Route {...props} />;
     case isAdmin:

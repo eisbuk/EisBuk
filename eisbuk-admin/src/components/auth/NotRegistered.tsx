@@ -47,7 +47,7 @@ interface Props {
 }
 
 /**
- * Displays "unauthorized" message and logout button
+ * Displays "not-registered" message and logout button
  * @param param0 {backgroundIndex: index of the background to show, if not provided, picks at random}
  * @returns
  */
