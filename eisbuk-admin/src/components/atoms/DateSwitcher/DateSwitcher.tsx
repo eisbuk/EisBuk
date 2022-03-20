@@ -1,5 +1,5 @@
 import React from "react";
-import { DateTime } from "luxon";
+import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
 import Menu, { MenuProps } from "@mui/material/Menu";
@@ -16,9 +16,10 @@ import { __calendarMenuId__ } from "@/__testData__/testIds";
 
 interface Props extends MenuProps {
   currentDate: DateTime;
+  jump: DateTimeUnit;
 }
 
-const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
+const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
   const dispatch = useDispatch();
   const start = currentDate.startOf("week");
   const end = currentDate.endOf("week");
@@ -27,13 +28,18 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, ...MenuProps }) => {
   return (
     <>
       <Menu data-testid={__calendarMenuId__} {...MenuProps}>
-        {console.log({ calendarData })}
         <CalendarPicker
           date={currentDate}
           onChange={(currentDate) => {
             dispatch(changeCalendarDate(currentDate!));
           }}
-          renderDay={renderWeekPickerDay(currentDate, start, end, calendarData)}
+          renderDay={renderWeekPickerDay(
+            currentDate,
+            start,
+            end,
+            calendarData,
+            jump
+          )}
         />
       </Menu>
     </>
@@ -45,14 +51,15 @@ const renderWeekPickerDay =
     currentDate: DateTime,
     start: DateTime,
     end: DateTime,
-    calendarData: { [dayInISO: string]: string }
+    calendarData: { [dayInISO: string]: string },
+    jump: DateTimeUnit
   ) =>
   (
     date: DateTime,
     selectedDates: (DateTime | null)[],
     pickersDayProps: PickersDayProps<DateTime>
   ): JSX.Element => {
-    if (!currentDate) {
+    if (jump === "day") {
       return <PickersDay {...pickersDayProps} />;
     }
 
