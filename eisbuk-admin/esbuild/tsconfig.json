@@ -1,21 +1,10 @@
 {
+  "extends": "../../scaffolding/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "",
-    "outDir": "dist",
-    "target": "es5",
     "module": "CommonJS",
-    "lib": ["es6", "esnext.asynciterable"],
-    "moduleResolution": "Node",
-    "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "skipLibCheck": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "strict": true,
-    "isolatedModules": true,
-    "allowJs": true,
+    "lib": ["ESNext", "ESNext.AsyncIterable"],
     "noEmit": true
   },
   "include": ["src"]

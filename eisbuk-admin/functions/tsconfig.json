@@ -1,34 +1,17 @@
 {
+  "extends": "../../scaffolding/tsconfig.json",
   "compilerOptions": {
-    "paths": {
-      "@functions/*": ["src/*"]
-    },
-    "target": "es6",
-    "module": "commonjs",
-    "lib": ["dom", "es6", "es2017", "esnext.asynciterable"],
+    "lib": ["ESNext", "ESNext.AsyncIterable"],
+
+    "baseUrl": ".",
+    "rootDir": "",
+    "outDir": "dist",
+
     "sourceMap": true,
-    "outDir": "./dist",
-    "moduleResolution": "node",
+
     "removeComments": true,
     "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
-    "baseUrl": ".",
-    "rootDir": "src/",
-    "typeRoots": ["node_modules/@types"],
-    "types": ["node"],
-    "preserveSymlinks": true,
-    "skipLibCheck": true,
+
     "noEmit": true
   },
   "exclude": ["node_modules"],
