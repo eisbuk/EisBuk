@@ -32,6 +32,7 @@ describe("Date Switcher", () => {
             open={true}
             anchorEl={null}
             onClose={() => {}}
+            jump={"week"}
           />
         </LocalizationProvider>
       );
