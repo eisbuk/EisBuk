@@ -91,16 +91,17 @@ export const deleteAllCollections = async (
     | FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
     | FirebaseFirestore.Firestore,
   collections: string[]
-): Promise<void> => {
-  const toDelete: Promise<FirebaseFirestore.WriteResult>[] = [];
+): Promise<any> =>
+  Promise.all(collections.map((coll) => deleteCollection(db.collection(coll))));
 
-  for (const coll of collections) {
-    // eslint-disable-next-line no-await-in-loop
-    const existing = await db.collection(coll).get();
-    existing.forEach((el) => {
-      toDelete.push(el.ref.delete());
-    });
-  }
-
-  await Promise.all(toDelete);
+/**
+ * Deletes all documents in a collection
+ * @param collRef
+ * @returns
+ */
+export const deleteCollection = async (
+  collRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>
+): Promise<FirebaseFirestore.WriteResult[]> => {
+  const docs = (await collRef.get()).docs;
+  return Promise.all(docs.map((doc) => doc.ref.delete()));
 };

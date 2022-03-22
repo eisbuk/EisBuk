@@ -10,6 +10,7 @@ import { CollectionSubscription } from "@/types/store";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
+import NotRegistered from "@/components/auth/NotRegistered";
 import LoginRoute from "@/components/auth/LoginRoute";
 
 import DashboardPage from "@/pages/root";
@@ -25,7 +26,7 @@ import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirest
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
-import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
+import { getIsAdmin } from "@/store/selectors/auth";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -36,13 +37,11 @@ import { getIsAuthLoaded, getIsAuthEmpty } from "@/store/selectors/auth";
  * @returns wrapper or components directly, both resulting if further rendering `AppComponents`
  */
 const AppContent: React.FC = () => {
-  const isAuthLoaded = useSelector(getIsAuthLoaded);
-  const isAuthEmpty = useSelector(getIsAuthEmpty);
+  const isAdmin = useSelector(getIsAdmin);
 
-  const subscribedCollections: CollectionSubscription[] =
-    isAuthLoaded && !isAuthEmpty
-      ? [Collection.Organizations, OrgSubCollection.Customers]
-      : [];
+  const subscribedCollections: CollectionSubscription[] = isAdmin
+    ? [Collection.Organizations, OrgSubCollection.Customers]
+    : [];
 
   useFirestoreSubscribe(subscribedCollections);
   usePaginateFirestore();
@@ -72,6 +71,7 @@ const AppContent: React.FC = () => {
           component={CustomerAreaPage}
         />
         <Route path={Routes.Unauthorized} component={Unauthorized} exact />
+        <Route path={Routes.NotRegistered} component={NotRegistered} exact />
         <Route path={Routes.Debug} component={DebugPage} />
       </Switch>
     </BrowserRouter>

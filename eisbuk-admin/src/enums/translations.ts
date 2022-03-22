@@ -16,7 +16,9 @@ export enum CustomerNavigationLabel {
 // #region auth
 export enum AuthMessage {
   NotAuthorized = "Authorization.NotAuthorized",
+  NotRegistered = "Authorization.NotRegistered",
   AdminsOnly = "Authorization.AdminsOnly",
+  ContactAdminsForRegistration = "Authorization.ContactAdminsForRegistration",
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
 

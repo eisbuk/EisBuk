@@ -11,6 +11,7 @@ import {
   FIRST_NAMES,
   LAST_NAMES,
   OrgSubCollection,
+  CreateAuthUserPayload,
 } from "eisbuk-shared";
 
 import { __functionsZone__ } from "./constants";
@@ -64,32 +65,72 @@ export const createOrganization = functions
       });
   });
 
+// #region createAuthUser
+
+/**
+ * A helper function triggered by multiple cloud functions,
+ * used to create a user un auth as well as (optionally firestore)
+ */
+const createUserInAuth = async ({
+  email,
+  phoneNumber,
+  password = "test00",
+  organization,
+  isAdmin,
+}: CreateAuthUserPayload) => {
+  // return early if no auth string provided
+  if (!email && !phoneNumber) {
+    return;
+  }
+  // create user in auth (if one doesn't exist)
+  try {
+    await admin.auth().createUser({
+      email,
+      phoneNumber,
+      password,
+    });
+  } catch (err) {
+    functions.logger.error(err);
+  }
+  // if should be admin, create entry in "admins" section
+  // for provided organization
+  if (isAdmin && organization) {
+    const firestore = admin.firestore();
+
+    const adminsEntry: string[] = [];
+    if (email) adminsEntry.push(email);
+    if (phoneNumber) adminsEntry.push(phoneNumber);
+
+    await firestore
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .set({ admins: adminsEntry }, { merge: true });
+  }
+};
+
+export const createUser = functions
+  .region(__functionsZone__)
+  .https.onCall(async (payload: CreateAuthUserPayload) =>
+    createUserInAuth(payload)
+  );
+
 export const createDefaultUser = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }: Pick<Payload, "organization">) => {
     const defaultEmail = "test@eisbuk.it";
     const defaultPhone = "+3912345678";
 
-    const auth = admin.auth();
-    const firestore = admin.firestore();
-
     // create a default user if one doesn't exist
-    try {
-      await auth.createUser({
-        email: defaultEmail,
-        phoneNumber: defaultPhone,
-        password: "test00",
-      });
-    } catch (err) {
-      functions.logger.error(err);
-    }
-    await firestore
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .set({ admins: [defaultEmail, defaultPhone] });
+    await createUserInAuth({
+      email: defaultEmail,
+      phoneNumber: defaultPhone,
+      organization,
+      isAdmin: true,
+    });
 
     return { organization };
   });
+// #region createAuthUser
 
 /**
  * Creates provided number of users and adds them as customers to provided organization
