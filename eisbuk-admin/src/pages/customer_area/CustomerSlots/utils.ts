@@ -1,6 +1,17 @@
 import { DateTime } from "luxon";
 
 /**
+ * Creates a sort function callback used to compare two ISO dates
+ * and return 1 or -1 as per the spec of `Array.protorype.sort()`
+ * callback.
+ * @param {"asc" | "dsc"} direction sort ascending or descending
+ */
+const compareISO = (direction: "asc" | "desc") => (a: string, b: string) => {
+  const ascRes = a < b ? -1 : 1;
+  return direction === "asc" ? ascRes : ascRes * -1;
+};
+
+/**
  * Takes an array of dates, groups them by week day,
  * sorts week days internally (in chronological order)
  * @param dates unsorted array of ISO dates
@@ -17,14 +28,7 @@ export const orderByWeekDay = (dates: string[]): string[] =>
       return acc;
     }, [] as string[][])
     // sort week days internally
-    .map((day) =>
-      day.sort((a, b) => {
-        const luxonA = DateTime.fromISO(a);
-        const luxonB = DateTime.fromISO(b);
-        const diff = luxonA.diff(luxonB).milliseconds;
-        return diff;
-      })
-    )
+    .map((day) => day.sort(compareISO("asc")))
     // flatten the dates (get array of dates ordered, but not grouped by week day)
     .reduce((acc, weekDay) => [...acc, ...weekDay], [] as string[]);
 
@@ -34,4 +38,4 @@ export const orderByWeekDay = (dates: string[]): string[] =>
  * @returns sorted array of dates (ISO)
  */
 export const orderByDate = (dates: string[]): string[] =>
-  dates.sort((a, b) => (a < b ? -1 : 1));
+  [...dates].sort(compareISO("asc"));
