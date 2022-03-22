@@ -98,13 +98,9 @@ const CustomerSlots: React.FC<Props> = ({
 
   // if no slots in a day, return just the no-slots message
   const noSlots = (
-    <DateNavigation jump={paginateBy} {...{ defaultDate }}>
-      {() => (
-        <Alert data-testid={__noSlotsDateId__} severity="info">
-          {t(Alerts.NoSlots, { currentDate })}
-        </Alert>
-      )}
-    </DateNavigation>
+    <Alert data-testid={__noSlotsDateId__} severity="info">
+      {t(Alerts.NoSlots, { currentDate })}
+    </Alert>
   );
 
   // actual slots display content
