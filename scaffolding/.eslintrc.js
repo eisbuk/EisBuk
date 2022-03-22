@@ -1,28 +1,41 @@
-{
-  "settings": {
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2021,
+    sourceType: "module",
+  },
+  settings: {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"],
+    },
     "import/resolver": {
-      "typescript": {}
-    }
+      typescript: {},
+    },
   },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    // Required for certain syntax usages
-    "ecmaVersion": 2017
-  },
-  "plugins": ["promise"],
-  "extends": [
+  plugins: ["promise", "import"],
+  extends: [
     "google",
     "eslint:recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:@typescript-eslint/recommended",
   ],
-  "ignorePatterns": ["dist/*"],
-  "root": true,
-  "rules": {
+  ignorePatterns: [
+    "build/",
+    "dist/",
+    "lib/",
+    "node_modules/",
+    ".eslintrc.js",
+    ".eslintrc.ui.js",
+    "vite.config.ts",
+  ],
+  rules: {
+    // Remove rule for props to require quotes
+    "quote-props": "off", //
+
     // Removed rule "disallow the use of console" from recommended eslint rules
-    "no-console": "warn",
+    "no-console": "off",
 
     // Removed rule "disallow multiple spaces in regular expressions" from recommended eslint rules
     "no-regex-spaces": "off",
@@ -31,13 +44,13 @@
     "no-debugger": "off",
 
     // Removed rule "disallow unused variables" from recommended eslint rules
-    "no-unused-vars": "off",
+    "no-unused-vars": "off" /** @TODO check this */,
 
     // Removed rule "disallow mixed spaces and tabs for indentation" from recommended eslint rules
-    "no-mixed-spaces-and-tabs": "off",
+    "no-mixed-spaces-and-tabs": "off" /** @TODO check this */,
 
     // Removed rule "disallow the use of undeclared variables unless mentioned in /*global */ comments" from recommended eslint rules
-    "no-undef": "off",
+    "no-undef": "off" /** @TODO check this */,
 
     // Warn against template literal placeholder syntax in regular strings
     "no-template-curly-in-string": 1,
@@ -49,7 +62,7 @@
     "array-callback-return": 1,
 
     // Require the use of === and !==
-    "eqeqeq": 2,
+    eqeqeq: 2,
 
     // Disallow the use of alert, confirm, and prompt
     "no-alert": 2,
@@ -127,14 +140,16 @@
     // Forces developers to return console logs and http calls in promises.
     "promise/always-return": 2,
 
-    //Enforces the use of catch() on un-returned promises
-    "promise/catch-or-return": 2,
+    // Enforces the use of catch() on un-returned promises
+    // Disabled for cypress' PromiseLike syntax (no catch method)
+    "promise/catch-or-return": "off",
 
     // Warn against nested then() or catch() statements
-    "promise/no-nesting": 1,
+    // If we have nested promises it's for a very good reason
+    "promise/no-nesting": "off",
 
     // Swotch strings to single quote (offset recommended)
-    "quotes": "off",
+    quotes: "off",
 
     // Allow spacing in curly braces
     "object-curly-spacing": "off",
@@ -143,7 +158,7 @@
     "max-len": "off",
 
     // Indentation on each line
-    "indent": "off",
+    indent: "off",
 
     // Allow "?" and ":" to be at the beginning of the line in ternary expressions
     "operator-linebreak": "off",
@@ -158,6 +173,23 @@
     "@typescript-eslint/no-non-null-assertion": "off",
 
     // Allow explicit any, but still avoid where possible
-    "@typescript-eslint/no-explicit-any": "off"
-  }
-}
+    "@typescript-eslint/no-explicit-any": "off",
+
+    // we're using empty functions as fallback for undefined props
+    "@typescript-eslint/no-empty-function": "off",
+
+    // This just gets in the way
+    "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off",
+
+    // we're turning this off as it produces false positives on imported namespaces (i.e. react)
+    "import/default": "off",
+
+    // no-case-declarations
+    "no-case-declarations": "off",
+
+    // even though Dan Abramov spreads this gospel, we're
+    // carefully setting the deps to precisely what we want
+    "react-hooks/exhaustive-deps": "off",
+  },
+};

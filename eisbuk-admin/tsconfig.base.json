@@ -11,7 +11,8 @@
     "functions",
     "plop-templates",
     "jest",
-    "src/setupTests.ts"
+    "src/setupTests.ts",
+    "./.eslintrc.js"
   ],
-  "include": ["src", "./.eslintrc.js"]
+  "include": ["src"]
 }
