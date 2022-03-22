@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-interface Props
+export interface ActionButtonProps
   extends DetailedHTMLProps<
     ButtonHTMLAttributes<HTMLButtonElement>,
     HTMLButtonElement
@@ -12,7 +12,26 @@ interface Props
   variant: "empty" | "fill" | "text";
 }
 
-export const ActionButton: React.FC<Props> = ({
+/**
+ * Type of `actionButtonLookup` record.
+ * A standardized type for creating lookup of buttons:
+ * - indexed by `I` type param (extends string)
+ * - each record entry is the array of button props, with `children` replaced by `label`
+ * - button props can be extended with optional `E` param
+ */
+export type ActionButtonLookup<I extends string> = Partial<
+  Record<
+    I,
+    Array<
+      Omit<ActionButtonProps, "children"> & { label: string } & Record<
+          string,
+          any
+        >
+    >
+  >
+>;
+
+export const ActionButton: React.FC<ActionButtonProps> = ({
   children,
   variant,
   ...props

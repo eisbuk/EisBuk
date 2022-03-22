@@ -16,11 +16,14 @@
     "LoggedInWith": "Hai effettuato l'accesso con:",
     "TryAgain": "Esci e riprova con un altro utente",
 
-    "RecoverPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
-    "CheckYourEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
+    "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
+    "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
+    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare",
+    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
+    "InvalidEmail": "Email non trovata. Controlla che la mail inserita sia quella usata per l'iscrizione.",
     "NetworkError": "Si è verificato un errore di rete",
     "EmailNotFound": "Nessun utente registrato con questa mail",
     "InvalidPassword": "Errore nella mail o nella password",
@@ -29,6 +32,7 @@
   },
   "AuthTitle": {
     "SignInWithEmail": "Accedi con la email",
+    "SignInWithEmailLink": "Sign in with email link",
     "SignInWithPhone": "Accedi con il telefono",
     "SignInWithGoogle": "Accedi con Google",
 
@@ -36,7 +40,9 @@
     "CreateAccount": "Crea un account",
     "RecoverPassword": "Recupera password",
     "CheckYourEmail": "Controlla la email",
-    "EnterCode": "Inserisci il codice"
+    "EnterCode": "Inserisci il codice",
+    "SendSignInLink": "Send sign in link",
+    "ConfirmEmail": "Confirm email"
   },
 
   "SlotType": {

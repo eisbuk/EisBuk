@@ -34,6 +34,4 @@ export const orderByWeekDay = (dates: string[]): string[] =>
  * @returns sorted array of dates (ISO)
  */
 export const orderByDate = (dates: string[]): string[] =>
-  dates.sort(
-    (a, b) => DateTime.fromISO(a).toMillis() - DateTime.fromISO(b).toMillis()
-  );
+  dates.sort((a, b) => (a < b ? -1 : 1));

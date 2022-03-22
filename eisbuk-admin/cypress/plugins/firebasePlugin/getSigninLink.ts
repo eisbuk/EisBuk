@@ -38,8 +38,8 @@ const handleGetSigninLink: TaskHandler<GetSigninLinkPayload, string> = async ({
 
   // normally, the signin link would go to auth emulator (port 9099) and redirected back to the dev server (port 3000)
   // cypress (browser actually), however, doesn't allow switching origin in the test, so we're manually constructing a login link
-  // going directly to the dev server
-  const signInLink = `http://localhost:3000/login?mode=signIn&lang=en&oobCode=${oobCode}&apiKey=fake-api-key`;
+  // going directoy to dev server
+  const signInLink = `/login?mode=signIn&lang=en&oobCode=${oobCode}&apiKey=fake-api-key`;
 
   return signInLink;
 };

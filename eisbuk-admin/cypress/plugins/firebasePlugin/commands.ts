@@ -57,6 +57,12 @@ declare global {
         projectId?: string
       ) => Chainable<string>;
       /**
+       * Retrieve email sign-in link from auth emulator
+       * @param {string} email we're using to register
+       * @returns {Chainable<number>} a `PromiseLike` yielding sign-in link string on success
+       */
+      getSigninLink: (phone: string, projectId?: string) => Chainable<string>;
+      /**
        * Sign into of firebase with default user
        */
       signIn: () => Chainable<UserCredential>;
@@ -121,6 +127,10 @@ const addFirebaseCommands = (): void => {
     "getRecaptchaCode",
     (phone: string, projectId = "eisbuk") =>
       cy.task("getRecaptchaCode", { phone, projectId })
+  );
+
+  Cypress.Commands.add("getSigninLink", (email: string, projectId = "eisbuk") =>
+    cy.task("getSigninLink", { email, projectId })
   );
 
   Cypress.Commands.add("signOut", () => signOut(getAuth()));

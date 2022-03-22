@@ -21,6 +21,7 @@ import { getCountdownProps } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { orderByWeekDay, orderByDate } from "./utils";
+
 import { __noSlotsDateId__ } from "@/__testData__/testIds";
 
 interface SlotsByDay {
@@ -78,11 +79,7 @@ const CustomerSlots: React.FC<Props> = ({
 
   // show countdown if booking deadline is close
   const currentDate = useSelector(getCalendarDay);
-  const selectorCountdownProps = useSelector(
-    // when we have a week (for book off-ice view), spaning over two months
-    // we want to show countdown/bookings-locked message with respect to later date
-    getCountdownProps(currentDate.endOf(paginateBy))
-  );
+  const selectorCountdownProps = useSelector(getCountdownProps(currentDate));
 
   // control local booking finalized to disable 'finalize' buttons on all instances of second countdown
   const [isBookingFinalized, setIsBookingFinalized] = useState(false);
@@ -99,53 +96,54 @@ const CustomerSlots: React.FC<Props> = ({
       // and prevent showing of countdown messages
       null;
 
+  // if no slots in a day, return just the no-slots message
+  if (!Object.keys(slots).length) {
+    return (
+      <Alert data-testid={__noSlotsDateId__} severity="info">
+        {t(Alerts.NoSlots, { currentDate })}
+      </Alert>
+    );
+  }
+
   return (
     <DateNavigation jump={paginateBy} {...{ defaultDate }}>
       {() => (
         <>
-          {!Object.keys(slots).length ? (
-            <Alert data-testid={__noSlotsDateId__} severity="info">
-              {t(Alerts.NoSlots, { currentDate })}
-            </Alert>
-          ) : (
-            <>
-              {countdownProps && <BookingsCountdown {...countdownProps} />}
-              {orderedDates?.map((date) => {
-                const luxonDay = DateTime.fromISO(date);
-                const slostForDay = slots[date] || {};
-                const slotsArray = Object.values(slostForDay);
+          {countdownProps && <BookingsCountdown {...countdownProps} />}
+          {orderedDates?.map((date) => {
+            const luxonDay = DateTime.fromISO(date);
+            const slostForDay = slots[date] || {};
+            const slotsArray = Object.values(slostForDay);
 
-                return (
-                  <SlotsDayContainer key={date} date={luxonDay}>
-                    {({ WrapElement, lockBookings }) => (
-                      <>
-                        {slotsArray.map((slot) => {
-                          const bookedInterval = bookedSlots
-                            ? bookedSlots[slot.id]?.interval
-                            : undefined;
+            return (
+              <SlotsDayContainer key={date} date={luxonDay}>
+                {({ WrapElement, lockBookings }) => (
+                  <>
+                    {slotsArray.map((slot) => {
+                      const bookedInterval = bookedSlots
+                        ? bookedSlots[slot.id]?.interval
+                        : undefined;
 
-                          return (
-                            <BookingCardGroup
-                              key={slot.id}
-                              {...{
-                                ...slot,
-                                bookedInterval,
-                                WrapElement,
-                              }}
-                              disableAll={lockBookings}
-                            />
-                          );
-                        })}
-                      </>
-                    )}
-                  </SlotsDayContainer>
-                );
-              })}
-              {countdownProps?.message ===
-                BookingCountdownMessage.SecondDeadline && (
-                <BookingsCountdown {...countdownProps} />
-              )}
-            </>
+                      return (
+                        <BookingCardGroup
+                          key={slot.id}
+                          {...{
+                            ...slot,
+                            bookedInterval,
+                            WrapElement,
+                          }}
+                          disableAll={lockBookings}
+                        />
+                      );
+                    })}
+                  </>
+                )}
+              </SlotsDayContainer>
+            );
+          })}
+          {countdownProps?.message ===
+            BookingCountdownMessage.SecondDeadline && (
+            <BookingsCountdown {...countdownProps} />
           )}
         </>
       )}

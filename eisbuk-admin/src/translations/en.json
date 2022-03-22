@@ -16,8 +16,10 @@
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
 
-    "RecoverPassword": "Get instructions sent to this email that explain how to reset your password",
-    "CheckYourEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "RecoverEmailPassword": "Get instructions sent to this email that explain how to reset your password",
+    "CheckPasswordRecoverEmail": "Follow the instructions sent to {{ email }} to recover your password",
+    "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication",
+    "ConfirmSignInEmail": "Please confirm the email used to sign in",
     "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
   "AuthError": {
@@ -25,17 +27,21 @@
     "EmailNotFound": "That email address doesn't match an existing account",
     "InvalidPassword": "The email and password you entered don't match",
     "InvalidVerificationCode": "The code you've entered is invalid, please enter the correct code",
+    "InvalidEmail": "Wrong email. Please enter the email you used to receive the sign in link.",
     "Unknown": "Unknown error"
   },
   "AuthTitle": {
     "SignInWithEmail": "Sign in with email",
+    "SignInWithEmailLink": "Sign in with email link",
     "SignInWithPhone": "Sign in with phone",
     "SignInWithGoogle": "Sign in with Google",
 
     "SignIn": "Sign in",
+    "SendSignInLink": "Send sign in link",
     "CreateAccount": "Create account",
     "RecoverPassword": "Recover password",
     "CheckYourEmail": "Check your email",
+    "ConfirmEmail": "Confirm email",
     "EnterCode": "Enter Code"
   },
 

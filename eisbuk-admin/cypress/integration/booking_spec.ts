@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import i18n from "@/i18next/i18n";
 
-import { CustomerRoute, Routes } from "@/enums/routes";
+import { Routes } from "@/enums/routes";
 import {
   ActionButton,
   AdminAria,
@@ -154,59 +154,6 @@ describe("Booking flow", () => {
         "have.attr",
         "disabled"
       );
-    });
-
-    /**
-     * @TODO make sure this test is necessary
-     */
-    it("enable booking in unlocked month and disable booking in locked month ", () => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-      const januaryDeadline = getBookingDeadline(testDateLuxon);
-      // January 2022 bookings should be unlocked, while the December 2021 bookings should be closed
-      // according to this date
-      const beforeDueDate = januaryDeadline.minus({
-        days: 2,
-      });
-      cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, [
-          "customers.json",
-          // load off-ice slots, belonging to the end-of-december start-of-january week
-          "off-ice-slots.json",
-        ])
-      );
-
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      // switch to book off-ice
-      cy.getAttrWith("aria-label", CustomerRoute.BookOffIce).click();
-      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-
-      cy.contains(
-        getCountdownStringMatch({
-          message: BookingCountdownMessage.FirstDeadline,
-          date: januaryDeadline,
-          // should count down two days (until deadline)
-          days: 2,
-          hours: 0,
-          month: testDateLuxon,
-        })
-      );
-
-      // should allow booking of second slot (belonging to January 2022)
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).click({
-        force: true,
-      });
-
-      // move back to December
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
-
-      // should disable the booking first slot (blonging to December 2021)
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(0)
-        .should("have.attr", "disabled");
-      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
     });
   });
 

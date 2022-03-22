@@ -20,8 +20,12 @@ export enum AuthMessage {
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
 
-  RecoverPassword = "Authorization.RecoverPassword",
-  CheckYourEmail = "Authorization.CheckYourEmail",
+  RecoverEmailPassword = "Authorization.RecoverEmailPassword",
+  CheckPasswordRecoverEmail = "Authorization.CheckPasswordRecoverEmail",
+
+  CheckSignInEmail = "Authorization.CheckSignInEmail",
+  ConfirmSignInEmail = "Authorization.ConfirmSignInEmail",
+
   SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {
@@ -29,17 +33,21 @@ export enum AuthErrorMessage {
   "auth/user-not-found" = "AuthError.EmailNotFound",
   "auth/wrong-password" = "AuthError.InvalidPassword",
   "auth/invalid-verification-code" = "AuthError.InvalidVerificationCode",
+  "auth/invalid-email" = "AuthError.InvalidEmail",
   UNKNOWN = "AuthError.Unknown",
 }
 export enum AuthTitle {
   SignInWithEmail = "AuthTitle.SignInWithEmail",
+  SignInWithEmailLink = "AuthTitle.SignInWithEmailLink",
   SignInWithPhone = "AuthTitle.SignInWithPhone",
   SignInWithGoogle = "AuthTitle.SignInWithGoogle",
 
   SignIn = "AuthTitle.SignIn",
+  SendSignInLink = "AuthTitle.SendSignInLink",
   CreateAccount = "AuthTitle.CreateAccount",
   RecoverPassword = "AuthTitle.RecoverPassword",
   CheckYourEmail = "AuthTitle.CheckYourEmail",
+  ConfirmEmail = "AuthTitle.ConfirmEmail",
   EnterCode = "AuthTitle.EnterCode",
 }
 // #endregion auth

@@ -28,6 +28,7 @@ describe("login", () => {
 
   afterEach(() => {
     cy.signOut();
+    cy.clearLocalStorage();
   });
 
   describe("Email login", () => {
@@ -58,7 +59,7 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.CreateAccount));
       cy.getAttrWith("id", "name").type("Slim Shady");
-      /** Name should be required */
+      // Name should be required
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
       // user is registered, but not added as an admin yet - should redirect to unauthorized page
@@ -73,12 +74,12 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.TroubleSigningIn));
       // help step
       cy.contains(t(AuthTitle.RecoverPassword));
-      cy.contains(t(AuthMessage.RecoverPassword));
+      cy.contains(t(AuthMessage.RecoverEmailPassword));
       cy.clickButton(t(ActionButton.Send));
       // mail sent step
       cy.contains(t(AuthTitle.CheckYourEmail));
       cy.contains(
-        t(AuthMessage.CheckYourEmail, {
+        t(AuthMessage.CheckPasswordRecoverEmail, {
           email: defaultUser.email,
         })
       );
@@ -215,6 +216,78 @@ describe("login", () => {
       cy.getAttrWith("id", "code").type("wrong-code");
       cy.clickButton(t(ActionButton.Submit));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
+    });
+  });
+
+  describe("Email link login", () => {
+    beforeEach(() => {
+      cy.clickButton(t(AuthTitle.SignInWithEmailLink));
+    });
+
+    it("logs in using link sent via email", () => {
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // should show check your email message on successful send
+      cy.contains(t(AuthTitle.CheckYourEmail));
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+      // should return to auth screen on "Done" button click
+      cy.clickButton(t(ActionButton.Done));
+
+      // check email-sent link validity and finalization of the flow
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("creates a new user if email not registered", () => {
+      // since auth service is shared amongst all organizations
+      // we're creating a new email each time to ensure the current email
+      // is not yet registered (by any previous tests)
+      const randomString = uuid().slice(0, 10);
+      const newEmail = `${randomString}@email.com`;
+
+      cy.getAttrWith("type", "email").type(newEmail);
+      cy.clickButton(t(ActionButton.Send));
+      cy.getSigninLink(newEmail).then((link) => cy.visit(link));
+      // user is registered, but not added as an admin yet - should redirect to unauthorized page
+      cy.contains(t(AuthMessage.NotAuthorized));
+    });
+
+    it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+
+      // expect the email confirmation prompt on sign in link click
+      cy.clearLocalStorage();
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ConfirmEmail));
+      cy.contains(t(AuthMessage.ConfirmSignInEmail));
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Verify));
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("handles errors in a predictable way", () => {
+      // test email validation
+      cy.getAttrWith("type", "email").type("invalid-email@string");
+      cy.clickButton(t(ActionButton.Send));
+      cy.contains(t(ValidationMessage.Email));
+      cy.getAttrWith("type", "email").clearAndType(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // test trying to log in using wrong sign in email
+      cy.clearLocalStorage()
+        .then(() => cy.getSigninLink(defaultUser.email))
+        .then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ConfirmEmail));
+      cy.getAttrWith("type", "email").type("wrong@gmail.com");
+      cy.clickButton(t(ActionButton.Verify));
+      cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_EMAIL]));
     });
   });
 });
