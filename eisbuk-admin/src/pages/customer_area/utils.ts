@@ -47,10 +47,13 @@ export const splitSlotsByCustomerRoute = (
       {} as SlotsByDay
     ),
     [CustomerRoute.BookOffIce]: days.reduce(
-      (acc, dayISO) => ({
-        ...acc,
-        [dayISO]: daysMap[dayISO][CustomerRoute.BookOffIce] || {},
-      }),
+      (acc, dayISO) =>
+        daysMap[dayISO][CustomerRoute.BookOffIce]
+          ? {
+              ...acc,
+              [dayISO]: daysMap[dayISO][CustomerRoute.BookOffIce],
+            }
+          : acc,
       {} as SlotsByDay
     ),
     [CustomerRoute.Calendar]: days.reduce(
