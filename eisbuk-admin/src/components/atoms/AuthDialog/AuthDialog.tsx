@@ -65,6 +65,7 @@ const AuthDialog: React.FC = () => {
               <ul className={classes.buttonsContainer}>
                 {buttons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
+                    key={label}
                     {...button}
                     label={t(label)}
                     onClick={() => setAuthFlow(authFlow)}
