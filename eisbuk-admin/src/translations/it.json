@@ -223,6 +223,6 @@
     "UpcomingBirthdays": "Prossimi Compleanni"
   },
   "Alerts": {
-    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ month, MMMM }}"
+    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
   }
 }
