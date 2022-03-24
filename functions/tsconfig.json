@@ -1,5 +1,5 @@
 {
-  "extends": "../../scaffolding/tsconfig.json",
+  "extends": "../scaffolding/tsconfig.json",
   "compilerOptions": {
     "lib": ["ESNext", "ESNext.AsyncIterable"],
 

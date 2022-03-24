@@ -17,7 +17,6 @@ module.exports = {
     ...scaffold.ignorePatterns,
     "dev-server-meta/" /** @TODO remove this when we switch to vite */,
     "coverage/",
-    "functions/",
     "setupTests.js",
     "nyc-config.js",
     "jest.config.js",

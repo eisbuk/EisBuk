@@ -1,10 +1,11 @@
-const scaffold = require("../../scaffolding/.eslintrc.js");
+const scaffold = require("../scaffolding/.eslintrc.js");
+const path = require("path");
 
 module.exports = {
   ...scaffold,
   parserOptions: {
     ...scaffold.parserOptions,
-    project: "./tsconfig.json",
+    project: path.join(__dirname, "./tsconfig.json"),
   },
   root: true,
   rules: {
