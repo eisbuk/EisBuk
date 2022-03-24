@@ -1,8 +1,8 @@
 {
   "extends": "../scaffolding/tsconfig.json",
   "compilerOptions": {
-    "rootDir": ".",
-    "baseUrl": "",
+    "rootDir": "src",
+    "baseUrl": ".",
 
     "lib": ["ESNext"],
 
