@@ -4,7 +4,6 @@
     "lib": ["ESNext", "ESNext.AsyncIterable"],
 
     "baseUrl": ".",
-    "rootDir": "",
     "outDir": "dist",
 
     "sourceMap": true,

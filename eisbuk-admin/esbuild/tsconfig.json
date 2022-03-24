@@ -2,7 +2,6 @@
   "extends": "../../scaffolding/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "rootDir": "",
     "module": "CommonJS",
     "lib": ["ESNext", "ESNext.AsyncIterable"],
     "noEmit": true

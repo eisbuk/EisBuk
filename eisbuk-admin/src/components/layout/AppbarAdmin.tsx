@@ -63,6 +63,7 @@ const AppbarAdmin: React.FC<AppBarProps> = (props) => {
     (action = "") =>
     () => {
       switch (action) {
+        // eslint-disable-next-line no-fallthrough
         case "logout":
           dispatch(signOut());
         // eslint-disable-next-line no-fallthrough
