@@ -222,5 +222,8 @@
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"
+  },
+  "Alerts": {
+    "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}"
   }
 }
