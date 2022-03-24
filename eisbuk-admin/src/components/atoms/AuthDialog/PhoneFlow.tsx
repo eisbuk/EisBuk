@@ -117,6 +117,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 {fieldsLookup[authStep]?.map((inputProps) => (
                   <AuthTextField {...inputProps} />
                 ))}
+                <input inputMode="numeric" />
               </Content>
               <ActionButtons>
                 {actionButtonLookup[authStep]?.map(
