@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-namespace */
+import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
 import { Customer } from "eisbuk-shared";
 
@@ -18,6 +19,7 @@ import { ActionButton } from "@/enums/translations";
 //
 
 // ***********************************************************
+
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -63,6 +65,20 @@ declare global {
        * @param {number} eq optional element index (if multiple elements found)
        */
       clickButton: (label: string, eq?: number) => Chainable<Element>;
+      /**
+       * A utility wrapper around cy.intercept. Allows us to intercept the message the specified number
+       * of times, after which the request goes through.
+       * @param {number} times number of times to intercept
+       * @param {string} method HTTP method to intercept
+       * @param {string} url URL string to match
+       * @param {HttpRequestInterceptor} cb an interceptor function to stub the behaviour of the intercepted call
+       */
+      interceptTimes: (
+        times: number,
+        method: string,
+        url: string,
+        cb: HttpRequestInterceptor
+      ) => Chainable<null>;
     }
   }
 }
@@ -161,4 +177,17 @@ export default (): void => {
       .eq(eq)
       .click({ force: true });
   });
+
+  Cypress.Commands.add(
+    "interceptTimes",
+    (times: number, method: any, url: string, cb: HttpRequestInterceptor) =>
+      cy.intercept(method, url, (req) => {
+        if (times) {
+          times--;
+          return cb(req);
+        } else {
+          return req.continue();
+        }
+      })
+  );
 };

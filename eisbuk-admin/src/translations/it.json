@@ -12,14 +12,16 @@
 
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
-    "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "AdminsOnly": "Questo spazio è riservato agli amministratori.",
     "LoggedInWith": "Hai effettuato l'accesso con:",
-    "TryAgain": "Esci e riprova con un altro utente",
+    "TryAgain": "Esci e riprova con un altro utente.",
 
-    "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
-    "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
-    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare",
-    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso",
+    "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password.",
+    "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password.",
+    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare.",
+    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso.",
+    "DifferentSignInEmail": "The email you've used for log in isn't the email expected by the app. Please confirm the email used to receive the sign in link.",
+    "ResendEmailLink": "The sign in link was already used or has expired. Would you like to resend the email link.",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -40,9 +42,10 @@
     "CreateAccount": "Crea un account",
     "RecoverPassword": "Recupera password",
     "CheckYourEmail": "Controlla la email",
-    "EnterCode": "Inserisci il codice",
     "SendSignInLink": "Send sign in link",
-    "ConfirmEmail": "Confirm email"
+    "ConfirmEmail": "Confirm email",
+    "ResendEmail": "Resend email",
+    "EnterCode": "Inserisci il codice"
   },
 
   "SlotType": {
@@ -146,6 +149,7 @@
     "ShowAll": "ShowAll",
     "Done": "Done",
     "Send": "Send",
+    "Resend": "Resend",
     "Dismiss": "Dismiss",
     "Submit": "Submit",
     "Verify": "Verify"

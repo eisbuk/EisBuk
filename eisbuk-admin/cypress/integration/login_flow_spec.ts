@@ -289,5 +289,85 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_EMAIL]));
     });
+
+    it("prompts user to confirm email if expected email and sign in email mismatch", () => {
+      // since it's difficult to reproduce the invalid email sign in link landing
+      // we need to resort to stubbing the response to test the expected behavior
+      cy.interceptTimes(1, "POST", signInWithEmailLinkURL, (req) => {
+        req.reply(400, createAuthReqError("INVALID_EMAIL"));
+      });
+
+      // get the login link as per usual
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // test langing to the auth page using different email than the one expected (test using stubbed behaviour)
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ConfirmEmail));
+      cy.contains(t(AuthMessage.DifferentSignInEmail));
+      // confirm sign in email and expect the login to be successful
+      // as the intercept stub should only be aplicable on the first call
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(i18n.t(ActionButton.Verify));
+      // expect to see admin page navigation on successful login
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("prompts user to resend email link if link expired or already used", () => {
+      // since it's difficult to reproduce the invalid email sign in link landing
+      // we need to resort to stubbing the response to test the expected behavior
+      cy.interceptTimes(1, "POST", signInWithEmailLinkURL, (req) => {
+        req.reply(400, createAuthReqError("INVALID_OOB_CODE"));
+      });
+
+      // get the login link as per usual
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // test landing to the auth page using invalidated oob code (test using stubbed behaviour)
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ResendEmail));
+      cy.contains(t(AuthMessage.ResendEmailLink));
+      // confirm resend email and log in successfully
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(i18n.t(ActionButton.Resend));
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // expect to see admin page navigation on successful login
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
   });
+});
+
+const signInWithEmailLinkURL =
+  "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithEmailLink?key=api-key";
+
+/**
+ * A helper used to construct firebase auth error,
+ * for cy.intercept stubbing
+ * @param message authErrorCode (i.e. IVNALID_EMA)
+ */
+const createAuthReqError = (message: keyof typeof AuthErrorCodes) => ({
+  error: {
+    code: 400,
+    message,
+    errors: [
+      {
+        message,
+        reason: "invalid",
+        domain: "global",
+      },
+    ],
+  },
 });
