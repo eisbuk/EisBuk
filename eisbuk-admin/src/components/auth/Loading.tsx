@@ -1,6 +1,6 @@
 import React from "react";
 
-import Bubbles from "@/assets/images/Bubble-20s-1920px.svg";
+import { ReactComponent as Bubbles } from "@/assets/images/Bubble-20s-1920px.svg";
 
 const loginImageStyle = {
   height: "100vh",

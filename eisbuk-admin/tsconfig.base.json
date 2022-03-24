@@ -8,11 +8,9 @@
     "node_modules",
     "dist",
     "scripts",
-    "functions",
-    "plop-templates",
     "jest",
     "src/setupTests.ts",
     "./.eslintrc.js"
   ],
-  "include": ["src"]
+  "include": ["src", "vite.config.ts"]
 }
