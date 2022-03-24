@@ -161,7 +161,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       name: "phone",
       id: "phone",
       label: "Phone",
-      type: "phone",
+      type: "text",
       inputMode: "numeric",
     },
   ],
