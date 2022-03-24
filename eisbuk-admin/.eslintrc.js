@@ -1,16 +1,15 @@
 const scaffold = require("../scaffolding/.eslintrc.ui.js");
-
 const path = require("path");
+
+const tsPaths = ["./", "esbuild", "cypress"].map((project) =>
+  path.join(__dirname, project, "tsconfig.json")
+);
 
 module.exports = {
   ...scaffold,
   parserOptions: {
     ...scaffold.parserOptions,
-    project: [
-      path.join(__dirname, "./tsconfig.json"),
-      "./esbuild/tsconfig.json",
-      "./cypress/tsconfig.json",
-    ],
+    project: tsPaths,
   },
   root: true,
   ignorePatterns: [
