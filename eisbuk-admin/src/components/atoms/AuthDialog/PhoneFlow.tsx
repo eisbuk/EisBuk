@@ -117,7 +117,6 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 {fieldsLookup[authStep]?.map((inputProps) => (
                   <AuthTextField {...inputProps} />
                 ))}
-                <input inputMode="numeric" />
               </Content>
               <ActionButtons>
                 {actionButtonLookup[authStep]?.map(
@@ -163,7 +162,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       id: "phone",
       label: "Phone",
       type: "text",
-      inputmode: "numeric",
+      inputMode: "numeric",
     },
   ],
   [PhoneAuthStep.SMSCode]: [
@@ -172,7 +171,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       id: "code",
       label: "SMS Code",
       type: "text",
-      inputmode: "numeric",
+      inputMode: "numeric",
     },
   ],
 };
