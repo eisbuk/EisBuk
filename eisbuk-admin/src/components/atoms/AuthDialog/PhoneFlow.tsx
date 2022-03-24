@@ -162,7 +162,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       id: "phone",
       label: "Phone",
       type: "text",
-      inputMode: "none",
+      inputmode: "numeric",
     },
   ],
   [PhoneAuthStep.SMSCode]: [
@@ -171,7 +171,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       id: "code",
       label: "SMS Code",
       type: "text",
-      inputMode: "numeric",
+      inputmode: "numeric",
     },
   ],
 };
