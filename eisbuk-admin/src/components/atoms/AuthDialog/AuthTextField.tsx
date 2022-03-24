@@ -50,11 +50,11 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
       <div className={classes.container}>
         <Field
           className={classes.textField}
+          inputProps={{ inputMode }}
           {...{
             name,
             ...props,
             type,
-            inputMode,
             InputProps,
           }}
           component={TextField}
