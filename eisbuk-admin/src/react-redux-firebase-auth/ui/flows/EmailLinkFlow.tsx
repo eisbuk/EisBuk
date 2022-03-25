@@ -20,15 +20,15 @@ import {
   AuthTitle,
   ValidationMessage,
 } from "@/enums/translations";
-import { EmailLinkAuthStep } from "@/enums/authSteps";
+import { EmailLinkAuthStep } from "../../enums";
 
-import AuthContainer from "./AuthContainer";
-import AuthErrorDialog from "./AuthErrorDialog";
-import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
-import ActionButton, { ActionButtonLookup } from "./ActionButton";
-import AuthTypography from "./AuthTypography";
+import AuthContainer from "../atoms/AuthContainer";
+import AuthErrorDialog from "../atoms/AuthErrorDialog";
+import AuthTextField, { AuthTextFieldLookup } from "../atoms/AuthTextField";
+import ActionButton, { ActionButtonLookup } from "../atoms/ActionButton";
+import AuthTypography from "../atoms/AuthTypography";
 
-import useAuthFlow from "@/hooks/useAuthFlow";
+import useAuthFlow from "../../hooks/useAuthFlow";
 
 import {
   getEmailForSignIn,
@@ -107,12 +107,15 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     setEmailForSignIn(email);
     setAuthStep(EmailLinkAuthStep.CheckSignInEmail);
   };
-  // add an empty function for 'check email' step as there is no `onSubmit` for this step
+
   submitHandlers[EmailLinkAuthStep.CheckSignInEmail] = async () => {};
+
   submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail] = ({ email }) =>
     handleSignInWithEmailLink(email);
+
   submitHandlers[EmailLinkAuthStep.DifferentSignInEmail] =
     submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail];
+
   submitHandlers[EmailLinkAuthStep.ResendEmailLink] =
     submitHandlers[EmailLinkAuthStep.SendSignInLink];
   // #region continueHandlers

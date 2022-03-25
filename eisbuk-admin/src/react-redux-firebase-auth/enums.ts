@@ -1,3 +1,4 @@
+// #region authSteps
 /**
  * Enum containing values for all possible views of email/password auth flow
  */
@@ -39,3 +40,4 @@ export enum PhoneAuthStep {
   /** Phone confirmation view (SMS code input) */
   SMSCode = "SMSCode",
 }
+// #endregion authSteps
