@@ -9,7 +9,7 @@ import { AppState, AppReducerAction, AppAction } from "@/types/store";
 export const defaultState = {
   notifications: [],
   calendarDay:
-    __isStorybook__ || process.env.NODE_ENV === "test"
+    __isStorybook__ || process.env.BUILD_ENV === "test"
       ? // If the env is storybook, set the standard date to keep chromatic consistent
         DateTime.fromISO(__storybookDate__)
       : // In dev/production, the date is current date
@@ -23,8 +23,9 @@ const appReducer = (
   switch (action.type) {
     case Action.EnqueueNotification:
       // new notification is recieved as payload
-      const newNotification = (action as AppReducerAction<Action.EnqueueNotification>)
-        .payload;
+      const newNotification = (
+        action as AppReducerAction<Action.EnqueueNotification>
+      ).payload;
 
       return {
         ...state,
