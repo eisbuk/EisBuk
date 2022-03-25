@@ -12,9 +12,9 @@ export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable (production, test, etc)
-export const __isDev__ = process.env.NODE_ENV !== "production";
+export const __isDev__ = process.env.BUILD_ENV !== "production";
 // check for explicit "test" environment
-export const __isTest__ = process.env.NODE_ENV === "test";
+export const __isTest__ = process.env.BUILD_ENV === "test";
 
 // organization constants
 export const __organization__ = __isTest__
@@ -27,10 +27,10 @@ export const __organization__ = __isTest__
       ? getOrgFromLocation(window.location.hostname)
       : "localhost");
 
-// variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
+// variables loaded from .env.deveolpment.local or .env.production.local file with respect to BUILD_ENV
 export const __projectId__ = process.env.REACT_APP_FIREBASE_PROJECT_ID;
 export const __firebaseApiKey__ =
-  process.env.NODE_ENV !== "production"
+  process.env.BUILD_ENV !== "production"
     ? "api-key"
     : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;

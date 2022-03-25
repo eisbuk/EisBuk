@@ -14,7 +14,7 @@ export default defineConfig({
     react(),
     environmentPlugin({
       FIRESTORE_EMULATOR_HOST: "",
-      NODE_ENV: "test",
+      BUILD_ENV: "development",
       REACT_APP_DATABASE_URL: "",
       REACT_APP_EISBUK_SITE: "",
       REACT_APP_FIREBASE_API_KEY: "fake-key",
