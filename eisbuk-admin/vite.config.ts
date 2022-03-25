@@ -4,10 +4,13 @@ import environmentPlugin from "vite-plugin-environment";
 import svgr from "vite-plugin-svgr";
 import path from "path";
 
+// replace /src with /instrumented files for code coverage
+const src = !process.env.USE_INSTRUMENTED ? "./src" : "./instrumented";
+
 export default defineConfig({
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, src),
     },
   },
   plugins: [
