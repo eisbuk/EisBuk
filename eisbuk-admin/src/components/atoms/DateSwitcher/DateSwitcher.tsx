@@ -59,11 +59,7 @@ const renderWeekPickerDay =
     selectedDates: (DateTime | null)[],
     pickersDayProps: PickersDayProps<DateTime>
   ): JSX.Element => {
-    if (jump === "day") {
-      return <PickersDay {...pickersDayProps} />;
-    }
-
-    const dayIsBetween = date > start && date < end;
+    const dayIsBetween = date > start.endOf("day") && date < end.startOf("day");
     const isFirstDay = date.equals(start);
     const isLastDay = date.endOf("day").equals(end);
     const hasSlots = calendarData[date.toISO().substring(0, 10)];
@@ -76,14 +72,18 @@ const renderWeekPickerDay =
         color={hasSlots === "slots" ? "secondary" : "success"}
         invisible={!hasSlots}
       >
-        <CustomPickersDay
-          {...pickersDayProps}
-          disableMargin
-          dayIsBetween={dayIsBetween}
-          isFirstDay={isFirstDay}
-          isLastDay={isLastDay}
-          showDaysOutsideCurrentMonth
-        />
+        {jump === "day" ? (
+          <PickersDay {...pickersDayProps} showDaysOutsideCurrentMonth />
+        ) : (
+          <CustomPickersDay
+            {...pickersDayProps}
+            disableMargin
+            dayIsBetween={dayIsBetween}
+            isFirstDay={isFirstDay}
+            isLastDay={isLastDay}
+            showDaysOutsideCurrentMonth
+          />
+        )}
       </Badge>
     );
   };
@@ -98,7 +98,8 @@ const CustomPickersDay = styled(PickersDay, {
   shouldForwardProp: (prop) =>
     prop !== "dayIsBetween" && prop !== "isFirstDay" && prop !== "isLastDay",
 })<CustomPickerDayProps>(({ theme, dayIsBetween, isFirstDay, isLastDay }) => ({
-  ...(dayIsBetween && {
+  // if any of the three apply color and hover and borderradius
+  ...((dayIsBetween || isFirstDay || isLastDay) && {
     borderRadius: 0,
     backgroundColor: theme.palette.primary.main,
     color: theme.palette.common.white,
@@ -106,14 +107,13 @@ const CustomPickersDay = styled(PickersDay, {
       backgroundColor: theme.palette.primary.dark,
     },
   }),
-  ...(isFirstDay && {
-    borderRadius: "0",
-    borderTopLeftRadius: "50%",
-    borderBottomLeftRadius: "50%",
-  }),
   ...(isLastDay && {
     borderTopRightRadius: "50%",
     borderBottomRightRadius: "50%",
+  }),
+  ...(isFirstDay && {
+    borderTopLeftRadius: "50%",
+    borderBottomLeftRadius: "50%",
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
 export default DateSwitcher;
