@@ -321,7 +321,7 @@ describe("login", () => {
       // since it's difficult to reproduce the invalid email sign in link landing
       // we need to resort to stubbing the response to test the expected behavior
       cy.interceptTimes(1, "POST", signInWithEmailLinkURL, (req) => {
-        req.reply(400, createAuthReqError("INVALID_OOB_CODE"));
+        req.reply(400, createAuthReqError("EXPIRED_OOB_CODE"));
       });
 
       // get the login link as per usual
