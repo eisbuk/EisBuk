@@ -186,9 +186,5 @@ module.exports = {
 
     // no-case-declarations
     "no-case-declarations": "off",
-
-    // even though Dan Abramov spreads this gospel, we're
-    // carefully setting the deps to precisely what we want
-    "react-hooks/exhaustive-deps": "off",
   },
 };
