@@ -24,7 +24,6 @@ module.exports = {
   ignorePatterns: [
     "build/",
     "dist/",
-    "lib/",
     "node_modules/",
     ".eslintrc.js",
     ".eslintrc.ui.js",

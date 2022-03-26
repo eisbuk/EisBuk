@@ -1,25 +1,22 @@
-const scaffold = require("../scaffolding/.eslintrc.ui.js");
 const path = require("path");
 
-const tsPaths = ["./", "esbuild", "cypress"].map((project) =>
+const scaffold = require("../scaffolding/.eslintrc.ui.js");
+const { useTSConfig } = require("../scaffolding/.eslint.utils.js");
+
+const tsPaths = ["./", "cypress"].map((project) =>
   path.join(__dirname, project, "tsconfig.json")
 );
 
-module.exports = {
-  ...scaffold,
-  parserOptions: {
-    ...scaffold.parserOptions,
-    project: tsPaths,
+module.exports = useTSConfig(
+  {
+    ...scaffold,
+    ignorePatterns: [
+      ...scaffold.ignorePatterns,
+      "coverage",
+      "setupTests.js",
+      "nyc-config.js",
+      "jest.config.js",
+    ],
   },
-  root: true,
-  ignorePatterns: [
-    ...scaffold.ignorePatterns,
-    "coverage/",
-    "setupTests.js",
-    "nyc-config.js",
-    "jest.config.js",
-  ],
-  rules: {
-    ...scaffold.rules,
-  },
-};
+  tsPaths
+);
