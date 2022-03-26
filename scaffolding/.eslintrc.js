@@ -19,6 +19,7 @@ module.exports = {
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
+    "plugin:promise/recommended",
     "plugin:@typescript-eslint/recommended",
   ],
   ignorePatterns: [
@@ -30,28 +31,15 @@ module.exports = {
     "vite.config.ts",
   ],
   rules: {
-    // Remove rule for props to require quotes
-    "quote-props": "off", //
+    // Using this rule would mean that every object literal should have quotes as properties, as such { "foo": true }
+    // Which is pretty outdated behaviour
+    "quote-props": "off",
 
     // Removed rule "disallow the use of console" from recommended eslint rules
     "no-console": "off",
 
-    // Removed rule "disallow multiple spaces in regular expressions" from recommended eslint rules
-    "no-regex-spaces": "off",
-
-    // Removed rule "disallow the use of debugger" from recommended eslint rules
-    "no-debugger": "off",
-
-    // Removed rule "disallow unused variables" from recommended eslint rules
-    "no-unused-vars": "off" /** @TODO check this */,
-
-    // Removed rule "disallow mixed spaces and tabs for indentation" from recommended eslint rules
-    "no-mixed-spaces-and-tabs": "off" /** @TODO check this */,
-
-    // Removed rule "disallow the use of undeclared variables unless mentioned in /*global */ comments" from recommended eslint rules
-    "no-undef": "off" /** @TODO check this */,
-
     // Warn against template literal placeholder syntax in regular strings
+    // i.e. "${foo}" should be illegal as it's most likely a mistake, trying to write `${foo}`
     "no-template-curly-in-string": 1,
 
     // Warn if return statements do not either always or never specify values
@@ -66,17 +54,16 @@ module.exports = {
     // Disallow the use of alert, confirm, and prompt
     "no-alert": 2,
 
-    // Disallow the use of arguments.caller or arguments.callee
+    // Disallow the use of `arguments.caller` or `arguments.callee`
+    // This is an old JS practice not used as much anymore
+    // We're disallowing it nonetheless
     "no-caller": 2,
-
-    // Disallow null comparisons without type-checking operators
-    "no-eq-null": 2,
 
     // Disallow the use of eval()
     "no-eval": 2,
 
     // Warn against extending native types
-    "no-extend-native": 1,
+    "no-extend-native": 2,
 
     // Warn against unnecessary calls to .bind()
     "no-extra-bind": 1,
@@ -87,19 +74,20 @@ module.exports = {
     // Disallow leading or trailing decimal points in numeric literals
     "no-floating-decimal": 2,
 
-    // Warn against shorthand type conversions
-    "no-implicit-coercion": 1,
+    // Type conversions should be as clear as possible (i.e. Number("4") rather than +"4")
+    "no-implicit-coercion": 2,
 
-    // Warn against function declarations and expressions inside loop statements
-    "no-loop-func": 1,
+    // Function declarations and expressions inside loop statements seem like a baad practice
+    "no-loop-func": 2,
 
     // Disallow new operators with the Function object
     "no-new-func": 2,
 
-    // Warn against new operators with the String, Number, and Boolean objects
-    "no-new-wrappers": 1,
+    // Using new operators with the String, Number, and Boolean objects
+    // is really unnecessary
+    "no-new-wrappers": 2,
 
-    // Disallow throwing literals as exceptions
+    // Disallow throwing exceptions that are anything other than `Error(<message>)`
     "no-throw-literal": 2,
 
     // Require using Error objects as Promise rejection reasons
@@ -112,6 +100,8 @@ module.exports = {
     "getter-return": 2,
 
     // Disallow await inside of loops
+    // This is a good practice most of the time, so it makes sense
+    // to override it only when (and if) really necessary
     "no-await-in-loop": 2,
 
     // Disallow comparing against -0
@@ -123,40 +113,22 @@ module.exports = {
     // Disallow identifiers from shadowing restricted names
     "no-shadow-restricted-names": 2,
 
-    // Enforce return statements in callbacks of array methods
-    "callback-return": 2,
-
-    // Require error handling in callbacks
-    "handle-callback-err": 2,
-
     // Warn against string concatenation with __dirname and __filename
     "no-path-concat": 1,
 
     // Prefer using arrow functions for callbacks
     "prefer-arrow-callback": 1,
 
-    // Return inside each then() to create readable and reusable Promise chains.
-    // Forces developers to return console logs and http calls in promises.
-    "promise/always-return": 2,
-
-    // Enforces the use of catch() on un-returned promises
-    // Disabled for cypress' PromiseLike syntax (no catch method)
-    "promise/catch-or-return": "off",
-
-    // Warn against nested then() or catch() statements
-    // If we have nested promises it's for a very good reason
-    "promise/no-nesting": "off",
-
     // Swotch strings to single quote (offset recommended)
     quotes: "off",
 
-    // Allow spacing in curly braces
+    // Allow spacing in curly braces (we're actually using this for readability)
     "object-curly-spacing": "off",
 
     // Max len is handled by prettier, if it turns out to be longer it's probbably a comment
     "max-len": "off",
 
-    // Indentation on each line
+    // Indentation is handled by prettier
     indent: "off",
 
     // Allow "?" and ":" to be at the beginning of the line in ternary expressions

@@ -373,6 +373,6 @@ describe("AttendanceCard", () => {
 });
 
 const hold = (timeout: number) =>
-  new Promise<void>((res) => {
-    setTimeout(() => res(), timeout);
+  new Promise<void>((resolve) => {
+    setTimeout(() => resolve(), timeout);
   });
