@@ -116,7 +116,7 @@ describe("Firestore subscriptions", () => {
       const nextWeek = startDate.plus({ weeks: 1 });
       store.dispatch(changeCalendarDate(nextWeek));
       // give some time for listeners to update (which it shouldn't)
-      await new Promise<void>((res) => setTimeout(() => res(), 200));
+      await new Promise<void>((resolve) => setTimeout(() => resolve(), 200));
       // no constraints should get updated
       await waitFor(() => {
         const listeners = getFirestoreListeners(store.getState());
