@@ -1,0 +1,5 @@
+# Peer dependencies might get installed here
+node_modules
+
+# Error logs
+yarn-error.log
