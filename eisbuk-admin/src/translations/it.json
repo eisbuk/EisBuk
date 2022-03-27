@@ -22,6 +22,9 @@
     "ConfirmSignInEmail": "Confermare la mail usata per l'accesso.",
     "DifferentSignInEmail": "The email you've used for log in isn't the email expected by the app. Please confirm the email used to receive the sign in link.",
     "ResendEmailLink": "The sign in link was already used or has expired. Would you like to resend the email link.",
+
+    "EnterSMSCode": "Please enter the code sent to {{ phone }}",
+    "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -45,6 +48,7 @@
     "SendSignInLink": "Send sign in link",
     "ConfirmEmail": "Confirm email",
     "ResendEmail": "Resend email",
+    "ResendSMS": "Resend Code",
     "EnterCode": "Inserisci il codice"
   },
 
@@ -128,6 +132,7 @@
   "ActionButton": {
     "SignIn": "Accedi",
     "TroubleSigningIn": "Problemi con l'accesso?",
+    "CodeNotReceived": "Didn't receive the code?",
 
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
