@@ -7,7 +7,7 @@ interface calendarSlot {
 export const getCalendarData = (state: LocalStore): calendarSlot => {
   const {
     firestore: {
-      data: { slotsByDay: allSlotsInStore, attendance = {} },
+      data: { slotsByDay: allSlotsInStore, attendance = {}, bookedSlots = {} },
     },
   } = state;
 
@@ -19,12 +19,22 @@ export const getCalendarData = (state: LocalStore): calendarSlot => {
     },
     {}
   );
-  const bookedDates = Object.values(attendance).reduce((acc, _) => {
-    const bookedIntervals = Object.values(_.attendances).filter(
-      (customerAttendance) => customerAttendance.bookedInterval
-    );
-    return bookedIntervals.length ? { ...acc, [_.date]: "booked" } : acc;
-  }, {});
+  const getBookedSlots = () => {
+    if (!Object.keys(attendance).length && !Object.keys(bookedSlots).length) {
+return {};
+}
+    return Object.keys(attendance).length
+      ? Object.values(attendance).reduce((acc, _) => {
+          const bookedIntervals = Object.values(_.attendances).filter(
+            (customerAttendance) => customerAttendance.bookedInterval
+          );
+          return bookedIntervals.length ? { ...acc, [_.date]: "booked" } : acc;
+        }, {})
+      : Object.values(bookedSlots).reduce(
+          (acc, _) => ({ ...acc, [_.date]: "booked" }),
+          {}
+        );
+  };
 
   const datesWithSlots: calendarSlot = Object.keys(flattenedSlotsByDay).reduce(
     (acc, _) => {
@@ -35,5 +45,5 @@ export const getCalendarData = (state: LocalStore): calendarSlot => {
     },
     {}
   );
-  return { ...datesWithSlots, ...bookedDates };
+  return { ...datesWithSlots, ...getBookedSlots() };
 };
