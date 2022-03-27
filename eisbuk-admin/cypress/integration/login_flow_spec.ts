@@ -192,6 +192,28 @@ describe("login", () => {
       cy.getAttrWith("aria-label", t(AdminAria.PageNav));
     });
 
+    it("shows code sent message (with phone number confirmation) and allows resend ", () => {
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.getAttrWith("id", "phone").type(defaultUser.phone);
+      cy.clickButton(t(ActionButton.Verify));
+      cy.contains(t(AuthTitle.EnterCode));
+      // check for phone confirmation message
+      cy.contains(t(AuthMessage.EnterSMSCode, { phone: defaultUser.phone }));
+      // should offer to resent if code not received
+      cy.clickButton(t(ActionButton.CodeNotReceived));
+      cy.contains(t(AuthTitle.ResendSMS));
+      cy.contains(t(AuthMessage.ResendSMS, { phone: defaultUser.phone }));
+      cy.clickButton(t(ActionButton.Resend));
+      // should redirect back to EnterSMSCode prompt
+      cy.contains(t(AuthMessage.EnterSMSCode, { phone: defaultUser.phone }));
+      cy.getRecaptchaCode(defaultUser.phone).then((code) => {
+        cy.getAttrWith("id", "code").type(code);
+        return cy.clickButton(t(ActionButton.Submit));
+      });
+      // login should be successful
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
     it("validates input fields", () => {
       // phone number is required
       cy.clickButton(t(ActionButton.Verify));
@@ -210,12 +232,20 @@ describe("login", () => {
       cy.contains(t(ValidationMessage.RequiredField));
     });
 
-    it("shows error message on wrong code", () => {
+    it("shows error message on wrong code and resets auth on cancel click", () => {
       cy.getAttrWith("id", "phone").clearAndType(defaultUser.phone);
       cy.clickButton(t(ActionButton.Verify));
       cy.getAttrWith("id", "code").type("wrong-code");
       cy.clickButton(t(ActionButton.Submit));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
+    });
+
+    it("resets form on cancel button click", () => {
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.clickButton(t(ActionButton.Cancel));
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.contains(t(AuthTitle.SignInWithGoogle));
+      cy.contains(t(AuthTitle.SignInWithEmail));
     });
   });
 

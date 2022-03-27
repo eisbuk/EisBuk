@@ -28,6 +28,8 @@ export enum AuthMessage {
   DifferentSignInEmail = "Authorization.DifferentSignInEmail",
   ResendEmailLink = "Authorization.ResendEmailLink",
 
+  EnterSMSCode = "Authorization.EnterSMSCode",
+  ResendSMS = "Authorization.ResendSMS",
   SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {
@@ -51,6 +53,7 @@ export enum AuthTitle {
   CheckYourEmail = "AuthTitle.CheckYourEmail",
   ConfirmEmail = "AuthTitle.ConfirmEmail",
   ResendEmail = "AuthTitle.ResendEmail",
+  ResendSMS = "AuthTitle.ResendSMS",
   EnterCode = "AuthTitle.EnterCode",
 }
 // #endregion auth
@@ -143,6 +146,7 @@ export enum Prompt {
 export enum ActionButton {
   SignIn = "ActionButton.SignIn",
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
+  CodeNotReceived = "ActionButton.CodeNotReceived",
 
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",

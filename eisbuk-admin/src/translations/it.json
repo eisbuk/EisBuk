@@ -22,6 +22,9 @@
     "ConfirmSignInEmail": "Confermare la mail usata per l'accesso.",
     "DifferentSignInEmail": "Su quale indirizzo mail hai ricevuto questo link?",
     "ResendEmailLink": "Il link che hai seguito nella mail è scaduto. Inviare di nuovo?",
+
+    "EnterSMSCode": "Please enter the code sent to {{ phone }}",
+    "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -45,6 +48,7 @@
     "SendSignInLink": "Send sign in link",
     "ConfirmEmail": "Conferma la email",
     "ResendEmail": "Invia di nuovo la email",
+    "ResendSMS": "Resend Code",
     "EnterCode": "Inserisci il codice"
   },
 
@@ -128,6 +132,7 @@
   "ActionButton": {
     "SignIn": "Accedi",
     "TroubleSigningIn": "Problemi con l'accesso?",
+    "CodeNotReceived": "Didn't receive the code?",
 
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",

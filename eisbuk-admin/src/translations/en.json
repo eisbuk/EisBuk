@@ -22,6 +22,9 @@
     "ConfirmSignInEmail": "Please confirm the email used to sign in.",
     "DifferentSignInEmail": "The email you used to log in isn't the email expected by the app. Please confirm the email used to receive the sign in link.",
     "ResendEmailLink": "The sign in link was already used or has expired. Would you like to resend the email link.",
+
+    "EnterSMSCode": "Please enter the code sent to {{ phone }}",
+    "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
     "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
   "AuthError": {
@@ -45,6 +48,7 @@
     "CheckYourEmail": "Check your email",
     "ConfirmEmail": "Confirm email",
     "ResendEmail": "Resend email",
+    "ResendSMS": "Resend Code",
     "EnterCode": "Enter Code"
   },
 
@@ -128,6 +132,7 @@
   "ActionButton": {
     "SignIn": "Signin",
     "TroubleSigningIn": "Trouble signing in?",
+    "CodeNotReceived": "Didn't receive the code?",
 
     "CreateSlot": "Create Slot",
     "EditSlot": "Edit Slot",
