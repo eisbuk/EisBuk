@@ -14,6 +14,17 @@
           "interval": "10:00-11:30"
         }
       }
+    },
+    "123445": {
+      "id": "saul",
+      "name": "Saul",
+      "surname": "Goodman",
+      "bookedSlots": {
+        "slot-2": {
+          "date": "2022-01-02",
+          "interval": "09:00-10:00"
+        }
+      }
     }
   }
 }
