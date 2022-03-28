@@ -28,7 +28,7 @@ describe("Date Switcher", () => {
 
       cy.signIn();
     });
-    xit("should show badges on days with booked slots in attendance view", () => {
+    it("should show badges on days with booked slots in attendance view", () => {
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["attendance.json"])
       );
@@ -42,7 +42,7 @@ describe("Date Switcher", () => {
         .should("have.attr", "aria-label")
         .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
     });
-    xit("should show badges on days with empty slots in attendance view", () => {
+    it("should show badges on days with empty slots in attendance view", () => {
       cy.visit(PrivateRoutes.Root);
       cy.getAttrWith("data-testid", __currentDateId__).click();
       cy.getAttrWith("data-testid", __DayWithSlots__)
