@@ -64,9 +64,16 @@ jobs:
           set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
-          yarn --cwd eisbuk-admin deploy:preview -- ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          yarn --cwd eisbuk-admin deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
-          cat deploy.output | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|" >> $GITHUB_ENV
+          # This horrible contraption converts lines like
+          # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
+          # ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
+          # to a form like this:
+          # igorice=https://igorice--dev-n0jjvnkh.web.app
+          # eisbuk=https://eisbuk--dev-xjkubzx5.web.app
+          # suitable to be included in the $GITHUB_ENV file
+          cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
           # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}

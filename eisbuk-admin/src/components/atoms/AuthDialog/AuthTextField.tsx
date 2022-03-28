@@ -19,6 +19,7 @@ export type AuthTextFieldLookup<I extends string> = Partial<
 const AuthTextField: React.FC<AuthTextFieldProps> = ({
   name,
   type: typeProp,
+  inputMode,
   ...props
 }) => {
   const classes = useStyles();
@@ -49,6 +50,7 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
       <div className={classes.container}>
         <Field
           className={classes.textField}
+          inputProps={{ inputMode }}
           {...{
             name,
             ...props,

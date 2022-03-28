@@ -17,6 +17,10 @@ export const __pasteButtonId__ = "paste-button";
 export const __deleteButtonId__ = "delete-button";
 // #endregion SlotOperationButtons
 
+// #region SlotAlerts
+export const __noSlotsDateId__ = "no-slots-date";
+// #endregion SlotAlerts
+
 // #region DateNavigation
 export const __dateNavNextId__ = "date-navigation-next-page";
 export const __dateNavPrevId__ = "date-navigation-previous-page";
