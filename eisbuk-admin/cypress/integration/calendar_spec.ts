@@ -62,7 +62,7 @@ describe("Date Switcher", () => {
         .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
     });
   });
-  describe("Badges that need attendance", () => {
+  xdescribe("Badges that need attendance", () => {
     it("should show badges on days with booked slots in attendance view", () => {
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, ["attendance.json"])
