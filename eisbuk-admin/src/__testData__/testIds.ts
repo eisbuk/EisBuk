@@ -25,6 +25,10 @@ export const __currentDateId__ = "current-date";
 
 // #region DateSwitcher
 export const __calendarMenuId__ = "calendar-menu";
+export const __PickedDay__ = "picked-day";
+export const __DayWithSlots__ = "day-with-slots";
+export const __DayWithBookedSlots__ = "day-with-booked-slots";
+
 // #endregion DateSwitcher
 
 // #region BookingCard

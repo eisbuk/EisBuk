@@ -12,7 +12,12 @@ import { styled } from "@mui/material/styles";
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { getCalendarData } from "@/store/selectors/calendar";
 
-import { __calendarMenuId__ } from "@/__testData__/testIds";
+import {
+  __calendarMenuId__,
+  __DayWithBookedSlots__,
+  __DayWithSlots__,
+  __PickedDay__,
+} from "@/__testData__/testIds";
 
 interface Props extends MenuProps {
   currentDate: DateTime;
@@ -71,6 +76,10 @@ const renderWeekPickerDay =
         variant="dot"
         color={hasSlots === "slots" ? "secondary" : "success"}
         invisible={!hasSlots}
+        data-testid={
+          hasSlots &&
+          (hasSlots === "slots" ? __DayWithSlots__ : __DayWithBookedSlots__)
+        }
       >
         {jump === "day" ? (
           <PickersDay {...pickersDayProps} showDaysOutsideCurrentMonth />
@@ -82,6 +91,9 @@ const renderWeekPickerDay =
             isFirstDay={isFirstDay}
             isLastDay={isLastDay}
             showDaysOutsideCurrentMonth
+            data-testid={
+              dayIsBetween || isFirstDay || isLastDay ? __PickedDay__ : ""
+            }
           />
         )}
       </Badge>
