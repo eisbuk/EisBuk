@@ -10,14 +10,16 @@ import {
 } from "@/__testData__/testIds";
 
 describe("Date Switcher", () => {
+  beforeEach(() => {
+    // our test data starts with this date so we're using it as reference point
+    const testDate = "2022-01-01";
+    const testDateLuxon = DateTime.fromISO(testDate);
+
+    // set current time just after the deadline has passed
+    cy.setClock(testDateLuxon.toMillis());
+  });
   describe("Badges", () => {
     beforeEach(() => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-
-      // set current time just after the deadline has passed
-      cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, [
           "bookings.json",
@@ -27,20 +29,6 @@ describe("Date Switcher", () => {
       );
 
       cy.signIn();
-    });
-    it("should show badges on days with booked slots in attendance view", () => {
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["attendance.json"])
-      );
-
-      cy.signIn();
-      cy.visit(PrivateRoutes.Root);
-      cy.getAttrWith("data-testid", __currentDateId__).click();
-      cy.getAttrWith("data-testid", __DayWithBookedSlots__)
-        .children()
-        .eq(0)
-        .should("have.attr", "aria-label")
-        .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
     });
     it("should show badges on days with empty slots in attendance view", () => {
       cy.visit(PrivateRoutes.Root);
@@ -66,6 +54,22 @@ describe("Date Switcher", () => {
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       cy.getAttrWith("data-testid", __customerNavigationCalendar__).click();
       cy.getAttrWith("data-testid", __dateNavPrevId__).click();
+      cy.getAttrWith("data-testid", __currentDateId__).click();
+      cy.getAttrWith("data-testid", __DayWithBookedSlots__)
+        .children()
+        .eq(0)
+        .should("have.attr", "aria-label")
+        .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
+    });
+  });
+  describe("Badges that need attendance", () => {
+    it("should show badges on days with booked slots in attendance view", () => {
+      cy.initAdminApp().then((organization) =>
+        cy.updateFirestore(organization, ["attendance.json"])
+      );
+
+      cy.signIn();
+      cy.visit(PrivateRoutes.Root);
       cy.getAttrWith("data-testid", __currentDateId__).click();
       cy.getAttrWith("data-testid", __DayWithBookedSlots__)
         .children()
