@@ -1,30 +1,26 @@
 import { DateTime } from "luxon";
 import { PrivateRoutes, Routes } from "@/enums/routes";
-import { saul } from "@/__testData__/customers";
+import { gus } from "@/__testData__/customers";
 import {
   __currentDateId__,
-  __customerNavigationCalendar__,
-  __dateNavPrevId__,
   __DayWithBookedSlots__,
   __DayWithSlots__,
 } from "@/__testData__/testIds";
 
 describe("Date Switcher", () => {
-  beforeEach(() => {
-    // our test data starts with this date so we're using it as reference point
-    const testDate = "2022-01-01";
-    const testDateLuxon = DateTime.fromISO(testDate);
-
-    // set current time just after the deadline has passed
-    cy.setClock(testDateLuxon.toMillis());
-  });
   describe("Badges", () => {
     beforeEach(() => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+
+      cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp().then((organization) =>
         cy.updateFirestore(organization, [
           "bookings.json",
           "slots.json",
-          "saul_with_extended_date.json",
+          "customers.json",
+          "attendance.json",
         ])
       );
 
@@ -37,45 +33,34 @@ describe("Date Switcher", () => {
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
-        .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
+        .and("equal", DateTime.fromISO("2021-12-31").toFormat("DD"));
     });
     it("should show badges on days with empty slots in customer calendar view", () => {
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      cy.getAttrWith("data-testid", __customerNavigationCalendar__).click();
-      cy.getAttrWith("data-testid", __dateNavPrevId__).click();
+      cy.visit([Routes.CustomerArea, gus.secretKey, "calendar"].join("/"));
       cy.getAttrWith("data-testid", __currentDateId__).click();
       cy.getAttrWith("data-testid", __DayWithSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
-        .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
+        .and("equal", DateTime.fromISO("2021-12-31").toFormat("DD"));
     });
     it("should show badges on days with booked slots in customer calendar view", () => {
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      cy.getAttrWith("data-testid", __customerNavigationCalendar__).click();
-      cy.getAttrWith("data-testid", __dateNavPrevId__).click();
+      cy.visit([Routes.CustomerArea, gus.secretKey, "calendar"].join("/"));
       cy.getAttrWith("data-testid", __currentDateId__).click();
       cy.getAttrWith("data-testid", __DayWithBookedSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
-        .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
+        .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
     });
-  });
-  xdescribe("Badges that need attendance", () => {
     it("should show badges on days with booked slots in attendance view", () => {
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["attendance.json"])
-      );
-
-      cy.signIn();
       cy.visit(PrivateRoutes.Root);
       cy.getAttrWith("data-testid", __currentDateId__).click();
       cy.getAttrWith("data-testid", __DayWithBookedSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
-        .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
+        .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
     });
   });
 });

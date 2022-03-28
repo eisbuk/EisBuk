@@ -1,11 +1,20 @@
 {
   "attendance": {
+    "slot-1": {
+      "date": "2022-01-01",
+      "attendances": {
+        "gus": {
+          "attendedInterval": "10:00-11:00",
+          "bookedInterval": "10:00-11:00"
+        }
+      }
+    },
     "slot-2": {
       "date": "2022-01-02",
       "attendances": {
-        "saul": {
-          "attendedInterval": "09:00-10:00",
-          "bookedInterval": "09:00-10:00"
+        "gus": {
+          "attendedInterval": "10:00-11:30",
+          "bookedInterval": "10:00-11:30"
         }
       }
     }

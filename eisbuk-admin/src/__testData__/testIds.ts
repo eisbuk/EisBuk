@@ -60,7 +60,3 @@ export const __notificationButton__ = "notification-button";
 // #region birthdayBadge
 export const __birthdayMenu__ = "birthday-menu";
 // #endregion birthdayBadge
-
-// #region customerNavigation
-export const __customerNavigationCalendar__ = "customer-navigation-calendar";
-// #endregion customerNavigation

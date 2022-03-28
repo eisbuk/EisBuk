@@ -15,7 +15,6 @@ import makeStyles from "@mui/styles/makeStyles";
 import { CustomerRoute } from "@/enums/routes";
 
 import { CustomerNavigationLabel } from "@/enums/translations";
-import { __customerNavigationCalendar__ } from "@/__testData__/testIds";
 
 /**
  * A placeholder string we use for dynamic route parsing.
@@ -99,7 +98,6 @@ const CustomerNavigation: React.FC = () => {
             value={CustomerRoute.BookOffIce}
           />
           <LinkTab
-            data-testid={__customerNavigationCalendar__}
             customerRoute={CustomerRoute.Calendar}
             icon={<PersonPinIcon />}
             disabled={customerRouteInPathname === CustomerRoute.Calendar}
