@@ -41,7 +41,7 @@ interface Props {
   onCancel?: () => void;
 }
 
-const fieldErrorMap = {
+const errorFieldMap = {
   [AuthErrorCodes.INVALID_PASSWORD]: "password",
 };
 
@@ -53,8 +53,8 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     EmailAuthStep.SignInWithEmail
   );
 
-  const { dialogError, removeDialogError, handleSubmit } =
-    useAuthFlow<CompleteFormValues>(fieldErrorMap);
+  const { dialogError, removeDialogError, wrapSubmit } =
+    useAuthFlow<CompleteFormValues>(errorFieldMap);
 
   // #region form
   const initialValues = { email: "", password: "", name: "" };
@@ -132,7 +132,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
             onClose={removeDialogError}
           />
           <Formik
-            onSubmit={handleSubmit(submitHandlers[authStep])}
+            onSubmit={wrapSubmit(submitHandlers[authStep])}
             {...{ initialValues, validationSchema }}
           >
             {({ values: { email } }) => (
