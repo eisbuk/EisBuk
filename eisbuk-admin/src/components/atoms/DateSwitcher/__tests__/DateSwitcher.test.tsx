@@ -14,7 +14,7 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import { testDateLuxon } from "@/__testData__/date";
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { DateTime } from "luxon";
-import { __PickedDay__ } from "@/__testData__/testIds";
+import { __pickedDay__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
@@ -60,11 +60,11 @@ describe("Date Switcher", () => {
         </LocalizationProvider>
       );
 
-      const nexDayDateTime = testDateDateTime.plus({ days: 1 });
-
-      const dayToClick = screen.getByLabelText(nexDayDateTime.toFormat("DD"));
+      const dayToClick = screen.getByLabelText(
+        testDateDateTime.plus({ days: 1 }).toFormat("DD")
+      );
       dayToClick.click();
-      expect(screen.getAllByTestId(__PickedDay__)).toHaveLength(7);
+      expect(screen.getAllByTestId(__pickedDay__)).toHaveLength(7);
     });
     test("should pick one day on booking and attendance view", () => {
       render(
@@ -79,11 +79,11 @@ describe("Date Switcher", () => {
         </LocalizationProvider>
       );
 
-      const nexDayDateTime = testDateDateTime.plus({ days: 1 });
-
-      const dayToClick = screen.getByLabelText(nexDayDateTime.toFormat("DD"));
+      const dayToClick = screen.getByLabelText(
+        testDateDateTime.plus({ days: 1 }).toFormat("DD")
+      );
       dayToClick.click();
-      expect(screen.queryByTestId(__PickedDay__)).toBeNull();
+      expect(screen.queryByTestId(__pickedDay__)).toBeNull();
     });
   });
 });
