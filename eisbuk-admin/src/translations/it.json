@@ -20,8 +20,8 @@
     "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password.",
     "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare.",
     "ConfirmSignInEmail": "Confermare la mail usata per l'accesso.",
-    "DifferentSignInEmail": "The email you've used for log in isn't the email expected by the app. Please confirm the email used to receive the sign in link.",
-    "ResendEmailLink": "The sign in link was already used or has expired. Would you like to resend the email link.",
+    "DifferentSignInEmail": "Su quale indirizzo mail hai ricevuto questo link?",
+    "ResendEmailLink": "Il link che hai seguito nella mail è scaduto. Inviare di nuovo?",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -43,8 +43,8 @@
     "RecoverPassword": "Recupera password",
     "CheckYourEmail": "Controlla la email",
     "SendSignInLink": "Send sign in link",
-    "ConfirmEmail": "Confirm email",
-    "ResendEmail": "Resend email",
+    "ConfirmEmail": "Conferma la email",
+    "ResendEmail": "Invia di nuovo la email",
     "EnterCode": "Inserisci il codice"
   },
 
@@ -146,13 +146,13 @@
     "Save": "Salva",
     "Next": "Seguente",
     "Cancel": "Annulla",
-    "ShowAll": "ShowAll",
-    "Done": "Done",
-    "Send": "Send",
-    "Resend": "Resend",
-    "Dismiss": "Dismiss",
-    "Submit": "Submit",
-    "Verify": "Verify"
+    "ShowAll": "Mostra tutti",
+    "Done": "Fatto",
+    "Send": "Invia",
+    "Resend": "Invia di nuovo",
+    "Dismiss": "Ignora",
+    "Submit": "Invia",
+    "Verify": "verifica"
   },
 
   "Notification": {
@@ -172,7 +172,7 @@
 
     "EmailSent": "Email inviata con successo",
     "SMSSent": "SMS inviato con successo",
-    "BookingDateExtended": "Booking date extended",
+    "BookingDateExtended": "Termine per le prenotazioni esteso",
 
     "Error": "Errore"
   },
