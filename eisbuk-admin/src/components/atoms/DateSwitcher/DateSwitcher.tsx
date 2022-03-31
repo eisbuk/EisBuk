@@ -2,6 +2,8 @@ import React from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
+import { DateHasBookingsMap } from "eisbuk-shared";
+
 import Menu, { MenuProps } from "@mui/material/Menu";
 import { CalendarPicker } from "@mui/lab";
 import Badge from "@mui/material/Badge";
@@ -14,9 +16,9 @@ import { getCalendarData } from "@/store/selectors/calendar";
 
 import {
   __calendarMenuId__,
-  __DayWithBookedSlots__,
-  __DayWithSlots__,
-  __PickedDay__,
+  __dayWithBookedSlots__,
+  __dayWithSlots__,
+  __pickedDay__,
 } from "@/__testData__/testIds";
 
 interface Props extends MenuProps {
@@ -28,7 +30,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
   const dispatch = useDispatch();
   const start = currentDate.startOf("week");
   const end = currentDate.endOf("week");
-  const calendarData = useSelector(getCalendarData);
+  const calendarData = useSelector(getCalendarData(currentDate.toISO()));
 
   return (
     <>
@@ -56,7 +58,7 @@ const renderWeekPickerDay =
     currentDate: DateTime,
     start: DateTime,
     end: DateTime,
-    calendarData: { [dayInISO: string]: string },
+    calendarData: DateHasBookingsMap,
     jump: DateTimeUnit
   ) =>
   (
@@ -74,15 +76,15 @@ const renderWeekPickerDay =
         key={date.toString()}
         overlap="circular"
         variant="dot"
-        color={hasSlots === "slots" ? "secondary" : "success"}
+        color={hasSlots === "hasSlots" ? "secondary" : "success"}
         invisible={!hasSlots}
         data-testid={
           hasSlots &&
-          (hasSlots === "slots" ? __DayWithSlots__ : __DayWithBookedSlots__)
+          (hasSlots === "hasSlots" ? __dayWithSlots__ : __dayWithBookedSlots__)
         }
       >
         {jump === "day" ? (
-          <PickersDay {...pickersDayProps} showDaysOutsideCurrentMonth />
+          <PickersDay {...pickersDayProps} />
         ) : (
           <CustomPickersDay
             {...pickersDayProps}
@@ -90,9 +92,8 @@ const renderWeekPickerDay =
             dayIsBetween={dayIsBetween}
             isFirstDay={isFirstDay}
             isLastDay={isLastDay}
-            showDaysOutsideCurrentMonth
             data-testid={
-              dayIsBetween || isFirstDay || isLastDay ? __PickedDay__ : ""
+              dayIsBetween || isFirstDay || isLastDay ? __pickedDay__ : ""
             }
           />
         )}
