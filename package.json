@@ -37,7 +37,7 @@
       "packages/eisbuk-shared",
       "packages/eisbuk-admin",
       "packages/functions",
-      "packages/scaffolding"
+      "packages/scaffold"
     ],
     "nohoist": [
       "**/mochawesome",
