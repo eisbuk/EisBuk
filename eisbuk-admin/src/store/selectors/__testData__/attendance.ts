@@ -9,6 +9,7 @@ import { createTestStore } from "@/__testUtils__/firestore";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
 import { walt, jian, saul } from "@/__testData__/customers";
+import { DateTime } from "luxon";
 
 /**
  * Test intervals ("09:00-10:00", "10:00-11:00", "09:00-11:00")
@@ -58,7 +59,7 @@ const nextDayISO = luxon2ISODate(testDateLuxon.plus({ days: 1 }));
 /**
  * `slotsByDay` entry in test store
  */
-const slotsByDay = {
+export const slotsByDay = {
   [monthString]: {
     [testDate]: slotsForADay,
     [nextDayISO]: slotsForNextDay,
@@ -152,6 +153,15 @@ export const attendance: LocalStore["firestore"]["data"]["attendance"] = {
       [saul.id]: {
         bookedInterval: intervals9Keys[1],
         attendedInterval: intervals9Keys[0],
+      },
+    },
+  },
+  ["slot-6"]: {
+    date: DateTime.fromISO(testDate).plus({ days: 1 }).toISO().substring(0, 10),
+    attendances: {
+      [walt.id]: {
+        bookedInterval: null,
+        attendedInterval: null,
       },
     },
   },
