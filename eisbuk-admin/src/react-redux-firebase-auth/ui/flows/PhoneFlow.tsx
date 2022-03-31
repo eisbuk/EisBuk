@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Form, FormikConfig } from "formik";
 import {
   getAuth,
@@ -63,13 +63,14 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
         test: (input) => isValidPhoneNumber(input),
         message: t(ValidationMessage.InvalidPhone),
       }),
-    ...(authStep === PhoneAuthStep.SMSCode
+    ...(authStep === PhoneAuthStep.EnterSMSCode
       ? { code: yup.string().required(t(ValidationMessage.RequiredField)) }
       : {}),
   });
   // #endregion form
 
-  useEffect(() => {
+  const submitHandlers = {} as Record<PhoneAuthStep, SubmitHandler>;
+  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone }) => {
     window.recaptchaVerifier = new RecaptchaVerifier(
       "submit-phone",
       {
@@ -77,36 +78,37 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
       },
       getAuth()
     );
-  }, []);
-
-  const submitHandlers = {} as Record<PhoneAuthStep, SubmitHandler>;
-  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone }) => {
-    const verifier = window;
-    await verifier.recaptchaVerifier.verify();
+    const verifier = window.recaptchaVerifier;
+    await verifier.verify();
     const res = await signInWithPhoneNumber(
       getAuth(),
       phone,
       window.recaptchaVerifier
     );
     window.confirmationResult = res;
-    setAuthStep(PhoneAuthStep.SMSCode);
+    setAuthStep(PhoneAuthStep.EnterSMSCode);
   };
-  submitHandlers[PhoneAuthStep.SMSCode] = async ({ code }) => {
+  submitHandlers[PhoneAuthStep.EnterSMSCode] = async ({ code }) => {
     await window.confirmationResult.confirm(code);
   };
+  submitHandlers[PhoneAuthStep.ResendSMS] =
+    submitHandlers[PhoneAuthStep.SignInWithPhone];
 
   const title = titleLookup[authStep] || AuthTitle[authStep];
+
+  const message = AuthMessage[authStep];
 
   const footerMessage = footerMessageLookup[authStep];
 
   return (
     <AuthContainer>
-      {({ Header, Content, Footer, ActionButtons }) => (
+      {({ Header, Content, Footer, ActionButtons, TextMessage }) => (
         <Formik
           onSubmit={handleSubmit(submitHandlers[authStep])}
+          onReset={onCancel}
           {...{ initialValues, validationSchema }}
         >
-          {() => (
+          {({ values: { phone } }) => (
             <Form>
               <AuthErrorDialog
                 open={Boolean(dialogError)}
@@ -114,6 +116,15 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 onClose={removeDialogError}
               />
               <Header>{t(title)}</Header>
+
+              {message && (
+                <TextMessage>
+                  <AuthTypography variant="body1">
+                    {t(message, { phone })}
+                  </AuthTypography>
+                </TextMessage>
+              )}
+
               <Content>
                 {fieldsLookup[authStep]?.map((inputProps) => (
                   <AuthTextField {...inputProps} />
@@ -121,8 +132,18 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
               </Content>
               <ActionButtons>
                 {actionButtonLookup[authStep]?.map(
-                  ({ label, ...buttonProps }) => (
-                    <ActionButton key={label} {...buttonProps}>
+                  ({ label, nextStep, ...buttonProps }) => (
+                    <ActionButton
+                      key={label}
+                      {...{
+                        ...buttonProps,
+                        // add onClick handler only if nextStep specified
+                        // (otherwise actions are controlled through `onSubmit`/`onReset`)
+                        ...(nextStep
+                          ? { onClick: () => setAuthStep(nextStep) }
+                          : {}),
+                      }}
+                    >
                       {t(label)}
                     </ActionButton>
                   )
@@ -150,7 +171,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
  * designate the auth step, i.e. `"SignInWithPhone"` will simply be `"AuthTitle.SignInWithPhone"`
  */
 const titleLookup = {
-  [PhoneAuthStep.SMSCode]: AuthTitle.EnterCode,
+  [PhoneAuthStep.EnterSMSCode]: AuthTitle.EnterCode,
 };
 
 /**
@@ -166,7 +187,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       inputMode: "tel",
     },
   ],
-  [PhoneAuthStep.SMSCode]: [
+  [PhoneAuthStep.EnterSMSCode]: [
     {
       name: "code",
       id: "code",
@@ -194,16 +215,30 @@ const actionButtonLookup: ActionButtonLookup<PhoneAuthStep> = {
       id: "submit-phone",
     },
   ],
-  [PhoneAuthStep.SMSCode]: [
+  [PhoneAuthStep.EnterSMSCode]: [
+    {
+      label: ActionButtonLabel.CodeNotReceived,
+      variant: "empty",
+      type: "button",
+      nextStep: PhoneAuthStep.ResendSMS,
+    },
+    {
+      label: ActionButtonLabel.Submit,
+      variant: "fill",
+      type: "submit",
+    },
+  ],
+  [PhoneAuthStep.ResendSMS]: [
     {
       label: ActionButtonLabel.Cancel,
       variant: "empty",
       type: "reset",
     },
     {
-      label: ActionButtonLabel.Submit,
+      label: ActionButtonLabel.Resend,
       variant: "fill",
       type: "submit",
+      id: "submit-phone",
     },
   ],
 };

@@ -38,6 +38,8 @@ export enum PhoneAuthStep {
   /** Phone initial view (only phone prompt) */
   SignInWithPhone = "SignInWithPhone",
   /** Phone confirmation view (SMS code input) */
-  SMSCode = "SMSCode",
+  EnterSMSCode = "EnterSMSCode",
+  /** Resend code prompt */
+  ResendSMS = "ResendSMS",
 }
 // #endregion authSteps

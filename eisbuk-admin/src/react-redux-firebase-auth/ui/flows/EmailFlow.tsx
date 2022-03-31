@@ -138,6 +138,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
             {({ values: { email } }) => (
               <Form onReset={onCancel}>
                 <Header>{t(title)}</Header>
+
                 {message && (
                   <TextMessage>
                     <AuthTypography variant="body1">
