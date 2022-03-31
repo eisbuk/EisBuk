@@ -1,0 +1,27 @@
+{
+  "name": "@eisbuk/shared",
+  "version": "1.0.0",
+  "description": "Shared code for eisbuk packages (frontend and cloud functions backend)",
+  "private": true,
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js",
+      "default": "./dist.index.es.js"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "devDependencies": {
+    "@google-cloud/firestore": "^4.13.2",
+    "@types/luxon": "^2.0.5"
+  },
+  "scripts": {
+    "build": "vite build && tsc",
+    "lint": "eslint .",
+    "lint:strict": "eslint . --max-warnings=0"
+  },
+  "dependencies": {
+    "luxon": "^2.0.2"
+  }
+}

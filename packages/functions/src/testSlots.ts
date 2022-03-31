@@ -9,7 +9,7 @@ import {
   SlotInterface,
   Collection,
   fromISO,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 

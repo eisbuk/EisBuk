@@ -1,0 +1,75 @@
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": [
+      "yarn --cwd \"$RESOURCE_DIR\" build",
+      "sed -i '/@eisbuk\\/shared/d' \"$RESOURCE_DIR/package.json\""
+    ],
+    "postdeploy": [
+      "sed -i -e \\'s/  .dependencies.: {/  \"dependencies\": {\\n    \"@eisbuk\\/shared\": \"1.0.0\",/\\' \"$RESOURCE_DIR/package.json\""
+    ],
+    "source": "../functions"
+  },
+  "hosting": [
+    {
+      "site": "igoriceteam",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    },
+    {
+      "site": "igorice",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "redirects": [
+        {
+          "source": "/",
+          "destination": "https://igoriceteam.web.app",
+          "type": 301
+        },
+        {
+          "source": "/**",
+          "destination": "https://igoriceteam.web.app",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "site": "eisbuk",
+      "public": "dist",
+      "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "rewrites": [
+        {
+          "source": "**",
+          "destination": "/index.html"
+        }
+      ]
+    }
+  ],
+  "emulators": {
+    "auth": {
+      "port": 9099
+    },
+    "functions": {
+      "port": 5001
+    },
+    "firestore": {
+      "port": 8080
+    },
+    "ui": {
+      "enabled": true
+    },
+    "hosting": {
+      "port": 5000,
+      "directory": "build"
+    }
+  }
+}

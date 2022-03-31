@@ -12,7 +12,7 @@ import {
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 
