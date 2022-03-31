@@ -34,9 +34,10 @@
   },
   "workspaces": {
     "packages": [
-      "eisbuk-shared",
-      "eisbuk-admin",
-      "functions"
+      "packages/eisbuk-shared",
+      "packages/eisbuk-admin",
+      "packages/functions",
+      "packages/scaffolding"
     ],
     "nohoist": [
       "**/mochawesome",

@@ -25,7 +25,7 @@ jobs:
         run: yarn
       - name: Build app
         run: |
-          yarn --cwd eisbuk-admin build | tee build.output
+          yarn --cwd packages/eisbuk-admin build | tee build.output
           echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
           # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
           # And store for use in later steps
@@ -58,7 +58,7 @@ jobs:
           SENTRY_URL: ${{ secrets.SENTRY_URL }}
         with:
           environment: staging
-          sourcemaps: "./eisbuk-admin/dist/app"
+          sourcemaps: "./packages/eisbuk-admin/dist/app"
       - name: Deploy preview channel
         id: deploy
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -66,7 +66,7 @@ jobs:
           set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
-          yarn --cwd eisbuk-admin deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          yarn --cwd packages/eisbuk-admin deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
           # This horrible contraption converts lines like
           # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
@@ -124,7 +124,7 @@ jobs:
       - name: Install and link packages
         run: yarn
       - name: Run tests
-        run: yarn --cwd eisbuk-admin test:emulators:ci
+        run: yarn --cwd packages/eisbuk-admin test:emulators:ci
       - name: Check if secrets are available
         id: has_secret
         if: success() || failure()
@@ -135,15 +135,15 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
         with:
           name: JEST Tests
-          path: eisbuk-admin/junit.xml
+          path: packages/eisbuk-admin/junit.xml
           reporter: jest-junit
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: eisbuk-admin/coverage/lcov.info
-          base-path: eisbuk-admin/
+          path-to-lcov: packages/eisbuk-admin/coverage/lcov.info
+          base-path: packages/eisbuk-admin/
           flag-name: run-jest
           parallel: true
       - name: Create file with gcloud cretentials
@@ -177,7 +177,7 @@ jobs:
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
-          rclone copy eisbuk-admin/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
+          rclone copy packages/eisbuk-admin/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
       - name: Print gcloud url to view test results
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
@@ -202,20 +202,20 @@ jobs:
       - name: Install and link packages
         run: yarn
       - name: Lint client app
-        run: "yarn --cwd eisbuk-admin lint:strict"
-      - name: Lint eisbuk-shared
+        run: "yarn --cwd packages/eisbuk-admin lint:strict"
+      - name: Lint shared package
         # Do not run on cancelled; run in all other cases
         if: success() || failure()
-        run: "yarn --cwd eisbuk-shared lint:strict"
+        run: "yarn --cwd packages/eisbuk-shared lint:strict"
       - name: Lint the functions
         if: success() || failure()
-        run: "yarn --cwd eisbuk-admin/functions lint:strict"
+        run: "yarn --cwd packages/functions lint:strict"
       - name: Typecheck client app
         if: success() || failure()
-        run: "yarn --cwd eisbuk-admin typecheck"
+        run: "yarn --cwd packages/eisbuk-admin typecheck"
       - name: Typecheck the functions
         if: success() || failure()
-        run: "yarn --cwd eisbuk-admin/functions typecheck"
+        run: "yarn --cwd packages/functions typecheck"
 
   cypress-run:
     runs-on: ubuntu-20.04
@@ -240,12 +240,12 @@ jobs:
         run: yarn
 
       - name: Build app
-        run: yarn --cwd eisbuk-admin build:test
+        run: yarn --cwd packages/eisbuk-admin build:test
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
           start: yarn emulators:start
-          working-directory: eisbuk-admin
+          working-directory: packages/eisbuk-admin
           wait-on: http://localhost:8080, http://localhost:5000
           # skip recording if no 'secrets.CYPRESS_KEY' found
           # we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
@@ -267,8 +267,8 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: eisbuk-admin/coverage/lcov.info
-          base-path: eisbuk-admin/
+          path-to-lcov: packages/eisbuk-admin/coverage/lcov.info
+          base-path: packages/eisbuk-admin/
           flag-name: run-cypress
           parallel: true
 
@@ -303,8 +303,8 @@ jobs:
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
-          rclone copy eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
-          rclone copy eisbuk-admin/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
+          rclone copy packages/eisbuk-admin/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
+          rclone copy packages/eisbuk-admin/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
 
       - name: Print gcloud url to view test results
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS

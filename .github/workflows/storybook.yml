@@ -30,6 +30,6 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMAUI_PROJECT_TOKEN }}
-          workingDir: eisbuk-admin
+          workingDir: packages/eisbuk-admin
           exitZeroOnChanges: true
           exitOnceUploaded: true
