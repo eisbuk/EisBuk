@@ -18,6 +18,8 @@ import {
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
+import { CreateAuthUserPayload } from "eisbuk-shared";
+
 import { CloudFunction } from "@/enums/functions";
 
 import { defaultUser } from "@/__testSetup__/envData";
@@ -35,6 +37,10 @@ declare global {
        * @returns {Chainable<string>} a `PromiseLike` which yielding `string` a name of the current organization
        */
       initAdminApp: () => Chainable<string>;
+      /**
+       * Create a user in firebase auth and (optionally), if admin to firestore organization
+       */
+      addAuthUser: (payload: CreateAuthUserPayload) => Chainable<void>;
       /**
        * A sort of a proxy handler: passes organization and file names back to node environment
        * process (using `cy.task` API). The files get read and parsed (JSON)
@@ -114,6 +120,10 @@ const addFirebaseCommands = (): void => {
     )({ organization });
 
     return organization;
+  });
+
+  Cypress.Commands.add("addAuthUser", async (payload) => {
+    await httpsCallable(functions, CloudFunction.CreateUser)(payload);
   });
 
   Cypress.Commands.add(

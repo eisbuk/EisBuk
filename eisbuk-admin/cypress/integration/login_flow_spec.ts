@@ -15,6 +15,8 @@ import {
 
 import { defaultUser } from "@/__testSetup__/envData";
 
+import { saul } from "@/__testData__/customers";
+
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>
   i18n.t(input, params);
@@ -23,7 +25,11 @@ describe("login", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization but don't sign in
-    cy.initAdminApp().then(() => cy.visit(PrivateRoutes.Root));
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateFirestore(organization, ["customers.json"])
+      )
+      .then(() => cy.visit(PrivateRoutes.Root));
   });
 
   afterEach(() => {
@@ -62,8 +68,8 @@ describe("login", () => {
       // Name should be required
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("sends a password reset email on demand", () => {
@@ -280,8 +286,8 @@ describe("login", () => {
       cy.getAttrWith("type", "email").type(newEmail);
       cy.clickButton(t(ActionButton.Send));
       cy.getSigninLink(newEmail).then((link) => cy.visit(link));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
@@ -376,6 +382,46 @@ describe("login", () => {
       // expect to see admin page navigation on successful login
       cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
       cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+  });
+
+  describe("Login redirect", () => {
+    it("Redirects to customer bookings page on customer (non-admin) login", () => {
+      const password = "password";
+      cy.addAuthUser({ email: saul.email, password });
+      // log in saul, who is not an admin, but exists in customers collection
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("type", "email").type(saul.email);
+      cy.clickButton(t(ActionButton.Next));
+      cy.contains(t(AuthTitle.SignIn));
+      cy.getAttrWith("type", "password").type(password);
+      cy.clickButton(t(ActionButton.SignIn));
+      // on successful login, should redirect to saul's customer bookings
+      cy.url().should("include", saul.secretKey);
+      cy.contains(`${saul.name} ${saul.surname}`);
+    });
+
+    it("redirects to non-registered page if user not admin, nor a registered customer", () => {
+      const email = "new-user@gmail.com";
+      const password = "password";
+      cy.addAuthUser({ email, password });
+      // log in saul, who is not an admin, but exists in customers collection
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("type", "email").type(email);
+      cy.clickButton(t(ActionButton.Next));
+      cy.contains(t(AuthTitle.SignIn));
+      cy.getAttrWith("type", "password").type(password);
+      cy.clickButton(t(ActionButton.SignIn));
+      // on successful login, should redirect to not-registered page
+      // the user is not admin and doesn't exist in customers collection
+      cy.contains(t(AuthMessage.NotRegistered));
+      cy.contains(
+        t(AuthMessage.ContactAdminsForRegistration, {
+          authString: email,
+          authMethod: "email",
+          organizationEmail: "test@email.com",
+        })
+      );
     });
   });
 });
