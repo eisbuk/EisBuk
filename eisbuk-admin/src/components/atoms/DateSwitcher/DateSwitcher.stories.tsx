@@ -20,7 +20,7 @@ export const Default = (): JSX.Element => (
       open={true}
       anchorEl={null}
       onClose={() => {}}
-      jump={"week"}
+      jump="week"
     />
   </LocalizationProvider>
 );
