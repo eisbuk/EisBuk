@@ -15,16 +15,17 @@ import {
   ValidationMessage,
   ActionButton as ActionButtonLabel,
 } from "@/enums/translations";
-import { PhoneAuthStep } from "@/enums/authSteps";
+import { PhoneAuthStep } from "../../enums";
 
-import AuthContainer from "./AuthContainer";
-import AuthTypography from "./AuthTypography";
-import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
-import ActionButton, { ActionButtonLookup } from "./ActionButton";
-import AuthErrorDialog from "./AuthErrorDialog";
+import AuthContainer from "../atoms/AuthContainer";
+import AuthTypography from "../atoms/AuthTypography";
+import AuthTextField, { AuthTextFieldLookup } from "../atoms/AuthTextField";
+import ActionButton, { ActionButtonLookup } from "../atoms/ActionButton";
+import AuthErrorDialog from "../atoms/AuthErrorDialog";
+
+import useAuthFlow from "../../hooks/useAuthFlow";
 
 import { isValidPhoneNumber } from "@/utils/helpers";
-import useAuthFlow from "@/hooks/useAuthFlow";
 
 declare global {
   interface Window {

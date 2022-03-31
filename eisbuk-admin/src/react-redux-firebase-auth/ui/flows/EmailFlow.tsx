@@ -19,15 +19,15 @@ import {
   ValidationMessage,
 } from "@/enums/translations";
 import { PrivateRoutes } from "@/enums/routes";
-import { EmailAuthStep } from "@/enums/authSteps";
+import { EmailAuthStep } from "../../enums";
 
-import AuthContainer from "./AuthContainer";
-import AuthErrorDialog from "./AuthErrorDialog";
-import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
-import ActionButton, { ActionButtonLookup } from "./ActionButton";
-import AuthTypography from "./AuthTypography";
+import AuthContainer from "../atoms/AuthContainer";
+import AuthErrorDialog from "../atoms/AuthErrorDialog";
+import AuthTextField, { AuthTextFieldLookup } from "../atoms/AuthTextField";
+import ActionButton, { ActionButtonLookup } from "../atoms/ActionButton";
+import AuthTypography from "../atoms/AuthTypography";
 
-import useAuthFlow from "@/hooks/useAuthFlow";
+import useAuthFlow from "../../hooks/useAuthFlow";
 
 interface CompleteFormValues {
   email: string;

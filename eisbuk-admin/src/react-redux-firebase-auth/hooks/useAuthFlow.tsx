@@ -71,6 +71,8 @@ const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
       try {
         await authRequest(...params);
       } catch (err) {
+        /** @TEMP to try and catch expired code error */
+        console.error(err);
         const error = err as AuthError;
         // a translated string-format error message
         const errorMessage =

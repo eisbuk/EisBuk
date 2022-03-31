@@ -16,10 +16,12 @@
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
 
-    "RecoverEmailPassword": "Get instructions sent to this email that explain how to reset your password",
-    "CheckPasswordRecoverEmail": "Follow the instructions sent to {{ email }} to recover your password",
-    "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication",
-    "ConfirmSignInEmail": "Please confirm the email used to sign in",
+    "RecoverEmailPassword": "Get instructions sent to this email that explain how to reset your password.",
+    "CheckPasswordRecoverEmail": "Follow the instructions sent to {{ email }} to recover your password.",
+    "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication.",
+    "ConfirmSignInEmail": "Please confirm the email used to sign in.",
+    "DifferentSignInEmail": "The email you used to log in isn't the email expected by the app. Please confirm the email used to receive the sign in link.",
+    "ResendEmailLink": "The sign in link was already used or has expired. Would you like to resend the email link.",
     "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
   "AuthError": {
@@ -42,6 +44,7 @@
     "RecoverPassword": "Recover password",
     "CheckYourEmail": "Check your email",
     "ConfirmEmail": "Confirm email",
+    "ResendEmail": "Resend email",
     "EnterCode": "Enter Code"
   },
 
@@ -146,6 +149,7 @@
     "ShowAll": "ShowAll",
     "Done": "Done",
     "Send": "Send",
+    "Resend": "Resend",
     "Dismiss": "Dismiss",
     "Submit": "Submit",
     "Verify": "Verify",

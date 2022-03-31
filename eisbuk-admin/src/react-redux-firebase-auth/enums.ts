@@ -1,3 +1,4 @@
+// #region authSteps
 /**
  * Enum containing values for all possible views of email/password auth flow
  */
@@ -24,6 +25,10 @@ export enum EmailLinkAuthStep {
   CheckSignInEmail = "CheckSignInEmail",
   /** Email link 'Confirm email' prompt (if isSignInWithEmaiLink, but email doesn't exist in local storage) */
   ConfirmSignInEmail = "ConfirmSignInEmail",
+  /** Email link 'Confirm email' prompt (if isSignInWithEmaiLink, but email in localStorage doesn't match the sign in link email) */
+  DifferentSignInEmail = "DifferentSignInEmail",
+  /** Email link 'Resend email' prompt (if landing using expired or used email link, prompt user to resend email link) */
+  ResendEmailLink = "ResendEmailLink",
 }
 
 /**
@@ -35,3 +40,4 @@ export enum PhoneAuthStep {
   /** Phone confirmation view (SMS code input) */
   SMSCode = "SMSCode",
 }
+// #endregion authSteps

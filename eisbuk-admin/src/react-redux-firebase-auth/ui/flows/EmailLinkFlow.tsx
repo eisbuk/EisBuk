@@ -7,6 +7,7 @@ import {
   signInWithEmailLink,
   isSignInWithEmailLink,
   AuthErrorCodes,
+  AuthError,
 } from "@firebase/auth";
 import { useTranslation } from "react-i18next";
 import * as yup from "yup";
@@ -19,15 +20,15 @@ import {
   AuthTitle,
   ValidationMessage,
 } from "@/enums/translations";
-import { EmailLinkAuthStep } from "@/enums/authSteps";
+import { EmailLinkAuthStep } from "../../enums";
 
-import AuthContainer from "./AuthContainer";
-import AuthErrorDialog from "./AuthErrorDialog";
-import AuthTextField, { AuthTextFieldLookup } from "./AuthTextField";
-import ActionButton, { ActionButtonLookup } from "./ActionButton";
-import AuthTypography from "./AuthTypography";
+import AuthContainer from "../atoms/AuthContainer";
+import AuthErrorDialog from "../atoms/AuthErrorDialog";
+import AuthTextField, { AuthTextFieldLookup } from "../atoms/AuthTextField";
+import ActionButton, { ActionButtonLookup } from "../atoms/ActionButton";
+import AuthTypography from "../atoms/AuthTypography";
 
-import useAuthFlow from "@/hooks/useAuthFlow";
+import useAuthFlow from "../../hooks/useAuthFlow";
 
 import {
   getEmailForSignIn,
@@ -59,18 +60,22 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   const { dialogError, removeDialogError, handleSubmit } =
     useAuthFlow<CompleteFormValues>(fieldErrorMap);
 
-  // check if site visited by sign in link
-
   // redirect to login-with-email-link if site visited by login link
-  const handleSignInWithEmailLink = async (email: string) => {
-    await signInWithEmailLink(getAuth(), email, window.location.href);
-    unsetEmailForSignIn();
-  };
   useEffect(() => {
     if (isSignInWithEmailLink(getAuth(), window.location.href)) {
       const email = getEmailForSignIn();
       if (email) {
-        handleSignInWithEmailLink(email);
+        handleSignInWithEmailLink(email).catch((error) => {
+          const { code } = error as AuthError;
+          switch (code) {
+            case AuthErrorCodes.INVALID_EMAIL:
+              setAuthStep(EmailLinkAuthStep.DifferentSignInEmail);
+              break;
+            case AuthErrorCodes.INVALID_OOB_CODE:
+            case AuthErrorCodes.EXPIRED_OOB_CODE:
+              setAuthStep(EmailLinkAuthStep.ResendEmailLink);
+          }
+        });
       } else {
         setAuthStep(EmailLinkAuthStep.ConfirmSignInEmail);
       }
@@ -102,10 +107,17 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     setEmailForSignIn(email);
     setAuthStep(EmailLinkAuthStep.CheckSignInEmail);
   };
-  // add an empty function for 'check email' step as there is no `onSubmit` for this step
+
   submitHandlers[EmailLinkAuthStep.CheckSignInEmail] = async () => {};
+
   submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail] = ({ email }) =>
     handleSignInWithEmailLink(email);
+
+  submitHandlers[EmailLinkAuthStep.DifferentSignInEmail] =
+    submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail];
+
+  submitHandlers[EmailLinkAuthStep.ResendEmailLink] =
+    submitHandlers[EmailLinkAuthStep.SendSignInLink];
   // #region continueHandlers
 
   const title = titleLookup[authStep] || AuthTitle[authStep];
@@ -134,7 +146,6 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
                     </AuthTypography>
                   </TextMessage>
                 )}
-
                 <Content>
                   {fieldsLookup[authStep]?.map((fieldProps) => (
                     <AuthTextField
@@ -144,7 +155,6 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
                     />
                   ))}
                 </Content>
-
                 <ActionButtons>
                   {actionButtonLookup[authStep]?.map(
                     ({ nextStep, label, ...buttonProps }) => (
@@ -173,20 +183,32 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   );
 };
 
+const handleSignInWithEmailLink = async (email: string) => {
+  await signInWithEmailLink(getAuth(), email, window.location.href);
+  unsetEmailForSignIn();
+};
+
 // #region stepContentLookups
 const titleLookup = {
   [EmailLinkAuthStep.CheckSignInEmail]: AuthTitle.CheckYourEmail,
   [EmailLinkAuthStep.ConfirmSignInEmail]: AuthTitle.ConfirmEmail,
+  [EmailLinkAuthStep.DifferentSignInEmail]: AuthTitle.ConfirmEmail,
+  [EmailLinkAuthStep.ResendEmailLink]: AuthTitle.ResendEmail,
 };
 
-const fieldsLookup: AuthTextFieldLookup<EmailLinkAuthStep> = {
-  [EmailLinkAuthStep.SendSignInLink]: [
-    { name: "email", label: "Email", type: "email" },
-  ],
-  [EmailLinkAuthStep.ConfirmSignInEmail]: [
-    { name: "email", label: "Email", type: "email" },
-  ],
-};
+const fieldsLookup: AuthTextFieldLookup<EmailLinkAuthStep> = Object.values(
+  EmailLinkAuthStep
+).reduce(
+  (acc, authStep) =>
+    authStep !== EmailLinkAuthStep.CheckSignInEmail
+      ? {
+          ...acc,
+          // all auth steps except for `EmailLinkAuthStep.CheckSignInEmail` have the same (email) input field
+          [authStep]: [{ name: "email", label: "Email", type: "email" }],
+        }
+      : acc,
+  {}
+);
 
 const actionButtonLookup: ActionButtonLookup<EmailLinkAuthStep> = {
   [EmailLinkAuthStep.SendSignInLink]: [
@@ -216,6 +238,30 @@ const actionButtonLookup: ActionButtonLookup<EmailLinkAuthStep> = {
     },
     {
       label: ActionButtonLabel.Verify,
+      variant: "fill",
+      type: "submit",
+    },
+  ],
+  [EmailLinkAuthStep.DifferentSignInEmail]: [
+    {
+      label: ActionButtonLabel.Cancel,
+      variant: "empty",
+      type: "reset",
+    },
+    {
+      label: ActionButtonLabel.Verify,
+      variant: "fill",
+      type: "submit",
+    },
+  ],
+  [EmailLinkAuthStep.ResendEmailLink]: [
+    {
+      label: ActionButtonLabel.Cancel,
+      variant: "empty",
+      type: "reset",
+    },
+    {
+      label: ActionButtonLabel.Resend,
       variant: "fill",
       type: "submit",
     },

@@ -12,7 +12,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { organizationInfo } from "@/themes";
 
-import AuthDialog from "@/components/atoms/AuthDialog";
+import AuthDialog from "@/react-redux-firebase-auth/ui/AuthDialog";
 
 import FigureSkatingSilhouetteCouple from "@/assets/images/login/figure-skating-silhouette-couple.svg";
 import FigureSkatingSilhouetteSkirt from "@/assets/images/login/figure-skating-silhouette-skirt.svg";

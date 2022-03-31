@@ -12,14 +12,16 @@
 
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
-    "AdminsOnly": "Questo spazio è riservato agli amministratori",
+    "AdminsOnly": "Questo spazio è riservato agli amministratori.",
     "LoggedInWith": "Hai effettuato l'accesso con:",
-    "TryAgain": "Esci e riprova con un altro utente",
+    "TryAgain": "Esci e riprova con un altro utente.",
 
-    "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password",
-    "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password",
-    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare",
-    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso",
+    "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password.",
+    "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password.",
+    "CheckSignInEmail": "Segui il link nella mail che hai ricevuto su {{ email }} per entrare.",
+    "ConfirmSignInEmail": "Confermare la mail usata per l'accesso.",
+    "DifferentSignInEmail": "Su quale indirizzo mail hai ricevuto questo link?",
+    "ResendEmailLink": "Il link che hai seguito nella mail è scaduto. Inviare di nuovo?",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -40,9 +42,10 @@
     "CreateAccount": "Crea un account",
     "RecoverPassword": "Recupera password",
     "CheckYourEmail": "Controlla la email",
-    "EnterCode": "Inserisci il codice",
     "SendSignInLink": "Send sign in link",
-    "ConfirmEmail": "Confirm email"
+    "ConfirmEmail": "Conferma la email",
+    "ResendEmail": "Invia di nuovo la email",
+    "EnterCode": "Inserisci il codice"
   },
 
   "SlotType": {
@@ -143,12 +146,13 @@
     "Save": "Salva",
     "Next": "Seguente",
     "Cancel": "Annulla",
-    "ShowAll": "ShowAll",
-    "Done": "Done",
-    "Send": "Send",
-    "Dismiss": "Dismiss",
-    "Submit": "Submit",
-    "Verify": "Verify"
+    "ShowAll": "Mostra tutti",
+    "Done": "Fatto",
+    "Send": "Invia",
+    "Resend": "Invia di nuovo",
+    "Dismiss": "Ignora",
+    "Submit": "Invia",
+    "Verify": "verifica"
   },
 
   "Notification": {
@@ -168,7 +172,7 @@
 
     "EmailSent": "Email inviata con successo",
     "SMSSent": "SMS inviato con successo",
-    "BookingDateExtended": "Booking date extended",
+    "BookingDateExtended": "Termine per le prenotazioni esteso",
 
     "Error": "Errore"
   },

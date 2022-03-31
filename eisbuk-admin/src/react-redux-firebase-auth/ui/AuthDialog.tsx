@@ -13,11 +13,11 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { AuthTitle } from "@/enums/translations";
 
-import AuthButton from "./AuthButton";
-import AuthContainer from "./AuthContainer";
-import EmailFlow from "./EmailFlow";
-import EmailLinkFlow from "./EmailLinkFlow";
-import PhoneFlow from "./PhoneFlow";
+import AuthButton from "./atoms/AuthButton";
+import AuthContainer from "./atoms/AuthContainer";
+import EmailFlow from "./flows/EmailFlow";
+import EmailLinkFlow from "./flows/EmailLinkFlow";
+import PhoneFlow from "./flows/PhoneFlow";
 
 enum AuthFlow {
   Email = "email",
@@ -65,6 +65,7 @@ const AuthDialog: React.FC = () => {
               <ul className={classes.buttonsContainer}>
                 {buttons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
+                    key={label}
                     {...button}
                     label={t(label)}
                     onClick={() => setAuthFlow(authFlow)}
