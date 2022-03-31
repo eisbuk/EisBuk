@@ -20,33 +20,33 @@ type ErrorCode = typeof AuthErrorCodes[ErrorCodeKey];
  * ```
  * if `auth/wrong-password` encountered, set error for field `"password"`
  */
-export type FieldErrorMap = Partial<Record<ErrorCode, string>>;
+export type ErrorFieldMap = Partial<Record<ErrorCode, string>>;
 
 type OnSubmit<V extends Record<string, any>> = FormikConfig<V>["onSubmit"];
 
-interface HandleSubmit<V extends Record<string, any>> {
+interface WrapSubmit<V extends Record<string, any>> {
   (fn: OnSubmit<V>): OnSubmit<V>;
 }
 
 interface UseAuthFlow {
-  <V extends Record<string, any>>(fieldErrorMap: FieldErrorMap): {
+  <V extends Record<string, any>>(errorFieldMap: ErrorFieldMap): {
     dialogError: string | null;
     removeDialogError: () => void;
-    handleSubmit: HandleSubmit<V>;
+    wrapSubmit: WrapSubmit<V>;
   };
 }
 
 /**
  * A hook used to handle firebase auth requests and possible errors.
- * Receives a `fieldErrorMap` used to differenciate between errors displayed as
- * vield validation (handled in `fieldErrorMap`) and errors displayed as error dialog.
+ * Receives an `errorFieldMap` used to differenciate between errors displayed as
+ * vield validation (handled in `ErrorFieldMap`) and errors displayed as error dialog.
  *
  * Keeps internal state of error message in dialog.
  *
  * Returns `dialogError`, `removeDialogError` (a handler to be fired on error dialog close)
- * and `handleSubmit` (A wrapper around auth request with error boundry and error handling logic)
+ * and `WrapSubmit` (A wrapper around auth request with error boundry and error handling logic)
  */
-const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
+const useAuthFlow: UseAuthFlow = (errorFieldMap) => {
   const { t } = useTranslation();
   const [dialogError, setDialogError] = useState<string | null>(null);
 
@@ -63,7 +63,7 @@ const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
    * @param authRequest a request to be sent for auth step (in form of Formik `onSubmit` handler)
    * @returns the aforementioned handler with error boundary
    */
-  const handleSubmit: HandleSubmit<any> =
+  const wrapSubmit: WrapSubmit<any> =
     (authRequest) =>
     async (...params) => {
       const [, { setFieldError }] = params;
@@ -71,16 +71,14 @@ const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
       try {
         await authRequest(...params);
       } catch (err) {
-        /** @TEMP to try and catch expired code error */
-        console.error(err);
-        const error = err as AuthError;
+        const { code } = (err as AuthError) || { code: "" };
         // a translated string-format error message
         const errorMessage =
           // if error message not defined for a particular error code, fall back to unknown error
-          t(AuthErrorMessage[error.code] || AuthErrorMessage.UNKNOWN);
+          t(AuthErrorMessage[code] || AuthErrorMessage.UNKNOWN);
 
         // check if the error message should be set as a field error or dialog
-        const invalidField = fieldErrorMap[error.code] as string | undefined;
+        const invalidField = errorFieldMap[code] as string | undefined;
         if (invalidField) {
           setFieldError(invalidField, errorMessage);
         } else {
@@ -89,7 +87,7 @@ const useAuthFlow: UseAuthFlow = (fieldErrorMap) => {
       }
     };
 
-  return { dialogError, removeDialogError, handleSubmit };
+  return { dialogError, removeDialogError, wrapSubmit };
 };
 
 export default useAuthFlow;

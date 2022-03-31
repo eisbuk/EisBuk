@@ -49,7 +49,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
 
   const [authStep, setAuthStep] = useState(PhoneAuthStep.SignInWithPhone);
 
-  const { handleSubmit, dialogError, removeDialogError } =
+  const { wrapSubmit, dialogError, removeDialogError } =
     useAuthFlow<FullFormValues>({});
 
   // #region form
@@ -104,7 +104,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
     <AuthContainer>
       {({ Header, Content, Footer, ActionButtons, TextMessage }) => (
         <Formik
-          onSubmit={handleSubmit(submitHandlers[authStep])}
+          onSubmit={wrapSubmit(submitHandlers[authStep])}
           onReset={onCancel}
           {...{ initialValues, validationSchema }}
         >

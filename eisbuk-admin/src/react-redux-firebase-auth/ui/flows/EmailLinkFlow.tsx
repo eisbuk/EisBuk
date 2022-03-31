@@ -46,7 +46,7 @@ interface Props {
   onCancel?: () => void;
 }
 
-const fieldErrorMap = {
+const errorFieldMap = {
   [AuthErrorCodes.INVALID_EMAIL]: "email",
 };
 
@@ -57,8 +57,8 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     EmailLinkAuthStep.SendSignInLink
   );
 
-  const { dialogError, removeDialogError, handleSubmit } =
-    useAuthFlow<CompleteFormValues>(fieldErrorMap);
+  const { dialogError, removeDialogError, wrapSubmit } =
+    useAuthFlow<CompleteFormValues>(errorFieldMap);
 
   // redirect to login-with-email-link if site visited by login link
   useEffect(() => {
@@ -133,7 +133,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
             onClose={removeDialogError}
           />
           <Formik
-            onSubmit={handleSubmit(submitHandlers[authStep])}
+            onSubmit={wrapSubmit(submitHandlers[authStep])}
             {...{ initialValues, validationSchema }}
           >
             {({ values: { email } }) => (
