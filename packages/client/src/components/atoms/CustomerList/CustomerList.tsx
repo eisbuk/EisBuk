@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
 
 import TableContainer from "@mui/material/TableContainer";
 import Table from "@mui/material/Table";
@@ -12,8 +11,7 @@ import TextField from "@mui/material/TextField";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "@eisbuk/shared";
-
-import { CustomerLabel } from "@/enums/translations";
+import { useTranslation, CustomerLabel } from "@eisbuk/translations";
 
 import CustomerListItem from "./CustomerListItem";
 

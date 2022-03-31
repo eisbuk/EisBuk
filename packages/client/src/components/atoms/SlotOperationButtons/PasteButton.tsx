@@ -1,13 +1,13 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
 
 import IconButton from "@mui/material/IconButton";
 
 import AssignmentIcon from "@mui/icons-material/Assignment";
 
+import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+
 import { ButtonContextType } from "@/enums/components";
-import { AdminAria, DateFormat } from "@/enums/translations";
 
 import { SlotButtonProps } from "@/types/components";
 

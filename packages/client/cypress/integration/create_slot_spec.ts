@@ -1,9 +1,8 @@
-import i18n from "@/__testUtils__/i18n";
+import i18n, { AdminAria, SlotFormAria } from "@eisbuk/translations";
 
 import { Category, SlotType } from "@eisbuk/shared";
 
 import { PrivateRoutes } from "@/enums/routes";
-import { AdminAria, SlotFormAria } from "@/enums/translations";
 
 const t = i18n.t;
 

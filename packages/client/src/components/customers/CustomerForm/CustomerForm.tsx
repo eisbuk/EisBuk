@@ -1,7 +1,5 @@
 import React from "react";
 import * as Yup from "yup";
-import { useTranslation } from "react-i18next";
-import i18n from "i18next";
 import { Formik, Form, FastField, FieldConfig } from "formik";
 import { TextField } from "formik-mui";
 
@@ -23,13 +21,13 @@ import LocalHospital from "@mui/icons-material/LocalHospital";
 import Payment from "@mui/icons-material/Payment";
 
 import { Category, Customer } from "@eisbuk/shared";
-
-import {
+import i18n, {
+  useTranslation,
   CustomerLabel,
   CustomerFormTitle,
   ValidationMessage,
   ActionButton,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
 
 import { defaultCustomerFormValues } from "@/lib/data";
 

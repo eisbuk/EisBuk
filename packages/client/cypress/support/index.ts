@@ -1,7 +1,5 @@
-import i18next from "i18next";
-import * as reactI18next from "react-i18next";
-
-import i18n from "@/i18next/i18n";
+import i18n from "@eisbuk/translations";
+import * as translations from "@eisbuk/translations";
 
 import initializeCommands from "./commands";
 
@@ -25,10 +23,10 @@ beforeEach(() => {
 
   // stub i18n to use the i18n initialized in cypress so that both
   // our tests and app runtime are "on the same page" regarding i18n
-  cy.stub(i18next, "t").callsFake((...args: Parameters<typeof i18n.t>) =>
+  cy.stub(i18n, "t").callsFake((...args: Parameters<typeof i18n.t>) =>
     i18n.t(...args)
   );
-  cy.stub(reactI18next, "useTranslation").callsFake(() => i18n.t);
+  cy.stub(translations, "useTranslation").callsFake(() => i18n.t);
 });
 
 afterEach(() => {

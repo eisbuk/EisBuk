@@ -7,12 +7,11 @@ import { screen, render, cleanup } from "@testing-library/react";
 import { useLocation } from "react-router-dom";
 import { mocked } from "ts-jest/utils";
 
+import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
+
 import { CustomerRoute } from "@/enums/routes";
-import { CustomerNavigationLabel } from "@/enums/translations";
 
 import CustomerNavigation from "../CustomerNavigation";
-
-import i18n from "@/__testUtils__/i18n";
 
 /**
  * A mock function we're using to spy on `history.push` usage

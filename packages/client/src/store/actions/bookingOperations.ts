@@ -1,5 +1,4 @@
 import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
-import i18n from "i18next";
 
 import {
   BookingSubCollection,
@@ -8,11 +7,11 @@ import {
   OrgSubCollection,
   SlotInterface,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/enums/translations";
 
 import { FirestoreThunk } from "@/types/store";
 

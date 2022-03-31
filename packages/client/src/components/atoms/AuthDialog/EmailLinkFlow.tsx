@@ -8,17 +8,18 @@ import {
   isSignInWithEmailLink,
   AuthErrorCodes,
 } from "@firebase/auth";
-import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import { __isDev__ } from "@/lib/constants";
-
 import {
+  useTranslation,
   ActionButton as ActionButtonLabel,
   AuthMessage,
   AuthTitle,
   ValidationMessage,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
+import { __isDev__ } from "@/lib/constants";
+
 import { EmailLinkAuthStep } from "@/enums/authSteps";
 
 import AuthContainer from "./AuthContainer";

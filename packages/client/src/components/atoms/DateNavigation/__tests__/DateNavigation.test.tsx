@@ -8,12 +8,13 @@ import { cleanup, screen, render } from "@testing-library/react";
 import { DateTime } from "luxon";
 import * as reactRedux from "react-redux";
 
+import i18n, { DateFormat } from "@eisbuk/translations";
+
 import DateNavigation from "../DateNavigation";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { renderWithRouter } from "@/__testUtils__/wrappers";
-import i18n from "@/__testUtils__/i18n";
 
 import { testDateLuxon } from "@/__testData__/date";
 import {
@@ -22,7 +23,6 @@ import {
   __dateNavNextId__,
   __dateNavPrevId__,
 } from "@/__testData__/testIds";
-import { DateFormat } from "@/enums/translations";
 
 // import { __toggleId__ } from "./testData";
 

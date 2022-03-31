@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { useField } from "formik";
-import { useTranslation } from "react-i18next";
 
 import TextField from "@mui/material/TextField";
 import InputAdornment from "@mui/material/InputAdornment";
 
-import { DateFormat } from "@/enums/translations";
+import { useTranslation, DateFormat } from "@eisbuk/translations";
 
 import { SvgComponent } from "@/types/components";
 

@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
 import ListSubheader from "@mui/material/ListSubheader";
@@ -8,7 +7,8 @@ import Typography from "@mui/material/Typography";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { DateFormat } from "@/enums/translations";
+import { useTranslation, DateFormat } from "@eisbuk/translations";
+
 import { getIsBookingAllowed } from "@/store/selectors/bookings";
 import { useSelector } from "react-redux";
 

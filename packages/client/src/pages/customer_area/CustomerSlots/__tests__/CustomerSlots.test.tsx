@@ -6,8 +6,9 @@ import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import * as reactRedux from "react-redux";
 
+import i18n, { ActionButton } from "@eisbuk/translations";
+
 import { CustomerRoute } from "@/enums/routes";
-import { ActionButton } from "@/enums/translations";
 
 import CustomerSlots from "../CustomerSlots";
 
@@ -100,7 +101,9 @@ describe("CustomerSlots", () => {
       )[0];
       render(<CustomerSlots slots={slotsMonth} {...{ customerId }} />);
       // we're looking for first interval button
-      screen.queryAllByText(ActionButton.BookInterval)[0].click();
+      screen
+        .queryAllByText(i18n.t(ActionButton.BookInterval) as string)[0]
+        .click();
       // create a mock redux action to test dispatch being called with proper data
       const mockBookAction = mockBookImplementation({
         bookedInterval: testInterval,
@@ -120,7 +123,7 @@ describe("CustomerSlots", () => {
       render(
         <CustomerSlots slots={slotsMonth} {...{ bookedSlots, customerId }} />
       );
-      screen.queryAllByText(ActionButton.Cancel)[0].click();
+      screen.queryAllByText(i18n.t(ActionButton.Cancel) as string)[0].click();
       // create a mock redux action to test dispatch being called with proper data
       const mockCancelAction = mockCancelImplementation({
         slotId,

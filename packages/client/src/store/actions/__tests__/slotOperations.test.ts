@@ -10,6 +10,7 @@ import {
   OrgSubCollection,
   SlotType,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
@@ -18,7 +19,6 @@ import { getNewStore } from "@/store/createStore";
 import { getOrganization } from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/enums/translations";
 
 import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
 import * as appActions from "../appActions";
@@ -26,7 +26,6 @@ import * as appActions from "../appActions";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
 
-import i18n from "@/__testUtils__/i18n";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import {

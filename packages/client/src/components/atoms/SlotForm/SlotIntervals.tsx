@@ -1,16 +1,18 @@
 import React from "react";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
-import { useTranslation } from "react-i18next";
 import { useField } from "formik";
 
 import Button from "@mui/material/Button";
 
 import { SlotInterval } from "@eisbuk/shared";
+import {
+  useTranslation,
+  SlotFormLabel,
+  SlotFormAria,
+} from "@eisbuk/translations";
 
 import { defaultInterval } from "@/lib/data";
-
-import { SlotFormLabel, SlotFormAria } from "@/enums/translations";
 
 import TimeIntervalField from "./TimeIntervalField";
 

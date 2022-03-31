@@ -18,7 +18,7 @@
     "@typescript-eslint/parser": "^4.30.0"
   },
   "scripts": {
-    "prepare": "husky install && yarn --cwd packages/shared build"
+    "prepare": "husky install && yarn --cwd packages/shared build && yarn --cwd packages/translations build"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
@@ -37,7 +37,8 @@
       "packages/shared",
       "packages/client",
       "packages/functions",
-      "packages/scaffold"
+      "packages/scaffold",
+      "packages/translations"
     ],
     "nohoist": [
       "**/mochawesome",

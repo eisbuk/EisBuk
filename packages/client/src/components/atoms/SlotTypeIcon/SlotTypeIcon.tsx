@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -11,8 +10,7 @@ import AcUnit from "@mui/icons-material/AcUnit";
 import AccessibilityNew from "@mui/icons-material/AccessibilityNew";
 
 import { SlotType } from "@eisbuk/shared";
-
-import { SlotTypeLabel } from "@/enums/translations";
+import { useTranslation, SlotTypeLabel } from "@eisbuk/translations";
 
 const iconLookup = {
   [SlotType.Ice]: AcUnit,

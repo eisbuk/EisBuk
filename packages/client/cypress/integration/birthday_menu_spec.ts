@@ -1,7 +1,10 @@
-import { PrivateRoutes } from "@/enums/routes";
-import { __birthdayMenu__ } from "@/__testData__/testIds";
 import { DateTime } from "luxon";
+
 import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
+
+import { PrivateRoutes } from "@/enums/routes";
+
+import { __birthdayMenu__ } from "@/__testData__/testIds";
 
 describe("birthday badge", () => {
   beforeEach(() => {

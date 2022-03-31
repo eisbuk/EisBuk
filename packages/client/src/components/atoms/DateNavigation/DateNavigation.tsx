@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 
 import Toolbar from "@mui/material/Toolbar";
 import AppBar, { AppBarProps } from "@mui/material/AppBar";
@@ -14,6 +13,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import makeStyles from "@mui/styles/makeStyles";
 
+import { useTranslation, AdminAria } from "@eisbuk/translations";
+
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getCalendarDay } from "@/store/selectors/app";
@@ -21,8 +22,6 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { createDateTitle } from "./utils";
 
 import { __toggleId__ } from "./__testData__/testData";
-
-import { AdminAria } from "@/enums/translations";
 
 import DateSwitcher from "@/components/atoms/DateSwitcher/DateSwitcher";
 

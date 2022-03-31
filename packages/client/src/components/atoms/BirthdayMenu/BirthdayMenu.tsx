@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { DateTime } from "luxon";
 
 import { CustomersByBirthday } from "@eisbuk/shared";
 
@@ -11,10 +12,13 @@ import Badge from "@mui/material/Badge";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { useTranslation } from "react-i18next";
-import { BirthdayMenu as BirthdayEnums } from "@/enums/translations";
+import {
+  useTranslation,
+  BirthdayMenu as BirthdayEnums,
+} from "@eisbuk/translations";
+
 import BirthdayMenuItem from "./BirthdayMenuItem";
-import { DateTime } from "luxon";
+
 import { __birthdayMenu__ } from "@/__testData__/testIds";
 interface Props {
   customers: CustomersByBirthday[];

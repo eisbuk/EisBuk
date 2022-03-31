@@ -1,11 +1,12 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
-import { useTranslation } from "react-i18next";
 
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
+
+import { useTranslation, AuthMessage } from "@eisbuk/translations";
 
 import { signOut } from "@/store/actions/authOperations";
 
@@ -16,7 +17,6 @@ import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.sv
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
 import { getLocalAuth } from "@/store/selectors/auth";
-import { AuthMessage } from "@/enums/translations";
 
 // #region backgroundImages
 const backgrounds = [

@@ -5,13 +5,12 @@ import {
   signInWithRedirect,
   isSignInWithEmailLink,
 } from "@firebase/auth";
-import { useTranslation } from "react-i18next";
 
 import "firebaseui/dist/firebaseui.css";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { AuthTitle } from "@/enums/translations";
+import { useTranslation, AuthTitle } from "@eisbuk/translations";
 
 import AuthButton from "./AuthButton";
 import AuthContainer from "./AuthContainer";

@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { useHistory, useLocation } from "react-router-dom";
 
 import AppBar from "@mui/material/AppBar";
@@ -12,9 +11,9 @@ import PersonPinIcon from "@mui/icons-material/PersonPin";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { CustomerRoute } from "@/enums/routes";
+import { useTranslation, CustomerNavigationLabel } from "@eisbuk/translations";
 
-import { CustomerNavigationLabel } from "@/enums/translations";
+import { CustomerRoute } from "@/enums/routes";
 
 /**
  * A placeholder string we use for dynamic route parsing.

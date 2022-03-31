@@ -1,6 +1,6 @@
 // import { CollectionReference, getFirestore } from "@firebase/firestore";
 import { getAuth, User } from "@firebase/auth";
-import i18n from "i18next";
+import i18n from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
 import { Collection } from "@eisbuk/shared";

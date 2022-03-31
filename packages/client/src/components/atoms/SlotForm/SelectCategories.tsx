@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useField } from "formik";
-import { useTranslation } from "react-i18next";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
@@ -11,12 +10,12 @@ import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
 import { SlotType, Category } from "@eisbuk/shared";
-
 import {
+  useTranslation,
   CategoryLabel,
   SlotFormAria,
   SlotFormLabel,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 // #region main

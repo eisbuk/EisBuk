@@ -19,7 +19,8 @@
   "scripts": {
     "build": "vite build && tsc",
     "lint": "eslint .",
-    "lint:strict": "eslint . --max-warnings=0"
+    "lint:strict": "eslint . --max-warnings=0",
+    "typecheck": "tsc"
   },
   "dependencies": {
     "luxon": "^2.0.2"

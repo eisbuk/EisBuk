@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 import { getFunctions, httpsCallable } from "@firebase/functions";
 import { getApp } from "@firebase/app";
 import { DateTime } from "luxon";
@@ -11,10 +10,12 @@ import Button from "@mui/material/Button";
 import makeStyles from "@mui/styles/makeStyles";
 
 import {
+  useTranslation,
   Prompt,
   ActionButton,
   BookingCountdownMessage,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
 import { CloudFunction } from "@/enums/functions";
 
 import ConfirmDialog from "@/components/global/ConfirmDialog";

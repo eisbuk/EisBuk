@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import i18n from "i18next";
 import {
   getFirestore,
   collection,
@@ -15,13 +14,13 @@ import {
   SlotInterface,
   SlotInterval,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
 
 import { SlotFormValues } from "@/lib/data";
 
 import { NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/enums/translations";
 
 import { FirestoreThunk } from "@/types/store";
 

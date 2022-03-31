@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 
 import Dialog, { DialogProps } from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
@@ -10,8 +9,7 @@ import Close from "@mui/icons-material/Close";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "@eisbuk/shared";
-
-import { ActionButton } from "@/enums/translations";
+import { useTranslation, ActionButton } from "@eisbuk/translations";
 
 import {
   __addCustomersDialogId__,
