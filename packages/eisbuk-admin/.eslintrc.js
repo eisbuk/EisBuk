@@ -1,7 +1,7 @@
 const path = require("path");
 
-const scaffold = require("../scaffolding/.eslintrc.ui.js");
-const { useTSConfig } = require("../scaffolding/.eslint.utils.js");
+const scaffold = require("../scaffold/.eslintrc.ui.js");
+const { useTSConfig } = require("../scaffold/.eslint.utils.js");
 
 const tsPaths = ["./", "cypress"].map((project) =>
   path.join(__dirname, project, "tsconfig.json")

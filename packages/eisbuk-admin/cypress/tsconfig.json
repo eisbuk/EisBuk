@@ -1,5 +1,5 @@
 {
-  "extends": "../../scaffolding/tsconfig.json",
+  "extends": "../../scaffold/tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
