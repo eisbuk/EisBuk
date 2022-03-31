@@ -13,12 +13,12 @@ import {
   CustomerBase,
   OrgSubCollection,
   SlotType,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 import {
   DeprecatedOrgSubCollection,
   DeprecatedBookingsMeta,
   DeprecatedSlotType,
-} from "eisbuk-shared/dist/deprecated";
+} from "@eisbuk/shared/dist/deprecated";
 
 import { __functionsZone__ } from "../constants";
 

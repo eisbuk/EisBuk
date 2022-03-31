@@ -12,7 +12,7 @@ import {
   OrgSubCollection,
   BookingsErrors,
   Customer,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __smsUrl__, __functionsZone__ } from "./constants";
 

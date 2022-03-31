@@ -15,7 +15,7 @@ import {
   SlotInterface,
   SlotInterval,
   getCustomerBase,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 

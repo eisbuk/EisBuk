@@ -11,7 +11,7 @@ import {
   FIRST_NAMES,
   LAST_NAMES,
   OrgSubCollection,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 

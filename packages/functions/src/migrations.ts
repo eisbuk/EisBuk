@@ -2,7 +2,7 @@ import * as functions from "firebase-functions";
 import { FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 
-import { Collection, OrgSubCollection } from "eisbuk-shared";
+import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 

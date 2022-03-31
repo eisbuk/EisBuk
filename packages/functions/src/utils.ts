@@ -6,7 +6,7 @@ import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
 
-import { Collection, HTTPSErrors } from "eisbuk-shared";
+import { Collection, HTTPSErrors } from "@eisbuk/shared";
 
 type Auth = CallableContext["auth"];
 
