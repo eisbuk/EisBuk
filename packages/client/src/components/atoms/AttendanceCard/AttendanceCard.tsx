@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import i18n from "i18next";
 
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
@@ -12,8 +11,7 @@ import AddNew from "@mui/icons-material/AddCircle";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
-
-import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
+import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
 
 import { CustomerWithAttendance } from "@/types/components";
 

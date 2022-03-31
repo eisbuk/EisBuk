@@ -1,14 +1,13 @@
 import React, { useState, useContext } from "react";
-import { useTranslation } from "react-i18next";
 
 import IconButton from "@mui/material/IconButton";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import { luxon2ISODate } from "@eisbuk/shared";
+import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
-import { AdminAria, DateFormat } from "@/enums/translations";
 
 import { SlotButtonProps } from "@/types/components";
 

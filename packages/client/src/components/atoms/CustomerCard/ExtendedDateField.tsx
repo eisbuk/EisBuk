@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 
 import Typography from "@mui/material/Typography";
@@ -8,8 +7,12 @@ import Button from "@mui/material/Button";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "@eisbuk/shared";
-
-import { ActionButton, CustomerLabel, Prompt } from "@/enums/translations";
+import {
+  useTranslation,
+  ActionButton,
+  CustomerLabel,
+  Prompt,
+} from "@eisbuk/translations";
 
 import ConfirmDialog from "@/components/global/ConfirmDialog";
 import { DateInput } from "@/components/atoms/DateInput";

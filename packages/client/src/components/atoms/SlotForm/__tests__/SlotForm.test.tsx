@@ -13,9 +13,7 @@ import {
 import userEvent from "@testing-library/user-event";
 
 import { Category, fromISO, SlotType } from "@eisbuk/shared";
-
-import { defaultInterval, defaultSlotFormValues } from "@/lib/data";
-import {
+import i18n, {
   SlotFormTitle,
   SlotTypeLabel,
   CategoryLabel,
@@ -23,13 +21,13 @@ import {
   ActionButton,
   ValidationMessage,
   DateFormat,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
+import { defaultInterval, defaultSlotFormValues } from "@/lib/data";
 
 import SlotForm from "../SlotForm";
 
 import * as slotOperations from "@/store/actions/slotOperations";
-
-import i18n from "@/__testUtils__/i18n";
 
 import {
   __timeIntervalFieldId__,

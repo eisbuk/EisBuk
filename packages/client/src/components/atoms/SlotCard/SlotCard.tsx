@@ -1,7 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import { useTranslation } from "react-i18next";
-import i18n from "i18next";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -12,8 +10,13 @@ import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "@eisbuk/shared";
+import i18n, {
+  useTranslation,
+  Prompt,
+  DateFormat,
+  CategoryLabel,
+} from "@eisbuk/translations";
 
-import { Prompt, DateFormat, CategoryLabel } from "@/enums/translations";
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons, {

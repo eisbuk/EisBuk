@@ -13,6 +13,7 @@ import {
   EmailMessage,
   SMSMessage,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
@@ -22,7 +23,6 @@ import { getOrganization } from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
-import { NotificationMessage } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
 
@@ -41,7 +41,6 @@ import { createTestStore } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import { loginDefaultUser } from "@/__testUtils__/auth";
-import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 

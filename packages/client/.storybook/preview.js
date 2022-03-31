@@ -3,7 +3,7 @@ import { muiTheme } from "storybook-addon-material-ui5";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 
-import "@/i18next/i18n";
+import "@/@eisbuk/translations/i18n";
 
 import { available as availableThemes } from "@/themes";
 

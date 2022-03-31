@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -13,8 +12,11 @@ import makeStyles from "@mui/styles/makeStyles";
 import Close from "@mui/icons-material/Close";
 
 import { Customer } from "@eisbuk/shared";
-
-import { CategoryLabel, CustomerLabel } from "@/enums/translations";
+import {
+  useTranslation,
+  CategoryLabel,
+  CustomerLabel,
+} from "@eisbuk/translations";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import CustomerOperationButtons from "./CustomerOperationButtons";

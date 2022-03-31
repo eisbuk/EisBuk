@@ -6,7 +6,6 @@ import {
   getFirestore,
   setDoc,
 } from "@firebase/firestore";
-import i18n from "i18next";
 
 import {
   Collection,
@@ -17,9 +16,9 @@ import {
   EmailMessage,
   SMSMessage,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
 

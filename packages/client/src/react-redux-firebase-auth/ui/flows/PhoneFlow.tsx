@@ -6,10 +6,10 @@ import {
   ConfirmationResult,
   signInWithPhoneNumber,
 } from "@firebase/auth";
-import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
 import {
+  useTranslation,
   AuthMessage,
   AuthTitle,
   ValidationMessage,

@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { FormikConfig } from "formik";
 
 import { AuthErrorCodes, AuthError } from "@firebase/auth";
 
-import { AuthErrorMessage } from "@/enums/translations";
+import { useTranslation, AuthErrorMessage } from "@eisbuk/translations";
 
 type ErrorCodeKey = keyof typeof AuthErrorCodes;
 type ErrorCode = typeof AuthErrorCodes[ErrorCodeKey];

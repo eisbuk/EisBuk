@@ -1,6 +1,5 @@
 import React from "react";
 import { useField } from "formik";
-import { useTranslation } from "react-i18next";
 
 import IconButton from "@mui/material/IconButton";
 
@@ -9,10 +8,10 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
+import { useTranslation, SlotFormAria } from "@eisbuk/translations";
+
 import TimePickerField from "./TimePickerField";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
-
-import { SlotFormAria } from "@/enums/translations";
 
 import {
   __startTimeInputId__,

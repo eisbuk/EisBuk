@@ -1,4 +1,5 @@
 import React from "react";
+import { DateTime } from "luxon";
 
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -6,12 +7,9 @@ import Box from "@mui/material/Box";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { Customer } from "@eisbuk/shared";
+import { DateFormat, useTranslation } from "@eisbuk/translations";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
-import { DateTime } from "luxon";
-import { DateFormat } from "@/enums/translations";
-
-import { useTranslation } from "react-i18next";
 
 interface Props {
   customer: Customer;

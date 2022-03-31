@@ -1,14 +1,17 @@
 import React, { useMemo, useState } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 
 import Alert from "@mui/material/Alert";
 
 import { SlotInterface } from "@eisbuk/shared";
+import {
+  useTranslation,
+  BookingCountdownMessage,
+  Alerts,
+} from "@eisbuk/translations";
 
 import { CustomerRoute } from "@/enums/routes";
-import { BookingCountdownMessage, Alerts } from "@/enums/translations";
 
 import { LocalStore } from "@/types/store";
 

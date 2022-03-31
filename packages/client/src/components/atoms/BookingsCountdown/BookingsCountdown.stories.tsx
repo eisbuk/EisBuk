@@ -1,7 +1,7 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import { BookingCountdownMessage } from "@/enums/translations";
+import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import BookingsCountdown from "./BookingsCountdown";
 

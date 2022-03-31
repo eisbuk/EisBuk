@@ -5,13 +5,11 @@
 import React from "react";
 import { render, screen, cleanup } from "@testing-library/react";
 
-import { ActionButton } from "@/enums/translations";
+import i18n, { ActionButton } from "@eisbuk/translations";
 
 import BookingCardGroup from "../BookingCardGroup";
 
 import * as bookingOperations from "@/store/actions/bookingOperations";
-
-import i18n from "@/__testUtils__/i18n";
 
 import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";

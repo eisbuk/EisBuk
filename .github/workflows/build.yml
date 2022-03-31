@@ -206,16 +206,25 @@ jobs:
       - name: Lint shared package
         # Do not run on cancelled; run in all other cases
         if: success() || failure()
-        run: "yarn --cwd packages/eisbuk-shared lint:strict"
+        run: "yarn --cwd packages/shared lint:strict"
       - name: Lint the functions
         if: success() || failure()
         run: "yarn --cwd packages/functions lint:strict"
+      - name: Lint translations
+        if: success() || failure()
+        run: "yarn --cwd packages/translations lint:strict"
       - name: Typecheck client app
         if: success() || failure()
         run: "yarn --cwd packages/client typecheck"
+      - name: Typecheck shared package
+        if: success() || failure()
+        run: "yarn --cwd packages/shared typecheck"
       - name: Typecheck the functions
         if: success() || failure()
         run: "yarn --cwd packages/functions typecheck"
+      - name: Typecheck translations
+        if: success() || failure()
+        run: "yarn --cwd packages/translations typecheck"
 
   cypress-run:
     runs-on: ubuntu-20.04

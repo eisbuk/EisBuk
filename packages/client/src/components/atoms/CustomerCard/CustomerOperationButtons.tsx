@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 
 import CardActions from "@mui/material/CardActions";
@@ -9,8 +8,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
 import { Customer } from "@eisbuk/shared";
-
-import { Prompt } from "@/enums/translations";
+import { useTranslation, Prompt } from "@eisbuk/translations";
 
 import { ActionButtonProps } from "./types";
 

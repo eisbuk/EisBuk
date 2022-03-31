@@ -1,14 +1,15 @@
 import { doc, getFirestore, setDoc } from "@firebase/firestore";
-import i18n from "i18next";
 
 import { Collection, OrganizationData } from "@eisbuk/shared";
-import { FirestoreThunk } from "@/types/store";
-import { enqueueNotification, showErrSnackbar } from "./appActions";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { __organization__ } from "@/lib/constants";
 
 import { NotifVariant } from "@/enums/store";
 
-import { NotificationMessage } from "@/enums/translations";
-import { __organization__ } from "@/lib/constants";
+import { FirestoreThunk } from "@/types/store";
+
+import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${__organization__}`;

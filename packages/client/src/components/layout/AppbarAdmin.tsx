@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
 import AppBar, { AppBarProps } from "@mui/material/AppBar";
@@ -28,7 +27,12 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { currentTheme, organizationInfo } from "@/themes";
 
-import { NavigationLabel, AdminAria } from "@/enums/translations";
+import {
+  useTranslation,
+  NavigationLabel,
+  AdminAria,
+} from "@eisbuk/translations";
+
 import { PrivateRoutes } from "@/enums/routes";
 
 import DebugMenu from "@/components/layout/DebugMenu";

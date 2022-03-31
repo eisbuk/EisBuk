@@ -4,15 +4,14 @@
 
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
-import { SlotType } from "@eisbuk/shared";
 
-import { ActionButton } from "@/enums/translations";
+import { SlotType } from "@eisbuk/shared";
+import i18n, { ActionButton } from "@eisbuk/translations";
+
 import { BookingDuration } from "@/enums/components";
 
 import BookingCard from "../BookingCard";
 import { calculateIntervalDuration } from "../Duration";
-
-import i18n from "@/__testUtils__/i18n";
 
 export const baseProps: Parameters<typeof BookingCard>[0] = {
   date: "2022-01-01",

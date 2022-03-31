@@ -1,4 +1,10 @@
 import { PrivateRoutes } from "@/enums/routes";
+
+import {
+  __customerDeleteId__,
+  __customerEditId__,
+} from "@/components/atoms/CustomerCard/__testData__/testIds";
+
 import {
   __create100Athletes__,
   __debugButtonId__,
@@ -6,10 +12,6 @@ import {
   __confirmDialogYesId__,
   __customersDialogId__,
 } from "@/__testData__/testIds";
-import {
-  __customerDeleteId__,
-  __customerEditId__,
-} from "@/components/atoms/CustomerCard/__testData__/testIds";
 
 xdescribe("athletes grid", () => {
   beforeEach(() => {

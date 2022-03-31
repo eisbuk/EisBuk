@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useTranslation } from "react-i18next";
 
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
@@ -13,8 +12,11 @@ import makeStyles from "@mui/styles/makeStyles";
 import { ETheme } from "@/themes";
 
 import { OrgSubCollection } from "@eisbuk/shared";
-
-import { ActionButton, NavigationLabel } from "@/enums/translations";
+import {
+  useTranslation,
+  ActionButton,
+  NavigationLabel,
+} from "@eisbuk/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerForm from "@/components/customers/CustomerForm";

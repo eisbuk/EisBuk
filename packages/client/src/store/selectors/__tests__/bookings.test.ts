@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { getCustomerBase, OrgSubCollection } from "@eisbuk/shared";
 
 import { Action } from "@/enums/store";
-import { BookingCountdownMessage } from "@/enums/translations";
+import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import { getNewStore } from "@/store/createStore";
 

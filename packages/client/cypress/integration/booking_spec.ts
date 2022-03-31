@@ -1,14 +1,14 @@
 import { DateTime } from "luxon";
-import i18n from "@/i18next/i18n";
 
-import { Routes } from "@/enums/routes";
-import {
+import i18n, {
   ActionButton,
   AdminAria,
   BookingCountdownMessage,
   NotificationMessage,
   Prompt,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
+import { Routes } from "@/enums/routes";
 
 import { createDateTitle } from "@/components/atoms/DateNavigation/utils";
 
@@ -36,7 +36,11 @@ describe("Booking flow", () => {
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
       // should show bookings locked message
-      cy.contains(i18n.t(BookingCountdownMessage.BookingsLocked) as string);
+      cy.contains(
+        i18n.t(BookingCountdownMessage.BookingsLocked, {
+          month: testDateLuxon,
+        }) as string
+      );
 
       // should not allow slot bookings
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
@@ -149,7 +153,11 @@ describe("Booking flow", () => {
       cy.get("button").contains(/yes/i).click({ force: true });
 
       // should lock bookings after "finalize" button click
-      cy.contains(i18n.t(BookingCountdownMessage.BookingsLocked) as string);
+      cy.contains(
+        i18n.t(BookingCountdownMessage.BookingsLocked, {
+          month: testDateLuxon,
+        }) as string
+      );
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
         "have.attr",
         "disabled"

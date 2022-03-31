@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 
 import { CustomerBase, CustomerBookingEntry } from "@eisbuk/shared";
 
-import { BookingCountdownMessage } from "@/enums/translations";
+import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import { LocalStore } from "@/types/store";
 

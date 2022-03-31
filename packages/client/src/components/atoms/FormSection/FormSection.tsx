@@ -1,15 +1,14 @@
 import React from "react";
-
 import { Field, useFormikContext } from "formik";
-import { useTranslation } from "react-i18next";
 
 import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 
 import makeStyles from "@mui/styles/makeStyles";
 
+import { useTranslation, OrganizationLabel } from "@eisbuk/translations";
+
 import ErrorMessage from "@/components/atoms/ErrorMessage";
-import { OrganizationLabel } from "@/enums/translations";
 
 interface FieldProps {
   name: string;

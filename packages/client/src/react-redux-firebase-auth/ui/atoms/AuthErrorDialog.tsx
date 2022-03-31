@@ -1,11 +1,10 @@
 import React, { useRef } from "react";
-import { useTranslation } from "react-i18next";
 
 import Typography from "@mui/material/Typography";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { ActionButton } from "@/enums/translations";
+import { useTranslation, ActionButton } from "@eisbuk/translations";
 
 import useClickOutside from "@/hooks/useClickOutside";
 

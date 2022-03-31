@@ -9,17 +9,18 @@ import {
   AuthErrorCodes,
   AuthError,
 } from "@firebase/auth";
-import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
-import { __isDev__ } from "@/lib/constants";
-
 import {
+  useTranslation,
   ActionButton as ActionButtonLabel,
   AuthMessage,
   AuthTitle,
   ValidationMessage,
 } from "@/enums/translations";
+
+import { __isDev__ } from "@/lib/constants";
+
 import { EmailLinkAuthStep } from "../../enums";
 
 import AuthContainer from "../atoms/AuthContainer";

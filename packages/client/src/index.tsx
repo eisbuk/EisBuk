@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import "./i18next/i18n";
+// import "@eisbuk/translations";
 
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";

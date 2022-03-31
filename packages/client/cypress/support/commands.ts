@@ -3,9 +3,7 @@ import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
 import { Customer } from "@eisbuk/shared";
 
-import i18n from "@/i18next/i18n";
-
-import { ActionButton } from "@/enums/translations";
+import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
 //

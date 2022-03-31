@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 
 import { Field, Form, useField } from "formik";
-import { useTranslation } from "react-i18next";
 
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
@@ -12,7 +11,11 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import IconButton from "@mui/material/IconButton";
 
-import { ActionButton, OrganizationLabel } from "@/enums/translations";
+import {
+  useTranslation,
+  ActionButton,
+  OrganizationLabel,
+} from "@eisbuk/translations";
 
 const AdminsField: React.FC<{
   currentUser: string;

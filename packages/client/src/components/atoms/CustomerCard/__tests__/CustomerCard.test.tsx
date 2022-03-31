@@ -13,18 +13,20 @@ import {
 import "@testing-library/jest-dom";
 
 import { Customer } from "@eisbuk/shared";
+import i18n, {
+  ActionButton,
+  CustomerFormTitle,
+  Prompt,
+} from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 
-import { ActionButton, CustomerFormTitle, Prompt } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 import { Routes } from "@/enums/routes";
 
 import CustomerCard from "../CustomerCard";
 
 import * as customerActions from "@/store/actions/customerOperations";
-
-import i18n from "@/__testUtils__/i18n";
 
 import { saul } from "@/__testData__/customers";
 import {

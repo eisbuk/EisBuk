@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
-import i18n from "i18next";
 
 import Button from "@mui/material/Button";
 
@@ -12,8 +10,13 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import Mail from "@mui/icons-material/Mail";
 import Phone from "@mui/icons-material/Phone";
 
+import i18n, {
+  useTranslation,
+  ActionButton,
+  Prompt,
+} from "@eisbuk/translations";
+
 import { Routes } from "@/enums/routes";
-import { ActionButton, Prompt } from "@/enums/translations";
 import { SendBookingLinkMethod } from "@/enums/other";
 
 import { ActionButtonProps } from "./types";

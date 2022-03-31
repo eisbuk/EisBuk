@@ -9,12 +9,11 @@ import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
 import { __organization__ } from "@/lib/constants";
 
-import { ActionButton } from "@/enums/translations";
+import i18n, { ActionButton } from "@eisbuk/translations";
 
 import { defaultUser } from "@/__testSetup__/envData";
 import { adminDb, auth, db } from "@/__testSetup__/firestoreSetup";
 
-import i18n from "@/__testUtils__/i18n";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
@@ -27,7 +26,7 @@ describe("Smoke test", () => {
 
   describe("Test i18n setup", () => {
     test("should initialize i18n with the tests", () => {
-      // i18n should be initialized in imported `@/__testUtils__/i18n`
+      // i18n should be initialized in imported `@eisbuk/translations`
       const translatedString = i18n.t(ActionButton.Cancel);
       expect(translatedString).toEqual("Cancel");
     });

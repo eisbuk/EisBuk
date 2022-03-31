@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -11,8 +10,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, fromISO } from "@eisbuk/shared";
+import { useTranslation, ActionButton, DateFormat } from "@eisbuk/translations";
 
-import { ActionButton, DateFormat } from "@/enums/translations";
 import { BookingCardVariant } from "@/enums/components";
 
 import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";

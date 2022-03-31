@@ -1,17 +1,16 @@
 import { v4 as uuid } from "uuid";
 import { AuthErrorCodes } from "@firebase/auth";
 
-import i18n from "@/i18next/i18n";
-
-import { PrivateRoutes } from "@/enums/routes";
-import {
+import i18n, {
   ActionButton,
   AdminAria,
   AuthMessage,
   AuthTitle,
   AuthErrorMessage,
   ValidationMessage,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
+import { PrivateRoutes } from "@/enums/routes";
 
 import { defaultUser } from "@/__testSetup__/envData";
 

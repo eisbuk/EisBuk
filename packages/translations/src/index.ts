@@ -1,12 +1,19 @@
 import i18n from "i18next";
-import { initReactI18next } from "react-i18next";
+import { initReactI18next, useTranslation } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 // import Backend from "i18next-http-backend";
 import { DateTime } from "luxon";
 
+// export all translation strings
+export * from "./translations";
+
+// make sure all imports of 'useTranslation' go through this file
+// and as a side effect run the initialization below
+export { useTranslation };
+
 /** @TEMP */
-import en from "@/translations/en.json";
-import it from "@/translations/it.json";
+import en from "./dict/en.json";
+import it from "./dict/it.json";
 /** @TEMP */
 
 i18n

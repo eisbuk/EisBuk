@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
@@ -16,10 +15,8 @@ import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
 import { SlotInterface, SlotInterval, SlotType, fromISO } from "@eisbuk/shared";
-
-import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
-
 import {
+  useTranslation,
   SlotFormTitle,
   ValidationMessage,
   DateFormat,
@@ -27,7 +24,9 @@ import {
   SlotTypeLabel,
   SlotFormAria,
   SlotFormLabel,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
+import { defaultSlotFormValues, SlotFormValues } from "@/lib/data";
 
 import RadioSelection from "@/components/atoms/RadioSelection";
 import SelectCategories from "./SelectCategories";

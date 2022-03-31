@@ -9,15 +9,16 @@ import {
   AuthErrorCodes,
 } from "@firebase/auth";
 import { useHistory } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import * as yup from "yup";
 
 import {
+  useTranslation,
   ActionButton as ActionButtonLabel,
   AuthMessage,
   AuthTitle,
   ValidationMessage,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
 import { PrivateRoutes } from "@/enums/routes";
 import { EmailAuthStep } from "../../enums";
 

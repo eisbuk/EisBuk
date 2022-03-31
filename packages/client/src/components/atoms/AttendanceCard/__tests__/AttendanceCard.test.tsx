@@ -7,12 +7,11 @@ import { cleanup, render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
+import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 
 import { CustomerWithAttendance } from "@/types/components";
-
-import { CategoryLabel, SlotTypeLabel } from "@/enums/translations";
 
 import AttendanceCard from "../AttendanceCard";
 
@@ -21,7 +20,6 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { comparePeriods } from "@/utils/helpers";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import i18n from "@/__testUtils__/i18n";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { saul } from "@/__testData__/customers";

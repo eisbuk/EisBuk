@@ -1,6 +1,6 @@
+import i18n, { ValidationMessage } from "@eisbuk/translations";
+
 import { PrivateRoutes } from "@/enums/routes";
-import { ValidationMessage } from "@/enums/translations";
-import i18n from "@/i18next/i18n";
 
 import { saul } from "@/__testData__/customers";
 

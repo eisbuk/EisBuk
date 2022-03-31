@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 
 import TableContainer from "@mui/material/TableContainer";
@@ -7,7 +6,11 @@ import Paper from "@mui/material/Paper";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { DateFormat, NavigationLabel } from "@/enums/translations";
+import {
+  useTranslation,
+  DateFormat,
+  NavigationLabel,
+} from "@eisbuk/translations";
 
 export interface Props {
   date: DateTime;

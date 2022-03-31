@@ -1,7 +1,6 @@
 import { DateTime, DateTimeUnit } from "luxon";
-import i18n from "i18next";
 
-import { DateFormat } from "@/enums/translations";
+import i18n, { DateFormat } from "@eisbuk/translations";
 
 type TranslateFunc = typeof i18n.t;
 

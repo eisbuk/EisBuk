@@ -6,12 +6,12 @@ import React from "react";
 import { screen, fireEvent } from "@testing-library/react";
 import * as formik from "formik";
 import * as yup from "yup";
-import i18n from "@/__testUtils__/i18n";
+
+import i18n, { ValidationMessage } from "@eisbuk/translations";
 
 import DateInput from "../DateInput";
 
 import { renderWithFormik } from "@/__testUtils__/wrappers";
-import { ValidationMessage } from "@/enums/translations";
 
 /**
  * A spy function we're using to mock different values passed

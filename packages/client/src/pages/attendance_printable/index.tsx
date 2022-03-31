@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { useTranslation } from "react-i18next";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 
@@ -11,7 +10,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import PrintIcon from "@mui/icons-material/Print";
 
-import { NavigationLabel } from "@/enums/translations";
+import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";

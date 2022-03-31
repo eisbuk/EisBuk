@@ -3,20 +3,19 @@
  */
 
 import * as firestore from "@firebase/firestore";
-import i18n from "@/__testUtils__/i18n";
 
 import {
   BookingSubCollection,
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getNewStore } from "@/store/createStore";
 
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
 import { Action, NotifVariant } from "@/enums/store";
-import { NotificationMessage } from "@/enums/translations";
 
 import { bookInterval, cancelBooking } from "../bookingOperations";
 import * as appActions from "../appActions";

@@ -2,21 +2,22 @@ import React from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
-import { useTranslation } from "react-i18next";
 
 import FormControl from "@mui/material/FormControl";
 import Button from "@mui/material/Button";
 
 import { OrganizationData } from "@eisbuk/shared";
-
-import { ActionButton, ValidationMessage } from "@/enums/translations";
+import i18n, {
+  ActionButton,
+  ValidationMessage,
+  useTranslation,
+} from "@eisbuk/translations";
 
 import makeStyles from "@mui/styles/makeStyles";
 
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 import { updateOrganization } from "@/store/actions/organizationOperations";
-import i18n from "@/i18next/i18n";
 
 import { getLocalAuth } from "@/store/selectors/auth";
 
