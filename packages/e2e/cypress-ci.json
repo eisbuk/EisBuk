@@ -9,7 +9,10 @@
 
   "reporter": "cypress-mochawesome-reporter",
   "reporterOptions": {
-    "reportDir": "reports"
+    "reportDir": "reports/html",
+    "reportTitle": "EisBuk-e2e",
+    "overwrite": true,
+    "saveHtml": true
   },
 
   "video": false,
