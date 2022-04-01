@@ -6,6 +6,7 @@ import { DateTime } from "luxon";
 
 // export all translation strings
 export * from "./translations";
+export * from "./utils";
 
 // make sure all imports of 'useTranslation' go through this file
 // and as a side effect run the initialization below

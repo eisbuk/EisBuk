@@ -34,7 +34,7 @@ const handleGetSigninLink: TaskHandler<GetSigninLinkPayload, string> = async ({
     .find(
       ({ email, requestType }) =>
         email === requestEmail && requestType === "EMAIL_SIGNIN"
-    ).oobCode;
+    )!.oobCode;
 
   // normally, the signin link would go to auth emulator (port 9099) and redirected back to the dev server (port 3000)
   // cypress (browser actually), however, doesn't allow switching origin in the test, so we're manually constructing a login link

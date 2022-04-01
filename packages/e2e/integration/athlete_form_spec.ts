@@ -1,8 +1,12 @@
+import { Customer } from "@eisbuk/shared";
 import i18n, { ValidationMessage } from "@eisbuk/translations";
 
-import { PrivateRoutes } from "@/enums/routes";
+import { PrivateRoutes } from "../temp";
 
-import { saul } from "@/__testData__/customers";
+import testCustomers from "../__testData__/customers.json";
+
+// extract saul from test data .json
+const saul = testCustomers.customers.saul as Customer;
 
 describe("add athlete", () => {
   beforeEach(() => {

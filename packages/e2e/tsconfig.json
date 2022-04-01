@@ -1,0 +1,15 @@
+{
+  "extends": "../scaffold/tsconfig.ui.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "target": "es5",
+    "lib": ["es5", "es2015", "dom"],
+
+    "types": ["cypress", "node"],
+
+    "noEmit": true,
+    "declaration": false
+  },
+  "exclude": ["node_modules", ".eslintrc.js"],
+  "include": ["**/*.ts", "vite.config.ts"]
+}

@@ -29,7 +29,7 @@ const handleGetRecaptchaCode: TaskHandler<GetRecaptchaPayload, string> =
       res.verificationCodes
         // search from end to front (to find the latest code)
         .reverse()
-        .find(({ phoneNumber }) => phoneNumber === phone).code
+        .find(({ phoneNumber }) => phoneNumber === phone)!.code
     );
   };
 

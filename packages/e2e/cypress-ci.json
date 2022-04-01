@@ -1,0 +1,13 @@
+{
+  "projectId": "j8dx4d",
+  "fixturesFolder": "fixtures",
+  "pluginsFile": "plugins/index.ts",
+  "supportFile": "support/index.ts",
+  "integrationFolder": "integration",
+
+  "baseUrl": "http://localhost:5000",
+
+  "reporter": "cypress-mochawesome-reporter",
+  "video": false,
+  "defaultCommandTimeout": 10000
+}

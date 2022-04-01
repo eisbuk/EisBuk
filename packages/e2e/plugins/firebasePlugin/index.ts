@@ -5,7 +5,7 @@ import handleGetRecaptchaCode from "./getRecaptchaCode";
 import handleGetSigninLink from "./getSigninLink";
 
 interface TaskHandlers {
-  [taskName: string]: TaskHandler;
+  [taskName: string]: TaskHandler<any, any>;
 }
 
 const initializeFirebasePlugin = (on: Cypress.PluginEvents): void => {

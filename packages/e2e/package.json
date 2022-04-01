@@ -1,0 +1,26 @@
+{
+  "name": "@eisbuk/e2e",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "lint": "eslint .",
+    "lint:strict": "eslint . --max-warnings=0",
+    "typecheck": "tsc"
+  },
+  "devDependencies": {
+    "@cypress/code-coverage": "^3.9.12",
+    "@eisbuk/shared": "1.0.0",
+    "@eisbuk/translations": "1.0.0",
+    "@google-cloud/firestore": "^4.13.2",
+    "@types/luxon": "^2.0.2",
+    "@types/node": "^16.11.10",
+    "@types/uuid": "^8.3.1",
+    "cypress": "^8.7.0",
+    "cypress-mochawesome-reporter": "^2.3.0",
+    "firebase-admin": "^9.4.2",
+    "luxon": "^2.0.2",
+    "mochawesome": "^7.0.1",
+    "typescript": "~4.4.2",
+    "uuid": "^8.3.0"
+  }
+}

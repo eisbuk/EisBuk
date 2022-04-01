@@ -10,9 +10,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { PrivateRoutes } from "@/enums/routes";
-
-import { defaultUser } from "@/__testSetup__/envData";
+import { PrivateRoutes, defaultUser } from "../temp";
 
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>

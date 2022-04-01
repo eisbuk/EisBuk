@@ -1,0 +1,9 @@
+{
+  "projectId": "j8dx4d",
+  "fixturesFolder": "fixtures",
+  "pluginsFile": "plugins/index.ts",
+  "supportFile": "support/index.ts",
+  "integrationFolder": "integration",
+
+  "baseUrl": "http://localhost:3000"
+}

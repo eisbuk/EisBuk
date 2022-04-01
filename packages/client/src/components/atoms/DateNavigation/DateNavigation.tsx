@@ -13,13 +13,15 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { useTranslation, AdminAria } from "@eisbuk/translations";
+import {
+  useTranslation,
+  AdminAria,
+  createDateTitle,
+} from "@eisbuk/translations";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getCalendarDay } from "@/store/selectors/app";
-
-import { createDateTitle } from "./utils";
 
 import { __toggleId__ } from "./__testData__/testData";
 

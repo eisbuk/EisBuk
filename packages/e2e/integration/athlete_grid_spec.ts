@@ -1,17 +1,14 @@
-import { PrivateRoutes } from "@/enums/routes";
+import { PrivateRoutes } from "../temp";
 
-import {
-  __customerDeleteId__,
-  __customerEditId__,
-} from "@/components/atoms/CustomerCard/__testData__/testIds";
-
-import {
-  __create100Athletes__,
-  __debugButtonId__,
-  __customersGridId__,
-  __confirmDialogYesId__,
-  __customersDialogId__,
-} from "@/__testData__/testIds";
+/** @TEMP test ids, @TODO replace these with aria-labels if at all possible and use the single source of truth */
+const __customerDeleteId__ = "customer-delete-button";
+const __customerEditId__ = "customer-edit-button";
+const __create100Athletes__ = "create-athletes";
+const __debugButtonId__ = "debug-button";
+const __customersGridId__ = "customer-grid";
+const __confirmDialogYesId__ = "confirm-dialog-yes-button";
+const __customersDialogId__ = "customer-dialog";
+/** @TEMP */
 
 xdescribe("athletes grid", () => {
   beforeEach(() => {
