@@ -6,7 +6,7 @@ const { useTSConfig } = require("../scaffold/.eslint.utils.js");
 module.exports = useTSConfig(
   {
     ...scaffold,
-    ignorePatterns: [...scaffold.ignorePatterns, "coverage", "nyc-config.js"],
+    ignorePatterns: [...scaffold.ignorePatterns, "coverage", "reports"],
     rules: {
       ...scaffold.rules,
 
