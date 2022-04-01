@@ -10,7 +10,7 @@
 
 import { beforeRunHook, afterRunHook } from "cypress-mochawesome-reporter/lib";
 import firebasePlugin from "./firebasePlugin";
-import codeCoverageTask = require("@cypress/code-coverage/task");
+import codeCoverageTask from "@cypress/code-coverage/task";
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
@@ -19,7 +19,7 @@ import codeCoverageTask = require("@cypress/code-coverage/task");
  * @type {Cypress.PluginConfig}
  */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-module.exports = (on: Cypress.PluginEvents, config: any) => {
+module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfig) => {
   on("before:run", async (details) => {
     console.log("override before:run");
     await beforeRunHook(details);
