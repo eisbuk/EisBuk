@@ -18,11 +18,9 @@ import {
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
-import { CreateAuthUserPayload } from "eisbuk-shared";
+import { CreateAuthUserPayload } from "@eisbuk/shared";
 
-import { CloudFunction } from "@/enums/functions";
-
-import { defaultUser } from "@/__testSetup__/envData";
+import { CloudFunction, defaultUser } from "../../temp";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {

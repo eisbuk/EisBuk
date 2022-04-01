@@ -2,7 +2,6 @@
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
 import { Customer } from "@eisbuk/shared";
-
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
@@ -116,16 +115,16 @@ export default (): void => {
     } = customer;
 
     if (name) {
-      cy.getAttrWith("name", "name").type(customer.name);
+      cy.getAttrWith("name", "name").type(name);
     }
     if (surname) {
-      cy.getAttrWith("name", "surname").type(customer.surname);
+      cy.getAttrWith("name", "surname").type(surname);
     }
     if (email) {
-      cy.getAttrWith("name", "email").type(customer.email);
+      cy.getAttrWith("name", "email").type(email);
     }
     if (phone) {
-      cy.getAttrWith("name", "phone").type(customer.phone);
+      cy.getAttrWith("name", "phone").type(phone);
     }
     if (birthday) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(birthday);

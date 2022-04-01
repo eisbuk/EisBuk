@@ -10,9 +10,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { PrivateRoutes } from "@/enums/routes";
-
-import { defaultUser } from "@/__testSetup__/envData";
+import { PrivateRoutes, defaultUser } from "../temp";
 
 import { saul } from "@/__testData__/customers";
 

@@ -1,18 +1,21 @@
 import { DateTime } from "luxon";
 
+import { Customer } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
   BookingCountdownMessage,
   NotificationMessage,
   Prompt,
+  createDateTitle,
 } from "@eisbuk/translations";
 
-import { Routes } from "@/enums/routes";
+import { Routes } from "../temp";
 
-import { createDateTitle } from "@/components/atoms/DateNavigation/utils";
+import testCustomers from "../__testData__/customers.json";
 
-import { saul } from "@/__testData__/customers";
+// extract saul from test data .json
+const saul = testCustomers.customers.saul as Customer;
 
 describe("Booking flow", () => {
   describe("Test for not-an-admin", () => {

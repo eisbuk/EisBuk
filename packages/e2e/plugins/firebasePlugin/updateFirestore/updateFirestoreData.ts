@@ -34,7 +34,7 @@ const updateFirestoreData = async (
         ...acc,
         ...queueCollectionUpdates(orgRef, collName, data[collName]),
       ],
-      []
+      [] as Promise<WriteResult>[]
     )
   );
 };

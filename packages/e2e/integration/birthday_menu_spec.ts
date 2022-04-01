@@ -1,10 +1,12 @@
 import { DateTime } from "luxon";
 
-import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
+import { __testDate__ } from "../constants";
 
-import { PrivateRoutes } from "@/enums/routes";
+import { PrivateRoutes } from "../temp";
 
-import { __birthdayMenu__ } from "@/__testData__/testIds";
+/** @TEMP test ids, @TODO replace these with aria-labels if at all possible and use the single source of truth */
+const __birthdayMenu__ = "birthday-menu";
+/** @TEMP */
 
 describe("birthday badge", () => {
   beforeEach(() => {
@@ -15,10 +17,10 @@ describe("birthday badge", () => {
   });
   it("should check for birthday menu rerendering on midnight", () => {
     const time =
-      DateTime.fromISO(__staticTestDate__)
+      DateTime.fromISO(__testDate__)
         .plus({ day: 1 })
         .startOf("day")
-        .toMillis() - DateTime.fromISO(__staticTestDate__).toMillis();
+        .toMillis() - DateTime.fromISO(__testDate__).toMillis();
     cy.visit(PrivateRoutes.Root);
     cy.getAttrWith("data-testid", __birthdayMenu__)
       .children()

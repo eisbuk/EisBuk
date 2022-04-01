@@ -1,13 +1,14 @@
+import "cypress-mochawesome-reporter/register";
+import "@cypress/code-coverage/support";
+
 import i18n from "@eisbuk/translations";
 import * as translations from "@eisbuk/translations";
 
+import { __testDate__ } from "../constants";
+
 import initializeCommands from "./commands";
 
-import { __storybookDate__ as __staticTestDate__ } from "@/lib/constants";
-
-import "cypress-mochawesome-reporter/register";
 import addFirebaseCommands from "../plugins/firebasePlugin/commands";
-import "@cypress/code-coverage/support";
 
 // add firebase-related commands (from firebasePlugin)
 addFirebaseCommands();
@@ -18,7 +19,7 @@ initializeCommands();
 // Overrides browser global Date Object to start from the first week of March 2021
 // This means "new Date()" will always return Monday 1st March 2021 in all tests
 beforeEach(() => {
-  const time = new Date(__staticTestDate__).getTime();
+  const time = new Date(__testDate__).getTime();
   cy.clock(time, ["Date"]);
 
   // stub i18n to use the i18n initialized in cypress so that both
