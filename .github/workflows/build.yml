@@ -213,6 +213,10 @@ jobs:
       - name: Lint translations
         if: success() || failure()
         run: "yarn --cwd packages/translations lint:strict"
+      - name: Lint e2e tests
+        if: success() || failure()
+        run: "yarn --cwd packages/e2e lint:strict"
+
       - name: Typecheck client app
         if: success() || failure()
         run: "yarn --cwd packages/client typecheck"
@@ -225,6 +229,9 @@ jobs:
       - name: Typecheck translations
         if: success() || failure()
         run: "yarn --cwd packages/translations typecheck"
+      - name: Typecheck e2e tests
+        if: success() || failure()
+        run: "yarn --cwd packages/e2e typecheck"
 
   cypress-run:
     runs-on: ubuntu-20.04
@@ -253,8 +260,8 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: yarn emulators:start
-          working-directory: packages/client
+          start: yarn --cwd ../client emulators:start
+          working-directory: packages/e2e
           wait-on: http://localhost:8080, http://localhost:5000
           # skip recording if no 'secrets.CYPRESS_KEY' found
           # we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
@@ -276,8 +283,8 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: packages/client/coverage/lcov.info
-          base-path: packages/client/
+          path-to-lcov: packages/e2e/coverage/lcov.info
+          base-path: packages/e2e
           flag-name: run-cypress
           parallel: true
 
@@ -312,8 +319,8 @@ jobs:
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
-          rclone copy packages/client/cypress/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
-          rclone copy packages/client/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
+          rclone copy packages/e2e/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
+          rclone copy packages/e2e/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
 
       - name: Print gcloud url to view test results
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
@@ -323,15 +330,6 @@ jobs:
           echo Check out coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
           echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
           echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
-
-      - name: "Create cypress browser logs summaries"
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        # Create summeries
-        uses: eisbuk/custom-check-summary@v1
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_DIR: result_tabs
-          SUMMARY_TITLE: "Cypress results"
 
   finish:
     needs:

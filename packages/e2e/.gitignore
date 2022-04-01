@@ -1,6 +1,4 @@
 # Temp files
-videos/
-screenshots/
 
 # dependencies
 /node_modules
@@ -37,4 +35,7 @@ eslint.log
 # Test result files
 junit.xml
 coverage
+videos
+screenshots
+reports
 
