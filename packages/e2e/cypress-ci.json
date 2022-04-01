@@ -8,6 +8,10 @@
   "baseUrl": "http://localhost:5000",
 
   "reporter": "cypress-mochawesome-reporter",
+  "reporterOptions": {
+    "reportDir": "reports"
+  },
+
   "video": false,
   "defaultCommandTimeout": 10000
 }
