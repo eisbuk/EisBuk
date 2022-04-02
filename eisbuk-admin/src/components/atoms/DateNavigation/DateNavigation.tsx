@@ -185,6 +185,7 @@ const DateNavigation: React.FC<Props> = ({
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
+            jump={jump}
           />
           <IconButton
             edge="start"

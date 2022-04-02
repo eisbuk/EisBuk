@@ -26,7 +26,10 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "../copyPaste";
-import { showErrSnackbar } from "@/store/actions/appActions";
+import {
+  changeCalendarDate,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -39,6 +42,8 @@ import {
   testSlots,
   testWeek,
 } from "../__testData__/copyPaste";
+import { __storybookDate__ } from "@/lib/constants";
+import { DateTime } from "luxon";
 
 /**
  * Mock dispatch function we're feeding to our thunk testing function (`setUpTestSlots`)
@@ -97,6 +102,7 @@ describe("Copy Paste actions", () => {
               store,
             }),
         });
+        store.dispatch(changeCalendarDate(DateTime.fromISO(__storybookDate__)));
         // make sure the tests use the test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk against a store
