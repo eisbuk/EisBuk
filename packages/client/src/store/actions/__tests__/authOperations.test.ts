@@ -4,8 +4,6 @@
 
 import { User } from "@firebase/auth";
 
-import { Collection, OrganizationData } from "@eisbuk/shared";
-
 import { defaultUser } from "@/__testSetup__/envData";
 
 import { updateAuthUser } from "../authOperations";

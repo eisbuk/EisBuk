@@ -14,7 +14,8 @@ import {
   AuthTitle,
   ValidationMessage,
   ActionButton as ActionButtonLabel,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
+
 import { PhoneAuthStep } from "../../enums";
 
 import AuthContainer from "../atoms/AuthContainer";

@@ -1,7 +1,7 @@
 import { getAuth, User } from "@firebase/auth";
-import i18n from "@eisbuk/translations";
 
-import { AuthStatus, Collection } from "@eisbuk/shared";
+import i18n from "@eisbuk/translations";
+import { AuthStatus } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
 

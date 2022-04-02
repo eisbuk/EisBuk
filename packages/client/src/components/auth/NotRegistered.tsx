@@ -7,7 +7,8 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
-import { AuthMessage } from "@/enums/translations";
+import { AuthMessage } from "@eisbuk/translations";
+
 import { Routes } from "@/enums/routes";
 
 import { signOut } from "@/store/actions/authOperations";

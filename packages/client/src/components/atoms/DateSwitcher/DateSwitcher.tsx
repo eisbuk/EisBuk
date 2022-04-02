@@ -2,7 +2,7 @@ import React from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
-import { DateHasBookingsMap } from "eisbuk-shared";
+import { DateHasBookingsMap } from "@eisbuk/shared";
 
 import Menu, { MenuProps } from "@mui/material/Menu";
 import { CalendarPicker } from "@mui/lab";

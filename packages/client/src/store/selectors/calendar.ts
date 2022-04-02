@@ -3,7 +3,7 @@ import {
   SlotAttendnace,
   SlotsByDay,
   DateHasBookingsMap,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 import { DateTime } from "luxon";

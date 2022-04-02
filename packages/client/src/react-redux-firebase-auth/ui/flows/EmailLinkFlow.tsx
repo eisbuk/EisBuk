@@ -17,7 +17,7 @@ import {
   AuthMessage,
   AuthTitle,
   ValidationMessage,
-} from "@/enums/translations";
+} from "@eisbuk/translations";
 
 import { __isDev__ } from "@/lib/constants";
 

@@ -1,12 +1,20 @@
 import { DateTime } from "luxon";
-import { PrivateRoutes, Routes } from "@/enums/routes";
-import { gus } from "@/__testData__/customers";
+
+import { Customer } from "@eisbuk/shared";
+
 import {
+  PrivateRoutes,
+  Routes,
   __currentDateId__,
   __dateNavNextId__,
   __dayWithBookedSlots__,
   __dayWithSlots__,
-} from "@/__testData__/testIds";
+} from "../temp";
+
+import testCustomers from "../__testData__/customers.json";
+
+// extract gus from test data .json
+const gus = testCustomers.customers.saul as Customer;
 
 describe("Date Switcher", () => {
   describe("Customer calendar view", () => {
