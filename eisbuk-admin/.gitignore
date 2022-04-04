@@ -5,12 +5,10 @@
 /.pnp
 .pnp.js
 
-# dev-server
-/dev-server-meta
-
 # testing
 /coverage
 /.nyc_output
+/instrumented
 
 # production
 /build

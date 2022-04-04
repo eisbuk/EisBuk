@@ -14,11 +14,11 @@ describe("Date Switcher", () => {
       const testDateLuxon = DateTime.fromISO("2022-01-04");
 
       cy.setClock(testDateLuxon.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy
-          .updateFirestore(organization, ["slots.json", "bookings.json"])
-          .then(() => cy.signIn())
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateFirestore(organization, ["slots.json", "bookings.json"])
+        )
+        .then(() => cy.signIn());
     });
 
     it("should show badges on days with empty slots in customer calendar view", () => {
@@ -47,13 +47,11 @@ describe("Date Switcher", () => {
       const testDateLuxon = DateTime.fromISO(testDate);
 
       cy.setClock(testDateLuxon.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy
-          .updateFirestore(organization, ["attendance.json"])
-          .then(() => cy.signIn())
-      );
-
-      // cy.signIn();
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateFirestore(organization, ["attendance.json"])
+        )
+        .then(() => cy.signIn());
     });
 
     it("should show badges on days with booked slots in attendance view", () => {

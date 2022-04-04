@@ -1,45 +1,45 @@
-{
-  "settings": {
+module.exports = {
+  parser: "@typescript-eslint/parser",
+  parserOptions: {
+    ecmaVersion: 2021,
+    sourceType: "module",
+  },
+  settings: {
+    "import/parsers": {
+      "@typescript-eslint/parser": [".ts", ".tsx"],
+    },
     "import/resolver": {
-      "typescript": {}
-    }
+      typescript: {},
+    },
   },
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    // Required for certain syntax usages
-    "ecmaVersion": 2017
-  },
-  "plugins": ["promise"],
-  "extends": [
+  plugins: ["promise", "import"],
+  extends: [
     "google",
     "eslint:recommended",
     "plugin:import/errors",
     "plugin:import/warnings",
     "plugin:import/typescript",
-    "plugin:@typescript-eslint/recommended"
+    "plugin:promise/recommended",
+    "plugin:@typescript-eslint/recommended",
   ],
-  "ignorePatterns": ["dist/*"],
-  "root": true,
-  "rules": {
+  ignorePatterns: [
+    "build/",
+    "dist/",
+    "node_modules/",
+    ".eslintrc.js",
+    ".eslintrc.ui.js",
+    "vite.config.ts",
+  ],
+  rules: {
+    // Using this rule would mean that every object literal should have quotes as properties, as such { "foo": true }
+    // Which is pretty outdated behaviour
+    "quote-props": "off",
+
     // Removed rule "disallow the use of console" from recommended eslint rules
-    "no-console": "warn",
-
-    // Removed rule "disallow multiple spaces in regular expressions" from recommended eslint rules
-    "no-regex-spaces": "off",
-
-    // Removed rule "disallow the use of debugger" from recommended eslint rules
-    "no-debugger": "off",
-
-    // Removed rule "disallow unused variables" from recommended eslint rules
-    "no-unused-vars": "off",
-
-    // Removed rule "disallow mixed spaces and tabs for indentation" from recommended eslint rules
-    "no-mixed-spaces-and-tabs": "off",
-
-    // Removed rule "disallow the use of undeclared variables unless mentioned in /*global */ comments" from recommended eslint rules
-    "no-undef": "off",
+    "no-console": "off",
 
     // Warn against template literal placeholder syntax in regular strings
+    // i.e. "${foo}" should be illegal as it's most likely a mistake, trying to write `${foo}`
     "no-template-curly-in-string": 1,
 
     // Warn if return statements do not either always or never specify values
@@ -49,22 +49,21 @@
     "array-callback-return": 1,
 
     // Require the use of === and !==
-    "eqeqeq": 2,
+    eqeqeq: 2,
 
     // Disallow the use of alert, confirm, and prompt
     "no-alert": 2,
 
-    // Disallow the use of arguments.caller or arguments.callee
+    // Disallow the use of `arguments.caller` or `arguments.callee`
+    // This is an old JS practice not used as much anymore
+    // We're disallowing it nonetheless
     "no-caller": 2,
-
-    // Disallow null comparisons without type-checking operators
-    "no-eq-null": 2,
 
     // Disallow the use of eval()
     "no-eval": 2,
 
     // Warn against extending native types
-    "no-extend-native": 1,
+    "no-extend-native": 2,
 
     // Warn against unnecessary calls to .bind()
     "no-extra-bind": 1,
@@ -75,19 +74,20 @@
     // Disallow leading or trailing decimal points in numeric literals
     "no-floating-decimal": 2,
 
-    // Warn against shorthand type conversions
-    "no-implicit-coercion": 1,
+    // Type conversions should be as clear as possible (i.e. Number("4") rather than +"4")
+    "no-implicit-coercion": 2,
 
-    // Warn against function declarations and expressions inside loop statements
-    "no-loop-func": 1,
+    // Function declarations and expressions inside loop statements seem like a baad practice
+    "no-loop-func": 2,
 
     // Disallow new operators with the Function object
     "no-new-func": 2,
 
-    // Warn against new operators with the String, Number, and Boolean objects
-    "no-new-wrappers": 1,
+    // Using new operators with the String, Number, and Boolean objects
+    // is really unnecessary
+    "no-new-wrappers": 2,
 
-    // Disallow throwing literals as exceptions
+    // Disallow throwing exceptions that are anything other than `Error(<message>)`
     "no-throw-literal": 2,
 
     // Require using Error objects as Promise rejection reasons
@@ -100,6 +100,8 @@
     "getter-return": 2,
 
     // Disallow await inside of loops
+    // This is a good practice most of the time, so it makes sense
+    // to override it only when (and if) really necessary
     "no-await-in-loop": 2,
 
     // Disallow comparing against -0
@@ -111,39 +113,23 @@
     // Disallow identifiers from shadowing restricted names
     "no-shadow-restricted-names": 2,
 
-    // Enforce return statements in callbacks of array methods
-    "callback-return": 2,
-
-    // Require error handling in callbacks
-    "handle-callback-err": 2,
-
     // Warn against string concatenation with __dirname and __filename
     "no-path-concat": 1,
 
     // Prefer using arrow functions for callbacks
     "prefer-arrow-callback": 1,
 
-    // Return inside each then() to create readable and reusable Promise chains.
-    // Forces developers to return console logs and http calls in promises.
-    "promise/always-return": 2,
-
-    //Enforces the use of catch() on un-returned promises
-    "promise/catch-or-return": 2,
-
-    // Warn against nested then() or catch() statements
-    "promise/no-nesting": 1,
-
     // Swotch strings to single quote (offset recommended)
-    "quotes": "off",
+    quotes: "off",
 
-    // Allow spacing in curly braces
+    // Allow spacing in curly braces (we're actually using this for readability)
     "object-curly-spacing": "off",
 
     // Max len is handled by prettier, if it turns out to be longer it's probbably a comment
     "max-len": "off",
 
-    // Indentation on each line
-    "indent": "off",
+    // Indentation is handled by prettier
+    indent: "off",
 
     // Allow "?" and ":" to be at the beginning of the line in ternary expressions
     "operator-linebreak": "off",
@@ -158,6 +144,19 @@
     "@typescript-eslint/no-non-null-assertion": "off",
 
     // Allow explicit any, but still avoid where possible
-    "@typescript-eslint/no-explicit-any": "off"
-  }
-}
+    "@typescript-eslint/no-explicit-any": "off",
+
+    // we're using empty functions as fallback for undefined props
+    "@typescript-eslint/no-empty-function": "off",
+
+    // This just gets in the way
+    "import/no-named-as-default-member": "off",
+    "import/no-named-as-default": "off",
+
+    // we're turning this off as it produces false positives on imported namespaces (i.e. react)
+    "import/default": "off",
+
+    // no-case-declarations
+    "no-case-declarations": "off",
+  },
+};

@@ -21,19 +21,19 @@ const readTestData = async (
     files.map((fName) => {
       const fPath = path.join(dir, fName);
 
-      return new Promise<FirestoreDataUpdate>((res) =>
+      return new Promise<FirestoreDataUpdate>((resolve) =>
         fs.readFile(fPath, (err, buff) => {
           if (err) {
             console.error(`Error reading ${fName}`, err);
-            res({});
+            resolve({});
           }
           try {
             // try and parse the buffer
             const jsonData = JSON.parse(buff.toString());
-            res(jsonData);
+            resolve(jsonData);
           } catch (err) {
             console.error(`Error parsing ${fName}`, err);
-            res({});
+            resolve({});
           }
         })
       );

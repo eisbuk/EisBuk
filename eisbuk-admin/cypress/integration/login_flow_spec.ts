@@ -293,6 +293,10 @@ describe("login", () => {
     it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
 
       // expect the email confirmation prompt on sign in link click
       cy.clearLocalStorage();
