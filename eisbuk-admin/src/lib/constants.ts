@@ -3,6 +3,10 @@
 import { getOrgFromLocation } from "@/utils/helpers";
 import { __testOrganization__ } from "@/__testSetup__/envData";
 
+// sometimes we want to change the behaviour of our app regardless of NODE_ENV (which can't be set explicitly with our current config)
+// therefore we're using the `__buildEnv__`, which we can control through `process.env.BUILD_ENV`, if undefined, will fall back to `process.env.NODE_ENV`
+export const __buildEnv__ = process.env.BUILD_ENV || process.env.NODE_ENV;
+
 /**
  * A date we're using for both storybook and testing
  * - for storybook it's convenient to have any 'static' date, in order for chromatic checks to not produce false positives
@@ -12,9 +16,9 @@ export const __storybookDate__ = "2021-03-01";
 export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable (production, test, etc)
-export const __isDev__ = process.env.NODE_ENV !== "production";
+export const __isDev__ = __buildEnv__ !== "production";
 // check for explicit "test" environment
-export const __isTest__ = process.env.NODE_ENV === "test";
+export const __isTest__ = __buildEnv__ === "test";
 
 // organization constants
 export const __organization__ = __isTest__
@@ -27,10 +31,10 @@ export const __organization__ = __isTest__
       ? getOrgFromLocation(window.location.hostname)
       : "localhost");
 
-// variables loaded from .env.deveolpment.local or .env.production.local file with respect to NODE_ENV
+// variables loaded from .env.deveolpment.local or .env.production.local file with respect to BUILD_ENV
 export const __projectId__ = process.env.REACT_APP_FIREBASE_PROJECT_ID;
 export const __firebaseApiKey__ =
-  process.env.NODE_ENV !== "production"
+  __buildEnv__ !== "production"
     ? "api-key"
     : process.env.REACT_APP_FIREBASE_API_KEY;
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;

@@ -1,28 +1,17 @@
 {
+  "extends": "../scaffolding/tsconfig.json",
   "compilerOptions": {
-    "target": "es5",
-    "module": "commonjs",
-    "lib": ["es2020"],
-    "skipLibCheck": true,
-    "sourceMap": true,
-    "outDir": "./dist",
-    "moduleResolution": "node",
-    "removeComments": false,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "noImplicitThis": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "resolveJsonModule": true,
+    "rootDir": "src",
     "baseUrl": ".",
-    "declaration": true
+
+    "lib": ["ESNext"],
+
+    "outDir": "dist",
+    "sourceMap": true,
+    "removeComments": false,
+    "declaration": true,
+    "declarationDir": "dist",
+    "types": ["node"]
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts"]

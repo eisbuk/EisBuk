@@ -27,7 +27,9 @@ jobs:
         run: |
           yarn --cwd eisbuk-admin build | tee build.output
           echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
-          cat build.output|grep File\ sizes -A5 >> $GITHUB_ENV
+          # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
+          # And store for use in later steps
+          cat build.output|awk '/^dist\// {print}' >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}

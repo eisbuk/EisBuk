@@ -15,6 +15,8 @@ import {
 
 import { defaultUser } from "@/__testSetup__/envData";
 
+import { saul } from "@/__testData__/customers";
+
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>
   i18n.t(input, params);
@@ -23,7 +25,11 @@ describe("login", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization but don't sign in
-    cy.initAdminApp().then(() => cy.visit(PrivateRoutes.Root));
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateFirestore(organization, ["customers.json"])
+      )
+      .then(() => cy.visit(PrivateRoutes.Root));
   });
 
   afterEach(() => {
@@ -62,8 +68,8 @@ describe("login", () => {
       // Name should be required
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("sends a password reset email on demand", () => {
@@ -192,6 +198,28 @@ describe("login", () => {
       cy.getAttrWith("aria-label", t(AdminAria.PageNav));
     });
 
+    it("shows code sent message (with phone number confirmation) and allows resend ", () => {
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.getAttrWith("id", "phone").type(defaultUser.phone);
+      cy.clickButton(t(ActionButton.Verify));
+      cy.contains(t(AuthTitle.EnterCode));
+      // check for phone confirmation message
+      cy.contains(t(AuthMessage.EnterSMSCode, { phone: defaultUser.phone }));
+      // should offer to resent if code not received
+      cy.clickButton(t(ActionButton.CodeNotReceived));
+      cy.contains(t(AuthTitle.ResendSMS));
+      cy.contains(t(AuthMessage.ResendSMS, { phone: defaultUser.phone }));
+      cy.clickButton(t(ActionButton.Resend));
+      // should redirect back to EnterSMSCode prompt
+      cy.contains(t(AuthMessage.EnterSMSCode, { phone: defaultUser.phone }));
+      cy.getRecaptchaCode(defaultUser.phone).then((code) => {
+        cy.getAttrWith("id", "code").type(code);
+        return cy.clickButton(t(ActionButton.Submit));
+      });
+      // login should be successful
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
     it("validates input fields", () => {
       // phone number is required
       cy.clickButton(t(ActionButton.Verify));
@@ -210,12 +238,20 @@ describe("login", () => {
       cy.contains(t(ValidationMessage.RequiredField));
     });
 
-    it("shows error message on wrong code", () => {
+    it("shows error message on wrong code and resets auth on cancel click", () => {
       cy.getAttrWith("id", "phone").clearAndType(defaultUser.phone);
       cy.clickButton(t(ActionButton.Verify));
       cy.getAttrWith("id", "code").type("wrong-code");
       cy.clickButton(t(ActionButton.Submit));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_CODE]));
+    });
+
+    it("resets form on cancel button click", () => {
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.clickButton(t(ActionButton.Cancel));
+      cy.contains(t(AuthTitle.SignInWithPhone));
+      cy.contains(t(AuthTitle.SignInWithGoogle));
+      cy.contains(t(AuthTitle.SignInWithEmail));
     });
   });
 
@@ -250,13 +286,17 @@ describe("login", () => {
       cy.getAttrWith("type", "email").type(newEmail);
       cy.clickButton(t(ActionButton.Send));
       cy.getSigninLink(newEmail).then((link) => cy.visit(link));
-      // user is registered, but not added as an admin yet - should redirect to unauthorized page
-      cy.contains(t(AuthMessage.NotAuthorized));
+      // user is registered, but not added as an admin yet - should redirect to not-registered page
+      cy.contains(t(AuthMessage.NotRegistered));
     });
 
     it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
 
       // expect the email confirmation prompt on sign in link click
       cy.clearLocalStorage();
@@ -289,5 +329,125 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(AuthErrorMessage[AuthErrorCodes.INVALID_EMAIL]));
     });
+
+    it("prompts user to confirm email if expected email and sign in email mismatch", () => {
+      // since it's difficult to reproduce the invalid email sign in link landing
+      // we need to resort to stubbing the response to test the expected behavior
+      cy.interceptTimes(1, "POST", signInWithEmailLinkURL, (req) => {
+        req.reply(400, createAuthReqError("INVALID_EMAIL"));
+      });
+
+      // get the login link as per usual
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // test langing to the auth page using different email than the one expected (test using stubbed behaviour)
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ConfirmEmail));
+      cy.contains(t(AuthMessage.DifferentSignInEmail));
+      // confirm sign in email and expect the login to be successful
+      // as the intercept stub should only be aplicable on the first call
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(i18n.t(ActionButton.Verify));
+      // expect to see admin page navigation on successful login
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
+
+    it("prompts user to resend email link if link expired or already used", () => {
+      // since it's difficult to reproduce the invalid email sign in link landing
+      // we need to resort to stubbing the response to test the expected behavior
+      cy.interceptTimes(1, "POST", signInWithEmailLinkURL, (req) => {
+        req.reply(400, createAuthReqError("EXPIRED_OOB_CODE"));
+      });
+
+      // get the login link as per usual
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(t(ActionButton.Send));
+      // wait for `check email` message to prevent race condition in the following assertions
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // test landing to the auth page using invalidated oob code (test using stubbed behaviour)
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.contains(t(AuthTitle.ResendEmail));
+      cy.contains(t(AuthMessage.ResendEmailLink));
+      // confirm resend email and log in successfully
+      cy.getAttrWith("type", "email").type(defaultUser.email);
+      cy.clickButton(i18n.t(ActionButton.Resend));
+      cy.contains(
+        t(AuthMessage.CheckSignInEmail, { email: defaultUser.email })
+      );
+
+      // expect to see admin page navigation on successful login
+      cy.getSigninLink(defaultUser.email).then((link) => cy.visit(link));
+      cy.getAttrWith("aria-label", t(AdminAria.PageNav));
+    });
   });
+
+  describe("Login redirect", () => {
+    it("Redirects to customer bookings page on customer (non-admin) login", () => {
+      const password = "password";
+      cy.addAuthUser({ email: saul.email, password });
+      // log in saul, who is not an admin, but exists in customers collection
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("type", "email").type(saul.email);
+      cy.clickButton(t(ActionButton.Next));
+      cy.contains(t(AuthTitle.SignIn));
+      cy.getAttrWith("type", "password").type(password);
+      cy.clickButton(t(ActionButton.SignIn));
+      // on successful login, should redirect to saul's customer bookings
+      cy.url().should("include", saul.secretKey);
+      cy.contains(`${saul.name} ${saul.surname}`);
+    });
+
+    it("redirects to non-registered page if user not admin, nor a registered customer", () => {
+      const email = "new-user@gmail.com";
+      const password = "password";
+      cy.addAuthUser({ email, password });
+      // log in saul, who is not an admin, but exists in customers collection
+      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("type", "email").type(email);
+      cy.clickButton(t(ActionButton.Next));
+      cy.contains(t(AuthTitle.SignIn));
+      cy.getAttrWith("type", "password").type(password);
+      cy.clickButton(t(ActionButton.SignIn));
+      // on successful login, should redirect to not-registered page
+      // the user is not admin and doesn't exist in customers collection
+      cy.contains(t(AuthMessage.NotRegistered));
+      cy.contains(
+        t(AuthMessage.ContactAdminsForRegistration, {
+          authString: email,
+          authMethod: "email",
+          organizationEmail: "test@email.com",
+        })
+      );
+    });
+  });
+});
+
+const signInWithEmailLinkURL =
+  "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithEmailLink?key=api-key";
+
+/**
+ * A helper used to construct firebase auth error,
+ * for cy.intercept stubbing
+ * @param message authErrorCode (i.e. IVNALID_EMA)
+ */
+const createAuthReqError = (message: keyof typeof AuthErrorCodes) => ({
+  error: {
+    code: 400,
+    message,
+    errors: [
+      {
+        message,
+        reason: "invalid",
+        domain: "global",
+      },
+    ],
+  },
 });

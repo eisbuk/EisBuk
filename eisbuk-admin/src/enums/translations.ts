@@ -16,7 +16,9 @@ export enum CustomerNavigationLabel {
 // #region auth
 export enum AuthMessage {
   NotAuthorized = "Authorization.NotAuthorized",
+  NotRegistered = "Authorization.NotRegistered",
   AdminsOnly = "Authorization.AdminsOnly",
+  ContactAdminsForRegistration = "Authorization.ContactAdminsForRegistration",
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
 
@@ -25,7 +27,11 @@ export enum AuthMessage {
 
   CheckSignInEmail = "Authorization.CheckSignInEmail",
   ConfirmSignInEmail = "Authorization.ConfirmSignInEmail",
+  DifferentSignInEmail = "Authorization.DifferentSignInEmail",
+  ResendEmailLink = "Authorization.ResendEmailLink",
 
+  EnterSMSCode = "Authorization.EnterSMSCode",
+  ResendSMS = "Authorization.ResendSMS",
   SMSDataRatesMayApply = "Authorization.SMSDataRatesMayApply",
 }
 export enum AuthErrorMessage {
@@ -48,6 +54,8 @@ export enum AuthTitle {
   RecoverPassword = "AuthTitle.RecoverPassword",
   CheckYourEmail = "AuthTitle.CheckYourEmail",
   ConfirmEmail = "AuthTitle.ConfirmEmail",
+  ResendEmail = "AuthTitle.ResendEmail",
+  ResendSMS = "AuthTitle.ResendSMS",
   EnterCode = "AuthTitle.EnterCode",
 }
 // #endregion auth
@@ -140,6 +148,7 @@ export enum Prompt {
 export enum ActionButton {
   SignIn = "ActionButton.SignIn",
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
+  CodeNotReceived = "ActionButton.CodeNotReceived",
 
   CreateSlot = "ActionButton.CreateSlot",
   EditSlot = "ActionButton.EditSlot",
@@ -161,6 +170,7 @@ export enum ActionButton {
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
   Send = "ActionButton.Send",
+  Resend = "ActionButton.Resend",
   Dismiss = "ActionButton.Dismiss",
   Submit = "ActionButton.Submit",
   Verify = "ActionButton.Verify",

@@ -6,10 +6,8 @@ import { isEmpty } from "lodash";
 
 import { LocalStore } from "@/types/store";
 
-import {
-  revalidateAdminStatus,
-  updateAuthUser,
-} from "@/store/actions/authOperations";
+import { updateAuthUser } from "@/store/actions/authOperations";
+import { getLocalAuth } from "@/store/selectors/auth";
 
 /**
  * A hook used to subscribe to firebase auth state changes and
@@ -33,7 +31,8 @@ export default (auth: Auth, store: Store<LocalStore, any>): void => {
   // as we're using organization data to check if user is admin of given organization
   useEffect(() => {
     if (organizations && !isEmpty(organizations)) {
-      dispatch(revalidateAdminStatus);
+      const authUser = getLocalAuth(store.getState());
+      dispatch(updateAuthUser(authUser));
     }
   }, [organizations]);
 
