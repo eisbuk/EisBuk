@@ -52,7 +52,5 @@ export const defaultUser = {
   phone: "+3912345678",
 };
 
-export const __dateNavNextId__ = "date-navigation-next-page";
-export const __currentDateId__ = "current-date";
 export const __dayWithSlots__ = "day-with-slots";
 export const __dayWithBookedSlots__ = "day-with-booked-slots";

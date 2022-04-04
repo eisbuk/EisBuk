@@ -1,12 +1,11 @@
-import { DateTime } from "luxon";
+import { DateTime, DateTimeUnit } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
+import i18n, { createDateTitle } from "@eisbuk/translations";
 
 import {
   PrivateRoutes,
   Routes,
-  __currentDateId__,
-  __dateNavNextId__,
   __dayWithBookedSlots__,
   __dayWithSlots__,
 } from "../temp";
@@ -14,13 +13,18 @@ import {
 import testCustomers from "../__testData__/customers.json";
 
 // extract gus from test data .json
-const gus = testCustomers.customers.saul as Customer;
+const gus = testCustomers.customers.gus as Customer;
+
+const testDateLuxon = DateTime.fromISO("2022-01-04");
+
+const openCalendar = (
+  date: DateTime = testDateLuxon,
+  jump: DateTimeUnit = "week"
+) => cy.contains(i18n.t(createDateTitle(date, jump)) as string).click();
 
 describe("Date Switcher", () => {
   describe("Customer calendar view", () => {
     beforeEach(() => {
-      const testDateLuxon = DateTime.fromISO("2022-01-04");
-
       cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp()
         .then((organization) =>
@@ -29,18 +33,21 @@ describe("Date Switcher", () => {
         .then(() => cy.signIn());
     });
 
-    it("should show badges on days with empty slots in customer calendar view", () => {
+    it("shows appropriate badges on clandar days in customer calendar view", () => {
       cy.visit([Routes.CustomerArea, gus.secretKey, "calendar"].join("/"));
-      cy.getAttrWith("data-testid", __currentDateId__).click();
+
+      openCalendar();
+
+      // should show a has-booked-slots badge on days with slots
+      // the customer has booked
       cy.getAttrWith("data-testid", __dayWithSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
         .and("equal", DateTime.fromISO("2022-01-02").toFormat("DD"));
-    });
-    it("should show badges on days with booked slots in customer calendar view", () => {
-      cy.visit([Routes.CustomerArea, gus.secretKey, "calendar"].join("/"));
-      cy.getAttrWith("data-testid", __currentDateId__).click();
+
+      // should show a has-slots badge on days with existing slots
+      // but no bookings for a day
       cy.getAttrWith("data-testid", __dayWithBookedSlots__)
         .children()
         .eq(0)
@@ -48,12 +55,9 @@ describe("Date Switcher", () => {
         .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
     });
   });
+
   describe("Attendance view", () => {
     beforeEach(() => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-04";
-      const testDateLuxon = DateTime.fromISO(testDate);
-
       cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp()
         .then((organization) =>
@@ -62,19 +66,17 @@ describe("Date Switcher", () => {
         .then(() => cy.signIn());
     });
 
-    it("should show badges on days with booked slots in attendance view", () => {
+    it("shows appropriate badges on clandar days in attendance view", () => {
       cy.visit(PrivateRoutes.Root);
-      cy.getAttrWith("data-testid", __currentDateId__).click();
+
+      openCalendar(testDateLuxon, "day");
+
       cy.getAttrWith("data-testid", __dayWithBookedSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
         .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
-    });
-    it("should show badges on days with empty slots in attendance view", () => {
-      cy.visit(PrivateRoutes.Root);
-      cy.getAttrWith("data-testid", __dateNavNextId__);
-      cy.getAttrWith("data-testid", __currentDateId__).click();
+
       cy.getAttrWith("data-testid", __dayWithSlots__)
         .children()
         .eq(0)

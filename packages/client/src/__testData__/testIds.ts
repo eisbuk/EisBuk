@@ -24,7 +24,6 @@ export const __noSlotsDateId__ = "no-slots-date";
 // #region DateNavigation
 export const __dateNavNextId__ = "date-navigation-next-page";
 export const __dateNavPrevId__ = "date-navigation-previous-page";
-export const __currentDateId__ = "current-date";
 // #endregion DateNavigation
 
 // #region DateSwitcher

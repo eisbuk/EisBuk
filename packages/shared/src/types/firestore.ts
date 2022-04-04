@@ -169,14 +169,6 @@ export interface SlotsById {
 export interface SlotsByDay {
   [dayStr: string]: SlotsById;
 }
-/**
- * Structure for using in calendar picker
- * key is the date in ISO and value is whether this is booked, empty or hasSlots
- */
-export interface DateHasBookingsMap {
-  [dayInISO: string]: string;
-}
-
 // #endregion slots
 
 // #region customers

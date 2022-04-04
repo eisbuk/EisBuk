@@ -2,27 +2,23 @@ import {
   CustomerBookingEntry,
   SlotAttendnace,
   SlotsByDay,
-  DateHasBookingsMap,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
-import { DateTime } from "luxon";
 
-const getMonthTemplate = (date: DateTime) => {
-  const startDate = date.startOf("month");
-  const endDate = date.endOf("month");
-
-  return Array(endDate.day - startDate.day).reduce((acc, _, i) => {
-    const isoDate = startDate.plus({ days: i }).toISODate();
-    return { ...acc, [isoDate]: "empty" };
-  }, {});
-};
+/**
+ * Structure for using in calendar picker
+ * key is the date in ISO and value is whether this is booked, empty or hasSlots
+ */
+export interface DateHasBookingsMap {
+  [dayInISO: string]: "booked" | "hasSlots";
+}
 
 const getCalendarDataFromAttendance = (
   date: string,
   attendance: Record<string, SlotAttendnace>
 ): DateHasBookingsMap => {
-  const calendar = getMonthTemplate(DateTime.fromISO(date));
+  const calendar = {} as DateHasBookingsMap;
   Object.values(attendance).forEach((slotAttendance) => {
     const { date, attendances } = slotAttendance;
 
@@ -46,7 +42,7 @@ const getCalendarDataFromSlots = (
   slotsByDay: SlotsByDay,
   bookedSlots: BookedSlots
 ): DateHasBookingsMap => {
-  const calendar = getMonthTemplate(DateTime.fromISO(date));
+  const calendar = {} as DateHasBookingsMap;
 
   Object.keys(slotsByDay).forEach((dayStr) => {
     if (calendar[dayStr] !== "booked") {
@@ -69,7 +65,6 @@ export const getCalendarData =
       },
     } = state;
 
-    const luxonDate = DateTime.fromISO(date);
     // if attendance exists, the user is an admin
     // use the most efficient booked state cheking (against attendance)
     if (attendance) {
@@ -78,10 +73,10 @@ export const getCalendarData =
 
     // return early if slot/booking data not yet loaded
     if (!slotsByMonth || slotsByMonth.length) {
-      return getMonthTemplate(luxonDate);
+      return {} as DateHasBookingsMap;
     }
 
-    const monthStr = date.substr(0, 7);
+    const monthStr = date.substring(0, 7);
     const slotsByDay = slotsByMonth[monthStr] || {};
 
     return getCalendarDataFromSlots(date, slotsByDay, bookedSlots);

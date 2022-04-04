@@ -2,8 +2,6 @@ import React from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
-import { DateHasBookingsMap } from "@eisbuk/shared";
-
 import Menu, { MenuProps } from "@mui/material/Menu";
 import { CalendarPicker } from "@mui/lab";
 import Badge from "@mui/material/Badge";
@@ -12,7 +10,10 @@ import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay";
 import { styled } from "@mui/material/styles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-import { getCalendarData } from "@/store/selectors/calendar";
+import {
+  getCalendarData,
+  DateHasBookingsMap,
+} from "@/store/selectors/calendar";
 
 import {
   __calendarMenuId__,

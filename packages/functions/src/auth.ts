@@ -7,7 +7,7 @@ import {
   OrganizationData,
   OrgSubCollection,
   QueryAuthStatusPayload,
-} from "eisbuk-shared";
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 import { checkRequiredFields } from "./utils";

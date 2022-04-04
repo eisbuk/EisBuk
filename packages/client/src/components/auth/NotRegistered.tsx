@@ -1,13 +1,13 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
-import { useTranslation } from "react-i18next";
+import { Redirect } from "react-router-dom";
 
 import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
-import { AuthMessage } from "@eisbuk/translations";
+import { useTranslation, AuthMessage } from "@eisbuk/translations";
 
 import { Routes } from "@/enums/routes";
 
@@ -20,7 +20,6 @@ import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.sv
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
 import { getLocalAuth, getIsAuthEmpty } from "@/store/selectors/auth";
-import { Redirect } from "react-router-dom";
 
 // #region backgroundImages
 const backgrounds = [
