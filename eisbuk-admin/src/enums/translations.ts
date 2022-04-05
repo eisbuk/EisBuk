@@ -158,6 +158,7 @@ export enum ActionButton {
 
   BookInterval = "ActionButton.BookInterval",
   FinalizeBookings = "ActionButton.FinalizeBookings",
+  AddToCalendar = "ActionButton.AddToCalendar",
 
   CustomerBookings = "ActionButton.CustomerBookings",
   SendBookingsEmail = "ActionButton.SendBookingsEmail",
@@ -203,7 +204,7 @@ export enum NotificationMessage {
 
   EmailSent = "Notification.EmailSent",
   SMSSent = "Notification.SMSSent",
-  BookingDateExtended = "Notification.BookingdateExtended",
+  BookingDateExtended = "Notification.BookingDateExtended",
 
   Error = "Notification.Error",
 }

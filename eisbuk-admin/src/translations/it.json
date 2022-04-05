@@ -144,6 +144,7 @@
 
     "BookInterval": "Prenota",
     "FinalizeBookings": "Finito",
+    "AddToCalendar": "Aggiungi Al Calendario",
 
     "CustomerBookings": "Prenotazioni",
     "SendBookingsEmail": "Invia email link prenotazioni",
