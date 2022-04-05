@@ -66,7 +66,7 @@ jobs:
           set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
-          yarn --cwd packages/client deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          yarn deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
           # This horrible contraption converts lines like
           # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
@@ -260,7 +260,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: yarn --cwd ../client emulators:start
+          start: yarn --cwd ../../ emulators:start
           working-directory: packages/e2e
           wait-on: http://localhost:8080, http://localhost:5000
           # skip recording if no 'secrets.CYPRESS_KEY' found

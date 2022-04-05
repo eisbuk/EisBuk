@@ -40,7 +40,7 @@ jobs:
           REACT_APP_SENTRY_ENVIRONMENT: production
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Deploy to firebase
-        run: yarn --cwd packages/client deploy:production
+        run: yarn deploy:production
         env: # Or as an environment variable
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Create Sentry release
