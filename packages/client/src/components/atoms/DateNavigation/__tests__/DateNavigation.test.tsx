@@ -8,7 +8,7 @@ import { cleanup, screen, render } from "@testing-library/react";
 import { DateTime } from "luxon";
 import * as reactRedux from "react-redux";
 
-import i18n, { DateFormat } from "@eisbuk/translations";
+import i18n, { createDateTitle, DateFormat } from "@eisbuk/translations";
 
 import DateNavigation from "../DateNavigation";
 
@@ -19,7 +19,6 @@ import { renderWithRouter } from "@/__testUtils__/wrappers";
 import { testDateLuxon } from "@/__testData__/date";
 import {
   __calendarMenuId__,
-  __currentDateId__,
   __dateNavNextId__,
   __dateNavPrevId__,
 } from "@/__testData__/testIds";
@@ -127,7 +126,7 @@ describe("Date Navigation", () => {
     });
     test("should disable calendar on views paginated by month", () => {
       renderWithRouter(<DateNavigation jump="month" />);
-      screen.getByTestId(__currentDateId__).click();
+      screen.getByText(createDateTitle(testDateLuxon, "month", i18n.t)).click();
       const calendarMenu = screen.queryByTestId(__calendarMenuId__);
       expect(calendarMenu).toBeNull();
     });
