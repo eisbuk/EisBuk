@@ -1,7 +1,7 @@
 {
   "firestore": {
-    "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "rules": "packages/firebase/firestore.rules",
+    "indexes": "packages/firebase/firestore.indexes.json"
   },
   "functions": {
     "predeploy": [
@@ -11,12 +11,12 @@
     "postdeploy": [
       "sed -i -e \\'s/  .dependencies.: {/  \"dependencies\": {\\n    \"@eisbuk\\/shared\": \"1.0.0\",/\\' \"$RESOURCE_DIR/package.json\""
     ],
-    "source": "../functions"
+    "source": "packages/functions"
   },
   "hosting": [
     {
       "site": "igoriceteam",
-      "public": "dist",
+      "public": "packages/client/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
@@ -27,7 +27,7 @@
     },
     {
       "site": "igorice",
-      "public": "dist",
+      "public": "packages/client/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "redirects": [
         {
@@ -44,7 +44,7 @@
     },
     {
       "site": "eisbuk",
-      "public": "dist",
+      "public": "packages/client/dist",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
       "rewrites": [
         {
