@@ -13,6 +13,7 @@
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
     "clsx": "^1.1.1",
+    "datebook": "^7.0.8",
     "eisbuk-shared": "1.0.0",
     "firebase": "9.1.1",
     "firebase-tools": "^9.16.6",

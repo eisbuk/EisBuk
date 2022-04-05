@@ -9231,6 +9231,13 @@ date-format@0.0.2:
   resolved "https://registry.yarnpkg.com/date-format/-/date-format-0.0.2.tgz#fafd448f72115ef1e2b739155ae92f2be6c28dd1"
   integrity sha1-+v1Ej3IRXvHitzkVWukvK+bCjdE=
 
+datebook@^7.0.8:
+  version "7.0.8"
+  resolved "https://registry.yarnpkg.com/datebook/-/datebook-7.0.8.tgz#21668cab43c36c754ed54ef99220ee65f5a4bc37"
+  integrity sha512-+EYcW6Ly06MBjGuJUEfJPb4ZrBa9VutxGAbErBy9NOqOlaSmxnChEAEetyo+uyseFNvGNuO593frXcQJDnGpYw==
+  dependencies:
+    file-saver "^2.0.2"
+
 dateformat@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
@@ -11051,6 +11058,11 @@ file-loader@^6.2.0:
   dependencies:
     loader-utils "^2.0.0"
     schema-utils "^3.0.0"
+
+file-saver@^2.0.2:
+  version "2.0.5"
+  resolved "https://registry.yarnpkg.com/file-saver/-/file-saver-2.0.5.tgz#d61cfe2ce059f414d899e9dd6d4107ee25670c38"
+  integrity sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==
 
 file-system-cache@^1.0.5:
   version "1.0.5"
