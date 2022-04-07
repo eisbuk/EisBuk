@@ -27,7 +27,7 @@ jobs:
       - name: Install and link packages
         run: yarn
       - name: Build app
-        run: yarn --cwd eisbuk-admin build
+        run: yarn --cwd packages/client build
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
@@ -40,7 +40,7 @@ jobs:
           REACT_APP_SENTRY_ENVIRONMENT: production
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Deploy to firebase
-        run: yarn --cwd eisbuk-admin deploy:production
+        run: yarn deploy:production
         env: # Or as an environment variable
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Create Sentry release
@@ -52,4 +52,4 @@ jobs:
           SENTRY_URL: ${{ secrets.SENTRY_URL }}
         with:
           environment: production
-          sourcemaps: "./eisbuk-admin/dist/app"
+          sourcemaps: "./packages/client/dist/app"
