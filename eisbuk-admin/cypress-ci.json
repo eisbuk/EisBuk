@@ -1,7 +1,0 @@
-{
-  "baseUrl": "http://localhost:5000",
-  "projectId": "j8dx4d",
-  "reporter": "cypress-mochawesome-reporter",
-  "video": false,
-  "defaultCommandTimeout": 10000
-}

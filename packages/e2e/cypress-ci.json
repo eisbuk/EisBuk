@@ -1,0 +1,20 @@
+{
+  "projectId": "j8dx4d",
+  "fixturesFolder": "fixtures",
+  "pluginsFile": "plugins/index.ts",
+  "supportFile": "support/index.ts",
+  "integrationFolder": "integration",
+
+  "baseUrl": "http://localhost:5000",
+
+  "reporter": "cypress-mochawesome-reporter",
+  "reporterOptions": {
+    "reportDir": "reports/html",
+    "reportTitle": "EisBuk-e2e",
+    "overwrite": true,
+    "saveHtml": true
+  },
+
+  "video": false,
+  "defaultCommandTimeout": 10000
+}
