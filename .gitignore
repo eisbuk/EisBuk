@@ -1,16 +1,35 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
+# -------General ignore patterns (for all subfolders of the repo)------- #
 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-.env.staging.local
+# Dependencies
+**/node_modules
+**/.pnp
+**/.pnp.js
 
+# Secrets
+**/.env.local
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+**/.env.staging.local
+
+# Misc. .log files
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/build-storybook.log*
+**/eslint.log
+
+# IDE specific
+**/.vscode
+
+# OS specific
+**/.DS_Store
+
+# Production build or library dist files
+**/dist
+**/build
+
+# -------Ignored contents of the root of the repo------- #
 
 # Firebase cache
 .firebase/
@@ -21,15 +40,3 @@ firebase*.log
 firestore*.log
 ui-debug.log
 
-# Misc. .log files
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-build-storybook.log*
-eslint.log
-
-# IDE specific
-.vscode
-node_modules
-**/node_modules
-./node_modules
