@@ -30,3 +30,4 @@ eslint.log
 
 # IDE specific
 .vscode
+node_modules
