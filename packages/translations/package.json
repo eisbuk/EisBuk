@@ -14,8 +14,10 @@
   "dependencies": {
     "@eisbuk/shared": "1.0.0",
     "i18next": "^21.6.14",
+    "i18next-browser-languagedetector": "^6.1.4",
     "i18next-http-backend": "^1.2.6",
-    "luxon": "^2.0.2"
+    "luxon": "^2.0.2",
+    "react-i18next": "^11.16.4"
   },
   "scripts": {
     "build": "vite build && tsc",
@@ -24,12 +26,13 @@
     "typecheck": "tsc"
   },
   "devDependencies": {
-    "@types/i18next": "^13.0.0",
-    "@types/i18next-browser-languagedetector": "^3.0.0",
     "@types/luxon": "^2.0.5",
     "@types/node": "^16.11.10",
-    "@types/react-i18next": "^8.1.0",
+    "react": "^16.13.1",
     "typescript": "~4.4.2",
     "vite": "^2.8.6"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1"
   }
 }
