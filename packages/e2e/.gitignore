@@ -1,0 +1,10 @@
+# Testing temp
+/.nyc_output
+
+# Test result files
+junit.xml
+coverage
+videos
+screenshots
+reports
+

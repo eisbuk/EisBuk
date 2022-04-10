@@ -1,0 +1,29 @@
+{
+  "firestore": {
+    "rules": "packages/firebase/firestore.rules",
+    "indexes": "packages/firebase/firestore.indexes.json"
+  },
+  "functions": {
+    "predeploy": ["yarn --cwd \"$RESOURCE_DIR\" run lint"],
+    "source": "packages/functions"
+  },
+  "emulators": {
+    "auth": {
+      "port": 9098
+    },
+    "functions": {
+      "port": 5002
+    },
+    "firestore": {
+      "port": 8081
+    },
+    "ui": {
+      "enabled": true,
+      "port": 4001
+    },
+    "hosting": {
+      "enabled": false,
+      "port": 5006
+    }
+  }
+}
