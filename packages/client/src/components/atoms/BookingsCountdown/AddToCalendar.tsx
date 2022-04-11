@@ -32,7 +32,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
       const endDate = getEndDate(bookedSlot.date, bookedSlot.interval);
 
       const bookedSlotEvent = {
-        title: "Booked Slot",
+        title: "Booked_Slots",
         start: startDate,
         end: endDate,
       };

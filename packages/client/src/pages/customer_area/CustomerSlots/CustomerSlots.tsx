@@ -5,11 +5,7 @@ import { useSelector } from "react-redux";
 import Alert from "@mui/material/Alert";
 
 import { SlotInterface } from "@eisbuk/shared";
-import {
-  useTranslation,
-  BookingCountdownMessage,
-  Alerts,
-} from "@eisbuk/translations";
+import { useTranslation, Alerts } from "@eisbuk/translations";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -154,9 +150,6 @@ const CustomerSlots: React.FC<Props> = ({
           </SlotsDayContainer>
         );
       })}
-      {countdownProps?.message === BookingCountdownMessage.SecondDeadline && (
-        <BookingsCountdown {...countdownProps} />
-      )}
     </>
   );
 
