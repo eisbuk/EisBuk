@@ -249,6 +249,12 @@ importers:
       "@cypress/code-coverage": ^3.9.12
       "@eisbuk/shared": 1.0.0
       "@eisbuk/translations": 1.0.0
+      "@firebase/app": ^0.7.20
+      "@firebase/app-compat": ^0.1.21
+      "@firebase/app-types": ^0.7.0
+      "@firebase/auth": ^0.19.11
+      "@firebase/firestore": ^3.4.7
+      "@firebase/functions": ^0.7.10
       "@google-cloud/firestore": ^4.13.2
       "@types/luxon": ^2.0.2
       "@types/node": ^16.11.10
@@ -257,22 +263,31 @@ importers:
       cypress-mochawesome-reporter: ^2.3.0
       firebase-admin: ^9.4.2
       luxon: ^2.0.2
+      mocha: ^8.2.1
       mochawesome: ^7.0.1
       typescript: ~4.4.2
       uuid: ^8.3.0
+    dependencies:
+      "@firebase/app": 0.7.20
+      "@firebase/app-compat": 0.1.21
+      "@firebase/auth": 0.19.11_@firebase+app@0.7.20
+      "@firebase/firestore": 3.4.7_@firebase+app@0.7.20
+      "@firebase/functions": 0.7.10_d8b1d8a8908d69140f74bf409d5ccca7
     devDependencies:
       "@cypress/code-coverage": 3.9.12_cypress@8.7.0
       "@eisbuk/shared": link:../shared
       "@eisbuk/translations": link:../translations
+      "@firebase/app-types": 0.7.0
       "@google-cloud/firestore": 4.15.1
       "@types/luxon": 2.3.1
       "@types/node": 16.11.26
       "@types/uuid": 8.3.4
       cypress: 8.7.0
-      cypress-mochawesome-reporter: 2.4.0_cypress@8.7.0
-      firebase-admin: 9.12.0
+      cypress-mochawesome-reporter: 2.4.0_cypress@8.7.0+mocha@8.4.0
+      firebase-admin: 9.12.0_b2c59dabb74e592c496f4266c968bb15
       luxon: 2.3.1
-      mochawesome: 7.1.3
+      mocha: 8.4.0
+      mochawesome: 7.1.3_mocha@8.4.0
       typescript: 4.4.4
       uuid: 8.3.2
 
@@ -2618,7 +2633,7 @@ packages:
       browserify: 16.5.2
       coffeeify: 3.0.1_coffeescript@1.12.7
       coffeescript: 1.12.7
-      debug: 4.3.3
+      debug: 4.3.4
       fs-extra: 9.1.0
       lodash.clonedeep: 4.5.0
       through2: 2.0.5
@@ -3322,18 +3337,6 @@ packages:
       "@firebase/util": 1.4.0
     dev: false
 
-  /@firebase/auth-interop-types/0.1.6_@firebase+util@1.5.1:
-    resolution:
-      {
-        integrity: sha512-etIi92fW3CctsmR9e3sYM3Uqnoq861M0Id9mdOPF6PWIg38BXL5k4upCNBggGUpLIS0H1grMOvy/wn1xymwe2g==,
-      }
-    peerDependencies:
-      "@firebase/app-types": 0.x
-      "@firebase/util": 1.x
-    dependencies:
-      "@firebase/util": 1.5.1
-    dev: true
-
   /@firebase/auth-types/0.10.3_0cd4160f67e87572471d89d202cbf809:
     resolution:
       {
@@ -3464,24 +3467,6 @@ packages:
       - "@firebase/app-types"
     dev: false
 
-  /@firebase/database-compat/0.1.7:
-    resolution:
-      {
-        integrity: sha512-T1mleRv2A8wyTV/jUuOdkN9Tl2lz0RGauqGc9nxP3AUzS9m3gIDN7u4CahZSdJlkR6tSU/MEWlfs5Q/oZStqxg==,
-      }
-    peerDependencies:
-      "@firebase/app-compat": 0.x
-    dependencies:
-      "@firebase/component": 0.5.12
-      "@firebase/database": 0.12.7
-      "@firebase/database-types": 0.9.6
-      "@firebase/logger": 0.3.2
-      "@firebase/util": 1.5.1
-      tslib: 2.3.1
-    transitivePeerDependencies:
-      - "@firebase/app-types"
-    dev: true
-
   /@firebase/database-compat/0.1.7_b2c59dabb74e592c496f4266c968bb15:
     resolution:
       {
@@ -3569,22 +3554,6 @@ packages:
     transitivePeerDependencies:
       - "@firebase/app-types"
     dev: false
-
-  /@firebase/database/0.12.7:
-    resolution:
-      {
-        integrity: sha512-HL2NMQ3Ce5YNM2MdEuACHmU9NQEwq2F64R0XK+CReph40skxp+A7TvlJDO5bTAC0s3l3ebgCA9VmxfJu5R6UAA==,
-      }
-    dependencies:
-      "@firebase/auth-interop-types": 0.1.6_@firebase+util@1.5.1
-      "@firebase/component": 0.5.12
-      "@firebase/logger": 0.3.2
-      "@firebase/util": 1.5.1
-      faye-websocket: 0.11.4
-      tslib: 2.3.1
-    transitivePeerDependencies:
-      - "@firebase/app-types"
-    dev: true
 
   /@firebase/database/0.12.7_@firebase+app-types@0.7.0:
     resolution:
@@ -12043,6 +12012,24 @@ packages:
       - mocha
     dev: true
 
+  /cypress-mochawesome-reporter/2.4.0_cypress@8.7.0+mocha@8.4.0:
+    resolution:
+      {
+        integrity: sha512-hp1shdb4ld897WwYTgJviSjJFVpllMNesflL9FXOa0kOz4GM7UaLESrX8pnkUHBvYyO05iDMsgWhJ0x6BABukA==,
+      }
+    engines: { node: ">=10" }
+    peerDependencies:
+      cypress: ">=6.2.0"
+    dependencies:
+      cypress: 8.7.0
+      fs-extra: 9.1.0
+      mochawesome: 6.3.1_mocha@8.4.0
+      mochawesome-merge: 4.2.1
+      mochawesome-report-generator: 5.2.0
+    transitivePeerDependencies:
+      - mocha
+    dev: true
+
   /cypress/8.7.0:
     resolution:
       {
@@ -14834,30 +14821,6 @@ packages:
       path-exists: 4.0.0
     dev: true
 
-  /firebase-admin/9.12.0:
-    resolution:
-      {
-        integrity: sha512-AtA7OH5RbIFGoc0gZOQgaYC6cdjdhZv4w3XgWoupkPKO1HY+0GzixOuXDa75kFeoVyhIyo4PkLg/GAC1dC1P6w==,
-      }
-    engines: { node: ">=10.13.0" }
-    dependencies:
-      "@firebase/database-compat": 0.1.7
-      "@firebase/database-types": 0.7.3
-      "@types/node": 17.0.23
-      dicer: 0.3.1
-      jsonwebtoken: 8.5.1
-      jwks-rsa: 2.0.5
-      node-forge: 0.10.0
-    optionalDependencies:
-      "@google-cloud/firestore": 4.15.1
-      "@google-cloud/storage": 5.19.0
-    transitivePeerDependencies:
-      - "@firebase/app-compat"
-      - "@firebase/app-types"
-      - encoding
-      - supports-color
-    dev: true
-
   /firebase-admin/9.12.0_b2c59dabb74e592c496f4266c968bb15:
     resolution:
       {
@@ -15770,7 +15733,7 @@ packages:
       fs.realpath: 1.0.0
       inflight: 1.0.6
       inherits: 2.0.4
-      minimatch: 3.0.4
+      minimatch: 3.1.2
       once: 1.4.0
       path-is-absolute: 1.0.1
     dev: true
@@ -20404,6 +20367,27 @@ packages:
       uuid: 8.3.2
     dev: true
 
+  /mochawesome/6.3.1_mocha@8.4.0:
+    resolution:
+      {
+        integrity: sha512-G2J7Le8ap+0222otJQEUVFs7RYzphiIk21NzaBZE2dbyHJ2+9aai+V2cV7lreEKigDpwQ+SXeiiBH9KQlrkaAQ==,
+      }
+    peerDependencies:
+      mocha: ">=7"
+    dependencies:
+      chalk: 4.1.2
+      diff: 5.0.0
+      json-stringify-safe: 5.0.1
+      lodash.isempty: 4.4.0
+      lodash.isfunction: 3.0.9
+      lodash.isobject: 3.0.2
+      lodash.isstring: 4.0.1
+      mocha: 8.4.0
+      mochawesome-report-generator: 5.2.0
+      strip-ansi: 6.0.1
+      uuid: 8.3.2
+    dev: true
+
   /mochawesome/7.1.3:
     resolution:
       {
@@ -20419,6 +20403,27 @@ packages:
       lodash.isfunction: 3.0.9
       lodash.isobject: 3.0.2
       lodash.isstring: 4.0.1
+      mochawesome-report-generator: 6.2.0
+      strip-ansi: 6.0.1
+      uuid: 8.3.2
+    dev: true
+
+  /mochawesome/7.1.3_mocha@8.4.0:
+    resolution:
+      {
+        integrity: sha512-Vkb3jR5GZ1cXohMQQ73H3cZz7RoxGjjUo0G5hu0jLaW+0FdUxUwg3Cj29bqQdh0rFcnyV06pWmqmi5eBPnEuNQ==,
+      }
+    peerDependencies:
+      mocha: ">=7"
+    dependencies:
+      chalk: 4.1.2
+      diff: 5.0.0
+      json-stringify-safe: 5.0.1
+      lodash.isempty: 4.4.0
+      lodash.isfunction: 3.0.9
+      lodash.isobject: 3.0.2
+      lodash.isstring: 4.0.1
+      mocha: 8.4.0
       mochawesome-report-generator: 6.2.0
       strip-ansi: 6.0.1
       uuid: 8.3.2
