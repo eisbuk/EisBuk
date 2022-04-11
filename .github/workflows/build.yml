@@ -17,15 +17,17 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            **/node_modules
-            node_modules
+            ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
-        run: yarn
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
       - name: Build app
         run: |
-          yarn --cwd packages/client build | tee build.output
+          pnpm -C packages/client build | tee build.output
           echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
           # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
           # And store for use in later steps
@@ -66,7 +68,7 @@ jobs:
           set -e
           # Run the `deploy:preview` script, passing the current git branch to be used for the name
           # of the preview channel
-          yarn deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          pnpm deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
           # This horrible contraption converts lines like
           # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
@@ -117,14 +119,16 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            **/node_modules
-            node_modules
+            ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
-        run: yarn
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
       - name: Run tests
-        run: yarn --cwd packages/client test:emulators:ci
+        run: pnpm -C packages/client test:emulators:ci
       - name: Check if secrets are available
         id: has_secret
         if: success() || failure()
@@ -195,43 +199,45 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            **/node_modules
-            node_modules
+            ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
-        run: yarn
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
       - name: Lint client app
-        run: "yarn --cwd packages/client lint:strict"
+        run: "pnpm -C packages/client lint:strict"
       - name: Lint shared package
         # Do not run on cancelled; run in all other cases
         if: success() || failure()
-        run: "yarn --cwd packages/shared lint:strict"
+        run: "pnpm -C packages/shared lint:strict"
       - name: Lint the functions
         if: success() || failure()
-        run: "yarn --cwd packages/functions lint:strict"
+        run: "pnpm -C packages/functions lint:strict"
       - name: Lint translations
         if: success() || failure()
-        run: "yarn --cwd packages/translations lint:strict"
+        run: "pnpm -C packages/translations lint:strict"
       - name: Lint e2e tests
         if: success() || failure()
-        run: "yarn --cwd packages/e2e lint:strict"
+        run: "pnpm -C packages/e2e lint:strict"
 
       - name: Typecheck client app
         if: success() || failure()
-        run: "yarn --cwd packages/client typecheck"
+        run: "pnpm -C packages/client typecheck"
       - name: Typecheck shared package
         if: success() || failure()
-        run: "yarn --cwd packages/shared typecheck"
+        run: "pnpm -C packages/shared typecheck"
       - name: Typecheck the functions
         if: success() || failure()
-        run: "yarn --cwd packages/functions typecheck"
+        run: "pnpm -C packages/functions typecheck"
       - name: Typecheck translations
         if: success() || failure()
-        run: "yarn --cwd packages/translations typecheck"
+        run: "pnpm -C packages/translations typecheck"
       - name: Typecheck e2e tests
         if: success() || failure()
-        run: "yarn --cwd packages/e2e typecheck"
+        run: "pnpm -C packages/e2e typecheck"
 
   cypress-run:
     runs-on: ubuntu-20.04
@@ -241,26 +247,25 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules
+      - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
         with:
           path: |
-            **/node_modules
-            node_modules
+            ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-            $HOME/.cache/Cypress
-            $HOME/Library/Caches/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-node14-v1-${{ hashFiles('**/yarn.lock') }}
-
-      - name: Install dependencies
-        run: yarn
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Install and link packages
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
 
       - name: Build app
-        run: yarn --cwd packages/client build:test
+        run: pnpm -C packages/client build:test
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: yarn --cwd ../../ emulators:start
+          start: pnpm -C ../../ emulators:start
           working-directory: packages/e2e
           wait-on: http://localhost:8080, http://localhost:5000
           # skip recording if no 'secrets.CYPRESS_KEY' found
