@@ -2,20 +2,20 @@
   "private": true,
   "name": "eisbuk",
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
     "@typescript-eslint/parser": "^4.33.0",
-    "eslint": "^7.31.0",
+    "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-import-resolver-typescript": "^2.4.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-unused-imports": "^1.0.1",
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint-plugin-unused-imports": "^1.1.5",
     "husky": "^7.0.4",
-    "lint-staged": "^12.0.3",
-    "prettier": "^2.4.1",
-    "typescript": "~4.4.2"
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.2",
+    "typescript": "~4.4.4"
   },
   "scripts": {
     "emulators:inspect": "bash -c '(trap \"kill 0\" SIGINT; pnpm -C packages/functions watch & firebase emulators:start --project eisbuk --inspect-functions 9229)'",
@@ -35,6 +35,6 @@
   },
   "dependencies": {
     "firebase": "9.1.1",
-    "firebase-tools": "^9.16.6"
+    "firebase-tools": "^9.23.3"
   }
 }
