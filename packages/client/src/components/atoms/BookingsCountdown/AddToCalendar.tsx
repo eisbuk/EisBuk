@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
 
@@ -10,6 +11,7 @@ import Button from "@mui/material/Button";
 import { ActionButton } from "@eisbuk/translations";
 import { LocalStore } from "@/types/store";
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
+import { getAboutOrganization } from "@/store/selectors/app";
 
 interface Props {
   /**
@@ -21,6 +23,8 @@ interface Props {
 const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
   const classes = useStyles();
 
+  const { displayName = "", location = "" } =
+    useSelector(getAboutOrganization) || {};
   const { t } = useTranslation();
 
   // is displayed when bookings are finalized aka deadline is null
@@ -33,6 +37,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
 
       const bookedSlotEvent = {
         title: "Booked_Slots",
+        organizer: displayName,
+        location: location,
         start: startDate,
         end: endDate,
       };
