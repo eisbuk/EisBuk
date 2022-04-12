@@ -1,5 +1,5 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslation, ActionButton } from "@eisbuk/translations";
 import { useSelector } from "react-redux";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
@@ -8,7 +8,6 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import Button from "@mui/material/Button";
 
-import { ActionButton } from "@eisbuk/translations";
 import { LocalStore } from "@/types/store";
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 import { getAboutOrganization } from "@/store/selectors/app";
