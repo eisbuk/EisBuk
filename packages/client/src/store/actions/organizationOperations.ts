@@ -22,7 +22,7 @@ export const updateOrganization =
   ): FirestoreThunk =>
   async (dispatch) => {
     try {
-      const { displayName, location } = orgData;
+      const { displayName, location, emailFrom } = orgData;
       const db = getFirestore();
       const docRef = doc(db, getOrganizationCollPath());
       const publicOrgInfoDocRef = doc(db, getPublicOrganizationInfoCollPath());
@@ -30,7 +30,7 @@ export const updateOrganization =
       await setDoc(docRef, orgData, { merge: true });
       await setDoc(
         publicOrgInfoDocRef,
-        { displayName, location },
+        { displayName, location, emailFrom },
         { merge: true }
       );
 
