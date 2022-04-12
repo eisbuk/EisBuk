@@ -122,6 +122,7 @@ export enum OrganizationLabel {
   SmsFrom = "OrganizationLabel.SmsFrom",
   SmsTemplate = "OrganizationLabel.SmsTemplate",
   DisplayName = "OrganizationLabel.DisplayName",
+  Location = "OrganizationLabel.Location",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
 }

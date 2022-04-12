@@ -76,6 +76,10 @@ export interface OrganizationData {
    * for a given organization
    */
   existingSecrets?: string[];
+  /**
+   * Organization Location
+   */
+  location?: string;
 }
 
 // #endregion organizations

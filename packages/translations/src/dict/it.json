@@ -99,6 +99,7 @@
     "SmsFrom": "SMS Da",
     "SmsTemplate": "Modello Di SMS",
     "DisplayName": "Nome Dell'Organizzazione",
+    "Location": "Posizione",
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore"
   },

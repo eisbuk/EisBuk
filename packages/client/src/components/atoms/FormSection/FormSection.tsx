@@ -30,20 +30,24 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
     <div>
       {name && <h5 className={classes.sectionTitle}>{name}</h5>}
       <div className={classes.fieldSection}>
-        {content.map(({ name, multiline }) => (
-          <div key={name}>
-            <Field
-              label={t(OrganizationLabel[name])}
-              name={name}
-              className={multiline ? classes.templateField : classes.field}
-              as={TextField}
-              variant="outlined"
-              multiline={multiline}
-              {...(multiline ? { rows: "4" } : {})}
-            />
-            {<ErrorMessage>{errors[name]}</ErrorMessage>}
-          </div>
-        ))}
+        {content.map(({ name, multiline }) => {
+          const label = `${name?.charAt(0).toUpperCase()}${name?.slice(1)}`;
+
+          return (
+            <div key={name}>
+              <Field
+                label={t(OrganizationLabel[label])}
+                name={name}
+                className={multiline ? classes.templateField : classes.field}
+                as={TextField}
+                variant="outlined"
+                multiline={multiline}
+                {...(multiline ? { rows: "4" } : {})}
+              />
+              {<ErrorMessage>{errors[name]}</ErrorMessage>}
+            </div>
+          );
+        })}
       </div>
       <Divider />
     </div>
