@@ -266,6 +266,9 @@ jobs:
         uses: cypress-io/github-action@v2
         with:
           start: pnpm -C ../../ emulators:start
+          # For some reason, this action can also install everything, which doesn't work well with pnpm
+          # Anyway we're using our own instalation as it is, so just skipping this part
+          install: false
           working-directory: packages/e2e
           wait-on: http://localhost:8080, http://localhost:5000
           # skip recording if no 'secrets.CYPRESS_KEY' found
