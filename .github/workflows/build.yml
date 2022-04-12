@@ -253,7 +253,9 @@ jobs:
           path: |
             ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
+            $HOME/.cache/Cypress
+            $HOME/Library/Caches/Cypress
+          key: ${{ runner.os }}-modules-emulators-cypress-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
         uses: pnpm/action-setup@v2.1.0
         with:
