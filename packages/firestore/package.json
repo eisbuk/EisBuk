@@ -1,0 +1,23 @@
+{
+  "name": "@eisbuk/firestore",
+  "version": "1.0.0",
+  "description": "Firestore utilities for Eisbuk",
+  "private": true,
+  "main": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.es.js",
+      "require": "./dist/index.js",
+      "default": "./dist.index.es.js"
+    }
+  },
+  "types": "dist/index.d.ts",
+  "devDependencies": {},
+  "scripts": {
+    "build": "vite build && tsc",
+    "lint": "eslint .",
+    "lint:strict": "eslint . --max-warnings=0",
+    "typecheck": "tsc"
+  },
+  "dependencies": {}
+}
