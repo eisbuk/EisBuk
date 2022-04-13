@@ -111,8 +111,7 @@ describe("Add To Calendar", () => {
       cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
       cy.contains("Yes").click();
 
-      // cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
-      cy.contains("ActionButton.AddToCalendar").click();
+      cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
       const filename = path.join(downloadsFolder, "Booked_Slots.ics");
       cy.readFile(filename);
     });

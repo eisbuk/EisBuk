@@ -63,7 +63,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
        * Download calendar on last iteration
        */
       if (i === Object.keys(bookedSlots).length - 1) {
-        icalendar.download();
+        icalendar.download("Booked_Slots.ics");
       }
     });
   };
