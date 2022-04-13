@@ -35,8 +35,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
       const endDate = getEndDate(bookedSlot.date, bookedSlot.interval);
 
       const bookedSlotEvent = {
-        title: "Booked_Slots",
-        organizer: displayName,
+        title: `Booked Slot at ${displayName}`,
         location: location,
         start: startDate,
         end: endDate,
@@ -48,12 +47,17 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
        * it's instantiated with the first bookedSlotEvent
        */
       if (i === 0) {
-        icalendar = new ICalendar(bookedSlotEvent);
+        icalendar = new ICalendar(bookedSlotEvent).addProperty(
+          "UID",
+          `${bookedSlot.date}${bookedSlot.interval}`
+        );
       } else {
         /**
          * To add another event to the calendar it must be of type ICalendar
          */
-        icalendar.addEvent(new ICalendar(bookedSlotEvent));
+        icalendar
+          .addEvent(new ICalendar(bookedSlotEvent))
+          .addProperty("UID", `${bookedSlot.date}${bookedSlot.interval}`);
       }
       /**
        * Download calendar on last iteration
