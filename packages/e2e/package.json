@@ -6,7 +6,9 @@
     "build": "echo \"@eisbuk/e2e doesn't have a build functionality. Skipping...\"",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",

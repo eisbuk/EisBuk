@@ -42,7 +42,8 @@
     "yup": "0.32.9"
   },
   "scripts": {
-    "build": "BUILD_ENV=production vite build",
+    "build": "echo \"Skipping @eisbuk/client build as part of rush's bulk 'build' script. To build the app for production run: 'rushx build:prod'\"",
+    "build:prod": "BUILD_ENV=production vite build",
     "build:test": "nyc instrument --compact=false src instrumented && cp -R -u -p src/* instrumented/ && USE_INSTRUMENTED=true BUILD_ENV=test vite build",
     "start": "vite",
     "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production vite",
