@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@eisbuk/shared": "1.0.0",
-    "@eisbuk/translations": "1.0.0",
+    "@eisbuk/shared": "workspace:*",
+    "@eisbuk/translations": "workspace:*",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@firebase/app": "0.7.2",

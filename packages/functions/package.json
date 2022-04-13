@@ -18,7 +18,7 @@
   },
   "main": "dist/index.js",
   "dependencies": {
-    "@eisbuk/shared": "1.0.0",
+    "@eisbuk/shared": "workspace:*",
     "@firebase/app-compat": "^0.1.21",
     "@google-cloud/firestore": "^4.13.2",
     "firebase": "^8.2.4",

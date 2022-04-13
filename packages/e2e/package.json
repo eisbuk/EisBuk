@@ -3,14 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "build": "echo \"@eisbuk/e2e doesn't have a build functionality. Skipping...\"",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc"
   },
   "devDependencies": {
     "@cypress/code-coverage": "^3.9.12",
-    "@eisbuk/shared": "1.0.0",
-    "@eisbuk/translations": "1.0.0",
+    "@eisbuk/shared": "workspace:*",
+    "@eisbuk/translations": "workspace:*",
     "@firebase/app-types": "^0.7.0",
     "@google-cloud/firestore": "^4.13.2",
     "@types/luxon": "^2.0.2",
