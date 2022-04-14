@@ -11,18 +11,18 @@ export default {
 
 const emailFields = [
   {
-    name: "EmailNameFrom",
+    name: "emailNameFrom",
   },
   {
-    name: "EmailFrom",
+    name: "emailFrom",
   },
   {
-    name: "EmailTemplate",
+    name: "emailTemplate",
     multiline: true,
   },
 ];
 
-const initialValues = { EmailNameFrom: "", EmailFrom: "", EmailTemplate: "" };
+const initialValues = { emailNameFrom: "", emailFrom: "", emailTemplate: "" };
 
 export const Default = (): JSX.Element => (
   <Formik {...{ initialValues }} onSubmit={() => {}}>
