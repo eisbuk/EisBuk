@@ -23,7 +23,7 @@
     "build": "vite build && tsc",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
-    "typecheck": "tsc"
+    "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/luxon": "^2.0.5",

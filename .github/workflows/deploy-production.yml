@@ -22,13 +22,18 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
+            common/temp/pnpm-store
+            **/node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
+      - name: Install firebase CLI
+        uses: pocket-apps/action-setup-firebase@v2
         with:
-          version: 6.32.3
-          run_install: true
+          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+      - name: Install rush
+        run: npm install -g @microsoft/rush@5.63.1
+      - name: Install and build packages
+        run: rush update && rush build
       - name: Build app
         run: pnpm -C packages/client build
         env:

@@ -16,14 +16,16 @@ jobs:
           node-version: "14"
       - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
-        with:
-          path: ~/.pnpm-store
+        path: |
+            ~/.pnpm-store
+            common/temp/pnpm-store
+            **/node_modules
+            $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
+      - name: Install rush
+        run: npm install -g @microsoft/rush@5.63.1
+      - name: Install and build packages
+        run: rush update && rush build
       - name: Check if secrets are available
         id: has_secret
         run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'

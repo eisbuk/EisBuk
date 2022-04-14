@@ -50,8 +50,10 @@ importers:
       '@types/node': ^16.11.10
       '@types/react': ^17.0.13
       '@types/react-dom': ^17.0.8
+      '@types/react-redux': ^7.1.24
       '@types/react-router-dom': 5.x
       '@types/seedrandom': ^3.0.1
+      '@types/testing-library__jest-dom': ^5.14.3
       '@types/use-sync-external-store': ^0.0.3
       '@types/uuid': ^8.3.1
       '@types/yup': ^0.29.13
@@ -181,8 +183,10 @@ importers:
       '@types/node': 16.11.26
       '@types/react': 17.0.44
       '@types/react-dom': 17.0.15
+      '@types/react-redux': 7.1.24
       '@types/react-router-dom': 5.3.3
       '@types/seedrandom': 3.0.2
+      '@types/testing-library__jest-dom': 5.14.3
       '@types/use-sync-external-store': 0.0.3
       '@types/uuid': 8.3.4
       '@types/yup': 0.29.13
@@ -279,6 +283,7 @@ importers:
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@google-cloud/firestore': ^4.13.2
+      '@types/lodash': ^4.14.170
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
       '@types/uuid': ^8.3.0
@@ -319,6 +324,7 @@ importers:
       uuid: 8.3.2
     devDependencies:
       '@firebase/app-types': 0.7.0
+      '@types/lodash': 4.14.181
       '@types/luxon': 2.3.1
       '@types/node': 16.11.26
       '@types/uuid': 8.3.4
@@ -6059,7 +6065,6 @@ packages:
     dependencies:
       '@types/react': 17.0.44
       hoist-non-react-statics: 3.3.2
-    dev: false
 
   /@types/html-minifier-terser/5.1.2:
     resolution: {integrity: sha512-h4lTMgMJctJybDp8CQrxTUiiYmedihHWkjnF/8Pxseu2S6Nlfcy8kwboQ8yejh456rP2yWoEVm1sS/FVsfM48w==}
@@ -6190,14 +6195,13 @@ packages:
     dependencies:
       '@types/react': 17.0.44
 
-  /@types/react-redux/7.1.23:
-    resolution: {integrity: sha512-D02o3FPfqQlfu2WeEYwh3x2otYd2Dk1o8wAfsA0B1C2AJEFxE663Ozu7JzuWbznGgW248NaOF6wsqCGNq9d3qw==}
+  /@types/react-redux/7.1.24:
+    resolution: {integrity: sha512-7FkurKcS1k0FHZEtdbbgN8Oc6b+stGSfZYjQGicofJ0j4U0qIn/jaSvnP2pLwZKiai3/17xqqxkkrxTgN8UNbQ==}
     dependencies:
       '@types/hoist-non-react-statics': 3.3.1
       '@types/react': 17.0.44
       hoist-non-react-statics: 3.3.2
       redux: 4.1.2
-    dev: false
 
   /@types/react-router-dom/5.3.3:
     resolution: {integrity: sha512-kpqnYK4wcdm5UaWI3fLcELopqLrHgLqNsdpHauzlQktfkHL3npOSwtj1Uz9oKBAzs7lFtVkV8j83voAz2D8fhw==}
@@ -17371,7 +17375,7 @@ packages:
         optional: true
     dependencies:
       '@babel/runtime': 7.17.9
-      '@types/react-redux': 7.1.23
+      '@types/react-redux': 7.1.24
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
       prop-types: 15.8.1
@@ -17652,7 +17656,6 @@ packages:
     resolution: {integrity: sha512-SH8PglcebESbd/shgf6mii6EIoRM0zrQyjcuQ+ojmfxjTtE0z9Y8pa62iA/OJ58qjP6j27uyW4kUF4jl/jd6sw==}
     dependencies:
       '@babel/runtime': 7.17.9
-    dev: false
 
   /refractor/3.6.0:
     resolution: {integrity: sha512-MY9W41IOWxxk31o+YvFCNyNzdkc9M20NoZK5vq6jkv4I/uh2zkWcfudj0Q1fovjUQJrNewS9NMzeTtqPf+n5EA==}
