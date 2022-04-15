@@ -19,5 +19,7 @@
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc"
   },
-  "dependencies": {}
+  "dependencies": {
+    "firebase-admin": "^9.4.2"
+  }
 }

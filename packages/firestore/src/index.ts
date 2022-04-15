@@ -1,1 +1,3 @@
-export default {};
+import "./firebase";
+
+export { listOrgs } from "./download";
