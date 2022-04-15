@@ -115,6 +115,7 @@
     "cypress": "^8.7.0",
     "cypress-mochawesome-reporter": "^2.3.0",
     "debugging-aid": "^0.5.3",
+    "eslint": "^7.0.0",
     "eslint-config-google": "^0.14.0",
     "eslint-import-resolver-typescript": "^2.4.0",
     "eslint-plugin-import": "^2.23.4",
