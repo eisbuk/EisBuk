@@ -221,6 +221,19 @@
       "summary": "Deploys all of the builds to production",
       "description": "Using the custom script, we're deploying the entire project to production, expecting a possible functions deletion prompt, to which the canned response is no, as to not affect the automated deployment.",
       "shellCommand": "./deploy-firebase.expect"
+    },
+
+    /**
+     * Pre-commit commands
+     */
+    {
+      "commandKind": "global",
+      "name": "lint-staged",
+      "summary": "Lints the staged files as a pre-commit, also does 'prettier --write' on files after linting",
+
+      "autoinstallerName": "lint-staged",
+
+      "shellCommand": "lint-staged"
     }
   ],
 
