@@ -2,28 +2,28 @@
   "private": true,
   "name": "eisbuk",
   "devDependencies": {
-    "husky": "^7.0.4",
-    "lint-staged": "^12.0.3",
-    "prettier": "^2.4.1",
-    "typescript": "~4.4.2",
-    "eslint": "^7.31.0",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.32.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-import-resolver-typescript": "^2.4.0",
-    "eslint-plugin-import": "^2.23.4",
-    "eslint-plugin-promise": "^4.2.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
-    "eslint-plugin-unused-imports": "^1.0.1",
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.30.0"
+    "eslint-import-resolver-typescript": "^2.7.1",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-promise": "^4.3.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.4.0",
+    "eslint-plugin-unused-imports": "^1.1.5",
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.2",
+    "typescript": "~4.4.4"
   },
   "scripts": {
-    "emulators:inspect": "bash -c '(trap \"kill 0\" SIGINT; yarn --cwd packages/functions watch & firebase emulators:start --project eisbuk --inspect-functions 9229)'",
-    "emulators:start": "bash -c '(trap \"kill 0\" SIGINT; yarn --cwd packages/functions build & firebase emulators:start --project eisbuk)'",
+    "emulators:inspect": "bash -c '(trap \"kill 0\" SIGINT; pnpm -C packages/functions watch & firebase emulators:start --project eisbuk --inspect-functions 9229)'",
+    "emulators:start": "bash -c '(trap \"kill 0\" SIGINT; pnpm -C packages/functions build & firebase emulators:start --project eisbuk)'",
     "deploy:eisbuk": "firebase deploy --project eisbuk --only hosting:eisbuk",
     "deploy:production": "./deploy-firebase.expect",
     "deploy:preview": "firebase --project eisbuk hosting:channel:deploy",
-    "prepare": "husky install && yarn --cwd packages/shared build && yarn --cwd packages/translations build"
+    "prepare": "pnpm husky install && pnpm -C packages/shared build && pnpm -C packages/translations build"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": [
@@ -33,26 +33,8 @@
       "prettier --write"
     ]
   },
-  "resolutions": {
-    "**/@typescript-eslint/eslint-plugin": "^4.1.1",
-    "**/@typescript-eslint/parser": "^4.1.1"
-  },
-  "workspaces": {
-    "packages": [
-      "packages/shared",
-      "packages/client",
-      "packages/functions",
-      "packages/scaffold",
-      "packages/translations",
-      "packages/e2e"
-    ],
-    "nohoist": [
-      "**/mochawesome",
-      "**/mochawesome/**",
-      "**/mocha",
-      "**/mocha/**",
-      "**/cypress",
-      "**/cypress/**"
-    ]
+  "dependencies": {
+    "firebase": "9.1.1",
+    "firebase-tools": "^9.23.3"
   }
 }

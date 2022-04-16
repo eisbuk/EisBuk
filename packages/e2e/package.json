@@ -11,6 +11,7 @@
     "@cypress/code-coverage": "^3.9.12",
     "@eisbuk/shared": "1.0.0",
     "@eisbuk/translations": "1.0.0",
+    "@firebase/app-types": "^0.7.0",
     "@google-cloud/firestore": "^4.13.2",
     "@types/luxon": "^2.0.2",
     "@types/node": "^16.11.10",
@@ -19,8 +20,16 @@
     "cypress-mochawesome-reporter": "^2.3.0",
     "firebase-admin": "^9.4.2",
     "luxon": "^2.0.2",
+    "mocha": "^8.2.1",
     "mochawesome": "^7.0.1",
     "typescript": "~4.4.2",
     "uuid": "^8.3.0"
+  },
+  "dependencies": {
+    "@firebase/app": "^0.7.20",
+    "@firebase/app-compat": "^0.1.21",
+    "@firebase/auth": "^0.19.11",
+    "@firebase/firestore": "^3.4.7",
+    "@firebase/functions": "^0.7.10"
   }
 }

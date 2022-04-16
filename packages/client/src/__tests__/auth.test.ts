@@ -21,7 +21,7 @@ import { adminDb, db, functions } from "@/__testSetup__/firestoreSetup";
 import { CloudFunction } from "@/enums/functions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { loginWithEmail, loginWithPhone } from "@/__testUtils__/auth";
+import { loginWithEmail } from "@/__testUtils__/auth";
 import { deleteCollection } from "@/__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
@@ -62,27 +62,6 @@ describe("Test authentication", () => {
         expect(org).toEqual(orgDefinition);
       }
     );
-
-    /** @TODO phone login doesn't work in node enviroment, investigate or test with cypress */
-    xtest("let admin access an organization data (by phone)", async () => {
-      const orgDefinition = {
-        admins: ["+1234567890"],
-      };
-      await adminDb
-        .collection(Collection.Organizations)
-        .doc("withPhone")
-        .set(orgDefinition);
-
-      await loginWithPhone(orgDefinition.admins[0]);
-      // After login we'll be able to read and write documents in our organization
-      const org = (
-        await adminDb
-          .collection(Collection.Organizations)
-          .doc("withPhone")
-          .get()
-      ).data();
-      expect(org).toStrictEqual(orgDefinition);
-    });
   });
 
   describe.only("Test queryAuthStatus", () => {
