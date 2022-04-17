@@ -2,7 +2,7 @@ import { collection, onSnapshot, setDoc, doc } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -28,7 +28,7 @@ describe("Firestore subscriptions", () => {
         const customersRef = collection(
           db,
           Collection.Organizations,
-          __organization__,
+          getOrganization(),
           OrgSubCollection.Customers
         );
         onSnapshot(
@@ -60,7 +60,7 @@ describe("Firestore subscriptions", () => {
         const saulRef = doc(
           db,
           Collection.Organizations,
-          __organization__,
+          getOrganization(),
           OrgSubCollection.Customers,
           saul.id
         );

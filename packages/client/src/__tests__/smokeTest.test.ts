@@ -7,7 +7,7 @@ import { signInWithEmailAndPassword, signOut } from "@firebase/auth";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -36,7 +36,7 @@ describe("Smoke test", () => {
     testWithEmulator("should create a default organization", async () => {
       const testOrgRef = adminDb
         .collection(Collection.Organizations)
-        .doc(__organization__);
+        .doc(getOrganization());
       const testOrgCreated = (await testOrgRef.get()).exists;
       expect(testOrgCreated).toEqual(true);
     });
@@ -60,7 +60,7 @@ describe("Smoke test", () => {
       async () => {
         const saulDocRef = doc(
           db,
-          `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}/${saul.id}`
+          `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Customers}/${saul.id}`
         );
 
         // should not allow access to customers before authentication
