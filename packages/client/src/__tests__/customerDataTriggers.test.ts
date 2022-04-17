@@ -14,7 +14,7 @@ import {
 
 import { db } from "@/__testSetup__/firestoreSetup";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { deleteAll } from "@/__testUtils__/firestore";
 import { waitForCondition } from "@/__testUtils__/helpers";
@@ -24,8 +24,8 @@ import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { saul } from "@/__testData__/customers";
 
-const customersCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Customers}`;
-const bookingsCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Bookings}`;
+const customersCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Customers}`;
+const bookingsCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Bookings}`;
 
 describe("Customer triggers", () => {
   beforeEach(async () => {

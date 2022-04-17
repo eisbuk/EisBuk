@@ -5,7 +5,7 @@ import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { LocalStore } from "@/types/store";
 
@@ -61,7 +61,7 @@ export const createTestStore = ({
 export const deleteAll = async (): Promise<void> => {
   const org = adminDb
     .collection(Collection.Organizations)
-    .doc(__organization__);
+    .doc(getOrganization());
 
   const operations: Promise<any>[] = [];
 
@@ -71,7 +71,7 @@ export const deleteAll = async (): Promise<void> => {
   // delete secrets
   const orgSecrets = adminDb
     .collection(Collection.Secrets)
-    .doc(__organization__);
+    .doc(getOrganization());
   operations.push(orgSecrets.delete());
 
   // remove `existingSecrets` from organization

@@ -14,7 +14,7 @@ import {
 } from "@eisbuk/shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -38,7 +38,7 @@ const customerBooking = getCustomerBase(saul);
 const testMonth = testDate.substring(0, 7);
 
 // document paths
-const orgPath = `${Collection.Organizations}/${__organization__}`;
+const orgPath = `${Collection.Organizations}/${getOrganization()}`;
 const slotsCollectionPath = `${orgPath}/${OrgSubCollection.Slots}`;
 const attendanceCollPath = `${orgPath}/${OrgSubCollection.Attendance}`;
 const bookingsCollectionPath = `${orgPath}/${OrgSubCollection.Bookings}`;
@@ -274,13 +274,13 @@ describe("Cloud functions -> Data triggers ->,", () => {
         // add new secret to trigger registering
         const orgSecretsRef = getDocumentRef(
           adminDb,
-          `${Collection.Secrets}/${__organization__}`
+          `${Collection.Secrets}/${getOrganization()}`
         );
         await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
         let existingSecrets = (
           (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
+            documentPath: `${Collection.Organizations}/${getOrganization()}`,
             condition: (data) => Boolean(data?.existingSecrets.length),
           })) as OrganizationData
         ).existingSecrets;
@@ -290,7 +290,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
         existingSecrets = (
           (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
+            documentPath: `${Collection.Organizations}/${getOrganization()}`,
             condition: (data) => data?.existingSecrets.length === 2,
           })) as OrganizationData
         ).existingSecrets;
@@ -300,7 +300,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         await orgSecretsRef.set({ anotherSecret: "abc234" });
         existingSecrets = (
           (await waitForCondition({
-            documentPath: `${Collection.Organizations}/${__organization__}`,
+            documentPath: `${Collection.Organizations}/${getOrganization()}`,
             condition: (data) => data?.existingSecrets.length === 1,
           })) as OrganizationData
         ).existingSecrets;

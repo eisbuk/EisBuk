@@ -24,7 +24,7 @@ export const __isTest__ = __buildEnv__ === "test";
 export const __organization__ = __isTest__
   ? // since we're importing organization string from this constant
     // to make our lives easier (so that we don't have to mock organization)
-    // the __organization__ in test environment will always have a value of __testOrganization__
+    // the getOrganization() in test environment will always have a value of __testOrganization__
     __testOrganization__
   : process.env.REACT_APP_EISBUK_SITE ||
     (window.location
