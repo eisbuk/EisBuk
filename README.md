@@ -32,7 +32,7 @@
 - - [pnpm](https://pnpm.io/) - a fast and storage efficient pacakge manager (pnpm stands for "performant npm")
 - - [Rush](https://rushjs.io/) - a monorepo management tool built for large projects, seamlessly integratable with pnpm, npm, yarn
 
-## Workling with the project
+## Working with the project
 
 ### Installation
 
@@ -66,6 +66,16 @@ As the repo is managed by rush, we use `rush` and `rushx` commands for running o
 To add a dependency, you can simply run `rush add --package <package_name>` **don't use pnpm add or npm install, etc.**. Additionally, you can add a dependency, manually, to package's `package.json`, after which you need to run `rush update`
 
 To remove a dependency, simply remove it from `package.json` and run `rush update`
+
+### Monorepo debugging
+
+The recommended node version for the monorepo is (as stated in `.nvmrc`) `14.18.1`. If you're using nvm (and have the given node version installed), it's sufficient to run `nvm use` anywhere in the repo to switch to appropriate version.
+
+Some unexpected and cryptic errors might arise from a corrupt shrinkwrap file, at which point running the following might prove useful:
+
+```bash
+rush update --full
+```
 
 ### Common local work (dev) flows
 
