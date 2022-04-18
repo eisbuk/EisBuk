@@ -115,10 +115,9 @@ const CustomerSlots: React.FC<Props> = ({
   const content = (
     <>
       {countdownProps && <BookingsCountdown {...countdownProps} />}
-      {countdownProps?.deadline === null &&
-        Object.keys(bookedSlotsByMonth).length && (
-          <AddToCalendar bookedSlots={bookedSlotsByMonth} />
-        )}
+      {Object.keys(bookedSlotsByMonth).length && (
+        <AddToCalendar bookedSlots={bookedSlotsByMonth} />
+      )}
       {orderedDates?.map((date) => {
         const luxonDay = DateTime.fromISO(date);
         const slostForDay = slots[date] || {};
