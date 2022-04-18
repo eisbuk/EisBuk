@@ -1,4 +1,5 @@
 import {
+  CalendarEvents,
   CustomerBookingEntry,
   SlotAttendnace,
   SlotsByDay,
@@ -80,4 +81,15 @@ export const getCalendarData =
     const slotsByDay = slotsByMonth[monthStr] || {};
 
     return getCalendarDataFromSlots(date, slotsByDay, bookedSlots);
+  };
+
+export const getCalendarEventsByMonth =
+  (monthStr: string) =>
+  (state: LocalStore): CalendarEvents["monthStr"] => {
+    const {
+      firestore: {
+        data: { calendar = {} },
+      },
+    } = state;
+    return calendar[monthStr] || {};
   };

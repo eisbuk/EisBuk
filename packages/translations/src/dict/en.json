@@ -184,7 +184,9 @@
     "SMSSent": "SMS successfully sent",
     "BookingDateExtended": "Booking date extended",
 
-    "Error": "Error"
+    "Error": "Error",
+
+    "SlotsAddedToCalendar": "Slots Added To Calendar"
   },
 
   "BookingCountdownMessage": {

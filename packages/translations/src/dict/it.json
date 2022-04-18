@@ -183,7 +183,9 @@
     "SMSSent": "SMS inviato con successo",
     "BookingDateExtended": "Termine per le prenotazioni esteso",
 
-    "Error": "Errore"
+    "Error": "Errore",
+
+    "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario"
   },
 
   "BookingCountdownMessage": {

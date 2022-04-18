@@ -208,6 +208,7 @@ export enum NotificationMessage {
   BookingDateExtended = "Notification.BookingDateExtended",
 
   Error = "Notification.Error",
+  SlotsAddedToCalendar = "Notification.SlotsAddedToCalendar",
 }
 
 export enum BookingCountdownMessage {
