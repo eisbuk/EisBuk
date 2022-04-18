@@ -25,7 +25,7 @@ interface Props {
    * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
    * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
    */
-  bookedSlots?: LocalStore["firestore"]["data"]["bookedSlots"];
+  bookedSlots: LocalStore["firestore"]["data"]["bookedSlots"];
 }
 
 const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
@@ -36,7 +36,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
 
   const { t } = useTranslation();
 
-  const monthStr = Object.values(bookedSlots)[0].date.substring(0, 7);
+  const monthStr = (Object.values(bookedSlots!)[0].date || "").substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
