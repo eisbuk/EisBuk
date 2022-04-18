@@ -108,3 +108,27 @@ export const cancelBooking =
       dispatch(showErrSnackbar);
     }
   };
+/**
+ * Keeps track of calendar events created by customer
+ */
+export const createCalendarEvents = ({ monthStr, secretKey, eventUids }: { monthStr: string, secretKey: Customer["secretKey"], eventUids: string[] })
+  : FirestoreThunk => async (dispatch) => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(db, getBookingsPath(), secretKey, BookingSubCollection.Calendar, monthStr);
+      await setDoc(docRef, { "uids": eventUids });
+      // show success message
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: i18n.t(NotificationMessage.SlotsAddedToCalendar),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch (error) {
+      dispatch(showErrSnackbar);
+    }
+  };
