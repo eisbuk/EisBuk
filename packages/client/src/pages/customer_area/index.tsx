@@ -54,6 +54,7 @@ const CustomerArea: React.FC = () => {
   useFirestoreSubscribe([
     OrgSubCollection.Bookings,
     BookingSubCollection.BookedSlots,
+    BookingSubCollection.Calendar,
     OrgSubCollection.SlotsByDay,
   ]);
 

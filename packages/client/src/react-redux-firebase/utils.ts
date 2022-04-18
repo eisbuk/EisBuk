@@ -45,6 +45,7 @@ export const getConstraintForColl = (
     [OrgSubCollection.SlotsByDay]: { documents },
     [OrgSubCollection.Customers]: null,
     [BookingSubCollection.BookedSlots]: { range },
+    [BookingSubCollection.Calendar]: null,
   };
 
   return collectionConstraintLookup[collection];
@@ -85,6 +86,12 @@ export const getCollectionPath = (
       OrgSubCollection.Bookings,
       getSecretKey(),
       BookingSubCollection.BookedSlots,
+    ].join("/"),
+    [BookingSubCollection.Calendar]: [
+      organizationPath,
+      OrgSubCollection.Bookings,
+      getSecretKey(),
+      BookingSubCollection.Calendar,
     ].join("/"),
   };
 
