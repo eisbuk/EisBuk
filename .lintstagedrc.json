@@ -4,5 +4,5 @@
     "eslint --fix --max-warnings=0",
     "prettier --write"
   ],
-  "*.{json,yml,yaml,md,mdx}": ["prettier --write"]
+  "*.{json,md,mdx}": ["prettier --write"]
 }
