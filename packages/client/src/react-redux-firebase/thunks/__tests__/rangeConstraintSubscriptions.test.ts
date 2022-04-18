@@ -17,7 +17,7 @@ import {
   testSlots,
   slotsCollPath,
 } from "../__testData__/slots";
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 import { deleteDoc } from "firebase/firestore";
 
 describe("Firestore subscriptions", () => {
@@ -82,7 +82,7 @@ describe("Firestore subscriptions", () => {
         const slotRef = doc(
           db,
           Collection.Organizations,
-          __organization__,
+          getOrganization(),
           OrgSubCollection.Slots,
           testSlots[0].id
         );

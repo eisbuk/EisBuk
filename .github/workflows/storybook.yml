@@ -14,13 +14,16 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules
+      - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
         with:
-          path: "**/node_modules"
-          key: ${{ runner.os }}-modules-2-${{ hashFiles('**/yarn.lock') }}
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
-        run: yarn
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
       - name: Check if secrets are available
         id: has_secret
         run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'

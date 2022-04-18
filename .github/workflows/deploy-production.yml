@@ -17,17 +17,20 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules
+      - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
         with:
           path: |
-            **/node_modules
+            ~/.pnpm-store
             $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-v12-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install and link packages
-        run: yarn
+        uses: pnpm/action-setup@v2.1.0
+        with:
+          version: 6.32.3
+          run_install: true
       - name: Build app
-        run: yarn --cwd packages/client build
+        run: pnpm -C packages/client build
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
@@ -40,7 +43,7 @@ jobs:
           REACT_APP_SENTRY_ENVIRONMENT: production
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Deploy to firebase
-        run: yarn deploy:production
+        run: pnpm deploy:production
         env: # Or as an environment variable
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Create Sentry release

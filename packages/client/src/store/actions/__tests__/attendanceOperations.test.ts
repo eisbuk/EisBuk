@@ -6,7 +6,7 @@ import * as firestore from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
 import { showErrSnackbar } from "../appActions";
@@ -28,7 +28,9 @@ const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-const attendaceCollectionPath = `${Collection.Organizations}/${__organization__}/${OrgSubCollection.Attendance}`;
+const attendaceCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Attendance}`;
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 
