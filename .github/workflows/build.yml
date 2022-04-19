@@ -27,8 +27,8 @@ jobs:
         uses: pocket-apps/action-setup-firebase@v2
         with:
           firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
-      - name: Install rush
-        run: npm install -g @microsoft/rush@5.63.1
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
         run: rush update && rush build
       - name: Build app
@@ -248,8 +248,8 @@ jobs:
         uses: pocket-apps/action-setup-firebase@v2
         with:
           firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
-      - name: Install rush
-        run: npm install -g @microsoft/rush@5.63.1
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
         run: rush update && rush build
 
