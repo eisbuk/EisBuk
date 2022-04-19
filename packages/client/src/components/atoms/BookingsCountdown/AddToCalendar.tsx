@@ -47,7 +47,9 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
   const handleClick = () => {
     let icalendar: ICalendar;
 
-    const previousCalendarUids = getPreviousCalendarUids(previousCalendar);
+    const previousCalendarUids = Object.keys(previousCalendar).length
+      ? getPreviousCalendarUids(previousCalendar)
+      : {};
 
     const eventUids: string[] = [];
 
