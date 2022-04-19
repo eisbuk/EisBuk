@@ -1,6 +1,9 @@
 import admin from "firebase-admin";
 
-import { __withEmulators__ } from "@eisbuk/client/src/__testUtils__/envUtils";
+/**
+ * A boolean flag set to `true` if the emulators exist in current environment
+ */
+const __withEmulators__ = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 
 admin.initializeApp({
   credential: admin.credential.cert({

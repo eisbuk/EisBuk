@@ -19,8 +19,10 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@eisbuk/client": "workspace:^0.1.0",
     "@eisbuk/shared": "workspace:1.0.0",
     "firebase-admin": "^9.4.2"
+  },
+  "devDependencies": {
+    "vite": "^2.8.6"
   }
 }
