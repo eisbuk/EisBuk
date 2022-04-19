@@ -1,3 +1,3 @@
 import "./firebase";
 
-export { listOrgs } from "./download";
+export { getOrgs } from "./download";
