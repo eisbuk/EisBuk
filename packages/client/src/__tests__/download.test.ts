@@ -4,11 +4,22 @@
 
 import { __testOrganization__ } from "@/__testSetup__/envData";
 
-import { listOrgs } from "@eisbuk/firestore";
+import { getOrgs } from "@eisbuk/firestore";
 
 it("Lists all existing organizations", async () => {
-  const orgs = await listOrgs();
+  const result = await getOrgs();
 
-  expect(orgs.length).toBe(1);
-  expect(orgs[0]).toBe(__testOrganization__);
+  if (result.ok) {
+    const orgs = result.data;
+
+    const numOfOrgs = orgs.length;
+    const isIncludesTestOrg = orgs
+      .map(({ id }) => id)
+      .includes(__testOrganization__);
+
+    expect(numOfOrgs).toBeGreaterThan(0);
+    expect(isIncludesTestOrg).toBe(true);
+  } else {
+    fail(result.message);
+  }
 });
