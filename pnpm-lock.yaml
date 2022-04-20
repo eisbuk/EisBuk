@@ -44,6 +44,7 @@ importers:
       "@babel/plugin-transform-runtime": ^7.12.10
       "@babel/preset-typescript": ^7.14.5
       "@cypress/code-coverage": ^3.9.12
+      "@eisbuk/firestore": ^1.0.0
       "@eisbuk/shared": 1.0.0
       "@eisbuk/translations": 1.0.0
       "@emotion/react": ^11.8.1
@@ -191,6 +192,7 @@ importers:
       "@babel/plugin-transform-runtime": 7.17.0_@babel+core@7.17.9
       "@babel/preset-typescript": 7.16.7_@babel+core@7.17.9
       "@cypress/code-coverage": 3.9.12_cypress@8.7.0
+      "@eisbuk/firestore": link:../firestore
       "@firebase/rules-unit-testing": 2.0.2_firebase@9.1.1
       "@google-cloud/firestore": 4.15.1
       "@grpc/grpc-js": 1.6.2
@@ -305,6 +307,17 @@ importers:
       mochawesome: 7.1.3_mocha@8.4.0
       typescript: 4.4.4
       uuid: 8.3.2
+
+  packages/firestore:
+    specifiers:
+      "@eisbuk/shared": 1.0.0
+      firebase-admin: ^9.4.2
+      vite: ^2.8.6
+    dependencies:
+      "@eisbuk/shared": link:../shared
+      firebase-admin: 9.12.0
+    devDependencies:
+      vite: 2.9.1
 
   packages/functions:
     specifiers:
@@ -3116,6 +3129,18 @@ packages:
       "@firebase/util": 1.4.0
     dev: false
 
+  /@firebase/auth-interop-types/0.1.6_@firebase+util@1.5.1:
+    resolution:
+      {
+        integrity: sha512-etIi92fW3CctsmR9e3sYM3Uqnoq861M0Id9mdOPF6PWIg38BXL5k4upCNBggGUpLIS0H1grMOvy/wn1xymwe2g==,
+      }
+    peerDependencies:
+      "@firebase/app-types": 0.x
+      "@firebase/util": 1.x
+    dependencies:
+      "@firebase/util": 1.5.1
+    dev: false
+
   /@firebase/auth-types/0.10.3_0cd4160f67e87572471d89d202cbf809:
     resolution:
       {
@@ -3267,6 +3292,24 @@ packages:
       - "@firebase/app-types"
     dev: false
 
+  /@firebase/database-compat/0.1.7:
+    resolution:
+      {
+        integrity: sha512-T1mleRv2A8wyTV/jUuOdkN9Tl2lz0RGauqGc9nxP3AUzS9m3gIDN7u4CahZSdJlkR6tSU/MEWlfs5Q/oZStqxg==,
+      }
+    peerDependencies:
+      "@firebase/app-compat": 0.x
+    dependencies:
+      "@firebase/component": 0.5.12
+      "@firebase/database": 0.12.7
+      "@firebase/database-types": 0.9.6
+      "@firebase/logger": 0.3.2
+      "@firebase/util": 1.5.1
+      tslib: 2.3.1
+    transitivePeerDependencies:
+      - "@firebase/app-types"
+    dev: false
+
   /@firebase/database-compat/0.1.7_b2c59dabb74e592c496f4266c968bb15:
     resolution:
       {
@@ -3349,6 +3392,22 @@ packages:
       "@firebase/component": 0.5.7
       "@firebase/logger": 0.3.0
       "@firebase/util": 1.4.0
+      faye-websocket: 0.11.4
+      tslib: 2.3.1
+    transitivePeerDependencies:
+      - "@firebase/app-types"
+    dev: false
+
+  /@firebase/database/0.12.7:
+    resolution:
+      {
+        integrity: sha512-HL2NMQ3Ce5YNM2MdEuACHmU9NQEwq2F64R0XK+CReph40skxp+A7TvlJDO5bTAC0s3l3ebgCA9VmxfJu5R6UAA==,
+      }
+    dependencies:
+      "@firebase/auth-interop-types": 0.1.6_@firebase+util@1.5.1
+      "@firebase/component": 0.5.12
+      "@firebase/logger": 0.3.2
+      "@firebase/util": 1.5.1
       faye-websocket: 0.11.4
       tslib: 2.3.1
     transitivePeerDependencies:
@@ -4126,7 +4185,7 @@ packages:
       duplexify: 4.1.2
       ent: 2.2.0
       extend: 3.0.2
-      gaxios: 4.3.2
+      gaxios: 4.3.3
       get-stream: 6.0.1
       google-auth-library: 7.14.1
       hash-stream-validation: 0.2.4
@@ -14773,6 +14832,30 @@ packages:
       path-exists: 4.0.0
     dev: true
 
+  /firebase-admin/9.12.0:
+    resolution:
+      {
+        integrity: sha512-AtA7OH5RbIFGoc0gZOQgaYC6cdjdhZv4w3XgWoupkPKO1HY+0GzixOuXDa75kFeoVyhIyo4PkLg/GAC1dC1P6w==,
+      }
+    engines: { node: ">=10.13.0" }
+    dependencies:
+      "@firebase/database-compat": 0.1.7
+      "@firebase/database-types": 0.7.3
+      "@types/node": 17.0.23
+      dicer: 0.3.1
+      jsonwebtoken: 8.5.1
+      jwks-rsa: 2.0.5
+      node-forge: 0.10.0
+    optionalDependencies:
+      "@google-cloud/firestore": 4.15.1
+      "@google-cloud/storage": 5.19.1
+    transitivePeerDependencies:
+      - "@firebase/app-compat"
+      - "@firebase/app-types"
+      - encoding
+      - supports-color
+    dev: false
+
   /firebase-admin/9.12.0_b2c59dabb74e592c496f4266c968bb15:
     resolution:
       {
@@ -15467,23 +15550,6 @@ packages:
       strip-ansi: 6.0.1
       wide-align: 1.1.5
     dev: false
-    optional: true
-
-  /gaxios/4.3.2:
-    resolution:
-      {
-        integrity: sha512-T+ap6GM6UZ0c4E6yb1y/hy2UB6hTrqhglp3XfmU9qbLCGRYhLVV5aRPpC4EmoG8N8zOnkYCgoBz+ScvGAARY6Q==,
-      }
-    engines: { node: ">=10" }
-    dependencies:
-      abort-controller: 3.0.0
-      extend: 3.0.2
-      https-proxy-agent: 5.0.0
-      is-stream: 2.0.1
-      node-fetch: 2.6.7
-    transitivePeerDependencies:
-      - encoding
-      - supports-color
     optional: true
 
   /gaxios/4.3.3:
