@@ -23,10 +23,6 @@ jobs:
             **/node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-node14-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install firebase CLI
-        uses: pocket-apps/action-setup-firebase@v2
-        with:
-          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
@@ -74,7 +70,7 @@ jobs:
           set -e
           # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
           # of the preview channel
-          firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
           # This horrible contraption converts lines like
           # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
@@ -240,10 +236,6 @@ jobs:
             $HOME/.cache/Cypress
             $HOME/Library/Caches/Cypress
           key: ${{ runner.os }}-modules-emulators-cypress-node14-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install firebase CLI
-        uses: pocket-apps/action-setup-firebase@v2
-        with:
-          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages

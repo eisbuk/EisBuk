@@ -26,10 +26,6 @@ jobs:
             **/node_modules
             $HOME/.cache/firebase/emulators
           key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install firebase CLI
-        uses: pocket-apps/action-setup-firebase@v2
-        with:
-          firebase-token: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
