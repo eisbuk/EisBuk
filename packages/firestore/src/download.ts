@@ -16,6 +16,13 @@ interface orgData {
   data: firestore.DocumentData;
 }
 
+interface subcollectionPath {
+  id: string;
+  path: string;
+}
+
+const db = admin.firestore();
+
 /**
  * getOrgs - Lists all orgs
  */
@@ -23,8 +30,6 @@ export async function getOrgs(): Promise<
   OperationSuccess<orgData[]> | OperationFailure
 > {
   const orgs: orgData[] = [];
-
-  const db = admin.firestore();
 
   try {
     const orgsRef = await db.collection(Collection.Organizations);
@@ -45,4 +50,23 @@ export async function getOrgs(): Promise<
   } catch (err: any) {
     return { ok: false, message: err.message };
   }
+}
+
+/**
+ * getSubCollectionPaths - Retreive a list of subcolleciton paths
+ */
+export async function getSubCollectionPaths(
+  org: string
+): Promise<subcollectionPath[]> {
+  const subCollectionPaths: subcollectionPath[] = [];
+  const subCollectionSnap = await db
+    .doc(`${Collection.Organizations}/${org}`)
+    .listCollections();
+
+  subCollectionSnap.forEach((collection) => {
+    const path = `${Collection.Organizations}/${org}/${collection.id}`;
+    subCollectionPaths.push({ id: collection.id, path });
+  });
+
+  return subCollectionPaths;
 }
