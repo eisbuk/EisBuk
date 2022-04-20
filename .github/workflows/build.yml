@@ -239,7 +239,7 @@ jobs:
             $HOME/.cache/firebase/emulators
             $HOME/.cache/Cypress
             $HOME/Library/Caches/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-node14-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-modules-emulators-cypress-node14-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Install firebase CLI
         uses: pocket-apps/action-setup-firebase@v2
         with:
