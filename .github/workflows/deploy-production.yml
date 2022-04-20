@@ -22,13 +22,14 @@ jobs:
         with:
           path: |
             ~/.pnpm-store
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
+            common/temp/pnpm-store
+            **/node_modules
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+      - name: Install and build packages
+        run: rush update && rush build
       - name: Build app
         run: pnpm -C packages/client build
         env:
