@@ -234,9 +234,8 @@ jobs:
             ~/.pnpm-store
             common/temp
             **/node_modules
-            $HOME/.cache/firebase/emulators
-            $HOME/.cache/Cypress
-            $HOME/Library/Caches/Cypress
+            ~/.cache/firebase/emulators
+            ~/.cache/Cypress
           key: ${{ runner.os }}-modules-emulators-cypress-node14-vsilvio-1-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
