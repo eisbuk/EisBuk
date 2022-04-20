@@ -13,6 +13,7 @@ import {
   getOrgs,
   getSubCollectionPaths,
   getSubCollectionData,
+  getAllSubCollectionData,
 } from "@eisbuk/firestore";
 
 it("Lists all existing organizations", async () => {
@@ -77,5 +78,18 @@ describe("Collects subcollection facts", () => {
     };
 
     expect(data).toEqual(expectedData);
+  });
+
+  it("Returns all subcollection data for a specified org", async () => {
+    const data = await getAllSubCollectionData(__testOrganization__);
+
+    const expectedCustomerData = {
+      saul: saul,
+      walt: walt,
+    };
+
+    expect(data).toHaveProperty("bookings");
+    expect(data).toHaveProperty("customers");
+    expect(data.customers).toEqual(expectedCustomerData);
   });
 });

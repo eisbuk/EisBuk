@@ -91,3 +91,32 @@ export async function getSubCollectionData(path: string): Promise<{
 
   return Object.fromEntries(subCollectionData);
 }
+
+/**
+ * getAllSubCollectionData - Retreive all subcollection data for a specified org
+ */
+export async function getAllSubCollectionData(org: string): Promise<{
+  [k: string]: {
+    [k: string]: firestore.DocumentData;
+  };
+}> {
+  const paths = await getSubCollectionPaths(org);
+
+  if (!paths.length) {
+    return {};
+  }
+
+  const subCollectionKeys = paths.map(({ id }) => id);
+
+  const subCollectionDataPromises = paths.map(({ path }) =>
+    getSubCollectionData(path)
+  );
+  const subCollectionData = await Promise.all(subCollectionDataPromises);
+
+  const subCollections = subCollectionKeys.map((key, ix) => {
+    const value = subCollectionData[ix];
+    return [key, value] as [string, { [k: string]: firestore.DocumentData }];
+  });
+
+  return Object.fromEntries(subCollections);
+}
