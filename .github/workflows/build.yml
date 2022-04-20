@@ -225,7 +225,7 @@ jobs:
         with:
           node-version: "14"
       - name: DEBUG
-        run: ls -l $HOME/.cache/Cypress
+        run: ls -l $HOME/.cache/Cypress || true
       - name: Cache node modules and firebase emulators
         uses: actions/cache@v2
         with:
@@ -241,11 +241,11 @@ jobs:
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: DEBUG
-        run: ls -l $HOME/.cache/Cypress
+        run: ls -l $HOME/.cache/Cypress || true
       - name: Install and build packages
         run: rush update && rush build
       - name: DEBUG
-        run: ls -l $HOME/.cache/Cypress
+        run: ls -l $HOME/.cache/Cypress || true
 
       - name: Build app
         run: cd packages/client && rushx build:test
