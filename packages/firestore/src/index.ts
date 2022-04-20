@@ -1,3 +1,7 @@
 import "./firebase";
 
-export { getOrgs, getSubCollectionPaths } from "./download";
+export {
+  getOrgs,
+  getSubCollectionPaths,
+  getSubCollectionData,
+} from "./download";

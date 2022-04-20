@@ -9,7 +9,11 @@ import { saul, walt } from "@/__testData__/customers";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import { getOrgs, getSubCollectionPaths } from "@eisbuk/firestore";
+import {
+  getOrgs,
+  getSubCollectionPaths,
+  getSubCollectionData,
+} from "@eisbuk/firestore";
 
 it("Lists all existing organizations", async () => {
   const result = await getOrgs();
@@ -62,5 +66,16 @@ describe("Collects subcollection facts", () => {
 
     expect(numOfSubcollections).toBe(2);
     expect(paths).toEqual(expectedPathsResult);
+  });
+
+  it("Returns subcollection data for a single path", async () => {
+    const data = await getSubCollectionData(customersSubcollectionPath);
+
+    const expectedData = {
+      saul: saul,
+      walt: walt,
+    };
+
+    expect(data).toEqual(expectedData);
   });
 });
