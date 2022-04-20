@@ -32,6 +32,10 @@
 - - [pnpm](https://pnpm.io/) - a fast and storage efficient pacakge manager (pnpm stands for "performant npm")
 - - [Rush](https://rushjs.io/) - a monorepo management tool built for large projects, seamlessly integratable with pnpm, npm, yarn
 
+### CI
+
+- - [Click here](./README_CI.md) to read about the CI infrastructure for the project
+
 ## Working with the project
 
 ### Installation
