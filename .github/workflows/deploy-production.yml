@@ -24,8 +24,8 @@ jobs:
             ~/.pnpm-store
             common/temp/pnpm-store
             **/node_modules
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
