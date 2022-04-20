@@ -70,3 +70,24 @@ export async function getSubCollectionPaths(
 
   return subCollectionPaths;
 }
+
+/**
+ * getSubCollectionData - Retrieve subcollection data at a specified path
+ */
+export async function getSubCollectionData(path: string): Promise<{
+  [k: string]: firestore.DocumentData;
+}> {
+  const subCollctionRef = await db.collection(path);
+  const subCollectionSnap = await subCollctionRef.get();
+
+  const subCollectionData: Array<[string, firestore.DocumentData]> = [];
+
+  subCollectionSnap.forEach((docRef) => {
+    const docId = docRef.id;
+    const docData = docRef.data();
+
+    subCollectionData.push([docId, docData]);
+  });
+
+  return Object.fromEntries(subCollectionData);
+}
