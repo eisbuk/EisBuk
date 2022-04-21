@@ -11,12 +11,24 @@ interface OperationFailure {
   message: string;
 }
 
-interface orgData {
+interface OrgData extends OrgRootData {
+  subCollections: SubCollections;
+}
+
+interface OrgRootData {
   id: string;
   data: firestore.DocumentData;
 }
 
-interface subcollectionPath {
+interface SubCollections {
+  [k: string]: SubCollectionData;
+}
+
+interface SubCollectionData {
+  [k: string]: firestore.DocumentData;
+}
+
+interface SubCollectionPath {
   id: string;
   path: string;
 }
@@ -24,12 +36,41 @@ interface subcollectionPath {
 const db = admin.firestore();
 
 /**
+ * getOrgData - Retrieve all org data
+ */
+export async function getOrgData(): Promise<
+  OperationSuccess<OrgData[]> | OperationFailure
+> {
+  try {
+    const orgsOp = await getOrgs();
+
+    if (orgsOp.ok === true) {
+      const orgs = orgsOp.data;
+
+      const getFullOrgDataOps = orgs.map(async (org) => {
+        const subCollectionData = await getAllSubCollectionData(org.id);
+
+        return { subCollections: subCollectionData, ...org };
+      });
+
+      const orgData = await Promise.all(getFullOrgDataOps);
+
+      return { ok: true, data: orgData };
+    } else {
+      throw new Error(orgsOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err };
+  }
+}
+
+/**
  * getOrgs - Lists all orgs
  */
 export async function getOrgs(): Promise<
-  OperationSuccess<orgData[]> | OperationFailure
+  OperationSuccess<OrgRootData[]> | OperationFailure
 > {
-  const orgs: orgData[] = [];
+  const orgs: OrgRootData[] = [];
 
   try {
     const orgsRef = await db.collection(Collection.Organizations);
@@ -53,53 +94,11 @@ export async function getOrgs(): Promise<
 }
 
 /**
- * getSubCollectionPaths - Retreive a list of subcolleciton paths
- */
-export async function getSubCollectionPaths(
-  org: string
-): Promise<subcollectionPath[]> {
-  const subCollectionPaths: subcollectionPath[] = [];
-  const subCollectionSnap = await db
-    .doc(`${Collection.Organizations}/${org}`)
-    .listCollections();
-
-  subCollectionSnap.forEach((collection) => {
-    const path = `${Collection.Organizations}/${org}/${collection.id}`;
-    subCollectionPaths.push({ id: collection.id, path });
-  });
-
-  return subCollectionPaths;
-}
-
-/**
- * getSubCollectionData - Retrieve subcollection data at a specified path
- */
-export async function getSubCollectionData(path: string): Promise<{
-  [k: string]: firestore.DocumentData;
-}> {
-  const subCollctionRef = await db.collection(path);
-  const subCollectionSnap = await subCollctionRef.get();
-
-  const subCollectionData: Array<[string, firestore.DocumentData]> = [];
-
-  subCollectionSnap.forEach((docRef) => {
-    const docId = docRef.id;
-    const docData = docRef.data();
-
-    subCollectionData.push([docId, docData]);
-  });
-
-  return Object.fromEntries(subCollectionData);
-}
-
-/**
  * getAllSubCollectionData - Retreive all subcollection data for a specified org
  */
-export async function getAllSubCollectionData(org: string): Promise<{
-  [k: string]: {
-    [k: string]: firestore.DocumentData;
-  };
-}> {
+export async function getAllSubCollectionData(
+  org: string
+): Promise<SubCollections> {
   const paths = await getSubCollectionPaths(org);
 
   if (!paths.length) {
@@ -119,4 +118,44 @@ export async function getAllSubCollectionData(org: string): Promise<{
   });
 
   return Object.fromEntries(subCollections);
+}
+
+/**
+ * getSubCollectionData - Retrieve subcollection data at a specified path
+ */
+export async function getSubCollectionData(
+  path: string
+): Promise<SubCollectionData> {
+  const subCollctionRef = await db.collection(path);
+  const subCollectionSnap = await subCollctionRef.get();
+
+  const subCollectionData: Array<[string, firestore.DocumentData]> = [];
+
+  subCollectionSnap.forEach((docRef) => {
+    const docId = docRef.id;
+    const docData = docRef.data();
+
+    subCollectionData.push([docId, docData]);
+  });
+
+  return Object.fromEntries(subCollectionData);
+}
+
+/**
+ * getSubCollectionPaths - Retreive a list of subcolleciton paths
+ */
+export async function getSubCollectionPaths(
+  org: string
+): Promise<SubCollectionPath[]> {
+  const subCollectionPaths: SubCollectionPath[] = [];
+  const subCollectionSnap = await db
+    .doc(`${Collection.Organizations}/${org}`)
+    .listCollections();
+
+  subCollectionSnap.forEach((collection) => {
+    const path = `${Collection.Organizations}/${org}/${collection.id}`;
+    subCollectionPaths.push({ id: collection.id, path });
+  });
+
+  return subCollectionPaths;
 }
