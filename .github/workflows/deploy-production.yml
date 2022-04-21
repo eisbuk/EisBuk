@@ -31,7 +31,7 @@ jobs:
       - name: Install and build packages
         run: rush update && rush build
       - name: Build app
-        run: pnpm -C packages/client build
+        run: cd packages/client && rushx build
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
@@ -44,7 +44,7 @@ jobs:
           REACT_APP_SENTRY_ENVIRONMENT: production
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Deploy to firebase
-        run: pnpm deploy:production
+        run: rush deploy:production
         env: # Or as an environment variable
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Create Sentry release
