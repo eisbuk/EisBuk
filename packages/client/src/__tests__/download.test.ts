@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 
-import { __testOrganization__ } from "@/__testSetup__/envData";
+import { __testOrganization__, defaultUser } from "@/__testSetup__/envData";
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { deleteAll } from "@/__testUtils__/firestore";
 import { saul, walt } from "@/__testData__/customers";
@@ -10,11 +10,16 @@ import { saul, walt } from "@/__testData__/customers";
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
 import {
+  getOrgData,
   getOrgs,
   getSubCollectionPaths,
   getSubCollectionData,
   getAllSubCollectionData,
 } from "@eisbuk/firestore";
+
+beforeAll(async () => {
+  await deleteAll();
+});
 
 it("Lists all existing organizations", async () => {
   const result = await getOrgs();
@@ -91,5 +96,47 @@ describe("Collects subcollection facts", () => {
     expect(data).toHaveProperty("bookings");
     expect(data).toHaveProperty("customers");
     expect(data.customers).toEqual(expectedCustomerData);
+  });
+
+  it("Returns full org data", async () => {
+    const result = await getOrgData();
+
+    if (result.ok) {
+      const expectedOrgData = {
+        id: __testOrganization__,
+        data: {
+          admins: [defaultUser.email],
+          existingSecrets: [],
+        },
+        subCollections: {
+          customers: {
+            saul: saul,
+            walt: walt,
+          },
+          bookings: {
+            [saul.secretKey]: {
+              deleted: false,
+              surname: saul.surname,
+              name: saul.name,
+              id: saul.id,
+              category: saul.category,
+            },
+            [walt.secretKey]: {
+              deleted: false,
+              surname: walt.surname,
+              name: walt.name,
+              id: walt.id,
+              category: walt.category,
+            },
+          },
+        },
+      };
+
+      const [data] = result.data;
+
+      expect(data).toEqual(expectedOrgData);
+    } else {
+      fail(result.message);
+    }
   });
 });
