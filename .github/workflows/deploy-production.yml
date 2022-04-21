@@ -31,7 +31,7 @@ jobs:
       - name: Install and build packages
         run: rush update && rush build
       - name: Build app
-        run: cd packages/client && rushx build
+        run: cd packages/client && rushx build:prod
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
