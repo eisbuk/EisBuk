@@ -53,10 +53,15 @@ const userBookingRef = getDocumentRef(
   adminDb,
   `${bookingsCollectionPath}/${secretKey}`
 );
+const publicOrgRef = getDocumentRef(
+  adminDb,
+  publicOrgPath
+);
 
 beforeEach(async () => {
   const clearAll = [
     deleteAllCollections(userBookingRef, [BookingSubCollection.BookedSlots]),
+    deleteAllCollections(publicOrgRef, [Collection.PublicOrgInfo]),
     deleteAll(),
   ];
   await Promise.all(clearAll);
@@ -348,6 +353,12 @@ describe("Cloud functions -> Data triggers ->,", () => {
           condition: (data) => Boolean(data),
         });
         expect(docRes).toEqual({ displayName, location, emailFrom });
+        // test removing of the public org info
+        await orgRef.delete();
+        await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(!data),
+        });
       }
     );
   });
