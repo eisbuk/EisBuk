@@ -26,7 +26,7 @@ const openCalendar = (
   jump: DateTimeUnit = "week"
 ) => cy.contains(i18n.t(createDateTitle(date, jump)) as string).click();
 
-xdescribe("Date Switcher", () => {
+describe("Date Switcher", () => {
   describe("Customer calendar view", () => {
     beforeEach(() => {
       cy.setClock(testDateLuxon.toMillis());
@@ -89,31 +89,28 @@ xdescribe("Date Switcher", () => {
     });
   });
 });
-describe("Add To Calendar", () => {
-  describe("ics file", () => {
+describe("Download ics file to Add To Calendar", () => {
+  it("downloads ics file", () => {
     const downloadsFolder = Cypress.config("downloadsFolder");
-    beforeEach(() => {
-      cy.setClock(testDateLuxon.toMillis());
 
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, [
-          "saul_with_extended_date.json",
-          "slots.json",
-        ])
-      );
-      cy.task("deleteFolder", downloadsFolder);
-    });
-    it("downloads ics file", () => {
-      cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
-      cy.getAttrWith("aria-label", "See past dates").click();
-      cy.getAttrWith("aria-label", "Book").first().click();
+    cy.setClock(testDateLuxon.toMillis());
 
-      cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
-      cy.contains("Yes").click();
+    cy.initAdminApp().then((organization) =>
+      cy.updateFirestore(organization, [
+        "saul_with_extended_date.json",
+        "slots.json",
+      ])
+    );
+    cy.task("deleteFolder", downloadsFolder);
+    cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
+    cy.getAttrWith("aria-label", "See past dates").click();
+    cy.getAttrWith("aria-label", "Book").first().click();
 
-      cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
-      const filename = path.join(downloadsFolder, "Booked_Slots.ics");
-      cy.readFile(filename);
-    });
+    cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
+    cy.contains("Yes").click();
+
+    cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
+    const filename = path.join(downloadsFolder, "Booked_Slots.ics");
+    cy.readFile(filename);
   });
 });
