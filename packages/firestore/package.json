@@ -19,10 +19,14 @@
     "typecheck": "tsc"
   },
   "dependencies": {
-    "@eisbuk/shared": "1.0.0",
+    "@eisbuk/shared": "workspace:*",
     "firebase-admin": "^9.4.2"
   },
   "devDependencies": {
+    "@types/node": "^16.11.10",
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "typescript": "~4.4.2",
     "vite": "^2.8.6"
   }
 }
