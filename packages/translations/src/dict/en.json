@@ -101,7 +101,10 @@
     "DisplayName": "Organization Name",
     "Location": "Location",
     "Admins": "Admins",
-    "AddNewAdmin": "Add New Admin"
+    "AddNewAdmin": "Add New Admin",
+    "Email": "Email",
+    "SMS": "SMS",
+    "General": "General"
   },
   "Validations": {
     "Email": "Please insert a valid email",

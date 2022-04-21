@@ -28,7 +28,9 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
 
   return (
     <div>
-      {name && <h5 className={classes.sectionTitle}>{name}</h5>}
+      {name && (
+        <h5 className={classes.sectionTitle}>{t(OrganizationLabel[name])}</h5>
+      )}
       <div className={classes.fieldSection}>
         {content.map(({ name, multiline }) => {
           const label = `${name?.charAt(0).toUpperCase()}${name?.slice(1)}`;

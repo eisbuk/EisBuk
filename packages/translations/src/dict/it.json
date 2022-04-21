@@ -101,7 +101,10 @@
     "DisplayName": "Nome Dell'Organizzazione",
     "Location": "Posizione",
     "Admins": "Amministrat(rici/ori)",
-    "AddNewAdmin": "Aggiungi Nuovo Amministratore"
+    "AddNewAdmin": "Aggiungi Nuovo Amministratore",
+    "Email": "Email",
+    "SMS": "SMS",
+    "General": "Generale"
   },
   "Validations": {
     "Email": "Inserisci una email valida",

@@ -53,7 +53,7 @@ const emailFields = [
     multiline: true,
   },
 ];
-const publicInfoFields = [{ name: "displayName" }, { name: "location" }];
+const GeneralFields = [{ name: "displayName" }, { name: "location" }];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -98,7 +98,7 @@ const OrganizationSettings: React.FC<Props> = () => {
               <Divider />
               <Form className={classes.form}>
                 <FormControl component="fieldset">
-                  <FormSection content={publicInfoFields} name="Public Info" />
+                  <FormSection content={GeneralFields} name="General" />
                   <FormSection content={emailFields} name="Email" />
                   <FormSection content={smsFields} name="SMS" />
                 </FormControl>

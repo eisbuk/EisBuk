@@ -125,6 +125,9 @@ export enum OrganizationLabel {
   Location = "OrganizationLabel.Location",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
+  Email = "OrganizationLabel.Email",
+  SMS = "OrganizationLabel.SMS",
+  General = "OrganizationLabel.General",
 }
 // #endregion forms
 
