@@ -30,7 +30,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
   const handleClick = () => {
     let icalendar: ICalendar;
 
-    Object.values(bookedSlots).forEach((bookedSlot, i) => {
+    Object.values(bookedSlots).forEach((bookedSlot, i, originalArr) => {
       const startDate = getStartDate(bookedSlot.date, bookedSlot.interval);
       const endDate = getEndDate(bookedSlot.date, bookedSlot.interval);
 
@@ -62,7 +62,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
       /**
        * Download calendar on last iteration
        */
-      if (i === Object.keys(bookedSlots).length - 1) {
+      if (i === originalArr.length - 1) {
         icalendar.download("Booked_Slots.ics");
       }
     });
