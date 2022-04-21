@@ -8,7 +8,7 @@ import { Collection } from "@eisbuk/shared";
 
 import { defaultUser } from "@/__testSetup__/envData";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 /** @TEMP replace this with central init test env function */
 export type TestEnvFirestore = ReturnType<RulesTestContext["firestore"]>;
@@ -27,7 +27,7 @@ export const getAuthTestEnv: GetTestEnv = async (setup = async () => {}) => {
   // as organization's admin in firestore for a complete `isAdmin` functionality
   await testEnv.withSecurityRulesDisabled(async (context) => {
     const db = context.firestore();
-    await setDoc(doc(db, Collection.Organizations, __organization__), {
+    await setDoc(doc(db, Collection.Organizations, getOrganization()), {
       admins: [defaultUser.email],
     });
     // run setup function if any provided

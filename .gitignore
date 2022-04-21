@@ -14,10 +14,18 @@
 
 # Misc. .log files
 **/npm-debug.log*
+**/.pnpm-debug.log*
 **/yarn-debug.log*
 **/yarn-error.log*
 **/build-storybook.log*
-**/eslint.log
+**/*.log
+**/build.output
+**/deploy.output
+
+# Runtime data
+**/*.pid
+**/*.seed
+**/*.pid.lock
 
 # IDE specific
 **/.vscode
@@ -40,3 +48,8 @@ firebase*.log
 firestore*.log
 ui-debug.log
 
+# Rush temporary files
+common/deploy/
+common/temp/
+common/autoinstallers/*/.npmrc
+**/.rush/temp/

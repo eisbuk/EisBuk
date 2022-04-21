@@ -34,8 +34,7 @@ describe("login", () => {
   });
 
   afterEach(() => {
-    cy.signOut();
-    cy.clearLocalStorage();
+    cy.signOut().then(() => cy.clearLocalStorage());
   });
 
   describe("Email login", () => {

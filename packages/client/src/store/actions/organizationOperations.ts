@@ -3,7 +3,7 @@ import { doc, getFirestore, setDoc } from "@firebase/firestore";
 import { Collection, OrganizationData } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -12,7 +12,7 @@ import { FirestoreThunk } from "@/types/store";
 import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 const getOrganizationCollPath = () =>
-  `${Collection.Organizations}/${__organization__}`;
+  `${Collection.Organizations}/${getOrganization()}`;
 
 export const updateOrganization =
   (
