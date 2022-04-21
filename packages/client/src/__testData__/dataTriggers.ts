@@ -1,6 +1,7 @@
 import {
   CustomerAttendance,
   CustomerBookingEntry,
+  OrganizationData,
   SlotAttendnace,
 } from "@eisbuk/shared";
 
@@ -59,4 +60,16 @@ export const attendanceWithTestCustomer: SlotAttendnace = {
       attendedInterval: bookedInterval,
     },
   },
+};
+
+export const organization: OrganizationData = {
+  displayName: "Los Pollos Hermanos",
+  location: "Albuquerque",
+  admins: ["Gus Fring"],
+  emailFrom: "gus@lospollos.hermanos",
+  emailTemplate: "Email Temp here",
+  emailNameFrom: "Gus",
+  smsFrom: "Gus",
+  smsTemplate: "SMS Temp here",
+  existingSecrets: ["authToken", "exampleSecret"],
 };

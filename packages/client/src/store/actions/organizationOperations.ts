@@ -13,8 +13,7 @@ import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${__organization__}`;
-const getPublicOrganizationInfoCollPath = () =>
-  `${Collection.PublicOrgInfo}/${__organization__}`;
+
 export const updateOrganization =
   (
     orgData: OrganizationData,
@@ -22,17 +21,10 @@ export const updateOrganization =
   ): FirestoreThunk =>
   async (dispatch) => {
     try {
-      const { displayName, location, emailFrom } = orgData;
       const db = getFirestore();
       const docRef = doc(db, getOrganizationCollPath());
-      const publicOrgInfoDocRef = doc(db, getPublicOrganizationInfoCollPath());
 
       await setDoc(docRef, orgData, { merge: true });
-      await setDoc(
-        publicOrgInfoDocRef,
-        { displayName, location, emailFrom },
-        { merge: true }
-      );
 
       dispatch(
         enqueueNotification({
@@ -46,7 +38,6 @@ export const updateOrganization =
       );
       setSubmitting(false);
     } catch (error) {
-      console.log({ error });
       dispatch(showErrSnackbar);
     }
   };

@@ -165,8 +165,10 @@ export interface FirestoreData {
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
   [Collection.PublicOrgInfo]: {
-    [organization: string]: Pick<OrganizationData, "displayName"> &
-      Pick<OrganizationData, "location">;
+    [organization: string]: Pick<
+      OrganizationData,
+      "displayName" | "location" | "emailFrom"
+    >;
   };
 }
 /**

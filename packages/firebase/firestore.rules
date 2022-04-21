@@ -195,7 +195,6 @@ service cloud.firestore {
     }
     // #region public-info-check
       match /publicOrgInfo/{organization} {
-      allow write: if isAdmin(organization);
       allow read: if true;
       }
     // #endregion public-info-check

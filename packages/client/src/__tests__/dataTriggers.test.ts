@@ -25,6 +25,7 @@ import {
   attendanceWithTestCustomer,
   baseAttendance,
   emptyAttendance,
+  organization,
 } from "@/__testData__/dataTriggers";
 import { saul } from "@/__testData__/customers";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
@@ -39,6 +40,7 @@ const testMonth = testDate.substring(0, 7);
 
 // document paths
 const orgPath = `${Collection.Organizations}/${__organization__}`;
+const publicOrgPath = `${Collection.PublicOrgInfo}/${__organization__}`;
 const slotsCollectionPath = `${orgPath}/${OrgSubCollection.Slots}`;
 const attendanceCollPath = `${orgPath}/${OrgSubCollection.Attendance}`;
 const bookingsCollectionPath = `${orgPath}/${OrgSubCollection.Bookings}`;
@@ -329,6 +331,23 @@ describe("Cloud functions -> Data triggers ->,", () => {
           documentPath: attendanceDocPath,
           condition: (data) => !data,
         });
+      }
+    );
+  });
+  describe("createPublicOrgInfo", () => {
+    testWithEmulator(
+      "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
+      async () => {
+        const { displayName, location, emailFrom } = organization;
+
+        const orgRef = getDocumentRef(adminDb, orgPath);
+        await orgRef.set(organization);
+
+        const docRes = await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(data),
+        });
+        expect(docRes).toEqual({ displayName, location, emailFrom });
       }
     );
   });
