@@ -53,15 +53,11 @@ const userBookingRef = getDocumentRef(
   adminDb,
   `${bookingsCollectionPath}/${secretKey}`
 );
-const publicOrgRef = getDocumentRef(
-  adminDb,
-  publicOrgPath
-);
+
 
 beforeEach(async () => {
   const clearAll = [
     deleteAllCollections(userBookingRef, [BookingSubCollection.BookedSlots]),
-    deleteAllCollections(publicOrgRef, [Collection.PublicOrgInfo]),
     deleteAll(),
   ];
   await Promise.all(clearAll);
@@ -345,9 +341,21 @@ describe("Cloud functions -> Data triggers ->,", () => {
       async () => {
         const { displayName, location, emailFrom } = organization;
 
-        const orgRef = getDocumentRef(adminDb, orgPath);
-        await orgRef.set(organization);
 
+        // check for non existence of publicOrgInfo before creating an organization
+        const publicOrgRes = await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(!data),
+        });
+        expect(publicOrgRes).toBeUndefined();
+
+        const orgRef = getDocumentRef(adminDb, orgPath);
+        const OrgRes = await waitForCondition({
+          documentPath: orgPath,
+          condition: (data) => Boolean(data),
+        });
+
+        await orgRef.set(organization);
         const docRes = await waitForCondition({
           documentPath: publicOrgPath,
           condition: (data) => Boolean(data),
