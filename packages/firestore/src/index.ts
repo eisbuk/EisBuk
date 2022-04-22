@@ -1,9 +1,10 @@
 import "./firebase";
 
 export {
+  backup,
   getOrgData,
   getOrgs,
   getSubCollectionPaths,
   getSubCollectionData,
   getAllSubCollectionData,
-} from "./download";
+} from "./backup";
