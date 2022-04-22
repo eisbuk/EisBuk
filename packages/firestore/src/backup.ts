@@ -1,4 +1,7 @@
+import fs from "fs/promises";
+import path from "path";
 import admin, { firestore } from "firebase-admin";
+
 import { Collection } from "@eisbuk/shared";
 
 interface OperationSuccess<T> {
@@ -34,6 +37,36 @@ interface SubCollectionPath {
 }
 
 const db = admin.firestore();
+
+/**
+ * backup
+ */
+export async function backup(): Promise<
+  OperationSuccess<string> | OperationFailure
+> {
+  try {
+    const orgDataOp = await getOrgData();
+
+    if (orgDataOp.ok) {
+      const writeDataOps = orgDataOp.data.map(async (orgData) => {
+        const fileName = `${orgData.id}.json`;
+        const filePath = path.resolve(process.cwd(), fileName);
+
+        const orgDataJson = JSON.stringify(orgData);
+
+        await fs.writeFile(filePath, orgDataJson, "utf-8");
+      });
+
+      await Promise.all(writeDataOps);
+
+      return { ok: true, data: "OK" };
+    } else {
+      throw new Error(orgDataOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
 
 /**
  * getOrgData - Retrieve all org data
