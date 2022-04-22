@@ -333,7 +333,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
       }
     );
   });
-  describe("createPublicOrgInfo", () => {
+  xdescribe("createPublicOrgInfo", () => {
     testWithEmulator(
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
       async () => {
