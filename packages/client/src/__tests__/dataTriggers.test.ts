@@ -40,7 +40,6 @@ const testMonth = testDate.substring(0, 7);
 
 // document paths
 const orgPath = `${Collection.Organizations}/${getOrganization()}`;
-const publicOrgPath = `${Collection.PublicOrgInfo}/${getOrganization()}`;
 const slotsCollectionPath = `${orgPath}/${OrgSubCollection.Slots}`;
 const attendanceCollPath = `${orgPath}/${OrgSubCollection.Attendance}`;
 const bookingsCollectionPath = `${orgPath}/${OrgSubCollection.Bookings}`;
@@ -53,7 +52,6 @@ const userBookingRef = getDocumentRef(
   adminDb,
   `${bookingsCollectionPath}/${secretKey}`
 );
-
 
 beforeEach(async () => {
   const clearAll = [
@@ -340,24 +338,31 @@ describe("Cloud functions -> Data triggers ->,", () => {
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
       async () => {
         const { displayName, location, emailFrom } = organization;
+        const orgName = "test-publicOrgInfo";
 
+        const publicOrgPath = `${Collection.PublicOrgInfo}/${orgName}`;
+        const orgPath = `${Collection.Organizations}/${orgName}`;
 
-        // check for non existence of publicOrgInfo before creating an organization
+        // check for non existence of publicOrgInfo before creating a new organization
         const publicOrgRes = await waitForCondition({
           documentPath: publicOrgPath,
           condition: (data) => Boolean(!data),
         });
         expect(publicOrgRes).toBeUndefined();
 
+        // create new organization
         const orgRef = getDocumentRef(adminDb, orgPath);
-
         await orgRef.set(organization);
+
+        // check for publicOrgInfo
+
         const docRes = await waitForCondition({
           documentPath: publicOrgPath,
           condition: (data) => Boolean(data),
         });
         expect(docRes).toEqual({ displayName, location, emailFrom });
-        // test removing of the public org info
+
+        // test non existence of publicOrgInfo after organization is deleted
         await orgRef.delete();
         await waitForCondition({
           documentPath: publicOrgPath,
