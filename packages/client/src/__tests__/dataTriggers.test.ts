@@ -350,10 +350,6 @@ describe("Cloud functions -> Data triggers ->,", () => {
         expect(publicOrgRes).toBeUndefined();
 
         const orgRef = getDocumentRef(adminDb, orgPath);
-        const OrgRes = await waitForCondition({
-          documentPath: orgPath,
-          condition: (data) => Boolean(data),
-        });
 
         await orgRef.set(organization);
         const docRes = await waitForCondition({

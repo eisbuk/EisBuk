@@ -12,11 +12,10 @@ import {
   getCustomerBase,
 } from "@eisbuk/shared";
 
-import { db } from "@/__testSetup__/firestoreSetup";
+import { db, adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { getOrganization } from "@/lib/getters";
 
-import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { deleteAll, deleteAllCollections } from "@/__testUtils__/firestore";
 import { waitForCondition, getDocumentRef } from "@/__testUtils__/helpers";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
@@ -42,7 +41,6 @@ describe("Customer triggers", () => {
   beforeEach(async () => {
     await deleteAll();
     await deleteAllCollections(publicOrgRef, [Collection.PublicOrgInfo]);
-
   });
 
   testWithEmulator(
