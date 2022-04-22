@@ -1,15 +1,15 @@
 import admin from "firebase-admin";
 import functions from "firebase-functions";
 
+// #region typeAliases
 type DocumentReference =
   FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
-
 type Change = functions.Change<FirebaseFirestore.DocumentSnapshot>;
-
 type Timestamp = FirebaseFirestore.Timestamp;
-
 type FieldValue = FirebaseFirestore.FieldValue;
+// #endregion typeAliases
 
+// #region types
 /**
  * Status of the process delivery
  */
@@ -37,6 +37,11 @@ enum DeliveryStatus {
   Retry = "RETRY",
 }
 
+/**
+ * Interface of a process document. The `delivery` part contains
+ * the delivery state data and is updated by processDelivery functionality.
+ * The payload is any payload appropriate for a particular delivery functionality (i.e. email sending)
+ */
 interface ProcessDocument {
   delivery: {
     startTime: Timestamp;
@@ -50,6 +55,10 @@ interface ProcessDocument {
   payload: Record<string, any>;
 }
 
+/**
+ * An update object passed to `transaction.update` in order to update
+ * the delivery status of a  process document.
+ */
 type ProcessUpdate = Partial<{
   "delivery.startTime": FieldValue;
   "delivery.endTime": FieldValue;
@@ -59,7 +68,15 @@ type ProcessUpdate = Partial<{
   "delivery.error": string | null;
   "delivery.result": any;
 }>;
+// #endregion types
 
+/**
+ * Try and execute the `deliver` functionality and update the
+ * delivery status (success/error) with appropriate metadata to
+ * process document.
+ * @param deliver An async function, the "meat" od the deliver functionality (i.e. email sending functionality)
+ * @param processDocumentRef reference to the process document (with deliver `payload` and `delivery` state)
+ */
 const execute = async (
   deliver: () => Promise<any>,
   processDocumentRef: DocumentReference
@@ -82,6 +99,10 @@ const execute = async (
   });
 };
 
+/**
+ * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
+ * as it's written using `transaction.update` on process create.
+ */
 const initialDeliveryState: Required<Omit<ProcessUpdate, "delivery.endTime">> =
   {
     "delivery.startTime": admin.firestore.FieldValue.serverTimestamp(),
@@ -92,6 +113,11 @@ const initialDeliveryState: Required<Omit<ProcessUpdate, "delivery.endTime">> =
     "delivery.result": null,
   };
 
+/**
+ * Set up delivery state and write to process document, thus initializing
+ * the delivery process
+ * @param ref reference of the process document
+ */
 const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
   // Wrapping in transaction to allow for automatic retries (#48)
   admin.firestore().runTransaction((transaction) => {
@@ -101,6 +127,11 @@ const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
     return Promise.resolve();
   });
 
+/**
+ * The main entry point of delivery functionality
+ * @param change firestore document onWrite change object
+ * @param deliver an async function resolving to any value. The resolved value will be set as result in the process document delivery object.
+ */
 const processDelivery = async (
   change: Change,
   deliver: () => Promise<any>
