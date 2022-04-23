@@ -9,6 +9,20 @@ export default defineConfig({
       fileName: (fmt) => (fmt === "es" ? "index.es.js" : "index.js"),
       formats: ["es", "cjs"],
     },
+    rollupOptions: {
+      external: [
+        "firebase",
+        "firebase-functions",
+        "firebase-admin",
+        "uuid",
+        "lodash",
+        "luxon",
+        "@google-cloud/firestore",
+      ],
+      output: {
+        exports: "named",
+      },
+    },
     outDir: "dist",
   },
 });
