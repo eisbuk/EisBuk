@@ -39,32 +39,31 @@ export enum DeliveryStatus {
 /**
  * Interface of a process document. The `delivery` part contains
  * the delivery state data and is updated by processDelivery functionality.
- * The payload is any payload appropriate for a particular delivery functionality (i.e. email sending)
+ * The document will probably be filled with other data used for a particular delivery functionality.
  */
 export interface ProcessDocument {
+  [key: string]: any;
   delivery: {
     startTime: Timestamp;
-    endTime?: Timestamp | null;
+    endTime?: Timestamp;
     leaseExpireTime: Timestamp | null;
-    state: DeliveryStatus;
+    status: DeliveryStatus;
     attempts: number;
     error: string | null;
     result: any;
   };
-  payload: Record<string, any>;
 }
 
+type TimestampKeys = "startTime" | "endTime" | "leaseExpireTime";
+
 /**
- * An update object passed to `transaction.update` in order to update
- * the delivery status of a  process document.
+ * An update for `ProcessDocument`'s `delivery` state. Each field is optional due to update being applied
+ * using `merge:true`. Additionally, each timestamped field ("startTime", "endTime", "leaseExpiration") can also
+ * be `FieldValue` other than `Timestamp | null` as it's an update - resulting in an appropriate
+ * `Timestamp | null` value in the state itself
  */
-export type ProcessUpdate = Partial<{
-  "delivery.startTime": FieldValue;
-  "delivery.endTime": FieldValue;
-  "delivery.leaseExpireTime": Timestamp | null;
-  "delivery.state": DeliveryStatus;
-  "delivery.attempts": number;
-  "delivery.error": string | null;
-  "delivery.result": any;
-}>;
+export type DeliveryUpdate = Partial<
+  Omit<ProcessDocument["delivery"], TimestampKeys> &
+    Record<TimestampKeys, Timestamp | FieldValue | null>
+>;
 // #endregion process
