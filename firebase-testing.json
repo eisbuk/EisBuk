@@ -4,7 +4,10 @@
     "indexes": "packages/firebase/firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["yarn --cwd \"$RESOURCE_DIR\" run lint"],
+    "predeploy": [
+      "npm --prefix packages/firestore-process-delivery run build",
+      "npm --prefix \"$RESOURCE_DIR\" build"
+    ],
     "source": "packages/functions"
   },
   "emulators": {
