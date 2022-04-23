@@ -9,6 +9,8 @@
     "outDir": "dist",
     "sourceMap": true,
     "removeComments": true,
+    "noUncheckedIndexedAccess": true,
+    "noPropertyAccessFromIndexSignature": true,
     "declaration": true,
     "declarationDir": "dist",
     "types": ["node"]
