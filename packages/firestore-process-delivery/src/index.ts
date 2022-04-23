@@ -1,12 +1,13 @@
+import { Timestamp } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 import logger from "./logger";
 
 import {
   DocumentReference,
-  ProcessUpdate,
   DeliveryStatus,
   ProcessDocument,
   Change,
+  DeliveryUpdate,
 } from "./types";
 
 import { wrapErrorBoundary } from "./utils";
@@ -15,15 +16,15 @@ import { wrapErrorBoundary } from "./utils";
  * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
  * as it's written using `transaction.update` on process create.
  */
-const initialDeliveryState: Required<Omit<ProcessUpdate, "delivery.endTime">> =
-  {
-    "delivery.startTime": admin.firestore.FieldValue.serverTimestamp(),
-    "delivery.leaseExpireTime": null,
-    "delivery.state": DeliveryStatus.Pending,
-    "delivery.attempts": 0,
-    "delivery.error": null,
-    "delivery.result": null,
-  };
+const initialDeliveryState: Required<DeliveryUpdate> = {
+  startTime: admin.firestore.FieldValue.serverTimestamp(),
+  endTime: null,
+  leaseExpireTime: null,
+  status: DeliveryStatus.Pending,
+  attempts: 0,
+  error: null,
+  result: null,
+};
 
 /**
  * Set up delivery state and write to process document, thus initializing
@@ -32,9 +33,13 @@ const initialDeliveryState: Required<Omit<ProcessUpdate, "delivery.endTime">> =
  */
 const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
   admin.firestore().runTransaction((transaction) => {
-    transaction.update(ref, {
-      delivery: initialDeliveryState,
-    });
+    transaction.set(
+      ref,
+      {
+        delivery: initialDeliveryState,
+      },
+      { merge: true }
+    );
     return Promise.resolve();
   });
 
@@ -60,7 +65,7 @@ const processDelivery = async (
 
   const processDocument = change.after.data() as ProcessDocument;
 
-  const { delivery } = processDocument;
+  const delivery = processDocument.delivery as DeliveryUpdate;
   // Shouldn't ever happen
   if (!delivery) {
     logger.error(
@@ -71,9 +76,7 @@ const processDelivery = async (
 
   const { leaseExpireTime } = delivery;
 
-  const update: ProcessUpdate = {};
-
-  switch (delivery.state) {
+  switch (delivery.status) {
     case DeliveryStatus.Success:
     case DeliveryStatus.Error:
       return;
@@ -81,14 +84,17 @@ const processDelivery = async (
     // Honestly, the scenario of this part bringing any utility whatsoever seems extremely (astronomically) unlikely
     // As it's a copy/edit of an existing Firebase official extension, leaving this here...might update at some point
     case DeliveryStatus.Processing:
-      if (!leaseExpireTime || leaseExpireTime.toMillis() < Date.now()) {
-        update["delivery.state"] = DeliveryStatus.Error;
-        update["delivery.error"] = "Message processing lease expired.";
+      if (
+        !leaseExpireTime ||
+        (leaseExpireTime as Timestamp).toMillis() < Date.now()
+      ) {
+        delivery.status = DeliveryStatus.Error;
+        delivery.error = "Message processing lease expired.";
 
         logger.info("Quitting the delivery process: Lease expired");
 
         admin.firestore().runTransaction((transaction) => {
-          transaction.update(change.after.ref, update);
+          transaction.set(change.after.ref, { delivery }, { merge: true });
           return Promise.resolve();
         });
         return;
@@ -98,12 +104,12 @@ const processDelivery = async (
     // Execute the delivery on "PENDING" (process initiated) or "RETRY" (process manually restarted)
     case DeliveryStatus.Pending:
     case DeliveryStatus.Retry:
-      update["delivery.state"] = DeliveryStatus.Processing;
-      update["delivery.leaseExpireTime"] = admin.firestore.Timestamp.fromMillis(
+      delivery.status = DeliveryStatus.Processing;
+      delivery.leaseExpireTime = admin.firestore.Timestamp.fromMillis(
         Date.now() + 60000
       );
       await admin.firestore().runTransaction((transaction) => {
-        transaction.update(change.after.ref, update);
+        transaction.set(change.after.ref, { delivery }, { merge: true });
         return Promise.resolve();
       });
       execute(deliver, change.after.ref);
@@ -126,20 +132,25 @@ const execute = async (
   deliver: () => Promise<any>,
   processDocumentRef: DocumentReference
 ) => {
-  const update: ProcessUpdate = {};
+  const delivery: DeliveryUpdate = {};
 
   try {
-    update["delivery.result"] = await deliver();
-    update["delivery.state"] = DeliveryStatus.Success;
+    const result = await deliver();
+    // Fall back to null if result is undefined (which shouldn't really happen)
+    // As firestore doesnt't allow (by default) the field value to be `undefined`
+    delivery.result = result || null;
+    delivery.status = DeliveryStatus.Success;
+    logger.log("Delivery successful, result: ", delivery.result);
   } catch (e) {
-    update["delivery.status"] = DeliveryStatus.Error;
-    update["delivery.error"] = (e as any).toString();
+    delivery.status = DeliveryStatus.Error;
+    delivery.error = (e as Error).toString();
+    logger.log("Delivery failed with error: ", delivery.error);
   }
 
   // Write the delivery result to the queue using transaction to enable
   // automatic retries
   admin.firestore().runTransaction((t) => {
-    t.update(processDocumentRef, update);
+    t.set(processDocumentRef, { delivery }, { merge: true });
     return Promise.resolve();
   });
 };
