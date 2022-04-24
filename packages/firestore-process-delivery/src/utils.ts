@@ -9,7 +9,9 @@ export const wrapErrorBoundary =
   async (...params: P): Promise<void> => {
     try {
       await cb(...params);
+      return Promise.resolve();
     } catch (err) {
       logger.error(err);
+      return Promise.resolve();
     }
   };

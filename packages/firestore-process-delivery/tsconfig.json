@@ -10,11 +10,11 @@
     "sourceMap": true,
     "removeComments": true,
     "noUncheckedIndexedAccess": true,
-    "noPropertyAccessFromIndexSignature": true,
     "declaration": true,
     "declarationDir": "dist",
-    "types": ["node"]
+    "emitDeclarationOnly": true,
+    "types": ["node", "jest"]
   },
-  "exclude": ["node_modules", "./.eslintrc.js"],
+  "exclude": ["node_modules", "./.eslintrc.js", "jest.config.js"],
   "include": ["./src/**/*.ts"]
 }
