@@ -7,24 +7,21 @@ type Logger = Record<
 
 const prefix = "[firestore-process-delivery]: ";
 
-export default {
-  log: (...message: any[]) => {
-    logger.log(prefix, ...message);
-  },
+const verbose = process.env.LOG_LEVEL === "verbose";
 
-  info: (...message: any[]) => {
-    logger.info(prefix, ...message);
-  },
+/**
+ * A logger created by prefixing each method with the given prefix and
+ * applying the log level: if verbose, all logs are written, if not, only
+ * the errors get written out.
+ */
+const finalLogger: Logger = ["log", "info", "warn", "debug", "error"].reduce(
+  (acc, method) => ({
+    ...acc,
+    [method]: (...message: any[]) =>
+      // eslint-disable-next-line import/namespace
+      verbose || method === "error" ? logger[method](prefix, ...message) : {},
+  }),
+  {} as Logger
+);
 
-  warn: (...message: any[]) => {
-    logger.warn(prefix, ...message);
-  },
-
-  debug: (...message: any[]) => {
-    logger.debug(prefix, ...message);
-  },
-
-  error: (...message: any[]) => {
-    logger.error(prefix, ...message);
-  },
-} as Logger;
+export default finalLogger;

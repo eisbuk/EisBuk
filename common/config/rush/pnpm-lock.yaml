@@ -307,9 +307,13 @@ importers:
 
   ../../packages/firestore-process-delivery:
     specifiers:
+      '@babel/core': 7.x
+      '@babel/plugin-transform-runtime': ^7.12.10
+      '@babel/preset-typescript': ^7.14.5
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@google-cloud/firestore': ^4.13.2
+      '@types/jest': ~27.4.1
       '@types/node': ^16.11.10
       '@typescript-eslint/eslint-plugin': ^4.30.0
       '@typescript-eslint/parser': ^4.30.0
@@ -323,8 +327,11 @@ importers:
       firebase-admin: ^9.4.2
       firebase-functions: ^3.13.1
       firebase-functions-test: ^0.2.3
+      jest: ~27.5.1
       mocha: ^8.2.1
       typescript: ~4.4.2
+      vite: ~2.9.5
+      vite-plugin-environment: ^1.1.0
     dependencies:
       '@firebase/app-compat': 0.1.27
       '@google-cloud/firestore': 4.15.1
@@ -332,8 +339,16 @@ importers:
       firebase-admin: 9.12.0_a7310c6a6c4dac9f9be58676ef40372e
       firebase-functions: 3.21.2_firebase-admin@9.12.0
     devDependencies:
+      '@babel/core': 7.17.9
+      '@babel/plugin-transform-runtime': 7.17.0_@babel+core@7.17.9
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
       '@firebase/app-types': 0.7.0
+<<<<<<< HEAD
       '@types/node': 16.11.41
+=======
+      '@types/jest': 27.4.1
+      '@types/node': 16.11.26
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
       '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.4.4
       eslint: 7.32.0
@@ -342,9 +357,16 @@ importers:
       eslint-plugin-import: 2.26.0_eslint@7.32.0
       eslint-plugin-promise: 4.3.1
       eslint-plugin-unused-imports: 1.1.5_d3b4c2d4ac51f4275548d5d796aee5d5
+<<<<<<< HEAD
       firebase-functions-test: 0.2.3_05f0c270d07cb9a761972795a8467de3
+=======
+      firebase-functions-test: 0.2.3_ea077f5259225260fec4fd63b9852b72
+      jest: 27.5.1
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
       mocha: 8.4.0
       typescript: 4.4.4
+      vite: 2.9.5
+      vite-plugin-environment: 1.1.1_vite@2.9.5
 
   ../../packages/functions:
     specifiers:
@@ -3810,7 +3832,56 @@ packages:
       - utf-8-validate
     dev: true
 
+<<<<<<< HEAD
   /@jest/core/27.5.1_ts-node@10.8.1:
+=======
+  /@jest/core/27.5.1:
+    resolution: {integrity: sha512-AK6/UTrvQD0Cd24NSqmIA6rKsu0tKIxfiCducZvqxYdmMisOYAsdItspT+fQDQYARPf8XgjAFZi0ogW2agH5nQ==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    peerDependencies:
+      node-notifier: ^8.0.1 || ^9.0.0 || ^10.0.0
+    peerDependenciesMeta:
+      node-notifier:
+        optional: true
+    dependencies:
+      '@jest/console': 27.5.1
+      '@jest/reporters': 27.5.1
+      '@jest/test-result': 27.5.1
+      '@jest/transform': 27.5.1
+      '@jest/types': 27.5.1
+      '@types/node': 16.11.26
+      ansi-escapes: 4.3.2
+      chalk: 4.1.2
+      emittery: 0.8.1
+      exit: 0.1.2
+      graceful-fs: 4.2.10
+      jest-changed-files: 27.5.1
+      jest-config: 27.5.1
+      jest-haste-map: 27.5.1
+      jest-message-util: 27.5.1
+      jest-regex-util: 27.5.1
+      jest-resolve: 27.5.1
+      jest-resolve-dependencies: 27.5.1
+      jest-runner: 27.5.1
+      jest-runtime: 27.5.1
+      jest-snapshot: 27.5.1
+      jest-util: 27.5.1
+      jest-validate: 27.5.1
+      jest-watcher: 27.5.1
+      micromatch: 4.0.5
+      rimraf: 3.0.2
+      slash: 3.0.0
+      strip-ansi: 6.0.1
+    transitivePeerDependencies:
+      - bufferutil
+      - canvas
+      - supports-color
+      - ts-node
+      - utf-8-validate
+    dev: true
+
+  /@jest/core/27.5.1_ts-node@10.7.0:
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
     resolution: {integrity: sha512-AK6/UTrvQD0Cd24NSqmIA6rKsu0tKIxfiCducZvqxYdmMisOYAsdItspT+fQDQYARPf8XgjAFZi0ogW2agH5nQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     peerDependencies:
@@ -14476,7 +14547,11 @@ packages:
       - utf-8-validate
     dev: true
 
+<<<<<<< HEAD
   /jest-cli/27.5.1_ts-node@10.8.1:
+=======
+  /jest-cli/27.5.1_ts-node@10.7.0:
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
     resolution: {integrity: sha512-Hc6HOOwYq4/74/c62dEE3r5elx8wjYqxY0r0G/nFrLDPMFRu6RA/u8qINOIkvhxG7mMQ5EJsOGfRpI8L6eFUVw==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     hasBin: true
@@ -14515,6 +14590,7 @@ packages:
       ts-node:
         optional: true
     dependencies:
+<<<<<<< HEAD
       '@babel/core': 7.18.5
       '@jest/test-sequencer': 27.5.1
       '@jest/types': 27.5.1
@@ -14523,6 +14599,16 @@ packages:
       ci-info: 3.3.2
       deepmerge: 4.2.2
       glob: 7.2.3
+=======
+      '@babel/core': 7.17.9
+      '@jest/test-sequencer': 27.5.1
+      '@jest/types': 27.5.1
+      babel-jest: 27.5.1_@babel+core@7.17.9
+      chalk: 4.1.2
+      ci-info: 3.3.0
+      deepmerge: 4.2.2
+      glob: 7.2.0
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
       graceful-fs: 4.2.10
       jest-circus: 27.5.1
       jest-environment-jsdom: 27.5.1
@@ -14546,7 +14632,11 @@ packages:
       - utf-8-validate
     dev: true
 
+<<<<<<< HEAD
   /jest-config/27.5.1_ts-node@10.8.1:
+=======
+  /jest-config/27.5.1_ts-node@10.7.0:
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
     resolution: {integrity: sha512-5sAsjm6tGdsVbW9ahcChPAFCk4IlkQUknH5AvKjuLTSlcO/wCZKyFdn7Rg0EkC+OGgWODEy2hDpWB1PgzH0JNA==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     peerDependencies:
@@ -15012,7 +15102,11 @@ packages:
       - utf-8-validate
     dev: true
 
+<<<<<<< HEAD
   /jest/27.5.1_ts-node@10.8.1:
+=======
+  /jest/27.5.1_ts-node@10.7.0:
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
     resolution: {integrity: sha512-Yn0mADZB89zTtjkPJEXwrac3LHudkQMR+Paqa8uxJHCBr9agxztUifWCyiYrjhMPBoUVBjyny0I7XH6ozDr7QQ==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     hasBin: true
@@ -21266,8 +21360,21 @@ packages:
       vite: 2.9.12
     dev: true
 
+<<<<<<< HEAD
   /vite-plugin-svgr/2.1.1_vite@2.9.12:
     resolution: {integrity: sha512-RWuUgp37kNx5bbBcG/RdbUMW90fcEZWyZGtDJTOlNrFxDsJDNfg0GS4YSTLon6/JLsBR2TG2WvTN8k+MnH4YhA==}
+=======
+  /vite-plugin-environment/1.1.1_vite@2.9.5:
+    resolution: {integrity: sha512-kbUAZaqmiHap+7aqRfMolRGzCGhJSU45qDjgLM11DpSDzmiI5JL4EzdyAIUZ4g0WrO88EV2cdcq2fpNYuJ17Pg==}
+    peerDependencies:
+      vite: ^2.7
+    dependencies:
+      vite: 2.9.5
+    dev: true
+
+  /vite-plugin-svgr/1.1.0_vite@2.9.1:
+    resolution: {integrity: sha512-fuwfRpUoMBX3wr47JVt4b4xpMYujONDGyDwZFE4JuohVTJovJ4VCNeAb3//mzdRxdzeHEfJuedpoHTvwPsqisA==}
+>>>>>>> 59b28fba (Add tests for firestore-process-delivery)
     peerDependencies:
       vite: ^2.6.0 || 3
     dependencies:
@@ -21297,6 +21404,30 @@ packages:
       postcss: 8.4.14
       resolve: 1.22.1
       rollup: 2.75.7
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: true
+
+  /vite/2.9.5:
+    resolution: {integrity: sha512-dvMN64X2YEQgSXF1lYabKXw3BbN6e+BL67+P3Vy4MacnY+UzT1AfkHiioFSi9+uiDUiaDy7Ax/LQqivk6orilg==}
+    engines: {node: '>=12.2.0'}
+    hasBin: true
+    peerDependencies:
+      less: '*'
+      sass: '*'
+      stylus: '*'
+    peerDependenciesMeta:
+      less:
+        optional: true
+      sass:
+        optional: true
+      stylus:
+        optional: true
+    dependencies:
+      esbuild: 0.14.36
+      postcss: 8.4.12
+      resolve: 1.22.0
+      rollup: 2.70.1
     optionalDependencies:
       fsevents: 2.3.2
     dev: true

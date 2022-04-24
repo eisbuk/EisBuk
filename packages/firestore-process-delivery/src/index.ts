@@ -1,6 +1,5 @@
-import { Timestamp } from "@google-cloud/firestore";
+import { Timestamp, FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
-import logger from "./logger";
 
 import {
   DocumentReference,
@@ -11,13 +10,14 @@ import {
 } from "./types";
 
 import { wrapErrorBoundary } from "./utils";
+import logger from "./logger";
 
 /**
  * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
  * as it's written using `transaction.update` on process create.
  */
 const initialDeliveryState: Required<DeliveryUpdate> = {
-  startTime: admin.firestore.FieldValue.serverTimestamp(),
+  startTime: FieldValue.serverTimestamp(),
   endTime: null,
   leaseExpireTime: null,
   status: DeliveryStatus.Pending,
@@ -51,16 +51,17 @@ const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
 const processDelivery = async (
   change: Change,
   deliver: () => Promise<any>
-): Promise<void> => {
+): Promise<any> => {
   // Exit early on delete
   if (!change.after.exists) {
-    return;
+    logger.info("Document deleted, exiting");
+    return null;
   }
 
   // Start new delivery process
   if (!change.before.exists) {
-    processCreate(change.after.ref);
-    return;
+    logger.info("New process document, starting a new delivery process");
+    return processCreate(change.after.ref);
   }
 
   const processDocument = change.after.data() as ProcessDocument;
@@ -71,7 +72,7 @@ const processDelivery = async (
     logger.error(
       "No 'delivery' state in process document. This is an internal error of firestore-process-delivery."
     );
-    return;
+    return null;
   }
 
   const { leaseExpireTime } = delivery;
@@ -79,7 +80,7 @@ const processDelivery = async (
   switch (delivery.status) {
     case DeliveryStatus.Success:
     case DeliveryStatus.Error:
-      return;
+      return null;
 
     // Honestly, the scenario of this part bringing any utility whatsoever seems extremely (astronomically) unlikely
     // As it's a copy/edit of an existing Firebase official extension, leaving this here...might update at some point
@@ -89,35 +90,30 @@ const processDelivery = async (
         (leaseExpireTime as Timestamp).toMillis() < Date.now()
       ) {
         delivery.status = DeliveryStatus.Error;
-        delivery.error = "Message processing lease expired.";
-
+        delivery.error = "Delivery processing lease expired.";
         logger.info("Quitting the delivery process: Lease expired");
-
-        admin.firestore().runTransaction((transaction) => {
+        return admin.firestore().runTransaction((transaction) => {
           transaction.set(change.after.ref, { delivery }, { merge: true });
           return Promise.resolve();
         });
-        return;
       }
-      return;
+      return null;
 
     // Execute the delivery on "PENDING" (process initiated) or "RETRY" (process manually restarted)
     case DeliveryStatus.Pending:
     case DeliveryStatus.Retry:
+      logger.info("Delivery in progress");
       delivery.status = DeliveryStatus.Processing;
-      delivery.leaseExpireTime = admin.firestore.Timestamp.fromMillis(
-        Date.now() + 60000
-      );
+      delivery.leaseExpireTime = Timestamp.fromMillis(Date.now() + 60000);
       await admin.firestore().runTransaction((transaction) => {
         transaction.set(change.after.ref, { delivery }, { merge: true });
         return Promise.resolve();
       });
-      execute(deliver, change.after.ref);
-      return;
+      return execute(deliver, change.after.ref);
 
     // Non-existing situation, here for eslint
     default:
-      return;
+      return null;
   }
 };
 
@@ -139,17 +135,19 @@ const execute = async (
     // Fall back to null if result is undefined (which shouldn't really happen)
     // As firestore doesnt't allow (by default) the field value to be `undefined`
     delivery.result = result || null;
+    delivery.error = null;
     delivery.status = DeliveryStatus.Success;
     logger.log("Delivery successful, result: ", delivery.result);
   } catch (e) {
     delivery.status = DeliveryStatus.Error;
+    delivery.result = null;
     delivery.error = (e as Error).toString();
     logger.log("Delivery failed with error: ", delivery.error);
   }
 
   // Write the delivery result to the queue using transaction to enable
   // automatic retries
-  admin.firestore().runTransaction((t) => {
+  return admin.firestore().runTransaction((t) => {
     t.set(processDocumentRef, { delivery }, { merge: true });
     return Promise.resolve();
   });
