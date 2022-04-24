@@ -4,10 +4,7 @@
     "indexes": "packages/firebase/firestore.indexes.json"
   },
   "functions": {
-    "predeploy": [
-      "npm --prefix packages/firestore-process-delivery run build",
-      "npm --prefix \"$RESOURCE_DIR\" build"
-    ],
+    "predeploy": ["rush build"],
     "source": "packages/functions"
   },
   "emulators": {

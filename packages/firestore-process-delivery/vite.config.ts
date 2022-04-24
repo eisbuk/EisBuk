@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import path from "path";
+import environmentPlugin from "vite-plugin-environment";
 
 export default defineConfig({
   build: {
@@ -25,4 +26,5 @@ export default defineConfig({
     },
     outDir: "dist",
   },
+  plugins: [environmentPlugin({ LOG_LEVEL: "verbose" })],
 });

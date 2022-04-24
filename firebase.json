@@ -5,8 +5,7 @@
   },
   "functions": {
     "predeploy": [
-      "npm --prefix packages/firestore-process-delivery run build",
-      "npm --prefix \"$RESOURCE_DIR\" build",
+      "rush build",
       "sed -i '/\"@eisbuk\\/shared/d\"' \"$RESOURCE_DIR/package.json\""
     ],
     "postdeploy": [
