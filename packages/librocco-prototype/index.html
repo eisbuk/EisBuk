@@ -4,9 +4,13 @@
     <meta charset='utf8'>
     <meta name='viewport' content='width=device-width'>
     <title>A puchdb prototype</title>
+    <script>
+      // Pouchdb requires global to exist
+      window.global = window;
+    </script>
   </head>
   <body>
     <div id="app"></div>
-    <script type="module" src='src/main.ts'></script>
+    <script type="module" src='/src/main.ts'></script>
   </body>
 </html>
