@@ -3,7 +3,6 @@ import admin from "firebase-admin";
 import pRetry from "p-retry";
 import {
   throwUnauth,
-  checkSecretKey,
   checkUser,
   createSMSReqOptions,
   sendRequest,
@@ -13,7 +12,6 @@ import {
 } from "./utils";
 import {
   Collection,
-  SendMailPayload,
   SendSMSPayload,
   SendSMSErrors,
   OrganizationData,
@@ -24,38 +22,6 @@ import {
 } from "@eisbuk/shared";
 
 import { __smsUrl__, __functionsZone__ } from "./constants";
-
-/**
- * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
- */
-export const sendEmail = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async (
-      { organization, secretKey = "", ...email }: SendMailPayload,
-      { auth }
-    ) => {
-      if (
-        !(await checkUser(organization, auth)) &&
-        !(await checkSecretKey({ organization, secretKey }))
-      ) {
-        throwUnauth();
-      }
-
-      checkRequiredFields(email, ["to", "message"]);
-      const { message } = email;
-      checkRequiredFields(message, ["html", "subject"]);
-
-      // add email to firestore, firing data trigger
-      await admin
-        .firestore()
-        .collection(Collection.EmailQueue)
-        .doc()
-        .set(email);
-
-      return { ...email, organization, success: true };
-    }
-  );
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params

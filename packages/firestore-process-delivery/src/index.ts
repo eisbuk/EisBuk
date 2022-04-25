@@ -12,6 +12,8 @@ import {
 import { wrapErrorBoundary } from "./utils";
 import logger from "./logger";
 
+export type { ProcessDocument };
+
 /**
  * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
  * as it's written using `transaction.update` on process create.
@@ -91,6 +93,7 @@ const processDelivery = async (
       ) {
         delivery.status = DeliveryStatus.Error;
         delivery.error = "Delivery processing lease expired.";
+        delivery.result = null;
         logger.info("Quitting the delivery process: Lease expired");
         return admin.firestore().runTransaction((transaction) => {
           transaction.set(change.after.ref, { delivery }, { merge: true });
@@ -135,6 +138,8 @@ const execute = async (
     // Fall back to null if result is undefined (which shouldn't really happen)
     // As firestore doesnt't allow (by default) the field value to be `undefined`
     delivery.result = result || null;
+    // Annul the `delivery.error` in case there's an error from prevoius iteration
+    // This might happen only on retries
     delivery.error = null;
     delivery.status = DeliveryStatus.Success;
     logger.log("Delivery successful, result: ", delivery.result);
@@ -142,7 +147,7 @@ const execute = async (
     delivery.status = DeliveryStatus.Error;
     delivery.result = null;
     delivery.error = (e as Error).toString();
-    logger.log("Delivery failed with error: ", delivery.error);
+    logger.warn("Delivery failed with error: ", delivery.error);
   }
 
   // Write the delivery result to the queue using transaction to enable

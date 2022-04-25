@@ -96,8 +96,8 @@ export const throwUnauth = (): never => {
 /**
  * A way to "Authenticate" a non-logged in user
  * Receives an organization name and a secretKey
- * returns a boolean promise depending on whether a booking
- * exists with that secretKey or not
+ * returns a boolean promise depending on whether a customer bookings
+ * entry exists with that secretKey or not
  * @param args.organization
  * @param args.secretKey
  * @returns {Promise<boolean>}

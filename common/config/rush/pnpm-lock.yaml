@@ -323,6 +323,7 @@ importers:
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@google-cloud/firestore': ^4.13.2
+      '@grpc/grpc-js': ^1.6.2
       '@types/jest': ~27.4.1
       '@types/node': ^16.11.10
       '@typescript-eslint/eslint-plugin': ^4.30.0
@@ -353,6 +354,7 @@ importers:
       '@babel/plugin-transform-runtime': 7.18.6_@babel+core@7.18.6
       '@babel/preset-typescript': 7.18.6_@babel+core@7.18.6
       '@firebase/app-types': 0.7.0
+      '@grpc/grpc-js': 1.6.7
       '@types/jest': 27.4.1
       '@types/node': 16.11.43
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
@@ -372,6 +374,7 @@ importers:
 
   ../../packages/functions:
     specifiers:
+      '@eisbuk/firestore-process-delivery': workspace:*
       '@eisbuk/shared': workspace:*
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
@@ -379,6 +382,7 @@ importers:
       '@types/lodash': ^4.14.170
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
+      '@types/nodemailer': ~6.4.4
       '@types/uuid': ^8.3.1
       '@typescript-eslint/eslint-plugin': ^5.20.0
       '@typescript-eslint/parser': ^5.20.0
@@ -406,6 +410,7 @@ importers:
       unix-timestamp: ^0.2.0
       uuid: ^8.3.2
     dependencies:
+      '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
       '@eisbuk/shared': link:../shared
       '@firebase/app-compat': 0.1.28
       '@google-cloud/firestore': 4.15.1
@@ -425,6 +430,7 @@ importers:
       '@types/lodash': 4.14.182
       '@types/luxon': 2.3.2
       '@types/node': 16.11.43
+      '@types/nodemailer': 6.4.4
       '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 5.30.5_aea3421fb39ada40c0c3dfcb1bacaa77
       '@typescript-eslint/parser': 5.30.5_eslint@8.19.0+typescript@4.6.4
@@ -443,6 +449,7 @@ importers:
 
   ../../packages/shared:
     specifiers:
+      '@eisbuk/firestore-process-delivery': workspace:*
       '@google-cloud/firestore': ^4.13.2
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
@@ -462,6 +469,7 @@ importers:
     dependencies:
       luxon: 2.4.0
     devDependencies:
+      '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
       '@google-cloud/firestore': 4.15.1
       '@types/luxon': 2.3.2
       '@types/node': 16.11.43
@@ -6899,6 +6907,12 @@ packages:
 
   /@types/node/16.11.43:
     resolution: {integrity: sha512-GqWykok+3uocgfAJM8imbozrqLnPyTrpFlrryURQlw1EesPUCx5XxTiucWDSFF9/NUEXDuD4bnvHm8xfVGWTpQ==}
+
+  /@types/nodemailer/6.4.4:
+    resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
+    dependencies:
+      '@types/node': 16.11.43
+    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
