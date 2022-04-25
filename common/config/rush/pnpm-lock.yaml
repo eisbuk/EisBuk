@@ -307,6 +307,7 @@ importers:
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@google-cloud/firestore': ^4.13.2
+      '@grpc/grpc-js': ^1.6.2
       '@types/jest': ~27.4.1
       '@types/node': ^16.11.10
       '@typescript-eslint/eslint-plugin': ^4.30.0
@@ -337,6 +338,7 @@ importers:
       '@babel/plugin-transform-runtime': 7.17.0_@babel+core@7.17.9
       '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
       '@firebase/app-types': 0.7.0
+      '@grpc/grpc-js': 1.6.3
       '@types/jest': 27.4.1
       '@types/node': 16.11.26
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
@@ -356,6 +358,7 @@ importers:
 
   ../../packages/functions:
     specifiers:
+      '@eisbuk/firestore-process-delivery': workspace:*
       '@eisbuk/shared': workspace:*
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
@@ -363,6 +366,7 @@ importers:
       '@types/lodash': ^4.14.170
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
+      '@types/nodemailer': ~6.4.4
       '@types/uuid': ^8.3.0
       '@typescript-eslint/eslint-plugin': ^4.30.0
       '@typescript-eslint/parser': ^4.30.0
@@ -381,6 +385,7 @@ importers:
       lodash: ^4.17.20
       luxon: ^2.0.2
       mocha: ^8.2.1
+      nodemailer: ~6.7.3
       p-retry: ^4.6.1
       retry: ^0.13.1
       ts-node: ^10.4.0
@@ -389,6 +394,7 @@ importers:
       unix-timestamp: ^0.2.0
       uuid: ^8.3.2
     dependencies:
+      '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
       '@eisbuk/shared': link:../shared
       '@firebase/app-compat': 0.1.21
       '@google-cloud/firestore': 4.15.1
@@ -397,6 +403,7 @@ importers:
       firebase-functions: 3.20.0_firebase-admin@9.12.0
       lodash: 4.17.21
       luxon: 2.3.1
+      nodemailer: 6.7.3
       p-retry: 4.6.1
       retry: 0.13.1
       ts-node: 10.7.0_417302ea145567f640c434d0edb74695
@@ -407,6 +414,7 @@ importers:
       '@types/lodash': 4.14.181
       '@types/luxon': 2.3.1
       '@types/node': 16.11.26
+      '@types/nodemailer': 6.4.4
       '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
       '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.4.4
@@ -425,6 +433,7 @@ importers:
 
   ../../packages/shared:
     specifiers:
+      '@eisbuk/firestore-process-delivery': workspace:*
       '@google-cloud/firestore': ^4.13.2
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
@@ -442,6 +451,7 @@ importers:
     dependencies:
       luxon: 2.3.1
     devDependencies:
+      '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
       '@google-cloud/firestore': 4.15.1
       '@types/luxon': 2.3.1
       '@types/node': 16.11.26
@@ -6387,6 +6397,12 @@ packages:
 
   /@types/node/16.11.26:
     resolution: {integrity: sha512-GZ7bu5A6+4DtG7q9GsoHXy3ALcgeIHP4NnL0Vv2wu0uUB/yQex26v0tf6/na1mm0+bS9Uw+0DFex7aaKr2qawQ==}
+
+  /@types/nodemailer/6.4.4:
+    resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
+    dependencies:
+      '@types/node': 16.11.26
+    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -16189,6 +16205,11 @@ packages:
   /node-releases/2.0.3:
     resolution: {integrity: sha512-maHFz6OLqYxz+VQyCAtA3PTX4UP/53pa05fyDNc9CwjvJ0yEh6+xBwKsgCxMNhS8taUKBFYxfuiaD9U/55iFaw==}
     dev: true
+
+  /nodemailer/6.7.3:
+    resolution: {integrity: sha512-KUdDsspqx89sD4UUyUKzdlUOper3hRkDVkrKh/89G+d9WKsU5ox51NWS4tB1XR5dPUdR4SP0E3molyEfOvSa3g==}
+    engines: {node: '>=6.0.0'}
+    dev: false
 
   /nopt/5.0.0:
     resolution: {integrity: sha512-Tbj67rffqceeLpcRXrT7vKAN8CwfPeIBgM7E6iBkmKLV7bEMwpGgYLGv0jACUsECaa/vuxP0IjEont6umdMgtQ==}

@@ -1,3 +1,5 @@
+import { ProcessDocument } from "@eisbuk/firestore-process-delivery";
+
 import {
   Category,
   SlotType,
@@ -90,6 +92,22 @@ export interface OrganizationSecrets {
    * Auth token used to authenticate with SMS sending service provider
    */
   smsAuthToken?: string;
+  /**
+   * SMTP service host
+   */
+  smtpHost: string;
+  /**
+   * SMTP port (465 in most cases)
+   */
+  smtpPort: number;
+  /**
+   * SMTP service auth user
+   */
+  smtpUser: string;
+  /**
+   * SMTP service auth password
+   */
+  smtpPass: string;
 }
 // #endregion secrets
 
@@ -312,13 +330,16 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
+      [OrgSubCollection.EmailQueue]: {
+        [id: string]: ProcessDocument<EmailMessage>;
+      };
+      [OrgSubCollection.SMSQueue]: {
+        [id: string]: ProcessDocument<SMSMessage>;
+      };
     };
   };
   [Collection.Secrets]: {
     [organization: string]: OrganizationSecrets;
-  };
-  [Collection.EmailQueue]: {
-    [id: string]: EmailMessage;
   };
 }
 

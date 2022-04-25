@@ -19,6 +19,7 @@
   "main": "dist/index.js",
   "dependencies": {
     "@eisbuk/shared": "workspace:*",
+    "@eisbuk/firestore-process-delivery": "workspace:*",
     "@firebase/app-compat": "^0.1.21",
     "@google-cloud/firestore": "^4.13.2",
     "firebase": "^8.2.4",
@@ -30,7 +31,8 @@
     "retry": "^0.13.1",
     "ts-node": "^10.4.0",
     "unix-timestamp": "^0.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "nodemailer": "~6.7.3"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.7.0",
@@ -51,7 +53,8 @@
     "firebase-functions-test": "^0.2.3",
     "mocha": "^8.2.1",
     "tsconfig-paths": "^3.10.1",
-    "typescript": "~4.4.2"
+    "typescript": "~4.4.2",
+    "@types/nodemailer": "~6.4.4"
   },
   "private": true
 }

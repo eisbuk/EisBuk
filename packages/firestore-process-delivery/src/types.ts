@@ -41,8 +41,7 @@ export enum DeliveryStatus {
  * the delivery state data and is updated by processDelivery functionality.
  * The document will probably be filled with other data used for a particular delivery functionality.
  */
-export interface ProcessDocument {
-  [key: string]: any;
+export interface ProcessDocument<P = Record<string, any>> {
   delivery: {
     startTime: Timestamp;
     endTime?: Timestamp;
@@ -52,6 +51,7 @@ export interface ProcessDocument {
     error: string | null;
     result: any;
   };
+  payload: P;
 }
 
 type TimestampKeys = "startTime" | "endTime" | "leaseExpireTime";
