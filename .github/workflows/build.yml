@@ -17,17 +17,19 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.rush
             ~/.pnpm-store
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
+            common/temp
+            **/node_modules
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+      - name: Install and build packages
+        run: rush update && rush build
       - name: Build app
         run: |
-          pnpm -C packages/client build | tee build.output
+          cd packages/client && rushx build:prod | tee build.output
           echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
           # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
           # And store for use in later steps
@@ -66,9 +68,9 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS
         run: |
           set -e
-          # Run the `deploy:preview` script, passing the current git branch to be used for the name
+          # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
           # of the preview channel
-          pnpm deploy:preview ${GITHUB_REF_SLUG_URL:-dev} | tee deploy.output
+          firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
           # To pass the info to a later task, use the $GITHUB_ENV file
           # This horrible contraption converts lines like
           # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
@@ -79,8 +81,6 @@ jobs:
           # suitable to be included in the $GITHUB_ENV file
           cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
           # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Find Comment
         uses: peter-evans/find-comment@v1
         if: ${{ github.event.pull_request.number }}
@@ -119,16 +119,18 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.rush
             ~/.pnpm-store
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
+            common/temp
+            **/node_modules
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+      - name: Install and build packages
+        run: rush update && rush build
       - name: Run tests
-        run: pnpm -C packages/client test:emulators:ci
+        run: cd packages/client && rushx test:emulators:ci
       - name: Check if secrets are available
         id: has_secret
         if: success() || failure()
@@ -199,45 +201,20 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.rush
             ~/.pnpm-store
-            $HOME/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
-      - name: Lint client app
-        run: "pnpm -C packages/client lint:strict"
-      - name: Lint shared package
-        # Do not run on cancelled; run in all other cases
-        if: success() || failure()
-        run: "pnpm -C packages/shared lint:strict"
-      - name: Lint the functions
-        if: success() || failure()
-        run: "pnpm -C packages/functions lint:strict"
-      - name: Lint translations
-        if: success() || failure()
-        run: "pnpm -C packages/translations lint:strict"
-      - name: Lint e2e tests
-        if: success() || failure()
-        run: "pnpm -C packages/e2e lint:strict"
-
-      - name: Typecheck client app
-        if: success() || failure()
-        run: "pnpm -C packages/client typecheck"
-      - name: Typecheck shared package
-        if: success() || failure()
-        run: "pnpm -C packages/shared typecheck"
-      - name: Typecheck the functions
-        if: success() || failure()
-        run: "pnpm -C packages/functions typecheck"
-      - name: Typecheck translations
-        if: success() || failure()
-        run: "pnpm -C packages/translations typecheck"
-      - name: Typecheck e2e tests
-        if: success() || failure()
-        run: "pnpm -C packages/e2e typecheck"
+            common/temp
+            **/node_modules
+            ~/.cache/firebase/emulators
+          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+      - name: Install and build packages
+        run: rush update && rush build
+      - name: Lint all the packages
+        run: rush lint:strict
+      - name: Typecheck all the packages
+        run: rush typecheck
 
   cypress-run:
     runs-on: ubuntu-20.04
@@ -251,23 +228,24 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            ~/.rush
             ~/.pnpm-store
-            $HOME/.cache/firebase/emulators
-            $HOME/.cache/Cypress
-            $HOME/Library/Caches/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-node14-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install and link packages
-        uses: pnpm/action-setup@v2.1.0
-        with:
-          version: 6.32.3
-          run_install: true
+            common/temp
+            **/node_modules
+            ~/.cache/firebase/emulators
+            ~/.cache/Cypress
+          key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - name: Add rush directory to PATH
+        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+      - name: Install and build packages
+        run: rush update && rush build
 
       - name: Build app
-        run: pnpm -C packages/client build:test
+        run: cd packages/client && rushx build:test
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: pnpm -C ../../ emulators:start
+          start: rush emulators:start
           # For some reason, this action can also install everything, which doesn't work well with pnpm
           # Anyway we're using our own instalation as it is, so just skipping this part
           install: false
