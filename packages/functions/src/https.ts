@@ -4,7 +4,6 @@ import pRetry from "p-retry";
 
 import {
   Collection,
-  SendMailPayload,
   SendSMSPayload,
   SendSMSErrors,
   OrganizationData,
@@ -24,28 +23,6 @@ import {
   runWithTimeout,
   checkRequiredFields,
 } from "./utils";
-
-/**
- * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
- */
-export const sendEmail = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async ({ organization, ...email }: SendMailPayload, { auth }) => {
-      await checkUser(organization, auth);
-
-      checkRequiredFields(email, ["to", "subject", "html"]);
-
-      // add email to firestore, firing data trigger
-      await admin
-        .firestore()
-        .collection(Collection.EmailQueue)
-        .doc()
-        .set(email);
-
-      return { ...email, organization, success: true };
-    }
-  );
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
