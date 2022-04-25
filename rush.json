@@ -400,6 +400,10 @@
     {
       "packageName": "@eisbuk/e2e",
       "projectFolder": "packages/e2e"
+    },
+    {
+      "packageName": "@librocco/prototype",
+      "projectFolder": "packages/librocco-prototype"
     }
   ]
 }
