@@ -45,7 +45,7 @@ export async function backup(): Promise<
   OperationSuccess<string> | OperationFailure
 > {
   try {
-    const orgDataOp = await getOrgData();
+    const orgDataOp = await getAllOrgData();
 
     if (orgDataOp.ok) {
       const writeDataOps = orgDataOp.data.map(async (orgData) => {
@@ -69,9 +69,9 @@ export async function backup(): Promise<
 }
 
 /**
- * getOrgData - Retrieve all org data
+ * getAllOrgData - Retrieve all data for all orgs
  */
-export async function getOrgData(): Promise<
+export async function getAllOrgData(): Promise<
   OperationSuccess<OrgData[]> | OperationFailure
 > {
   try {
@@ -80,11 +80,7 @@ export async function getOrgData(): Promise<
     if (orgsOp.ok === true) {
       const orgs = orgsOp.data;
 
-      const getFullOrgDataOps = orgs.map(async (org) => {
-        const subCollectionData = await getAllSubCollectionData(org.id);
-
-        return { subCollections: subCollectionData, ...org };
-      });
+      const getFullOrgDataOps = orgs.map(getOrgData);
 
       const orgData = await Promise.all(getFullOrgDataOps);
 
@@ -95,6 +91,17 @@ export async function getOrgData(): Promise<
   } catch (err: any) {
     return { ok: false, message: err };
   }
+}
+
+/**
+ * getOrgData - Retrieve all data for a specified organisation
+ */
+export async function getOrgData(org: OrgRootData): Promise<OrgData> {
+  const subCollectionData = await getAllSubCollectionData(org.id);
+
+  const orgData = { subCollections: subCollectionData, ...org };
+
+  return orgData;
 }
 
 /**
