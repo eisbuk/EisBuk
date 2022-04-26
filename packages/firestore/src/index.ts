@@ -9,13 +9,11 @@ import * as backupService from "./backup";
 export { backupService };
 
 /**
- * backup
+ * backupToFs - Write all organisation data to json
  */
-export async function backup(): Promise<
-  IOperationSuccess<string> | IOperationFailure
-> {
+export async function backupToFs(): Promise<void> {
   try {
-    const orgDataOp = await getAllOrgData();
+    const orgDataOp = await getAllOrganisationsData();
 
     if (orgDataOp.ok) {
       const writeDataOps = orgDataOp.data.map(async (orgData) => {
@@ -28,20 +26,18 @@ export async function backup(): Promise<
       });
 
       await Promise.all(writeDataOps);
-
-      return { ok: true, data: "OK" };
     } else {
       throw new Error(orgDataOp.message);
     }
   } catch (err: any) {
-    return { ok: false, message: err.message };
+    console.error(err);
   }
 }
 
 /**
- * getAllOrgData - Retrieve all data for all orgs
+ * getAllOrganisationsData - Retrieve all data for all orgs
  */
-export async function getAllOrgData(): Promise<
+export async function getAllOrganisationsData(): Promise<
   IOperationSuccess<IOrgData[]> | IOperationFailure
 > {
   try {
