@@ -1,102 +1,22 @@
-import fs from "fs/promises";
-import path from "path";
 import admin, { firestore } from "firebase-admin";
 
 import { Collection } from "@eisbuk/shared";
-
-interface OperationSuccess<T> {
-  ok: true;
-  data: T;
-}
-
-interface OperationFailure {
-  ok: false;
-  message: string;
-}
-
-interface OrgData extends OrgRootData {
-  subCollections: SubCollections;
-}
-
-interface OrgRootData {
-  id: string;
-  data: firestore.DocumentData;
-}
-
-interface SubCollections {
-  [k: string]: SubCollectionData;
-}
-
-interface SubCollectionData {
-  [k: string]: firestore.DocumentData;
-}
-
-interface SubCollectionPath {
-  id: string;
-  path: string;
-}
+import {
+  IOperationFailure,
+  IOperationSuccess,
+  IOrgData,
+  IOrgRootData,
+  ISubCollectionData,
+  ISubCollectionPath,
+  ISubCollections,
+} from "./types";
 
 const db = admin.firestore();
 
 /**
- * backup
- */
-export async function backup(): Promise<
-  OperationSuccess<string> | OperationFailure
-> {
-  try {
-    const orgDataOp = await getAllOrgData();
-
-    if (orgDataOp.ok) {
-      const writeDataOps = orgDataOp.data.map(async (orgData) => {
-        const fileName = `${orgData.id}.json`;
-        const filePath = path.resolve(process.cwd(), fileName);
-
-        const orgDataJson = JSON.stringify(orgData);
-
-        await fs.writeFile(filePath, orgDataJson, "utf-8");
-      });
-
-      await Promise.all(writeDataOps);
-
-      return { ok: true, data: "OK" };
-    } else {
-      throw new Error(orgDataOp.message);
-    }
-  } catch (err: any) {
-    return { ok: false, message: err.message };
-  }
-}
-
-/**
- * getAllOrgData - Retrieve all data for all orgs
- */
-export async function getAllOrgData(): Promise<
-  OperationSuccess<OrgData[]> | OperationFailure
-> {
-  try {
-    const orgsOp = await getOrgs();
-
-    if (orgsOp.ok === true) {
-      const orgs = orgsOp.data;
-
-      const getFullOrgDataOps = orgs.map(getOrgData);
-
-      const orgData = await Promise.all(getFullOrgDataOps);
-
-      return { ok: true, data: orgData };
-    } else {
-      throw new Error(orgsOp.message);
-    }
-  } catch (err: any) {
-    return { ok: false, message: err };
-  }
-}
-
-/**
  * getOrgData - Retrieve all data for a specified organisation
  */
-export async function getOrgData(org: OrgRootData): Promise<OrgData> {
+export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
   const subCollectionData = await getAllSubCollectionData(org.id);
 
   const orgData = { subCollections: subCollectionData, ...org };
@@ -108,9 +28,9 @@ export async function getOrgData(org: OrgRootData): Promise<OrgData> {
  * getOrgs - Lists all orgs
  */
 export async function getOrgs(): Promise<
-  OperationSuccess<OrgRootData[]> | OperationFailure
+  IOperationSuccess<IOrgRootData[]> | IOperationFailure
 > {
-  const orgs: OrgRootData[] = [];
+  const orgs: IOrgRootData[] = [];
 
   try {
     const orgsRef = await db.collection(Collection.Organizations);
@@ -138,7 +58,7 @@ export async function getOrgs(): Promise<
  */
 export async function getAllSubCollectionData(
   org: string
-): Promise<SubCollections> {
+): Promise<ISubCollections> {
   const paths = await getSubCollectionPaths(org);
 
   if (!paths.length) {
@@ -165,7 +85,7 @@ export async function getAllSubCollectionData(
  */
 export async function getSubCollectionData(
   path: string
-): Promise<SubCollectionData> {
+): Promise<ISubCollectionData> {
   const subCollctionRef = await db.collection(path);
   const subCollectionSnap = await subCollctionRef.get();
 
@@ -186,8 +106,8 @@ export async function getSubCollectionData(
  */
 export async function getSubCollectionPaths(
   org: string
-): Promise<SubCollectionPath[]> {
-  const subCollectionPaths: SubCollectionPath[] = [];
+): Promise<ISubCollectionPath[]> {
+  const subCollectionPaths: ISubCollectionPath[] = [];
   const subCollectionSnap = await db
     .doc(`${Collection.Organizations}/${org}`)
     .listCollections();
