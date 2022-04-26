@@ -2,6 +2,7 @@
  * @jest-environment node
  */
 import fs from "fs/promises";
+import path from "path";
 
 import { __testOrganization__, defaultUser } from "@/__testSetup__/envData";
 import { adminDb } from "@/__testSetup__/firestoreSetup";
@@ -10,7 +11,11 @@ import { saul, walt } from "@/__testData__/customers";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import { backup, getAllOrgData, backupService } from "@eisbuk/firestore";
+import {
+  backupToFs,
+  getAllOrganisationsData,
+  backupService,
+} from "@eisbuk/firestore";
 
 const customersSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Customers}`;
 const bookingsSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Bookings}`;
@@ -132,7 +137,7 @@ describe("Backup", () => {
   };
 
   it("Returns full org data", async () => {
-    const result = await getAllOrgData();
+    const result = await getAllOrganisationsData();
 
     if (result.ok) {
       const [data] = result.data;
@@ -146,20 +151,20 @@ describe("Backup", () => {
   it("Writes orgData to .json files", async () => {
     const spy = jest.spyOn(fs, "writeFile").mockImplementation();
 
-    const result = await backup();
+    try {
+      await backupToFs();
 
-    if (result.ok) {
-      const orgFilePath = `${__testOrganization__}.json`;
+      const expectedFileBasename = `${__testOrganization__}.json`;
 
       const [firstCall] = spy.mock.calls;
       const [resultPath, resultJson] = firstCall;
 
-      expect(resultPath).toEqual(orgFilePath);
+      expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
       expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
 
       spy.mockRestore();
-    } else {
-      fail(result.message);
+    } catch (err: any) {
+      fail(err);
     }
   });
 });

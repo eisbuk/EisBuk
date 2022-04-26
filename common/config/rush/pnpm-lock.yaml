@@ -312,10 +312,12 @@ importers:
       '@types/node': ^16.11.10
       '@typescript-eslint/eslint-plugin': ^4.30.0
       '@typescript-eslint/parser': ^4.33.0
+      commander: ^8.3.0
       firebase-admin: ^9.4.2
       typescript: ~4.4.2
     dependencies:
       '@eisbuk/shared': link:../shared
+      commander: 8.3.0
       firebase-admin: 9.12.0
     devDependencies:
       '@types/node': 16.11.26
@@ -9027,6 +9029,11 @@ packages:
     resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
     dev: true
+
+  /commander/8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+    dev: false
 
   /common-path-prefix/3.0.0:
     resolution: {integrity: sha512-QE33hToZseCH3jS0qN96O/bSh3kaw/h+Tq7ngyY9eWDUnTlTNUyqfqvCXioLe5Na5jFsL78ra/wuBU4iuEgd4w==}
