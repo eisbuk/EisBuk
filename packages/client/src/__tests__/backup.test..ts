@@ -10,14 +10,7 @@ import { saul, walt } from "@/__testData__/customers";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import {
-  backup,
-  getOrgData,
-  getOrgs,
-  getSubCollectionPaths,
-  getSubCollectionData,
-  getAllSubCollectionData,
-} from "@eisbuk/firestore";
+import { backup, getAllOrgData, backupService } from "@eisbuk/firestore";
 
 const customersSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Customers}`;
 const bookingsSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Bookings}`;
@@ -37,27 +30,29 @@ afterEach(async () => {
   await deleteAll();
 });
 
-it("Lists all existing organizations", async () => {
-  const result = await getOrgs();
+describe("Backup service", () => {
+  it("Lists all existing organizations", async () => {
+    const result = await backupService.getOrgs();
 
-  if (result.ok) {
-    const orgs = result.data;
+    if (result.ok) {
+      const orgs = result.data;
 
-    const numOfOrgs = orgs.length;
-    const isIncludesTestOrg = orgs
-      .map(({ id }) => id)
-      .includes(__testOrganization__);
+      const numOfOrgs = orgs.length;
+      const isIncludesTestOrg = orgs
+        .map(({ id }) => id)
+        .includes(__testOrganization__);
 
-    expect(numOfOrgs).toBeGreaterThan(0);
-    expect(isIncludesTestOrg).toBe(true);
-  } else {
-    fail(result.message);
-  }
-});
+      expect(numOfOrgs).toBeGreaterThan(0);
+      expect(isIncludesTestOrg).toBe(true);
+    } else {
+      fail(result.message);
+    }
+  });
 
-describe("SubCollection Data", () => {
   it("Returns an array of subcollection paths", async () => {
-    const paths = await getSubCollectionPaths(__testOrganization__);
+    const paths = await backupService.getSubCollectionPaths(
+      __testOrganization__
+    );
 
     const numOfSubcollections = paths.length;
 
@@ -77,7 +72,9 @@ describe("SubCollection Data", () => {
   });
 
   it("Returns subcollection data for a single path", async () => {
-    const data = await getSubCollectionData(customersSubcollectionPath);
+    const data = await backupService.getSubCollectionData(
+      customersSubcollectionPath
+    );
 
     const expectedData = {
       saul: saul,
@@ -88,7 +85,9 @@ describe("SubCollection Data", () => {
   });
 
   it("Returns all subcollection data for a specified org", async () => {
-    const data = await getAllSubCollectionData(__testOrganization__);
+    const data = await backupService.getAllSubCollectionData(
+      __testOrganization__
+    );
 
     const expectedCustomerData = {
       saul: saul,
@@ -101,7 +100,7 @@ describe("SubCollection Data", () => {
   });
 });
 
-describe("Organization Data", () => {
+describe("Backup", () => {
   const expectedOrgData = {
     id: __testOrganization__,
     data: {
@@ -133,7 +132,7 @@ describe("Organization Data", () => {
   };
 
   it("Returns full org data", async () => {
-    const result = await getOrgData();
+    const result = await getAllOrgData();
 
     if (result.ok) {
       const [data] = result.data;
