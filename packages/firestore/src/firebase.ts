@@ -5,14 +5,17 @@ import admin from "firebase-admin";
  */
 const __withEmulators__ = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
 
+const projectId = process.env.FIREBASE_CREDENTIALS_project_id ?? "";
+const clientEmail = process.env.FIREBASE_CREDENTIALS_client_email ?? "";
+
+const _privateKey = process.env.FIREBASE_CREDENTIALS_private_key;
+const privateKey = _privateKey ? _privateKey.replace(/\\n/g, "n") : "";
+
 admin.initializeApp({
   credential: admin.credential.cert({
-    projectId: process.env.FIREBASE_CREDENTIALS_project_id,
-    clientEmail: process.env.FIREBASE_CREDENTIALS_client_email,
-    privateKey: process.env.FIREBASE_CREDENTIALS_private_key?.replace(
-      /\\n/g,
-      "n"
-    ),
+    projectId,
+    clientEmail,
+    privateKey,
   }),
 });
 
