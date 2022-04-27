@@ -11,7 +11,7 @@
     "removeComments": false,
     "declaration": true,
     "declarationDir": "dist",
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
   "exclude": ["node_modules"],
   "include": ["./src/**/*.ts"]
