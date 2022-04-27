@@ -11,8 +11,6 @@ import {
   ISubCollections,
 } from "./types";
 
-const db = admin.firestore();
-
 /**
  * getOrgData - Retrieve all data for a specified organisation
  */
@@ -30,10 +28,16 @@ export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
 export async function getOrgs(): Promise<
   IOperationSuccess<IOrgRootData[]> | IOperationFailure
 > {
+  /**
+   * @DELETE_THIS_COMMENT This, as mentioned, is initialized here (and below in each function), rather than top level for the reasons I've mentioned on Slack.
+   * I'm not 100% positive the reason for failing is exact as I've described it, but this way it kinda worked rather than failing immediately
+   */
+  const db = admin.firestore();
+
   const orgs: IOrgRootData[] = [];
 
   try {
-    const orgsRef = await db.collection(Collection.Organizations);
+    const orgsRef = db.collection(Collection.Organizations);
     const orgsSnapshot = await orgsRef.get();
 
     if (orgsSnapshot.empty) {
@@ -86,7 +90,9 @@ export async function getAllSubCollectionData(
 export async function getSubCollectionData(
   path: string
 ): Promise<ISubCollectionData> {
-  const subCollctionRef = await db.collection(path);
+  const db = admin.firestore();
+
+  const subCollctionRef = db.collection(path);
   const subCollectionSnap = await subCollctionRef.get();
 
   const subCollectionData: Array<[string, firestore.DocumentData]> = [];
@@ -107,6 +113,8 @@ export async function getSubCollectionData(
 export async function getSubCollectionPaths(
   org: string
 ): Promise<ISubCollectionPath[]> {
+  const db = admin.firestore();
+
   const subCollectionPaths: ISubCollectionPath[] = [];
   const subCollectionSnap = await db
     .doc(`${Collection.Organizations}/${org}`)
