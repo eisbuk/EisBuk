@@ -5,6 +5,7 @@ import {
   SlotType,
   OrgSubCollection,
   Collection,
+  DeliveryQueue,
 } from "../enums/firestore";
 
 // #region organizations
@@ -311,18 +312,54 @@ export type SlotAttendnace = {
 // #endregion attendance
 
 // #region cloudSentMessages
-export interface EmailMessage {
-  to: string;
-  message: {
-    subject: string;
-    html: string;
-    attachments?: Attachment[];
-  };
-}
-interface Attachment {
+/**
+ * Interface for a single attachment in an email.
+ * Email will include an optional array of these items.
+ */
+export interface EmailAttachment {
   filename: string;
   content: string | Buffer;
 }
+/**
+ * `message` portion of an email interface
+ */
+export interface EmailMessage {
+  subject: string;
+  html: string;
+  attachments?: EmailAttachment[];
+}
+/**
+ * Interface used as `payload` in email process-delivery.
+ * It's basically a full email payload without the `from`
+ * field (as it's loaded from organization preferences).
+ */
+export interface EmailPayload {
+  to: string;
+  message: EmailMessage;
+}
+/**
+ * A full email interface, including:
+ * `to`, `from` and `message` (`subject`, `html`, `attachments`).
+ */
+export interface Email extends EmailPayload {
+  from: string;
+}
+/**
+ * A payload used in `sendEmail` cloud function.
+ */
+export interface SendEmailPayload extends EmailPayload {
+  /**
+   * Used to identify an organization where the email is sent from,
+   * as well as which organization to authenticate against.
+   */
+  organization: string;
+  /**
+   * Alternative authentication to enable customers (unauthenticated, but in possession of `secretKey`)
+   * send emails as well. (recovery emails, etc.)
+   */
+  secretKey?: string;
+}
+
 export interface SMSMessage {
   to: string;
   message: string;
@@ -350,10 +387,14 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [OrgSubCollection.EmailQueue]: {
-        [id: string]: ProcessDocument<EmailMessage>;
+    };
+  };
+  [Collection.DeliveryQueues]: {
+    [organization: string]: {
+      [DeliveryQueue.EmailQueue]: {
+        [id: string]: ProcessDocument<EmailPayload>;
       };
-      [OrgSubCollection.SMSQueue]: {
+      [DeliveryQueue.SMSQueue]: {
         [id: string]: ProcessDocument<SMSMessage>;
       };
     };

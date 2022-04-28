@@ -5,6 +5,8 @@ import admin from "firebase-admin";
 import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
+import Ajv, { ErrorObject, JSONSchemaType } from "ajv";
+import customizeErrors from "ajv-errors";
 
 import {
   Collection,
@@ -294,3 +296,144 @@ export const checkRequiredFields = (
     });
   }
 };
+
+// #region JSONValidation
+/**
+ * Reads through the provided JSON validation errors and constructs a single
+ * string error message *
+ * @param {ErrorObject[]} errs array of ajv error objects
+ * @param prefix final error message string prefix (defaults to `"Errors found:"`)
+ * @returns a single error message string in following format:
+ * `Errors found: 1) Error found at field [<firstErrorField>]: "first error message" ** 2) Error found at field [<secondErrorField>]: "second error message"`
+ */
+// const constructValidationErrors = (
+//   errs: ErrorObject[],
+//   prefix = "Errors found:"
+// ): string => {
+//   const errors = errs.map(({ instancePath, message }, i) => {
+//     // Remove starting "/" and replace further "/" steps with "." (latter is for nested properties)
+//     const field = instancePath.slice(1).replace(/\//g, ".");
+
+//     const errorMessage = instancePath
+//       ? `Error at field '${field}': "${message}"`
+//       : `Error: "${message}"`;
+
+//     return `${i + 1})` + " " + errorMessage;
+//   });
+
+//   return prefix + " " + errors.join("  **  ");
+// };
+
+const constructValidationErrors = (
+  errs: ErrorObject[],
+  prefix = "Errors found:"
+): string => {
+  /** Create a numbered error message string in format: `1) Example error message` */
+  const createErrMessageString = (message: string, i: number) =>
+    `${i}) ${message}`;
+
+  // Unknown fields are natively handled a bit weirdly, therefore we're storing the
+  // unkonwn fields in this list and constructing an error afterwards
+  const unknownFields: string[] = [];
+  // Error counter used to append the additinal 'unknown fields' error after all of the other errors
+  let numErrs = 0;
+
+  // Combine all of the 'regular' error messages in a single error string
+  const errorMessage = errs.reduce(
+    (acc, { instancePath, message, keyword, params }, i) => {
+      // For additional (unkonwn) properties we're not adding the error to a final error string
+      // but just storing them in `unkonwnFields` for later use
+      // functions.logger.log("Keyword:", keyword);
+      // functions.logger.log(
+      //   "Keyword additional props:",
+      //   keyword === "additionalProperties"
+      // );
+      // functions.logger.log("Params:", params);
+      // functions.logger.log(
+      //   "Params.additionalProperties:",
+      //   params.additionalProperties
+      // );
+
+      if (keyword === "additionalProperties" && params.additionalProperty) {
+        unknownFields.push(`'${params.additionalProperty}'`);
+        return acc;
+      }
+
+      // Remove starting "/" and replace further "/" steps with "." (the latter is for nested properties)
+      const field = instancePath.slice(1).replace(/\//g, ".");
+
+      const errorMessage = instancePath
+        ? `Error at field '${field}': "${message}"`
+        : `Error: "${message}"`;
+
+      // Apply separator to all but the first error
+      const sep = i === 0 ? " " : "  **  ";
+
+      numErrs++;
+
+      return acc + sep + createErrMessageString(errorMessage, i + 1);
+    },
+    prefix
+  );
+
+  // If unkonwn fields found, add the 'unkonwn fields' error at the end of the
+  // final error string
+  if (unknownFields.length) {
+    const unknownFieldsError =
+      "Object can specify only known fields, unkonwn fields found: " +
+      unknownFields.join(", ");
+
+    // Don't apply "**" separator if no other errors
+    const sep = numErrs === 0 ? " " : "  **  ";
+
+    return (
+      errorMessage +
+      sep +
+      createErrMessageString(unknownFieldsError, numErrs + 1)
+    );
+  }
+
+  return errorMessage;
+};
+
+/**
+ * Validates a JSON object, using Ajv JSON validator, with respect to provided schema.
+ * The schema supports custom `errorMessages` defined using `ajv-errors`:
+ *
+ * https://www.npmjs.com/package/ajv-errors
+ *
+ * If any errors encountered, the function combines all of the validation messages in one strings
+ * and throws an exception with that string as a message.
+ *
+ * Additionally, the function accepts a type parameter representing interface of the validated object,
+ * if provided, upon successul validation the function also serves as a type guard casting the returned type
+ * to a required one (validated one)
+ *
+ * @param schema JSON validation schema
+ * @param object object to validate
+ * @param errorPrefix a string used to prefix the error string, defaults to `"Errors found:"`
+ * @returns a validated object
+ */
+export const validateJSON = <T extends Record<string, any>>(
+  schema: JSONSchemaType<T>,
+  object: Record<string, any>,
+  errorPrefix = "Errors found:"
+): T => {
+  // Set up Ajv instance with custom error messages (read from schema)
+  const ajv = new Ajv({ allErrors: true });
+  customizeErrors(ajv);
+
+  // Validate object with respect to schema
+  ajv.validate<T>(schema, object);
+
+  // Throw errors, if any
+  const errors = ajv.errors;
+  if (errors?.length) {
+    const errorMessage = constructValidationErrors(errors, errorPrefix);
+    throw new Error(errorMessage);
+  }
+
+  // Return validated object as type safe
+  return object as T;
+};
+// #endregion JSONValidation

@@ -15,6 +15,7 @@ import {
   Customer,
   getCustomerBase,
   DeprecatedCategory,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -30,6 +31,7 @@ import {
   getBookedSlotDocPath,
   getBookingsDocPath,
   getCustomerDocPath,
+  getEmailProcessDocPath,
   getSlotDocPath,
   getSlotsByDayDocPath,
   getSlotsPath,
@@ -948,18 +950,20 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow anybody read/write access to 'emailQueue' as it's written to only by cloud functions",
       async () => {
-        const { db } = await getTestEnv({
-          setup: (db) =>
-            setDoc(doc(db, Collection.EmailQueue, "mail-id"), {
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")), {
               message: { html: "Hello world", subject: "Subject" },
               to: "ikusteu@gmail.com",
             }),
         });
         // check read
-        await assertFails(getDoc(doc(db, Collection.EmailQueue, "mail-id")));
+        await assertFails(
+          getDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")))
+        );
         // check write
         await assertFails(
-          setDoc(doc(db, Collection.EmailQueue, "new-mail-id"), {
+          setDoc(doc(db, getEmailProcessDocPath(organization, "new-mail-id")), {
             message: {
               html: "Hello from the other side",
               subject: "Subject 2",
@@ -968,7 +972,9 @@ describe("Firestore rules", () => {
           })
         );
         // check delete
-        await assertFails(deleteDoc(doc(db, Collection.EmailQueue, "mail-id")));
+        await assertFails(
+          deleteDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")))
+        );
       }
     );
   });

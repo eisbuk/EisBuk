@@ -1,6 +1,7 @@
 import {
   BookingSubCollection,
   Collection,
+  DeliveryQueue,
   OrgSubCollection,
 } from "@eisbuk/shared";
 
@@ -36,6 +37,8 @@ export const getBookedSlotsPath: GetCollectionPath<[string]> = (
     getBookingsDocPath(organization, secretKey),
     BookingSubCollection.BookedSlots,
   ].join("/");
+export const getEmailQueueCollectionPath: GetCollectionPath = (organization) =>
+  [Collection.DeliveryQueues, organization, DeliveryQueue.EmailQueue].join("/");
 // #endregion getCollectionPath
 
 // #region getDocPath
@@ -62,4 +65,9 @@ export const getBookedSlotDocPath: GetDocumentPath<[string]> = (
   secretKey,
   slotId
 ) => [getBookedSlotsPath(organization, secretKey), slotId].join("/");
+export const getEmailProcessDocPath: GetDocumentPath = (
+  organization,
+  emailId
+) => [getEmailQueueCollectionPath(organization), emailId].join("/");
+
 // #endregion getDocPath
