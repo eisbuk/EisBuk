@@ -5,6 +5,7 @@ import {
   IOperationFailure,
   IOperationSuccess,
   IOrgRootData,
+  IOrgData,
   ISubCollectionData,
 } from "./types";
 
@@ -20,6 +21,36 @@ export async function setOrgRootData({
   try {
     const path = `${Collection.Organizations}/${id}`;
     await db.doc(path).set(data);
+
+    return { ok: true, data: "OK" };
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
+
+/**
+ * setOrgSubCollections - Set all docs in an array of subcollections
+ */
+export async function setOrgSubCollections({
+  id,
+  subCollections,
+}: Pick<IOrgData, "id" | "subCollections">): Promise<
+  IOperationSuccess<string> | IOperationFailure
+> {
+  const orgPath = `${Collection.Organizations}/${id}`;
+
+  const subCollectionsArr = Object.entries(subCollections);
+
+  const setSubCollectionDataOps = subCollectionsArr.map(
+    async ([subId, subData]) => {
+      const subPath = `${orgPath}/${subId}`;
+
+      return await setSubCollectionData(subPath, subData);
+    }
+  );
+
+  try {
+    await Promise.all(setSubCollectionDataOps);
 
     return { ok: true, data: "OK" };
   } catch (err: any) {
