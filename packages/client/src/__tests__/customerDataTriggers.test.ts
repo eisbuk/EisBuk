@@ -12,26 +12,24 @@ import {
   getCustomerBase,
 } from "@eisbuk/shared";
 
-import { db, adminDb } from "@/__testSetup__/firestoreSetup";
+import { db } from "@/__testSetup__/firestoreSetup";
 
 import { getOrganization } from "@/lib/getters";
 
-import { deleteAll, deleteAllCollections } from "@/__testUtils__/firestore";
-import { waitForCondition, getDocumentRef } from "@/__testUtils__/helpers";
+import { deleteAll } from "@/__testUtils__/firestore";
+import { waitForCondition } from "@/__testUtils__/helpers";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { saul } from "@/__testData__/customers";
 
-const customersCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Customers}`;
-const bookingsCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Bookings}`;
-const publicOrgPath = `${Collection.PublicOrgInfo}/${getOrganization()}`;
-
-const publicOrgRef = getDocumentRef(
-  adminDb,
-  publicOrgPath
-);
+const customersCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Customers}`;
+const bookingsCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Bookings}`;
 
 describe("Customer triggers", () => {
   beforeEach(async () => {
@@ -40,7 +38,6 @@ describe("Customer triggers", () => {
 
   beforeEach(async () => {
     await deleteAll();
-    await deleteAllCollections(publicOrgRef, [Collection.PublicOrgInfo]);
   });
 
   testWithEmulator(
