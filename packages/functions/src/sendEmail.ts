@@ -1,23 +1,30 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 import nodemailer from "nodemailer";
+import { JSONSchemaType } from "ajv";
 
 import {
   SendMailPayload,
   Collection,
-  OrgSubCollection,
   OrganizationData,
   EmailMessage,
   OrganizationSecrets,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
-import { __functionsZone__ } from "./constants";
+import {
+  __functionsZone__,
+  emailPattern,
+  __invalidEmailError,
+  __noSecretsError,
+} from "./constants";
 
-import { checkUser, checkRequiredFields } from "./utils";
+import { checkUser, checkRequiredFields, validateJSON } from "./utils";
 
+// #region httpsEndpoint
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
  */
@@ -33,7 +40,7 @@ export const sendEmail = functions
       await admin
         .firestore()
         .collection(
-          `${Collection.Organizations}/${organization}/${OrgSubCollection.EmailQueue}`
+          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
         .set({ payload });
@@ -41,6 +48,77 @@ export const sendEmail = functions
       return { email: payload, organization, success: true };
     }
   );
+// #endregion httpsEndpoint
+
+// #region transportLayer
+interface TransportConfig {
+  host: string;
+  port: number;
+  secure: boolean;
+  auth: {
+    user: string;
+    pass: string;
+  };
+}
+interface SMTPSettings {
+  smtpHost: string;
+  smtpPort: number;
+  smtpUser: string;
+  smtpPass: string;
+}
+
+const smtpConfigSchema: JSONSchemaType<SMTPSettings> = {
+  properties: {
+    smtpHost: { type: "string" },
+    smtpPort: { type: "integer" },
+    smtpUser: { type: "string" },
+    smtpPass: { type: "string" },
+  },
+  type: "object",
+  required: ["smtpHost", "smtpPort"],
+};
+
+/**
+ * Reads smtp config from `organization` config as well as `secrets` and validates the fields.
+ * @param organization organization name
+ * @returns smtp config options
+ */
+const getMailConfig = async (
+  organization: string
+): Promise<TransportConfig> => {
+  const db = admin.firestore();
+
+  const secretsSnap = await db
+    .doc(`${Collection.Secrets}/${organization}`)
+    .get();
+
+  const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
+  if (!secretsData) {
+    throw new Error(__noSecretsError);
+  }
+  const { smtpHost, smtpPass, smtpPort, smtpUser } = secretsData;
+
+  const smtpConfig = validateJSON<SMTPSettings>(
+    smtpConfigSchema,
+    {
+      smtpHost,
+      smtpPass,
+      smtpPort,
+      smtpUser,
+    },
+    "Invalid SMTP config (check your organization preferences):"
+  );
+
+  return {
+    host: smtpConfig.smtpHost,
+    port: smtpConfig.smtpPort,
+    auth: {
+      user: smtpConfig.smtpUser,
+      pass: smtpConfig.smtpPass,
+    },
+    secure: smtpPort === 465,
+  };
+};
 
 /**
  * Reads SMTP config and creates an SMTP transport layer.
@@ -51,92 +129,73 @@ const getTransportLayer = async (organization: string) => {
   const mailConfig = await getMailConfig(organization);
   return nodemailer.createTransport(mailConfig);
 };
+// #endregion transportLayer
 
-interface MailConfig {
-  host: string;
-  port: number;
-  secure: true;
-  auth: {
-    user: string;
-    pass: string;
-  };
-}
+// #region delivery
+type SendEmailObject = EmailMessage & { from: string };
 
-/**
- * Reads smtp config from `organization` config as well as `secrets` and validates the fields.
- * @param organization organization name
- * @returns smtp config options
- */
-const getMailConfig = async (organization: string): Promise<MailConfig> => {
-  const db = admin.firestore();
-
-  const [secretsSnap, orgSnap] = await Promise.all([
-    db.doc(`${Collection.Secrets}/${organization}`).get(),
-    db.doc(`${Collection.Organizations}/${organization}`).get(),
-  ]);
-
-  const secrets = secretsSnap.data() as OrganizationSecrets;
-  const { emailFrom } = orgSnap.data() as OrganizationData;
-
-  const config = {};
-  const errors = [];
-
-  if (!secrets.smtpHost) {
-    errors.push("No host");
-  } else if (typeof secrets.smtpHost !== "string") {
-    errors.push("Host should be string");
-  } else {
-    config["host"] = secrets.smtpHost;
-  }
-
-  if (!secrets.smtpPort) {
-    errors.push("No port");
-  } else if (typeof secrets.smtpPort !== "number") {
-    errors.push("Port should be number");
-  } else {
-    config["port"] = secrets.smtpPort;
-  }
-
-  if (!secrets.smtpUser) {
-    errors.push("No user");
-  } else {
-    config["auth"] = { user: secrets.smtpUser };
-  }
-
-  if (!secrets.smtpPass) {
-    errors.push("No pass");
-  } else {
-    config["auth"].pass = secrets.smtpPass;
-  }
-
-  if (!emailFrom) {
-    errors.push("No email from");
-  } else if (!isValidEmail(emailFrom)) {
-    errors.push("email from invalid");
-  } else {
-    config["from"] = emailFrom;
-  }
-
-  if (errors.length) {
-    throw new Error(errors.join(" ** "));
-  }
-
-  return config as MailConfig;
+const EmailSchema: JSONSchemaType<SendEmailObject> = {
+  properties: {
+    from: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    to: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    subject: { type: "string" },
+    html: { type: "string" },
+  },
+  additionalProperties: false,
+  type: "object",
+  required: ["from", "html", "subject", "to"],
 };
 
+/**
+ * An email delivery functionality, uses a firestore document with path:
+ *
+ * `deliveryQueue/{ organization }/emailQueue/{ email }`
+ *
+ * The document is used as a data trigger to start the delivery as well as a process
+ * document to log the delivery state to.
+ * Under the hood uses the `processDelivery` from `@eisbuk/firestore-process-delivery`
+ * to attempt delivery, retry and log delivery state accordingly.
+ */
 export const deliverEmail = functions
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.EmailQueue}/{emailDoc}`
+    `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`
   )
   .onWrite((change, { params }) =>
     processDelivery(change, async () => {
       const { organization } = params;
 
-      const data = change.after.data() as ProcessDocument<EmailMessage>;
-      const email = { ...data.payload, from: "eisbuk@team.com" };
-
       const transport = await getTransportLayer(organization);
+
+      // Get current email payload
+      const data = change.after.data() as Partial<
+        ProcessDocument<EmailMessage>
+      >;
+
+      // Get email preferences from organization info (such as 'fromEmail')
+      const db = admin.firestore();
+      const orgSnap = await db
+        .doc(`${Collection.Organizations}/${organization}`)
+        .get();
+      const { emailFrom } = orgSnap.data() as OrganizationData;
+
+      // Validate email and throw if not a valid schema
+      const email = validateJSON(
+        EmailSchema,
+        {
+          from: emailFrom,
+          ...data.payload,
+        },
+        "Error constructing email (check the email payload and organization preferences):"
+      );
 
       functions.logger.info("Sending mail:", email);
 
@@ -153,7 +212,4 @@ export const deliverEmail = functions
       return info;
     })
   );
-
-/** @TODO move to shared at some point */
-const isValidEmail = (email: string) =>
-  /^[-_.a-z0-9A-Z]*@[-_.a-z0-9A-Z]*\.[a-z][a-z]+$/.test(email);
+// #endregion delivery

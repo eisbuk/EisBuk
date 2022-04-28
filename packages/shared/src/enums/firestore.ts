@@ -13,6 +13,10 @@ export enum Collection {
    * an organization we want made public and accessible for customers
    */
   PublicOrgInfo = "publicOrgInfo",
+  /**
+   * All process delivery queues (such as email, SMS) are stored here, on per-organization basis
+   */
+  DeliveryQueues = "deliveryQueues",
 }
 
 export enum OrgSubCollection {
@@ -21,12 +25,15 @@ export enum OrgSubCollection {
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
-  EmailQueue = "emailQueue",
-  SMSQueue = "SMSQueue",
 }
 
 export enum BookingSubCollection {
   BookedSlots = "bookedSlots",
+}
+
+export enum DeliveryQueue {
+  EmailQueue = "emailQueue",
+  SMSQueue = "SMSQueue",
 }
 // endregion
 
