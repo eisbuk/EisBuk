@@ -29,7 +29,7 @@ export async function backupToFs(): Promise<void> {
       throw new Error(orgDataOp.message);
     }
   } catch (err: any) {
-    console.error(err);
+    console.error(err.message);
   }
 }
 
@@ -54,6 +54,6 @@ export async function getAllOrganisationsData(): Promise<
       throw new Error(orgsOp.message);
     }
   } catch (err: any) {
-    return { ok: false, message: err };
+    return { ok: false, message: err.message };
   }
 }
