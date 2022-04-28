@@ -7,16 +7,14 @@ import { adminDb } from "../__testSetup__/adminDb";
 import { deleteAll } from "../__testUtils__/deleteAll";
 import { defaultUser } from "../__testData__/customers";
 
+import { Collection } from "@eisbuk/shared";
+
 import * as restoreService from "../restore";
 
-const __testOrganization__ = "Random Test Org";
+const __testOrganization__ = "test-organization-2";
 
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
-
-beforeAll(async () => {
-  await deleteAll();
-});
 
 afterEach(async () => {
   await deleteAll();
@@ -24,21 +22,28 @@ afterEach(async () => {
 
 afterAll(() => {
   jest.resetAllMocks();
-})
+});
 
 describe("Restore service", () => {
-  it("Sets organisation document data", async () => {
-    const orgData = {
-      id: __testOrganization__,
-      data: { admins: [defaultUser.email] },
+  it("Sets organization document data", async () => {
+    const orgId = __testOrganization__;
+    const orgData = { admins: [defaultUser.email] };
+
+    const orgPath = `${Collection.Organizations}/${orgId}`;
+    const orgPayload = {
+      id: orgId,
+      data: orgData,
     };
 
-    const res = await restoreService.setOrgRootData(orgData);
+    const res = await restoreService.setOrgRootData(orgPayload);
 
     if (res.ok === true) {
-      expect(res.data).toBe("OK");
+      const result = await adminDb.doc(orgPath).get();
+      const resultData = result.data();
+
+      expect(resultData).toEqual(orgData);
     } else {
-      fail(res.message);
+      throw new Error(res.message);
     }
   });
 });
