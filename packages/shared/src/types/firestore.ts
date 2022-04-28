@@ -5,6 +5,7 @@ import {
   SlotType,
   OrgSubCollection,
   Collection,
+  DeliveryQueue,
 } from "../enums/firestore";
 
 // #region organizations
@@ -330,10 +331,14 @@ export interface FirestoreSchema {
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };
-      [OrgSubCollection.EmailQueue]: {
+    };
+  };
+  [Collection.DeliveryQueues]: {
+    [organization: string]: {
+      [DeliveryQueue.EmailQueue]: {
         [id: string]: ProcessDocument<EmailMessage>;
       };
-      [OrgSubCollection.SMSQueue]: {
+      [DeliveryQueue.SMSQueue]: {
         [id: string]: ProcessDocument<SMSMessage>;
       };
     };

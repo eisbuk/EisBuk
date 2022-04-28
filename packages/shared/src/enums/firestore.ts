@@ -8,6 +8,10 @@ export enum Collection {
    * This can be changed, but the change should be reflected in firestore extension setup as well.
    */
   Secrets = "secrets",
+  /**
+   * All process delivery queues (such as email, SMS) are stored here, on per-organization basis
+   */
+  DeliveryQueues = "deliveryQueues",
 }
 
 export enum OrgSubCollection {
@@ -16,12 +20,15 @@ export enum OrgSubCollection {
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
-  EmailQueue = "emailQueue",
-  SMSQueue = "SMSQueue",
 }
 
 export enum BookingSubCollection {
   BookedSlots = "bookedSlots",
+}
+
+export enum DeliveryQueue {
+  EmailQueue = "emailQueue",
+  SMSQueue = "SMSQueue",
 }
 // endregion
 
