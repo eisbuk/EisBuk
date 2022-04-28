@@ -9,28 +9,32 @@ import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
 import { adminDb } from "../__testSetup__/adminDb";
 import { deleteAll } from "../__testUtils__/deleteAll";
+import { sleep } from "../__testUtils__/sleep";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 
 import { backupToFs, getAllOrganisationsData } from "../";
 import * as backupService from "../backup";
 
 const __testOrganization__ = "test-organization";
+const orgData = {
+  admins: [defaultUser.email],
+};
 
-const customersSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Customers}`;
-const bookingsSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Bookings}`;
+const orgRootPath = `${Collection.Organizations}/${__testOrganization__}`;
+const customersSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Customers}`;
+const bookingsSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Bookings}`;
 
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
 
-beforeAll(async () => {
-  await deleteAll();
-});
-
 beforeEach(async () => {
+  await adminDb.doc(`${orgRootPath}`).set(orgData);
   await adminDb.doc(`${customersSubcollectionPath}/${saul.id}`).set(saul);
   await adminDb.doc(`${customersSubcollectionPath}/${walt.id}`).set(walt);
 
   // * Note: `bookings` are created implicitly as a result of data trigger on Customers doc write
+  // * => we need to wait for this op to finish before we assert against subcollections
+  await sleep();
 });
 
 afterEach(async () => {
@@ -39,7 +43,7 @@ afterEach(async () => {
 
 afterAll(() => {
   jest.resetAllMocks();
-})
+});
 
 describe("Backup service", () => {
   it("Lists all existing organizations", async () => {
@@ -53,10 +57,10 @@ describe("Backup service", () => {
         .map(({ id }) => id)
         .includes(__testOrganization__);
 
-      expect(numOfOrgs).toBeGreaterThan(0);
+      expect(numOfOrgs).toBe(1);
       expect(isIncludesTestOrg).toBe(true);
     } else {
-      fail(result.message);
+      throw new Error(result.message);
     }
   });
 
@@ -116,7 +120,6 @@ describe("Backup", () => {
     id: __testOrganization__,
     data: {
       admins: [defaultUser.email],
-      existingSecrets: [],
     },
     subCollections: {
       customers: {
@@ -150,31 +153,23 @@ describe("Backup", () => {
 
       expect(data).toEqual(expectedOrgData);
     } else {
-      /**
-       * @DELETE_THIS_COMMENT I've replaced `fail(error)` with exception, as I think it achieves the desired
-       * result, and `fail()` was failing with "fail is not defined" message (even though it's jest standard api)
-       */
       throw new Error(result.message);
     }
   });
 
-  xit("Writes orgData to .json files", async () => {
+  it("Writes orgData to .json files", async () => {
     const spy = jest.spyOn(fs, "writeFile").mockImplementation();
 
-    try {
-      await backupToFs();
+    await backupToFs();
 
-      const expectedFileBasename = `${__testOrganization__}.json`;
+    const expectedFileBasename = `${__testOrganization__}.json`;
 
-      const [firstCall] = spy.mock.calls;
-      const [resultPath, resultJson] = firstCall;
+    const [firstCall] = spy.mock.calls;
+    const [resultPath, resultJson] = firstCall;
 
-      expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
-      expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
+    expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
+    expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
 
-      spy.mockRestore();
-    } catch (err: any) {
-      throw err;
-    }
+    spy.mockRestore();
   });
 });

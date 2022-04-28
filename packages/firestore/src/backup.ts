@@ -28,10 +28,6 @@ export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
 export async function getOrgs(): Promise<
   IOperationSuccess<IOrgRootData[]> | IOperationFailure
 > {
-  /**
-   * @DELETE_THIS_COMMENT This, as mentioned, is initialized here (and below in each function), rather than top level for the reasons I've mentioned on Slack.
-   * I'm not 100% positive the reason for failing is exact as I've described it, but this way it kinda worked rather than failing immediately
-   */
   const db = admin.firestore();
 
   const orgs: IOrgRootData[] = [];
