@@ -1,7 +1,12 @@
 import { DateTime, DateTimeUnit } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
-import i18n, { createDateTitle, ActionButton } from "@eisbuk/translations";
+import i18n, {
+  createDateTitle,
+  ActionButton,
+  AdminAria,
+  BookingAria,
+} from "@eisbuk/translations";
 
 import {
   PrivateRoutes,
@@ -103,8 +108,8 @@ describe("Download ics file to Add To Calendar", () => {
     );
     cy.task("deleteFolder", downloadsFolder);
     cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
-    cy.getAttrWith("aria-label", "See past dates").click();
-    cy.getAttrWith("aria-label", "Book").first().click();
+    cy.getAttrWith("aria-label", AdminAria.SeePastDates).click();
+    cy.getAttrWith("aria-label", BookingAria.BookButton).first().click();
 
     cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
     cy.contains("Yes").click();

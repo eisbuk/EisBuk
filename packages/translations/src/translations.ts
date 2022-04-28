@@ -263,6 +263,9 @@ export enum SlotFormAria {
   ConfirmCreateSlot = "SlotFormAria.ConfirmCreateSlot",
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
 }
+export enum BookingAria {
+  BookButton = "BookingAria.BookButton",
+}
 // #endregion aria-labels
 
 // #region alerts

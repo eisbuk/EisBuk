@@ -233,6 +233,9 @@
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
   },
+  "BookingAria": {
+    "BookButton": "Prenota"
+  },
 
   "BirthdayMenu": {
     "ShowAll": "Mostra Tutti",

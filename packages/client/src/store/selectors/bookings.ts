@@ -52,9 +52,9 @@ export const getBookedSlotsByMonth =
   (month: number) =>
   (state: LocalStore): Record<string, CustomerBookingEntry> =>
     Object.entries(state.firestore.data?.bookedSlots || {}).reduce(
-      (acc, [key, value]) =>
-        DateTime.fromISO(value.date).month === month
-          ? { ...acc, [key]: value }
+      (acc, [slotId, CustomerBookingEntry]) =>
+        DateTime.fromISO(CustomerBookingEntry.date).month === month
+          ? { ...acc, [slotId]: CustomerBookingEntry }
           : acc,
       {}
     );

@@ -331,16 +331,10 @@ export const createPublicOrgInfo = functions
     if (isDelete) {
       await publicOrgInfoDocRef.delete();
       return;
-    } else if (
-      !orgData.displayName ||
-      !orgData.location ||
-      !orgData.emailFrom
-    ) {
-      return;
     }
-    await publicOrgInfoDocRef.set({
-      displayName: orgData.displayName,
-      location: orgData.location,
-      emailFrom: orgData.emailFrom,
-    });
+    const updates = ["displayName", "location", "emailFrom"].reduce(
+      (acc, curr) => (orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc),
+      {}
+    );
+    await publicOrgInfoDocRef.set(updates, { merge: true });
   });

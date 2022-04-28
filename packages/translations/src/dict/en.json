@@ -234,7 +234,9 @@
     "ConfirmCreateSlot": "Confirm slot creation",
     "ConfirmEditSlot": "Confirm slot edits"
   },
-
+  "BookingAria": {
+    "BookButton": "Book"
+  },
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"

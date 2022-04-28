@@ -194,9 +194,9 @@ service cloud.firestore {
       // #endregion attendance-checks
     }
     // #region public-info-check
-      match /publicOrgInfo/{organization} {
-      allow read: if true;
-      }
+    match /publicOrgInfo/{organization} {
+    allow read: if true;
+    }
     // #endregion public-info-check
   }
 }

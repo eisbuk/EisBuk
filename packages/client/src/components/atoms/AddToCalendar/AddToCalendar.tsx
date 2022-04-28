@@ -41,27 +41,25 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
         end: endDate,
       };
 
-      /**
-       * ICalendar needs to be instantiated with an event
-       * which can't be an empty object so on the first iteration
-       * it's instantiated with the first bookedSlotEvent
-       */
+      // ICalendar needs to be instantiated with an event
+      // which can't be an empty object so on the first iteration
+      // it's instantiated with the first bookedSlotEvent
+
       if (i === 0) {
         icalendar = new ICalendar(bookedSlotEvent).addProperty(
           "UID",
           `${bookedSlot.date}${bookedSlot.interval}`
         );
       } else {
-        /**
-         * To add another event to the calendar it must be of type ICalendar
-         */
+        // To add another event to the calendar it must be of type ICalendar
+
         icalendar
           .addEvent(new ICalendar(bookedSlotEvent))
           .addProperty("UID", `${bookedSlot.date}${bookedSlot.interval}`);
       }
-      /**
-       * Download calendar on last iteration
-       */
+
+      // Download calendar on last iteration
+
       if (i === originalArr.length - 1) {
         icalendar.download("Booked_Slots.ics");
       }
