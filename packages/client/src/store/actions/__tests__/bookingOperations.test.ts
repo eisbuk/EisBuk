@@ -7,6 +7,7 @@ import * as firestore from "@firebase/firestore";
 import {
   BookingSubCollection,
   Collection,
+  EmailMessage,
   OrgSubCollection,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -17,20 +18,39 @@ import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { bookInterval, cancelBooking } from "../bookingOperations";
+import { bookInterval, cancelBooking, sendICSFile } from "../bookingOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
+import * as firebaseUtils from "@/utils/firebase";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 import { getOrganization } from "@/lib/getters";
+import { createTestStore } from "@/__testUtils__/firestore";
 
 const bookingsCollectionPath = `${
   Collection.Organizations
 }/${getOrganization()}/${OrgSubCollection.Bookings}`;
 
+/**
+ * A spy of `getFirebase` function which we're using to make sure
+ * all firestore calls get dispatched against test `db`
+ */
+const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
+
+// mock functions and app packages because they
+// get imported by utils/firebase used inside bookingActions
+jest.mock("@firebase/functions", () => ({
+  getFunctions: jest.fn(),
+  httpsCallable: () => jest.fn(),
+}));
+
+jest.mock("@firebase/app", () => ({
+  ...jest.requireActual("@firebase/app"),
+  getApp: jest.fn(),
+}));
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
  * Here we're using the same implmentation as the original function (action creator),
@@ -53,15 +73,14 @@ jest
   .spyOn(appActions, "enqueueNotification")
   .mockImplementation(mockEnqueueSnackbar as any);
 
-/**
- * A spy of `getFirebase` function which we're using to make sure
- * all firestore calls get dispatched against test `db`
- */
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-
 const { secretKey } = saul;
 
 // #region testData
+/**
+ * A mock function we're passing as `dispatch` to thunk in order
+ * to test appropriate actions being dispatched to the store
+ */
+const mockDispatch = jest.fn();
 /**
  * Intervals available for booking
  */
@@ -92,6 +111,7 @@ const testSlot = {
   id: bookingId,
   categories: [saul.category],
 };
+
 // #endregion testData
 
 describe("Booking Notifications", () => {
@@ -242,5 +262,52 @@ describe("Booking Notifications", () => {
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
+  });
+
+  describe("sendICSFile", () => {
+    testWithEmulator("should call sendICSFile with correct file", async () => {
+      const icsFile = "iceFileHere";
+      // test state for all tests
+      const getState = () =>
+        createTestStore({
+          data: {
+            customers: {
+              [saul.id]: saul,
+            },
+          },
+        });
+
+      // mocks we're using to test calling the right cloud function
+      const mockSendMail = jest.fn();
+      jest
+        .spyOn(firebaseUtils, "createCloudFunctionCaller")
+        .mockImplementation((func, payload) => () => mockSendMail(payload));
+      await sendICSFile({ secretKey: saul.secretKey, icsFile: "icsFileHere" })(
+        mockDispatch,
+        getState
+      );
+
+      // check results
+      expect(mockSendMail).toHaveBeenCalledTimes(1);
+      const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
+
+      expect(sentMail.to).toEqual(saul.email);
+      expect(sentMail.subject).toBeDefined();
+      // we're not matching the complete html of message
+      // but are asserting that it contains important parts
+      expect(sentMail.html.includes(icsFile)).toBeTruthy();
+      expect(sentMail.html.includes(saul.name)).toBeTruthy();
+
+      // check for success notification
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockEnqueueSnackbar({
+          message: i18n.t(NotificationMessage.EmailSent),
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    });
   });
 });

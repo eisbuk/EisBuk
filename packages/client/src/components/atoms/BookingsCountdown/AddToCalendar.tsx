@@ -16,7 +16,10 @@ import { LocalStore } from "@/types/store";
 import { getAboutOrganization } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
 
-import { createCalendarEvents } from "@/store/actions/bookingOperations";
+import {
+  createCalendarEvents,
+  sendICSFile,
+} from "@/store/actions/bookingOperations";
 
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 
@@ -90,6 +93,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
         createCancelledEvents(previousCalendarUids, icalendar, displayName);
         icalendar.download("Booked_Slots.ics");
         dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
+        dispatch(sendICSFile({ secretKey: secretKey, icsFile: "icsFileHere" }));
       }
     });
   };
