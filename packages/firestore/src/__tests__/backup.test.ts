@@ -3,30 +3,24 @@
  */
 import fs from "fs/promises";
 import path from "path";
-import admin, { initializeApp } from "firebase-admin";
+import admin from "firebase-admin";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
 import { adminDb } from "../__testSetup__/adminDb";
+import { deleteAll } from "../__testUtils__/deleteAll";
+import { saul, walt, defaultUser } from "../__testData__/customers";
 
-import { backupToFs, getAllOrganisationsData, backupService } from "../index";
-
-import { saul, walt, defaultUser } from "../testData";
+import { backupToFs, getAllOrganisationsData } from "../";
+import * as backupService from "../backup";
 
 const __testOrganization__ = "test-organization";
 
 const customersSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Customers}`;
 const bookingsSubcollectionPath = `${Collection.Organizations}/${__testOrganization__}/${OrgSubCollection.Bookings}`;
 
-/**
- * @DELETE_THIS_COMMENT __withEmulators__ tells you if we're using emulators, while __isTest__ actually tells you if we're in a test environment
- * This was a quick, shorter version of `deleteAll` found in @eisbuk/client, it deletes all of the entries in the firestore db,
- * which might or might not cause the problems as @eisbuk/client one doesn't delete organization document I think...
- */
-const deleteAll = async (): Promise<any> => {
-  const collections = await adminDb.listCollections();
-  return Promise.all(collections.map((ref) => adminDb.recursiveDelete(ref)));
-};
+jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
+jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
 
 beforeAll(async () => {
   await deleteAll();
@@ -43,16 +37,9 @@ afterEach(async () => {
   await deleteAll();
 });
 
-/**
- * @DELETE_THIS_COMMENT
- * Here we're mocking `admin.firestore()` (only function, not a namespace)
- * To always return our `adminDb`, removing the need for admin app initialization in the tests
- * and the bug s that come with it.
- * This way you have a complete (admin) control of the emulated firestore, both from outside the tested code
- * as well as inside (as `admin.firestore` returns the same Firestore instance).
- */
-jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
-jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
+afterAll(() => {
+  jest.resetAllMocks();
+})
 
 describe("Backup service", () => {
   it("Lists all existing organizations", async () => {

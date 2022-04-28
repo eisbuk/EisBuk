@@ -6,9 +6,6 @@ import "./firebase";
 import { IOperationFailure, IOperationSuccess, IOrgData } from "./types";
 
 import * as backupService from "./backup";
-import * as restoreService from "./restore";
-
-export { backupService, restoreService };
 
 /**
  * backupToFs - Write all organisation data to json

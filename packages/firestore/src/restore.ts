@@ -3,8 +3,6 @@ import admin from "firebase-admin";
 import { Collection } from "@eisbuk/shared";
 import { IOperationFailure, IOperationSuccess, IOrgRootData } from "./types";
 
-const db = admin.firestore();
-
 /**
  * setOrgRootData - Set organisation data
  */
@@ -12,6 +10,8 @@ export async function setOrgRootData({
   id,
   data,
 }: IOrgRootData): Promise<IOperationSuccess<string> | IOperationFailure> {
+  const db = admin.firestore();
+
   try {
     const path = `${Collection.Organizations}/${id}`;
     await db.doc(path).set(data);

@@ -312,16 +312,15 @@ importers:
       '@babel/plugin-transform-runtime': ^7.12.10
       '@babel/preset-typescript': ^7.14.5
       '@eisbuk/shared': workspace:*
+      '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ~1.6.7
       '@types/jest': ^27.4.1
-      '@types/luxon': ~2.3.1
       '@types/node': ^16.11.10
       '@typescript-eslint/eslint-plugin': ^4.30.0
       '@typescript-eslint/parser': ^4.33.0
       commander: ^8.3.0
       firebase-admin: ^9.4.2
       jest: ^27.5.1
-      luxon: ~2.3.2
       typescript: ~4.4.2
     dependencies:
       '@eisbuk/shared': link:../shared
@@ -331,14 +330,13 @@ importers:
       '@babel/core': 7.17.9
       '@babel/plugin-transform-runtime': 7.17.0_@babel+core@7.17.9
       '@babel/preset-typescript': 7.16.7_@babel+core@7.17.9
+      '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.6.7
       '@types/jest': 27.4.1
-      '@types/luxon': 2.3.1
       '@types/node': 16.11.26
       '@typescript-eslint/eslint-plugin': 4.33.0_83aa6eb90d476d226895a490658e997b
       '@typescript-eslint/parser': 4.33.0_typescript@4.4.4
       jest: 27.5.1
-      luxon: 2.3.2
       typescript: 4.4.4
 
   ../../packages/functions:
@@ -15444,11 +15442,6 @@ packages:
   /luxon/2.3.1:
     resolution: {integrity: sha512-I8vnjOmhXsMSlNMZlMkSOvgrxKJl0uOsEzdGgGNZuZPaS9KlefpE9KV95QFftlJSC+1UyCC9/I69R02cz/zcCA==}
     engines: {node: '>=12'}
-
-  /luxon/2.3.2:
-    resolution: {integrity: sha512-MlAQQVMFhGk4WUA6gpfsy0QycnKP0+NlCBJRVRNPxxSIbjrCbQ65nrpJD3FVyJNZLuJ0uoqL57ye6BmDYgHaSw==}
-    engines: {node: '>=12'}
-    dev: true
 
   /lz-string/1.4.4:
     resolution: {integrity: sha1-wNjq82BZ9wV5bh40SBHPTEmNOiY=}
