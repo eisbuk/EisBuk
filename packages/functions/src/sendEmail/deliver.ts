@@ -4,7 +4,6 @@ import nodemailer from "nodemailer";
 import { JSONSchemaType } from "ajv";
 
 import {
-  SendMailPayload,
   Collection,
   OrganizationData,
   EmailMessage,
@@ -20,52 +19,11 @@ import {
   emailPattern,
   __invalidEmailError,
   __noSecretsError,
-} from "./constants";
+} from "../constants";
 
-import { checkUser, checkRequiredFields, validateJSON } from "./utils";
+import { SMTPSettings, TransportConfig, SendEmailObject } from "./types";
 
-// #region httpsEndpoint
-/**
- * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
- */
-export const sendEmail = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async ({ organization, ...payload }: SendMailPayload, { auth }) => {
-      await checkUser(organization, auth);
-
-      checkRequiredFields(payload, ["to", "subject", "html"]);
-
-      // add email to firestore, firing data trigger
-      await admin
-        .firestore()
-        .collection(
-          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
-        )
-        .doc()
-        .set({ payload });
-
-      return { email: payload, organization, success: true };
-    }
-  );
-// #endregion httpsEndpoint
-
-// #region transportLayer
-interface TransportConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-}
-interface SMTPSettings {
-  smtpHost: string;
-  smtpPort: number;
-  smtpUser: string;
-  smtpPass: string;
-}
+import { validateJSON } from "../utils";
 
 const smtpConfigSchema: JSONSchemaType<SMTPSettings> = {
   properties: {
@@ -132,7 +90,6 @@ const getTransportLayer = async (organization: string) => {
 // #endregion transportLayer
 
 // #region delivery
-type SendEmailObject = EmailMessage & { from: string };
 
 const EmailSchema: JSONSchemaType<SendEmailObject> = {
   properties: {
@@ -212,4 +169,3 @@ export const deliverEmail = functions
       return info;
     })
   );
-// #endregion delivery

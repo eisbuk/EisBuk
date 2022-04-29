@@ -1,10 +1,9 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 import pRetry from "p-retry";
-import http from "http";
+import { JSONSchemaType } from "ajv";
 
 import {
-  SendSMSPayload,
   OrganizationData,
   OrganizationSecrets,
   Collection,
@@ -15,52 +14,12 @@ import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
-import { __smsUrl__, __functionsZone__ } from "./constants";
+import { __smsUrl__, __functionsZone__ } from "../constants";
 
-import {
-  checkUser,
-  runWithTimeout,
-  sendRequest,
-  checkRequiredFields,
-  validateJSON,
-} from "./utils";
-import { JSONSchemaType } from "ajv";
+import { CheckSMSRes, SMSResponse, SendSMSObject } from "./types";
 
-// #region httpsEndpoint
-/**
- * Sends SMS message using template data from organizations firestore entry and provided params
- */
-export const sendSMS = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async ({ organization, ...payload }: SendSMSPayload, { auth }) => {
-      await checkUser(organization, auth);
-
-      // check payload
-      checkRequiredFields(payload, ["message", "to"]);
-
-      // Add SMS to delivery queue, thus starting the delivery process
-      await admin
-        .firestore()
-        .collection(
-          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}`
-        )
-        .doc()
-        .set({ payload });
-
-      return { sms: payload, organization, success: true };
-    }
-  );
-// #endregion httpsEndpoint
-
-// #region delivery
-
-interface CheckSMSRes {
-  recipients: {
-    dsnstatus: string;
-    dsnerror: string;
-  }[];
-}
+import { createSMSReqOptions } from "./utils";
+import { runWithTimeout, sendRequest, validateJSON } from "../utils";
 
 /**
  * Check the state of sent sms with the provider
@@ -97,22 +56,6 @@ const checkSMS = async (
 
   return [smsOk, status, errorMessage];
 };
-
-interface SMSResponse {
-  ids?: string[];
-  usage?: {
-    currency: string;
-    // eslint-disable-next-line camelcase
-    total_cost: number;
-    countries: Record<string, unknown>;
-  };
-}
-
-interface SendSMSObject {
-  message: string;
-  smsFrom: string;
-  recipients: { msisdn: string }[];
-}
 
 const SMSSchema: JSONSchemaType<SendSMSObject> = {
   properties: {
@@ -208,56 +151,3 @@ export const deliverSMS = functions
       return res;
     })
   );
-
-// #endregion delivery
-
-// #region utils
-/**
- * A convenience method used to create SMS request options.
- * Used purely for code readability
- * @param url
- * @param token
- * @returns
- */
-const createSMSReqOptions = (
-  method: "GET" | "POST",
-  url: string,
-  token: string
-): http.RequestOptions & { proto: "http" | "https" } => {
-  let proto: "http" | "https" = "https";
-  let hostname = "";
-  let endpoint = "/";
-  let portString = "";
-
-  // check for protocol in url string (the fallback is https)
-  if (/^https?:\/\//.test(url)) {
-    [proto, hostname] = url.split("://") as ["http" | "https", string];
-  } else {
-    hostname = url;
-  }
-
-  // split hostname and endpoint from url
-  const breakingPoint = hostname.indexOf("/");
-  if (breakingPoint !== -1) {
-    endpoint = hostname.slice(breakingPoint);
-    hostname = hostname.slice(0, breakingPoint);
-  }
-
-  // check for port number
-  if (hostname.includes(":")) {
-    [hostname, portString] = hostname.split(":");
-  }
-
-  const port = Number(portString) || undefined;
-
-  return {
-    proto,
-    hostname,
-    path: [endpoint, `token=${token}`].join("?"),
-    port,
-    // a standard part of each SMS post request we're sending
-    headers: { ["Content-Type"]: "application/json" },
-    method,
-  };
-};
-// #endregion utils
