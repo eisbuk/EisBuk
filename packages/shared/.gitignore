@@ -1,8 +1,0 @@
-# ignore installation
-node_modules
-
-# ignore build
-dist
-
-# local log files
-yarn-error.log

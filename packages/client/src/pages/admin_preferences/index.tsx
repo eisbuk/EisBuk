@@ -31,10 +31,10 @@ interface Props {
 }
 const smsFields = [
   {
-    name: "SmsFrom",
+    name: "smsFrom",
   },
   {
-    name: "SmsTemplate",
+    name: "smsTemplate",
 
     multiline: true,
   },
@@ -42,18 +42,18 @@ const smsFields = [
 
 const emailFields = [
   {
-    name: "EmailNameFrom",
+    name: "emailNameFrom",
   },
   {
-    name: "EmailFrom",
+    name: "emailFrom",
   },
   {
-    name: "EmailTemplate",
+    name: "emailTemplate",
 
     multiline: true,
   },
 ];
-const nameField = [{ name: "DisplayName" }];
+const nameField = [{ name: "displayName" }];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({

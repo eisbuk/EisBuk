@@ -17,7 +17,7 @@ import {
 
 import { TestEnvFirestore } from "@/__testSetup__/getTestEnv";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 
 import { LocalStore } from "@/types/store";
 
@@ -31,7 +31,7 @@ import {
 /**
  * A stored path to test organization in firestore
  */
-const orgPath = [Collection.Organizations, __organization__].join("/");
+const orgPath = [Collection.Organizations, getOrganization()].join("/");
 /**
  * A path to `slots` collection in test organization
  */
@@ -135,7 +135,7 @@ export const setupTestBookings = async ({
   /** Path to customer's bookings */
   const customerBookingsPath = [
     Collection.Organizations,
-    __organization__,
+    getOrganization(),
     OrgSubCollection.Bookings,
     secretKey,
   ].join("/");

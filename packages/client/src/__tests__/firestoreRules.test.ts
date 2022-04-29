@@ -18,7 +18,7 @@ import {
   getCustomerBase,
 } from "@eisbuk/shared";
 
-import { __organization__ } from "@/lib/constants";
+import { getOrganization } from "@/lib/getters";
 import { defaultCustomerFormValues } from "@/lib/data";
 
 import { getTestEnv } from "@/__testSetup__/getTestEnv";
@@ -34,7 +34,7 @@ describe("Firestore rules", () => {
       "should allow organziation admin read and write access to organization",
       async () => {
         const db = await getTestEnv({});
-        const orgRef = doc(db, Collection.Organizations, __organization__);
+        const orgRef = doc(db, Collection.Organizations, getOrganization());
         // check read access
         await assertSucceeds(getDoc(orgRef));
         // check write access
@@ -48,7 +48,7 @@ describe("Firestore rules", () => {
       "should not allow read nor write access to an unauth user",
       async () => {
         const db = await getTestEnv({ auth: false });
-        const orgRef = doc(db, Collection.Organizations, __organization__);
+        const orgRef = doc(db, Collection.Organizations, getOrganization());
         // check read access
         await assertFails(getDoc(orgRef));
         // check write access
@@ -89,7 +89,7 @@ describe("Firestore rules", () => {
      */
     const pathToSlots = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Slots,
     ].join("/");
     const pathToSlot = [pathToSlots, baseSlot.id].join("/");
@@ -221,14 +221,14 @@ describe("Firestore rules", () => {
     const monthStr = baseSlot.date.substring(0, 7);
     const pathToMonth = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.SlotsByDay,
       monthStr,
     ].join("/");
 
     const pathToSlot = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Slots,
       baseSlot.id,
     ].join("/");
@@ -264,7 +264,7 @@ describe("Firestore rules", () => {
      */
     const saulBookingsPath = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Bookings,
       saul.secretKey,
     ].join("/");
@@ -323,7 +323,7 @@ describe("Firestore rules", () => {
      */
     const testSlotPath = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Slots,
       baseSlot.id,
     ].join("/");
@@ -450,7 +450,7 @@ describe("Firestore rules", () => {
   describe("Customers rules", () => {
     const saulPath = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Customers,
       saul.id,
     ].join("/");
@@ -677,7 +677,7 @@ describe("Firestore rules", () => {
      */
     const attendanceSlotPath = [
       Collection.Organizations,
-      __organization__,
+      getOrganization(),
       OrgSubCollection.Attendance,
       baseSlot.id,
     ].join("/");
@@ -742,7 +742,7 @@ describe("Firestore rules", () => {
               db,
               [
                 Collection.Organizations,
-                __organization__,
+                getOrganization(),
                 OrgSubCollection.Attendance,
                 "new-attendance",
               ].join("/")
