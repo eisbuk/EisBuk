@@ -15,7 +15,6 @@ import {
   Customer,
   getCustomerBase,
   DeprecatedCategory,
-  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";

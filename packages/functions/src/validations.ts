@@ -4,6 +4,7 @@ import { EmailAttachment, EmailMessage, Email } from "@eisbuk/shared";
 
 import { emailPattern, __invalidEmailError } from "./constants";
 
+// #region email
 export interface SMTPSettings {
   smtpHost: string;
   smtpPort: number;
@@ -87,3 +88,42 @@ export const EmailSchema: JSONSchemaType<Email> = {
     message: EmailMessageSchema,
   },
 };
+// #endregion email
+
+// #region sms
+interface SMSRecipient {
+  msisdn: string;
+}
+
+interface SendSMSObject {
+  message: string;
+  smsFrom: string;
+  recipients: SMSRecipient[];
+}
+
+const SMSRecipientSchema: JSONSchemaType<SMSRecipient> = {
+  type: "object",
+  properties: { msisdn: { type: "string" } },
+  required: ["msisdn"],
+};
+
+export const SendSMSObjectSchema: JSONSchemaType<SendSMSObject> = {
+  type: "object",
+  required: ["message", "smsFrom", "recipients"],
+  properties: {
+    message: { type: "string" },
+    smsFrom: {
+      type: "string",
+      maxLength: 11,
+      errorMessage:
+        // eslint-disable-next-line no-template-curly-in-string
+        "should be a string with max 11 characters, received: ${/smsFrom}",
+    },
+    recipients: {
+      type: "array",
+      items: SMSRecipientSchema,
+      maxItems: 1,
+    },
+  },
+};
+// #endregion sms
