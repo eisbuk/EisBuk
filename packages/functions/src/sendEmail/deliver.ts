@@ -8,70 +8,17 @@ import {
   OrganizationSecrets,
   DeliveryQueue,
   EmailPayload,
-  SendEmailPayload,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
-import { __functionsZone__, __noSecretsError } from "./constants";
+import { SMTPSettings, TransportConfig } from "./types";
 
-import {
-  throwUnauth,
-  checkUser,
-  checkRequiredFields,
-  checkSecretKey,
-  validateJSON,
-} from "./utils";
-import { EmailSchema, SMTPConfigSchema, SMTPSettings } from "./validations";
+import { __functionsZone__, __noSecretsError } from "../constants";
 
-// #region httpsEndpoint
-/**
- * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
- */
-export const sendEmail = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async (
-      { organization, secretKey = "", ...email }: SendEmailPayload,
-      { auth }
-    ) => {
-      if (
-        !(await checkUser(organization, auth)) &&
-        !(await checkSecretKey({ organization, secretKey }))
-      ) {
-        throwUnauth();
-      }
-
-      checkRequiredFields(email, ["to", "message"]);
-
-      const { message } = email;
-      checkRequiredFields(message, ["html", "subject"]);
-
-      // add email to firestore, firing data trigger
-      await admin
-        .firestore()
-        .collection(
-          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
-        )
-        .doc()
-        .set({ payload: email });
-
-      return { email, organization, success: true };
-    }
-  );
-// #endregion httpsEndpoint
-
-// #region transportLayer
-interface TransportConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-}
+import { EmailSchema, SMTPConfigSchema } from "./validations";
+import { validateJSON } from "../utils";
 
 /**
  * Reads smtp config from `organization` config as well as `secrets` and validates the fields.

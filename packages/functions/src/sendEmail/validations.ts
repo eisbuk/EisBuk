@@ -1,17 +1,15 @@
 import { JSONSchemaType } from "ajv";
 
-import { EmailAttachment, EmailMessage, Email } from "@eisbuk/shared";
+import { EmailAttachment, Email, EmailMessage } from "@eisbuk/shared";
 
-import { emailPattern, __invalidEmailError } from "./constants";
+import { SMTPSettings } from "./types";
 
-// #region email
-export interface SMTPSettings {
-  smtpHost: string;
-  smtpPort: number;
-  smtpUser: string;
-  smtpPass: string;
-}
+// #region constants
+export const emailPattern = "^[-_.a-z0-9A-Z]*@[-_.a-z0-9A-Z]*[.][a-z][a-z]+$";
+export const __invalidEmailError = "must be a valid email string";
+// #endregion constants
 
+// #region validations
 /**
  * Validation for full SMTP config (used to create an SMTP transport layer).
  */
@@ -88,42 +86,4 @@ export const EmailSchema: JSONSchemaType<Email> = {
     message: EmailMessageSchema,
   },
 };
-// #endregion email
-
-// #region sms
-interface SMSRecipient {
-  msisdn: string;
-}
-
-interface SendSMSObject {
-  message: string;
-  smsFrom: string;
-  recipients: SMSRecipient[];
-}
-
-const SMSRecipientSchema: JSONSchemaType<SMSRecipient> = {
-  type: "object",
-  properties: { msisdn: { type: "string" } },
-  required: ["msisdn"],
-};
-
-export const SendSMSObjectSchema: JSONSchemaType<SendSMSObject> = {
-  type: "object",
-  required: ["message", "smsFrom", "recipients"],
-  properties: {
-    message: { type: "string" },
-    smsFrom: {
-      type: "string",
-      maxLength: 11,
-      errorMessage:
-        // eslint-disable-next-line no-template-curly-in-string
-        "should be a string with max 11 characters, received: ${/smsFrom}",
-    },
-    recipients: {
-      type: "array",
-      items: SMSRecipientSchema,
-      maxItems: 1,
-    },
-  },
-};
-// #endregion sms
+// #region validations
