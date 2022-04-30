@@ -103,8 +103,8 @@ describe("Test process delivery functionality", () => {
       foo: "bar",
       delivery: {
         status: DeliveryStatus.Error,
-        error: "Error: Intentional test error",
-      } as ProcessDocument["delivery"],
+        error: ["Error: Intentional test error"],
+      } as Partial<ProcessDocument["delivery"]>,
     });
     const errorDoc = await processDocRef.get();
 
@@ -154,8 +154,8 @@ describe("Test process delivery functionality", () => {
     const cancelledDoc = await processDocRef.get();
     const cancelledDocData = cancelledDoc.data() as ProcessDocument;
     expect(cancelledDocData.delivery.status).toEqual(DeliveryStatus.Error);
-    expect(cancelledDocData.delivery.error).toEqual(
-      "Delivery processing lease expired."
-    );
+    expect(cancelledDocData.delivery.errors).toEqual([
+      "Delivery processing lease expired.",
+    ]);
   });
 });

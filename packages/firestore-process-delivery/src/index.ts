@@ -7,6 +7,7 @@ import {
   ProcessDocument,
   Change,
   DeliveryUpdate,
+  DeliverCallback,
 } from "./types";
 
 import { wrapErrorBoundary } from "./utils";
@@ -24,7 +25,7 @@ const initialDeliveryState: Required<DeliveryUpdate> = {
   leaseExpireTime: null,
   status: DeliveryStatus.Pending,
   attempts: 0,
-  error: null,
+  errors: [],
   result: null,
 };
 
@@ -92,7 +93,7 @@ const processDelivery = async (
         (leaseExpireTime as Timestamp).toMillis() < Date.now()
       ) {
         delivery.status = DeliveryStatus.Error;
-        delivery.error = "Delivery processing lease expired.";
+        delivery.errors = ["Delivery processing lease expired."];
         delivery.result = null;
         logger.info("Quitting the delivery process: Lease expired");
         return admin.firestore().runTransaction((transaction) => {
@@ -128,26 +129,33 @@ const processDelivery = async (
  * @param processDocumentRef reference to the process document (with deliver `payload` and `delivery` state)
  */
 const execute = async (
-  deliver: () => Promise<any>,
+  deliver: DeliverCallback,
   processDocumentRef: DocumentReference
 ) => {
   const delivery: DeliveryUpdate = {};
 
   try {
-    const result = await deliver();
-    // Fall back to null if result is undefined (which shouldn't really happen)
-    // As firestore doesnt't allow (by default) the field value to be `undefined`
-    delivery.result = result || null;
-    // Annul the `delivery.error` in case there's an error from prevoius iteration
-    // This might happen only on retries
-    delivery.error = null;
-    delivery.status = DeliveryStatus.Success;
-    logger.log("Delivery successful, result: ", delivery.result);
+    const [result, errors] = await deliver({
+      success: (res) => [res, null],
+      error: (errors) => [null, errors],
+    });
+
+    if (errors) {
+      logger.warn("Delivery failed with errors: ", delivery.errors);
+      delivery.status = DeliveryStatus.Error;
+    } else {
+      logger.log("Delivery successful, result: ", delivery.result);
+      delivery.status = DeliveryStatus.Success;
+    }
+
+    delivery.result = result;
+    delivery.errors = errors;
   } catch (e) {
+    // Catch unexpected errors and update the process document accordingly
+    // Expected errors are updated in the `try` block
     delivery.status = DeliveryStatus.Error;
     delivery.result = null;
-    delivery.error = (e as Error).toString();
-    logger.warn("Delivery failed with error: ", delivery.error);
+    delivery.errors = [(e as Error).toString()];
   }
 
   // Write the delivery result to the queue using transaction to enable
