@@ -8,7 +8,7 @@ export type Timestamp = FirebaseFirestore.Timestamp;
 export type FieldValue = FirebaseFirestore.FieldValue;
 // #endregion typeAliases
 
-// #region process
+// #region processDocument
 /**
  * Status of the process delivery
  */
@@ -43,13 +43,34 @@ export enum DeliveryStatus {
  */
 export interface ProcessDocument<P = Record<string, any>> {
   delivery: {
+    /**
+     * Start time of the delivery process.
+     */
     startTime: Timestamp;
+    /**
+     * Time of the latest update (`"SUCCESS"`, `"ERROR"`, or additional updates from provider webhooks).
+     */
     endTime?: Timestamp;
+    /**
+     * Lease expires 60 seconds after the delivery attempted (assigned on `"PENDING"` or `"RETRY"`).
+     */
     leaseExpireTime: Timestamp | null;
+    /**
+     * See `DeliveryStatus` enum.
+     */
     status: DeliveryStatus;
+    /**
+     * Number of delivery attempts: incremented on each PENDING or RETRY before starting the delivery attempt.
+     */
     attempts: number;
-    error: string | null;
-    result: any;
+    /**
+     * An array of error messages.
+     */
+    errors: string[] | null;
+    /**
+     * Response object of successful delivery
+     */
+    result: Record<string, any> | null;
   };
   payload: P;
 }
@@ -66,4 +87,42 @@ export type DeliveryUpdate = Partial<
   Omit<ProcessDocument["delivery"], TimestampKeys> &
     Record<TimestampKeys, Timestamp | FieldValue | null>
 >;
-// #endregion process
+// #endregion processDocument
+
+// #region deliverCallback
+type DeliverResultTuple<
+  S extends DeliveryStatus.Error | DeliveryStatus.Success = any
+> = S extends DeliveryStatus.Success
+  ? [Record<string, any>, null]
+  : [null, string[]];
+
+interface SuccessHelper {
+  (res: Record<string, any>): DeliverResultTuple<DeliveryStatus.Success>;
+}
+interface ErrorHelper {
+  (errors: string[]): DeliverResultTuple<DeliveryStatus.Error>;
+}
+
+export interface DeliverCallback {
+  (helpers: {
+    /**
+     * On successful delivery, return the result of this helper, like so:
+     * ```
+     * const res = await someAsyncFunc()
+     * return success(res)
+     * ```
+     */
+    success: SuccessHelper;
+    /**
+     * On failed delivery, return the result of this helper, like so:
+     * ```
+     * ajv.validate(SomeSchema, someJSON)
+     * if (ajv.errors.length) {
+     *  return error(ajv.errors)
+     * }
+     * ```
+     */
+    error: ErrorHelper;
+  }): Promise<DeliverResultTuple>;
+}
+// #endregion deliverCallback
