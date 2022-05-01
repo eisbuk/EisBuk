@@ -16,6 +16,7 @@ import {
   SlotType,
   Customer,
   getCustomerBase,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -790,25 +791,63 @@ describe("Firestore rules", () => {
       async () => {
         const db = await getTestEnv({
           setup: (db) =>
-            setDoc(doc(db, Collection.EmailQueue, "mail-id"), {
-              message: { html: "Hello world", subject: "Subject" },
-              to: "ikusteu@gmail.com",
-            }),
+            setDoc(
+              doc(
+                db,
+                Collection.DeliveryQueues,
+                getOrganization(),
+                DeliveryQueue.EmailQueue,
+                "mail-id"
+              ),
+              {
+                message: { html: "Hello world", subject: "Subject" },
+                to: "ikusteu@gmail.com",
+              }
+            ),
         });
         // check read
-        await assertFails(getDoc(doc(db, Collection.EmailQueue, "mail-id")));
+        await assertFails(
+          getDoc(
+            doc(
+              db,
+              Collection.DeliveryQueues,
+              getOrganization(),
+              DeliveryQueue.EmailQueue,
+              "mail-id"
+            )
+          )
+        );
         // check write
         await assertFails(
-          setDoc(doc(db, Collection.EmailQueue, "new-mail-id"), {
-            message: {
-              html: "Hello from the other side",
-              subject: "Subject 2",
-            },
-            to: "ikusteu@gmail.com",
-          })
+          setDoc(
+            doc(
+              db,
+              Collection.DeliveryQueues,
+              getOrganization(),
+              DeliveryQueue.EmailQueue,
+              "new-mail-id"
+            ),
+            {
+              message: {
+                html: "Hello from the other side",
+                subject: "Subject 2",
+              },
+              to: "ikusteu@gmail.com",
+            }
+          )
         );
         // check delete
-        await assertFails(deleteDoc(doc(db, Collection.EmailQueue, "mail-id")));
+        await assertFails(
+          deleteDoc(
+            doc(
+              db,
+              Collection.DeliveryQueues,
+              getOrganization(),
+              DeliveryQueue.EmailQueue,
+              "mail-id"
+            )
+          )
+        );
       }
     );
   });
