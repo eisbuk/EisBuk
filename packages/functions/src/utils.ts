@@ -330,10 +330,10 @@ export const validateJSON = <T extends Record<string, any>>(
 
   if (validate(object)) {
     // Return validated object as type safe
-    return [object, null];
+    return [object, null, {}];
   }
 
   // If not validated, return errors
-  return [null, constructValidationErrors(validate.errors || [], prefix)];
+  return [null, constructValidationErrors(validate.errors || [], prefix), {}];
 };
 // #endregion JSONValidation

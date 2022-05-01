@@ -14,12 +14,11 @@ import processDelivery, {
 
 import { __smsUrl__, __functionsZone__ } from "../constants";
 
-import { sendRequest, validateJSON } from "../utils";
-import { SMSSchema } from "./validations";
-
 import { SMSResponse } from "./types";
 
-import { createSMSReqOptions } from "./utils";
+import { createSMSReqOptions, getSMSCallbackUrl } from "./utils";
+import { sendRequest, validateJSON } from "../utils";
+import { SMSAPIPayloadSchema } from "./validations";
 
 /**
  * An SMS delivery functionality, uses a firestore document with path:
@@ -70,10 +69,11 @@ export const deliverSMS = functions
       );
 
       // Construct and validate SMS data
-      const [sms, errs] = validateJSON(SMSSchema, {
+      const [sms, errs] = validateJSON(SMSAPIPayloadSchema, {
         message,
         smsFrom,
         recipients: [{ msisdn: to }],
+        callback_url: getSMSCallbackUrl(),
       });
       if (errs) {
         return error(errs);
@@ -86,7 +86,7 @@ export const deliverSMS = functions
       if (res && res.ids) {
         // A response containing a `res` key is successful
         functions.logger.log("SMS POST request successful", { response: res });
-        return success(res);
+        return success(res, { status: "BUFFERED" });
       } else {
         functions.logger.log("Error while sending SMS, check the response", {
           response: res,
