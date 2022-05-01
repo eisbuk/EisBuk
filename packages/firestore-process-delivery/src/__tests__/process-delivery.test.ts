@@ -36,7 +36,9 @@ describe("Test process delivery functionality", () => {
     await processDocRef.set({ foo: "bar" });
     const after = await processDocRef.get();
 
-    await processDelivery({ before, after }, () => Promise.resolve());
+    await processDelivery({ before, after }, async ({ success }) =>
+      success({})
+    );
 
     const resultDoc = await processDocRef.get();
     const data = resultDoc.data() as ProcessDocument;
@@ -61,9 +63,9 @@ describe("Test process delivery functionality", () => {
     const mockDelivery = jest.fn();
     await processDelivery(
       { before: pendingDoc, after: pendingDoc },
-      async () => {
+      async ({ success }) => {
         mockDelivery();
-        return "Great success";
+        return success({ message: "Great success" });
       }
     );
     expect(mockDelivery).toHaveBeenCalledTimes(1);
@@ -71,7 +73,9 @@ describe("Test process delivery functionality", () => {
     const successDocData = successDoc.data() || {};
     expect(successDocData.delivery.status).toEqual(DeliveryStatus.Success);
     // Should store the delivery `result` to process document
-    expect(successDocData.delivery.result).toEqual("Great success");
+    expect(successDocData.delivery.result).toEqual({
+      message: "Great success",
+    });
   });
 
   test("should store the error to process document if error occured", async () => {
@@ -87,8 +91,8 @@ describe("Test process delivery functionality", () => {
     const errorMessage = "Intentional test error";
     await processDelivery(
       { before: pendingDoc, after: pendingDoc },
-      async () => {
-        throw new Error(errorMessage);
+      async ({ error }) => {
+        return error([errorMessage]);
       }
     );
     const errorDoc = await processDocRef.get();
@@ -115,15 +119,16 @@ describe("Test process delivery functionality", () => {
     const retryDoc = await processDocRef.get();
 
     const successMessage = "Great success";
-    await processDelivery({ before: errorDoc, after: retryDoc }, () =>
-      Promise.resolve(successMessage)
+    await processDelivery(
+      { before: errorDoc, after: retryDoc },
+      async ({ success }) => success({ message: successMessage })
     );
     const retriedDoc = await processDocRef.get();
     const retriedDocData = retriedDoc.data() || {};
     // Status should be 'SUCCESS', result stored and error cleared
     expect(retriedDocData.delivery.status).toEqual(DeliveryStatus.Success);
     expect(retriedDocData.delivery.error).toEqual(null);
-    expect(retriedDocData.delivery.result).toEqual(successMessage);
+    expect(retriedDocData.delivery.result).toEqual({ message: successMessage });
   });
 
   test("should cancel the delivery if 'PROCESSING' and lease time expired", async () => {
@@ -148,8 +153,9 @@ describe("Test process delivery functionality", () => {
     });
     const expiredDoc = await processDocRef.get();
 
-    await processDelivery({ before: pendingDoc, after: expiredDoc }, () =>
-      Promise.resolve()
+    await processDelivery(
+      { before: pendingDoc, after: expiredDoc },
+      async ({ success }) => success({})
     );
     const cancelledDoc = await processDocRef.get();
     const cancelledDocData = cancelledDoc.data() as ProcessDocument;

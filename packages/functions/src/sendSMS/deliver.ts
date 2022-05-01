@@ -64,7 +64,7 @@ export const deliverSMS = functions
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`
   )
   .onWrite((change, { params }) =>
-    processDelivery(change, async () => {
+    processDelivery(change, async ({ success, error }) => {
       const { organization } = params as { organization: string };
 
       // Get current SMS payload
@@ -108,8 +108,7 @@ export const deliverSMS = functions
         // A response containg a `res` key is successful
         functions.logger.log("SMS POST request successful", { response: res });
       } else {
-        // If res unsuccessful, throw
-        throw new Error("Error while sending SMS request to the provider");
+        return error(["Error while sending SMS request to the provider"]);
       }
 
       const smsId = res.ids[0];
@@ -122,9 +121,9 @@ export const deliverSMS = functions
       // const details = { status, errorMessage };
 
       if (!smsOk) {
-        throw new Error(errorMessage || "Unkonwn error has occurred");
+        return error([errorMessage || "Unkonwn error has occurred"]);
       }
 
-      return res;
+      return success(res);
     })
   );

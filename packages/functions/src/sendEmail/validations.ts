@@ -2,7 +2,7 @@ import { JSONSchemaType } from "ajv";
 
 import { EmailAttachment, Email, EmailMessage } from "@eisbuk/shared";
 
-import { SMTPSettings } from "./types";
+import { SMTPPreferences } from "./types";
 
 // #region constants
 export const emailPattern = "^[-_.a-z0-9A-Z]*@[-_.a-z0-9A-Z]*[.][a-z][a-z]+$";
@@ -13,7 +13,7 @@ export const __invalidEmailError = "must be a valid email string";
 /**
  * Validation for full SMTP config (used to create an SMTP transport layer).
  */
-export const SMTPConfigSchema: JSONSchemaType<SMTPSettings> = {
+export const SMTPPreferencesSchema: JSONSchemaType<SMTPPreferences> = {
   type: "object",
   required: ["smtpHost", "smtpPort"],
   properties: {

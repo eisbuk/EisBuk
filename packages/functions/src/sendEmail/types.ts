@@ -2,13 +2,13 @@ export interface TransportConfig {
   host: string;
   port: number;
   secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
+  auth?: {
+    user?: string;
+    pass?: string;
   };
 }
 
-export interface SMTPSettings {
+export interface SMTPPreferences {
   smtpHost: string;
   smtpPort: number;
   smtpUser: string;
