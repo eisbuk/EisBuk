@@ -21,11 +21,12 @@ import {
   __noSecretsError,
 } from "../constants";
 
-import { SMTPSettings, TransportConfig, SendEmailObject } from "./types";
+import { SMTPPreferences, TransportConfig, SendEmailObject } from "./types";
 
 import { validateJSON } from "../utils";
 
-const smtpConfigSchema: JSONSchemaType<SMTPSettings> = {
+// #region SMTPPreferences
+const SMTPPreferencesSchema: JSONSchemaType<SMTPPreferences> = {
   properties: {
     smtpHost: { type: "string" },
     smtpPort: { type: "integer" },
@@ -41,9 +42,9 @@ const smtpConfigSchema: JSONSchemaType<SMTPSettings> = {
  * @param organization organization name
  * @returns smtp config options
  */
-const getMailConfig = async (
+const getSMTPPreferences = async (
   organization: string
-): Promise<TransportConfig> => {
+): Promise<Partial<SMTPPreferences>> => {
   const db = admin.firestore();
 
   const secretsSnap = await db
@@ -54,40 +55,34 @@ const getMailConfig = async (
   if (!secretsData) {
     throw new Error(__noSecretsError);
   }
-  const { smtpHost, smtpPass, smtpPort, smtpUser } = secretsData;
-
-  const smtpConfig = validateJSON<SMTPSettings>(
-    smtpConfigSchema,
-    {
-      smtpHost,
-      smtpPass,
-      smtpPort,
-      smtpUser,
-    },
-    "Invalid SMTP config (check your organization preferences):"
-  );
-
-  return {
-    host: smtpConfig.smtpHost,
-    port: smtpConfig.smtpPort,
-    auth: {
-      user: smtpConfig.smtpUser,
-      pass: smtpConfig.smtpPass,
-    },
-    secure: smtpPort === 465,
-  };
+  return secretsData;
 };
 
 /**
- * Reads SMTP config and creates an SMTP transport layer.
- * @param organization organization name
- * @returns nodemailers `Transport` object
+ * Process SMTP preferences (read from organization secrets) into
+ * a nodemailer transport config
  */
-const getTransportLayer = async (organization: string) => {
-  const mailConfig = await getMailConfig(organization);
-  return nodemailer.createTransport(mailConfig);
-};
-// #endregion transportLayer
+const processSMTPPreferences = ({
+  smtpHost,
+  smtpPass,
+  smtpPort,
+  smtpUser,
+}: SMTPPreferences): TransportConfig => ({
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpPort === 465,
+
+  // Add `auth` field only if auth data provided
+  ...(smtpUser || smtpPass
+    ? {}
+    : {
+        auth: {
+          user: smtpUser,
+          pass: smtpPass,
+        },
+      }),
+});
+// #region SMTPPreferences
 
 // #region delivery
 
@@ -127,10 +122,24 @@ export const deliverEmail = functions
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`
   )
   .onWrite((change, { params }) =>
-    processDelivery(change, async () => {
+    processDelivery(change, async ({ success, error }) => {
       const { organization } = params;
 
-      const transport = await getTransportLayer(organization);
+      // Get transport layer
+      const partialSMTPPreferences = await getSMTPPreferences(organization);
+      const [SMTPPreferences, configErrs] = validateJSON<SMTPPreferences>(
+        SMTPPreferencesSchema,
+        partialSMTPPreferences,
+        "Invalid SMTP config (check your organization preferences), following validation errors occurred:"
+      );
+      if (configErrs) {
+        functions.logger.info("SMTP setup failed with errors", {
+          errors: configErrs,
+        });
+        return error(configErrs);
+      }
+      const smtpConfig = processSMTPPreferences(SMTPPreferences);
+      const transport = nodemailer.createTransport(smtpConfig);
 
       // Get current email payload
       const data = change.after.data() as Partial<
@@ -145,27 +154,31 @@ export const deliverEmail = functions
       const { emailFrom } = orgSnap.data() as OrganizationData;
 
       // Validate email and throw if not a valid schema
-      const email = validateJSON(
+      const [email, emailErrs] = validateJSON(
         EmailSchema,
         {
           from: emailFrom,
           ...data.payload,
         },
-        "Error constructing email (check the email payload and organization preferences):"
+        "Constructing gave following errors (check the email payload and organization preferences):"
       );
+      if (emailErrs) {
+        functions.logger.info("Email delivery failed with errors", {
+          errors: emailErrs,
+        });
+        return error(emailErrs);
+      }
 
       functions.logger.info("Sending mail:", email);
-
       const result = await transport.sendMail(email);
 
-      const info = {
+      // Store send mail response to process document with success result
+      return success({
         messageId: result.messageId || null,
         accepted: result.accepted || [],
         rejected: result.rejected || [],
         pending: result.pending || [],
         response: result.response || null,
-      };
-
-      return info;
+      });
     })
   );
