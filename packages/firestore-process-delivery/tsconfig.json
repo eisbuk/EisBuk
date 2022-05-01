@@ -10,9 +10,7 @@
     "sourceMap": true,
     "removeComments": true,
     "noUncheckedIndexedAccess": true,
-    "declaration": true,
-    "declarationDir": "dist",
-    "emitDeclarationOnly": true,
+
     "types": ["node", "jest"]
   },
   "exclude": ["node_modules", "./.eslintrc.js", "jest.config.js"],
