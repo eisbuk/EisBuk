@@ -98,16 +98,16 @@ describe("Test process delivery functionality", () => {
     const errorDoc = await processDocRef.get();
     const errorDocData = errorDoc.data() || {};
     expect(errorDocData.delivery.status).toEqual(DeliveryStatus.Error);
-    expect(errorDocData.delivery.error).toContain(errorMessage);
+    expect(errorDocData.delivery.errors).toEqual([errorMessage]);
   });
 
-  test("should profcess the document on 'RETRY' (set manually)", async () => {
+  test("should process the document on 'RETRY' (set manually)", async () => {
     const processDocRef = adminDb.doc("queue/doc1");
     await processDocRef.set({
       foo: "bar",
       delivery: {
         status: DeliveryStatus.Error,
-        error: ["Error: Intentional test error"],
+        errors: ["Error: Intentional test error"],
       } as Partial<ProcessDocument["delivery"]>,
     });
     const errorDoc = await processDocRef.get();
@@ -127,7 +127,7 @@ describe("Test process delivery functionality", () => {
     const retriedDocData = retriedDoc.data() || {};
     // Status should be 'SUCCESS', result stored and error cleared
     expect(retriedDocData.delivery.status).toEqual(DeliveryStatus.Success);
-    expect(retriedDocData.delivery.error).toEqual(null);
+    expect(retriedDocData.delivery.errors).toEqual(null);
     expect(retriedDocData.delivery.result).toEqual({ message: successMessage });
   });
 
