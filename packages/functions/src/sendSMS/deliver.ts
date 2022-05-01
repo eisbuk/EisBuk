@@ -1,6 +1,5 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
-import pRetry from "p-retry";
 import { JSONSchemaType } from "ajv";
 
 import {
@@ -16,46 +15,10 @@ import processDelivery, {
 
 import { __smsUrl__, __functionsZone__ } from "../constants";
 
-import { CheckSMSRes, SMSResponse, SendSMSObject } from "./types";
+import { SMSResponse, SendSMSObject } from "./types";
 
 import { createSMSReqOptions } from "./utils";
-import { runWithTimeout, sendRequest, validateJSON } from "../utils";
-
-/**
- * Check the state of sent sms with the provider
- * @param smsId
- * @param authToken
- * @returns
- */
-const checkSMS = async (
-  smsId: string,
-  authToken: string
-): Promise<[boolean, string, string | null]> => {
-  const { proto, ...options } = createSMSReqOptions(
-    "GET",
-    `https://gatewayapi.com/rest/mtsms/${smsId}`,
-    authToken
-  );
-
-  // ok sms states (from GatewayAPI), if we get any of these, the sending was success
-  const okStates = ["DELIVERED", "ACCEPTED"];
-  // we're using this function to retry until sms in one of the final states (pass or fail)
-  const finalStates = [...okStates, "SKIPPED", "EXPIRED", "REJECTED"];
-
-  const { recipients } = await sendRequest<CheckSMSRes>(proto, {
-    ...options,
-  });
-
-  const { dsnstatus: status, dsnerror: errorMessage } = recipients[0];
-
-  if (!finalStates.includes(status)) {
-    throw new Error("unexpected SMS delivery status");
-  }
-
-  const smsOk = okStates.includes(status);
-
-  return [smsOk, status, errorMessage];
-};
+import { sendRequest, validateJSON } from "../utils";
 
 const SMSSchema: JSONSchemaType<SendSMSObject> = {
   properties: {
@@ -81,13 +44,26 @@ const SMSSchema: JSONSchemaType<SendSMSObject> = {
   required: ["message", "smsFrom", "recipients"],
 };
 
+/**
+ * An SMS delivery functionality, uses a firestore document with path:
+ *
+ * `deliveryQueue/{ organization }/SMSQueue/{ sms }`
+ *
+ * The document is used as a data trigger to start the delivery as well as a process
+ * document to log the delivery state to.
+ * Under the hood uses the `processDelivery` from `@eisbuk/firestore-process-delivery`
+ * to attempt delivery, retry and log delivery state accordingly.
+ *
+ * Additionally, the SMS request (using GatewayAPI) is sent out with a `callback_url`
+ * sending the SMS delivery status to `updateSMSStatus` cloud function.
+ */
 export const deliverSMS = functions
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`
   )
   .onWrite((change, { params }) =>
-    processDelivery(change, async () => {
+    processDelivery(change, async ({ success, error }) => {
       const { organization } = params as { organization: string };
 
       // Get current SMS payload
@@ -97,7 +73,7 @@ export const deliverSMS = functions
 
       const db = admin.firestore();
 
-      // Get sms preferences and secrets
+      // Get SMS preferences and secrets
       const [orgSnap, secretsSnap] = await Promise.all([
         db.doc(`${Collection.Organizations}/${organization}`).get(),
         db.doc(`${Collection.Secrets}/${organization}`).get(),
@@ -128,26 +104,29 @@ export const deliverSMS = functions
       const res = await sendRequest<SMSResponse>(proto, options, sms);
 
       if (res && res.ids) {
-        // A response containg a `res` key is successful
+        // A response containing a `res` key is successful
         functions.logger.log("SMS POST request successful", { response: res });
+        return success(res);
       } else {
-        // If res unsuccessful, throw
-        throw new Error("Error while senging SMS request to the provider");
+        functions.logger.log("Error while sending SMS, check the response", {
+          response: res,
+        });
+        return error([
+          "Error occurred while trying to send SMS, check the function logs for more info.",
+        ]);
       }
 
-      const smsId = res.ids[0];
+      // const smsId = res.ids[0];
 
-      const [smsOk, , errorMessage] = await runWithTimeout(
-        () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 10000 }),
-        { timeout: 6000 }
-      );
+      // const [smsOk, , errorMessage] = await runWithTimeout(
+      //   () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 10000 }),
+      //   { timeout: 6000 }
+      // );
 
       // const details = { status, errorMessage };
 
-      if (!smsOk) {
-        throw new Error(errorMessage || "Unkonwn error has occurred");
-      }
-
-      return res;
+      // if (!smsOk) {
+      //   throw new Error(errorMessage || "Unkonwn error has occurred");
+      // }
     })
   );
