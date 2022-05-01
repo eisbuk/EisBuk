@@ -71,6 +71,10 @@ export interface ProcessDocument<P = Record<string, any>> {
      * Response object of successful delivery
      */
     result: Record<string, any> | null;
+    /**
+     * Optional metadata of a delivery process
+     */
+    meta?: Record<string, any> | null;
   };
   payload: P;
 }
@@ -93,13 +97,21 @@ export type DeliveryUpdate = Partial<
 export type DeliverResultTuple<
   S extends DeliveryStatus.Error | DeliveryStatus.Success = any,
   R extends Record<string, any> = Record<string, any>
-> = S extends DeliveryStatus.Success ? [R, null] : [null, string[]];
+> = S extends DeliveryStatus.Success
+  ? [R, null, Record<string, any>]
+  : [null, string[], Record<string, any>];
 
 interface SuccessHelper {
-  (res: Record<string, any>): DeliverResultTuple<DeliveryStatus.Success>;
+  (
+    res: Record<string, any>,
+    meta?: Record<string, any>
+  ): DeliverResultTuple<DeliveryStatus.Success>;
 }
 interface ErrorHelper {
-  (errors: string[]): DeliverResultTuple<DeliveryStatus.Error>;
+  (
+    errors: string[],
+    meta?: Record<string, any>
+  ): DeliverResultTuple<DeliveryStatus.Error>;
 }
 
 export interface DeliverCallback {
