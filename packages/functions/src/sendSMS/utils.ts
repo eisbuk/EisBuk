@@ -1,5 +1,7 @@
 import http from "http";
 
+import { __functionsZone__, __projectId__ } from "../constants";
+
 /**
  * A convenience method used to create SMS request options.
  * Used purely for code readability
@@ -48,3 +50,9 @@ export const createSMSReqOptions = (
     method,
   };
 };
+
+/**
+ * Creates an URL of and endpoint for `updateSMSSStatus` for GatewayAPI status update.
+ */
+export const getSMSCallbackUrl = (): string =>
+  `https://${__functionsZone__}-${__projectId__}.cloudfunctions.net/sendSMS`;

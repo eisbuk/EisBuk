@@ -17,7 +17,7 @@ import { __smsUrl__, __functionsZone__ } from "../constants";
 
 import { SMSResponse, SendSMSObject } from "./types";
 
-import { createSMSReqOptions } from "./utils";
+import { createSMSReqOptions, getSMSCallbackUrl } from "./utils";
 import { sendRequest, validateJSON } from "../utils";
 
 const SMSSchema: JSONSchemaType<SendSMSObject> = {
@@ -39,6 +39,7 @@ const SMSSchema: JSONSchemaType<SendSMSObject> = {
       },
       maxItems: 1,
     },
+    callback_url: { type: "string", nullable: true },
   },
   type: "object",
   required: ["message", "smsFrom", "recipients"],
@@ -97,6 +98,7 @@ export const deliverSMS = functions
         message,
         smsFrom,
         recipients: [{ msisdn: to }],
+        callback_url: getSMSCallbackUrl(),
       });
 
       // Send SMS request to the provider
@@ -106,7 +108,7 @@ export const deliverSMS = functions
       if (res && res.ids) {
         // A response containing a `res` key is successful
         functions.logger.log("SMS POST request successful", { response: res });
-        return success(res);
+        return success(res, { status: "BUFFERED" });
       } else {
         functions.logger.log("Error while sending SMS, check the response", {
           response: res,
@@ -115,18 +117,5 @@ export const deliverSMS = functions
           "Error occurred while trying to send SMS, check the function logs for more info.",
         ]);
       }
-
-      // const smsId = res.ids[0];
-
-      // const [smsOk, , errorMessage] = await runWithTimeout(
-      //   () => pRetry(() => checkSMS(smsId, authToken), { maxRetryTime: 10000 }),
-      //   { timeout: 6000 }
-      // );
-
-      // const details = { status, errorMessage };
-
-      // if (!smsOk) {
-      //   throw new Error(errorMessage || "Unkonwn error has occurred");
-      // }
     })
   );

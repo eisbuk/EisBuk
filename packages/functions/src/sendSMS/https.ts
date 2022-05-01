@@ -3,7 +3,9 @@ import admin from "firebase-admin";
 
 import { SendSMSPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
 
-import { __functionsZone__ } from "src/constants";
+import { __functionsZone__ } from "../constants";
+
+import { SMSStatusPayload } from "./types";
 
 import { checkUser, checkRequiredFields } from "../utils";
 
@@ -31,3 +33,53 @@ export const sendSMS = functions
       return { sms: payload, organization, success: true };
     }
   );
+
+/**
+ * An endpoint handling SMS status updates from GatewayAPI, writes received status to the process document for the appropriate SMS message.
+ * Should receive params:
+ *  - `id` document id of the SMS process document in firestore
+ *  - `organization` name of the organization the SMS belongs to
+ */
+export const updateSMSStatus = functions
+  .region(__functionsZone__)
+  .https.onRequest(async (req, res) => {
+    functions.logger.log(
+      "Received a SMS delivery status update from GatewayAPI, processing..."
+    );
+
+    // This id is the id of the firestore document for a process delivery
+    // rather than the GatewayAPI assigned SMS id
+    const params = (req.params as { id: string; organization: string }) || {};
+    const { id, organization } = params;
+    if (!id || !organization) {
+      functions.logger.log("GatewayAPI request missing query params", {
+        params,
+      });
+      res.writeHead(500);
+      res.end();
+    }
+
+    const { status } = (req.body as SMSStatusPayload) || {};
+
+    if (!status) {
+      functions.logger.log("No status received with GatewayAPI update");
+      res.writeHead(500);
+      res.end();
+    }
+
+    // Store the status in the appropriate process document
+    await admin
+      .firestore()
+      .doc(
+        `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}/${id}`
+      )
+      .set(
+        { delivery: { meta: { status } } },
+        {
+          merge: true,
+        }
+      );
+
+    res.writeHead(200);
+    res.end();
+  });

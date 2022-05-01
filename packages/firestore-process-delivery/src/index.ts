@@ -27,6 +27,7 @@ const initialDeliveryState: Required<DeliveryUpdate> = {
   attempts: 0,
   errors: [],
   result: null,
+  meta: {},
 };
 
 /**
@@ -133,12 +134,14 @@ const execute = async (
   processDocumentRef: DocumentReference
 ) => {
   const delivery: DeliveryUpdate = {};
+  let meta = {};
 
   try {
-    const [result, errors] = await deliver({
-      success: (res) => [res, null],
-      error: (errors) => [null, errors],
+    const [result, errors, metaUpdate] = await deliver({
+      success: (res, meta = {}) => [res, null, meta],
+      error: (errors, meta = {}) => [null, errors, meta],
     });
+    meta = metaUpdate;
 
     if (errors) {
       logger.warn("Delivery failed with errors: ", delivery.errors);
@@ -161,7 +164,7 @@ const execute = async (
   // Write the delivery result to the queue using transaction to enable
   // automatic retries
   return admin.firestore().runTransaction((t) => {
-    t.set(processDocumentRef, { delivery }, { merge: true });
+    t.set(processDocumentRef, { delivery, meta }, { merge: true });
     return Promise.resolve();
   });
 };
