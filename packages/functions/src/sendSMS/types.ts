@@ -2,17 +2,10 @@ export interface SMSRecipient {
   msisdn: string;
 }
 
-export interface SendSMSObject {
+export interface SMS {
   message: string;
   smsFrom: string;
   recipients: SMSRecipient[];
-}
-
-export interface CheckSMSRes {
-  recipients: {
-    dsnstatus: string;
-    dsnerror: string;
-  }[];
 }
 
 export interface SMSResponse {
