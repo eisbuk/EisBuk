@@ -90,11 +90,10 @@ export type DeliveryUpdate = Partial<
 // #endregion processDocument
 
 // #region deliverCallback
-type DeliverResultTuple<
-  S extends DeliveryStatus.Error | DeliveryStatus.Success = any
-> = S extends DeliveryStatus.Success
-  ? [Record<string, any>, null]
-  : [null, string[]];
+export type DeliverResultTuple<
+  S extends DeliveryStatus.Error | DeliveryStatus.Success = any,
+  R extends Record<string, any> = Record<string, any>
+> = S extends DeliveryStatus.Success ? [R, null] : [null, string[]];
 
 interface SuccessHelper {
   (res: Record<string, any>): DeliverResultTuple<DeliveryStatus.Success>;

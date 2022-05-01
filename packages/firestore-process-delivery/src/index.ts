@@ -13,7 +13,7 @@ import {
 import { wrapErrorBoundary } from "./utils";
 import logger from "./logger";
 
-export type { ProcessDocument };
+export * from "./types";
 
 /**
  * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
@@ -53,7 +53,7 @@ const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
  */
 const processDelivery = async (
   change: Change,
-  deliver: () => Promise<any>
+  deliver: DeliverCallback
 ): Promise<any> => {
   // Exit early on delete
   if (!change.after.exists) {
