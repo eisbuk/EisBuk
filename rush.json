@@ -404,6 +404,10 @@
     {
       "packageName": "@librocco/prototype",
       "projectFolder": "packages/librocco-prototype"
+    },
+    {
+      "packageName": "pouchdb-quick-search",
+      "projectFolder": "packages/pouchdb-quick-search"
     }
   ]
 }

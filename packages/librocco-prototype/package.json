@@ -10,7 +10,8 @@
       "check": "svelte-check --tsconfig ./tsconfig.json"
     },
     "dependencies": {
-      "pouchdb": "~7.3.0"
+      "pouchdb": "~7.3.0",
+      "pouchdb-quick-search": "workspace:*"
     },
     "devDependencies": {
       "@sveltejs/vite-plugin-svelte": "~1.0.0-next.41",
