@@ -7,6 +7,9 @@
     <script>
       // Pouchdb requires global to exist
       window.global = window;
+      // In theory vite-plugin-environment should take care of this
+      // in vite.config.json, but it doesn't seem to be working
+      window.process = {}
     </script>
   </head>
   <body>

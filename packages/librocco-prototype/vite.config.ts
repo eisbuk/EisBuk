@@ -1,12 +1,12 @@
 // vite.config.js
 import { defineConfig } from 'vite';
 import { svelte } from '@sveltejs/vite-plugin-svelte';
-//import { esbuildCommonjs } from '@originjs/vite-plugin-commonjs'
+import environmentPlugin from "vite-plugin-environment";
 
 
 export default defineConfig({
   plugins: [
     svelte(),
-    //esbuildCommonjs(['pouchdb-quick-search'])
+    environmentPlugin({}),
   ]
 });

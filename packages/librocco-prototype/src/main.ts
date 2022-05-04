@@ -13,10 +13,14 @@ export default app
 
 window.pouchDb = new PouchDB('http://localhost:5984/kittens');
 
-var res = await window.pouchDb.search({
-  query: '',
-  fields: ['title', 'description'],
-  include_docs: true,
-  highlighting: true
-});
+const main = async function() {
+  var res = await window.pouchDb.search({
+    query: '',
+    fields: ['title', 'description'],
+    include_docs: true,
+    highlighting: true
+  });
+}
 
+
+main();
