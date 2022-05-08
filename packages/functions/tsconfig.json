@@ -7,7 +7,6 @@
 
     "outDir": "dist",
     "sourceMap": true,
-    "removeComments": true,
     "noEmit": true
   },
   "exclude": ["node_modules", "./.eslintrc.js"],

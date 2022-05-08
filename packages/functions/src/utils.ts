@@ -314,7 +314,7 @@ const constructValidationErrors = (
  *
  * @param schema JSON validation schema
  * @param object object to validate
- * @returns `[validatedObject, errorsArray]` tuple: if one is present, the other is `null`
+ * @returns `[validatedObject, errorsArray, emptyMetadataObject]` tuple
  */
 export const validateJSON = <T extends Record<string, any>>(
   schema: JSONSchemaType<T>,

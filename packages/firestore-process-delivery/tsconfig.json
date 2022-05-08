@@ -8,7 +8,6 @@
 
     "outDir": "dist",
     "sourceMap": true,
-    "removeComments": true,
     "noUncheckedIndexedAccess": true,
 
     "types": ["node", "jest"]

@@ -99,7 +99,8 @@ export const deliverEmail = functions
         });
         return error(configErrs);
       }
-      const smtpConfig = processSMTPPreferences(SMTPPreferences);
+      /** @TEMP non-null assertion below, updating TypeScript should fix it */
+      const smtpConfig = processSMTPPreferences(SMTPPreferences!);
       const transport = nodemailer.createTransport(smtpConfig);
 
       // Get current email payload
@@ -131,7 +132,8 @@ export const deliverEmail = functions
       }
 
       functions.logger.info("Sending mail:", email);
-      const result = await transport.sendMail(email);
+      /** @TEMP non-null assertion below, updating TypeScript should fix it */
+      const result = await transport.sendMail(email!);
 
       // Store send mail response to process document with success result
       return success({
