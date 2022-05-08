@@ -281,7 +281,7 @@ const constructValidationErrors = (
  *
  * @param schema JSON validation schema
  * @param object object to validate
- * @returns `[validatedObject, errorsArray]` tuple: if one is present, the other is `null`
+ * @returns `[validatedObject, errorsArray, emptyMetadataObject]` tuple
  */
 export const validateJSON = <T extends Record<string, any>>(
   schema: JSONSchemaType<T>,
@@ -297,10 +297,10 @@ export const validateJSON = <T extends Record<string, any>>(
 
   if (validate(object)) {
     // Return validated object as type safe
-    return [object, null];
+    return [object, null, {}];
   }
 
   // If not validated, return errors
-  return [null, constructValidationErrors(validate.errors || [], prefix)];
+  return [null, constructValidationErrors(validate.errors || [], prefix), {}];
 };
 // #endregion JSONValidation

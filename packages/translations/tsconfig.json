@@ -8,7 +8,6 @@
 
     "outDir": "dist",
     "sourceMap": true,
-    "removeComments": false,
     "declaration": true,
     "declarationDir": "dist"
   },
