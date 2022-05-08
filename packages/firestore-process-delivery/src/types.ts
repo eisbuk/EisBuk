@@ -94,6 +94,13 @@ export type DeliveryUpdate = Partial<
 // #endregion processDocument
 
 // #region deliverCallback
+/**
+ * A three part tuple usad across delivery and functions related JSON validations:
+ * `[<resultObject>, <errorsArray>, <metadataObject>]`
+ * - either the `errorsArray` is `null` and `resultObject` is defined = SUCCESS
+ * - or `resultObject` is `null` and `errorsArray` contains at least one error message = FAILURE
+ * - `metadataObject` is always an object, empty or otherwise
+ */
 export type DeliverResultTuple<
   S extends DeliveryStatus.Error | DeliveryStatus.Success = any,
   R extends Record<string, any> = Record<string, any>

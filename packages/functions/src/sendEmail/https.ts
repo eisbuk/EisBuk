@@ -3,7 +3,7 @@ import admin from "firebase-admin";
 
 import { SendMailPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
 
-import { __functionsZone__ } from "src/constants";
+import { __functionsZone__ } from "../constants";
 
 import { checkUser, checkRequiredFields } from "../utils";
 
