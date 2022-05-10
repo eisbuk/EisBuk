@@ -85,7 +85,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
   container: {
     display: "flex",
     alignItems: "stretch",
-    width: "12.5rem",
+    width: "15rem",
   },
   intervalContainer: {
     position: "relative",
