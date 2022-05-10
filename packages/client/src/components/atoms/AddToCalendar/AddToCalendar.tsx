@@ -28,9 +28,9 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
 
   // is displayed when bookings are finalized aka deadline is null
   const handleClick = () => {
-    let icalendar: ICalendar;
+    let icalendar = {} as ICalendar;
 
-    Object.values(bookedSlots).forEach((bookedSlot, i, originalArr) => {
+    Object.values(bookedSlots).forEach((bookedSlot, i) => {
       const startDate = getStartDate(bookedSlot.date, bookedSlot.interval);
       const endDate = getEndDate(bookedSlot.date, bookedSlot.interval);
 
@@ -57,13 +57,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
           .addEvent(new ICalendar(bookedSlotEvent))
           .addProperty("UID", `${bookedSlot.date}${bookedSlot.interval}`);
       }
-
-      // Download calendar on last iteration
-
-      if (i === originalArr.length - 1) {
-        icalendar.download("Booked_Slots.ics");
-      }
     });
+    icalendar.download("Booked_Slots.ics");
   };
   return (
     <div className={classes.container}>
