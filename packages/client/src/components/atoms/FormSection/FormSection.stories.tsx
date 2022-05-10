@@ -3,6 +3,7 @@ import { ComponentMeta } from "@storybook/react";
 import { Formik } from "formik";
 
 import FormSection from "./FormSection";
+import { OrganizationLabel } from "@eisbuk/translations";
 
 export default {
   title: "Form Section",
@@ -12,12 +13,15 @@ export default {
 const emailFields = [
   {
     name: "emailNameFrom",
+    label: OrganizationLabel[OrganizationLabel.EmailNameFrom],
   },
   {
     name: "emailFrom",
+    label: OrganizationLabel[OrganizationLabel.EmailFrom],
   },
   {
     name: "emailTemplate",
+    label: OrganizationLabel[OrganizationLabel.EmailTemplate],
     multiline: true,
   },
 ];
