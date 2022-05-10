@@ -64,11 +64,9 @@ const UserAttendance: React.FC<Props> = ({
     attendedInterval || bookedInterval!
   );
 
-  /**
-   * In an edge case of some other client (browser or different browser window)
-   * updates the booked interval (or boolean attendance state) we wish to reflect that
-   * update locally as well
-   */
+  // In an edge case of some other client (browser or different browser window)
+  // updates the booked interval (or boolean attendance state) we wish to reflect that
+  // update locally as well
   useEffect(() => {
     if (attendedInterval) {
       setSelectedInterval(attendedInterval);
@@ -116,18 +114,48 @@ const UserAttendance: React.FC<Props> = ({
     debMarkAttendance({ attendedInterval: value });
   };
 
-  /**
-   * We're disabling attendance button while `localAttended` (boolean) syncs with state in firestore (`attendedInterval !== null`)
-   * and when switchig through intervals -> `selectedInterval` and `attendedInterval` (from firestore) are not the same
-   * the second doesn't apply if `attendedInterval = null` (as that would cause problems and isn't exactly expected behavior).
-   */
+  // We're disabling attendance button while `localAttended` (boolean) syncs with state in firestore (`attendedInterval !== null`)
+  // and when switchig through intervals -> `selectedInterval` and `attendedInterval` (from firestore) are not the same
+  // the second doesn't apply if `attendedInterval = null` (as that would cause problems and isn't exactly expected behavior).
   const disableButton =
     localAttended !== Boolean(attendedInterval) ||
     Boolean(attendedInterval && attendedInterval !== selectedInterval);
 
+  const isAbsent = !attendedInterval;
+  const backgroundColor = isAbsent ? classes.bgAbsent : classes.bgWhite;
+  const shadowColor = isAbsent ? classes.shadowAbsent : classes.shadowWhite;
+
+  // Container setup
+  const listItemClass = [
+    classes.container,
+    backgroundColor,
+    customer.deleted ? classes.deleted : "",
+  ].join(" ");
+
+  // Avatar/name setup
+  const customerString = [
+    `${customer.name} ${customer.surname}`,
+    customer.deleted ? `(${t("Flags.Deleted")})` : "",
+  ]
+    .join(" ")
+    .trim();
+
+  // Interval picker setup
+  const intervalContainerClasses = [
+    classes.intervalContainer,
+    backgroundColor,
+    shadowColor,
+  ].join(" ");
+
+  // Attendance button setup
   const attendanceButton = bookedInterval ? "👍" : "🗑️";
   const absenceButton = "👎";
-  const buttonClass = [
+  const buttonContainerClasses = [
+    classes.buttonContainer,
+    backgroundColor,
+    shadowColor,
+  ].join(" ");
+  const buttonClasses = [
     !bookedInterval
       ? classes.trashCan
       : localAttended
@@ -135,19 +163,6 @@ const UserAttendance: React.FC<Props> = ({
       : classes.absentButton,
     classes.button,
   ].join(" ");
-
-  const listItemClass = [
-    classes.container,
-    attendedInterval ? "" : classes.absent,
-    customer.deleted ? classes.deleted : "",
-  ].join(" ");
-
-  const customerString = [
-    `${customer.name} ${customer.surname}`,
-    customer.deleted ? `(${t("Flags.Deleted")})` : "",
-  ]
-    .join(" ")
-    .trim();
 
   return (
     <ListItem style={{}} className={listItemClass}>
@@ -157,18 +172,20 @@ const UserAttendance: React.FC<Props> = ({
           {customerString}
         </Typography>
       </div>
-      <Button
-        className={buttonClass}
-        data-testid={__attendanceButton__}
-        variant="contained"
-        size="small"
-        onClick={handleClick}
-        disabled={disableButton}
-        style={{ justifySelf: "end" }}
-      >
-        {localAttended ? attendanceButton : absenceButton}
-      </Button>
-      <div className={classes.intervalContainer}>
+      <div className={buttonContainerClasses}>
+        <Button
+          className={buttonClasses}
+          data-testid={__attendanceButton__}
+          variant="contained"
+          size="small"
+          onClick={handleClick}
+          disabled={disableButton}
+          style={{ justifySelf: "end" }}
+        >
+          {localAttended ? attendanceButton : absenceButton}
+        </Button>
+      </div>
+      <div className={intervalContainerClasses}>
         <IntervalPicker
           disabled={!localAttended}
           intervals={intervals}
@@ -214,22 +231,32 @@ const useStyles = makeStyles((theme: ETheme) => ({
     },
     margin: theme.spacing(1),
   },
-  button: {
+  buttonContainer: {
     position: "absolute",
     top: "0.75rem",
     right: "1.5rem",
     height: "2.75rem",
   },
+  button: {
+    height: "2.75rem",
+  },
 
-  // Variants
-  absent: {
+  // Colors
+  bgAbsent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
+  },
+  bgWhite: {
+    backgroundColor: "#FFFF",
+  },
+  shadowWhite: {
+    boxShadow: "0 4px 8px 12px white",
+  },
+  shadowAbsent: {
+    boxShadow: `0 4px 8px 12px ${theme.palette.absent}`,
   },
   deleted: {
     opacity: 0.5,
   },
-
-  // Action buttons
   trashCan: {
     background: "rgba(0, 0, 0, 0.1)",
   },
