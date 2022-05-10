@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "@eisbuk/translations";
 
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -52,11 +50,6 @@ const UserAttendance: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const classes = useStyles();
-  const listItemClass = [
-    classes.listItem,
-    attendedInterval ? "" : classes.absent,
-    customer.deleted ? classes.deleted : "",
-  ].join(" ");
 
   /**
    * Local (boolean) state for attended/absent.
@@ -143,27 +136,11 @@ const UserAttendance: React.FC<Props> = ({
     classes.button,
   ].join(" ");
 
-  const attendnaceControl = (
-    <div className={classes.actionsContainer}>
-      <IntervalPicker
-        disabled={!localAttended}
-        intervals={intervals}
-        attendedInterval={selectedInterval}
-        bookedInterval={bookedInterval}
-        onChange={handleIntervalChange}
-      />
-      <Button
-        className={buttonClass}
-        data-testid={__attendanceButton__}
-        variant="contained"
-        size="small"
-        onClick={handleClick}
-        disabled={disableButton}
-      >
-        {localAttended ? attendanceButton : absenceButton}
-      </Button>
-    </div>
-  );
+  const listItemClass = [
+    classes.container,
+    attendedInterval ? "" : classes.absent,
+    customer.deleted ? classes.deleted : "",
+  ].join(" ");
 
   const customerString = [
     `${customer.name} ${customer.surname}`,
@@ -173,33 +150,86 @@ const UserAttendance: React.FC<Props> = ({
     .trim();
 
   return (
-    <ListItem className={listItemClass}>
-      <ListItemAvatar className={classes.avatarContainer}>
+    <ListItem style={{}} className={listItemClass}>
+      <div className={classes.avatarContainer}>
         <EisbukAvatar {...customer} />
-      </ListItemAvatar>
-      <ListItemText primary={customerString} />
-      <ListItemSecondaryAction>{attendnaceControl}</ListItemSecondaryAction>
+        <Typography style={{ margin: "0 0.75rem" }}>
+          {customerString}
+        </Typography>
+      </div>
+      <Button
+        className={buttonClass}
+        data-testid={__attendanceButton__}
+        variant="contained"
+        size="small"
+        onClick={handleClick}
+        disabled={disableButton}
+        style={{ justifySelf: "end" }}
+      >
+        {localAttended ? attendanceButton : absenceButton}
+      </Button>
+      <div className={classes.intervalContainer}>
+        <IntervalPicker
+          disabled={!localAttended}
+          intervals={intervals}
+          attendedInterval={selectedInterval}
+          bookedInterval={bookedInterval}
+          onChange={handleIntervalChange}
+          style={{ justifySelf: "center" }}
+        />
+      </div>
     </ListItem>
   );
 };
 
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
-  avatarContainer: {
-    display: "none",
+  // Blocks
+  container: {
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
     [theme.breakpoints.up("sm")]: {
-      display: "block",
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      justifyContent: "space-between",
     },
   },
+  avatarContainer: {
+    margin: theme.spacing(1),
+    display: "flex",
+    width: "100%",
+    justifyContent: "start",
+    alignItems: "center",
+    whiteSpace: "nowrap",
+  },
+  intervalContainer: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "center",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+      position: "absolute",
+      right: "6rem",
+    },
+    margin: theme.spacing(1),
+  },
+  button: {
+    position: "absolute",
+    top: "0.75rem",
+    right: "1.5rem",
+    height: "2.75rem",
+  },
+
+  // Variants
   absent: {
     backgroundColor: theme.palette.absent || theme.palette.grey[500],
   },
-  button: {
-    marginLeft: "1.5rem",
-    [theme.breakpoints.up("md")]: {
-      marginLeft: "none",
-    },
+  deleted: {
+    opacity: 0.5,
   },
+
+  // Action buttons
   trashCan: {
     background: "rgba(0, 0, 0, 0.1)",
   },
@@ -208,17 +238,6 @@ const useStyles = makeStyles((theme: ETheme) => ({
   },
   absentButton: {
     background: theme.palette.secondary.main,
-  },
-  listItem: {
-    padding: theme.spacing(1),
-  },
-  actionsContainer: {
-    minWidth: 120,
-    display: "flex",
-    flexDirection: "row",
-  },
-  deleted: {
-    opacity: 0.5,
   },
 }));
 // #endregion Styles
