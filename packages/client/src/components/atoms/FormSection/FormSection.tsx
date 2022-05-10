@@ -12,9 +12,9 @@ import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 interface FieldProps {
   name: string;
+  label: keyof typeof OrganizationLabel;
   multiline?: boolean;
 }
-
 interface Props {
   name?: string;
   content: FieldProps[];
@@ -32,9 +32,7 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
         <h5 className={classes.sectionTitle}>{t(OrganizationLabel[name])}</h5>
       )}
       <div className={classes.fieldSection}>
-        {content.map(({ name, multiline }) => {
-          const label = `${name?.charAt(0).toUpperCase()}${name?.slice(1)}`;
-
+        {content.map(({ name, multiline, label }) => {
           return (
             <div key={name}>
               <Field
