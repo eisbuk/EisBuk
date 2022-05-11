@@ -59,7 +59,7 @@ const emailFields = [
   },
 ];
 
-const GeneralFields = [
+const generalFields = [
   {
     name: "displayName",
     label: OrganizationLabel[OrganizationLabel.DisplayName],
@@ -110,7 +110,7 @@ const OrganizationSettings: React.FC<Props> = () => {
               <Divider />
               <Form className={classes.form}>
                 <FormControl component="fieldset">
-                  <FormSection content={GeneralFields} name="General" />
+                  <FormSection content={generalFields} name="General" />
                   <FormSection content={emailFields} name="Email" />
                   <FormSection content={smsFields} name="SMS" />
                 </FormControl>
