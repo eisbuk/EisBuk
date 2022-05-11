@@ -93,17 +93,15 @@ const SlotCard: React.FC<SlotCardProps> = ({
     ...(canClick ? [classes.cursorPointer] : []),
   ].join(" ");
 
-  // Set up slot type label styles
-  const slotTypeLabelClasses = [classes.typeLabel, backgroundColor].join(" ");
-
-  // Set up interval styles
-  const overlayShadow = selected ? classes.insetSelected : classes.insetBasic;
-  const intervalsOverlayClasses = [classes.overlay, overlayShadow].join(" ");
-
-  // Set up action button styles
-  const actionButtonClasses = [classes.actionButtons, backgroundColor].join(
-    " "
-  );
+  // Set up interval tag fades styles
+  const fadeLeftClasses = [
+    classes.leftOverlay,
+    selected ? classes.fadeSelectedLeft : classes.fadeWhiteLeft,
+  ].join(" ");
+  const fadeRightClasses = [
+    classes.rightOverlay,
+    selected ? classes.fadeSelectedRight : classes.fadeWhiteRight,
+  ].join(" ");
 
   return (
     <>
@@ -142,21 +140,24 @@ const SlotCard: React.FC<SlotCardProps> = ({
         </CardContent>
 
         <Box className={classes.contentBottom} flexGrow={1}>
-          <SlotTypeIcon className={slotTypeLabelClasses} type={slotData.type} />
+          <SlotTypeIcon className={classes.typeLabel} type={slotData.type} />
           <Box className={classes.intervalsContainer}>
             <>
-              <div className={intervalsOverlayClasses} />
-              {intervalStrings.map((interval) => (
-                <Typography
-                  style={{ backgroundColor: typeColor }}
-                  key={interval}
-                  component="span"
-                  variant="body2"
-                  className={classes.intervalTag}
-                >
-                  {interval.split("-").join(" - ")}
-                </Typography>
-              ))}
+              <div className={fadeLeftClasses} />
+              <div className={classes.intervals}>
+                {intervalStrings.map((interval) => (
+                  <Typography
+                    style={{ backgroundColor: typeColor }}
+                    key={interval}
+                    component="span"
+                    variant="body2"
+                    className={classes.intervalTag}
+                  >
+                    {interval.split("-").join(" - ")}
+                  </Typography>
+                ))}
+              </div>
+              <div className={fadeRightClasses} />
             </>
           </Box>
           {enableEdit && (
@@ -164,7 +165,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
               contextType={ButtonContextType.Slot}
               slot={slotData}
               iconSize="small"
-              className={actionButtonClasses}
+              className={classes.actionButtons}
             >
               <EditSlotButton />
               <DeleteButton
@@ -292,8 +293,21 @@ const useStyles = makeStyles((theme) =>
       position: "relative",
       height: "100%",
       overflow: "hidden",
+      boxSizing: "border-box",
+    },
+    intervals: {
+      height: "100%",
+      width: "100%",
+      overflowY: "hidden",
+      overflowX: "auto",
+      scrollPadding: 0,
+      ["&::-webkit-scrollbar"]: {
+        height: 0,
+        background: "none",
+      },
       padding: ".5rem",
       boxSizing: "border-box",
+      cursor: "normal",
     },
     intervalTag: {
       margin: "0 0.25rem",
@@ -304,6 +318,7 @@ const useStyles = makeStyles((theme) =>
       fontWeight: "bold",
       fontSize: "0.75rem",
       whiteSpace: "nowrap",
+      userSelect: "none",
     },
     actionButtons: {
       height: "100%",
@@ -318,21 +333,34 @@ const useStyles = makeStyles((theme) =>
     bgBasic: {
       backgroundColor: "#FFFFFF",
     },
-    insetSelected: {
-      boxShadow: `inset 12px 0 6px -6px ${theme.palette.warning.light}, inset -12px 0 6px -6px ${theme.palette.warning.light}`,
+    fadeSelectedLeft: {
+      boxShadow: `inset 12px 0 6px -6px ${theme.palette.warning.light}`,
     },
-    insetBasic: {
-      boxShadow:
-        "inset 12px 0 6px -6px #FFFFFF, inset -12px 0 6px -6px #FFFFFF",
+    fadeSelectedRight: {
+      boxShadow: `inset -12px 0 6px -6px ${theme.palette.warning.light}`,
+    },
+    fadeWhiteLeft: {
+      boxShadow: "inset 12px 0 6px -6px #FFFFFF",
+    },
+    fadeWhiteRight: {
+      boxShadow: "inset -12px 0 6px -6px #FFFFFF",
     },
 
     // Misc utils
     cursorPointer: {
       cursor: "pointer",
     },
-    overlay: {
+    leftOverlay: {
       position: "absolute",
+      width: "1rem",
       left: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: 1000,
+    },
+    rightOverlay: {
+      position: "absolute",
+      width: "1rem",
       top: 0,
       right: 0,
       bottom: 0,
