@@ -1,6 +1,7 @@
 /**
  * @jest-environment node
  */
+import fs from "fs/promises";
 import admin, { firestore } from "firebase-admin";
 
 import { adminDb } from "../__testSetup__/adminDb";
@@ -9,10 +10,37 @@ import { saul, walt, defaultUser } from "../__testData__/customers";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
+import { restoreFromFs } from "../";
 import * as restoreService from "../restore";
+
 import { ISubCollectionData } from "src/types";
 
 const __testOrganization__ = "test-organization-2";
+const orgData = {
+  admins: [defaultUser.email],
+};
+const orgSubCollections = {
+  customers: {
+    saul: saul,
+    walt: walt,
+  },
+  bookings: {
+    [saul.secretKey]: {
+      deleted: false,
+      surname: saul.surname,
+      name: saul.name,
+      id: saul.id,
+      category: saul.category,
+    },
+    [walt.secretKey]: {
+      deleted: false,
+      surname: walt.surname,
+      name: walt.name,
+      id: walt.id,
+      category: walt.category,
+    },
+  },
+};
 
 const orgRootPath = `${Collection.Organizations}/${__testOrganization__}`;
 const customersSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Customers}`;
@@ -43,8 +71,6 @@ afterAll(() => {
 
 describe("Restore service", () => {
   test("Sets organization document data", async () => {
-    const orgData = { admins: [defaultUser.email] };
-
     const orgPayload = {
       id: __testOrganization__,
       data: orgData,
@@ -86,28 +112,7 @@ describe("Restore service", () => {
   test("Set all docs in an array of subcollections", async () => {
     const subColPayload = {
       id: __testOrganization__,
-      subCollections: {
-        customers: {
-          saul: saul,
-          walt: walt,
-        },
-        bookings: {
-          [saul.secretKey]: {
-            deleted: false,
-            surname: saul.surname,
-            name: saul.name,
-            id: saul.id,
-            category: saul.category,
-          },
-          [walt.secretKey]: {
-            deleted: false,
-            surname: walt.surname,
-            name: walt.name,
-            id: walt.id,
-            category: walt.category,
-          },
-        },
-      },
+      subCollections: orgSubCollections,
     };
 
     const res = await restoreService.setOrgSubCollections(subColPayload);
@@ -131,5 +136,50 @@ describe("Restore service", () => {
     } else {
       throw new Error(res.message);
     }
+  });
+});
+
+describe("Restore", () => {
+  const org = {
+    id: __testOrganization__,
+    data: orgData,
+    subCollections: orgSubCollections,
+  };
+
+  const mockJsonData = JSON.stringify(org);
+
+  it("Reads orgData from a .json file and writes it to db", async () => {
+    jest.spyOn(fs, "access").mockResolvedValue();
+    jest.spyOn(fs, "readFile").mockResolvedValue(mockJsonData);
+
+    await restoreFromFs("");
+
+    const rootResult = await adminDb.doc(orgRootPath).get();
+    const customersResult = await adminDb
+      .collection(customersSubcollectionPath)
+      .get();
+    const bookingsResult = await adminDb
+      .collection(bookingsSubcollectionPath)
+      .get();
+
+    const rootData = rootResult.data();
+    const customersData = unpackCollectionData(customersResult);
+    const bookingsData = unpackCollectionData(bookingsResult);
+
+    expect(rootData).toEqual(org.data);
+    expect(customersData).toEqual([saul, walt]);
+    expect(bookingsData).toEqual([
+      org.subCollections.bookings[walt.secretKey],
+      org.subCollections.bookings[saul.secretKey],
+    ]);
+  });
+
+  it("Throws an error if the file doesn't exist", async () => {
+    const file = "";
+    jest.spyOn(fs, "access").mockRejectedValue(new Error());
+
+    await expect(restoreFromFs("")).rejects.toThrow(
+      `File ${file} not found in specified location.`
+    );
   });
 });

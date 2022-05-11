@@ -10,7 +10,33 @@ import {
 } from "./types";
 
 /**
- * setOrgRootData - Set organisation data
+ * setAllOrganisationData() - Set all organisation data
+ */
+export async function setAllOrganisationData({
+  id,
+  data,
+  subCollections,
+}: IOrgData): Promise<void> {
+  const setOrgRootDataOp = await setOrgRootData({ id, data });
+
+  if (!setOrgRootDataOp.ok) {
+    throw new Error(setOrgRootDataOp.message);
+  }
+
+  const setOrgSubCollecitonOps = await setOrgSubCollections({
+    id,
+    subCollections,
+  });
+
+  if (!setOrgSubCollecitonOps.ok) {
+    throw new Error(setOrgSubCollecitonOps.message);
+  }
+
+  return;
+}
+
+/**
+ * setOrgRootData - Set organisation root doc data
  */
 export async function setOrgRootData({
   id,
