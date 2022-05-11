@@ -108,8 +108,10 @@ describe("Download ics file to Add To Calendar", () => {
     );
     cy.task("deleteFolder", downloadsFolder);
     cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
-    cy.getAttrWith("aria-label", AdminAria.SeePastDates).click();
-    cy.getAttrWith("aria-label", BookingAria.BookButton).first().click();
+    cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
+    cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
+      .first()
+      .click();
 
     cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
     cy.contains("Yes").click();
