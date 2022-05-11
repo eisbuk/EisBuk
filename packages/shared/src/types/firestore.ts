@@ -77,7 +77,7 @@ export interface OrganizationData {
    */
   existingSecrets?: string[];
   /**
-   * Organization Location
+   * Physical address of the gym, ice ring, etc. where the skating lessons are held
    */
   location?: string;
 }
