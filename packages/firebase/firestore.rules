@@ -195,7 +195,7 @@ service cloud.firestore {
     }
     // #region public-info-check
     match /publicOrgInfo/{organization} {
-    allow read: if true;
+      allow read: if true;
     }
     // #endregion public-info-check
   }
