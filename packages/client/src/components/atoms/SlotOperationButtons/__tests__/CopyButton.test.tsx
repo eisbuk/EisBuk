@@ -5,7 +5,6 @@
 import React from "react";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
-import * as reactRedux from "react-redux";
 
 import {
   __noDateCopy,
@@ -21,12 +20,13 @@ import CopyButton from "../CopyButton";
 import * as copyPasteActions from "@/store/actions/copyPaste";
 
 import { __copyButtonId__ } from "@/__testData__/testIds";
-import { slotsInClipboardDay } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
-const mockSelector = jest.spyOn(reactRedux, "useSelector");
-mockSelector.mockImplementation(() => slotsInClipboardDay);
-jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
+const mockSelector = jest.fn();
+jest.mock("react-redux", () => ({
+  useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
+}));
 
 describe("SlotOperationButtons", () => {
   afterEach(() => {
