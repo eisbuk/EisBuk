@@ -121,9 +121,10 @@ export async function backupAllOrganizations(): Promise<
 }
 
 /**
- * restoreFromFs - read all organisation data from json & write back to firestore
+ * restoreSingleOrgFromFs - Read an organisations data from JSON & write it back to the db
+ * @param {string} fileName - The name of the JSON file to read from
  */
-export async function restoreFromFs(fileName: string): Promise<void> {
+export async function restoreSingleOrgFromFs(fileName: string): Promise<void> {
   const currentDir = process.cwd();
   const filePath = path.resolve(currentDir, fileName);
 
@@ -140,7 +141,7 @@ export async function restoreFromFs(fileName: string): Promise<void> {
     const dataObj = JSON.parse(data);
 
     // TODO: Validate org data before writing => it should only have id, data & subcollections keys
-    await setAllOrganisationData([dataObj]);
+    await restoreOrganizations([dataObj]);
 
     console.log("Organization successfully restored.");
   } catch (err: any) {
@@ -149,14 +150,15 @@ export async function restoreFromFs(fileName: string): Promise<void> {
 }
 
 /**
- * setAllOrganisationData - Set all data for an array of orgs
+ * restoreOrganizations - Set all data for an array of organizations
+ * @param {IOrgData[]} orgs - An array of organizations to write: { id, data, subCollections }
  */
-export async function setAllOrganisationData(
+export async function restoreOrganizations(
   orgs: IOrgData[]
 ): Promise<IOperationSuccess<string> | IOperationFailure> {
   try {
     const writeOrgOps = orgs.map(async (org) => {
-      await restoreService.setAllOrganisationData(org);
+      await restoreService.setOrganization(org);
     });
 
     await Promise.all(writeOrgOps);

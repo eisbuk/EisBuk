@@ -1,4 +1,4 @@
-import admin from "firebase-admin";
+import admin, { firestore } from "firebase-admin";
 
 import { Collection } from "@eisbuk/shared";
 import {
@@ -10,9 +10,9 @@ import {
 } from "./types";
 
 /**
- * setAllOrganisationData() - Set all organisation data
+ * setOrganization - Set all organisation data
  */
-export async function setAllOrganisationData({
+export async function setOrganization({
   id,
   data,
   subCollections,
@@ -36,7 +36,8 @@ export async function setAllOrganisationData({
 }
 
 /**
- * setOrgRootData - Set organisation root doc data
+ * setOrgRootData - Set organization root doc data
+ * @returns "OK" on success; error message on failure
  */
 export async function setOrgRootData({
   id,
@@ -46,7 +47,7 @@ export async function setOrgRootData({
 
   try {
     const path = `${Collection.Organizations}/${id}`;
-    await db.doc(path).set(data);
+    await db.doc(path).set(data as firestore.DocumentData);
 
     return { ok: true, data: "OK" };
   } catch (err: any) {
@@ -55,15 +56,18 @@ export async function setOrgRootData({
 }
 
 /**
- * setOrgSubCollections - Set all docs in an array of subcollections
+ * setOrgSubCollections - Set all docs for an array of subcollections
+ * @param {Object} orgData - Organization data: { id, subCollections }
+ * @param {string} orgData.id - An organizations id
+ * @param {ISubCollections} orgData.subCollections - An object of subcollections data
  */
 export async function setOrgSubCollections({
-  id,
+  id: orgId,
   subCollections,
 }: Pick<IOrgData, "id" | "subCollections">): Promise<
   IOperationSuccess<string> | IOperationFailure
 > {
-  const orgPath = `${Collection.Organizations}/${id}`;
+  const orgPath = `${Collection.Organizations}/${orgId}`;
 
   const subCollectionsArr = Object.entries(subCollections);
 
