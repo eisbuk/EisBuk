@@ -85,7 +85,7 @@ service cloud.firestore {
 
     match /organizations/{organization} {
       allow read, write: if isAdmin(organization);
-      
+
       // #region slot-checks
       match /slots/{slotId} {
         // Only admins can read/delete slots
@@ -193,5 +193,10 @@ service cloud.firestore {
       }
       // #endregion attendance-checks
     }
+    // #region public-info-check
+    match /publicOrgInfo/{organization} {
+      allow read: if true;
+    }
+    // #endregion public-info-check
   }
 }

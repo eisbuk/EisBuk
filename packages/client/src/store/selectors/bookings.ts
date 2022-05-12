@@ -43,6 +43,21 @@ export const getBookedSlots = (
   state: LocalStore
 ): Record<string, CustomerBookingEntry> =>
   state.firestore.data?.bookedSlots || {};
+/**
+ * Get subscribed slots from state for a specific month
+ * @param state Local Redux Store
+ * @returns record of subscribed slots
+ */
+export const getBookedSlotsByMonth =
+  (month: number) =>
+  (state: LocalStore): Record<string, CustomerBookingEntry> =>
+    Object.entries(state.firestore.data?.bookedSlots || {}).reduce(
+      (acc, [slotId, CustomerBookingEntry]) =>
+        DateTime.fromISO(CustomerBookingEntry.date).month === month
+          ? { ...acc, [slotId]: CustomerBookingEntry }
+          : acc,
+      {}
+    );
 
 /**
  * A selector used to check if booking is allowed for currently observed slots.

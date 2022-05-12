@@ -10,6 +10,7 @@
 
 import { beforeRunHook, afterRunHook } from "cypress-mochawesome-reporter/lib";
 import firebasePlugin from "./firebasePlugin";
+import fsPlugin from "./fsPlugin";
 import codeCoverageTask from "@cypress/code-coverage/task";
 
 // This function is called when a project is opened or re-opened (e.g. due to
@@ -32,6 +33,7 @@ module.exports = (on: Cypress.PluginEvents, config: Cypress.PluginConfig) => {
 
   // initilize firebase plugin with commands and handlers
   firebasePlugin(on);
+  fsPlugin(on);
   codeCoverageTask(on, config);
   return config;
 };

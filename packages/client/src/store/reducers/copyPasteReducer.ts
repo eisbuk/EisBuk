@@ -38,8 +38,9 @@ export const copyPasteReducer = (
 
     case Action.DeleteSlotFromClipboard:
       // delete single slot from slots in clipboard
-      const slotIdToDelete = (action as CopyPasteReducerAction<Action.DeleteSlotFromClipboard>)
-        .payload;
+      const slotIdToDelete = (
+        action as CopyPasteReducerAction<Action.DeleteSlotFromClipboard>
+      ).payload;
 
       return {
         ...state,
@@ -51,8 +52,9 @@ export const copyPasteReducer = (
 
     case Action.AddSlotToClipboard:
       // add single slot to existing slots in clipboard
-      const slotToAdd = (action as CopyPasteReducerAction<Action.AddSlotToClipboard>)
-        .payload;
+      const slotToAdd = (
+        action as CopyPasteReducerAction<Action.AddSlotToClipboard>
+      ).payload;
 
       return {
         ...state,

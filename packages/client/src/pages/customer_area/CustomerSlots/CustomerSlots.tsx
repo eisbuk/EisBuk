@@ -7,8 +7,8 @@ import Alert from "@mui/material/Alert";
 import { SlotInterface } from "@eisbuk/shared";
 import {
   useTranslation,
-  BookingCountdownMessage,
   Alerts,
+  BookingCountdownMessage,
 } from "@eisbuk/translations";
 
 import { CustomerRoute } from "@/enums/routes";
@@ -19,8 +19,12 @@ import BookingsCountdown from "@/components/atoms/BookingsCountdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
+import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import { getCountdownProps } from "@/store/selectors/bookings";
+import {
+  getBookedSlotsByMonth,
+  getCountdownProps,
+} from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { orderByWeekDay, orderByDate } from "./utils";
@@ -84,6 +88,11 @@ const CustomerSlots: React.FC<Props> = ({
   const currentDate = useSelector(getCalendarDay);
   const selectorCountdownProps = useSelector(getCountdownProps(currentDate));
 
+  // show add to calendar if there are booked slots in the current month and if bookings are finalized
+  const bookedSlotsByMonth = useSelector(
+    getBookedSlotsByMonth(currentDate.month)
+  );
+
   // control local booking finalized to disable 'finalize' buttons on all instances of second countdown
   const [isBookingFinalized, setIsBookingFinalized] = useState(false);
 
@@ -110,6 +119,10 @@ const CustomerSlots: React.FC<Props> = ({
   const content = (
     <>
       {countdownProps && <BookingsCountdown {...countdownProps} />}
+      {countdownProps?.deadline === null &&
+        Object.keys(bookedSlotsByMonth).length && (
+          <AddToCalendar bookedSlots={bookedSlotsByMonth} />
+        )}
       {orderedDates?.map((date) => {
         const luxonDay = DateTime.fromISO(date);
         const slostForDay = slots[date] || {};
