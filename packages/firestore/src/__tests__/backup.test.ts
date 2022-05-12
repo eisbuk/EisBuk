@@ -14,7 +14,7 @@ import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 import { bookings } from "../__testData__/bookings";
 
-import { backupToFs, getAllOrganisationsData } from "../";
+import { backupAllOrgsToFs, backupAllOrganisations } from "../";
 import * as backupService from "../backup";
 
 import { Errors } from "../types";
@@ -168,8 +168,8 @@ describe("With subcollection data", () => {
     expect(data.bookings).toEqual(bookingsSubColData);
   });
 
-  it("Returns full org data", async () => {
-    const result = await getAllOrganisationsData();
+  test("Returns full org data", async () => {
+    const result = await backupAllOrganisations();
 
     const expectedOrgData = {
       id: __testOrganization__,
@@ -189,10 +189,10 @@ describe("With subcollection data", () => {
     }
   });
 
-  it("Writes orgData to .json files", async () => {
+  test("Writes orgData to .json files", async () => {
     const spy = jest.spyOn(fs, "writeFile").mockImplementation();
 
-    await backupToFs();
+    await backupAllOrgsToFs();
 
     const expectedFileBasename = `${__testOrganization__}.json`;
     const expectedOrgData = {
@@ -209,8 +209,6 @@ describe("With subcollection data", () => {
 
     expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
     expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
-
-    spy.mockRestore();
   });
 });
 

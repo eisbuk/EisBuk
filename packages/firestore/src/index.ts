@@ -3,23 +3,18 @@ import path from "path";
 
 import "./firebase";
 
-import {
-  IOperationFailure,
-  IOperationSuccess,
-  IOrgData,
-  IOrgRootData,
-} from "./types";
+import { IOperationFailure, IOperationSuccess, IOrgData } from "./types";
 
 import * as backupService from "./backup";
 import * as restoreService from "./restore";
 import { exists } from "./helpers";
 
 /**
- * backupToFs - Write all organisation data to json
+ * backupAllOrgsToFs - Write all organization data to JSON files
  */
-export async function backupToFs(): Promise<void> {
+export async function backupAllOrgsToFs(): Promise<void> {
   try {
-    const orgDataOp = await getAllOrganisationsData();
+    const orgDataOp = await backupAllOrganisations();
 
     if (orgDataOp.ok) {
       const writeDataOps = orgDataOp.data.map(async (orgData) => {
@@ -41,9 +36,10 @@ export async function backupToFs(): Promise<void> {
 }
 
 /**
- * getAllOrganisationsData - Retrieve all data for all orgs
+ * backupAllOrganisations - Returns root document and subcollection data for all organizations
+ * @returns An array of Organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
  */
-export async function getAllOrganisationsData(): Promise<
+export async function backupAllOrganisations(): Promise<
   IOperationSuccess<IOrgData[]> | IOperationFailure
 > {
   try {
@@ -52,7 +48,12 @@ export async function getAllOrganisationsData(): Promise<
     if (orgsOp.ok === true) {
       const orgs = orgsOp.data;
 
-      const getFullOrgDataOps = orgs.map(getOrgData);
+      const getFullOrgDataOps = orgs.map(async (org) => {
+        const subCollectionData = await backupService.getAllSubCollections(
+          org.id
+        );
+        return { subCollections: subCollectionData, ...org };
+      });
 
       const orgData = await Promise.all(getFullOrgDataOps);
 
@@ -63,17 +64,6 @@ export async function getAllOrganisationsData(): Promise<
   } catch (err: any) {
     return { ok: false, message: err.message };
   }
-}
-
-/**
- * getOrgData - Retrieve all data for a specified organisation
- */
-export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
-  const subCollectionData = await backupService.getAllSubCollections(org.id);
-
-  const orgData = { subCollections: subCollectionData, ...org };
-
-  return orgData;
 }
 
 /**
