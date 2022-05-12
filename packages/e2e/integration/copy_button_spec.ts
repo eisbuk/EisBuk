@@ -25,7 +25,7 @@ describe("Copy Button", () => {
       })}`
     )
       .click()
-      .click();
+      .click({ force: true });
 
     cy.get(".MuiBadge-invisible").should("have.length", 8);
     cy.getAttrWith(
