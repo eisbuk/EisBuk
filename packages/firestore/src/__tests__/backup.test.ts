@@ -9,7 +9,7 @@ import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
 import { adminDb } from "../__testSetup__/adminDb";
 import { deleteAll } from "../__testUtils__/deleteAll";
-import { sleep } from "../__testUtils__/sleep";
+import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 
 import { backupToFs, getAllOrganisationsData } from "../";
@@ -34,7 +34,17 @@ beforeEach(async () => {
 
   // * Note: `bookings` are created implicitly as a result of data trigger on Customers doc write
   // * => we need to wait for this op to finish before we assert against subcollections
-  await sleep();
+  const saulBookingsPath = `${bookingsSubcollectionPath}/${saul.secretKey}`;
+  const waltBookingsPath = `${bookingsSubcollectionPath}/${walt.secretKey}`;
+
+  await waitForCondition({
+    documentPath: saulBookingsPath,
+    condition: (data) => Boolean(data !== undefined),
+  });
+  await waitForCondition({
+    documentPath: waltBookingsPath,
+    condition: (data) => Boolean(data !== undefined),
+  });
 });
 
 afterEach(async () => {
