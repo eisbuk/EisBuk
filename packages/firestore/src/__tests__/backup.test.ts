@@ -45,26 +45,6 @@ const bookingsSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Bookings}`;
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
 
-beforeEach(async () => {
-  await adminDb.doc(`${orgRootPath}`).set(orgRootData);
-  await adminDb.doc(`${customersSubcollectionPath}/${saul.id}`).set(saul);
-  await adminDb.doc(`${customersSubcollectionPath}/${walt.id}`).set(walt);
-
-  // * Note: `bookings` are created implicitly as a result of data trigger on Customers doc write
-  // * => we need to wait for this op to finish before we assert against subcollections
-  const saulBookingsPath = `${bookingsSubcollectionPath}/${saul.secretKey}`;
-  const waltBookingsPath = `${bookingsSubcollectionPath}/${walt.secretKey}`;
-
-  await waitForCondition({
-    documentPath: saulBookingsPath,
-    condition: (data) => Boolean(data !== undefined),
-  });
-  await waitForCondition({
-    documentPath: waltBookingsPath,
-    condition: (data) => Boolean(data !== undefined),
-  });
-});
-
 afterEach(async () => {
   await deleteAll();
 });
@@ -73,23 +53,55 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 
+test("Lists all existing organizations", async () => {
+  await adminDb.doc(`${orgRootPath}`).set(orgRootData);
+
+  const result = await backupService.getOrgs();
+
+  if (result.ok) {
+    const orgs = result.data;
+
+    const numOfOrgs = orgs.length;
+    const isIncludesTestOrg = orgs
+      .map(({ id }) => id)
+      .includes(__testOrganization__);
+
+    expect(numOfOrgs).toBe(1);
+    expect(isIncludesTestOrg).toBe(true);
+  } else {
+    throw new Error(result.message);
+  }
+});
+
+test("Returns an negative result when no organisations are found", async () => {
+  const result = await backupService.getOrgs();
+
+  if (!result.ok) {
+    expect(result?.message).toBe("No organizations found in collection.");
+  } else {
+    throw new Error();
+  }
+});
+
 describe("Backup service", () => {
-  it("Lists all existing organizations", async () => {
-    const result = await backupService.getOrgs();
+  beforeEach(async () => {
+    await adminDb.doc(`${orgRootPath}`).set(orgRootData);
+    await adminDb.doc(`${customersSubcollectionPath}/${saul.id}`).set(saul);
+    await adminDb.doc(`${customersSubcollectionPath}/${walt.id}`).set(walt);
 
-    if (result.ok) {
-      const orgs = result.data;
+    // * Note: `bookings` are created implicitly as a result of data trigger on Customers doc write
+    // * => we need to wait for this op to finish before we assert against subcollections
+    const saulBookingsPath = `${bookingsSubcollectionPath}/${saul.secretKey}`;
+    const waltBookingsPath = `${bookingsSubcollectionPath}/${walt.secretKey}`;
 
-      const numOfOrgs = orgs.length;
-      const isIncludesTestOrg = orgs
-        .map(({ id }) => id)
-        .includes(__testOrganization__);
-
-      expect(numOfOrgs).toBe(1);
-      expect(isIncludesTestOrg).toBe(true);
-    } else {
-      throw new Error(result.message);
-    }
+    await waitForCondition({
+      documentPath: saulBookingsPath,
+      condition: (data) => Boolean(data !== undefined),
+    });
+    await waitForCondition({
+      documentPath: waltBookingsPath,
+      condition: (data) => Boolean(data !== undefined),
+    });
   });
 
   it("Returns an array of subcollection paths", async () => {
@@ -131,20 +143,18 @@ describe("Backup service", () => {
     expect(data).toHaveProperty("customers");
     expect(data.customers).toEqual(customersSubColData);
   });
-});
-
-describe("Backup", () => {
-  const expectedOrgData = {
-    id: __testOrganization__,
-    data: orgRootData,
-    subCollections: {
-      customers: customersSubColData,
-      bookings: bookingsSubColData,
-    },
-  };
 
   it("Returns full org data", async () => {
     const result = await getAllOrganisationsData();
+
+    const expectedOrgData = {
+      id: __testOrganization__,
+      data: orgRootData,
+      subCollections: {
+        customers: customersSubColData,
+        bookings: bookingsSubColData,
+      },
+    };
 
     if (result.ok) {
       const [data] = result.data;
@@ -161,6 +171,14 @@ describe("Backup", () => {
     await backupToFs();
 
     const expectedFileBasename = `${__testOrganization__}.json`;
+    const expectedOrgData = {
+      id: __testOrganization__,
+      data: orgRootData,
+      subCollections: {
+        customers: customersSubColData,
+        bookings: bookingsSubColData,
+      },
+    };
 
     const [firstCall] = spy.mock.calls;
     const [resultPath, resultJson] = firstCall;

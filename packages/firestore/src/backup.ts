@@ -23,7 +23,8 @@ export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
 }
 
 /**
- * getOrgs - Lists all orgs
+ * getOrgs - Lists all Organizations
+ * @returns An array of Organizations: { id: string, data: DocumentData }
  */
 export async function getOrgs(): Promise<
   IOperationSuccess<IOrgRootData[]> | IOperationFailure
@@ -37,7 +38,7 @@ export async function getOrgs(): Promise<
     const orgsSnapshot = await orgsRef.get();
 
     if (orgsSnapshot.empty) {
-      return { ok: false, message: "No organizations in collection." };
+      throw new Error("No organizations found in collection.");
     }
 
     orgsSnapshot.forEach((docRef) => {
