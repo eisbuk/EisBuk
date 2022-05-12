@@ -1,8 +1,21 @@
 import { program } from "commander";
 
-import { backupAllOrgsToFs, restoreSingleOrgFromFs } from "./";
+import {
+  backupAllOrgsToFs,
+  backupSingleOrgToFs,
+  restoreSingleOrgFromFs,
+} from "./";
 
 program.command("backupAllOrgs").action(backupAllOrgsToFs);
+
+program
+  .command("backup")
+  .argument(
+    "orgId",
+    "The name of the organization that data will be read from."
+  )
+  .action(backupSingleOrgToFs);
+
 program
   .command("restore")
   .argument(
