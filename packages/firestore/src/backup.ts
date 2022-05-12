@@ -15,7 +15,7 @@ import {
  * getOrgData - Retrieve all data for a specified organisation
  */
 export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
-  const subCollectionData = await getAllSubCollectionData(org.id);
+  const subCollectionData = await getAllSubCollections(org.id);
 
   const orgData = { subCollections: subCollectionData, ...org };
 
@@ -55,12 +55,15 @@ export async function getOrgs(): Promise<
 }
 
 /**
- * getAllSubCollectionData - Retreive all subcollection data for a specified org
+ * getAllSubCollections - Returns all subcollection data for a specified org
+ * @param {string} orgId - An organization id
+ * @returns An object of subcollections data
+ *  where the key = the subcollectionid, and the value = an object of subcolletion documents
  */
-export async function getAllSubCollectionData(
-  org: string
+export async function getAllSubCollections(
+  orgId: string
 ): Promise<ISubCollections> {
-  const paths = await getSubCollectionPaths(org);
+  const paths = await getOrgSubCollectionPaths(orgId);
 
   if (!paths.length) {
     return {};
@@ -82,7 +85,10 @@ export async function getAllSubCollectionData(
 }
 
 /**
- * getSubCollectionData - Retrieve subcollection data at a specified path
+ * getSubCollectionData - Returns all documents for a specified subcollection
+ * @param {string} path - A full path to a subcollection e.g `Organizations/{OrgId}/{SubCollection}`
+ * @returns An object of subcollection documents,
+ *  where the key = the document id, and the value = the documentData
  */
 export async function getSubCollectionData(
   path: string
@@ -91,6 +97,10 @@ export async function getSubCollectionData(
 
   const subCollctionRef = db.collection(path);
   const subCollectionSnap = await subCollctionRef.get();
+
+  if (subCollectionSnap.empty) {
+    return {};
+  }
 
   const subCollectionData: Array<[string, firestore.DocumentData]> = [];
 
@@ -105,20 +115,22 @@ export async function getSubCollectionData(
 }
 
 /**
- * getSubCollectionPaths - Retreive a list of subcolleciton paths
+ * getOrgSubCollectionPaths - Returns a list of all the subcollections under a specified organization
+ * @param {string} orgId - An organization id
+ * @Returns An array of subcollection paths: { id: string, path: string }
+ *  where 'id' = the collection key, and 'path' = the full path to the collection
  */
-export async function getSubCollectionPaths(
-  org: string
+export async function getOrgSubCollectionPaths(
+  orgId: string
 ): Promise<ISubCollectionPath[]> {
   const db = admin.firestore();
+  const orgDocPath = `${Collection.Organizations}/${orgId}`;
 
   const subCollectionPaths: ISubCollectionPath[] = [];
-  const subCollectionSnap = await db
-    .doc(`${Collection.Organizations}/${org}`)
-    .listCollections();
+  const subCollectionSnap = await db.doc(orgDocPath).listCollections();
 
   subCollectionSnap.forEach((collection) => {
-    const path = `${Collection.Organizations}/${org}/${collection.id}`;
+    const path = `${orgDocPath}/${collection.id}`;
     subCollectionPaths.push({ id: collection.id, path });
   });
 

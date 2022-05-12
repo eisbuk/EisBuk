@@ -83,7 +83,7 @@ test("Returns an negative result when no organisations are found", async () => {
   }
 });
 
-describe("Backup service", () => {
+describe("With subcollection data", () => {
   beforeEach(async () => {
     await adminDb.doc(`${orgRootPath}`).set(orgRootData);
     await adminDb.doc(`${customersSubcollectionPath}/${saul.id}`).set(saul);
@@ -104,8 +104,8 @@ describe("Backup service", () => {
     });
   });
 
-  it("Returns an array of subcollection paths", async () => {
-    const paths = await backupService.getSubCollectionPaths(
+  test("Returns an array of subcollection paths", async () => {
+    const paths = await backupService.getOrgSubCollectionPaths(
       __testOrganization__
     );
 
@@ -126,7 +126,7 @@ describe("Backup service", () => {
     expect(paths).toEqual(expectedPathsResult);
   });
 
-  it("Returns subcollection data for a single path", async () => {
+  test("Returns subcollection data for a single path", async () => {
     const data = await backupService.getSubCollectionData(
       customersSubcollectionPath
     );
@@ -134,14 +134,13 @@ describe("Backup service", () => {
     expect(data).toEqual(customersSubColData);
   });
 
-  it("Returns all subcollection data for a specified org", async () => {
-    const data = await backupService.getAllSubCollectionData(
-      __testOrganization__
-    );
+  test("Returns all subcollection data for a specified org", async () => {
+    const data = await backupService.getAllSubCollections(__testOrganization__);
 
     expect(data).toHaveProperty("bookings");
     expect(data).toHaveProperty("customers");
     expect(data.customers).toEqual(customersSubColData);
+    expect(data.bookings).toEqual(bookingsSubColData);
   });
 
   it("Returns full org data", async () => {
@@ -187,5 +186,35 @@ describe("Backup service", () => {
     expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
 
     spy.mockRestore();
+  });
+});
+
+describe("Without subcollection data", () => {
+  beforeEach(async () => {
+    await adminDb.doc(`${orgRootPath}`).set(orgRootData);
+  });
+
+  test("Returns an empty array of subcollection paths", async () => {
+    const paths = await backupService.getOrgSubCollectionPaths(
+      __testOrganization__
+    );
+
+    const numOfSubcollections = paths.length;
+
+    expect(numOfSubcollections).toBe(0);
+  });
+
+  test("Returns an empty object if the subcollection reference is empty", async () => {
+    const data = await backupService.getSubCollectionData(
+      customersSubcollectionPath
+    );
+
+    expect(data).toEqual({});
+  });
+
+  test("Returns an empty object if there are no subcollection references", async () => {
+    const data = await backupService.getAllSubCollections(__testOrganization__);
+
+    expect(data).toEqual({});
   });
 });
