@@ -1,14 +1,14 @@
 import { program } from "commander";
 
-import { backupToFs, restoreFromFs } from "./";
+import { backupAllOrgsToFs, restoreSingleOrgFromFs } from "./";
 
-program.command("backup").action(backupToFs);
+program.command("backupAllOrgs").action(backupAllOrgsToFs);
 program
   .command("restore")
   .argument(
-    "fileName",
-    "A JSON file of organisation data that will restore/overwrite production data."
+    "filePath",
+    "Path to a JSON file of organisation data that will restore/overwrite production data."
   )
-  .action(restoreFromFs);
+  .action(restoreSingleOrgFromFs);
 
 program.parse();

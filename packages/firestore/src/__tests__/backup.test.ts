@@ -209,6 +209,8 @@ describe("With subcollection data", () => {
 
     expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
     expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
+
+    spy.mockRestore();
   });
 });
 

@@ -12,10 +12,10 @@ import { bookings } from "../__testData__/bookings";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import { restoreSingleOrgFromFs } from "../";
+import * as restore from "../";
 import * as restoreService from "../restore";
 
-import { ISubCollectionData } from "src/types";
+import { ISubCollectionData, FsErrors } from "../types";
 
 /**
  * Test Data
@@ -146,10 +146,14 @@ test("Set all docs in an array of subcollections", async () => {
 test("Reads orgData from a .json file and writes it to db", async () => {
   const mockJsonData = JSON.stringify(org);
 
-  jest.spyOn(fs, "access").mockResolvedValue();
-  jest.spyOn(fs, "readFile").mockResolvedValue(mockJsonData);
+  const accessSpy = jest.spyOn(fs, "access").mockResolvedValue();
+  const readFileSpy = jest
+    .spyOn(fs, "readFile")
+    .mockResolvedValue(mockJsonData);
 
-  await restoreSingleOrgFromFs("");
+  const filePath = "test.json";
+
+  await restore.restoreSingleOrgFromFs(filePath);
 
   const rootResult = await adminDb.doc(orgRootPath).get();
   const customersResult = await adminDb
@@ -169,13 +173,31 @@ test("Reads orgData from a .json file and writes it to db", async () => {
     org.subCollections.bookings[walt.secretKey],
     org.subCollections.bookings[saul.secretKey],
   ]);
+
+  accessSpy.mockRestore();
+  readFileSpy.mockRestore();
 });
 
 test("Throws an error if the file doesn't exist", async () => {
-  const file = "";
-  jest.spyOn(fs, "access").mockRejectedValue(new Error());
+  const accessSpy = jest.spyOn(fs, "access").mockRejectedValue(new Error());
 
-  await expect(restoreSingleOrgFromFs("")).rejects.toThrow(
-    `File ${file} not found in specified location.`
+  const filePath = "";
+
+  await expect(restore.restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+    FsErrors.FILE_NOT_FOUND
   );
+
+  accessSpy.mockRestore();
+});
+
+test("Throws an error if the file is not valid json", async () => {
+  const accessSpy = jest.spyOn(fs, "access").mockResolvedValue();
+
+  const filePath = "test.txt";
+
+  await expect(restore.restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+    FsErrors.INVALID_FILE
+  );
+
+  accessSpy.mockRestore();
 });

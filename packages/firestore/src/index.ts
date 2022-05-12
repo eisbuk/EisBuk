@@ -3,7 +3,12 @@ import path from "path";
 
 import "./firebase";
 
-import { IOperationFailure, IOperationSuccess, IOrgData } from "./types";
+import {
+  IOperationFailure,
+  IOperationSuccess,
+  IOrgData,
+  FsErrors,
+} from "./types";
 
 import * as backupService from "./backup";
 import * as restoreService from "./restore";
@@ -121,27 +126,34 @@ export async function backupAllOrganizations(): Promise<
 }
 
 /**
- * restoreSingleOrgFromFs - Read an organisations data from JSON & write it back to the db
- * @param {string} fileName - The name of the JSON file to read from
+ * restoreSingleOrgFromFs - Read an organizations data from JSON & write it back to the db
+ * @param {string} filePath - Path to an organizations JSON file
  */
-export async function restoreSingleOrgFromFs(fileName: string): Promise<void> {
+export async function restoreSingleOrgFromFs(filePath: string): Promise<void> {
   const currentDir = process.cwd();
-  const filePath = path.resolve(currentDir, fileName);
+  const resolvedPath = path.resolve(currentDir, filePath);
 
   try {
-    const fileExists = await exists(filePath);
-
-    // TODO: Validate that its a .json file
+    const fileExists = await exists(resolvedPath);
 
     if (!fileExists) {
-      throw new Error(`File ${fileName} not found in specified location.`);
+      throw new Error(FsErrors.FILE_NOT_FOUND);
+    }
+
+    if (path.extname(filePath) !== ".json") {
+      throw new Error(FsErrors.INVALID_FILE);
     }
 
     const data = await fs.readFile(filePath, "utf-8");
     const dataObj = JSON.parse(data);
 
     // TODO: Validate org data before writing => it should only have id, data & subcollections keys
-    await restoreOrganizations([dataObj]);
+    // TODO: Validate subcollections too?
+    const restoreOp = await restoreOrganizations([dataObj]);
+
+    if (!restoreOp.ok) {
+      throw new Error(restoreOp.message);
+    }
 
     console.log("Organization successfully restored.");
   } catch (err: any) {
