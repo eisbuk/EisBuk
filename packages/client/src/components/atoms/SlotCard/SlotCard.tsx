@@ -301,6 +301,7 @@ const useStyles = makeStyles((theme) =>
       overflowY: "hidden",
       overflowX: "auto",
       scrollPadding: 0,
+      scrollbarWidth: "none",
       ["&::-webkit-scrollbar"]: {
         height: 0,
         background: "none",
