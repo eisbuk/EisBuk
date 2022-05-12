@@ -32,7 +32,12 @@ export interface ISubCollectionPath {
   path: string;
 }
 
-export enum Errors {
+export enum FirestoreErrors {
   EMPTY_DOC = "No document exists at the specified reference.",
   EMPTY_COLLECTION = "No documents found in collection.",
+}
+
+export enum FsErrors {
+  FILE_NOT_FOUND = "File not found at the specified path.",
+  INVALID_FILE = "File does not have valid .json extension type.",
 }

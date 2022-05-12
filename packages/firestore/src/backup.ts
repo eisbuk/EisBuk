@@ -8,7 +8,7 @@ import {
   ISubCollectionData,
   ISubCollectionPath,
   ISubCollections,
-  Errors,
+  FirestoreErrors,
 } from "./types";
 
 /**
@@ -29,7 +29,7 @@ export async function getOrg(
     const orgData = orgSnap.data();
 
     if (!orgSnap.exists) {
-      throw new Error(Errors.EMPTY_DOC);
+      throw new Error(FirestoreErrors.EMPTY_DOC);
     }
 
     const org = { id: orgId, data: orgData };
@@ -56,7 +56,7 @@ export async function getOrgs(): Promise<
     const orgsSnapshot = await orgsRef.get();
 
     if (orgsSnapshot.empty) {
-      throw new Error(Errors.EMPTY_COLLECTION);
+      throw new Error(FirestoreErrors.EMPTY_COLLECTION);
     }
 
     orgsSnapshot.forEach((docRef) => {

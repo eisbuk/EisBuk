@@ -17,7 +17,7 @@ import { bookings } from "../__testData__/bookings";
 import { backupSingleOrgToFs, backupSingleOrganization } from "../";
 import * as backupService from "../backup";
 
-import { Errors } from "../types";
+import { FirestoreErrors } from "../types";
 
 /**
  * Test Data
@@ -92,7 +92,7 @@ test("Returns an negative result when no organisation is found", async () => {
   const result = await backupService.getOrg(__testOrganization__);
 
   if (!result.ok) {
-    expect(result?.message).toBe(Errors.EMPTY_DOC);
+    expect(result?.message).toBe(FirestoreErrors.EMPTY_DOC);
   } else {
     throw new Error();
   }
@@ -102,7 +102,7 @@ test("Returns an negative result when no organisations are found", async () => {
   const result = await backupService.getOrgs();
 
   if (!result.ok) {
-    expect(result?.message).toBe(Errors.EMPTY_COLLECTION);
+    expect(result?.message).toBe(FirestoreErrors.EMPTY_COLLECTION);
   } else {
     throw new Error();
   }
