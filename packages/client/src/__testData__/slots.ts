@@ -125,3 +125,12 @@ export const slotsWeek = Array(7)
       },
     };
   }, {} as Record<string, Record<string, SlotInterface>>);
+
+/**
+ * Dummy slots that resemble what we get from getDayFromClipboard selector.
+ */
+export const slotsInClipboardDay = {
+  "slot-01": { ...baseSlot, id: "slot-01", date: luxon2ISODate(testDateLuxon) },
+  "slot-02": { ...baseSlot, id: "slot-02", date: luxon2ISODate(testDateLuxon) },
+  "slot-03": { ...baseSlot, id: "slot-03", date: luxon2ISODate(testDateLuxon) },
+};
