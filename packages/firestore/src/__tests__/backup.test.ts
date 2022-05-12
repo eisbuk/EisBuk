@@ -14,7 +14,7 @@ import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 import { bookings } from "../__testData__/bookings";
 
-import { backupAllOrgsToFs, backupAllOrganisations } from "../";
+import { backupSingleOrgToFs, backupSingleOrganization } from "../";
 import * as backupService from "../backup";
 
 import { Errors } from "../types";
@@ -169,7 +169,7 @@ describe("With subcollection data", () => {
   });
 
   test("Returns full org data", async () => {
-    const result = await backupAllOrganisations();
+    const result = await backupSingleOrganization(__testOrganization__);
 
     const expectedOrgData = {
       id: __testOrganization__,
@@ -181,7 +181,7 @@ describe("With subcollection data", () => {
     };
 
     if (result.ok) {
-      const [data] = result.data;
+      const data = result.data;
 
       expect(data).toEqual(expectedOrgData);
     } else {
@@ -192,7 +192,7 @@ describe("With subcollection data", () => {
   test("Writes orgData to .json files", async () => {
     const spy = jest.spyOn(fs, "writeFile").mockImplementation();
 
-    await backupAllOrgsToFs();
+    await backupSingleOrgToFs(__testOrganization__);
 
     const expectedFileBasename = `${__testOrganization__}.json`;
     const expectedOrgData = {
