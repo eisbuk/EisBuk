@@ -4,22 +4,40 @@ import { Collection } from "@eisbuk/shared";
 import {
   IOperationFailure,
   IOperationSuccess,
-  IOrgData,
   IOrgRootData,
   ISubCollectionData,
   ISubCollectionPath,
   ISubCollections,
+  Errors,
 } from "./types";
 
 /**
- * getOrgData - Retrieve all data for a specified organisation
+ * getOrg - Returns a single organization by id
+ * @param orgId - An organization id
+ * @returns An organizations id and root document data: { id: string, data: DocumentData }
  */
-export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
-  const subCollectionData = await getAllSubCollections(org.id);
+export async function getOrg(
+  orgId: string
+): Promise<IOperationSuccess<IOrgRootData> | IOperationFailure> {
+  try {
+    const db = admin.firestore();
+    const orgPath = `${Collection.Organizations}/${orgId}`;
 
-  const orgData = { subCollections: subCollectionData, ...org };
+    const orgRef = db.doc(orgPath);
 
-  return orgData;
+    const orgSnap = await orgRef.get();
+    const orgData = orgSnap.data();
+
+    if (!orgSnap.exists) {
+      throw new Error(Errors.EMPTY_DOC);
+    }
+
+    const org = { id: orgId, data: orgData };
+
+    return { ok: true, data: org };
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
 }
 
 /**
@@ -38,7 +56,7 @@ export async function getOrgs(): Promise<
     const orgsSnapshot = await orgsRef.get();
 
     if (orgsSnapshot.empty) {
-      throw new Error("No organizations found in collection.");
+      throw new Error(Errors.EMPTY_COLLECTION);
     }
 
     orgsSnapshot.forEach((docRef) => {

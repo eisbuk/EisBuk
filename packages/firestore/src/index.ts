@@ -3,7 +3,12 @@ import path from "path";
 
 import "./firebase";
 
-import { IOperationFailure, IOperationSuccess, IOrgData } from "./types";
+import {
+  IOperationFailure,
+  IOperationSuccess,
+  IOrgData,
+  IOrgRootData,
+} from "./types";
 
 import * as backupService from "./backup";
 import * as restoreService from "./restore";
@@ -47,7 +52,7 @@ export async function getAllOrganisationsData(): Promise<
     if (orgsOp.ok === true) {
       const orgs = orgsOp.data;
 
-      const getFullOrgDataOps = orgs.map(backupService.getOrgData);
+      const getFullOrgDataOps = orgs.map(getOrgData);
 
       const orgData = await Promise.all(getFullOrgDataOps);
 
@@ -58,6 +63,17 @@ export async function getAllOrganisationsData(): Promise<
   } catch (err: any) {
     return { ok: false, message: err.message };
   }
+}
+
+/**
+ * getOrgData - Retrieve all data for a specified organisation
+ */
+export async function getOrgData(org: IOrgRootData): Promise<IOrgData> {
+  const subCollectionData = await backupService.getAllSubCollections(org.id);
+
+  const orgData = { subCollections: subCollectionData, ...org };
+
+  return orgData;
 }
 
 /**

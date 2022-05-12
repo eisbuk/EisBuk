@@ -16,7 +16,7 @@ export interface IOrgData extends IOrgRootData {
 
 export interface IOrgRootData {
   id: string;
-  data: firestore.DocumentData;
+  data: firestore.DocumentData | undefined;
 }
 
 export interface ISubCollections {
@@ -30,4 +30,9 @@ export interface ISubCollectionData {
 export interface ISubCollectionPath {
   id: string;
   path: string;
+}
+
+export enum Errors {
+  EMPTY_DOC = "No document exists at the specified reference.",
+  EMPTY_COLLECTION = "No documents found in collection.",
 }

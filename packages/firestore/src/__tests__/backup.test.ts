@@ -17,6 +17,8 @@ import { bookings } from "../__testData__/bookings";
 import { backupToFs, getAllOrganisationsData } from "../";
 import * as backupService from "../backup";
 
+import { Errors } from "../types";
+
 /**
  * Test Data
  */
@@ -53,6 +55,19 @@ afterAll(() => {
   jest.resetAllMocks();
 });
 
+test("Returns a single organization by id", async () => {
+  await adminDb.doc(`${orgRootPath}`).set(orgRootData);
+
+  const result = await backupService.getOrg(__testOrganization__);
+
+  if (result.ok) {
+    const { id, data } = result.data;
+
+    expect(id).toBe(__testOrganization__);
+    expect(data).toEqual(orgRootData);
+  }
+});
+
 test("Lists all existing organizations", async () => {
   await adminDb.doc(`${orgRootPath}`).set(orgRootData);
 
@@ -73,11 +88,21 @@ test("Lists all existing organizations", async () => {
   }
 });
 
+test("Returns an negative result when no organisation is found", async () => {
+  const result = await backupService.getOrg(__testOrganization__);
+
+  if (!result.ok) {
+    expect(result?.message).toBe(Errors.EMPTY_DOC);
+  } else {
+    throw new Error();
+  }
+});
+
 test("Returns an negative result when no organisations are found", async () => {
   const result = await backupService.getOrgs();
 
   if (!result.ok) {
-    expect(result?.message).toBe("No organizations found in collection.");
+    expect(result?.message).toBe(Errors.EMPTY_COLLECTION);
   } else {
     throw new Error();
   }
