@@ -26,7 +26,6 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
     useSelector(getAboutOrganization) || {};
   const { t } = useTranslation();
 
-  // is displayed when bookings are finalized aka deadline is null
   const handleClick = () => {
     let icalendar = {} as ICalendar;
 
