@@ -242,6 +242,7 @@ export enum AdminAria {
   SeeFutureDates = "AdminAria.SeeFutureDates",
   ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
   CopySlots = "AdminAria.CopySlots",
+  CopiedSlotsBadge = "AdminAria.CopiedSlotsBadge",
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
 }

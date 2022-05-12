@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { DateTime } from "luxon";
 
 import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
@@ -15,6 +16,7 @@ import { SlotButtonProps } from "@/types/components";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import { copySlotsDay, copySlotsWeek } from "@/store/actions/copyPaste";
+import { getDayFromClipboard } from "@/store/selectors/copyPaste";
 
 import {
   __slotButtonNoContextError,
@@ -38,6 +40,7 @@ import { __copyButtonId__ } from "@/__testData__/testIds";
  */
 export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
   const dispatch = useDispatch();
+  const dayInClipboard = useSelector(getDayFromClipboard) || {};
 
   const { t } = useTranslation();
 
@@ -74,8 +77,14 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
     dispatch(copyActionCreator(date));
   };
 
+  // get date from a slot in the clipboard and show badge only for that date's copy button
+  const dateOfDayInClipboard = Object.values(dayInClipboard).pop()?.date;
+
+  const isCopiedDay = slotsToCopy?.day
+    ? DateTime.fromISO(dateOfDayInClipboard || "").equals(date)
+    : true;
   // check if there are slots in clipboard for given `contextType`
-  const displayBadge = slotsToCopy && slotsToCopy[contextType!];
+  const displayBadge = slotsToCopy && slotsToCopy[contextType!] && isCopiedDay;
 
   return (
     <>
@@ -86,7 +95,14 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
         aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
         // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
       >
-        <Badge color="secondary" variant="dot" invisible={!displayBadge}>
+        <Badge
+          aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
+            date,
+          })}`}
+          color="secondary"
+          variant="dot"
+          invisible={!displayBadge}
+        >
           <FileCopyIcon />
         </Badge>
       </IconButton>
