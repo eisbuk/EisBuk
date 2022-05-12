@@ -4,6 +4,7 @@
 import fs from "fs/promises";
 import path from "path";
 import admin from "firebase-admin";
+import { v4 as uuid } from "uuid";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
@@ -11,24 +12,41 @@ import { adminDb } from "../__testSetup__/adminDb";
 import { deleteAll } from "../__testUtils__/deleteAll";
 import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
+import { bookings } from "../__testData__/bookings";
 
 import { backupToFs, getAllOrganisationsData } from "../";
 import * as backupService from "../backup";
 
-const __testOrganization__ = "test-organization";
-const orgData = {
+/**
+ * Test Data
+ */
+const __testOrganization__ = uuid();
+
+const orgRootData = {
   admins: [defaultUser.email],
 };
 
+const bookingsSubColData = bookings;
+const customersSubColData = {
+  saul,
+  walt,
+};
+
+/**
+ * Test Collection Paths
+ */
 const orgRootPath = `${Collection.Organizations}/${__testOrganization__}`;
 const customersSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Customers}`;
 const bookingsSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Bookings}`;
 
+/**
+ * Tests
+ */
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
 
 beforeEach(async () => {
-  await adminDb.doc(`${orgRootPath}`).set(orgData);
+  await adminDb.doc(`${orgRootPath}`).set(orgRootData);
   await adminDb.doc(`${customersSubcollectionPath}/${saul.id}`).set(saul);
   await adminDb.doc(`${customersSubcollectionPath}/${walt.id}`).set(walt);
 
@@ -101,12 +119,7 @@ describe("Backup service", () => {
       customersSubcollectionPath
     );
 
-    const expectedData = {
-      saul: saul,
-      walt: walt,
-    };
-
-    expect(data).toEqual(expectedData);
+    expect(data).toEqual(customersSubColData);
   });
 
   it("Returns all subcollection data for a specified org", async () => {
@@ -114,44 +127,19 @@ describe("Backup service", () => {
       __testOrganization__
     );
 
-    const expectedCustomerData = {
-      saul: saul,
-      walt: walt,
-    };
-
     expect(data).toHaveProperty("bookings");
     expect(data).toHaveProperty("customers");
-    expect(data.customers).toEqual(expectedCustomerData);
+    expect(data.customers).toEqual(customersSubColData);
   });
 });
 
 describe("Backup", () => {
   const expectedOrgData = {
     id: __testOrganization__,
-    data: {
-      admins: [defaultUser.email],
-    },
+    data: orgRootData,
     subCollections: {
-      customers: {
-        saul: saul,
-        walt: walt,
-      },
-      bookings: {
-        [saul.secretKey]: {
-          deleted: false,
-          surname: saul.surname,
-          name: saul.name,
-          id: saul.id,
-          category: saul.category,
-        },
-        [walt.secretKey]: {
-          deleted: false,
-          surname: walt.surname,
-          name: walt.name,
-          id: walt.id,
-          category: walt.category,
-        },
-      },
+      customers: customersSubColData,
+      bookings: bookingsSubColData,
     },
   };
 

@@ -3,10 +3,12 @@
  */
 import fs from "fs/promises";
 import admin, { firestore } from "firebase-admin";
+import { v4 as uuid } from "uuid";
 
 import { adminDb } from "../__testSetup__/adminDb";
 import { deleteAll } from "../__testUtils__/deleteAll";
 import { saul, walt, defaultUser } from "../__testData__/customers";
+import { bookings } from "../__testData__/bookings";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
@@ -15,36 +17,36 @@ import * as restoreService from "../restore";
 
 import { ISubCollectionData } from "src/types";
 
-const __testOrganization__ = "test-organization-2";
-const orgData = {
+/**
+ * Test Data
+ */
+const __testOrganization__ = uuid();
+
+const orgRootData = {
   admins: [defaultUser.email],
 };
-const orgSubCollections = {
-  customers: {
-    saul: saul,
-    walt: walt,
-  },
-  bookings: {
-    [saul.secretKey]: {
-      deleted: false,
-      surname: saul.surname,
-      name: saul.name,
-      id: saul.id,
-      category: saul.category,
-    },
-    [walt.secretKey]: {
-      deleted: false,
-      surname: walt.surname,
-      name: walt.name,
-      id: walt.id,
-      category: walt.category,
-    },
-  },
+
+const customersSubColData = {
+  saul,
+  walt,
+};
+const bookingsSubColData = bookings;
+
+const orgSubCollectionsData = {
+  customers: customersSubColData,
+  bookings: bookingsSubColData,
 };
 
+/**
+ * Test Collection Paths
+ */
 const orgRootPath = `${Collection.Organizations}/${__testOrganization__}`;
 const customersSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Customers}`;
 const bookingsSubcollectionPath = `${orgRootPath}/${OrgSubCollection.Bookings}`;
+
+/**
+ * One-time Test Utils
+ */
 
 /**
  * unPackCollectionData - Util to unwrap docs from query snapshot
@@ -58,6 +60,9 @@ function unpackCollectionData(
   return resultData;
 }
 
+/**
+ * Tests
+ */
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
 
@@ -73,7 +78,7 @@ describe("Restore service", () => {
   test("Sets organization document data", async () => {
     const orgPayload = {
       id: __testOrganization__,
-      data: orgData,
+      data: orgRootData,
     };
 
     const res = await restoreService.setOrgRootData(orgPayload);
@@ -82,21 +87,16 @@ describe("Restore service", () => {
       const result = await adminDb.doc(orgRootPath).get();
       const resultData = result.data();
 
-      expect(resultData).toEqual(orgData);
+      expect(resultData).toEqual(orgRootData);
     } else {
       throw new Error(res.message);
     }
   });
 
   test("Sets an array of individual docs in a specified subcollection", async () => {
-    const subColPayload = {
-      saul: saul,
-      walt: walt,
-    };
-
     await restoreService.setSubCollectionData(
       customersSubcollectionPath,
-      subColPayload
+      customersSubColData
     );
 
     const result = await adminDb.collection(customersSubcollectionPath).get();
@@ -112,7 +112,7 @@ describe("Restore service", () => {
   test("Set all docs in an array of subcollections", async () => {
     const subColPayload = {
       id: __testOrganization__,
-      subCollections: orgSubCollections,
+      subCollections: orgSubCollectionsData,
     };
 
     const res = await restoreService.setOrgSubCollections(subColPayload);
@@ -142,8 +142,8 @@ describe("Restore service", () => {
 describe("Restore", () => {
   const org = {
     id: __testOrganization__,
-    data: orgData,
-    subCollections: orgSubCollections,
+    data: orgRootData,
+    subCollections: orgSubCollectionsData,
   };
 
   const mockJsonData = JSON.stringify(org);
