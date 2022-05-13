@@ -15,6 +15,10 @@ import * as restoreService from "./restore";
 import { exists } from "./helpers";
 
 /**
+ * CLI Actions
+ */
+
+/**
  * backupSingleOrgToFs - Write a single organization to a JSON file
  * @param {string} orgId - An organization id
  */
@@ -35,36 +39,7 @@ export async function backupSingleOrgToFs(orgId: string): Promise<void> {
       throw new Error(orgDataOp.message);
     }
   } catch (err: any) {
-    console.error(err.message);
-  }
-}
-
-/**
- * backupSingleOrganization - Returns root document and subcollection data for a single organization
- * @param {string} orgId - An organization id
- * @returns An organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
- */
-export async function backupSingleOrganization(
-  orgId: string
-): Promise<IOperationSuccess<IOrgData> | IOperationFailure> {
-  try {
-    const orgsOp = await backupService.getOrg(orgId);
-
-    if (orgsOp.ok === true) {
-      const org = orgsOp.data;
-
-      const subCollectionData = await backupService.getAllSubCollections(
-        org.id
-      );
-
-      const data = { subCollections: subCollectionData, ...org };
-
-      return { ok: true, data };
-    } else {
-      throw new Error(orgsOp.message);
-    }
-  } catch (err: any) {
-    return { ok: false, message: err.message };
+    throw new Error(err.message);
   }
 }
 
@@ -90,38 +65,7 @@ export async function backupAllOrgsToFs(): Promise<void> {
       throw new Error(orgDataOp.message);
     }
   } catch (err: any) {
-    console.error(err.message);
-  }
-}
-
-/**
- * backupAllOrganizations - Returns root document and subcollection data for all organizations
- * @returns An array of Organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
- */
-export async function backupAllOrganizations(): Promise<
-  IOperationSuccess<IOrgData[]> | IOperationFailure
-> {
-  try {
-    const orgsOp = await backupService.getOrgs();
-
-    if (orgsOp.ok === true) {
-      const orgs = orgsOp.data;
-
-      const getFullOrgDataOps = orgs.map(async (org) => {
-        const subCollectionData = await backupService.getAllSubCollections(
-          org.id
-        );
-        return { subCollections: subCollectionData, ...org };
-      });
-
-      const orgData = await Promise.all(getFullOrgDataOps);
-
-      return { ok: true, data: orgData };
-    } else {
-      throw new Error(orgsOp.message);
-    }
-  } catch (err: any) {
-    return { ok: false, message: err.message };
+    throw new Error(err.message);
   }
 }
 
@@ -158,6 +102,70 @@ export async function restoreSingleOrgFromFs(filePath: string): Promise<void> {
     console.log("Organization successfully restored.");
   } catch (err: any) {
     throw new Error(err.message);
+  }
+}
+
+/**
+ * Script Actions
+ */
+
+/**
+ * backupSingleOrganization - Returns root document and subcollection data for a single organization
+ * @param {string} orgId - An organization id
+ * @returns An organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
+ */
+export async function backupSingleOrganization(
+  orgId: string
+): Promise<IOperationSuccess<IOrgData> | IOperationFailure> {
+  try {
+    const orgsOp = await backupService.getOrg(orgId);
+
+    if (orgsOp.ok === true) {
+      const org = orgsOp.data;
+
+      const subCollectionData = await backupService.getAllSubCollections(
+        org.id
+      );
+
+      const data = { subCollections: subCollectionData, ...org };
+
+      return { ok: true, data };
+    } else {
+      throw new Error(orgsOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
+
+/**
+ * backupAllOrganizations - Returns root document and subcollection data for all organizations
+ * @returns An array of Organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
+ */
+export async function backupAllOrganizations(): Promise<
+  IOperationSuccess<IOrgData[]> | IOperationFailure
+> {
+  try {
+    const orgsOp = await backupService.getOrgs();
+
+    if (orgsOp.ok === true) {
+      const orgs = orgsOp.data;
+
+      const getFullOrgDataOps = orgs.map(async (org) => {
+        const subCollectionData = await backupService.getAllSubCollections(
+          org.id
+        );
+        return { subCollections: subCollectionData, ...org };
+      });
+
+      const orgData = await Promise.all(getFullOrgDataOps);
+
+      return { ok: true, data: orgData };
+    } else {
+      throw new Error(orgsOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err.message };
   }
 }
 
