@@ -172,9 +172,9 @@ xdescribe("SlotForm ->", () => {
       };
       // select `adults` category
       screen
-        .getByText(i18n.t(CategoryLabel[Category.Adults]) as string)
+        .getByText(i18n.t(CategoryLabel[Category.CourseAdults]) as string)
         .click();
-      submitValues = { ...submitValues, categories: [Category.Adults] };
+      submitValues = { ...submitValues, categories: [Category.CourseAdults] };
       // select slot type `ice`
       screen.getByText(i18n.t(SlotTypeLabel[SlotType.Ice]) as string).click();
       submitValues = { ...submitValues, type: SlotType.Ice };

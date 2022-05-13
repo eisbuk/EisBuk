@@ -235,7 +235,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         await slotRef.set({
           ...baseSlot,
           intervals: {},
-          categories: [Category.PreCompetitive],
+          categories: [Category.PreCompetitiveAdults],
         });
         // check the no new entry for slot attendance was created (on update)
         const slotAttendance = await attendanceDocRef.get();

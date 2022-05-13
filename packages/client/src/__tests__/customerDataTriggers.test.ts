@@ -109,7 +109,7 @@ describe("Customer triggers", () => {
         condition: (data) => Boolean(data),
       });
       // add update to db
-      const updatedCategory = Category.Course;
+      const updatedCategory = Category.CourseAdults;
       const updatedSaul = {
         ...saul,
         secretKey,

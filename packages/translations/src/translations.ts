@@ -66,10 +66,11 @@ export const SlotTypeLabel = {
   [SlotType.OffIce]: "SlotType.OffIce",
 };
 export const CategoryLabel = {
-  [Category.Adults]: "Category.Adults",
-  [Category.PreCompetitive]: "Category.PreCompetitive",
+  [Category.PreCompetitiveAdults]: "Category.PreCompetitiveAdults",
+  [Category.PreCompetitiveMinors]: "Category.PreCompetitiveMinors",
+  [Category.CourseAdults]: "Category.CourseAdults",
+  [Category.CourseMinors]: "Category.CourseMinors",
   [Category.Competitive]: "Category.Competitive",
-  [Category.Course]: "Category.Course",
 };
 // #endregion dataEntries
 

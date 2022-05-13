@@ -160,7 +160,10 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, pathToSlot), {
             ...baseSlot,
-            categories: [Category.Adults, "non-existing-category"],
+            categories: [
+              Category.PreCompetitiveAdults,
+              "non-existing-category",
+            ],
           })
         );
       }
@@ -434,7 +437,7 @@ describe("Firestore rules", () => {
             setDoc(doc(db, testSlotPath), {
               ...testSlot,
               // saul is category = "competitive"
-              category: [Category.Adults],
+              category: [Category.PreCompetitiveAdults],
             }),
         });
         await assertFails(
@@ -480,7 +483,7 @@ describe("Firestore rules", () => {
       await assertSucceeds(
         setDoc(doc(db, saulPath), {
           ...saul,
-          category: Category.PreCompetitive,
+          category: Category.PreCompetitiveAdults,
         })
       );
       // check delete
