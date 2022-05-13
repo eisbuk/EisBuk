@@ -12,7 +12,7 @@ import { bookings } from "../__testData__/bookings";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import * as restore from "../";
+import { restoreSingleOrgFromFs } from "../";
 import * as restoreService from "../restore";
 
 import { ISubCollectionData, FsErrors } from "../types";
@@ -77,7 +77,7 @@ afterEach(async () => {
 });
 
 afterAll(() => {
-  jest.resetAllMocks();
+  jest.restoreAllMocks();
 });
 
 test("Sets organization document data", async () => {
@@ -146,14 +146,12 @@ test("Set all docs in an array of subcollections", async () => {
 test("Reads orgData from a .json file and writes it to db", async () => {
   const mockJsonData = JSON.stringify(org);
 
-  const accessSpy = jest.spyOn(fs, "access").mockResolvedValue();
-  const readFileSpy = jest
-    .spyOn(fs, "readFile")
-    .mockResolvedValue(mockJsonData);
+  jest.spyOn(fs, "access").mockResolvedValue();
+  jest.spyOn(fs, "readFile").mockResolvedValue(mockJsonData);
 
   const filePath = "test.json";
 
-  await restore.restoreSingleOrgFromFs(filePath);
+  await restoreSingleOrgFromFs(filePath);
 
   const rootResult = await adminDb.doc(orgRootPath).get();
   const customersResult = await adminDb
@@ -173,31 +171,24 @@ test("Reads orgData from a .json file and writes it to db", async () => {
     org.subCollections.bookings[walt.secretKey],
     org.subCollections.bookings[saul.secretKey],
   ]);
-
-  accessSpy.mockRestore();
-  readFileSpy.mockRestore();
 });
 
 test("Throws an error if the file doesn't exist", async () => {
-  const accessSpy = jest.spyOn(fs, "access").mockRejectedValue(new Error());
+  jest.spyOn(fs, "access").mockRejectedValue(new Error());
 
   const filePath = "";
 
-  await expect(restore.restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+  await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
     FsErrors.FILE_NOT_FOUND
   );
-
-  accessSpy.mockRestore();
 });
 
 test("Throws an error if the file is not valid json", async () => {
-  const accessSpy = jest.spyOn(fs, "access").mockResolvedValue();
+  jest.spyOn(fs, "access").mockResolvedValue();
 
   const filePath = "test.txt";
 
-  await expect(restore.restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+  await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
     FsErrors.INVALID_FILE
   );
-
-  accessSpy.mockRestore();
 });
