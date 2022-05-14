@@ -27,6 +27,9 @@ service cloud.firestore {
     function getCategories() {
       return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive"]
     }
+    function getAllCategories() {
+      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive", "adults"]
+    }
     function getSlotTypes() {
       return ["ice", "off-ice"]
     }
@@ -86,19 +89,23 @@ service cloud.firestore {
     match /organizations/{organization} {
       allow read, write: if isAdmin(organization);
 
-      // #region slot-checks
       match /slots/{slotId} {
         // Only admins can read/delete slots
         allow read, delete: if isAdmin(organization)
         // Validate data integrity for create/update
-        allow create, update: if isAdmin(organization) &&
+        allow update: if isAdmin(organization) &&
           // check date
           checkValidDate(request.resource.data.date) &&
           // check valid type
           request.resource.data.type in getSlotTypes() &&
-          // check valid categories
-          request.resource.data.categories.hasOnly(getCategories())
+          // check valid categories (on update, "adults" is still supported, even though deprecated)
+          request.resource.data.categories.hasOnly(getAllCategories())
           // @TODO check valid intervals
+        allow create: if isAdmin(organization) &&
+          checkValidDate(request.resource.data.date) &&
+          request.resource.data.type in getSlotTypes() &&
+          // allow slot creation only with currently supported categories
+          request.resource.data.categories.hasOnly(getCategories())
       }
       // #endregion slot-checks
 

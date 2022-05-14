@@ -16,6 +16,7 @@ import {
   SlotType,
   Customer,
   getCustomerBase,
+  DeprecatedCategory,
 } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -166,6 +167,38 @@ describe("Firestore rules", () => {
             ],
           })
         );
+      }
+    );
+    testWithEmulator(
+      'should allow updating a slot with "adults" category, but disallow new creating new slots with said category',
+      () => {
+        async () => {
+          const slotWithAdults = {
+            ...baseSlot,
+            categories: [DeprecatedCategory.Adults],
+            id: "slot-with-adults",
+          };
+
+          const db = await getTestEnv({
+            setup: (db) =>
+              Promise.all([setDoc(doc(db, pathToSlot), slotWithAdults)]),
+          });
+
+          // The deprecated category already exists in the slot, we should allow it to stay there
+          await assertSucceeds(
+            setDoc(doc(db, pathToSlot), {
+              ...baseSlot,
+              categories: [Category.Competitive, DeprecatedCategory.Adults],
+            })
+          );
+          // We're not allowing the creation of new slots with deprecated values
+          await assertFails(
+            setDoc(doc(db, pathToSlots, "new-slot"), {
+              ...baseSlot,
+              categories: [Category.Competitive, DeprecatedCategory.Adults],
+            })
+          );
+        };
       }
     );
     /**
