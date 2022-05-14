@@ -676,6 +676,42 @@ describe("Firestore rules", () => {
       }
     );
     testWithEmulator(
+      'should allow updating customer in "adults" category, but disallow creation of new customers in (non-spacific) "adults" category',
+      async () => {
+        const db = await getTestEnv({
+          setup: (db) =>
+            setDoc(doc(db, saulPath), {
+              ...saul,
+              category: DeprecatedCategory.Adults,
+            }),
+        });
+        // Should allow updating, even though category = "adults"
+        await assertSucceeds(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            category: DeprecatedCategory.Adults,
+            name: "Jimmy",
+          })
+        );
+        // Should disallow creation of new customers with category "adults"
+        await assertFails(
+          setDoc(
+            doc(
+              db,
+              Collection.Organizations,
+              getOrganization(),
+              OrgSubCollection.Customers,
+              "new-customer"
+            ),
+            {
+              ...saul,
+              category: DeprecatedCategory.Adults,
+            }
+          )
+        );
+      }
+    );
+    testWithEmulator(
       "should not allow create/update if 'covidCertificateSuspended' provided, but not boolean",
       async () => {
         const db = await getTestEnv({});

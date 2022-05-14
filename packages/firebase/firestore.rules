@@ -157,7 +157,7 @@ service cloud.firestore {
         // Only admins can access customer collection
         allow read, delete: if isAdmin(organization)
         // Check data integrity 
-        allow create, update: if (
+        allow update: if (
           isAdmin(organization) &&
           // Check required fields
           checkRequiredString(request.resource.data.name) &&
@@ -166,7 +166,33 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "birthday") &&
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
-          // Check category
+          // Check category (allows updates even if "adults")
+          request.resource.data.category in getAllCategories() &&
+          // Check valid email
+          (
+            !("email" in request.resource.data) || 
+            request.resource.data.email == "" || 
+            checkValidEmail(request.resource.data.email)
+          ) &&
+          // Check valid phone number 
+          (
+            !("phone" in request.resource.data) || 
+            request.resource.data.phone == "" || 
+            checkValidPhoneNumber(request.resource.data.phone)
+          ) &&
+          // Check release date suspended type
+          checkOptionalBoolean(request.resource.data, "covidCertificateSuspended")
+        )
+        allow create: if (
+          isAdmin(organization) &&
+          // Check required fields
+          checkRequiredString(request.resource.data.name) &&
+          checkRequiredString(request.resource.data.surname) &&
+          // Check optional dates
+          checkOptionalValidDate(request.resource.data, "birthday") &&
+          checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
+          checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
+          // Check category (shouldn't allow creation with "adults" category)
           request.resource.data.category in getCategories() &&
           // Check valid email
           (
