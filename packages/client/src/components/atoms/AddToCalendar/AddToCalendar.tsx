@@ -9,8 +9,10 @@ import makeStyles from "@mui/styles/makeStyles";
 import Button from "@mui/material/Button";
 
 import { LocalStore } from "@/types/store";
-import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
+
 import { getAboutOrganization } from "@/store/selectors/app";
+
+import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 
 interface Props {
   /**

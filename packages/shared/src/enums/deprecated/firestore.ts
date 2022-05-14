@@ -21,3 +21,7 @@ export enum DeprecatedSlotType {
   OffIceDancing = "off-ice-dancing",
   OffIceGym = "off-ice-gym",
 }
+
+export enum DeprecatedCategory {
+  Adults = "adults",
+}
