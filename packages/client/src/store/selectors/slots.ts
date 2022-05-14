@@ -1,9 +1,72 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { DateTime } from "luxon";
 
-import { SlotsByDay, Category, SlotsById, luxon2ISODate } from "@eisbuk/shared";
+import {
+  SlotsByDay,
+  Category,
+  SlotsById,
+  luxon2ISODate,
+  DeprecatedCategory,
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
+import { CategoryUnion } from "@/types/firestore";
+
+// #region localHelpers
+interface CategoryFilter {
+  (categories: CategoryUnion[]): boolean;
+}
+
+/**
+ * An util higher order function returning the condition for category filtering
+ * based on received category.
+ * @param category category (of a customer we're filtering for)
+ * @returns a filtering function used check if slot's categories contain the category or should be filtered out
+ */
+const createCategoryFilter = (category: CategoryUnion): CategoryFilter =>
+  // For unspecified "adults" we're showing all the "adult-" prefixed category slots
+  category === DeprecatedCategory.Adults
+    ? (categories) =>
+        categories.includes(DeprecatedCategory.Adults) ||
+        categories.includes(Category.CourseAdults) ||
+        categories.includes(Category.PreCompetitiveAdults)
+    : // For customers belonging to "adult-" prefixed category, we're showing the specific category slots
+    // as well as general "adult" slots
+    [Category.PreCompetitiveAdults, Category.CourseAdults].includes(category)
+    ? (categories) =>
+        categories.includes(DeprecatedCategory.Adults) ||
+        categories.includes(category)
+    : // For all non adult categories, we're only displaying the slot if it contains that exact category
+      (categories) => categories.includes(category);
+
+/**
+ * A helper function we're using to filter out slots not within provided category.
+ * @param slotsRecord record of slots keyed by slotId
+ * @param category customer's category we're checking against
+ * @returns a tuple of filtered slots record and boolean (true if filtered record is empty)
+ */
+const filterSlotsByCategory = (
+  slotsRecord: SlotsById,
+  category: CategoryUnion
+): [SlotsById, boolean] => {
+  let isEmptyWhenFiltered = true;
+
+  const categoryFilter = createCategoryFilter(category);
+
+  const filteredRecord = Object.keys(slotsRecord).reduce((acc, slotId) => {
+    const slot = slotsRecord[slotId];
+    const categories = slot.categories as CategoryUnion[];
+
+    if (categoryFilter(categories)) {
+      isEmptyWhenFiltered = false;
+      return { ...acc, [slotId]: slot };
+    }
+    return acc;
+  }, {} as SlotsById);
+
+  return [filteredRecord, isEmptyWhenFiltered];
+};
+// #endregion localHelpers
 
 /**
  * Get `slotsByDay` entry from store, filtered according to `timeframe`, `startDate` and `category`
@@ -13,7 +76,11 @@ import { LocalStore } from "@/types/store";
  * @returns created selector
  */
 export const getSlotsForCustomer =
-  (category: Category, timeframe: "week" | "month", startDate: DateTime) =>
+  (
+    category: Category | DeprecatedCategory,
+    timeframe: "week" | "month",
+    startDate: DateTime
+  ) =>
   // eslint-disable-next-line consistent-return
   (state: LocalStore): SlotsByDay => {
     const allSlotsInStore = state.firestore.data?.slotsByDay;
@@ -24,7 +91,7 @@ export const getSlotsForCustomer =
     switch (timeframe) {
       case "month":
         // get slots for current month
-        const monthString = startDate.toISO().substr(0, 7);
+        const monthString = startDate.toISO().substring(0, 7);
         const slotsForAMonth = allSlotsInStore[monthString] || {};
 
         // filter slots from each day with respect to category
@@ -47,17 +114,11 @@ export const getSlotsForCustomer =
 
         // filter slots within each day with respect to category
         const filteredDays = weekDates.reduce((acc, date) => {
-          const monthStaring = date.substr(0, 7);
+          const monthStaring = date.substring(0, 7);
           const slotsMonth = allSlotsInStore[monthStaring] || {};
           const slotsDay = slotsMonth[date] || {};
 
-          const slotKeys = Object.keys(slotsDay);
-          const newDay = slotKeys.reduce((acc, slotId) => {
-            const { categories } = slotsDay[slotId];
-            return categories.includes(category)
-              ? { ...acc, [slotId]: slotsDay[slotId] }
-              : acc;
-          }, {} as SlotsById);
+          const [newDay] = filterSlotsByCategory(slotsDay, category);
           return { ...acc, [date]: newDay };
         }, {} as SlotsByDay);
 
@@ -66,29 +127,10 @@ export const getSlotsForCustomer =
   };
 
 /**
- * A helper function we're using to filter out slots not within provided category.
- * @param slotsRecord record of slots keyed by slotId
- * @param category customer's category we're checking against
- * @returns a tuple of filtered slots record and boolean (true if filtered record is empty)
+ * Get slots for admin view, with respect to current date
+ * @param state Local store state
+ * @returns record of days filled with slots
  */
-const filterSlotsByCategory = (
-  slotsRecord: SlotsById,
-  category: Category
-): [SlotsById, boolean] => {
-  let isEmptyWhenFiltered = true;
-
-  const filteredRecord = Object.keys(slotsRecord).reduce((acc, slotId) => {
-    const slot = slotsRecord[slotId];
-    if (slot.categories.includes(category)) {
-      isEmptyWhenFiltered = false;
-      return { ...acc, [slotId]: slot };
-    }
-    return acc;
-  }, {} as SlotsById);
-
-  return [filteredRecord, isEmptyWhenFiltered];
-};
-
 export const getAdminSlots = (state: LocalStore): SlotsByDay => {
   const {
     firestore: {
