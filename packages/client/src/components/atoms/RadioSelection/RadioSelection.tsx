@@ -10,7 +10,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 type Props = Omit<FieldAttributes<any>, "options"> & {
-  options: { value: string; label: string }[];
+  options: { value: string; label: string; disabled?: boolean }[];
 };
 
 /**
@@ -30,11 +30,13 @@ const RadioSelection: React.FC<Props> = ({ options, ...props }) => {
   return (
     <div className={classes.container}>
       <Field {...props} className={classes.field} component={RadioGroup} row>
-        {options.map(({ label, value }) => (
+        {options.map(({ label, value, disabled }) => (
           <FormControlLabel
+            className={classes.radioTag}
             key={value}
             value={value}
             label={label}
+            disabled={disabled}
             control={<Radio />}
             aria-checked={field.value === value ? "true" : "false"}
             aria-label={label}
@@ -53,7 +55,13 @@ const useStyles = makeStyles((theme) => ({
   },
   field: {
     display: "flex",
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
+  },
+  radioTag: {
+    width: "100%",
+    [theme.breakpoints.up("sm")]: {
+      width: "40%",
+    },
   },
 }));
 
