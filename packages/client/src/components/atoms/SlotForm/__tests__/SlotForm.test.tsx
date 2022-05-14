@@ -12,7 +12,12 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import { Category, fromISO, SlotType } from "@eisbuk/shared";
+import {
+  Category,
+  DeprecatedCategory,
+  fromISO,
+  SlotType,
+} from "@eisbuk/shared";
 import i18n, {
   SlotFormTitle,
   SlotTypeLabel,
@@ -53,7 +58,7 @@ const { date: __date, ...testFormValues } = slotToFormValues(baseSlot)!;
 // commonly used translations
 const createSlotLabel = i18n.t(ActionButton.CreateSlot) as string;
 
-xdescribe("SlotForm ->", () => {
+describe("SlotForm ->", () => {
   /** @TODO Check up */
   afterEach(() => {
     cleanup();
@@ -96,6 +101,12 @@ xdescribe("SlotForm ->", () => {
       // run the actual test
       render(<SlotForm {...baseProps} open={false} />);
       expect(screen.queryByTestId(__slotFormId__)).toEqual(null);
+    });
+
+    test('should render a deprecated "adults" category for backwards compatibility', () => {
+      screen.getByText(
+        i18n.t(CategoryLabel[DeprecatedCategory.Adults]) as string
+      );
     });
   });
 
