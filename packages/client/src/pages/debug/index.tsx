@@ -88,6 +88,17 @@ const DebugPage: React.FC = () => {
           Delete orphaned bookings
         </Button>
       </Box>
+      <Box my={4} color="secondary.main">
+        <Button
+          onClick={createCloudFunctionCaller(
+            CloudFunction.MigrateCategoriesToExplicitMinors
+          )}
+          color="primary"
+          variant="contained"
+        >
+          Migrate categories to explicit minors
+        </Button>
+      </Box>
     </Container>
   );
 };
