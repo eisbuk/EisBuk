@@ -2,7 +2,13 @@ import * as functions from "firebase-functions";
 import { FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 
-import { Collection, OrgSubCollection } from "@eisbuk/shared";
+import {
+  Category,
+  Collection,
+  DeprecatedCategory,
+  OrgSubCollection,
+  SlotInterface,
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
 
@@ -107,4 +113,48 @@ export const deleteOrphanedBookings = functions
 
     await Promise.all(toDelete);
     return { success: true };
+  });
+
+export const migrateSlotsCategoriesToExplicitMinors = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    await checkUser(organization, auth);
+
+    const batch = admin.firestore().batch();
+
+    const slotsRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Slots);
+
+    const allSlots = await slotsRef.get();
+
+    allSlots.forEach((slot) => {
+      const updatedCategories: (Category | DeprecatedCategory)[] = [];
+
+      const data = slot.data() as SlotInterface;
+      const categories = data.categories as (Category | DeprecatedCategory)[];
+
+      categories.forEach((c) => {
+        let category = c;
+        switch (category) {
+          case DeprecatedCategory.Course:
+            category = Category.CourseMinors;
+            break;
+          case DeprecatedCategory.PreCompetitive:
+            category = Category.PreCompetitiveMinors;
+            break;
+          default:
+        }
+        // Avoid duplicating of the categories
+        if (!updatedCategories.includes(category)) {
+          updatedCategories.push(category);
+        }
+      });
+
+      batch.set(slot.ref, { categories: updatedCategories }, { merge: true });
+    });
+
+    await batch.commit();
   });

@@ -57,7 +57,7 @@
     "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --ci --reporters=default --reporters=jest-junit --collect-coverage --forceExit --detectOpenHandles --runInBand\")'",
     "test:quicktest": "echo Running tests with no emulators support && jest --watch src",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators",
-    "test:temp": "jest --watch slots.test.ts",
+    "test:temp": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles migrations\")'",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public"
   },

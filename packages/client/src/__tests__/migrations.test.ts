@@ -10,6 +10,8 @@ import {
   HTTPSErrors,
   OrgSubCollection,
   getCustomerBase,
+  Category,
+  DeprecatedCategory,
 } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -33,6 +35,7 @@ import { waitForCondition } from "@/__testUtils__/helpers";
 import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import * as customers from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 
 const organization = getOrganization();
 
@@ -128,5 +131,74 @@ describe("Migrations", () => {
         invokeFunction(CloudFunction.DeleteOrphanedBookings)()
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
+  });
+
+  describe.only("'migrateSlotsCategoriesToExplicitMinors'", () => {
+    testWithEmulator(
+      'should replace "pre-competitive" and "course" category entries with corresponging "-minor" category entries, while leaving the existing categories as they are',
+      async () => {
+        const courseSlot = {
+          ...baseSlot,
+          categories: [Category.Competitive, DeprecatedCategory.Course],
+          id: "course-slot",
+        };
+        const preCompetitiveSlot = {
+          ...baseSlot,
+          categories: [Category.Competitive, DeprecatedCategory.PreCompetitive],
+          id: "pre-competitive-slot",
+        };
+        // Edge case, if the category already exists, shouldn't be duplicated
+        const courseMinorsSlot = {
+          ...baseSlot,
+          categories: [Category.CourseMinors, DeprecatedCategory.Course],
+          id: "pre-competitive-minors-slot",
+        };
+        const slotsRef = adminDb.collection(
+          `${Collection.Organizations}/${getOrganization()}/${
+            OrgSubCollection.Slots
+          }`
+        );
+
+        const courseSlotRef = slotsRef.doc(courseSlot.id);
+        const preCompetitiveSlotRef = slotsRef.doc(preCompetitiveSlot.id);
+        const courseMinorsSlotRef = slotsRef.doc(courseMinorsSlot.id);
+
+        await Promise.all([
+          courseSlotRef.set(courseSlot),
+          preCompetitiveSlotRef.set(preCompetitiveSlot),
+          courseMinorsSlotRef.set(courseMinorsSlot),
+        ]);
+
+        await invokeFunction(
+          CloudFunction.MigrateSlotsCategoriesToExplicitMinors
+        )();
+
+        const [resCourse, resPreCompetitive, resCourseMinors] =
+          await Promise.all([
+            courseSlotRef.get(),
+            preCompetitiveSlotRef.get(),
+            courseMinorsSlotRef.get(),
+          ]);
+        expect(resCourse.data()).toEqual({
+          ...courseSlot,
+          categories: [Category.Competitive, Category.CourseMinors],
+        });
+        expect(resPreCompetitive.data()).toEqual({
+          ...preCompetitiveSlot,
+          categories: [Category.Competitive, Category.PreCompetitiveMinors],
+        });
+        expect(resCourseMinors.data()).toEqual({
+          ...courseMinorsSlot,
+          categories: [Category.CourseMinors],
+        });
+      }
+    );
+
+    // testWithEmulator("should not allow calls to non-admin", async () => {
+    //   await signOut(getAuth());
+    //   await expect(
+    //     invokeFunction(CloudFunction.DeleteOrphanedBookings)()
+    //   ).rejects.toThrow(HTTPSErrors.Unauth);
+    // });
   });
 });
