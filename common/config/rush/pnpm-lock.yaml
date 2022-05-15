@@ -5,6 +5,45 @@ importers:
   .:
     specifiers: {}
 
+  ../../packages/backup-restore:
+    specifiers:
+      '@babel/core': 7.x
+      '@babel/plugin-transform-runtime': ^7.12.10
+      '@babel/preset-typescript': ^7.14.5
+      '@eisbuk/shared': workspace:*
+      '@google-cloud/firestore': ^4.13.2
+      '@grpc/grpc-js': ~1.6.7
+      '@types/jest': ^27.4.1
+      '@types/node': ^16.11.10
+      '@types/uuid': ^8.3.1
+      '@typescript-eslint/eslint-plugin': ^4.30.0
+      '@typescript-eslint/parser': ^4.33.0
+      commander: ^8.3.0
+      firebase-admin: ^9.4.2
+      jest: ^27.5.1
+      p-retry: ^4.6.1
+      typescript: ~4.4.2
+      uuid: ^8.3.0
+    dependencies:
+      '@eisbuk/shared': link:../shared
+      commander: 8.3.0
+      firebase-admin: 9.12.0
+    devDependencies:
+      '@babel/core': 7.17.10
+      '@babel/plugin-transform-runtime': 7.17.10_@babel+core@7.17.10
+      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.10
+      '@google-cloud/firestore': 4.15.1
+      '@grpc/grpc-js': 1.6.7
+      '@types/jest': 27.5.1
+      '@types/node': 16.11.35
+      '@types/uuid': 8.3.4
+      '@typescript-eslint/eslint-plugin': 4.33.0_83aa6eb90d476d226895a490658e997b
+      '@typescript-eslint/parser': 4.33.0_typescript@4.4.4
+      jest: 27.5.1
+      p-retry: 4.6.2
+      typescript: 4.4.4
+      uuid: 8.3.2
+
   ../../packages/client:
     specifiers:
       '@babel/core': 7.x
@@ -304,43 +343,7 @@ importers:
       uuid: 8.3.2
 
   ../../packages/firestore:
-    specifiers:
-      '@babel/core': 7.x
-      '@babel/plugin-transform-runtime': ^7.12.10
-      '@babel/preset-typescript': ^7.14.5
-      '@eisbuk/shared': workspace:*
-      '@google-cloud/firestore': ^4.13.2
-      '@grpc/grpc-js': ~1.6.7
-      '@types/jest': ^27.4.1
-      '@types/node': ^16.11.10
-      '@types/uuid': ^8.3.1
-      '@typescript-eslint/eslint-plugin': ^4.30.0
-      '@typescript-eslint/parser': ^4.33.0
-      commander: ^8.3.0
-      firebase-admin: ^9.4.2
-      jest: ^27.5.1
-      p-retry: ^4.6.1
-      typescript: ~4.4.2
-      uuid: ^8.3.0
-    dependencies:
-      '@eisbuk/shared': link:../shared
-      commander: 8.3.0
-      firebase-admin: 9.12.0
-    devDependencies:
-      '@babel/core': 7.17.10
-      '@babel/plugin-transform-runtime': 7.17.10_@babel+core@7.17.10
-      '@babel/preset-typescript': 7.16.7_@babel+core@7.17.10
-      '@google-cloud/firestore': 4.15.1
-      '@grpc/grpc-js': 1.6.7
-      '@types/jest': 27.5.1
-      '@types/node': 16.11.35
-      '@types/uuid': 8.3.4
-      '@typescript-eslint/eslint-plugin': 4.33.0_83aa6eb90d476d226895a490658e997b
-      '@typescript-eslint/parser': 4.33.0_typescript@4.4.4
-      jest: 27.5.1
-      p-retry: 4.6.2
-      typescript: 4.4.4
-      uuid: 8.3.2
+    specifiers: {}
 
   ../../packages/functions:
     specifiers:
@@ -21372,11 +21375,11 @@ packages:
   /yargs-parser/20.2.4:
     resolution: {integrity: sha512-WOkpgNhPTlE73h4VFAFsOnomJVaovO8VqLDzy5saChRBFQFBoMYirowyW+Q9HB4HFF4Z7VZTiG3iSzJJA29yRA==}
     engines: {node: '>=10'}
+    dev: true
 
   /yargs-parser/20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
-    dev: true
 
   /yargs-parser/21.0.1:
     resolution: {integrity: sha512-9BK1jFpLzJROCI5TzwZL/TU4gqjK5xiHV/RfWLOahrjAko/e4DJkRDZQXfvqAsiZzzYhgAzbgz6lg48jcm4GLg==}
@@ -21435,7 +21438,7 @@ packages:
       require-directory: 2.1.1
       string-width: 4.2.3
       y18n: 5.0.8
-      yargs-parser: 20.2.4
+      yargs-parser: 20.2.9
 
   /yargs/17.5.0:
     resolution: {integrity: sha512-3sLxVhbAB5OC8qvVRebCLWuouhwh/rswsiDYx3WGxajUk/l4G20SKfrKKFeNIHboUFt2JFgv2yfn+5cgOr/t5A==}

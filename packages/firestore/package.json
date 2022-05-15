@@ -1,46 +1,4 @@
 {
   "name": "@eisbuk/firestore",
-  "version": "1.0.0",
-  "description": "Firestore utilities for Eisbuk",
-  "private": true,
-  "main": "dist/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.js",
-      "default": "./dist.index.es.js"
-    }
-  },
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "lint": "eslint .",
-    "lint:strict": "eslint . --max-warnings=0",
-    "typecheck": "tsc",
-    "test": "bash -c '(trap \"kill 0\" SIGINT; firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles src\")'"
-  },
-  "dependencies": {
-    "@eisbuk/shared": "workspace:*",
-    "firebase-admin": "^9.4.2",
-    "commander": "^8.3.0"
-  },
-  "devDependencies": {
-    "@babel/core": "7.x",
-    "@babel/plugin-transform-runtime": "^7.12.10",
-    "@babel/preset-typescript": "^7.14.5",
-    "@google-cloud/firestore": "^4.13.2",
-    "@grpc/grpc-js": "~1.6.7",
-    "@types/jest": "^27.4.1",
-    "@types/node": "^16.11.10",
-    "@types/uuid": "^8.3.1",
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.33.0",
-    "p-retry": "^4.6.1",
-    "jest": "^27.5.1",
-    "typescript": "~4.4.2",
-    "uuid": "^8.3.0"
-  },
-  "bin": {
-    "eisbuk": "./dist/cli.js"
-  }
+  "version": "1.0.0"
 }

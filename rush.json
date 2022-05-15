@@ -404,6 +404,10 @@
     {
       "packageName": "@eisbuk/firestore",
       "projectFolder": "packages/firestore"
+    },
+    {
+      "packageName": "@eisbuk/backup-restore",
+      "projectFolder": "packages/backup-restore"
     }
   ]
 }
