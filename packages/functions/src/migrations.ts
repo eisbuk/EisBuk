@@ -117,7 +117,7 @@ export const deleteOrphanedBookings = functions
     return { success: true };
   });
 
-export const migrateSlotsCategoriesToExplicitMinors = functions
+export const migrateCategoriesToExplicitMinors = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }, { auth }) => {
     await checkUser(organization, auth);

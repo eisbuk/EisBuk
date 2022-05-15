@@ -170,9 +170,7 @@ describe("Migrations", () => {
           courseMinorsSlotRef.set(courseMinorsSlot),
         ]);
 
-        await invokeFunction(
-          CloudFunction.MigrateSlotsCategoriesToExplicitMinors
-        )();
+        await invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)();
 
         const [resCourse, resPreCompetitive, resCourseMinors] =
           await Promise.all([
@@ -224,9 +222,7 @@ describe("Migrations", () => {
           preCompetitiveCustomerRef.set(preCompetitiveCustomer),
         ]);
 
-        await invokeFunction(
-          CloudFunction.MigrateSlotsCategoriesToExplicitMinors
-        )();
+        await invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)();
 
         const [resCourse, resPreCompetitive] = await Promise.all([
           courseCustomerRef.get(),
@@ -246,7 +242,7 @@ describe("Migrations", () => {
     testWithEmulator("should not allow calls to non-admin", async () => {
       await signOut(getAuth());
       await expect(
-        invokeFunction(CloudFunction.MigrateSlotsCategoriesToExplicitMinors)()
+        invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)()
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
   });
