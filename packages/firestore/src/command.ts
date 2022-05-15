@@ -32,10 +32,18 @@ export function makeProgram(
     });
   }
 
-  program.command("backupAllOrgs").action(backupAllOrgsToFs);
+  program
+    .command("backupAllOrgs")
+    .description(
+      "Backup all organization data to JSON files in the current working directory."
+    )
+    .action(backupAllOrgsToFs);
 
   program
     .command("backup")
+    .description(
+      "Backup a single organization to a JSON file in the current working directory."
+    )
     .argument(
       "<orgId>",
       "The name of the organization that data will be read from."
@@ -44,6 +52,7 @@ export function makeProgram(
 
   program
     .command("restore")
+    .description("Restore an organizations data from a JSON file.")
     .argument(
       "<filePath>",
       "Path to a JSON file of organisation data that will restore/overwrite production data."

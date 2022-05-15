@@ -19,7 +19,7 @@ import { exists } from "./helpers";
  */
 
 /**
- * backupSingleOrgToFs - Write a single organization to a JSON file
+ * backupSingleOrgToFs - Write a single organization to a JSON file in the current working directory
  * @param {string} orgId - An organization id
  */
 export async function backupSingleOrgToFs(orgId: string): Promise<void> {
@@ -44,7 +44,7 @@ export async function backupSingleOrgToFs(orgId: string): Promise<void> {
 }
 
 /**
- * backupAllOrgsToFs - Write all organization data to JSON files
+ * backupAllOrgsToFs - Write all organization data to JSON files in the current working directory
  */
 export async function backupAllOrgsToFs(): Promise<void> {
   try {
