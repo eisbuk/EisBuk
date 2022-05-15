@@ -60,6 +60,7 @@ const OrganizationValidation = Yup.object().shape({
   SmsFrom: Yup.string()
     .matches(/^[a-z0-9]+$/, i18n.t(ValidationMessage.InvalidSmsFrom))
     .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
+  displayName: Yup.string().required(),
 });
 // #endregion validations
 const OrganizationSettings: React.FC<Props> = () => {
