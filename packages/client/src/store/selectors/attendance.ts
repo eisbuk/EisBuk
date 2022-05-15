@@ -4,7 +4,7 @@ import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import { compareCustomers } from "@/utils/customers";
+import { compareCustomersBookedIntervals } from "@/utils/customers";
 import { getSlotTimespan } from "@/utils/helpers";
 
 export const getSlotsWithAttendance = (
@@ -44,7 +44,6 @@ export const getSlotsWithAttendance = (
 
   return slotIds.map((slotId) => {
     const slotsAttendance = attendance[slotId]?.attendances;
-    // create customer + attendance-for-customer entries for slot
     const customers: AttendanceCardProps["customers"] = Object.keys(
       slotsAttendance
     )
@@ -52,8 +51,9 @@ export const getSlotsWithAttendance = (
         ...allCustomers[customerId],
         ...slotsAttendance[customerId],
       }))
-      // sort customers alphabetically
-      .sort(compareCustomers);
+
+      // sort customers according to booked interval
+      .sort(compareCustomersBookedIntervals);
 
     return { ...slotsInDay[slotId], customers };
   });

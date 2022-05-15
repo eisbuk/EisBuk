@@ -3,14 +3,14 @@ import React from "react";
 import AttendanceSheet from "./AttendanceSheet";
 import AttendanceSheetSlot from "./AttendanceSheetSlot";
 
-import { fromISO } from "@eisbuk/shared";
+import { fromISO, SlotType } from "@eisbuk/shared";
 
 import {
   baseAttendanceCard,
   intervalStrings as intervals,
 } from "@/__testData__/attendance";
 
-import { saul, walt } from "@/__testData__/customers";
+import { saul, walt, gus, jane } from "@/__testData__/customers";
 
 export default {
   title: "Attendance Sheet",
@@ -28,13 +28,26 @@ const waltBookings = {
 };
 
 const customers = [
-  { ...saul, ...saulBookings },
   { ...walt, ...waltBookings },
+  { ...saul, ...saulBookings },
+  { ...gus, ...waltBookings },
+];
+const customers2 = [
+  { ...walt, ...waltBookings },
+  { ...jane, ...waltBookings },
+  { ...saul, ...saulBookings },
+
+  { ...gus, ...waltBookings },
 ];
 
 const slots = [
-  { ...baseAttendanceCard, customers, notes: "this slot is in rink 2" },
-  { ...baseAttendanceCard, customers },
+  {
+    ...baseAttendanceCard,
+    type: SlotType.OffIce,
+    customers,
+    notes: "this slot is in rink 2",
+  },
+  { ...baseAttendanceCard, customers: customers2 },
 ];
 const date = fromISO(baseAttendanceCard.date);
 
