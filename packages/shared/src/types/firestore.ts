@@ -76,6 +76,10 @@ export interface OrganizationData {
    * for a given organization
    */
   existingSecrets?: string[];
+  /**
+   * Physical address of the gym, ice ring, etc. where the skating lessons are held
+   */
+  location?: string;
 }
 
 // #endregion organizations

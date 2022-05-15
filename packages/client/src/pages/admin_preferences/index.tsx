@@ -11,6 +11,7 @@ import i18n, {
   ActionButton,
   ValidationMessage,
   useTranslation,
+  OrganizationLabel,
 } from "@eisbuk/translations";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -29,13 +30,15 @@ import { getOrganizationSettings } from "@/store/selectors/app";
 interface Props {
   organization: OrganizationData;
 }
+// trying to get the key of smsFrom in organization
 const smsFields = [
   {
     name: "smsFrom",
+    label: OrganizationLabel[OrganizationLabel.SmsFrom],
   },
   {
     name: "smsTemplate",
-
+    label: OrganizationLabel[OrganizationLabel.SmsTemplate],
     multiline: true,
   },
 ];
@@ -43,17 +46,26 @@ const smsFields = [
 const emailFields = [
   {
     name: "emailNameFrom",
+    label: OrganizationLabel[OrganizationLabel.EmailNameFrom],
   },
   {
     name: "emailFrom",
+    label: OrganizationLabel[OrganizationLabel.EmailFrom],
   },
   {
     name: "emailTemplate",
-
+    label: OrganizationLabel[OrganizationLabel.EmailTemplate],
     multiline: true,
   },
 ];
-const nameField = [{ name: "displayName" }];
+
+const generalFields = [
+  {
+    name: "displayName",
+    label: OrganizationLabel[OrganizationLabel.DisplayName],
+  },
+  { name: "location", label: OrganizationLabel[OrganizationLabel.Location] },
+];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -99,7 +111,7 @@ const OrganizationSettings: React.FC<Props> = () => {
               <Divider />
               <Form className={classes.form}>
                 <FormControl component="fieldset">
-                  <FormSection content={nameField} />
+                  <FormSection content={generalFields} name="General" />
                   <FormSection content={emailFields} name="Email" />
                   <FormSection content={smsFields} name="SMS" />
                 </FormControl>

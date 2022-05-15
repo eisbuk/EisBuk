@@ -24,8 +24,12 @@ import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { saul } from "@/__testData__/customers";
 
-const customersCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Customers}`;
-const bookingsCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Bookings}`;
+const customersCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Customers}`;
+const bookingsCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Bookings}`;
 
 describe("Customer triggers", () => {
   beforeEach(async () => {

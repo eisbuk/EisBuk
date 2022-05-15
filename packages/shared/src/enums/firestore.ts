@@ -14,6 +14,11 @@ export enum Collection {
    * accessed from cloud function environment and written to from the client.
    */
   Secrets = "secrets",
+  /**
+   * A collection for each organization for fields in
+   * an organization we want made public and accessible for customers
+   */
+  PublicOrgInfo = "publicOrgInfo",
 }
 
 export enum OrgSubCollection {

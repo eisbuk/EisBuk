@@ -30,41 +30,44 @@ const getAttendanceCollPath = () =>
  * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
  */
-export const markAttendance = ({
-  attendedInterval,
-  slotId,
-  customerId,
-}: {
-  slotId: SlotInterface["id"];
-  customerId: Customer["id"];
-  attendedInterval: string;
-}): FirestoreThunk => async (dispatch, getState) => {
-  try {
-    const localState = getState();
+export const markAttendance =
+  ({
+    attendedInterval,
+    slotId,
+    customerId,
+  }: {
+    slotId: SlotInterface["id"];
+    customerId: Customer["id"];
+    attendedInterval: string;
+  }): FirestoreThunk =>
+  async (dispatch, getState) => {
+    try {
+      const localState = getState();
 
-    const db = getFirestore();
-    const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
+      const db = getFirestore();
+      const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
 
-    // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-    const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
+      // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
+      const localAttendnaceEntry =
+        localState.firestore.data.attendance![slotId];
 
-    // update customer attendance from local store with new values
-    const updatedCustomerAttendance: CustomerAttendance = {
-      bookedInterval:
-        localAttendnaceEntry.attendances[customerId]?.bookedInterval || null,
-      attendedInterval: attendedInterval,
-    };
+      // update customer attendance from local store with new values
+      const updatedCustomerAttendance: CustomerAttendance = {
+        bookedInterval:
+          localAttendnaceEntry.attendances[customerId]?.bookedInterval || null,
+        attendedInterval: attendedInterval,
+      };
 
-    // update month document with new values
-    await setDoc(
-      slotToUpdate,
-      { attendances: { [customerId]: updatedCustomerAttendance } },
-      { merge: true }
-    );
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+      // update month document with new values
+      await setDoc(
+        slotToUpdate,
+        { attendances: { [customerId]: updatedCustomerAttendance } },
+        { merge: true }
+      );
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };
 
 /**
  * Function called to mark customer absent on given slot:
@@ -75,52 +78,53 @@ export const markAttendance = ({
  * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
  */
-export const markAbsence = ({
-  slotId,
-  customerId,
-}: {
-  slotId: SlotInterface["id"];
-  customerId: Customer["id"];
-}): FirestoreThunk => async (dispatch, getState) => {
-  try {
-    const localState = getState();
+export const markAbsence =
+  ({
+    slotId,
+    customerId,
+  }: {
+    slotId: SlotInterface["id"];
+    customerId: Customer["id"];
+  }): FirestoreThunk =>
+  async (dispatch, getState) => {
+    try {
+      const localState = getState();
 
-    const db = getFirestore();
-    const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
+      const db = getFirestore();
+      const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
 
-    // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
-    const localAttendnaceEntry = localState.firestore.data.attendance![slotId];
+      // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
+      const localAttendnaceEntry =
+        localState.firestore.data.attendance![slotId];
 
-    // extract customer entry from slot's attendance
-    const {
-      [customerId]: customerEntry,
-      ...attendanceForSlot
-    } = localAttendnaceEntry.attendances;
+      // extract customer entry from slot's attendance
+      const { [customerId]: customerEntry, ...attendanceForSlot } =
+        localAttendnaceEntry.attendances;
 
-    // if booked not null, customer should stay in db (only mark absence)
-    const { bookedInterval } = customerEntry || {};
-    const updatedCustomerAttendance = bookedInterval
-      ? {
-          [customerId]: {
-            bookedInterval,
-            attendedInterval: null,
-          },
-        }
-      : // if not booked and not attended, omit customer from updated document
-        {};
+      // if booked not null, customer should stay in db (only mark absence)
+      const { bookedInterval } = customerEntry || {};
+      const updatedCustomerAttendance = bookedInterval
+        ? {
+            [customerId]: {
+              bookedInterval,
+              attendedInterval: null,
+            },
+          }
+        : // if not booked and not attended, omit customer from updated document
+          {};
 
-    // create proper structure for attendance entry
-    const attendanceEntry: SlotAttendnace = {
-      ...localAttendnaceEntry,
-      attendances: {
-        ...attendanceForSlot,
-        ...updatedCustomerAttendance,
-      },
-    };
+      // create proper structure for attendance entry
+      const attendanceEntry: SlotAttendnace = {
+        ...localAttendnaceEntry,
+        attendances: {
+          ...attendanceForSlot,
+          ...updatedCustomerAttendance,
+        },
+      };
 
-    // update month document with new values
-    await setDoc(slotToUpdate, attendanceEntry);
-  } catch {
-    dispatch(showErrSnackbar);
-  }
-};
+      // update month document with new values
+      await setDoc(slotToUpdate, attendanceEntry);
+    } catch {
+      dispatch(showErrSnackbar);
+    }
+  };

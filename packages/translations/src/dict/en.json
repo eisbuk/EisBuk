@@ -99,8 +99,12 @@
     "SmsFrom": "SMS From",
     "SmsTemplate": "SMS Template",
     "DisplayName": "Organization Name",
+    "Location": "Location",
     "Admins": "Admins",
-    "AddNewAdmin": "Add New Admin"
+    "AddNewAdmin": "Add New Admin",
+    "Email": "Email",
+    "SMS": "SMS",
+    "General": "General"
   },
   "Validations": {
     "Email": "Please insert a valid email",
@@ -144,6 +148,7 @@
 
     "BookInterval": "Book",
     "FinalizeBookings": "Finalize",
+    "AddToCalendar": "Add To Calendar",
 
     "CustomerBookings": "Bookings",
     "SendBookingsEmail": "Send bookings link email",
@@ -231,7 +236,9 @@
     "ConfirmCreateSlot": "Confirm slot creation",
     "ConfirmEditSlot": "Confirm slot edits"
   },
-
+  "BookingAria": {
+    "BookButton": "Book"
+  },
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"

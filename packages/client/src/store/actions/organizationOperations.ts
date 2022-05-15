@@ -23,6 +23,7 @@ export const updateOrganization =
     try {
       const db = getFirestore();
       const docRef = doc(db, getOrganizationCollPath());
+
       await setDoc(docRef, orgData, { merge: true });
 
       dispatch(

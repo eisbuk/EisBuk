@@ -122,8 +122,12 @@ export enum OrganizationLabel {
   SmsFrom = "OrganizationLabel.SmsFrom",
   SmsTemplate = "OrganizationLabel.SmsTemplate",
   DisplayName = "OrganizationLabel.DisplayName",
+  Location = "OrganizationLabel.Location",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
+  Email = "OrganizationLabel.Email",
+  SMS = "OrganizationLabel.SMS",
+  General = "OrganizationLabel.General",
 }
 // #endregion forms
 
@@ -158,6 +162,7 @@ export enum ActionButton {
 
   BookInterval = "ActionButton.BookInterval",
   FinalizeBookings = "ActionButton.FinalizeBookings",
+  AddToCalendar = "ActionButton.AddToCalendar",
 
   CustomerBookings = "ActionButton.CustomerBookings",
   SendBookingsEmail = "ActionButton.SendBookingsEmail",
@@ -203,7 +208,7 @@ export enum NotificationMessage {
 
   EmailSent = "Notification.EmailSent",
   SMSSent = "Notification.SMSSent",
-  BookingDateExtended = "Notification.BookingdateExtended",
+  BookingDateExtended = "Notification.BookingDateExtended",
 
   Error = "Notification.Error",
 }
@@ -259,6 +264,9 @@ export enum SlotFormAria {
   CancelSlot = "SlotFormAria.CancelSlot",
   ConfirmCreateSlot = "SlotFormAria.ConfirmCreateSlot",
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
+}
+export enum BookingAria {
+  BookButton = "BookingAria.BookButton",
 }
 // #endregion aria-labels
 
