@@ -2,6 +2,7 @@ export * from "./enums/firestore";
 export * from "./enums/errorMessages";
 export * from "./types/firestore";
 export * from "./types/cloudFunctions";
+export * from "./types/misc";
 export * from "./utils";
 
 export * from "./deprecated";

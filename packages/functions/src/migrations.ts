@@ -8,6 +8,8 @@ import {
   DeprecatedCategory,
   OrgSubCollection,
   SlotInterface,
+  CategoryUnion,
+  Customer,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -122,28 +124,37 @@ export const migrateSlotsCategoriesToExplicitMinors = functions
 
     const batch = admin.firestore().batch();
 
-    const slotsRef = admin
+    const orgRef = admin
       .firestore()
       .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Slots);
+      .doc(organization);
+    const slotsRef = orgRef.collection(OrgSubCollection.Slots);
+    const customersRef = orgRef.collection(OrgSubCollection.Customers);
 
-    const allSlots = await slotsRef.get();
+    const [allSlots, allCustomers] = await Promise.all([
+      slotsRef.get(),
+      customersRef.get(),
+    ]);
 
+    // Enqueue slot updates
     allSlots.forEach((slot) => {
-      const updatedCategories: (Category | DeprecatedCategory)[] = [];
+      const updatedCategories: CategoryUnion[] = [];
 
       const data = slot.data() as SlotInterface;
-      const categories = data.categories as (Category | DeprecatedCategory)[];
+      const categories = data.categories as CategoryUnion[];
 
+      // Update slot only if needed: if at least one of the categories needs updating
+      let shouldUpdate = false;
       categories.forEach((c) => {
         let category = c;
         switch (category) {
           case DeprecatedCategory.Course:
             category = Category.CourseMinors;
+            shouldUpdate = true;
             break;
           case DeprecatedCategory.PreCompetitive:
             category = Category.PreCompetitiveMinors;
+            shouldUpdate = true;
             break;
           default:
         }
@@ -153,8 +164,31 @@ export const migrateSlotsCategoriesToExplicitMinors = functions
         }
       });
 
-      batch.set(slot.ref, { categories: updatedCategories }, { merge: true });
+      if (shouldUpdate) {
+        batch.set(slot.ref, { categories: updatedCategories }, { merge: true });
+      }
+    });
+
+    // Enqueue customer updates
+    allCustomers.forEach((customer) => {
+      const data = customer.data() as Customer;
+      let category = data.category as CategoryUnion;
+
+      switch (category) {
+        case DeprecatedCategory.Course:
+          category = Category.CourseMinors;
+          break;
+        case DeprecatedCategory.PreCompetitive:
+          category = Category.PreCompetitiveMinors;
+          break;
+        default:
+          // No changes needed, no updates batched
+          return;
+      }
+      batch.set(customer.ref, { category }, { merge: true });
     });
 
     await batch.commit();
+
+    return { success: true };
   });

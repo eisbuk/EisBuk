@@ -36,6 +36,7 @@ import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import * as customers from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
+import { saul } from "@/__testData__/customers";
 
 const organization = getOrganization();
 
@@ -194,11 +195,59 @@ describe("Migrations", () => {
       }
     );
 
-    // testWithEmulator("should not allow calls to non-admin", async () => {
-    //   await signOut(getAuth());
-    //   await expect(
-    //     invokeFunction(CloudFunction.DeleteOrphanedBookings)()
-    //   ).rejects.toThrow(HTTPSErrors.Unauth);
-    // });
+    testWithEmulator(
+      'should replace "pre-competitive" and "course" category entries with corresponging "-minor" category entries, in customer documents',
+      async () => {
+        const courseCustomer = {
+          ...saul,
+          category: DeprecatedCategory.Course,
+          id: "course-customer",
+        };
+        const preCompetitiveCustomer = {
+          ...saul,
+          category: DeprecatedCategory.PreCompetitive,
+          id: "pre-competitive-customer",
+        };
+        const customersRef = adminDb.collection(
+          `${Collection.Organizations}/${getOrganization()}/${
+            OrgSubCollection.Customers
+          }`
+        );
+
+        const courseCustomerRef = customersRef.doc(courseCustomer.id);
+        const preCompetitiveCustomerRef = customersRef.doc(
+          preCompetitiveCustomer.id
+        );
+
+        await Promise.all([
+          courseCustomerRef.set(courseCustomer),
+          preCompetitiveCustomerRef.set(preCompetitiveCustomer),
+        ]);
+
+        await invokeFunction(
+          CloudFunction.MigrateSlotsCategoriesToExplicitMinors
+        )();
+
+        const [resCourse, resPreCompetitive] = await Promise.all([
+          courseCustomerRef.get(),
+          preCompetitiveCustomerRef.get(),
+        ]);
+        expect(resCourse.data()).toEqual({
+          ...courseCustomer,
+          category: Category.CourseMinors,
+        });
+        expect(resPreCompetitive.data()).toEqual({
+          ...preCompetitiveCustomer,
+          category: Category.PreCompetitiveMinors,
+        });
+      }
+    );
+
+    testWithEmulator("should not allow calls to non-admin", async () => {
+      await signOut(getAuth());
+      await expect(
+        invokeFunction(CloudFunction.MigrateSlotsCategoriesToExplicitMinors)()
+      ).rejects.toThrow(HTTPSErrors.Unauth);
+    });
   });
 });

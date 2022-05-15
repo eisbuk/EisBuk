@@ -1,4 +1,5 @@
-import { Category, DeprecatedCategory } from "@eisbuk/shared";
+import { Category } from "../enums/firestore";
+import { DeprecatedCategory } from "../enums/deprecated/firestore";
 
 /**
  * A union type of deprecated and currently supported categories.

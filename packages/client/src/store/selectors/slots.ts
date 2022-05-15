@@ -7,10 +7,10 @@ import {
   SlotsById,
   luxon2ISODate,
   DeprecatedCategory,
+  CategoryUnion,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
-import { CategoryUnion } from "@/types/firestore";
 
 // #region localHelpers
 interface CategoryFilter {
@@ -32,7 +32,9 @@ const createCategoryFilter = (category: CategoryUnion): CategoryFilter =>
         categories.includes(Category.PreCompetitiveAdults)
     : // For customers belonging to "adult-" prefixed category, we're showing the specific category slots
     // as well as general "adult" slots
-    [Category.PreCompetitiveAdults, Category.CourseAdults].includes(category)
+    [Category.PreCompetitiveAdults, Category.CourseAdults].includes(
+        category as Category
+      )
     ? (categories) =>
         categories.includes(DeprecatedCategory.Adults) ||
         categories.includes(category)

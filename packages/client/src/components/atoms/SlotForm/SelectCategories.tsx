@@ -9,7 +9,12 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
-import { SlotType, Category, DeprecatedCategory } from "@eisbuk/shared";
+import {
+  SlotType,
+  Category,
+  DeprecatedCategory,
+  CategoryUnion,
+} from "@eisbuk/shared";
 import {
   useTranslation,
   CategoryLabel,
@@ -49,13 +54,10 @@ const SelectCategories: React.FC = () => {
     }
   }, [slotType]);
 
-  // Include deprecated categories for backwards compatibility
-  type CategoryString = DeprecatedCategory | Category;
-
-  const deprecatedCategories: CategoryString[] =
+  const deprecatedCategories: CategoryUnion[] =
     Object.values(DeprecatedCategory);
   const availableCategories = (
-    Object.values(Category) as CategoryString[]
+    Object.values(Category) as CategoryUnion[]
   ).concat(deprecatedCategories);
 
   return (
@@ -74,7 +76,7 @@ const SelectCategories: React.FC = () => {
             {...{ category, disabled, key: category }}
             // Disable if explicitly specified, or deprecated
             disabled={Boolean(
-              deprecatedCategories.includes(category as CategoryString) ||
+              deprecatedCategories.includes(category as CategoryUnion) ||
                 disabled
             )}
           />
