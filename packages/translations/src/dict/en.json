@@ -66,7 +66,9 @@
     "Competitive": "competitive"
   },
   "DeprecatedCategory": {
-    "Adults": "adults"
+    "Adults": "adults",
+    "PreCompetitive": "pre-competitive",
+    "Course": "course"
   },
 
   "FormTitle": {

@@ -73,6 +73,8 @@ export const CategoryLabel = {
   [Category.Competitive]: "Category.Competitive",
   /** @TODO This should be removed in the future and is here for temporary backwards compatibility */
   [DeprecatedCategory.Adults]: "DeprecatedCategory.Adults",
+  [DeprecatedCategory.PreCompetitive]: "DeprecatedCategory.PreCompetitive",
+  [DeprecatedCategory.Course]: "DeprecatedCategory.Course",
 };
 // #endregion dataEntries
 
