@@ -178,25 +178,73 @@ export const testStore = createTestStore({
 /**
  * The struct we're expecting to receive for selector's test result (for test date)
  */
-export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
+export const expectedStructByName: Omit<AttendanceCardProps, "allCustomers">[] =
+  [
+    {
+      ...slotsForADay["slot-0"],
+      customers: [
+        // customers should be sorted alphabetically (surname first)
+        {
+          // surname: goodman
+          ...saul,
+          ...attendance["slot-0"].attendances[saul.id],
+        },
+        {
+          // surname: white
+          ...walt,
+          ...attendance["slot-0"].attendances[walt.id],
+        },
+        {
+          // surname: yang
+          ...jian,
+          ...attendance["slot-0"].attendances[jian.id],
+        },
+      ],
+    },
+    {
+      ...slotsForADay["slot-1"],
+      customers: [
+        {
+          ...jian,
+          ...attendance["slot-1"].attendances[jian.id],
+        },
+      ],
+    },
+    {
+      ...slotsForADay["slot-2"],
+      customers: [
+        {
+          ...walt,
+          ...attendance["slot-2"].attendances[walt.id],
+        },
+      ],
+    },
+  ];
+/**
+ * The struct we're expecting to receive for selector's test result (for test date) when sorted by bookedInterval
+ */
+export const expectedStructByBookedInterval: Omit<
+  AttendanceCardProps,
+  "allCustomers"
+>[] = [
   {
     ...slotsForADay["slot-0"],
     customers: [
-      // customers should be sorted alphabetically (surname first)
+      // customers should be sorted by their bookedInterval
+      // bookedInterval: "09:00-10:00"
       {
-        // surname: goodman
-        ...saul,
-        ...attendance["slot-0"].attendances[saul.id],
-      },
-      {
-        // surname: white
         ...walt,
         ...attendance["slot-0"].attendances[walt.id],
       },
       {
-        // surname: yang
+        // bookedInterval: "09:00-10:00"
         ...jian,
         ...attendance["slot-0"].attendances[jian.id],
+      },
+      {
+        // bookedInterval: "10:00-11:00"
+        ...saul,
+        ...attendance["slot-0"].attendances[saul.id],
       },
     ],
   },
@@ -204,6 +252,7 @@ export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
     ...slotsForADay["slot-1"],
     customers: [
       {
+        // "13:00-14:00"
         ...jian,
         ...attendance["slot-1"].attendances[jian.id],
       },
@@ -213,6 +262,7 @@ export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
     ...slotsForADay["slot-2"],
     customers: [
       {
+        // "15:00-17:00"
         ...walt,
         ...attendance["slot-2"].attendances[walt.id],
       },

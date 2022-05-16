@@ -22,6 +22,7 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import { AttendanceSortBy } from "@/enums/other";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
@@ -33,7 +34,9 @@ const DashboardPage: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const attendanceSlots = useSelector(getSlotsWithAttendance);
+  const attendanceSlots = useSelector(
+    getSlotsWithAttendance(AttendanceSortBy.BookedInterval)
+  );
 
   const date = useSelector(getCalendarDay);
 
