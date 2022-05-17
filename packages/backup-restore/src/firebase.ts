@@ -1,19 +1,26 @@
-import admin from "firebase-admin";
+import admin, { ServiceAccount } from "firebase-admin";
 
-const __isTest__ = process.env.NODE_ENV === "test";
+interface Options {
+  serviceAccount: ServiceAccount;
+  useEmulator?: boolean;
+  emulatorHost?: string;
+}
 
-const projectId = process.env.FIREBASE_CREDENTIALS_project_id ?? "";
-const clientEmail = process.env.FIREBASE_CREDENTIALS_client_email ?? "";
+/**
+ * intializeApp - Wrapper for 'firebase-admin' init
+ */
+export function initializeApp({
+  serviceAccount,
+  useEmulator = false,
+  emulatorHost = "localhost:8081",
+}: Options): void {
+  if (useEmulator) {
+    process.env["FIRESTORE_EMULATOR_HOST"] = emulatorHost;
+  }
 
-const _privateKey = process.env.FIREBASE_CREDENTIALS_private_key;
-const privateKey = _privateKey ? _privateKey.replace(/\\n/g, "n") : "";
+  const credentials = useEmulator
+    ? { projectId: serviceAccount.projectId }
+    : { credential: admin.credential.cert(serviceAccount) };
 
-if (!__isTest__) {
-  admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId,
-      clientEmail,
-      privateKey,
-    }),
-  });
+  admin.initializeApp(credentials);
 }

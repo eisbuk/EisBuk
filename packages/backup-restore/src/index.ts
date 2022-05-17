@@ -1,8 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 
-import "./firebase";
-
 import {
   IOperationFailure,
   IOperationSuccess,
