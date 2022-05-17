@@ -217,6 +217,7 @@
     "SeeFutureDates": "Avanti",
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlots": "Copia slot",
+    "CopiedSlotsBadge": "Slot copiati",
     "PasteSlots": "Incolla slot",
     "CreateSlots": "Crea nuovo slot"
   },
