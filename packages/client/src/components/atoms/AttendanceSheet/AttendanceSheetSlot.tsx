@@ -47,6 +47,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
           >
             <TableCell
               align="center"
+              size="small"
               className={
                 type === SlotType.Ice
                   ? classes.iceInterval
@@ -68,7 +69,9 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
             <TableCell align="center" className={classes.tableCell}>
               {bookedTotalHours || attendedTotalHours}
             </TableCell>
-            <TableCell align="center" className={classes.tableCell}></TableCell>
+            <TableCell align="center" className={classes.tableCell}>
+              {notes}
+            </TableCell>
             <TableCell align="center" className={classes.tableCell}>
               {}
             </TableCell>
@@ -78,9 +81,6 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
             >{`${customer.name} ${customer.surname}`}</TableCell>
             <TableCell align="center" className={classes.tableCell}>
               {}
-            </TableCell>
-            <TableCell align="center" className={classes.tableCell}>
-              {notes}
             </TableCell>
           </TableRow>
         );
@@ -94,22 +94,19 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
 const useStyles = makeStyles(() =>
   createStyles({
     divider: {
-      borderWidth: "10px",
+      borderWidth: "0.3rem",
       borderColor: "rgba(255, 255, 255, 1)",
     },
     tableCell: {
       border: "solid rgba(0, 0, 0, 0.2)",
       borderWidth: "2px 2px 5px 2px",
-      "@media print": {
-        border: "solid rgba(0, 0, 0, 0.2)",
-        borderWidth: "2px 2px 2px 2px",
-        backgroundColor: "red",
-      },
+      padding: "0px",
     },
     iceInterval: {
       border: "solid rgba(0, 0, 0, 0.2)",
       borderWidth: "2px 2px 2px 2px",
       backgroundColor: "#42a5f5",
+      padding: "0px",
 
       "@media print": {
         border: "solid rgba(0, 0, 0, 0.2)",
@@ -122,6 +119,7 @@ const useStyles = makeStyles(() =>
       border: "solid rgba(0, 0, 0, 0.2)",
       borderWidth: "2px 2px 2px 2px",
       backgroundColor: "#ffa726",
+      padding: "0px",
 
       "@media print": {
         border: "solid rgba(0, 0, 0, 0.2)",

@@ -281,7 +281,6 @@ export enum PrintableAttendance {
   Start = "PrintableAttendance.Start",
   End = "PrintableAttendance.End",
   TotalHours = "PrintableAttendance.TotalHours",
-  Ring = "PrintableAttendance.Ring",
   Trainer = "PrintableAttendance.Trainer",
   Athlete = "PrintableAttendance.Athlete",
   Signature = "PrintableAttendance.Signature",

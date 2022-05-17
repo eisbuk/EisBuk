@@ -52,7 +52,6 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
         <span
           style={{
             backgroundColor: theme.palette.offIce,
-            printColorAdjust: "exact",
           }}
           className={classes.offIceLegend}
         >
@@ -73,19 +72,16 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
                 {t(PrintableAttendance.TotalHours)}
               </TableCell>
               <TableCell align="center" className={classes.tableCell}>
-                {t(PrintableAttendance.Ring)}
+                {t(PrintableAttendance.Note)}
               </TableCell>
-              <TableCell align="center" className={classes.tableCell}>
+              <TableCell align="center" className={classes.wideCell}>
                 {t(PrintableAttendance.Trainer)}
               </TableCell>
-              <TableCell align="center" className={classes.tableCell}>
+              <TableCell align="center" className={classes.wideCell}>
                 {t(PrintableAttendance.Athlete)}
               </TableCell>
-              <TableCell align="center" className={classes.tableCell}>
+              <TableCell align="center" className={classes.wideCell}>
                 {t(PrintableAttendance.Signature)}
-              </TableCell>
-              <TableCell align="center" className={classes.tableCell}>
-                {t(PrintableAttendance.Note)}
               </TableCell>
             </TableRow>
           </TableHead>
@@ -101,36 +97,47 @@ const useStyles = makeStyles((theme) => ({
     justifyContent: "center",
     alignItems: "center",
     fontWeight: 600,
-    padding: 20,
     background: theme.palette.primary.main,
     fontFamily: theme.typography.fontFamily,
     color: theme.palette.primary.contrastText,
   },
   date: {
     marginRight: "5rem",
+    "@media print": {
+      color: "black",
+    },
   },
   iceLegend: {
     margin: "0.25rem",
     padding: "0.25rem 0.5rem",
     borderRadius: "1rem",
     fontWeight: "bold",
+    "@media print": {
+      printColorAdjust: "exact",
+    },
   },
   offIceLegend: {
     margin: "0.25rem",
     padding: "0.25rem 0.5rem",
     borderRadius: "1rem",
     fontWeight: "bold",
+    "@media print": {
+      printColorAdjust: "exact",
+    },
   },
   flexCenter: {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    "@media print": {
+      margin: "0px",
+    },
   },
   tableCell: {
-    wordWrap: "break-word",
-    maxWidth: "5rem",
     borderWidth: "1px 2px 2px 1px",
     border: "solid rgba(0, 0, 0, 0.2)",
+    padding: "0px",
+    minWidth: "3.5rem",
   },
   heading: {
     border: "3px solid rgba(224, 224, 224, 224)",
@@ -138,6 +145,13 @@ const useStyles = makeStyles((theme) => ({
   tableContainer: {
     borderWidth: "1px 1px 1px 1px",
     border: "solid rgba(0, 0, 0, 0.2)",
+  },
+  wideCell: {
+    width: "20rem",
+    wordWrap: "break-word",
+    borderWidth: "1px 2px 2px 1px",
+    border: "solid rgba(0, 0, 0, 0.2)",
+    padding: "0px",
   },
 }));
 export default AttendanceSheet;
