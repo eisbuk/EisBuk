@@ -38,11 +38,11 @@ export function makeProgram(
     .command("config:get")
     .description(
       `
-    Set/get config options using -o | --option <name>
+    Get config options using -o | --option <name>
     Options include: ${listOptions()}
     `
     )
-    .option("-o", "--option <name>")
+    .option("-o, --option <name>")
     .action(getConfigOption);
 
   program

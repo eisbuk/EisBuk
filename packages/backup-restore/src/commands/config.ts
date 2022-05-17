@@ -1,7 +1,6 @@
 import { OptionValues } from "commander";
 
-import { configstore } from "../configstore";
-import { ConfigOptions } from "../types";
+import { configstore, ConfigOptions } from "../configstore";
 
 /**
  * Get config option
@@ -9,21 +8,26 @@ import { ConfigOptions } from "../types";
 export function getConfigOption(options: OptionValues): void {
   const configOption = options.option;
 
+  let option;
+
   switch (configOption) {
     case ConfigOptions.ActiveProject:
-      getActiveProject();
+      option = getActiveProject();
       break;
     case ConfigOptions.EmulatorHost:
-      getEmulatorHost();
+      option = getEmulatorHost();
       break;
-    case ConfigOptions.UseEmulator:
-      getUseEmulator;
+    case ConfigOptions.UseEmulators:
+      option = getUseEmulator();
       break;
     default:
       console.log(
-        `Config option not recognised. Options include: ${listOptions()}`
+        `Config option not recognised. Options include:${listOptions()}`
       );
+      return;
   }
+
+  console.log(option);
 }
 
 /**
@@ -34,7 +38,7 @@ export function listOptions(): string {
 
   return options
     .filter((opt) => opt !== ConfigOptions.Projects)
-    .map((opt, ix) => `${opt} ${ix !== options.length - 1 ? "-" : ""}`)
+    .map((opt) => ` '${opt}'`)
     .toString();
 }
 
@@ -49,7 +53,7 @@ function getEmulatorHost(): string {
  * Get use emulator
  */
 function getUseEmulator(): boolean {
-  return configstore.get(ConfigOptions.UseEmulator);
+  return configstore.get(ConfigOptions.UseEmulators);
 }
 
 /**

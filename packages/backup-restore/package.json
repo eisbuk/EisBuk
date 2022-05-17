@@ -23,7 +23,7 @@
     "@eisbuk/shared": "workspace:*",
     "firebase-admin": "^9.4.2",
     "commander": "^8.3.0",
-    "configstore": "~6.0.0"
+    "configstore": "^5.0.0"
   },
   "devDependencies": {
     "@babel/core": "7.x",
