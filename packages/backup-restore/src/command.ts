@@ -6,6 +6,8 @@ import {
   restoreSingleOrgFromFs,
 } from "./";
 
+import { getConfigOption, listOptions } from "./commands/config";
+
 interface programOptions {
   exitOverride?: boolean;
   suppressOutput?: boolean;
@@ -31,6 +33,17 @@ export function makeProgram(
       writeErr: () => {},
     });
   }
+
+  program
+    .command("config:get")
+    .description(
+      `
+    Set/get config options using -o | --option <name>
+    Options include: ${listOptions()}
+    `
+    )
+    .option("-o", "--option <name>")
+    .action(getConfigOption);
 
   program
     .command("backupAllOrgs")

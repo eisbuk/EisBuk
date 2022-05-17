@@ -41,3 +41,17 @@ export enum FsErrors {
   FILE_NOT_FOUND = "File not found at the specified path.",
   INVALID_FILE = "File does not have valid .json extension type.",
 }
+
+export enum ConfigOptions {
+  Projects = "projects",
+  ActiveProject = "activeProjects",
+  UseEmulator = "useEmulator",
+  EmulatorHost = "emulatorHost",
+}
+
+export interface Config {
+  projects: string[];
+  activeProject: string | null;
+  useEmulators: boolean;
+  emulatorHost: string;
+}
