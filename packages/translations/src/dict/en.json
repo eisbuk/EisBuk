@@ -220,6 +220,7 @@
     "SeeFutureDates": "See future dates",
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlots": "Copy slots from",
+    "CopiedSlotsBadge": "Copied slots on",
     "PasteSlots": "Paste copied slots on",
     "CreateSlots": "Create new slots on"
   },

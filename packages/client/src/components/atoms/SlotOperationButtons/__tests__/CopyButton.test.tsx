@@ -22,9 +22,10 @@ import * as copyPasteActions from "@/store/actions/copyPaste";
 import { __copyButtonId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
-
+const mockSelector = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
 }));
 
 describe("SlotOperationButtons", () => {
