@@ -82,6 +82,9 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
             <TableCell align="center" className={classes.tableCell}>
               {}
             </TableCell>
+            <TableCell align="center" className={classes.tableCell}>
+              {}
+            </TableCell>
           </TableRow>
         );
       })}

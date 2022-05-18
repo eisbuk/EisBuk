@@ -74,7 +74,7 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
               <TableCell align="center" className={classes.tableCell}>
                 {t(PrintableAttendance.Note)}
               </TableCell>
-              <TableCell align="center" className={classes.wideCell}>
+              <TableCell align="center" className={classes.tableCell}>
                 {t(PrintableAttendance.Trainer)}
               </TableCell>
               <TableCell align="center" className={classes.wideCell}>
@@ -82,6 +82,9 @@ const AttendanceSheet: React.FC<Props> = ({ date, children }) => {
               </TableCell>
               <TableCell align="center" className={classes.wideCell}>
                 {t(PrintableAttendance.Signature)}
+              </TableCell>
+              <TableCell align="center" className={classes.wideCell}>
+                {t(PrintableAttendance.Note)}
               </TableCell>
             </TableRow>
           </TableHead>
