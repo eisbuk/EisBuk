@@ -208,7 +208,9 @@
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
     "Placeholder": "gg/mm/aaaa",
-    "Today": "Oggi"
+    "Today": "Oggi",
+    "FullWithWeekday": "{{ date, DDDD }}",
+    "Date": "Data"
   },
 
   "AdminAria": {
@@ -244,5 +246,14 @@
   },
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
+  },
+  "PrintableAttendance": {
+    "Start": "Inizio",
+    "End": "Fine",
+    "TotalHours": "Ore Totali",
+    "Trainer": "Insegnante",
+    "Athlete": "Atleta",
+    "Signature": "Firma",
+    "Note": "Note"
   }
 }

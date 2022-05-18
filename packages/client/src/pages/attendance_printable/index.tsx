@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 
-import Container from "@mui/material/Container";
 import IconButton from "@mui/material/IconButton";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -23,6 +22,7 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import { AttendanceSortBy } from "@/enums/other";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
@@ -34,7 +34,9 @@ const DashboardPage: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const attendanceSlots = useSelector(getSlotsWithAttendance);
+  const attendanceSlots = useSelector(
+    getSlotsWithAttendance(AttendanceSortBy.BookedInterval)
+  );
 
   const date = useSelector(getCalendarDay);
 
@@ -64,13 +66,12 @@ const DashboardPage: React.FC = () => {
         extraButtons={printButton}
       >
         {() => (
-          <Container maxWidth="sm">
-            <AttendanceSheet date={date}>
-              {attendanceSlots.map((slot) => (
-                <AttendanceSheetSlot {...slot} />
-              ))}
-            </AttendanceSheet>
-          </Container>
+          <AttendanceSheet date={date}>
+            {attendanceSlots.map(
+              (slot) =>
+                slot.customers.length > 0 && <AttendanceSheetSlot {...slot} />
+            )}
+          </AttendanceSheet>
         )}
       </DateNavigation>
     </>

@@ -237,6 +237,8 @@ export enum DateFormat {
   Time = "Date.Time",
   Placeholder = "Date.Placeholder",
   Today = "Date.Today",
+  FullWithWeekday = "Date.FullWithWeekday",
+  Date = "Date.Date",
 }
 // #endregion date
 
@@ -272,5 +274,17 @@ export enum BookingAria {
 // #region alerts
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
+}
+// #endregion alerts
+
+// #region alerts
+export enum PrintableAttendance {
+  Start = "PrintableAttendance.Start",
+  End = "PrintableAttendance.End",
+  TotalHours = "PrintableAttendance.TotalHours",
+  Trainer = "PrintableAttendance.Trainer",
+  Athlete = "PrintableAttendance.Athlete",
+  Signature = "PrintableAttendance.Signature",
+  Note = "PrintableAttendance.Note",
 }
 // #endregion alerts

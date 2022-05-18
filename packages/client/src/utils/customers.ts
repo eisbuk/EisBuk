@@ -1,4 +1,6 @@
+import { CustomerWithAttendance } from "@/types/components";
 import { Customer } from "@eisbuk/shared";
+import { comparePeriods } from "./helpers";
 
 /**
  * A comparison function passed as `Array.sort` callback to sort
@@ -25,4 +27,14 @@ export const compareCustomers = (
     default:
       return 0;
   }
+};
+/**
+ * A comparison function passed as `Array.sort` callback to sort
+ * an array of customers according to their booked interval
+ */
+export const compareCustomersBookedIntervals = (
+  { bookedInterval: bookedInterval1 }: CustomerWithAttendance,
+  { bookedInterval: bookedInterval2 }: CustomerWithAttendance
+): number => {
+  return comparePeriods(bookedInterval1 || "", bookedInterval2 || "");
 };

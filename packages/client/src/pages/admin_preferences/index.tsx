@@ -69,17 +69,18 @@ const generalFields = [
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
-  SmsFrom: Yup.string()
+  smsFrom: Yup.string()
     .matches(/^[a-z0-9]+$/, i18n.t(ValidationMessage.InvalidSmsFrom))
     .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
+  displayName: Yup.string().required(),
 });
 // #endregion validations
 const OrganizationSettings: React.FC<Props> = () => {
-  const { t } = useTranslation();
-  const classes = useStyles();
   const dispatch = useDispatch();
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
+  const { t } = useTranslation();
+  const classes = useStyles();
 
   const handleSubmit = (
     orgData: OrganizationData,

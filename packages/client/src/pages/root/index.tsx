@@ -27,7 +27,7 @@ const DashboardPage: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const attendanceCards = useSelector(getSlotsWithAttendance);
+  const attendanceCards = useSelector(getSlotsWithAttendance());
   const allCustomers = useSelector(getCustomersList(true));
 
   const printButton = (
