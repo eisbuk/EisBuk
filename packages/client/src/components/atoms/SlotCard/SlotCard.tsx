@@ -1,5 +1,4 @@
 import React from "react";
-import clsx from "clsx";
 
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -85,18 +84,34 @@ const SlotCard: React.FC<SlotCardProps> = ({
     intervalValues[0] || { startTime: "00:00", endTime: "00:00" }
   );
 
+  const backgroundColor = selected ? classes.bgSelected : classes.bgBasic;
+
+  // Set up container styles
+  const containerClasses = [
+    classes.container,
+    backgroundColor,
+    ...(canClick ? [classes.cursorPointer] : []),
+  ].join(" ");
+
+  // Set up interval tag fades styles
+  const fadeLeftClasses = [
+    classes.leftOverlay,
+    selected ? classes.fadeSelectedLeft : classes.fadeWhiteLeft,
+  ].join(" ");
+  const fadeRightClasses = [
+    classes.rightOverlay,
+    selected ? classes.fadeSelectedRight : classes.fadeWhiteRight,
+  ].join(" ");
+
   return (
     <>
       <Card
-        className={clsx(classes.root, {
-          [classes.selected]: selected,
-          [classes.cursorPointer]: canClick,
-        })}
+        className={containerClasses}
         variant="outlined"
         data-testid={__slotId__}
         onClick={onClick}
       >
-        <CardContent className={classes.wrapper}>
+        <CardContent className={classes.contentTop}>
           <SlotTime backgroundColor={typeColor} {...{ startTime, endTime }} />
           <Box
             display="flex"
@@ -123,27 +138,34 @@ const SlotCard: React.FC<SlotCardProps> = ({
             </Box>
           </Box>
         </CardContent>
-        <Box className={classes.actionsContainer} flexGrow={1}>
+
+        <Box className={classes.contentBottom} flexGrow={1}>
           <SlotTypeIcon className={classes.typeLabel} type={slotData.type} />
-          <Box display="flex" justifyContent="space-evenly">
-            {intervalStrings.map((interval) => (
-              <Typography
-                style={{ backgroundColor: typeColor }}
-                key={interval}
-                component="span"
-                variant="body2"
-                className={classes.intervalTag}
-              >
-                {interval.split("-").join(" - ")}
-              </Typography>
-            ))}
+          <Box className={classes.intervalsContainer}>
+            <>
+              <div className={fadeLeftClasses} />
+              <div className={classes.intervals}>
+                {intervalStrings.map((interval) => (
+                  <Typography
+                    style={{ backgroundColor: typeColor }}
+                    key={interval}
+                    component="span"
+                    variant="body2"
+                    className={classes.intervalTag}
+                  >
+                    {interval.split("-").join(" - ")}
+                  </Typography>
+                ))}
+              </div>
+              <div className={fadeRightClasses} />
+            </>
           </Box>
           {enableEdit && (
             <SlotOperationButtons
               contextType={ButtonContextType.Slot}
               slot={slotData}
               iconSize="small"
-              className={classes.buttons}
+              className={classes.actionButtons}
             >
               <EditSlotButton />
               <DeleteButton
@@ -213,7 +235,8 @@ const createDeleteConfirmDialog = ({
 // #region styles
 const useStyles = makeStyles((theme) =>
   createStyles({
-    root: {
+    // Blocks top
+    container: {
       border: "1px solid",
       borderColor: theme.palette.divider,
       position: "relative",
@@ -223,7 +246,7 @@ const useStyles = makeStyles((theme) =>
         borderColor: theme.palette.primary.light,
       },
     },
-    wrapper: {
+    contentTop: {
       display: "flex",
       padding: 0,
       "&:last-child": {
@@ -234,9 +257,6 @@ const useStyles = makeStyles((theme) =>
       padding: 4,
       display: "flex",
       flexWrap: "wrap",
-    },
-    typeLabel: {
-      padding: `0 ${theme.spacing(1)}`,
     },
     category: {
       textTransform: "uppercase",
@@ -251,8 +271,11 @@ const useStyles = makeStyles((theme) =>
     notes: {
       fontWeight: theme.typography.fontWeightBold,
     },
-    actionsContainer: {
+
+    // Blocks bottom
+    contentBottom: {
       display: "flex",
+      flexWrap: "nowrap",
       justifyContent: "start",
       alignItems: "center",
       height: "2.25rem",
@@ -261,23 +284,88 @@ const useStyles = makeStyles((theme) =>
       borderTopColor: theme.palette.divider,
       padding: "0 0.5rem",
     },
+    typeLabel: {
+      height: "100%",
+      backgroundColor: "inherit",
+      padding: `0 ${theme.spacing(1)}`,
+    },
+    intervalsContainer: {
+      position: "relative",
+      height: "100%",
+      overflow: "hidden",
+      boxSizing: "border-box",
+    },
+    intervals: {
+      height: "100%",
+      width: "100%",
+      overflowY: "hidden",
+      overflowX: "auto",
+      scrollPadding: 0,
+      scrollbarWidth: "none",
+      ["&::-webkit-scrollbar"]: {
+        height: 0,
+        background: "none",
+      },
+      padding: ".5rem",
+      boxSizing: "border-box",
+      cursor: "normal",
+    },
     intervalTag: {
-      margin: "0.25rem",
+      margin: "0 0.25rem",
       padding: "0.25rem 0.5rem",
       borderRadius: "0.5rem",
       overflow: "hidden",
       color: theme.palette.primary.contrastText,
       fontWeight: "bold",
       fontSize: "0.75rem",
+      whiteSpace: "nowrap",
+      userSelect: "none",
     },
-    buttons: {
+    actionButtons: {
+      height: "100%",
       marginLeft: "auto",
+      backgroundColor: "inherit",
     },
-    selected: {
+
+    // Color
+    bgSelected: {
       backgroundColor: theme.palette.warning.light,
     },
+    bgBasic: {
+      backgroundColor: "#FFFFFF",
+    },
+    fadeSelectedLeft: {
+      boxShadow: `inset 12px 0 6px -6px ${theme.palette.warning.light}`,
+    },
+    fadeSelectedRight: {
+      boxShadow: `inset -12px 0 6px -6px ${theme.palette.warning.light}`,
+    },
+    fadeWhiteLeft: {
+      boxShadow: "inset 12px 0 6px -6px #FFFFFF",
+    },
+    fadeWhiteRight: {
+      boxShadow: "inset -12px 0 6px -6px #FFFFFF",
+    },
+
+    // Misc utils
     cursorPointer: {
       cursor: "pointer",
+    },
+    leftOverlay: {
+      position: "absolute",
+      width: "1rem",
+      left: 0,
+      top: 0,
+      bottom: 0,
+      zIndex: 1000,
+    },
+    rightOverlay: {
+      position: "absolute",
+      width: "1rem",
+      top: 0,
+      right: 0,
+      bottom: 0,
+      zIndex: 1000,
     },
   })
 );
