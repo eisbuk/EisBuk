@@ -21,11 +21,13 @@ import Divider from "@mui/material/Divider";
 import { updateOrganization } from "@/store/actions/organizationOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
+import { getOrganizationSettings } from "@/store/selectors/app";
+
+import { isEmpty } from "@/utils/helpers";
 
 import AdminsField from "./AdminsField";
 import FormSection from "@/components/atoms/FormSection";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import { getOrganizationSettings } from "@/store/selectors/app";
 
 const smsFields = [
   {
@@ -86,18 +88,38 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const currentUser = userAuthInfo?.email || "";
+
+  if (isEmpty(organization)) {
+    return null;
+  }
+
+  const initialValues: OrganizationData = {
+    // Set up fallbacks
+    admins: [],
+    displayName: "",
+    emailFrom: "",
+    emailNameFrom: "",
+    emailTemplate: "",
+    existingSecrets: [],
+    location: "",
+    smsFrom: "",
+    smsTemplate: "",
+
+    // Override fallbacks with any defined organizaiton data
+    ...organization,
+  };
+
   return (
     <>
       <AppbarAdmin />
       <div className={classes.title}>
         <Typography variant="h4">{`${
-          organization.displayName || "Organization"
+          organization?.displayName || "Organization"
         }  Settings`}</Typography>
       </div>
-      <div>{organization.admins[0]}</div>
       <div className={classes.content}>
         <Formik
-          {...{ initialValues: { ...organization } }}
+          {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
           validateOnChange={false}
           validationSchema={OrganizationValidation}

@@ -23,13 +23,14 @@ export const getCalendarDay = (state: LocalStore): DateTime =>
 
 export const getOrganizationSettings = (
   state: LocalStore
-): OrganizationData => {
+): Partial<OrganizationData> => {
   if (Object.values(state.firestore.data.organizations || {}).length > 1) {
     console.error("More than one organization are in store");
   }
 
-  return Object.values(state.firestore.data.organizations || {})[0];
+  return Object.values(state.firestore.data.organizations || {})[0] || {};
 };
+
 export const getAboutOrganization = (
   state: LocalStore
 ): {
