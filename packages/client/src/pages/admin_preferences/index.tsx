@@ -27,10 +27,6 @@ import FormSection from "@/components/atoms/FormSection";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import { getOrganizationSettings } from "@/store/selectors/app";
 
-interface Props {
-  organization: OrganizationData;
-}
-// trying to get the key of smsFrom in organization
 const smsFields = [
   {
     name: "smsFrom",
@@ -75,7 +71,7 @@ const OrganizationValidation = Yup.object().shape({
   displayName: Yup.string().required(),
 });
 // #endregion validations
-const OrganizationSettings: React.FC<Props> = () => {
+const OrganizationSettings: React.FC = () => {
   const dispatch = useDispatch();
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
@@ -98,6 +94,7 @@ const OrganizationSettings: React.FC<Props> = () => {
           organization.displayName || "Organization"
         }  Settings`}</Typography>
       </div>
+      <div>{organization.admins[0]}</div>
       <div className={classes.content}>
         <Formik
           {...{ initialValues: { ...organization } }}
@@ -108,6 +105,7 @@ const OrganizationSettings: React.FC<Props> = () => {
           {({ isSubmitting, isValidating, handleReset }) => (
             <>
               <AdminsField currentUser={currentUser} />
+
               <Divider />
               <Form className={classes.form}>
                 <FormControl component="fieldset">
