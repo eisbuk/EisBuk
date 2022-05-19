@@ -32,11 +32,11 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 const smsFields = [
   {
     name: "smsFrom",
-    label: OrganizationLabel[OrganizationLabel.SmsFrom],
+    label: OrganizationLabel.SmsFrom,
   },
   {
     name: "smsTemplate",
-    label: OrganizationLabel[OrganizationLabel.SmsTemplate],
+    label: OrganizationLabel.SmsTemplate,
     multiline: true,
   },
 ];
@@ -44,15 +44,15 @@ const smsFields = [
 const emailFields = [
   {
     name: "emailNameFrom",
-    label: OrganizationLabel[OrganizationLabel.EmailNameFrom],
+    label: OrganizationLabel.EmailNameFrom,
   },
   {
     name: "emailFrom",
-    label: OrganizationLabel[OrganizationLabel.EmailFrom],
+    label: OrganizationLabel.EmailFrom,
   },
   {
     name: "emailTemplate",
-    label: OrganizationLabel[OrganizationLabel.EmailTemplate],
+    label: OrganizationLabel.EmailTemplate,
     multiline: true,
   },
 ];
@@ -60,9 +60,9 @@ const emailFields = [
 const generalFields = [
   {
     name: "displayName",
-    label: OrganizationLabel[OrganizationLabel.DisplayName],
+    label: OrganizationLabel.DisplayName,
   },
-  { name: "location", label: OrganizationLabel[OrganizationLabel.Location] },
+  { name: "location", label: OrganizationLabel.Location },
 ];
 
 // #region validations
