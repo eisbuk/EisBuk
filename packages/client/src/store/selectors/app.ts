@@ -33,9 +33,5 @@ export const getOrganizationSettings = (
 
 export const getAboutOrganization = (
   state: LocalStore
-): {
-  [organization: string]: Pick<
-    OrganizationData,
-    "displayName" | "location" | "emailFrom"
-  >;
-} => state.firestore.data.publicOrgInfo || {};
+): Pick<OrganizationData, "displayName" | "location" | "emailFrom"> =>
+  state.firestore.data.publicOrgInfo || {};
