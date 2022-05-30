@@ -16,6 +16,7 @@ import {
   SlotType,
   Customer,
   getCustomerBase,
+  DeprecatedCategory,
 } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -160,9 +161,44 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, pathToSlot), {
             ...baseSlot,
-            categories: [Category.Adults, "non-existing-category"],
+            categories: [
+              Category.PreCompetitiveAdults,
+              "non-existing-category",
+            ],
           })
         );
+      }
+    );
+    testWithEmulator(
+      'should allow updating a slot with "adults" category, but disallow new creating new slots with said category',
+      () => {
+        async () => {
+          const slotWithAdults = {
+            ...baseSlot,
+            categories: [DeprecatedCategory.Adults],
+            id: "slot-with-adults",
+          };
+
+          const db = await getTestEnv({
+            setup: (db) =>
+              Promise.all([setDoc(doc(db, pathToSlot), slotWithAdults)]),
+          });
+
+          // The deprecated category already exists in the slot, we should allow it to stay there
+          await assertSucceeds(
+            setDoc(doc(db, pathToSlot), {
+              ...baseSlot,
+              categories: [Category.Competitive, DeprecatedCategory.Adults],
+            })
+          );
+          // We're not allowing the creation of new slots with deprecated values
+          await assertFails(
+            setDoc(doc(db, pathToSlots, "new-slot"), {
+              ...baseSlot,
+              categories: [Category.Competitive, DeprecatedCategory.Adults],
+            })
+          );
+        };
       }
     );
     /**
@@ -434,7 +470,7 @@ describe("Firestore rules", () => {
             setDoc(doc(db, testSlotPath), {
               ...testSlot,
               // saul is category = "competitive"
-              category: [Category.Adults],
+              category: [Category.PreCompetitiveAdults],
             }),
         });
         await assertFails(
@@ -480,7 +516,7 @@ describe("Firestore rules", () => {
       await assertSucceeds(
         setDoc(doc(db, saulPath), {
           ...saul,
-          category: Category.PreCompetitive,
+          category: Category.PreCompetitiveAdults,
         })
       );
       // check delete
@@ -636,6 +672,42 @@ describe("Firestore rules", () => {
             ...saul,
             category: "not-a-valid-category",
           })
+        );
+      }
+    );
+    testWithEmulator(
+      'should allow updating customer in "adults" category, but disallow creation of new customers in (non-spacific) "adults" category',
+      async () => {
+        const db = await getTestEnv({
+          setup: (db) =>
+            setDoc(doc(db, saulPath), {
+              ...saul,
+              category: DeprecatedCategory.Adults,
+            }),
+        });
+        // Should allow updating, even though category = "adults"
+        await assertSucceeds(
+          setDoc(doc(db, saulPath), {
+            ...saul,
+            category: DeprecatedCategory.Adults,
+            name: "Jimmy",
+          })
+        );
+        // Should disallow creation of new customers with category "adults"
+        await assertFails(
+          setDoc(
+            doc(
+              db,
+              Collection.Organizations,
+              getOrganization(),
+              OrgSubCollection.Customers,
+              "new-customer"
+            ),
+            {
+              ...saul,
+              category: DeprecatedCategory.Adults,
+            }
+          )
         );
       }
     );

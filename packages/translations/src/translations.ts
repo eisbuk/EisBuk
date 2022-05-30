@@ -1,4 +1,4 @@
-import { Category, SlotType } from "@eisbuk/shared";
+import { Category, SlotType, DeprecatedCategory } from "@eisbuk/shared";
 
 // #region navigation
 export enum NavigationLabel {
@@ -66,10 +66,15 @@ export const SlotTypeLabel = {
   [SlotType.OffIce]: "SlotType.OffIce",
 };
 export const CategoryLabel = {
-  [Category.Adults]: "Category.Adults",
-  [Category.PreCompetitive]: "Category.PreCompetitive",
+  [Category.PreCompetitiveAdults]: "Category.PreCompetitiveAdults",
+  [Category.PreCompetitiveMinors]: "Category.PreCompetitiveMinors",
+  [Category.CourseAdults]: "Category.CourseAdults",
+  [Category.CourseMinors]: "Category.CourseMinors",
   [Category.Competitive]: "Category.Competitive",
-  [Category.Course]: "Category.Course",
+  /** @TODO This should be removed in the future and is here for temporary backwards compatibility */
+  [DeprecatedCategory.Adults]: "DeprecatedCategory.Adults",
+  [DeprecatedCategory.PreCompetitive]: "DeprecatedCategory.PreCompetitive",
+  [DeprecatedCategory.Course]: "DeprecatedCategory.Course",
 };
 // #endregion dataEntries
 

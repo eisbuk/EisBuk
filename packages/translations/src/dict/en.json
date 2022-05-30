@@ -59,9 +59,15 @@
     "OffIce": "off-ice"
   },
   "Category": {
+    "PreCompetitiveAdults": "pre-competitive-adults",
+    "PreCompetitiveMinors": "pre-competitive-minors",
+    "CourseAdults": "course-adults",
+    "CourseMinors": "course-minors",
+    "Competitive": "competitive"
+  },
+  "DeprecatedCategory": {
     "Adults": "adults",
     "PreCompetitive": "pre-competitive",
-    "Competitive": "competitive",
     "Course": "course"
   },
 

@@ -73,7 +73,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
             // translations of multi-word categories are "-" separeted lowercased words
             property === "category"
               ? capitalizeFirst(t(CategoryLabel[customer.category])).replace(
-                  "-",
+                  /-/g,
                   " "
                 )
               : customer[property] || "-";

@@ -21,8 +21,8 @@ const createIntervalEntry = (startHour: number, duration: number) => {
   const startTimeLuxon = DateTime.fromObject({ hour: startHour });
   const endTimeLuxon = startTimeLuxon.plus({ hours: duration });
 
-  const startTime = startTimeLuxon.toISOTime().substr(0, 5);
-  const endTime = endTimeLuxon.toISOTime().substr(0, 5);
+  const startTime = startTimeLuxon.toISOTime().substring(0, 5);
+  const endTime = endTimeLuxon.toISOTime().substring(0, 5);
 
   return {
     [`${startTime}-${endTime}`]: {
@@ -55,7 +55,7 @@ export const baseSlot: SlotInterface = {
   date: testDate,
   id: "base-slot-id",
   type: SlotType.Ice,
-  categories: [Category.Competitive, Category.Adults],
+  categories: [Category.Competitive, Category.CourseMinors],
   intervals,
   notes: "",
 };
