@@ -59,10 +59,16 @@
     "OffIce": "off-ice"
   },
   "Category": {
+    "PreCompetitiveAdults": "pre-agonismo-adulti",
+    "PreCompetitiveMinors": "pre-agonismo-ragazzi",
+    "CourseAdults": "corso-adulti",
+    "CourseMinors": "corso-ragazzi",
+    "Competitive": "agonismo"
+  },
+  "DeprecatedCategory": {
     "Adults": "adulti",
     "PreCompetitive": "pre-agonismo",
-    "Competitive": "agonismo",
-    "Course": "corso"
+    "Course": "courso"
   },
 
   "FormTitle": {

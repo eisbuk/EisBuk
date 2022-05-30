@@ -148,7 +148,7 @@ xdescribe("customerOperations", () => {
         // create a thunk with updated customer data
         const saulDocRef = doc(db, customersPath, saul.id);
         const saulInDb = (await getDoc(saulDocRef)).data() as Customer;
-        const updatedSaul = { ...saulInDb, category: Category.Course };
+        const updatedSaul = { ...saulInDb, category: Category.CourseAdults };
         const testThunk = updateCustomer(updatedSaul);
         // run the thunk with mocked data
         await testThunk(store.dispatch, store.getState);

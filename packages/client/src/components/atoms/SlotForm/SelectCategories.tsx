@@ -9,7 +9,12 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
-import { SlotType, Category } from "@eisbuk/shared";
+import {
+  SlotType,
+  Category,
+  DeprecatedCategory,
+  CategoryUnion,
+} from "@eisbuk/shared";
 import {
   useTranslation,
   CategoryLabel,
@@ -49,6 +54,12 @@ const SelectCategories: React.FC = () => {
     }
   }, [slotType]);
 
+  const deprecatedCategories: CategoryUnion[] =
+    Object.values(DeprecatedCategory);
+  const availableCategories = (
+    Object.values(Category) as CategoryUnion[]
+  ).concat(deprecatedCategories);
+
   return (
     <>
       <Box
@@ -60,10 +71,17 @@ const SelectCategories: React.FC = () => {
         <Typography className={classes.categoriesTitle}>
           {t(SlotFormLabel.Categories)}
         </Typography>
-        {Object.values(Category).map((category) => (
-          <CategoryCheckbox {...{ category, disabled, key: category }} />
+        {availableCategories.map((category) => (
+          <CategoryCheckbox
+            {...{ category, disabled, key: category }}
+            // Disable if explicitly specified, or deprecated
+            disabled={Boolean(
+              deprecatedCategories.includes(category as CategoryUnion) ||
+                disabled
+            )}
+          />
         ))}
-        <ErrorMessage>{error}</ErrorMessage>
+        <ErrorMessage className={classes.errorMessage}>{error}</ErrorMessage>
       </Box>
     </>
   );
@@ -74,7 +92,7 @@ const SelectCategories: React.FC = () => {
 // #region CategoryCheckbox
 
 interface CategoryCheckboxProps {
-  category: Category;
+  category: Category | DeprecatedCategory;
   disabled?: boolean;
 }
 
@@ -130,17 +148,15 @@ const useStyles = makeStyles((theme) =>
       [theme.breakpoints.up("sm")]: {
         display: "flex",
         flexWrap: "wrap",
-        justifyContent: "start",
+        justifyContent: "space-between",
         paddingBottom: theme.spacing(1),
       },
     },
-    error: {
-      position: "absolute",
-      bottom: 0,
-      left: "50%",
-      witdh: "80%",
+    errorMessage: {
+      width: "100%",
+      textAlign: "center",
+      marginTop: "1rem",
       whitespace: "normal",
-      transform: "translateX(-50%)",
       fontSize: 14,
       fontFamily: theme.typography.fontFamily,
       color: theme.palette.error.dark,
@@ -150,9 +166,11 @@ const useStyles = makeStyles((theme) =>
 
 const useCheckboxStyles = makeStyles((theme) => ({
   categoryCheckbox: {
+    width: "40%",
     [theme.breakpoints.down("sm")]: {
       display: "block",
-      marginLeft: "1rem",
+      // marginLeft: "1rem",
+      width: "100%",
     },
   },
 }));
