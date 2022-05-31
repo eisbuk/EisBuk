@@ -1,41 +1,39 @@
 name: Storybook
-
-on:
-  - pull_request
-
+"on":
+- pull_request
 jobs:
   storybook:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.pnpm-store
-            common/temp/pnpm-store
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Install rush
-        run: npm install -g @microsoft/rush@5.63.1
-      - name: Install and build packages
-        run: rush update && rush build
-      - name: Check if secrets are available
-        id: has_secret
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
-      - name: Publish to Chromatic
-        uses: chromaui/action@v1
-        if: steps.has_secret.outputs.HAS_SECRETS
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          projectToken: ${{ secrets.CHROMAUI_PROJECT_TOKEN }}
-          workingDir: packages/client
-          exitZeroOnChanges: true
-          exitOnceUploaded: true
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.pnpm-store
+          common/temp/pnpm-store
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Install rush
+      run: npm install -g @microsoft/rush@5.63.1
+    - name: Install and build packages
+      run: rush update && rush build
+    - name: Check if secrets are available
+      id: has_secret
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Publish to Chromatic
+      uses: chromaui/action@v1
+      if: steps.has_secret.outputs.HAS_SECRETS
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        projectToken: ${{ secrets.CHROMAUI_PROJECT_TOKEN }}
+        workingDir: packages/client
+        exitZeroOnChanges: true
+        exitOnceUploaded: true
