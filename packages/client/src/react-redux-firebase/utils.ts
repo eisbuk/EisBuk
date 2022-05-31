@@ -40,6 +40,7 @@ export const getConstraintForColl = (
     FirestoreListenerConstraint | null
   > = {
     [Collection.Organizations]: { documents: [getOrganization()] },
+    [Collection.PublicOrgInfo]: { documents: [getOrganization()] },
     [OrgSubCollection.Attendance]: { range },
     [OrgSubCollection.Bookings]: { documents: [getSecretKey()] },
     [OrgSubCollection.SlotsByDay]: { documents },
