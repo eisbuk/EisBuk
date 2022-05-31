@@ -1,5 +1,6 @@
 #! YAML library files must be named *.lib.yml
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
+#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 
 name: Build and deploy preview
 
@@ -16,10 +17,9 @@ jobs:
         with:
           node-version: "14"
       - #@ cache_node()
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
       - name: Build app
         run: |
           cd packages/client && rushx build:prod | tee build.output
@@ -107,10 +107,9 @@ jobs:
         with:
           node-version: "14"
       - #@ cache_node()
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci
       - name: Check if secrets are available
@@ -180,10 +179,9 @@ jobs:
         with:
           node-version: "14"
       - #@ cache_node()
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
       - name: Lint all the packages
         run: rush lint:strict
       - name: Typecheck all the packages
@@ -196,21 +194,10 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-            ~/.cache/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
+      - #@ cache_cypress()
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
       - name: Build app
         run: cd packages/client && rushx build:test
       - name: Cypress run

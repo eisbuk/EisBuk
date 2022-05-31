@@ -28,7 +28,9 @@ jobs:
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Build app
       run: cd packages/client && rushx build:prod
       env:

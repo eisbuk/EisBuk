@@ -24,7 +24,9 @@ jobs:
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Build app
       run: |
         cd packages/client && rushx build:prod | tee build.output
@@ -124,7 +126,9 @@ jobs:
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Run tests
       run: cd packages/client && rushx test:emulators:ci
     - name: Check if secrets are available
@@ -197,7 +201,9 @@ jobs:
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Lint all the packages
       run: rush lint:strict
     - name: Typecheck all the packages
@@ -210,7 +216,7 @@ jobs:
     - uses: actions/setup-node@v2
       with:
         node-version: "14"
-    - name: Cache node modules and firebase emulators
+    - name: Cache node modules, firebase emulators and cypress
       uses: actions/cache@v2
       with:
         path: |
@@ -224,7 +230,9 @@ jobs:
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Build app
       run: cd packages/client && rushx build:test
     - name: Cypress run
