@@ -42,10 +42,13 @@ export enum SlotType {
 }
 
 export enum Category {
-  Course = "course",
-  PreCompetitive = "pre-competitive",
+  PreCompetitiveAdults = "pre-competitive-adults",
+  PreCompetitiveMinors = "pre-competitive-minors",
+  CourseAdults = "course-adults",
+  CourseMinors = "course-minors",
   Competitive = "competitive",
-  Adults = "adults",
+  /** @TODO Soon to be deprecated */
+  // Adults = "adults",
 }
 
 // endregion

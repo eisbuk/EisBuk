@@ -15,6 +15,7 @@ import {
   SlotInterface,
   SlotInterval,
   getCustomerBase,
+  OrganizationData,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -310,4 +311,30 @@ export const registerCreatedOrgSecret = functions
       { existingSecrets: updatedSecrets },
       { merge: true }
     );
+  });
+
+export const createPublicOrgInfo = functions
+  .region(__functionsZone__)
+  .firestore.document(`${Collection.Organizations}/{organization}`)
+  .onWrite(async (change, context) => {
+    const { organization } = context.params;
+
+    const db = admin.firestore();
+
+    const isDelete = !change.after.exists;
+
+    const publicOrgInfoDocRef = db
+      .collection(Collection.PublicOrgInfo)
+      .doc(organization);
+    const orgData = change.after.data() as OrganizationData;
+
+    if (isDelete) {
+      await publicOrgInfoDocRef.delete();
+      return;
+    }
+    const updates = ["displayName", "location", "emailFrom"].reduce(
+      (acc, curr) => (orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc),
+      {}
+    );
+    await publicOrgInfoDocRef.set(updates, { merge: true });
   });

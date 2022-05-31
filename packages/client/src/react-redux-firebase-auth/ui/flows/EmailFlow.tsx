@@ -242,6 +242,7 @@ const actionButtonLookup: ActionButtonLookup<EmailAuthStep> = {
       label: ActionButtonLabel.TroubleSigningIn,
       variant: "text",
       nextStep: EmailAuthStep.RecoverEmailPassword,
+      type: "button",
     },
     {
       label: ActionButtonLabel.SignIn,

@@ -25,6 +25,7 @@ import {
   attendanceWithTestCustomer,
   baseAttendance,
   emptyAttendance,
+  organization,
 } from "@/__testData__/dataTriggers";
 import { saul } from "@/__testData__/customers";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
@@ -234,7 +235,7 @@ describe("Cloud functions -> Data triggers ->,", () => {
         await slotRef.set({
           ...baseSlot,
           intervals: {},
-          categories: [Category.PreCompetitive],
+          categories: [Category.PreCompetitiveAdults],
         });
         // check the no new entry for slot attendance was created (on update)
         const slotAttendance = await attendanceDocRef.get();
@@ -328,6 +329,44 @@ describe("Cloud functions -> Data triggers ->,", () => {
         await waitForCondition({
           documentPath: attendanceDocPath,
           condition: (data) => !data,
+        });
+      }
+    );
+  });
+  describe("createPublicOrgInfo", () => {
+    testWithEmulator(
+      "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
+      async () => {
+        const { displayName, location, emailFrom } = organization;
+        const orgName = "test-publicOrgInfo";
+
+        const publicOrgPath = `${Collection.PublicOrgInfo}/${orgName}`;
+        const orgPath = `${Collection.Organizations}/${orgName}`;
+
+        // check for non existence of publicOrgInfo before creating a new organization
+        const publicOrgRes = await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(!data),
+        });
+        expect(publicOrgRes).toBeUndefined();
+
+        // create new organization
+        const orgRef = getDocumentRef(adminDb, orgPath);
+        await orgRef.set(organization);
+
+        // check for publicOrgInfo
+
+        const docRes = await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(data),
+        });
+        expect(docRes).toEqual({ displayName, location, emailFrom });
+
+        // test non existence of publicOrgInfo after organization is deleted
+        await orgRef.delete();
+        await waitForCondition({
+          documentPath: publicOrgPath,
+          condition: (data) => Boolean(!data),
         });
       }
     );

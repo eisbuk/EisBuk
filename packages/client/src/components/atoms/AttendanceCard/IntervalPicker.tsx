@@ -17,7 +17,8 @@ import {
   __prevIntervalButtonId__,
 } from "./__testData__/testIds";
 
-interface Props {
+interface Props
+  extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "color"> {
   intervals: string[];
   onChange: (attendedInterval: string) => void;
   attendedInterval: string;
@@ -31,6 +32,8 @@ const IntervalPicker: React.FC<Props> = ({
   attendedInterval,
   disabled,
   onChange,
+  className,
+  ...props
 }) => {
   const classes = useStyles();
 
@@ -52,7 +55,11 @@ const IntervalPicker: React.FC<Props> = ({
   };
 
   return (
-    <ButtonGroup className={classes.container} disabled={disabled}>
+    <ButtonGroup
+      {...props}
+      className={[classes.container, className].join(" ")}
+      disabled={disabled}
+    >
       <IconButton
         onClick={handleClick(-1)}
         disabled={disabled || intervalIndex === 0}
@@ -78,7 +85,7 @@ const useStyles = makeStyles((theme: ETheme) => ({
   container: {
     display: "flex",
     alignItems: "stretch",
-    width: "12.5rem",
+    width: "15rem",
   },
   intervalContainer: {
     position: "relative",

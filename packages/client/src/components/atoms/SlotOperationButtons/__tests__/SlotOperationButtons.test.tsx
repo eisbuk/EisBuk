@@ -25,6 +25,7 @@ import { baseSlot } from "@/__testData__/slots";
 
 jest.mock("react-redux", () => ({
   useDispatch: () => jest.fn(),
+  useSelector: () => jest.fn(),
 }));
 
 const dummyDate = DateTime.fromISO("2021-03-01");

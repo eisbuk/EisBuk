@@ -21,7 +21,10 @@ import {
   sendICSFile,
 } from "@/store/actions/bookingOperations";
 
-import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
+import {
+  __addToCalendarButtonId__,
+  __addToCalendarButtonId__,
+} from "@/__testData__/testIds";
 
 interface Props {
   /**
@@ -46,9 +49,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
   const { displayName = "", location = "" } =
     useSelector(getAboutOrganization) || {};
 
-  // is displayed when bookings are finalized aka deadline is null
   const handleClick = () => {
-    let icalendar: ICalendar;
+    let icalendar = {} as ICalendar;
 
     const previousCalendarUids = Object.keys(previousCalendar).length
       ? getPreviousCalendarUids(previousCalendar)
@@ -71,11 +73,10 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
       eventUids.push(uid);
       delete previousCalendarUids[uid];
 
-      /**
-       * ICalendar needs to be instantiated with an event
-       * which can't be an empty object so on the first iteration
-       * it's instantiated with the first bookedSlotEvent
-       */
+      // ICalendar needs to be instantiated with an event
+      // which can't be an empty object so on the first iteration
+      // it's instantiated with the first bookedSlotEvent
+
       if (i === 0) {
         icalendar = new ICalendar(bookedSlotEvent).addProperty("UID", uid);
       } else {
@@ -96,6 +97,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
         dispatch(sendICSFile({ secretKey: secretKey, icsFile: "icsFileHere" }));
       }
     });
+    icalendar.download("Booked_Slots.ics");
   };
   return (
     <div className={classes.container}>

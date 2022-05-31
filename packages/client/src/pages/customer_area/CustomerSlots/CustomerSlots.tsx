@@ -5,7 +5,11 @@ import { useSelector } from "react-redux";
 import Alert from "@mui/material/Alert";
 
 import { SlotInterface } from "@eisbuk/shared";
-import { useTranslation, Alerts } from "@eisbuk/translations";
+import {
+  useTranslation,
+  Alerts,
+  BookingCountdownMessage,
+} from "@eisbuk/translations";
 
 import { CustomerRoute } from "@/enums/routes";
 
@@ -15,7 +19,7 @@ import BookingsCountdown from "@/components/atoms/BookingsCountdown";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
-import AddToCalendar from "@/components/atoms/BookingsCountdown/AddToCalendar";
+import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import {
   getBookedSlotsByMonth,
@@ -149,6 +153,9 @@ const CustomerSlots: React.FC<Props> = ({
           </SlotsDayContainer>
         );
       })}
+      {countdownProps?.message === BookingCountdownMessage.SecondDeadline && (
+        <BookingsCountdown {...countdownProps} />
+      )}
     </>
   );
 

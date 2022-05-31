@@ -1,4 +1,4 @@
-import { Category, SlotType } from "@eisbuk/shared";
+import { Category, SlotType, DeprecatedCategory } from "@eisbuk/shared";
 
 // #region navigation
 export enum NavigationLabel {
@@ -66,10 +66,15 @@ export const SlotTypeLabel = {
   [SlotType.OffIce]: "SlotType.OffIce",
 };
 export const CategoryLabel = {
-  [Category.Adults]: "Category.Adults",
-  [Category.PreCompetitive]: "Category.PreCompetitive",
+  [Category.PreCompetitiveAdults]: "Category.PreCompetitiveAdults",
+  [Category.PreCompetitiveMinors]: "Category.PreCompetitiveMinors",
+  [Category.CourseAdults]: "Category.CourseAdults",
+  [Category.CourseMinors]: "Category.CourseMinors",
   [Category.Competitive]: "Category.Competitive",
-  [Category.Course]: "Category.Course",
+  /** @TODO This should be removed in the future and is here for temporary backwards compatibility */
+  [DeprecatedCategory.Adults]: "DeprecatedCategory.Adults",
+  [DeprecatedCategory.PreCompetitive]: "DeprecatedCategory.PreCompetitive",
+  [DeprecatedCategory.Course]: "DeprecatedCategory.Course",
 };
 // #endregion dataEntries
 
@@ -125,6 +130,9 @@ export enum OrganizationLabel {
   Location = "OrganizationLabel.Location",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
+  Email = "OrganizationLabel.Email",
+  SMS = "OrganizationLabel.SMS",
+  General = "OrganizationLabel.General",
 }
 // #endregion forms
 
@@ -235,6 +243,8 @@ export enum DateFormat {
   Time = "Date.Time",
   Placeholder = "Date.Placeholder",
   Today = "Date.Today",
+  FullWithWeekday = "Date.FullWithWeekday",
+  Date = "Date.Date",
 }
 // #endregion date
 
@@ -245,6 +255,7 @@ export enum AdminAria {
   SeeFutureDates = "AdminAria.SeeFutureDates",
   ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
   CopySlots = "AdminAria.CopySlots",
+  CopiedSlotsBadge = "AdminAria.CopiedSlotsBadge",
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
 }
@@ -261,10 +272,25 @@ export enum SlotFormAria {
   ConfirmCreateSlot = "SlotFormAria.ConfirmCreateSlot",
   ConfirmEditSlot = "SlotFormAria.ConfirmEditSlot",
 }
+export enum BookingAria {
+  BookButton = "BookingAria.BookButton",
+}
 // #endregion aria-labels
 
 // #region alerts
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
+}
+// #endregion alerts
+
+// #region alerts
+export enum PrintableAttendance {
+  Start = "PrintableAttendance.Start",
+  End = "PrintableAttendance.End",
+  TotalHours = "PrintableAttendance.TotalHours",
+  Trainer = "PrintableAttendance.Trainer",
+  Athlete = "PrintableAttendance.Athlete",
+  Signature = "PrintableAttendance.Signature",
+  Note = "PrintableAttendance.Note",
 }
 // #endregion alerts

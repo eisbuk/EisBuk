@@ -59,10 +59,16 @@
     "OffIce": "off-ice"
   },
   "Category": {
+    "PreCompetitiveAdults": "pre-agonismo-adulti",
+    "PreCompetitiveMinors": "pre-agonismo-ragazzi",
+    "CourseAdults": "corso-adulti",
+    "CourseMinors": "corso-ragazzi",
+    "Competitive": "agonismo"
+  },
+  "DeprecatedCategory": {
     "Adults": "adulti",
     "PreCompetitive": "pre-agonismo",
-    "Competitive": "agonismo",
-    "Course": "corso"
+    "Course": "courso"
   },
 
   "FormTitle": {
@@ -101,7 +107,10 @@
     "DisplayName": "Nome Dell'Organizzazione",
     "Location": "Posizione",
     "Admins": "Amministrat(rici/ori)",
-    "AddNewAdmin": "Aggiungi Nuovo Amministratore"
+    "AddNewAdmin": "Aggiungi Nuovo Amministratore",
+    "Email": "Email",
+    "SMS": "SMS",
+    "General": "Generale"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -207,7 +216,9 @@
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
     "Placeholder": "gg/mm/aaaa",
-    "Today": "Oggi"
+    "Today": "Oggi",
+    "FullWithWeekday": "{{ date, DDDD }}",
+    "Date": "Data"
   },
 
   "AdminAria": {
@@ -216,6 +227,7 @@
     "SeeFutureDates": "Avanti",
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlots": "Copia slot",
+    "CopiedSlotsBadge": "Slot copiati",
     "PasteSlots": "Incolla slot",
     "CreateSlots": "Crea nuovo slot"
   },
@@ -232,6 +244,9 @@
     "ConfirmCreateSlot": "Conferma creazione dello slot",
     "ConfirmEditSlot": "Conferma modifiche allo slot"
   },
+  "BookingAria": {
+    "BookButton": "Prenota"
+  },
 
   "BirthdayMenu": {
     "ShowAll": "Mostra Tutti",
@@ -239,5 +254,14 @@
   },
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
+  },
+  "PrintableAttendance": {
+    "Start": "Inizio",
+    "End": "Fine",
+    "TotalHours": "Ore Totali",
+    "Trainer": "Insegnante",
+    "Athlete": "Atleta",
+    "Signature": "Firma",
+    "Note": "Note"
   }
 }

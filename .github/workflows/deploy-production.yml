@@ -56,4 +56,4 @@ jobs:
           SENTRY_URL: ${{ secrets.SENTRY_URL }}
         with:
           environment: production
-          sourcemaps: "./packages/client/dist/app"
+          sourcemaps: "./packages/client/dist/assets"

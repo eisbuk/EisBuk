@@ -25,7 +25,10 @@ service cloud.firestore {
 
     // #region enums
     function getCategories() {
-      return ["course", "pre-competitive", "competitive", "adults"]
+      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive"]
+    }
+    function getAllCategories() {
+      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive", "adults"]
     }
     function getSlotTypes() {
       return ["ice", "off-ice"]
@@ -86,19 +89,23 @@ service cloud.firestore {
     match /organizations/{organization} {
       allow read, write: if isAdmin(organization);
 
-      // #region slot-checks
       match /slots/{slotId} {
         // Only admins can read/delete slots
         allow read, delete: if isAdmin(organization)
         // Validate data integrity for create/update
-        allow create, update: if isAdmin(organization) &&
+        allow update: if isAdmin(organization) &&
           // check date
           checkValidDate(request.resource.data.date) &&
           // check valid type
           request.resource.data.type in getSlotTypes() &&
-          // check valid categories
-          request.resource.data.categories.hasOnly(getCategories())
+          // check valid categories (on update, "adults" is still supported, even though deprecated)
+          request.resource.data.categories.hasOnly(getAllCategories())
           // @TODO check valid intervals
+        allow create: if isAdmin(organization) &&
+          checkValidDate(request.resource.data.date) &&
+          request.resource.data.type in getSlotTypes() &&
+          // allow slot creation only with currently supported categories
+          request.resource.data.categories.hasOnly(getCategories())
       }
       // #endregion slot-checks
 
@@ -155,7 +162,7 @@ service cloud.firestore {
         // Only admins can access customer collection
         allow read, delete: if isAdmin(organization)
         // Check data integrity 
-        allow create, update: if (
+        allow update: if (
           isAdmin(organization) &&
           // Check required fields
           checkRequiredString(request.resource.data.name) &&
@@ -164,7 +171,33 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "birthday") &&
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
-          // Check category
+          // Check category (allows updates even if "adults")
+          request.resource.data.category in getAllCategories() &&
+          // Check valid email
+          (
+            !("email" in request.resource.data) || 
+            request.resource.data.email == "" || 
+            checkValidEmail(request.resource.data.email)
+          ) &&
+          // Check valid phone number 
+          (
+            !("phone" in request.resource.data) || 
+            request.resource.data.phone == "" || 
+            checkValidPhoneNumber(request.resource.data.phone)
+          ) &&
+          // Check release date suspended type
+          checkOptionalBoolean(request.resource.data, "covidCertificateSuspended")
+        )
+        allow create: if (
+          isAdmin(organization) &&
+          // Check required fields
+          checkRequiredString(request.resource.data.name) &&
+          checkRequiredString(request.resource.data.surname) &&
+          // Check optional dates
+          checkOptionalValidDate(request.resource.data, "birthday") &&
+          checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
+          checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
+          // Check category (shouldn't allow creation with "adults" category)
           request.resource.data.category in getCategories() &&
           // Check valid email
           (
@@ -199,10 +232,9 @@ service cloud.firestore {
       // #endregion attendance-checks
     }
     // #region public-info-check
-      match /publicOrgInfo/{organization} {
-      allow write: if isAdmin(organization);
+    match /publicOrgInfo/{organization} {
       allow read: if true;
-      }
+    }
     // #endregion public-info-check
   }
 }

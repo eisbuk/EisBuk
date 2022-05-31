@@ -2,7 +2,10 @@ export * from "./enums/firestore";
 export * from "./enums/errorMessages";
 export * from "./types/firestore";
 export * from "./types/cloudFunctions";
+export * from "./types/misc";
 export * from "./utils";
+
+export * from "./deprecated";
 
 import italianNames from "./assets/italian-names.json";
 import italianSurnames from "./assets/italian-surnames.json";

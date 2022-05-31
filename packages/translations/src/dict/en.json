@@ -59,9 +59,15 @@
     "OffIce": "off-ice"
   },
   "Category": {
+    "PreCompetitiveAdults": "pre-competitive-adults",
+    "PreCompetitiveMinors": "pre-competitive-minors",
+    "CourseAdults": "course-adults",
+    "CourseMinors": "course-minors",
+    "Competitive": "competitive"
+  },
+  "DeprecatedCategory": {
     "Adults": "adults",
     "PreCompetitive": "pre-competitive",
-    "Competitive": "competitive",
     "Course": "course"
   },
 
@@ -101,7 +107,10 @@
     "DisplayName": "Organization Name",
     "Location": "Location",
     "Admins": "Admins",
-    "AddNewAdmin": "Add New Admin"
+    "AddNewAdmin": "Add New Admin",
+    "Email": "Email",
+    "SMS": "SMS",
+    "General": "General"
   },
   "Validations": {
     "Email": "Please insert a valid email",
@@ -208,7 +217,9 @@
     "MonthYear": "{{ date, MMMM yyyy }}",
     "Time": "{{date, HH:mm}}",
     "Placeholder": "dd/mm/yyyy",
-    "Today": "Today"
+    "Today": "Today",
+    "FullWithWeekday": "{{ date, DDDD }}",
+    "Date": "Date"
   },
 
   "AdminAria": {
@@ -217,6 +228,7 @@
     "SeeFutureDates": "See future dates",
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlots": "Copy slots from",
+    "CopiedSlotsBadge": "Copied slots on",
     "PasteSlots": "Paste copied slots on",
     "CreateSlots": "Create new slots on"
   },
@@ -233,12 +245,23 @@
     "ConfirmCreateSlot": "Confirm slot creation",
     "ConfirmEditSlot": "Confirm slot edits"
   },
-
+  "BookingAria": {
+    "BookButton": "Book"
+  },
   "BirthdayMenu": {
     "ShowAll": "Show All",
     "UpcomingBirthdays": "Upcoming Birthdays"
   },
   "Alerts": {
     "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}"
+  },
+  "PrintableAttendance": {
+    "Start": "Start",
+    "End": "End",
+    "TotalHours": "Total Hours",
+    "Trainer": "Trainer",
+    "Athlete": "Athlete",
+    "Signature": "Signature",
+    "Note": "Note"
   }
 }

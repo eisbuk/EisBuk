@@ -16,7 +16,7 @@ export default {
   components: AttendanceCard,
   decorators: [
     (Story) => (
-      <List style={{ width: 800, margin: "auto" }}>
+      <List style={{ maxWidth: 800, margin: "auto" }}>
         <Story />
       </List>
     ),
@@ -45,7 +45,7 @@ const gusBookings = {
 const customers = [
   { ...saul, ...saulBookings },
   { ...walt, ...waltBookings },
-  { ...gus, ...gusBookings },
+  { ...gus, ...gusBookings, name: "RAJESH", surname: "KOOTHRAPALI" },
 ];
 
 export const MultipleWithCustomers = (): JSX.Element => (
