@@ -8,10 +8,8 @@ import pRetry from "p-retry";
 import { DateTime } from "luxon";
 
 import {
-  BookingSubCollection,
   Category,
   Collection,
-  OrgSubCollection,
   SlotAttendnace,
   SlotType,
   Customer,
@@ -19,7 +17,6 @@ import {
   DeprecatedCategory,
 } from "@eisbuk/shared";
 
-import { getOrganization } from "@/lib/getters";
 import { defaultCustomerFormValues } from "@/lib/data";
 
 import { getTestEnv } from "@/__testSetup__/firestore";
@@ -28,14 +25,23 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { baseSlot } from "@/__testData__/slots";
 import { saul } from "@/__testData__/customers";
+import {
+  getAttendanceDocPath,
+  getBookedSlotDocPath,
+  getBookingsDocPath,
+  getCustomerDocPath,
+  getSlotDocPath,
+  getSlotsByDayDocPath,
+  getSlotsPath,
+} from "@/utils/firestore";
 
 describe("Firestore rules", () => {
   describe("Organization rules", () => {
     testWithEmulator(
       "should allow organziation admin read and write access to organization",
       async () => {
-        const db = await getTestEnv({});
-        const orgRef = doc(db, Collection.Organizations, getOrganization());
+        const { db, organization } = await getTestEnv({});
+        const orgRef = doc(db, Collection.Organizations, organization);
         // check read access
         await assertSucceeds(getDoc(orgRef));
         // check write access
@@ -48,8 +54,8 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow read nor write access to an unauth user",
       async () => {
-        const db = await getTestEnv({ auth: false });
-        const orgRef = doc(db, Collection.Organizations, getOrganization());
+        const { db, organization } = await getTestEnv({ auth: false });
+        const orgRef = doc(db, Collection.Organizations, organization);
         // check read access
         await assertFails(getDoc(orgRef));
         // check write access
@@ -60,7 +66,7 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow read nor write access to authenticated user if not admin for current organization",
       async () => {
-        const db = await getTestEnv({
+        const { db } = await getTestEnv({
           // create a new organization of which the current user (`test@eisbuk.it`) is not admin
           setup: (db) =>
             setDoc(
@@ -84,29 +90,22 @@ describe("Firestore rules", () => {
   });
 
   describe("Slots rules", () => {
-    /**
-     * Path to a slot with baseSlot id.
-     * We're using this for most of the tests
-     */
-    const pathToSlots = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Slots,
-    ].join("/");
-    const pathToSlot = [pathToSlots, baseSlot.id].join("/");
+    // const getSlotDocPath(organization, baseSlot.id) = [getSlotsPath(organization), baseSlot.id].join("/");
 
     testWithEmulator("should not allow access to unauth user", async () => {
-      const db = await getTestEnv({
+      const { db, organization } = await getTestEnv({
         auth: false,
         // create test slot in the db
-        setup: (db) => setDoc(doc(db, pathToSlot), baseSlot),
+        setup: (db, { organization }) =>
+          setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), baseSlot),
       });
-      const slotRef = doc(db, pathToSlot);
+      console.log("Orgaization:", organization);
+      const slotRef = doc(db, getSlotDocPath(organization, baseSlot.id));
       // check read access
       await assertFails(getDoc(slotRef));
       // check write access
       await assertFails(
-        setDoc(doc(db, pathToSlots, "some-id"), {
+        setDoc(doc(db, getSlotsPath(organization), "some-id"), {
           ...baseSlot,
           id: "some-id",
         })
@@ -118,8 +117,8 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should allow access if organization admin (for delete) and slot interface is correct (for write/update)",
       async () => {
-        const db = await getTestEnv({});
-        const slotRef = doc(db, pathToSlot);
+        const { db, organization } = await getTestEnv({});
+        const slotRef = doc(db, getSlotDocPath(organization, baseSlot.id));
         // check create access
         await assertSucceeds(setDoc(slotRef, baseSlot));
         // check read access
@@ -136,18 +135,21 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow create/update if slot date not valid",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         await assertFails(
-          setDoc(doc(db, pathToSlot), { ...baseSlot, date: "2022-24-01" })
+          setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
+            ...baseSlot,
+            date: "2022-24-01",
+          })
         );
       }
     );
     testWithEmulator(
       "should not allow create/update if slot type not valid",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         await assertFails(
-          setDoc(doc(db, pathToSlot), {
+          setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
             ...baseSlot,
             type: "non-existing-slot-type",
           })
@@ -157,9 +159,9 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow create/update if slot category not valid",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         await assertFails(
-          setDoc(doc(db, pathToSlot), {
+          setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
             ...baseSlot,
             categories: [
               Category.PreCompetitiveAdults,
@@ -208,8 +210,8 @@ describe("Firestore rules", () => {
     // testWithEmulator(
     //   "should not allow create/update if intervals not valid",
     //   async () => {
-    //     const db = await getTestEnv({});
-    //     const slotRef = doc(db, pathToSlot);
+    //     const {db} = await getTestEnv({});
+    //     const slotRef = doc(db, getSlotDocPath(organization, baseSlot.id));
     //     // check invalid interval
     //     await assertFails(
     //       setDoc(slotRef, {
@@ -255,38 +257,37 @@ describe("Firestore rules", () => {
      * A month string used throughout the tests
      */
     const monthStr = baseSlot.date.substring(0, 7);
-    const pathToMonth = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.SlotsByDay,
-      monthStr,
-    ].join("/");
-
-    const pathToSlot = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Slots,
-      baseSlot.id,
-    ].join("/");
 
     testWithEmulator("should allow read access to all", async () => {
-      const db = await getTestEnv({
+      const { db, organization } = await getTestEnv({
         auth: false,
-        setup: async (db) => {
-          await setDoc(doc(db, pathToSlot), baseSlot);
+        setup: async (db, { organization }) => {
+          await setDoc(
+            doc(db, getSlotDocPath(organization, baseSlot.id)),
+            baseSlot
+          );
           // wait for 'slotsByDay' aggregation
-          await pRetry(async () => (await getDoc(doc(db, pathToMonth))).exists);
+          await pRetry(
+            async () =>
+              (
+                await getDoc(
+                  doc(db, getSlotsByDayDocPath(organization, monthStr))
+                )
+              ).exists
+          );
         },
       });
-      await assertSucceeds(getDoc(doc(db, pathToMonth)));
+      await assertSucceeds(
+        getDoc(doc(db, getSlotsByDayDocPath(organization, monthStr)))
+      );
     });
 
     testWithEmulator(
       "should not allow write access (the collection is updated by cloud functions)",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         await assertFails(
-          setDoc(doc(db, pathToMonth), {
+          setDoc(doc(db, getSlotsByDayDocPath(organization, monthStr)), {
             [baseSlot.date]: { [baseSlot.id]: baseSlot },
           })
         );
@@ -295,36 +296,37 @@ describe("Firestore rules", () => {
   });
 
   describe("Bookings rules", () => {
-    /**
-     * Path to bookings for "saul". We're using this for all tests
-     */
-    const saulBookingsPath = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Bookings,
-      saul.secretKey,
-    ].join("/");
-
     testWithEmulator(
       "should allow anybody read access to bookings document",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) =>
-            setDoc(doc(db, saulBookingsPath), getCustomerBase(saul)),
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              getCustomerBase(saul)
+            ),
         });
-        await assertSucceeds(getDoc(doc(db, saulBookingsPath)));
+        await assertSucceeds(
+          getDoc(doc(db, getBookingsDocPath(organization, saul.secretKey)))
+        );
       }
     );
 
     testWithEmulator(
       "should not allow anybody write access to bookings document (as it's handled through cloud functions)",
       async () => {
-        const db = await getTestEnv({
-          setup: (db) =>
-            setDoc(doc(db, saulBookingsPath), getCustomerBase(saul)),
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              getCustomerBase(saul)
+            ),
         });
-        const saulBookingsDoc = doc(db, saulBookingsPath);
+        const saulBookingsDoc = doc(
+          db,
+          getBookingsDocPath(organization, saul.secretKey)
+        );
         // check update
         await assertFails(
           setDoc(saulBookingsDoc, {
@@ -354,38 +356,30 @@ describe("Firestore rules", () => {
      * Intervals existing in test slot
      */
     const testIntervals = Object.keys(testSlot.intervals);
-    /**
-     * A path to test slot
-     */
-    const testSlotPath = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Slots,
-      baseSlot.id,
-    ].join("/");
-    /**
-     * Path to bookings for saul for base slot
-     */
-    const bookedSlotPath = [
-      saulBookingsPath,
-      BookingSubCollection.BookedSlots,
-      baseSlot.id,
-    ].join("/");
 
     testWithEmulator(
       "should allow anybody to read and write (create/update/delete) booked slots (semi auth is done by possesion of 'secretKey')",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: async (db) =>
+          setup: async (db, { organization }) =>
             await Promise.all([
               // create test slot (as it's used to check compatibility with booking)
-              setDoc(doc(db, testSlotPath), testSlot),
+              setDoc(
+                doc(db, getSlotDocPath(organization, baseSlot.id)),
+                testSlot
+              ),
               // create saul's bookings entry (CustomerBase) as it's used to check category
-              setDoc(doc(db, saulBookingsPath), getCustomerBase(saul)),
+              setDoc(
+                doc(db, getBookingsDocPath(organization, saul.secretKey)),
+                getCustomerBase(saul)
+              ),
             ]),
         });
-        const bookedSlotRef = doc(db, bookedSlotPath);
+        const bookedSlotRef = doc(
+          db,
+          getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+        );
         // check create
         await assertSucceeds(
           setDoc(bookedSlotRef, {
@@ -410,17 +404,23 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow create/update of booking subscribing to non-existing slot",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) => setDoc(doc(db, testSlotPath), testSlot),
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getSlotDocPath(organization, baseSlot.id)),
+              testSlot
+            ),
         });
         await assertFails(
           setDoc(
             doc(
               db,
-              saulBookingsPath,
-              BookingSubCollection.BookedSlots,
-              "non-existing-slot-id"
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                "non-existing-slot-id"
+              )
             ),
             {
               date: testSlot.date,
@@ -433,112 +433,153 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow create/update of booking subscribing to non-existing interval",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) => setDoc(doc(db, testSlotPath), testSlot),
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getSlotDocPath(organization, baseSlot.id)),
+              testSlot
+            ),
         });
         await assertFails(
-          setDoc(doc(db, bookedSlotPath), {
-            date: testSlot.date,
-            interval: testIntervals[0],
-          })
+          setDoc(
+            doc(
+              db,
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            ),
+            {
+              date: testSlot.date,
+              interval: testIntervals[0],
+            }
+          )
         );
       }
     );
     testWithEmulator(
       "should not allow create/update of invalid booking entry",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) => setDoc(doc(db, testSlotPath), testSlot),
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getSlotDocPath(organization, baseSlot.id)),
+              testSlot
+            ),
         });
         // check entry <-> subscribed slot `date` mismatch
         await assertFails(
-          setDoc(doc(db, bookedSlotPath), {
-            date: DateTime.fromISO(testSlot.date).plus({ days: 1 }).toISODate(),
-            interval: testIntervals[0],
-          })
+          setDoc(
+            doc(
+              db,
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            ),
+            {
+              date: DateTime.fromISO(testSlot.date)
+                .plus({ days: 1 })
+                .toISODate(),
+              interval: testIntervals[0],
+            }
+          )
         );
       }
     );
     testWithEmulator(
       "should not allow customer to subscribe to slot not supporting their category",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) =>
-            setDoc(doc(db, testSlotPath), {
+          setup: (db, { organization }) =>
+            setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
               ...testSlot,
               // saul is category = "competitive"
               category: [Category.PreCompetitiveAdults],
             }),
         });
         await assertFails(
-          setDoc(doc(db, bookedSlotPath), {
-            date: testSlot.date,
-            interval: testIntervals[0],
-          })
+          setDoc(
+            doc(
+              db,
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            ),
+            {
+              date: testSlot.date,
+              interval: testIntervals[0],
+            }
+          )
         );
       }
     );
   });
 
   describe("Customers rules", () => {
-    const saulPath = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Customers,
-      saul.id,
-    ].join("/");
-
     testWithEmulator("should only allow admin access", async () => {
-      const db = await getTestEnv({
+      const { db, organization } = await getTestEnv({
         auth: false,
-        setup: (db) => setDoc(doc(db, saulPath), saul),
+        setup: (db, { organization }) =>
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
       });
       // check read
-      await assertFails(getDoc(doc(db, saulPath)));
+      await assertFails(
+        getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+      );
       // check write
       await assertFails(
-        setDoc(doc(db, saulPath), { ...saul, name: "not-saul" })
+        setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+          ...saul,
+          name: "not-saul",
+        })
       );
       // check delete
-      await assertFails(deleteDoc(doc(db, saulPath)));
+      await assertFails(
+        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+      );
     });
 
     testWithEmulator("should allow read/write to org admin", async () => {
-      const db = await getTestEnv({
-        setup: (db) => setDoc(doc(db, saulPath), saul),
+      const { db, organization } = await getTestEnv({
+        setup: (db, { organization }) =>
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
       });
       // check read
-      await assertSucceeds(getDoc(doc(db, saulPath)));
+      await assertSucceeds(
+        getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+      );
       // check write
       await assertSucceeds(
-        setDoc(doc(db, saulPath), {
+        setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
           ...saul,
           category: Category.PreCompetitiveAdults,
         })
       );
       // check delete
-      await assertSucceeds(deleteDoc(doc(db, saulPath)));
+      await assertSucceeds(
+        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+      );
     });
 
     testWithEmulator(
       "should not allow create/update if required fields (name, surname) not provided",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { name, ...noNameSaul } = saul;
-        await assertFails(setDoc(doc(db, saulPath), noNameSaul));
+        await assertFails(
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), noNameSaul)
+        );
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { surname, ...noSurnameSaul } = saul;
-        await assertFails(setDoc(doc(db, saulPath), noSurnameSaul));
+        await assertFails(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noSurnameSaul
+          )
+        );
       }
     );
     testWithEmulator(
       "should allow create/update with empty strings as values of optional strings (as is in CustomerForm in production)",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { name, surname, category } = saul;
         const minimalCustomer: Omit<Omit<Customer, "id">, "secretKey"> = {
@@ -549,126 +590,168 @@ describe("Firestore rules", () => {
           surname,
           category,
         };
-        await assertSucceeds(setDoc(doc(db, saulPath), minimalCustomer));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            minimalCustomer
+          )
+        );
       }
     );
     testWithEmulator(
       "should not allow create/update if 'covidCertificateReleaseDate' provided, but not a valid date",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { covidCertificateReleaseDate, ...noCovidSaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             covidCertificateReleaseDate: "2022-22-24",
           })
         );
         // should allow if (optional) `covidCertificateReleaseDate` is not provided
-        await assertSucceeds(setDoc(doc(db, saulPath), noCovidSaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noCovidSaul
+          )
+        );
       }
     );
     testWithEmulator(
       "should not allow create/update if 'certificateExpiration' provided, but not a valid date",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { certificateExpiration, ...noCertificateSaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             certificateExpiration: "2022-22-24",
           })
         );
         // should allow if (optional) `certificateExpiration` is not provided
-        await assertSucceeds(setDoc(doc(db, saulPath), noCertificateSaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noCertificateSaul
+          )
+        );
       }
     );
     testWithEmulator(
       "should not allow create/update if birthday provided, but not a valid date",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { birthday, ...noBirthdaySaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             birthday: "2022-22-24",
           })
         );
         // should allow if (optional) `birthday` is not provided
-        await assertSucceeds(setDoc(doc(db, saulPath), noBirthdaySaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noBirthdaySaul
+          )
+        );
       }
     );
     testWithEmulator(
       "should not allow create/update if phone provided but not valid",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { phone, ...noPhoneSaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "not-a-number-string",
           })
         );
         // number needs to be prepended with "+" or "00"
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "115566774",
           })
         );
         // should accept only number characters
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             phone: "foobar+123",
           })
         );
         await assertSucceeds(
-          setDoc(doc(db, saulPath), { ...saul, phone: "+385996688132" })
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+            ...saul,
+            phone: "+385996688132",
+          })
         );
         // should allow `phone` prepended with "00" instead of "+"
         await assertSucceeds(
-          setDoc(doc(db, saulPath), { ...saul, phone: "00385996688132" })
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+            ...saul,
+            phone: "00385996688132",
+          })
         );
         // should allow if (optional) `phone` is not provided
-        await assertSucceeds(setDoc(doc(db, saulPath), noPhoneSaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noPhoneSaul
+          )
+        );
         // check too long and to short phone numbers
         // current min length is 9 (not counting "+" or "00" prefix)
         await assertFails(
-          setDoc(doc(db, saulPath), { ...saul, phone: "0038599666" })
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+            ...saul,
+            phone: "0038599666",
+          })
         );
         // current max length is 15 (not counting "+" or "00" prefix)
         await assertFails(
-          setDoc(doc(db, saulPath), { ...saul, phone: "003859966881231567" })
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+            ...saul,
+            phone: "003859966881231567",
+          })
         );
       }
     );
     testWithEmulator(
       "should not allow create/update if email provided but not valid",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { email, ...noEmailSaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             email: "no-domain-email@",
           })
         );
         // should allow if (optional) `email` is not provided
-        await assertSucceeds(setDoc(doc(db, saulPath), noEmailSaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noEmailSaul
+          )
+        );
       }
     );
     testWithEmulator(
       "should not allow create/update if invalid category",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // check valid `category`
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             category: "not-a-valid-category",
           })
@@ -714,25 +797,31 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow create/update if 'covidCertificateSuspended' provided, but not boolean",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { covidCertificateSuspended, ...noSuspendedSaul } = saul;
         await assertFails(
-          setDoc(doc(db, saulPath), {
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
             covidCertificateSuspended: "not-a-boolean",
           })
         );
-        await assertSucceeds(setDoc(doc(db, saulPath), noSuspendedSaul));
+        await assertSucceeds(
+          setDoc(
+            doc(db, getCustomerDocPath(organization, saul.id)),
+            noSuspendedSaul
+          )
+        );
       }
     );
     testWithEmulator("should allow `extendedDate` update", async () => {
-      const db = await getTestEnv({
-        setup: (db) => setDoc(doc(db, saulPath), saul),
+      const { db, organization } = await getTestEnv({
+        setup: (db, { organization }) =>
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
       });
       await assertSucceeds(
         setDoc(
-          doc(db, saulPath),
+          doc(db, getCustomerDocPath(organization, saul.id)),
           {
             extendedDate: "2022-02-01",
           },
@@ -745,15 +834,6 @@ describe("Firestore rules", () => {
 
   describe("Attendance rules", () => {
     /**
-     * Path to attendance entry for base slot
-     */
-    const attendanceSlotPath = [
-      Collection.Organizations,
-      getOrganization(),
-      OrgSubCollection.Attendance,
-      baseSlot.id,
-    ].join("/");
-    /**
      * A basic (empty) attendance with baseSlot `date`
      */
     const testAttendance: SlotAttendnace = {
@@ -764,15 +844,21 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow non-admin users read nor write access",
       async () => {
-        const db = await getTestEnv({
+        const { db, organization } = await getTestEnv({
           auth: false,
-          setup: (db) => setDoc(doc(db, attendanceSlotPath), testAttendance),
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getAttendanceDocPath(organization, baseSlot.id)),
+              testAttendance
+            ),
         });
         // check read
-        await assertFails(getDoc(doc(db, attendanceSlotPath)));
+        await assertFails(
+          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+        );
         // check write
         await assertFails(
-          setDoc(doc(db, attendanceSlotPath), {
+          setDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)), {
             ...testAttendance,
             attendances: {
               [saul.id]: {
@@ -783,21 +869,29 @@ describe("Firestore rules", () => {
           })
         );
         // check delete
-        await assertFails(deleteDoc(doc(db, attendanceSlotPath)));
+        await assertFails(
+          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+        );
       }
     );
 
     testWithEmulator(
       "should allow admin read and update access (create/delete are handled through cloud functions)",
       async () => {
-        const db = await getTestEnv({
-          setup: (db) => setDoc(doc(db, attendanceSlotPath), testAttendance),
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getAttendanceDocPath(organization, baseSlot.id)),
+              testAttendance
+            ),
         });
         // check read
-        await assertSucceeds(getDoc(doc(db, attendanceSlotPath)));
+        await assertSucceeds(
+          getDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+        );
         // check update
         await assertSucceeds(
-          setDoc(doc(db, attendanceSlotPath), {
+          setDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)), {
             ...testAttendance,
             attendances: {
               [saul.id]: {
@@ -810,30 +904,28 @@ describe("Firestore rules", () => {
         // check create
         await assertFails(
           setDoc(
-            doc(
-              db,
-              [
-                Collection.Organizations,
-                getOrganization(),
-                OrgSubCollection.Attendance,
-                "new-attendance",
-              ].join("/")
-            ),
+            doc(db, getAttendanceDocPath(organization, "new-attendance")),
             testAttendance
           )
         );
         // check delete
-        await assertFails(deleteDoc(doc(db, attendanceSlotPath)));
+        await assertFails(
+          deleteDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)))
+        );
       }
     );
     testWithEmulator(
       "should not allow date update (as that is handled through cloud functions on slot update)",
       async () => {
-        const db = await getTestEnv({
-          setup: (db) => setDoc(doc(db, attendanceSlotPath), testAttendance),
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setDoc(
+              doc(db, getAttendanceDocPath(organization, baseSlot.id)),
+              testAttendance
+            ),
         });
         await assertFails(
-          setDoc(doc(db, attendanceSlotPath), {
+          setDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)), {
             ...testAttendance,
             date: DateTime.fromISO(testAttendance.date)
               .plus({ days: 1 })
@@ -842,7 +934,7 @@ describe("Firestore rules", () => {
         );
         // if date is the same, but is still included in update payload, should allow
         await assertSucceeds(
-          setDoc(doc(db, attendanceSlotPath), {
+          setDoc(doc(db, getAttendanceDocPath(organization, baseSlot.id)), {
             date: testAttendance.date,
             attendances: {
               [saul.id]: {
@@ -860,7 +952,7 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow anybody read/write access to 'emailQueue' as it's written to only by cloud functions",
       async () => {
-        const db = await getTestEnv({
+        const { db } = await getTestEnv({
           setup: (db) =>
             setDoc(doc(db, Collection.EmailQueue, "mail-id"), {
               message: { html: "Hello world", subject: "Subject" },
@@ -889,7 +981,7 @@ describe("Firestore rules", () => {
     testWithEmulator(
       "should not allow anybody read/write access to 'secrets', it should only be written to from firebase console",
       async () => {
-        const db = await getTestEnv({
+        const { db } = await getTestEnv({
           setup: (db) =>
             setDoc(doc(db, Collection.Secrets, "test-organization"), {
               smsAuthToken: "test-token",
