@@ -1,3 +1,6 @@
+#! YAML library files must be named *.lib.yml
+#@ load("cache.lib.yml", "cache_node", "cache_cypress")
+
 name: Deploy to production
 
 "on":
@@ -17,15 +20,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.pnpm-store
-            common/temp/pnpm-store
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - #@ cache_node()
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
@@ -45,7 +40,7 @@ jobs:
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Deploy to firebase
         run: rush deploy:production
-        env: # Or as an environment variable
+        env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
       - name: Create Sentry release
         uses: getsentry/action-release@v1

@@ -16,8 +16,9 @@ jobs:
       uses: actions/cache@v2
       with:
         path: |
+          ~/.rush
           ~/.pnpm-store
-          common/temp/pnpm-store
+          common/temp
           **/node_modules
           ~/.cache/firebase/emulators
         key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}

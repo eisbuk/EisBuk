@@ -1,3 +1,6 @@
+#! YAML library files must be named *.lib.yml
+#@ load("cache.lib.yml", "cache_node", "cache_cypress")
+
 name: Storybook
 
 "on":
@@ -14,15 +17,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.pnpm-store
-            common/temp/pnpm-store
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - #@ cache_node()
       - name: Install rush
         run: npm install -g @microsoft/rush@5.63.1
       - name: Install and build packages

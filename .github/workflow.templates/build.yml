@@ -1,3 +1,6 @@
+#! YAML library files must be named *.lib.yml
+#@ load("cache.lib.yml", "cache_node", "cache_cypress")
+
 name: Build and deploy preview
 
 "on":
@@ -12,16 +15,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - #@ cache_node()
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
@@ -112,16 +106,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - #@ cache_node()
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
@@ -194,16 +179,7 @@ jobs:
       - uses: actions/setup-node@v2
         with:
           node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+      - #@ cache_node()
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
       - name: Install and build packages
