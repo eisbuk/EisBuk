@@ -27,6 +27,7 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "@/store/actions/copyPaste";
+import { getAttendanceDocPath } from "@/utils/firestore";
 
 /**
  * A stored path to test organization in firestore
@@ -40,10 +41,6 @@ const slotsPath = [orgPath, OrgSubCollection.Slots].join("/");
  * A path to `customers` collection in test organization
  */
 const customersPath = [orgPath, OrgSubCollection.Customers].join("/");
-/*
- * A path to `slots` collection in test organization
- */
-const attendancePath = [orgPath, OrgSubCollection.Attendance].join("/");
 
 interface AdminSetupFunction<
   T extends Record<string, any> = Record<string, never>
@@ -61,14 +58,17 @@ interface AdminSetupFunction<
  */
 export const setupTestAttendance: AdminSetupFunction<{
   attendance: Record<string, SlotAttendnace>;
-}> = async ({ attendance, db, store }) => {
+  organization: string;
+}> = async ({ attendance, db, store, organization }) => {
   // set attendance to store
   store.dispatch(updateLocalDocuments(OrgSubCollection.Attendance, attendance));
 
   // set desired values to emulated db
-  const attendanceCollRef = collection(db, attendancePath);
   const updates = Object.keys(attendance).map((slotId) =>
-    setDoc(doc(attendanceCollRef, slotId), attendance[slotId])
+    setDoc(
+      doc(db, getAttendanceDocPath(organization, slotId)),
+      attendance[slotId]
+    )
   );
 
   await Promise.all(updates);
