@@ -1,6 +1,7 @@
 #! YAML library files must be named *.lib.yml
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("secrets.lib.yml", "check_secrets")
 
 name: Build and deploy preview
 
@@ -41,10 +42,7 @@ jobs:
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      - #@ check_secrets()
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -112,10 +110,7 @@ jobs:
       - #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      - #@ check_secrets()
       - name: Test Report
         uses: dorny/test-reporter@v1
 
@@ -224,10 +219,7 @@ jobs:
           #! pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      - #@ check_secrets()
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -283,10 +275,7 @@ jobs:
       - test_v14
     runs-on: ubuntu-latest
     steps:
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      - #@ check_secrets()
       - name: Finalize Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
