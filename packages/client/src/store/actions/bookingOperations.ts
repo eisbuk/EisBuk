@@ -1,9 +1,12 @@
 import {
   deleteDoc,
   doc,
-  getDoc,
+  collection,
   getFirestore,
   setDoc,
+  query,
+  where,
+  getDocs,
 } from "@firebase/firestore";
 
 import {
@@ -19,17 +22,21 @@ import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { getOrganization } from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
+import { CloudFunction } from "@/enums/functions";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { enqueueNotification, showErrSnackbar } from "./appActions";
-
-import { CloudFunction } from "@/enums/functions";
 import { createCloudFunctionCaller } from "@/utils/firebase";
+
+import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 const getBookingsPath = () =>
   `${Collection.Organizations}/${getOrganization()}/${
     OrgSubCollection.Bookings
+  }`;
+const getCustomersPath = () =>
+  `${Collection.Organizations}/${getOrganization()}/${
+    OrgSubCollection.Customers
   }`;
 
 /**
@@ -173,25 +180,35 @@ export const sendICSFile: sendICSFile =
   async (dispatch) => {
     try {
       const db = getFirestore();
-      const docRef = doc(
-        db,
-        getBookingsPath(),
-        secretKey,
-        OrgSubCollection.Customers
-      );
-      const { email, name } = (await getDoc(docRef)).data() as Customer;
 
-      const subject = "prenotazioni lezioni di Igor Ice Team";
+      const colRef = collection(db, getCustomersPath());
+
+      const customerQuery = query(colRef, where("secretKey", "==", secretKey));
+      const customer = await getDocs(customerQuery);
+
+      if (customer.size !== 1) throw new Error("Customer not found");
+
+      let email = "";
+      let name = "";
+      customer.forEach((doc) => {
+        const { email: customerEmail, name: customerName } = doc.data();
+        email = customerEmail;
+        name = customerName;
+      });
+
+      const subject = "Calendario prenotazioni Igor Ice Team";
 
       const html = `<p>Ciao ${name},</p>
-        <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
-        <a href="${icsFile}">Clicca qui per gestire le tue prenotazioni</a>`;
+        <p>Ti inviamo un file per aggiungere le tue prossime lezioni con ${getOrganization()} al tuo calendario:</p>
+        <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
 
       const handler = CloudFunction.SendEmail;
       const payload = {
         to: email,
         html,
         subject,
+        filename: "IgorIceBookings",
+        content: icsFile,
       } as EmailMessage;
 
       await createCloudFunctionCaller(handler, payload)();

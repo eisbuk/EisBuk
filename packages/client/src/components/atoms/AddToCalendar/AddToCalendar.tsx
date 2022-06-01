@@ -21,10 +21,7 @@ import {
   sendICSFile,
 } from "@/store/actions/bookingOperations";
 
-import {
-  __addToCalendarButtonId__,
-  __addToCalendarButtonId__,
-} from "@/__testData__/testIds";
+import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 
 interface Props {
   /**
@@ -87,17 +84,11 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
           new ICalendar(bookedSlotEvent).addProperty("UID", uid)
         );
       }
-      /**
-       * Download calendar on last iteration
-       */
-      if (i === Object.keys(bookedSlots).length - 1) {
-        createCancelledEvents(previousCalendarUids, icalendar, displayName);
-        icalendar.download("Booked_Slots.ics");
-        dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
-        dispatch(sendICSFile({ secretKey: secretKey, icsFile: "icsFileHere" }));
-      }
     });
-    icalendar.download("Booked_Slots.ics");
+    const icsFile = icalendar.render();
+    createCancelledEvents(previousCalendarUids, icalendar, displayName);
+    dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
+    dispatch(sendICSFile({ secretKey: secretKey, icsFile: icsFile }));
   };
   return (
     <div className={classes.container}>
