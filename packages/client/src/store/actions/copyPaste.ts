@@ -2,8 +2,6 @@ import { DateTime } from "luxon";
 import { collection, getFirestore, writeBatch, doc } from "@firebase/firestore";
 
 import {
-  Collection,
-  OrgSubCollection,
   SlotInterface,
   SlotsById,
   luxon2ISODate,
@@ -17,6 +15,7 @@ import { Action } from "@/enums/store";
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
 import { showErrSnackbar } from "./appActions";
+import { getSlotsPath } from "@/utils/firestore";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -144,9 +143,6 @@ export const copySlotsWeek =
     dispatch(setSlotWeekToClipboard({ slots, weekStart }));
   };
 
-const getSlotsCollectionPath = () =>
-  `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Slots}`;
-
 /**
  * Creates Redux action to paste the day of slots from clipboard to a new day
  * @returns Redux action object
@@ -166,7 +162,7 @@ export const pasteSlotsDay =
       const date = luxon2ISODate(newDate);
 
       // add updated slots to firestore
-      const slotsCollRef = collection(db, getSlotsCollectionPath());
+      const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
       const batch = writeBatch(db);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -206,7 +202,7 @@ export const pasteSlotsWeek =
       const jump = newWeekStart.diff(weekStart, ["weeks"]).toObject().weeks!;
 
       // update each slot with new date and set up for firestore dispatching
-      const slotsCollRef = collection(db, getSlotsCollectionPath());
+      const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
       const batch = writeBatch(db);
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
