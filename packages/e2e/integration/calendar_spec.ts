@@ -111,7 +111,7 @@ describe("Download ics file to Add To Calendar", () => {
     cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
     cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
       .first()
-      .click();
+      .click({ force: true });
 
     cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
     cy.contains("Yes").click();
