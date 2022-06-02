@@ -1,9 +1,8 @@
 import { AnyAction, Store } from "redux";
-import { doc, setDoc, collection } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 import { v4 as uuid } from "uuid";
 
 import {
-  Collection,
   OrgSubCollection,
   SlotInterface,
   SlotsByDay,
@@ -17,8 +16,6 @@ import {
 
 import { TestEnvFirestore } from "@/__testSetup__/firestore";
 
-import { getOrganization } from "@/lib/getters";
-
 import { LocalStore } from "@/types/store";
 
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
@@ -31,17 +28,9 @@ import {
   getAttendanceDocPath,
   getBookedSlotDocPath,
   getBookingsDocPath,
+  getCustomerDocPath,
   getSlotDocPath,
 } from "@/utils/firestore";
-
-/**
- * A stored path to test organization in firestore
- */
-const orgPath = [Collection.Organizations, getOrganization()].join("/");
-/**
- * A path to `customers` collection in test organization
- */
-const customersPath = [orgPath, OrgSubCollection.Customers].join("/");
 
 interface AdminSetupFunction<
   T extends Record<string, any> = Record<string, never>
@@ -162,16 +151,15 @@ export const setupTestBookings: AdminSetupFunction<{
  */
 export const setupTestCustomer: AdminSetupFunction<{
   customer: CustomerLoose;
-}> = async ({ customer, db, store }) => {
-  const customersRef = collection(db, customersPath);
-
+  organization: string;
+}> = async ({ customer, db, store, organization }) => {
   // id customer id or secretKey not provided, generate locally
   const id = customer.id || uuid();
   const secretKey = customer.secretKey || uuid();
   const customerEntry = { ...customer, id, secretKey };
 
   // udpate firestore
-  await setDoc(doc(customersRef, id), customerEntry);
+  await setDoc(doc(db, getCustomerDocPath(organization, id)), customerEntry);
 
   // set customer to the store
   store.dispatch(
