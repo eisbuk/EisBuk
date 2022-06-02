@@ -26,7 +26,7 @@ describe("add athlete", () => {
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
 
-  it.only("allows customer form submission with minimal fields", () => {
+  it("allows customer form submission with minimal fields", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
@@ -148,5 +148,19 @@ describe("add athlete", () => {
     // all of the data above should be submitable
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${archer.name} ${archer.surname} update`);
+  });
+
+  it("prefills the number field of the first athlete", () => {
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("name", "subscriptionNumber").should("have.value", "1");
+  });
+  it("prefills the number field with max + 1", () => {
+    cy.initAdminApp().then((organization) =>
+      cy.updateFirestore(organization, ["saul_with_extended_date.json"])
+    );
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("name", "subscriptionNumber").should("have.value", "42");
   });
 });
