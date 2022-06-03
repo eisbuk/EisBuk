@@ -9,6 +9,7 @@ import "@testing-library/jest-dom";
 import * as reactRedux from "react-redux";
 
 import AddToCalendar from "../AddToCalendar";
+import { expectedIcsFile } from "../__testData__/testData";
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 import { bookedSlots } from "@/store/actions/__testData__/bookingOperations";
@@ -44,23 +45,21 @@ const mockDispatch = jest.fn();
 jest.spyOn(reactRedux, "useDispatch").mockImplementation(() => mockDispatch);
 
 describe("Add To Calendar", () => {
-  describe("Smoke Test", () => {
+  describe("ICS File Email Test", () => {
     afterEach(() => {
       jest.clearAllMocks();
       cleanup();
-    });
-    test("should render component", () => {
-      renderWithRedux(<AddToCalendar bookedSlots={bookedSlots} />);
-      screen.getByTestId(__addToCalendarButtonId__);
     });
     testWithEmulator(
       "should call sendICSFile function when button is clicked",
       () => {
         renderWithRedux(<AddToCalendar bookedSlots={bookedSlots} />);
         screen.getByTestId(__addToCalendarButtonId__).click();
-        expect(mockDispatch).toHaveBeenCalledWith({
+
+        expect(mockDispatch).toHaveBeenCalledTimes(2);
+        expect(mockDispatch).toHaveBeenNthCalledWith(2, {
           secretKey: saul.secretKey,
-          icsFile: "icsFileHere",
+          icsFile: expect.stringMatching(expectedIcsFile),
         });
       }
     );

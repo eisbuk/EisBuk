@@ -7,7 +7,6 @@ import * as firestore from "@firebase/firestore";
 import {
   BookingSubCollection,
   Collection,
-  EmailMessage,
   OrgSubCollection,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -18,17 +17,15 @@ import { getTestEnv } from "@/__testSetup__/getTestEnv";
 
 import { Action, NotifVariant } from "@/enums/store";
 
-import { bookInterval, cancelBooking, sendICSFile } from "../bookingOperations";
+import { bookInterval, cancelBooking } from "../bookingOperations";
 import * as appActions from "../appActions";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
-import * as firebaseUtils from "@/utils/firebase";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 import { getOrganization } from "@/lib/getters";
-import { createTestStore } from "@/__testUtils__/firestore";
 
 const bookingsCollectionPath = `${
   Collection.Organizations
@@ -45,6 +42,9 @@ const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 jest.mock("@firebase/functions", () => ({
   getFunctions: jest.fn(),
   httpsCallable: () => jest.fn(),
+}));
+jest.mock("@/utils/firebase", () => ({
+  createCloudFunctionCaller: jest.fn(),
 }));
 
 jest.mock("@firebase/app", () => ({
@@ -76,11 +76,7 @@ jest
 const { secretKey } = saul;
 
 // #region testData
-/**
- * A mock function we're passing as `dispatch` to thunk in order
- * to test appropriate actions being dispatched to the store
- */
-const mockDispatch = jest.fn();
+
 /**
  * Intervals available for booking
  */
@@ -262,52 +258,5 @@ describe("Booking Notifications", () => {
         expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
       }
     );
-  });
-
-  describe("sendICSFile", () => {
-    testWithEmulator("should call sendICSFile with correct file", async () => {
-      const icsFile = "iceFileHere";
-      // test state for all tests
-      const getState = () =>
-        createTestStore({
-          data: {
-            customers: {
-              [saul.id]: saul,
-            },
-          },
-        });
-
-      // mocks we're using to test calling the right cloud function
-      const mockSendMail = jest.fn();
-      jest
-        .spyOn(firebaseUtils, "createCloudFunctionCaller")
-        .mockImplementation((func, payload) => () => mockSendMail(payload));
-      await sendICSFile({ secretKey: saul.secretKey, icsFile: "icsFileHere" })(
-        mockDispatch,
-        getState
-      );
-
-      // check results
-      expect(mockSendMail).toHaveBeenCalledTimes(1);
-      const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
-
-      expect(sentMail.to).toEqual(saul.email);
-      expect(sentMail.subject).toBeDefined();
-      // we're not matching the complete html of message
-      // but are asserting that it contains important parts
-      expect(sentMail.html.includes(icsFile)).toBeTruthy();
-      expect(sentMail.html.includes(saul.name)).toBeTruthy();
-
-      // check for success notification
-      expect(mockDispatch).toHaveBeenCalledWith(
-        mockEnqueueSnackbar({
-          message: i18n.t(NotificationMessage.EmailSent),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
-        })
-      );
-    });
   });
 });

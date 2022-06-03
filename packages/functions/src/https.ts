@@ -43,18 +43,22 @@ export const sendEmail = functions
         .collection(Collection.EmailQueue)
         .doc()
         .set(email);
+
       // XXX - testing - actually send the email using nodemailer
       // we use localhost port 2500 as SMTP server.
       // The command
       // docker run -it -p 2500:2500 -p 9571:8080 -p 8085:8085 --rm marcopas/docker-mailslurper
       // will start a local mailslurper server.
       // You can see the emails you send on http://localhost:9571/
-      const transporter = nodemailer.createTransport({
-        host: "localhost",
-        port: 2500,
-        secure: false,
-      });
-      await transporter.sendMail({ ...email, from: "eisbuk@localhost" });
+      if (process.env.BUILD_ENV !== "production") {
+        const transporter = nodemailer.createTransport({
+          host: "localhost",
+          port: 2500,
+          secure: false,
+        });
+
+        await transporter.sendMail({ ...email, from: "eisbuk@localhost" });
+      }
       return { ...email, organization, success: true };
     }
   );
