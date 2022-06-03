@@ -21,6 +21,10 @@ jest.mock("react-router", () => ({
   useParams: () => ({ secretKey: "secret-key" }),
 }));
 
+jest.mock("@/utils/firebase", () => ({
+  createCloudFunctionCaller: jest.fn(),
+}));
+
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   ...jest.requireActual("react-redux"),

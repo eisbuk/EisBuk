@@ -31,7 +31,9 @@ const secretKey = "secret-key";
 jest.mock("react-router", () => ({
   useParams: () => ({ secretKey: "secret-key" }),
 }));
-
+jest.mock("@/utils/firebase", () => ({
+  createCloudFunctionCaller: jest.fn(),
+}));
 describe("CustomerSlots", () => {
   afterEach(() => {
     jest.clearAllMocks();
