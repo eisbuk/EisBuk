@@ -9,7 +9,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import Button from "@mui/material/Button";
 
-import { CalendarEvents } from "@eisbuk/shared";
+import { CalendarEvents, SlotsByDay } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -29,9 +29,14 @@ interface Props {
    * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
    */
   bookedSlots: LocalStore["firestore"]["data"]["bookedSlots"];
+  /**
+   * Record of slots grouped by day's ISO date (day),
+   * keyed by slotId within each day.
+   */
+  slots: SlotsByDay;
 }
 
-const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
+const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -55,18 +60,23 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
 
     const eventUids: string[] = [];
 
-    Object.values(bookedSlots).forEach((bookedSlot, i) => {
-      const startDate = getStartDate(bookedSlot.date, bookedSlot.interval);
-      const endDate = getEndDate(bookedSlot.date, bookedSlot.interval);
+    Object.entries(bookedSlots).forEach((bookedSlot, i) => {
+      const bookedSlotId = bookedSlot[0];
+      const bookedSlotValue = bookedSlot[1];
+      const slotDate = bookedSlot[1].date;
 
-      // console.log(`${bookedSlot.date}${bookedSlot.interval}`);
+      const startDate = getStartDate(slotDate, bookedSlotValue.interval);
+      const endDate = getEndDate(slotDate, bookedSlotValue.interval);
+
+      const slotType = slots[slotDate][bookedSlotId].type;
+
       const bookedSlotEvent = {
-        title: `Booked Slot at ${displayName}`,
+        title: `Booked ${slotType} Slot at ${displayName}`,
         location: location,
         start: startDate,
         end: endDate,
       };
-      const uid = `${bookedSlot.date}${bookedSlot.interval}`;
+      const uid = `${bookedSlotValue.interval}${slotDate}`.replace(/[-:]/g, "");
       eventUids.push(uid);
       delete previousCalendarUids[uid];
 
@@ -85,9 +95,9 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
         );
       }
     });
-    const icsFile = icalendar.render();
     createCancelledEvents(previousCalendarUids, icalendar, displayName);
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
+    const icsFile = icalendar.render();
     dispatch(sendICSFile({ secretKey: secretKey, icsFile: icsFile }));
   };
   return (
@@ -112,6 +122,7 @@ const getStartDate = (date: string, interval: string) =>
       minute: Number(interval.substring(3, 5)),
     })
     .toJSDate();
+
 const getEndDate = (date: string, interval: string) =>
   DateTime.fromISO(date)
     .set({
@@ -120,28 +131,60 @@ const getEndDate = (date: string, interval: string) =>
     })
     .toJSDate();
 
+/**
+ * Creates and adds cancelled events to icalendar instance
+ * @param { [uid: string]: string } previousCalendar
+ * @param  {ICalendar} icalendar
+ * @param {string} displayName
+ */
 const createCancelledEvents = (
   previousCalendar: { [uid: string]: string },
   icalendar: ICalendar,
   displayName: string
 ) => {
   Object.values(previousCalendar).forEach((uid) => {
-    console.log("cancelled uid", { uid });
-    const start = getStartDate(uid.substring(0, 10), uid.substring(10));
-    const end = getEndDate(uid.substring(0, 10), uid.substring(10));
+    const start = DateTime.utc()
+      .set({
+        year: Number(uid.substring(8, 12)),
+        month: Number(uid.substring(12, 14)),
+        day: Number(uid.substring(14)),
+        hour: Number(uid.substring(0, 2)),
+        minute: Number(uid.substring(2, 4)),
+      })
+      .toJSDate();
+    const end = DateTime.utc()
+      .set({
+        year: Number(uid.substring(8, 12)),
+        month: Number(uid.substring(12, 14)),
+        day: Number(uid.substring(14)),
+        hour: Number(uid.substring(4, 6)),
+        minute: Number(uid.substring(6, 8)),
+      })
+      .toJSDate();
+
     icalendar.addEvent(
-      new ICalendar({ title: `Booked Slot at ${displayName}`, start, end })
+      new ICalendar({
+        title: `Cancelled Booking at ${displayName}`,
+        start,
+        end,
+      })
         .addProperty("UID", uid)
         .addProperty("STATUS", "CANCELLED")
     );
   });
 };
+/**
+ * Gets uids of events previously saved to calendar (from calendar subcollection of bookedSlots)
+ * @param {CalendarEvents["monthStr"]} previousCalendar
+ * @returns { [uid: string]: string } object of uids
+ */
 const getPreviousCalendarUids = (
   previousCalendar: CalendarEvents["monthStr"]
 ) =>
   previousCalendar.uids.reduce((acc, curr) => {
     return { ...acc, [curr]: curr };
   }, {});
+
 // #endregion helpers
 
 // #region styles

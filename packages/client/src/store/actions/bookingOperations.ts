@@ -207,7 +207,7 @@ export const sendICSFile: sendICSFile =
         to: email,
         html,
         subject,
-        filename: "IgorIceBookings",
+        filename: "bookedSlots.ics",
         content: icsFile,
       } as EmailMessage;
 

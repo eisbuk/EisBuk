@@ -42,7 +42,13 @@ describe("CustomerSlots", () => {
 
   describe("Test pagination", () => {
     test("should paginate by month if 'view=\"book_ice\"'", () => {
-      render(<CustomerSlots slots={slotsMonth} view={CustomerRoute.BookIce} />);
+      render(
+        <CustomerSlots
+          slots={slotsMonth}
+          rawSlots={slotsMonth}
+          view={CustomerRoute.BookIce}
+        />
+      );
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
       const expectedDate = testDateLuxon.plus({ months: 1 });
@@ -53,7 +59,11 @@ describe("CustomerSlots", () => {
 
     test("should paginate by month if 'view=\"book_off_ice\"'", () => {
       render(
-        <CustomerSlots slots={slotsMonth} view={CustomerRoute.BookOffIce} />
+        <CustomerSlots
+          slots={slotsMonth}
+          rawSlots={slotsMonth}
+          view={CustomerRoute.BookOffIce}
+        />
       );
       screen.getByTestId(__dateNavNextId__).click();
       // we're expecting next date to be a month jump from our first date
@@ -64,11 +74,15 @@ describe("CustomerSlots", () => {
     });
   });
   test("should show alert message when there are no slots available for the whole month in ice", () => {
-    render(<CustomerSlots slots={{}} view={CustomerRoute.BookIce} />);
+    render(
+      <CustomerSlots rawSlots={{}} slots={{}} view={CustomerRoute.BookIce} />
+    );
     screen.getByTestId(__noSlotsDateId__);
   });
   test("should show alert message when there are no slots available for the whole month in off-ice", () => {
-    render(<CustomerSlots slots={{}} view={CustomerRoute.BookOffIce} />);
+    render(
+      <CustomerSlots rawSlots={{}} slots={{}} view={CustomerRoute.BookOffIce} />
+    );
     screen.getByTestId(__noSlotsDateId__);
   });
 
@@ -101,7 +115,13 @@ describe("CustomerSlots", () => {
       const testInterval = Object.keys(testSlot.intervals).sort(
         comparePeriods
       )[0];
-      render(<CustomerSlots slots={slotsMonth} {...{ customerId }} />);
+      render(
+        <CustomerSlots
+          slots={slotsMonth}
+          rawSlots={slotsMonth}
+          {...{ customerId }}
+        />
+      );
       // we're looking for first interval button
       screen
         .queryAllByText(i18n.t(ActionButton.BookInterval) as string)[0]
@@ -123,7 +143,11 @@ describe("CustomerSlots", () => {
         [slotId]: { date: testDate, interval: bookedInterval },
       };
       render(
-        <CustomerSlots slots={slotsMonth} {...{ bookedSlots, customerId }} />
+        <CustomerSlots
+          slots={slotsMonth}
+          rawSlots={slotsMonth}
+          {...{ bookedSlots, customerId }}
+        />
       );
       screen.queryAllByText(i18n.t(ActionButton.Cancel) as string)[0].click();
       // create a mock redux action to test dispatch being called with proper data

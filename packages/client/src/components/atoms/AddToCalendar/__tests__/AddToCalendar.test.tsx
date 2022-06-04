@@ -12,7 +12,10 @@ import AddToCalendar from "../AddToCalendar";
 import { expectedIcsFile } from "../__testData__/testData";
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 import { renderWithRedux } from "@/__testUtils__/wrappers";
-import { bookedSlots } from "@/store/actions/__testData__/bookingOperations";
+import {
+  bookedSlots,
+  slotsByDay,
+} from "@/store/actions/__testData__/bookingOperations";
 import * as bookingActions from "@/store/actions/bookingOperations";
 import { saul } from "@/__testData__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -53,7 +56,9 @@ describe("Add To Calendar", () => {
     testWithEmulator(
       "should call sendICSFile function when button is clicked",
       () => {
-        renderWithRedux(<AddToCalendar bookedSlots={bookedSlots} />);
+        renderWithRedux(
+          <AddToCalendar bookedSlots={bookedSlots} slots={slotsByDay} />
+        );
         screen.getByTestId(__addToCalendarButtonId__).click();
 
         expect(mockDispatch).toHaveBeenCalledTimes(2);

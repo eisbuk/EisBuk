@@ -5,24 +5,24 @@ export const expectedIcsFile = new RegExp(
     "CLASS:PUBLIC\n" +
     "DESCRIPTION:\n" +
     "LOCATION:\n" +
-    "SUMMARY:Booked Slot at \n" +
+    "SUMMARY:Booked ice Slot at \n" +
     "TRANSP:TRANSPARENT\n" +
     "DTSTART:20210301T070000Z\n" +
     "DTEND:20210301T080000Z\n" +
-    "UID:2021-03-0109:00-10:00\n" +
+    "UID:0900100020210301\n" +
     "END:VEVENT\n" +
     "BEGIN:VEVENT\n" +
     "CLASS:PUBLIC\n" +
     "DESCRIPTION:\n" +
     "LOCATION:\n" +
-    "SUMMARY:Booked Slot at \n" +
+    "SUMMARY:Booked ice Slot at \n" +
     "TRANSP:TRANSPARENT\n" +
     "DTSTART:20210301T070000Z\n" +
     "DTEND:20210301T080000Z\n" +
-    "UID:2021-03-0109:00-10:00\n" +
+    "UID:0900100020210301\n" +
     "END:VEVENT\n" +
     "END:VCALENDAR\n" +
     "UID:[a-z0-9]*\n" +
-    "DTSTAMP:20220603\n" +
+    "DTSTAMP:[0-9]*\n" +
     "PRODID:localhost"
 );

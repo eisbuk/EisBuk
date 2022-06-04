@@ -57,7 +57,17 @@ export const sendEmail = functions
           secure: false,
         });
 
-        await transporter.sendMail({ ...email, from: "eisbuk@localhost" });
+        await transporter.sendMail({
+          ...email,
+          from: "eisbuk@localhost",
+          attachments: [
+            {
+              content: email.content,
+              filename: "bookedSlots.ics",
+              contentType: "text/calendar",
+            },
+          ],
+        });
       }
       return { ...email, organization, success: true };
     }
