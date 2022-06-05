@@ -297,6 +297,7 @@ export interface EmailMessage {
   to: string;
   subject: string;
   html: string;
+  content: string;
 }
 
 export interface SMSMessage {
