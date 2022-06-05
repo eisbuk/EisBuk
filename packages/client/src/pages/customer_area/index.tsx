@@ -2,7 +2,11 @@ import React, { useEffect, useMemo } from "react";
 import { Route, Switch, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { OrgSubCollection, BookingSubCollection } from "@eisbuk/shared";
+import {
+  OrgSubCollection,
+  BookingSubCollection,
+  Collection,
+} from "@eisbuk/shared";
 
 import { CustomerRoute, Routes } from "@/enums/routes";
 
@@ -53,6 +57,7 @@ const CustomerArea: React.FC = () => {
 
   useFirestoreSubscribe([
     OrgSubCollection.Bookings,
+    Collection.PublicOrgInfo,
     BookingSubCollection.BookedSlots,
     BookingSubCollection.Calendar,
     OrgSubCollection.SlotsByDay,

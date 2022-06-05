@@ -216,6 +216,7 @@ export interface FirestoreListener {
  */
 export type CollectionSubscription =
   | Collection.Organizations
+  | Collection.PublicOrgInfo
   | OrgSubCollection.SlotsByDay
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings

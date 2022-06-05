@@ -23,6 +23,8 @@ import {
 
 import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 
+import { __organization__ } from "@/lib/constants";
+
 interface Props {
   /**
    * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
@@ -49,7 +51,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
   const { displayName = "", location = "" } =
-    useSelector(getAboutOrganization) || {};
+    useSelector(getAboutOrganization)[__organization__] || {};
 
   const handleClick = () => {
     let icalendar = {} as ICalendar;
