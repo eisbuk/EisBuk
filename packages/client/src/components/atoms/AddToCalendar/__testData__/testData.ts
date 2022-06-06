@@ -7,8 +7,8 @@ export const expectedIcsFile = new RegExp(
     "LOCATION:\n" +
     "SUMMARY:Booked ice Slot at \n" +
     "TRANSP:TRANSPARENT\n" +
-    "DTSTART:20210301T070000Z\n" +
-    "DTEND:20210301T080000Z\n" +
+    "DTSTART:20210301T090000Z\n" +
+    "DTEND:20210301T100000Z\n" +
     "UID:0900100020210301\n" +
     "END:VEVENT\n" +
     "BEGIN:VEVENT\n" +
@@ -17,8 +17,8 @@ export const expectedIcsFile = new RegExp(
     "LOCATION:\n" +
     "SUMMARY:Booked ice Slot at \n" +
     "TRANSP:TRANSPARENT\n" +
-    "DTSTART:20210301T070000Z\n" +
-    "DTEND:20210301T080000Z\n" +
+    "DTSTART:20210301T090000Z\n" +
+    "DTEND:20210301T100000Z\n" +
     "UID:0900100020210301\n" +
     "END:VEVENT\n" +
     "END:VCALENDAR\n" +
