@@ -21,16 +21,18 @@ const EmptySpace: React.FC<EmptySpaceProps> = ({
       className: [...baseClasses, className].join(" "),
     },
     [
-      <span key="exclamation-circle" className="w-8 h-8 mr-2">
+      <span key="exclamation-circle" className="w-8 h-8 mb-2 md:mb-0 md:mr-2">
         <ExclamationCircle />
       </span>,
-      <span dangerouslySetInnerHTML={{ __html: children }} />,
+      <span
+        className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
+        dangerouslySetInnerHTML={{ __html: children }}
+      />,
     ]
   );
 
 const baseClasses = [
-  "px-4",
-  "py-3",
+  "py-8",
   "border-2",
   "border-gray-200",
   "rounded-lg",
@@ -38,7 +40,11 @@ const baseClasses = [
   "text-base",
   "select-none",
   "flex",
+  "flex-col",
   "items-center",
+  "md:flex-row",
+  "md:px-4",
+  "md:py-3",
 ];
 
 export default EmptySpace;

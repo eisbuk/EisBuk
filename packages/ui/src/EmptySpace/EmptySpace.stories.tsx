@@ -9,5 +9,5 @@ export default {
 } as ComponentMeta<typeof EmptySpace>;
 
 export const Default = (): JSX.Element => (
-  <EmptySpace className="w-md">{`No slots are currently available for the month of <strong>May</strong>`}</EmptySpace>
+  <EmptySpace className="max-w-md">{`No slots are currently available for the month of <strong>May</strong>`}</EmptySpace>
 );
