@@ -3,4 +3,6 @@
 import "./main.css";
 
 import TestComponent from "./TestComponent";
-export { TestComponent };
+import EmptySpace from "./EmptySpace";
+
+export { TestComponent, EmptySpace };
