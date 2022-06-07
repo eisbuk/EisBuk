@@ -11,6 +11,7 @@ interface NotificationToastProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "children"> {
   children: string;
   variant: NotificationToastVariant;
+  onClose?: () => void;
   as?: keyof JSX.IntrinsicElements;
 }
 
@@ -19,6 +20,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
   children,
   className,
   as = "div",
+  onClose = () => {},
   ...props
 }) =>
   React.createElement(
@@ -31,7 +33,11 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     },
     [
       <span dangerouslySetInnerHTML={{ __html: children }} />,
-      <button key="close-button" className="w-5 h-5 text-white/60">
+      <button
+        onClick={() => onClose()}
+        key="close-button"
+        className="w-5 h-5 text-white/60"
+      >
         <Close />
       </button>,
     ]
