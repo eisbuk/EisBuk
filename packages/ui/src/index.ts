@@ -5,7 +5,8 @@ import "./main.css";
 import TestComponent from "./TestComponent";
 import EmptySpace from "./EmptySpace";
 import NotificationToast from "./NotificationToast";
+import Button from "./Button";
 
 export * from "./NotificationToast";
 
-export { TestComponent, NotificationToast, EmptySpace };
+export { TestComponent, NotificationToast, EmptySpace, Button };

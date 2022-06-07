@@ -17,6 +17,7 @@ export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   StartAdornment?: React.FC;
   EndAdornment?: React.FC;
   disabled?: boolean;
+  as?: keyof JSX.IntrinsicElements;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -27,6 +28,7 @@ const Button: React.FC<ButtonProps> = ({
   children,
   className: classes,
   disabled = false,
+  as = "button",
   ...props
 }) => {
   const className = [
@@ -36,23 +38,21 @@ const Button: React.FC<ButtonProps> = ({
     classes,
   ].join(" ");
 
-  return (
-    <button {...{ ...props, className, disabled }}>
-      {StartAdornment && (
-        <div className="mr-1">
-          <StartAdornment />
-        </div>
-      )}
+  return React.createElement(as, { ...props, className, disabled }, [
+    StartAdornment && (
+      <div key="start-adornment" className="mr-1">
+        <StartAdornment />
+      </div>
+    ),
 
-      {children}
+    children,
 
-      {EndAdornment && (
-        <div className="ml-1">
-          <EndAdornment />
-        </div>
-      )}
-    </button>
-  );
+    EndAdornment && (
+      <div key="end-adornment" className="ml-1">
+        <EndAdornment />
+      </div>
+    ),
+  ]);
 };
 
 const baseClasses = [

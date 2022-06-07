@@ -51,11 +51,6 @@ export const Variants = (): JSX.Element => (
           {buttonText}
         </Button>
       </StorybookItem>
-      <StorybookItem label="No color">
-        <Button size={ButtonSize.LG} disabled>
-          {buttonText}
-        </Button>
-      </StorybookItem>
     </StorybookGrid>
   </>
 );
