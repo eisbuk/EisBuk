@@ -2,6 +2,6 @@ import NotificationToast, {
   NotificationToastVariant,
 } from "./NotificationToast";
 
-export type { NotificationToastVariant };
+export { NotificationToastVariant };
 
 export default NotificationToast;
