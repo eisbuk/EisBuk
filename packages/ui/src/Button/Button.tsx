@@ -16,6 +16,7 @@ export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   color?: ButtonColor;
   StartAdornment?: React.FC;
   EndAdornment?: React.FC;
+  disabled?: boolean;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -25,17 +26,18 @@ const Button: React.FC<ButtonProps> = ({
   EndAdornment,
   children,
   className: classes,
+  disabled = false,
   ...props
 }) => {
   const className = [
     ...baseClasses,
     ...sizeClassesLookup[size],
-    ...(color ? colorClassesLookup[color] : []),
+    getColorClass(disabled, color),
     classes,
   ].join(" ");
 
   return (
-    <button {...{ ...props, className }}>
+    <button {...{ ...props, className, disabled }}>
       {StartAdornment && (
         <div className="mr-1">
           <StartAdornment />
@@ -53,17 +55,26 @@ const Button: React.FC<ButtonProps> = ({
   );
 };
 
-const baseClasses = ["font-600", "rounded-md"];
+const baseClasses = [
+  "font-semibold",
+  "rounded-md",
+  "text-white",
+  "flex",
+  "justify-center",
+];
 
 const sizeClassesLookup = {
   [ButtonSize.Base]: ["px-[10px]", "py-[6px]", "text-sm"],
   [ButtonSize.LG]: ["px-[17px]", "py-[9px]", "text-base"],
 };
 
-const colorClassesLookup = {
-  [ButtonColor.Primary]: ["bg-cyan-500"],
-  [ButtonColor.Secondary]: ["bg-yellow-600"],
-  [ButtonColor.Error]: ["bg-red-700"],
+const getColorClass = (disabled: boolean, color?: ButtonColor) =>
+  disabled ? "bg-gray-200" : !color ? "" : colorClassLookup[color];
+
+const colorClassLookup = {
+  [ButtonColor.Primary]: "bg-cyan-500",
+  [ButtonColor.Secondary]: "bg-yellow-600",
+  [ButtonColor.Error]: "bg-red-700",
 };
 
 export default Button;
