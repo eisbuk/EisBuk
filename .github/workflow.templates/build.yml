@@ -282,3 +282,17 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
+
+  rush_check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - #@ cache_node()
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - name: Check dependency consistency
+        run: rush check
