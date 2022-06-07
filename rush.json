@@ -404,6 +404,10 @@
     {
       "packageName": "@eisbuk/ui",
       "projectFolder": "packages/ui"
+    },
+    {
+      "packageName": "@eisbuk/svg",
+      "projectFolder": "packages/svg"
     }
   ]
 }
