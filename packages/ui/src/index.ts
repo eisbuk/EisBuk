@@ -8,5 +8,6 @@ import NotificationToast from "./NotificationToast";
 import Button from "./Button";
 
 export * from "./NotificationToast";
+export * from "./Button";
 
 export { TestComponent, NotificationToast, EmptySpace, Button };
