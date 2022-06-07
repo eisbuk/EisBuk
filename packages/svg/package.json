@@ -7,9 +7,6 @@
     "./dist/style.css": {
       "import": "./dist/style.css"
     },
-    "./__mocks__/svg": {
-      "import": "./src/__mocks__/svg.ts"
-    },
     ".": {
       "import": "./dist/index.es.js",
       "require": "./dist/index.js",
