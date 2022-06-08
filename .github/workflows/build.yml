@@ -356,5 +356,5 @@ jobs:
           key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Add rush directory to PATH
         run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
+      - name: Install dependencies and check version mismatches
         run: rush update && rush check

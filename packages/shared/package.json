@@ -26,8 +26,8 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-unused-imports": "^1.0.1",
     "react": "^16.13.1",
-    "vite": "^2.8.6",
-    "typescript": "~4.4.2"
+    "vite": "^2.9.9",
+    "typescript": "4.6.3"
   },
   "scripts": {
     "build": "vite build && tsc",
