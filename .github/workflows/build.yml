@@ -332,4 +332,4 @@ jobs:
     - name: Install and build packages
       run: rush update
     - name: Check dependency consistency
-      run: rush check
+      run: ./.github/check-rush.sh

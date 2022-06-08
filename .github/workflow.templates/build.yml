@@ -295,4 +295,4 @@ jobs:
       - #@ rush_add_path()
       - #@ rush_update()
       - name: Check dependency consistency
-        run: rush check
+        run: ./.github/check-rush.sh
