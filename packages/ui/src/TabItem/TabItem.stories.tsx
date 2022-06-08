@@ -13,23 +13,24 @@ export default {
 } as ComponentMeta<typeof TabItem>;
 
 export const Default = (): JSX.Element => (
-  <StorybookGrid>
-    <StorybookItem>
-      <TabItem Icon={AccountCircle} label="Book" />
-    </StorybookItem>
-    <StorybookItem>
-      <TabItem Icon={Calendar} label="Calendar" />
-    </StorybookItem>
-  </StorybookGrid>
-);
-
-export const Active = (): JSX.Element => (
-  <StorybookGrid>
-    <StorybookItem>
-      <TabItem Icon={AccountCircle} label="Book" active={true} />
-    </StorybookItem>
-    <StorybookItem>
-      <TabItem Icon={Calendar} label="Calendar" active={true} />
-    </StorybookItem>
-  </StorybookGrid>
+  <>
+    <h1 className="text-lg font-bold mb-4">Default</h1>
+    <StorybookGrid>
+      <StorybookItem>
+        <TabItem Icon={AccountCircle} label="Book" />
+      </StorybookItem>
+      <StorybookItem>
+        <TabItem Icon={Calendar} label="Calendar" />
+      </StorybookItem>
+    </StorybookGrid>
+    <h1 className="text-lg font-bold mb-4">Active</h1>
+    <StorybookGrid>
+      <StorybookItem>
+        <TabItem Icon={AccountCircle} label="Book" active={true} />
+      </StorybookItem>
+      <StorybookItem>
+        <TabItem Icon={Calendar} label="Calendar" active={true} />
+      </StorybookItem>
+    </StorybookGrid>
+  </>
 );
