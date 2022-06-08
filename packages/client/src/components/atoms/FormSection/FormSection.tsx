@@ -12,7 +12,7 @@ import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 interface FieldProps {
   name: string;
-  label: keyof typeof OrganizationLabel;
+  label: OrganizationLabel;
   multiline?: boolean;
 }
 interface Props {
@@ -36,7 +36,7 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
           return (
             <div key={name}>
               <Field
-                label={t(OrganizationLabel[label])}
+                label={t(label)}
                 name={name}
                 className={multiline ? classes.templateField : classes.field}
                 as={TextField}

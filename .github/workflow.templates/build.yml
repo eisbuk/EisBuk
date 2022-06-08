@@ -7,7 +7,7 @@ name: Build and deploy preview
 
 "on":
   - push
-  - pull_request
+
 jobs:
   build_v14:
     runs-on: ubuntu-latest
