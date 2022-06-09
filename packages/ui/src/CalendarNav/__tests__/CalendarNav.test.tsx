@@ -46,6 +46,18 @@ describe("CalendarNav", () => {
   describe("Date switching table tests", () => {
     runDateTableTests([
       {
+        currentDate: "2022-06-01",
+        jump: "day",
+        prev: "2022-05-31",
+        next: "2022-06-02",
+      },
+      {
+        currentDate: "2022-06-03",
+        jump: "day",
+        prev: "2022-06-02",
+        next: "2022-06-04",
+      },
+      {
         currentDate: "2022-06-06",
         jump: "week",
         prev: "2022-05-30",
