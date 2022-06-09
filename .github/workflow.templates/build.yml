@@ -2,6 +2,9 @@
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
+#@ load("rclone.lib.yml", "install_rclone")
+#@ load("rclone.lib.yml", "install_gcloud_credentials")
+#@ load("rclone.lib.yml", "set_results_destination")
 
 name: Build and deploy preview
 
@@ -130,33 +133,9 @@ jobs:
           base-path: packages/client/
           flag-name: run-jest
           parallel: true
-      - name: Create file with gcloud cretentials
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-
-        #! To make sure the file contents are not manipulated by the github infrastructure
-        #! they're encoded using base64. Here we decode them.
-        #! A downside of this approach is that we don't get the default
-        #! protection in case of accidental printing of the secret file.
-        run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
-
-      - name: Set destination of test results
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
-        id: results-destination
-      - name: Install rclone
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone
-          echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
-        env:
-          RCLONE_CONF: |
-            [gcloud]
-            type = google cloud storage
-            service_account_file = ${{ github.workspace }}/.gcloud.json
-            object_acl = publicRead
-            bucket_acl = publicRead
-            bucket_policy_only = true
+      - #@ install_gcloud_credentials()
+      - #@ set_results_destination()
+      - #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
@@ -229,33 +208,9 @@ jobs:
           base-path: packages/e2e
           flag-name: run-cypress
           parallel: true
-      - name: Create file with gcloud cretentials
-        if: success() || failure()
-
-        #! To make sure the file contents are not manipulated by the github infrastructure
-        #! they're encoded using base64. Here we decode them.
-        #! A downside of this approach is that we don't get the default
-        #! protection in case of accidental printing of the secret file.
-        run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
-
-      - name: Set destination of test results
-        if: success() || failure()
-        run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
-        id: results-destination
-      - name: Install rclone
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone
-          echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
-        env:
-          RCLONE_CONF: |
-            [gcloud]
-            type = google cloud storage
-            service_account_file = ${{ github.workspace }}/.gcloud.json
-            object_acl = publicRead
-            bucket_acl = publicRead
-            bucket_policy_only = true
+      - #@ install_gcloud_credentials()
+      - #@ set_results_destination()
+      - #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |

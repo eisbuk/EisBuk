@@ -260,10 +260,10 @@ jobs:
         flag-name: run-cypress
         parallel: true
     - name: Create file with gcloud cretentials
-      if: success() || failure()
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
-      if: success() || failure()
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
       run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
       id: results-destination
     - name: Install rclone
