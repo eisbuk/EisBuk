@@ -126,7 +126,7 @@
     "eslint-plugin-react-hooks": "^4.4.0",
     "eslint-plugin-unused-imports": "^2.0.0",
     "firebase-admin": "^9.4.2",
-    "firebase-functions": "^3.11.0",
+    "firebase-functions": "^3.13.1",
     "jest": "^27.5.1",
     "jest-junit": "^12.2.0",
     "mocha": "^8.2.1",

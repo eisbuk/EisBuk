@@ -4,7 +4,10 @@
       "dependencyName": "@firebase/app",
 
       "versions": [
-        { "projects": ["@eisbuk/client"], "version": "0.7.2" },
+        {
+          "projects": ["@eisbuk/client"],
+          "version": "0.7.2"
+        },
         {
           "projects": ["@eisbuk/e2e"],
           "version": "^0.7.20"
@@ -34,19 +37,6 @@
         {
           "projects": ["@eisbuk/functions"],
           "version": "^8.2.4"
-        }
-      ]
-    },
-    {
-      "dependencyName": "firebase-functions",
-      "versions": [
-        {
-          "projects": ["@eisbuk/client"],
-          "version": "^3.11.0"
-        },
-        {
-          "projects": ["@eisbuk/functions"],
-          "version": "^3.13.1"
         }
       ]
     }
