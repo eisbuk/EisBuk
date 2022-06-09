@@ -33,13 +33,13 @@ importers:
       '@sentry/react': ^6.16.1
       '@sentry/tracing': ^6.16.1
       '@storybook/addon-a11y': ^6.3.9
-      '@storybook/addon-actions': ^6.3.4
-      '@storybook/addon-essentials': ^6.3.4
-      '@storybook/addon-links': ^6.3.4
+      '@storybook/addon-actions': ^6.4.22
+      '@storybook/addon-essentials': ^6.4.22
+      '@storybook/addon-links': ^6.4.22
       '@storybook/addons': ^6.4.21
       '@storybook/cli': ^6.3.4
       '@storybook/node-logger': ^6.3.4
-      '@storybook/react': ^6.3.4
+      '@storybook/react': ^6.4.22
       '@svgr/webpack': '5.5'
       '@testing-library/dom': ^8.13.0
       '@testing-library/jest-dom': ^5.16.2
