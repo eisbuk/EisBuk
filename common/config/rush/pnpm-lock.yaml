@@ -497,7 +497,9 @@ importers:
       '@babel/core': 7.x
       '@babel/plugin-transform-runtime': ^7.12.10
       '@babel/preset-typescript': ^7.14.5
+      '@eisbuk/shared': workspace:*
       '@eisbuk/svg': workspace:*
+      '@eisbuk/translations': workspace:*
       '@storybook/addon-actions': ^6.4.22
       '@storybook/addon-essentials': ^6.4.22
       '@storybook/addon-interactions': ^6.4.22
@@ -538,7 +540,9 @@ importers:
       '@babel/core': 7.18.2
       '@babel/plugin-transform-runtime': 7.18.2_@babel+core@7.18.2
       '@babel/preset-typescript': 7.17.12_@babel+core@7.18.2
+      '@eisbuk/shared': link:../shared
       '@eisbuk/svg': link:../svg
+      '@eisbuk/translations': link:../translations
       '@storybook/addon-actions': 6.5.7_react-dom@16.14.0+react@16.14.0
       '@storybook/addon-essentials': 6.5.7_264910fe5166eaadf460a6ff3df0cfbf
       '@storybook/addon-interactions': 6.5.7_0e1e38238c2bf2d7e1341b379399c282
@@ -8991,6 +8995,7 @@ packages:
 
   /bindings/1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
+    requiresBuild: true
     dependencies:
       file-uri-to-path: 1.0.0
     dev: true
@@ -12581,6 +12586,7 @@ packages:
 
   /file-uri-to-path/1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
+    requiresBuild: true
     dev: true
     optional: true
 
