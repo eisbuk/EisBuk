@@ -14,6 +14,37 @@ export const Default = (): JSX.Element => (
   <CalendarNav date={DateTime.fromISO("2022-04-01")} jump="month" />
 );
 
+export const Interactive = (): JSX.Element => {
+  const startDate = DateTime.fromISO("2022-04-01");
+
+  const [month, setMonth] = React.useState(startDate);
+  const [week, setWeek] = React.useState(startDate);
+  const [day, setDay] = React.useState(startDate);
+
+  return (
+    <>
+      <h1 className="text-lg font-bold mb-4">Jump: Month</h1>
+      <CalendarNav
+        className="mb-6"
+        date={month}
+        onChange={(date) => setMonth(date)}
+        jump="month"
+      />
+
+      <h1 className="text-lg font-bold mb-4">Jump: Week</h1>
+      <CalendarNav
+        className="mb-6"
+        date={week}
+        onChange={(date) => setWeek(date)}
+        jump="week"
+      />
+
+      <h1 className="text-lg font-bold mb-4">Jump: Week</h1>
+      <CalendarNav date={day} onChange={(date) => setDay(date)} jump="day" />
+    </>
+  );
+};
+
 const countdown = (
   <EmptySpace className="md:!h-[32px]">{`Let's pretend this is the <strong>Countdown</strong>`}</EmptySpace>
 );

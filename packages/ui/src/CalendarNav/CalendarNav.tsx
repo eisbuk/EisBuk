@@ -1,6 +1,8 @@
 import React from "react";
 import { DateTime, DateTimeUnit } from "luxon";
 
+import { createDateTitle } from "@eisbuk/translations";
+
 import DateNavigation from "./DateNavigation";
 
 interface CalendarNavProps
@@ -48,7 +50,7 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
     <div className="content-container gap-2.5 flex items-center flex-wrap md:justify-between">
       <DateNavigation
         className="w-full md:w-[280px]"
-        content="April 2022"
+        content={createDateTitle(date, jump)}
         onPrev={updateDate(-1)}
         onNext={updateDate(1)}
       />

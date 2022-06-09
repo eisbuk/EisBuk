@@ -27,7 +27,7 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
       </button>
 
       <div className="w-full h-full mx-3 relative bg-white rounded-md">
-        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold">
+        <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold whitespace-nowrap">
           {content}
         </span>
       </div>
