@@ -4,5 +4,8 @@ import "./main.css";
 
 import TestComponent from "./TestComponent";
 import EmptySpace from "./EmptySpace";
+import NotificationToast from "./NotificationToast";
 
-export { TestComponent, EmptySpace };
+export * from "./NotificationToast";
+
+export { TestComponent, NotificationToast, EmptySpace };
