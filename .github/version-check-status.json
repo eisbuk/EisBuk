@@ -2,11 +2,9 @@
   "mismatchedVersions": [
     {
       "dependencyName": "@firebase/app",
+
       "versions": [
-        {
-          "projects": ["@eisbuk/client"],
-          "version": "0.7.2"
-        },
+        { "projects": ["@eisbuk/client"], "version": "0.7.2" },
         {
           "projects": ["@eisbuk/e2e"],
           "version": "^0.7.20"
