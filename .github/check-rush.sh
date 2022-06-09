@@ -3,7 +3,7 @@
 echo Checking for newly inrtoduced dependency mismatches
 
 
-diff <(rush check --json |
+diff -w <(rush check --json |
     grep -A5000 -m1 -e '^$'|
     tail -n +5 |
     jq -S .) .github/version-check-status.json && exit 0
