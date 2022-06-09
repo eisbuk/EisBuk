@@ -25,7 +25,7 @@ export const Interactive = (): JSX.Element => {
     <>
       <h1 className="text-lg font-bold mb-4">Jump: Month</h1>
       <CalendarNav
-        className="mb-6"
+        className="mb-8"
         date={month}
         onChange={(date) => setMonth(date)}
         jump="month"
@@ -33,7 +33,7 @@ export const Interactive = (): JSX.Element => {
 
       <h1 className="text-lg font-bold mb-4">Jump: Week</h1>
       <CalendarNav
-        className="mb-6"
+        className="mb-8"
         date={week}
         onChange={(date) => setWeek(date)}
         jump="week"

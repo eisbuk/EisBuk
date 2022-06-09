@@ -40,13 +40,18 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
   onChange = () => {},
   jump,
   additionalContent,
+  className: classes,
 }) => {
   const updateDate = (delta: -1 | 1) => () =>
     onChange(date.plus({ [jump]: delta }));
 
+  const className = ["bg-ice-300", "py-2.5", "w-full", "p-2.5", classes].join(
+    " "
+  );
+
   return React.createElement(
     as,
-    { className: ["bg-ice-300 py-2.5 w-full p-2.5"].join(" ") },
+    { className },
     <div className="content-container gap-2.5 flex items-center flex-wrap md:justify-between">
       <DateNavigation
         className="w-full md:w-[280px]"
