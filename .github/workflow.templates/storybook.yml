@@ -1,13 +1,16 @@
 #! YAML library files must be named *.lib.yml
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
+#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("secrets.lib.yml", "check_secrets")
 
-name: Storybook
+name: Chromatic Storybook
 
 "on":
   - pull_request
 
 jobs:
   storybook:
+    name: Build storybook and push to Chromatic
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -18,13 +21,10 @@ jobs:
         with:
           node-version: "14"
       - #@ cache_node()
-      - name: Install rush
-        run: npm install -g @microsoft/rush@5.63.1
-      - name: Install and build packages
-        run: rush update && rush build
-      - name: Check if secrets are available
-        id: has_secret
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
+      - #@ check_secrets()
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         if: steps.has_secret.outputs.HAS_SECRETS

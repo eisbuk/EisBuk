@@ -1,8 +1,9 @@
-name: Storybook
+name: Chromatic Storybook
 "on":
 - pull_request
 jobs:
   storybook:
+    name: Build storybook and push to Chromatic
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -22,12 +23,15 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
         key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-    - name: Install rush
-      run: npm install -g @microsoft/rush@5.63.1
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
-      run: rush update && rush build
+      run: rush update
+    - name: Build packages
+      run: rush build
     - name: Check if secrets are available
       id: has_secret
+      if: success() || failure()
       run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Publish to Chromatic
       uses: chromaui/action@v1
