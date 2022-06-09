@@ -25,6 +25,7 @@ module.exports = {
         //        spacingKey = numPixels / 4
         //
         // This will prevent confusion and duplication
+        2.5: rem(10),
       },
       colors: {
         ice: {

@@ -44,8 +44,8 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
 
   return React.createElement(
     as,
-    { className: ["bg-ice-300 py-[10px] w-full p-[10px]"].join(" ") },
-    <div className="content-container gap-[10px] flex items-center flex-wrap md:justify-between">
+    { className: ["bg-ice-300 py-2.5 w-full p-2.5"].join(" ") },
+    <div className="content-container gap-2.5 flex items-center flex-wrap md:justify-between">
       <DateNavigation
         className="w-full md:w-[280px]"
         content="April 2022"
