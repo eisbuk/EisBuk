@@ -20,7 +20,7 @@ importers:
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@firebase/auth': ^0.19.11
-      '@firebase/firestore': 3.1.0
+      '@firebase/firestore': ^3.4.7
       '@firebase/functions': ^0.7.10
       '@firebase/rules-unit-testing': ^2.0.1
       '@google-cloud/firestore': ^4.13.2
@@ -130,7 +130,7 @@ importers:
       '@firebase/app-compat': 0.1.26
       '@firebase/app-types': 0.7.0
       '@firebase/auth': 0.19.12_@firebase+app@0.7.25
-      '@firebase/firestore': 3.1.0_@firebase+app@0.7.25
+      '@firebase/firestore': 3.4.9_@firebase+app@0.7.25
       '@firebase/functions': 0.7.11_674bc4539f6a34c80d0d029450c6f235
       '@mui/icons-material': 5.8.2_918e4a33803ec674af61492147dbecc5
       '@mui/lab': 5.0.0-alpha.84_4c03761f2a3113fade3cc2f71d68c578
@@ -3025,23 +3025,6 @@ packages:
       '@firebase/app': 0.x
     dependencies:
       '@firebase/app': 0.7.2
-      '@firebase/component': 0.5.7
-      '@firebase/logger': 0.3.0
-      '@firebase/util': 1.4.0
-      '@firebase/webchannel-wrapper': 0.6.0
-      '@grpc/grpc-js': 1.6.7
-      '@grpc/proto-loader': 0.6.13
-      node-fetch: 2.6.2
-      tslib: 2.4.0
-    dev: false
-
-  /@firebase/firestore/3.1.0_@firebase+app@0.7.25:
-    resolution: {integrity: sha512-vOXueHNRjlgBlKVCWuUDhr3dQW2hJwbcqcJaFiIV9V+PamfyhOHzX8pEQkrPort4YQQvoRmY9uiFhfOGj2hbeA==}
-    engines: {node: ^8.13.0 || >=10.10.0}
-    peerDependencies:
-      '@firebase/app': 0.x
-    dependencies:
-      '@firebase/app': 0.7.25
       '@firebase/component': 0.5.7
       '@firebase/logger': 0.3.0
       '@firebase/util': 1.4.0
