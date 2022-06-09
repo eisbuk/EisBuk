@@ -40,7 +40,7 @@
     "redux-thunk": "^2.3.0",
     "unix-timestamp": "^0.2.0",
     "use-sync-external-store": "1.0.0-alpha-5cccacd13-20211101",
-    "uuid": "^8.3.0",
+    "uuid": "^8.3.2",
     "yup": "0.32.9"
   },
   "scripts": {
