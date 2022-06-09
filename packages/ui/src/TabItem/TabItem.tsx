@@ -11,9 +11,12 @@ interface TabItemProps extends React.HTMLAttributes<HTMLButtonElement> {
 const TabItem: React.FC<TabItemProps> = ({
   label,
   Icon,
+  onClick,
   active = false,
   ...props
 }) => {
+  const onClickHandler = onClick ? onClick : () => {};
+
   const buttonStateClasses = active
     ? buttonActiveClasses
     : buttonDefaultClasses;
@@ -24,7 +27,7 @@ const TabItem: React.FC<TabItemProps> = ({
   );
 
   return (
-    <button className={buttonClassNames} {...props}>
+    <button className={buttonClassNames} onClick={onClickHandler} {...props}>
       <span className={svgClassNames}>
         <Icon />
       </span>
