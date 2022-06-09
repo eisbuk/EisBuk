@@ -21,7 +21,7 @@ const EmptySpace: React.FC<EmptySpaceProps> = ({
       className: [...baseClasses, className].join(" "),
     },
     [
-      <span key="exclamation-circle" className="w-8 h-8 mb-2 md:mb-0 md:mr-2">
+      <span key="exclamation-circle" className="w-6 h-6 mb-2 md:mb-0 md:mr-2">
         <ExclamationCircle />
       </span>,
       <span
