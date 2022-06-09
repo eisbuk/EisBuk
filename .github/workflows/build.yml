@@ -333,3 +333,67 @@ jobs:
       run: rush update
     - name: Check dependency consistency
       run: ./.github/check-rush.sh
+  client_storybook:
+    name: Build storybook for client
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Build client storybook
+      run: cd packages/client && rushx build-storybook
+    - name: Publish storybook
+      run: echo Publishing storybook to ${{ github.sha }}
+    - name: Create file with gcloud cretentials
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+    - name: Set destination of test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      id: results-destination
+    - name: Install rclone
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+        mkdir -p ~/.config/rclone
+        echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+      env:
+        RCLONE_CONF: |
+          [gcloud]
+          type = google cloud storage
+          service_account_file = ${{ github.workspace }}/.gcloud.json
+          object_acl = publicRead
+          bucket_acl = publicRead
+          bucket_policy_only = true
+    - name: Copy test results to gcloud
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        rclone copy packages/client/storybook-static gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
+    - name: Print gcloud url to view test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        echo Check out client storybook at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage/lcov-report/index.html
