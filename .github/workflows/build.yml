@@ -1,8 +1,9 @@
-name: Build and deploy preview
+name: OnPush
 "on":
 - push
 jobs:
   build_v14:
+    name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -105,6 +106,7 @@ jobs:
         reactions: heart, hooray, laugh, rocket
         edit-mode: replace
   test_v14:
+    name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -180,6 +182,7 @@ jobs:
       run: |
         echo Check out coverage results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage/lcov-report/index.html
   run-lint:
+    name: Lint source
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -208,6 +211,7 @@ jobs:
     - name: Typecheck all the packages
       run: rush typecheck
   cypress-run:
+    name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
     - name: Checkout
@@ -294,6 +298,7 @@ jobs:
         echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
         echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
   finish:
+    name: Coveralls finish
     needs:
     - cypress-run
     - test_v14
@@ -310,6 +315,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         parallel-finished: true
   rush_check:
+    name: Check dependency versions
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

@@ -1,4 +1,4 @@
-name: PullRequestConflicting
+name: PR Conflict Check
 "on":
   push:
     branches:
