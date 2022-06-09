@@ -4,6 +4,8 @@ import { ChevronRight, ChevronLeft } from "@eisbuk/svg";
 
 interface DateNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
   content: string;
+  onPrev?: () => void;
+  onNext?: () => void;
 }
 
 /**
@@ -13,12 +15,14 @@ interface DateNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
 const DateNavigation: React.FC<DateNavigationProps> = ({
   className,
   content,
+  onPrev,
+  onNext,
 }) => {
   const buttonClasses = "w-8 h-full p-1 text-gray-500";
 
   return (
     <div className={["h-8", "flex", className].join(" ")}>
-      <button className={buttonClasses}>
+      <button onClick={onPrev} className={buttonClasses}>
         <ChevronLeft />
       </button>
 
@@ -28,7 +32,7 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
         </span>
       </div>
 
-      <button className={buttonClasses}>
+      <button onClick={onNext} className={buttonClasses}>
         <ChevronRight />
       </button>
     </div>
