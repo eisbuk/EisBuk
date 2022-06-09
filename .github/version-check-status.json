@@ -1,6 +1,19 @@
 {
   "mismatchedVersions": [
     {
+      "dependencyName": "@firebase/firestore",
+      "versions": [
+        {
+          "projects": ["@eisbuk/client"],
+          "version": "3.1.0"
+        },
+        {
+          "projects": ["@eisbuk/e2e"],
+          "version": "^3.4.7"
+        }
+      ]
+    },
+    {
       "dependencyName": "firebase",
       "versions": [
         {
