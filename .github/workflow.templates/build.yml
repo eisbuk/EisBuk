@@ -254,3 +254,4 @@ jobs:
         run: ./.github/check-rush.sh
 
   client_storybook: #@ build_storybook("client")
+  ui_storybook: #@ build_storybook("ui")
