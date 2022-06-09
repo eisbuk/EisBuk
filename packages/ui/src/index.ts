@@ -10,10 +10,12 @@ import SlotTypeIcon from "./SlotTypeIcon";
 import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
 import Layout from "./Layout";
+import IntervalCard from "./IntervalCard";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
 export * from "./Button";
+export * from "./IntervalCard";
 
 export {
   TestComponent,
@@ -24,4 +26,5 @@ export {
   TabItem,
   CalendarNav,
   SlotTypeIcon,
+  IntervalCard,
 };
