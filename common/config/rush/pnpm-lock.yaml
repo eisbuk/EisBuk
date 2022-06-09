@@ -13,6 +13,7 @@ importers:
       '@cypress/code-coverage': ^3.9.12
       '@eisbuk/shared': workspace:*
       '@eisbuk/translations': workspace:*
+      '@eisbuk/ui': workspace:*
       '@emotion/react': ^11.8.1
       '@emotion/styled': ^11.8.1
       '@firebase/app': 0.7.2
@@ -122,6 +123,7 @@ importers:
     dependencies:
       '@eisbuk/shared': link:../shared
       '@eisbuk/translations': link:../translations
+      '@eisbuk/ui': link:../ui
       '@emotion/react': 11.9.0_44a770ea1ecdeb5562e1a5c80c4b8e17
       '@emotion/styled': 11.8.1_e07889cfc822789bfe1e3581bcdc167b
       '@firebase/app': 0.7.2
@@ -375,6 +377,7 @@ importers:
       '@google-cloud/firestore': ^4.13.2
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
+      '@types/react': ^17.0.13
       '@typescript-eslint/eslint-plugin': ^4.30.0
       '@typescript-eslint/parser': ^4.30.0
       eslint: ^7.0.0
@@ -384,6 +387,7 @@ importers:
       eslint-plugin-promise: ^4.2.1
       eslint-plugin-unused-imports: ^1.0.1
       luxon: ^2.0.2
+      react: ^16.13.1
       typescript: ~4.4.2
       vite: ^2.8.6
     dependencies:
@@ -392,6 +396,7 @@ importers:
       '@google-cloud/firestore': 4.15.1
       '@types/luxon': 2.3.2
       '@types/node': 16.11.38
+      '@types/react': 17.0.45
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
       '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.4.4
       eslint: 7.32.0
@@ -400,6 +405,7 @@ importers:
       eslint-plugin-import: 2.26.0_eslint@7.32.0
       eslint-plugin-promise: 4.3.1
       eslint-plugin-unused-imports: 1.1.5_d3b4c2d4ac51f4275548d5d796aee5d5
+      react: 16.14.0
       typescript: 4.4.4
       vite: 2.9.10
 
