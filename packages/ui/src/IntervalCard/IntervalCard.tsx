@@ -18,7 +18,6 @@ export enum IntervalCardVariant {
 interface IntervalCardProps
   extends Pick<SlotInterface, "type" | "date" | "notes"> {
   interval: SlotInterval;
-  notes: string;
   state?: IntervalCardState;
   variant?: IntervalCardVariant;
   as?: keyof JSX.IntrinsicElements;
