@@ -16,7 +16,7 @@ importers:
       '@eisbuk/ui': workspace:*
       '@emotion/react': ^11.8.1
       '@emotion/styled': ^11.8.1
-      '@firebase/app': 0.7.2
+      '@firebase/app': ^0.7.20
       '@firebase/app-compat': ^0.1.21
       '@firebase/app-types': ^0.7.0
       '@firebase/auth': ^0.19.11
@@ -114,7 +114,7 @@ importers:
       typescript: ~4.6.3
       unix-timestamp: ^0.2.0
       use-sync-external-store: 1.0.0-alpha-5cccacd13-20211101
-      uuid: ^8.3.0
+      uuid: ^8.3.2
       vite: ^2.9.9
       vite-plugin-environment: ^1.1.0
       vite-plugin-svgr: ~2.1.0
@@ -126,12 +126,12 @@ importers:
       '@eisbuk/ui': link:../ui
       '@emotion/react': 11.9.0_44a770ea1ecdeb5562e1a5c80c4b8e17
       '@emotion/styled': 11.8.1_e07889cfc822789bfe1e3581bcdc167b
-      '@firebase/app': 0.7.2
+      '@firebase/app': 0.7.25
       '@firebase/app-compat': 0.1.26
       '@firebase/app-types': 0.7.0
-      '@firebase/auth': 0.19.12_@firebase+app@0.7.2
-      '@firebase/firestore': 3.1.0_@firebase+app@0.7.2
-      '@firebase/functions': 0.7.11_d5dc97a09d47334250258acb69ebac36
+      '@firebase/auth': 0.19.12_@firebase+app@0.7.25
+      '@firebase/firestore': 3.1.0_@firebase+app@0.7.25
+      '@firebase/functions': 0.7.11_674bc4539f6a34c80d0d029450c6f235
       '@mui/icons-material': 5.8.2_918e4a33803ec674af61492147dbecc5
       '@mui/lab': 5.0.0-alpha.84_4c03761f2a3113fade3cc2f71d68c578
       '@mui/material': 5.8.2_c4d327d208754450f55a80e1ea5a67fa
@@ -268,7 +268,7 @@ importers:
       mocha: ^8.2.1
       mochawesome: ^7.0.1
       typescript: ~4.6.3
-      uuid: ^8.3.0
+      uuid: ^8.3.2
     dependencies:
       '@firebase/app': 0.7.25
       '@firebase/app-compat': 0.1.26
@@ -2820,24 +2820,6 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@firebase/auth/0.19.12_@firebase+app@0.7.2:
-    resolution: {integrity: sha512-39/eJBmq5Ne+HoCJuQXlhaOH2e8qySxYUa5Z25mhcam8nmAMrBh7Ph1yZjUeSfLsSJiSXANMHK5dnVE+1TROXw==}
-    peerDependencies:
-      '@firebase/app': 0.x
-    dependencies:
-      '@firebase/app': 0.7.2
-      '@firebase/component': 0.5.13
-      '@firebase/logger': 0.3.2
-      '@firebase/util': 1.5.2
-      node-fetch: 2.6.7
-      selenium-webdriver: 4.0.0-rc-1
-      tslib: 2.4.0
-    transitivePeerDependencies:
-      - bufferutil
-      - encoding
-      - utf-8-validate
-    dev: false
-
   /@firebase/auth/0.19.12_@firebase+app@0.7.25:
     resolution: {integrity: sha512-39/eJBmq5Ne+HoCJuQXlhaOH2e8qySxYUa5Z25mhcam8nmAMrBh7Ph1yZjUeSfLsSJiSXANMHK5dnVE+1TROXw==}
     peerDependencies:
@@ -3053,6 +3035,23 @@ packages:
       tslib: 2.4.0
     dev: false
 
+  /@firebase/firestore/3.1.0_@firebase+app@0.7.25:
+    resolution: {integrity: sha512-vOXueHNRjlgBlKVCWuUDhr3dQW2hJwbcqcJaFiIV9V+PamfyhOHzX8pEQkrPort4YQQvoRmY9uiFhfOGj2hbeA==}
+    engines: {node: ^8.13.0 || >=10.10.0}
+    peerDependencies:
+      '@firebase/app': 0.x
+    dependencies:
+      '@firebase/app': 0.7.25
+      '@firebase/component': 0.5.7
+      '@firebase/logger': 0.3.0
+      '@firebase/util': 1.4.0
+      '@firebase/webchannel-wrapper': 0.6.0
+      '@grpc/grpc-js': 1.6.7
+      '@grpc/proto-loader': 0.6.13
+      node-fetch: 2.6.2
+      tslib: 2.4.0
+    dev: false
+
   /@firebase/firestore/3.4.9_@firebase+app@0.7.25:
     resolution: {integrity: sha512-EiSG/uYDyUmrrHlwrsP9WqWI8ChD0hUW/+0MS3NDh8Cfo1Dfb/sM3YWKzgnIZ3wKTxn/nbe9oidHZp5cqI9G+w==}
     engines: {node: '>=10.10.0'}
@@ -3119,24 +3118,6 @@ packages:
       '@firebase/app': 0.x
     dependencies:
       '@firebase/app': 0.7.25
-      '@firebase/app-check-interop-types': 0.1.0
-      '@firebase/auth-interop-types': 0.1.6_a64185e619fe35b9275fc3c76f6268db
-      '@firebase/component': 0.5.13
-      '@firebase/messaging-interop-types': 0.1.0
-      '@firebase/util': 1.5.2
-      node-fetch: 2.6.7
-      tslib: 2.4.0
-    transitivePeerDependencies:
-      - '@firebase/app-types'
-      - encoding
-    dev: false
-
-  /@firebase/functions/0.7.11_d5dc97a09d47334250258acb69ebac36:
-    resolution: {integrity: sha512-o9pmN1TWHDEpmB6IYbqeIIG6Wllcfw6jSNm8UZYnOYM8oDay1FW6OeN/fA0GlGmwF4cPdxA3oKXbLn3ObYFxXQ==}
-    peerDependencies:
-      '@firebase/app': 0.x
-    dependencies:
-      '@firebase/app': 0.7.2
       '@firebase/app-check-interop-types': 0.1.0
       '@firebase/auth-interop-types': 0.1.6_a64185e619fe35b9275fc3c76f6268db
       '@firebase/component': 0.5.13
