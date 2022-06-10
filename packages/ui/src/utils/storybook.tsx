@@ -29,8 +29,21 @@ export const StorybookGrid: FC<{ cols?: number }> = ({
   );
 };
 
-export const StorybookItem: FC<{ label?: string }> = ({ children, label }) => (
-  <figure className="w-full h-24 flex flex-col items-stretch">
+export const StorybookItem: FC<{ label?: string; height?: number }> = ({
+  children,
+  label,
+  height,
+}) => (
+  <figure
+    style={{ height }}
+    className={[
+      "w-full",
+      "flex",
+      "flex-col",
+      "items-stretch",
+      ...(height ? [] : ["h-24"]),
+    ].join(" ")}
+  >
     <div className="w-full h-full flex justify-center items-center">
       {children}
     </div>
