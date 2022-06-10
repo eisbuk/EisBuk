@@ -497,6 +497,7 @@ importers:
       '@babel/core': 7.x
       '@babel/plugin-transform-runtime': ^7.12.10
       '@babel/preset-typescript': ^7.14.5
+      '@eisbuk/shared': workspace:*
       '@eisbuk/svg': workspace:*
       '@storybook/addon-actions': ^6.4.22
       '@storybook/addon-essentials': ^6.4.22
@@ -538,6 +539,7 @@ importers:
       '@babel/core': 7.18.2
       '@babel/plugin-transform-runtime': 7.18.2_@babel+core@7.18.2
       '@babel/preset-typescript': 7.17.12_@babel+core@7.18.2
+      '@eisbuk/shared': link:../shared
       '@eisbuk/svg': link:../svg
       '@storybook/addon-actions': 6.5.7_react-dom@16.14.0+react@16.14.0
       '@storybook/addon-essentials': 6.5.7_264910fe5166eaadf460a6ff3df0cfbf
