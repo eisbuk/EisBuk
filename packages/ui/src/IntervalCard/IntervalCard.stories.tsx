@@ -7,7 +7,7 @@ import IntervalCard, {
   IntervalCardState,
   IntervalCardVariant,
 } from "./IntervalCard";
-import { StorybookGrid, StorybookItem } from "src/utils/storybook";
+import { StorybookGrid, StorybookItem } from "../utils/storybook";
 
 export default {
   title: "Interval Card",
@@ -92,10 +92,14 @@ export const Types = (): JSX.Element => (
   <>
     <StorybookGrid cols={3}>
       <StorybookItem label="Type: Ice">
-        <IntervalCard {...baseSlot} />
+        <IntervalCard {...baseSlot} state={IntervalCardState.Active} />
       </StorybookItem>
       <StorybookItem label="Type: Off Ice">
-        <IntervalCard {...baseSlot} type={SlotType.OffIce} />
+        <IntervalCard
+          {...baseSlot}
+          type={SlotType.OffIce}
+          state={IntervalCardState.Active}
+        />
       </StorybookItem>
     </StorybookGrid>
   </>
