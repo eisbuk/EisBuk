@@ -1,7 +1,9 @@
 import React from "react";
 
 import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
+import { calculateDuration } from "./utils";
 
+// #region types
 export enum IntervalCardState {
   Default = "default",
   Active = "active",
@@ -29,7 +31,9 @@ interface IntervalCardProps
   as?: keyof JSX.IntrinsicElements;
   className?: string;
 }
+// #endregion types
 
+// #region Component
 const IntervalCard: React.FC<IntervalCardProps> = ({
   type,
 
@@ -37,18 +41,23 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   className: classes,
   variant = IntervalCardVariant.Booking,
   state = IntervalCardState.Default,
+  interval: { startTime, endTime },
 }) => {
+  const duration = calculateDuration(startTime, endTime);
+
   const className = [
     ...containerBaseClasses,
-    ...getContainerSizeClasses(variant, IntervalDuration["1h"]),
-    ...getContainerColorClasses(variant, type, state),
+    ...getContainerSizeClasses(variant, duration),
+    ...getBorderClasses(type, variant, state),
+    getBackgroundColor(type, variant, state),
     classes,
   ].join(" ");
 
   return React.createElement(as, { className }, []);
 };
+// #endregion Component
 
-const containerBaseClasses = ["px-4", "py-3", "border"];
+const containerBaseClasses = ["px-4", "py-3"];
 
 // #region containerSize
 const getContainerSizeClasses = (
@@ -71,42 +80,67 @@ const bookingContainerSizeLookup = {
 };
 // #endregion containerSize
 
-// #region containerColor
-const getContainerColorClasses = (
-  variant: IntervalCardVariant,
+// #region backgroundColor
+const getBackgroundColor = (
   type: SlotType,
+  variant: IntervalCardVariant,
   state: IntervalCardState
 ) => {
-  const typeColor = typeColorLookup[type];
-  const { border, bg } = typeColor;
+  const isActive =
+    variant === IntervalCardVariant.Booking &&
+    state === IntervalCardState.Active;
+  const isFaded =
+    variant === IntervalCardVariant.Booking &&
+    state === IntervalCardState.Faded;
 
-  return variant !== IntervalCardVariant.Booking
-    ? ["bg-white", border, "border-4"]
-    : state === IntervalCardState.Active
-    ? [bg, border, "border-4"]
-    : state === IntervalCardState.Disabled
-    ? ["bg-gray-100", "border-gray-200"]
-    : [
-        "bg-white",
-        type === SlotType.Ice ? "border-ice-300" : "border-gray-200",
-      ];
+  return isActive
+    ? backgroundColorLookup[type]
+    : isFaded
+    ? "bg-gray-100"
+    : "bg-white";
 };
 
-const typeColorLookup = {
+const backgroundColorLookup = {
+  [SlotType.Ice]: "bg-ice-300",
+  [SlotType.OffIce]: "bg-off-ice-300",
+};
+// #region backgroundColor
+
+// #region border
+const getBorderClasses = (
+  type: SlotType,
+  variant: IntervalCardVariant,
+  state: IntervalCardState
+) => {
+  const borderVariant =
+    // If variant is not "Booking", the border is same as for "active" state
+    variant !== IntervalCardVariant.Booking ? IntervalCardState.Active : state;
+
+  const borderWidth =
+    borderWidthLookup[borderVariant] || borderWidthLookup.default;
+
+  const borderColor =
+    borderColorLookup[type][borderVariant] || borderColorLookup.default;
+
+  return [borderWidth, borderColor];
+};
+
+const borderWidthLookup = {
+  [IntervalCardState.Active]: "border-4",
+  default: "border",
+};
+
+const borderColorLookup = {
+  default: "border-gray-200",
   [SlotType.Ice]: {
-    bg: "bg-ice-300",
-    border: "border-cyan-500",
-    buttonBg: "",
-    durationBadge: "",
+    [IntervalCardState.Default]: "border-ice-300",
+    [IntervalCardState.Active]: "border-cyan-500",
+    [IntervalCardState.Faded]: "border-ice-300",
   },
   [SlotType.OffIce]: {
-    bg: "bg-off-ice-300",
-    border: "border-yellow-600",
-    buttonBg: "",
-    durationBadge: "",
+    [IntervalCardState.Active]: "border-yellow-600",
   },
 };
-
-// #endregion containerColor
+// #endregion border
 
 export default IntervalCard;
