@@ -3,10 +3,10 @@ import { ComponentMeta } from "@storybook/react";
 
 import { SlotType } from "@eisbuk/shared";
 
-import IntervalCard, {
-  IntervalCardState,
-  IntervalCardVariant,
-} from "./IntervalCard";
+import { IntervalCardState, IntervalCardVariant } from "./types";
+
+import IntervalCard from "./IntervalCard";
+
 import { StorybookGrid, StorybookItem } from "../utils/storybook";
 
 export default {

@@ -1,4 +1,4 @@
-import { IntervalDuration } from "../IntervalCard";
+import { IntervalDuration } from "../types";
 
 import { calculateDuration } from "../utils";
 
