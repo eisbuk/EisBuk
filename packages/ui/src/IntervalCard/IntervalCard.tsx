@@ -1,6 +1,9 @@
 import React from "react";
+import { DateTime } from "luxon";
 
 import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
+import { useTranslation, DateFormat } from "@eisbuk/translations";
+
 import { calculateDuration } from "./utils";
 
 // #region types
@@ -42,7 +45,24 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   variant = IntervalCardVariant.Booking,
   state = IntervalCardState.Default,
   interval: { startTime, endTime },
+  date: dateISO,
 }) => {
+  const { t } = useTranslation();
+  const date = DateTime.fromISO(dateISO);
+
+  const dateString = (
+    <h1
+      className={[
+        "text-base",
+        variant === IntervalCardVariant.Simple
+          ? "font-medium"
+          : "font-semibold",
+      ].join(" ")}
+    >
+      {t(DateFormat.Full, { date })}
+    </h1>
+  );
+
   const duration = calculateDuration(startTime, endTime);
 
   const className = [
@@ -53,7 +73,11 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
     classes,
   ].join(" ");
 
-  return React.createElement(as, { className }, []);
+  return React.createElement(
+    as,
+    { className },
+    <>{variant !== IntervalCardVariant.Booking && dateString}</>
+  );
 };
 // #endregion Component
 
