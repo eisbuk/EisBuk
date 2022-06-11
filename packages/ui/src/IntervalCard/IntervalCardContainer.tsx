@@ -19,6 +19,7 @@ const IntervalCardContainer: React.FC<IntervalCardContainerProps> = ({
   as = "div",
 }) => {
   const className = [
+    "relative",
     ...getContainerSizeClasses(variant, duration),
     ...getBorderClasses(type, variant, state),
     getBackgroundColor(type, variant, state),

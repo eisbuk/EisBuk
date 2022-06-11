@@ -10,8 +10,10 @@ import {
   IntervalCardProps,
 } from "./types";
 
-import { calculateDuration } from "./utils";
 import IntervalCardContainer from "./IntervalCardContainer";
+import BookingButton from "./BookingButton";
+
+import { calculateDuration } from "./utils";
 
 const IntervalCard: React.FC<IntervalCardProps> = ({
   interval: { startTime, endTime },
@@ -27,15 +29,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   const duration = calculateDuration(startTime, endTime);
 
   const dateString = (
-    <span
-      className={[
-        "text-base",
-        "block",
-        variant === IntervalCardVariant.Simple
-          ? "font-medium"
-          : "font-semibold",
-      ].join(" ")}
-    >
+    <span className={getDatestringClasses(variant)}>
       {t(DateFormat.Full, { date })}
     </span>
   );
@@ -51,10 +45,27 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
       {...{ ...containerProps, state, duration, type, variant }}
     >
       {variant !== IntervalCardVariant.Booking && dateString}
+
       {timestring}
+
+      {variant !== IntervalCardVariant.Simple && (
+        <BookingButton
+          className="absolute right-2 bottom-2"
+          {...{ type, variant, state, duration }}
+        />
+      )}
     </IntervalCardContainer>
   );
 };
+
+// #region datestringClasses
+const getDatestringClasses = (variant: IntervalCardVariant) =>
+  [
+    "block",
+    "text-base",
+    variant === IntervalCardVariant.Simple ? "font-medium" : "font-semibold",
+  ].join(" ");
+// #endregion datestringClasses
 
 // #region timestringClasses
 const getTimestringClasses = (

@@ -55,13 +55,9 @@ export const Variants = (): JSX.Element => (
   </>
 );
 
-const durationIce = () => <div className="bg-cyan-600 rounded-md px-1">2h</div>;
-const durationOffIce = () => (
-  <div className="bg-yellow-700 rounded-md px-1">2h</div>
-);
-const durationDisabled = () => (
-  <div className="bg-gray-300 rounded-md px-1">2h</div>
-);
+const durationIce = <div className="bg-cyan-600 rounded-md px-1">2h</div>;
+const durationOffIce = <div className="bg-yellow-700 rounded-md px-1">2h</div>;
+const durationDisabled = <div className="bg-gray-300 rounded-md px-1">2h</div>;
 
 export const Prototype = (): JSX.Element => (
   <>
@@ -71,7 +67,7 @@ export const Prototype = (): JSX.Element => (
         <Button
           className="min-w-[85px]"
           color={ButtonColor.Primary}
-          EndAdornment={durationIce}
+          endAdornment={durationIce}
         >
           Book
         </Button>
@@ -80,7 +76,7 @@ export const Prototype = (): JSX.Element => (
         <Button
           className="min-w-[85px]"
           color={ButtonColor.Secondary}
-          EndAdornment={durationOffIce}
+          endAdornment={durationOffIce}
         >
           Book
         </Button>
@@ -93,7 +89,7 @@ export const Prototype = (): JSX.Element => (
       <StorybookItem label="Disabled">
         <Button
           className="min-w-[85px]"
-          EndAdornment={durationDisabled}
+          endAdornment={durationDisabled}
           disabled
         >
           Book

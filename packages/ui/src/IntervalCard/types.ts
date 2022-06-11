@@ -29,6 +29,11 @@ export interface IntervalCardContainerProps
   className?: string;
 }
 
+export type BookingButtonProps = Omit<
+  IntervalCardContainerProps,
+  "as" | "children"
+>;
+
 export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
   Omit<Partial<IntervalCardContainerProps>, "duration" | "type"> & {
     interval: SlotInterval;
