@@ -10,6 +10,7 @@ import SlotTypeIcon from "./SlotTypeIcon";
 import UserAvatar from "./UserAvatar";
 import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
+import Layout from "./Layout";
 
 export * from "./NotificationToast";
 export * from "./Button";
@@ -19,8 +20,9 @@ export {
   NotificationToast,
   EmptySpace,
   Button,
+  Layout,
   TabItem,
   UserAvatar,
   CalendarNav,
-  SlotTypeIcon
+  SlotTypeIcon,
 };
