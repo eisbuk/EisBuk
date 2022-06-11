@@ -21,6 +21,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   state = IntervalCardState.Default,
   variant = IntervalCardVariant.Booking,
   type,
+  notes,
   ...containerProps
 }) => {
   const { t } = useTranslation();
@@ -40,6 +41,10 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
     </span>
   );
 
+  const notesElement = (
+    <p className="text-base text-gray-500 font-medium">{notes}</p>
+  );
+
   return (
     <IntervalCardContainer
       {...{ ...containerProps, state, duration, type, variant }}
@@ -47,6 +52,8 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
       {variant !== IntervalCardVariant.Booking && dateString}
 
       {timestring}
+
+      {variant !== IntervalCardVariant.Simple && notesElement}
 
       {variant !== IntervalCardVariant.Simple && (
         <BookingButton
@@ -72,18 +79,26 @@ const getTimestringClasses = (
   variant: IntervalCardVariant,
   duration: IntervalDuration
 ) =>
-  variant !== IntervalCardVariant.Booking
-    ? timestringSizeLookup[variant].join(" ")
-    : timestringBookingSizeLookup[duration].join(" ");
+  [
+    "block",
+    ...(variant !== IntervalCardVariant.Booking
+      ? timestringSizeLookup[variant]
+      : timestringBookingSizeLookup[duration]),
+  ].join(" ");
 
 const timestringBookingSizeLookup = {
-  [IntervalDuration["1h"]]: ["text-lg", "leading-8", "font-semibold"],
-  [IntervalDuration["1.5h"]]: ["text-3xl", "leading-8", "font-semibold"],
-  [IntervalDuration["2h"]]: ["text-4xl", "leading-10", "font-semibold"],
+  [IntervalDuration["1h"]]: ["mb-2", "text-lg", "leading-8", "font-semibold"],
+  [IntervalDuration["1.5h"]]: [
+    "mb-2",
+    "text-3xl",
+    "leading-8",
+    "font-semibold",
+  ],
+  [IntervalDuration["2h"]]: ["mb-4", "text-4xl", "leading-10", "font-semibold"],
 };
 
 const timestringSizeLookup = {
-  [IntervalCardVariant.Calendar]: ["text-3xl", "font-semibold"],
+  [IntervalCardVariant.Calendar]: ["mb-4", "text-3xl", "font-semibold"],
   [IntervalCardVariant.Simple]: ["text-2xl", "font-medium"],
 };
 // #endregion timestringClasses

@@ -25,6 +25,7 @@ const baseSlot = {
   date,
   type: SlotType.Ice,
   interval: hourInterval,
+  notes: "Rink 1",
 };
 
 const hourAndHalfInterval = {
