@@ -13,6 +13,7 @@ const TabItem: React.FC<TabItemProps> = ({
   Icon,
   onClick,
   active = false,
+  className,
   ...props
 }) => {
   const onClickHandler = onClick ? onClick : () => {};
@@ -22,9 +23,11 @@ const TabItem: React.FC<TabItemProps> = ({
     : buttonDefaultClasses;
 
   const svgClassNames = svgClasses.join(" ");
-  const buttonClassNames = [...buttonBaseClasses, ...buttonStateClasses].join(
-    " "
-  );
+  const buttonClassNames = [
+    ...buttonBaseClasses,
+    ...buttonStateClasses,
+    className,
+  ].join(" ");
 
   return (
     <button className={buttonClassNames} onClick={onClickHandler} {...props}>
