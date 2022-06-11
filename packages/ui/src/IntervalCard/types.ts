@@ -37,4 +37,6 @@ export type BookingButtonProps = Omit<
 export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
   Omit<Partial<IntervalCardContainerProps>, "duration" | "type"> & {
     interval: SlotInterval;
+    onBook?: () => void;
+    onCancel?: () => void;
   };

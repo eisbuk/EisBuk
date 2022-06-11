@@ -22,6 +22,8 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   variant = IntervalCardVariant.Booking,
   type,
   notes,
+  onBook = () => {},
+  onCancel = () => {},
   ...containerProps
 }) => {
   const { t } = useTranslation();
@@ -29,18 +31,22 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
 
   const duration = calculateDuration(startTime, endTime);
 
+  const handleBookingClick = () =>
+    variant === IntervalCardVariant.Calendar ||
+    state === IntervalCardState.Active
+      ? onCancel()
+      : onBook();
+
   const dateString = (
     <span className={getDatestringClasses(variant)}>
       {t(DateFormat.Full, { date })}
     </span>
   );
-
   const timestring = (
     <span className={getTimestringClasses(variant, duration)}>
       {[startTime, endTime].join(" - ")}
     </span>
   );
-
   const notesElement = (
     <p className="text-base text-gray-500 font-medium">{notes}</p>
   );
@@ -59,6 +65,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
         <BookingButton
           className="absolute right-2 bottom-2"
           {...{ type, variant, state, duration }}
+          onClick={handleBookingClick}
         />
       )}
     </IntervalCardContainer>
