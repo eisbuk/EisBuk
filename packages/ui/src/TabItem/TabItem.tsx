@@ -54,7 +54,7 @@ const buttonBaseClasses = [
   "md:space-x-2",
   "md:space-y-0",
   "space-y-1",
-  "text-base",
+  "text-sm",
   "rounded-lg",
   "select-none",
 ];
