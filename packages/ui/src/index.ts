@@ -6,8 +6,9 @@ import TestComponent from "./TestComponent";
 import EmptySpace from "./EmptySpace";
 import NotificationToast from "./NotificationToast";
 import Button from "./Button";
+import UserAvatar from "./UserAvatar";
 
 export * from "./NotificationToast";
 export * from "./Button";
 
-export { TestComponent, NotificationToast, EmptySpace, Button };
+export { TestComponent, NotificationToast, EmptySpace, Button, UserAvatar };
