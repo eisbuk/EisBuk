@@ -19,7 +19,7 @@ const Layout: React.FC<LayoutProps> = ({
 
   return (
     <div className="bg-gray-800">
-      <div className="content-container px-4 md:px-0">
+      <div className="content-container">
         <div className={rowClasses}>
           <div className="h-5 w-[86px] text-white">
             <EisbukLogo />
