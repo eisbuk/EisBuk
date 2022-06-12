@@ -36,7 +36,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
       <button
         onClick={() => onClose()}
         key="close-button"
-        className="w-5 h-5 text-white/60"
+        className="w-5 h-5 absolute top-1/2 -translate-y-1/2 right-3 text-white/60"
       >
         <Close />
       </button>,
@@ -44,14 +44,16 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
   );
 
 const baseClasses = [
-  "font-semibold",
-  "px-4",
-  "py-3",
+  "min-w-[360px]",
+  "inline-block",
+  "relative",
+  "pl-3",
+  "pr-10", // Offset for absolutely positioned 'x' button
+  "py-2",
   "rounded-lg",
+  "font-medium",
   "text-white",
-  "text-semibold",
   "select-none",
-  "flex",
   "justify-between",
   "items-center",
 ];
