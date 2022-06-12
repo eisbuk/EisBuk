@@ -359,6 +359,7 @@ importers:
       '@types/lodash': 4.14.182
       '@types/luxon': 2.3.2
       '@types/node': 16.11.38
+      '@types/nodemailer': 6.4.4
       '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 4.33.0_cc617358c89d3f38c52462f6d809db4c
       '@typescript-eslint/parser': 4.33.0_eslint@7.32.0+typescript@4.4.4
@@ -7305,7 +7306,7 @@ packages:
   /@types/nodemailer/6.4.4:
     resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
     dependencies:
-      '@types/node': 16.11.35
+      '@types/node': 16.11.38
     dev: true
 
   /@types/normalize-package-data/2.4.1:
