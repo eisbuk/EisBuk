@@ -5,12 +5,14 @@ import { EisbukLogo } from "@eisbuk/svg";
 import UserAvatar, { UserAvatarProps } from "../UserAvatar";
 
 interface LayoutProps {
+  Logo?: React.FC;
   user?: UserAvatarProps;
   additionalButtons?: JSX.Element;
   Notifications?: React.FC<{ className?: string }>;
 }
 
 const Layout: React.FC<LayoutProps> = ({
+  Logo = EisbukLogo,
   additionalButtons,
   user,
   Notifications,
@@ -21,9 +23,7 @@ const Layout: React.FC<LayoutProps> = ({
     <div className="bg-gray-800">
       <div className="content-container">
         <div className={rowClasses}>
-          <div className="h-5 w-[86px] text-white">
-            <EisbukLogo />
-          </div>
+          <div className="h-5 w-[86px] text-white">{<Logo />}</div>
 
           {user && <UserAvatar {...user} />}
         </div>
