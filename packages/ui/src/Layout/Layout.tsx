@@ -15,11 +15,11 @@ const Layout: React.FC<LayoutProps> = ({
   user,
   notifications,
 }) => {
-  const rowClasses = "flex justify-between items-center w-full h-[70px]";
+  const rowClasses = "flex justify-between items-center w-full min-h-[70px]";
 
   return (
     <div className="bg-gray-800">
-      <div className="content-container">
+      <div className="content-container px-4 md:px-0">
         <div className={rowClasses}>
           <div className="h-5 w-[86px] text-white">
             <EisbukLogo />
@@ -30,9 +30,13 @@ const Layout: React.FC<LayoutProps> = ({
 
         <div className="w-full h-[2px] bg-gray-700" />
 
-        <div className={rowClasses}>
-          <div className="flex max-w-1/2 gap-[10px]">{additionalButtons}</div>
-          <div>{notifications}</div>
+        <div className={[rowClasses, "py-[15px]"].join(" ")}>
+          <div className="w-full flex justify-center gap-4 md:gap-3 md:justify-start md:max-w-1/2">
+            {additionalButtons}
+          </div>
+          <div className="w-full fixed bottom-[27px] left-4 right-4 md:static ">
+            {notifications}
+          </div>
         </div>
       </div>
     </div>
