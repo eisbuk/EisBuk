@@ -21,8 +21,11 @@ const additionalButtons = (
   </>
 );
 
-const notifications = (
-  <NotificationToast variant={NotificationToastVariant.Success}>
+const Notifications: React.FC<{ className?: string }> = ({ className }) => (
+  <NotificationToast
+    {...{ className }}
+    variant={NotificationToastVariant.Success}
+  >
     {`April 13th 08:00 - 09:00, <strong>confirmed</strong>`}
   </NotificationToast>
 );
@@ -35,5 +38,5 @@ const user = {
 };
 export const Default = (): JSX.Element => <Layout {...{ user }} />;
 export const CustomerArea = (): JSX.Element => (
-  <Layout {...{ additionalButtons, notifications, user }} />
+  <Layout {...{ additionalButtons, Notifications, user }} />
 );
