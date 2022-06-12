@@ -21,6 +21,6 @@ export {
   Calendar,
   ChevronLeft,
   ChevronRight,
-  Ice, 
+  Ice,
   OffIce,
 };
