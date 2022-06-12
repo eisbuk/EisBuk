@@ -7,11 +7,11 @@ import EmptySpace from "./EmptySpace";
 import NotificationToast from "./NotificationToast";
 import Button from "./Button";
 import SlotTypeIcon from "./SlotTypeIcon";
-import UserAvatar from "./UserAvatar";
 import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
 import Layout from "./Layout";
 
+export * from "./UserAvatar";
 export * from "./NotificationToast";
 export * from "./Button";
 
@@ -22,7 +22,6 @@ export {
   Button,
   Layout,
   TabItem,
-  UserAvatar,
   CalendarNav,
   SlotTypeIcon,
 };

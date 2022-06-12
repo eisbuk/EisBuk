@@ -2,7 +2,8 @@ import React, { useState } from "react";
 
 import { CustomerBase } from "@eisbuk/shared";
 
-interface UserAvatarProps extends Pick<CustomerBase, "name" | "surname"> {
+export interface UserAvatarProps
+  extends Pick<CustomerBase, "name" | "surname"> {
   avatar?: string;
 }
 
