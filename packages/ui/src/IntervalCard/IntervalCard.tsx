@@ -12,6 +12,7 @@ import {
 
 import IntervalCardContainer from "./IntervalCardContainer";
 import BookingButton from "./BookingButton";
+import SlotTypeIcon from "../SlotTypeIcon";
 
 import { calculateDuration } from "./utils";
 
@@ -55,11 +56,17 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
     <IntervalCardContainer
       {...{ ...containerProps, state, duration, type, variant }}
     >
-      {variant !== IntervalCardVariant.Booking && dateString}
+      <div className="relative h-full w-full">
+        {variant !== IntervalCardVariant.Booking && dateString}
 
-      {timestring}
+        {timestring}
 
-      {variant !== IntervalCardVariant.Simple && notesElement}
+        {variant !== IntervalCardVariant.Simple && notesElement}
+
+        {variant !== IntervalCardVariant.Simple && (
+          <SlotTypeIcon type={type} className="absolute left-0 bottom-0" />
+        )}
+      </div>
 
       {variant !== IntervalCardVariant.Simple && (
         <BookingButton

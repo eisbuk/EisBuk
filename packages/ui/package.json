@@ -83,7 +83,6 @@
   },
   "dependencies": {
     "@eisbuk/shared": "workspace:*",
-    "@eisbuk/translations": "workspace:*",
     "@eisbuk/svg": "workspace:*",
     "@eisbuk/translations": "workspace:*",
     "luxon": "^2.0.5"
