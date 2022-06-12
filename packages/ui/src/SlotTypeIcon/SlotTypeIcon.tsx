@@ -29,8 +29,6 @@ const SlotTypeIcon: React.FC<{ type: SlotType; className?: string }> = ({
 };
 
 const baseClasses = [
-  "px-4",
-  "py-3",
   "font-sm",
   "uppercase",
   "text-base",
@@ -41,8 +39,6 @@ const baseClasses = [
   "items-center",
   "justify-center",
   "md:flex-row",
-  "md:px-4",
-  "md:py-3",
 ];
 
 export default SlotTypeIcon;
