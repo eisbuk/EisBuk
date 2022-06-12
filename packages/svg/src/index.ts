@@ -1,4 +1,6 @@
 import TestSVG from "./SVG.svg";
+import Ice from "./Ice.svg";
+import OffIce from "./OffIce.svg";
 import ExclamationCircle from "./exclamation-circle.svg";
 import Close from "./close.svg";
 import AccountCircle from "./account-circle.svg";
@@ -19,4 +21,6 @@ export {
   Calendar,
   ChevronLeft,
   ChevronRight,
+  Ice,
+  OffIce,
 };

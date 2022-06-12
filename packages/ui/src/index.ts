@@ -6,6 +6,7 @@ import TestComponent from "./TestComponent";
 import EmptySpace from "./EmptySpace";
 import NotificationToast from "./NotificationToast";
 import Button from "./Button";
+import SlotTypeIcon from "./SlotTypeIcon";
 import UserAvatar from "./UserAvatar";
 import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
@@ -21,4 +22,5 @@ export {
   TabItem,
   UserAvatar,
   CalendarNav,
+  SlotTypeIcon
 };
