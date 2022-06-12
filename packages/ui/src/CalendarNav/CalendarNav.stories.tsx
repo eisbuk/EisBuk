@@ -39,7 +39,7 @@ export const Interactive = (): JSX.Element => {
         jump="week"
       />
 
-      <h1 className="text-lg font-bold mb-4">Jump: Week</h1>
+      <h1 className="text-lg font-bold mb-4">Jump: Day</h1>
       <CalendarNav date={day} onChange={(date) => setDay(date)} jump="day" />
     </>
   );
@@ -48,7 +48,7 @@ export const Interactive = (): JSX.Element => {
 const countdown = (
   <EmptySpace className="md:!h-[32px]">{`Let's pretend this is the <strong>Countdown</strong>`}</EmptySpace>
 );
-export const WithConuntdown = (): JSX.Element => (
+export const WithCountdown = (): JSX.Element => (
   <CalendarNav
     date={DateTime.fromISO("2022-04-01")}
     jump="month"
