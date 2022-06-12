@@ -5,6 +5,7 @@
   "dependencies": {
     "@eisbuk/shared": "workspace:*",
     "@eisbuk/translations": "workspace:*",
+    "@eisbuk/ui": "workspace:*",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
     "@firebase/app": "0.7.2",

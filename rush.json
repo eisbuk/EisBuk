@@ -400,6 +400,14 @@
     {
       "packageName": "@eisbuk/e2e",
       "projectFolder": "packages/e2e"
+    },
+    {
+      "packageName": "@eisbuk/ui",
+      "projectFolder": "packages/ui"
+    },
+    {
+      "packageName": "@eisbuk/svg",
+      "projectFolder": "packages/svg"
     }
   ]
 }

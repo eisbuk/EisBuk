@@ -181,6 +181,33 @@ The client package contains our main (browser) app. Currently all of our unit te
 
 _Please note: client build process is a bit lengthier than that of the shared, functions, etc.. packages. Therefore, `build` script in client package does nothing, not to slow down the bulk `rush build` command. If you wish to build the `@eisbuk/client` package for production, `rushx build:prod` should be ran instead (from `packages/client`)_
 
+### @eisbuk/svg
+
+The SVG package is used to store all `.svg` files in one place. This is convenient for multiple reasons, but is not without challenges.
+
+The pros of this approach is that we can use one standard SVG build mechanism and export all svg files as react components (prebuilt with SVGR). Additionally, having a single store of SVG assets allows us to externalize the deps of each package using `.svg`s and bundle them in, only, with the final app. This prevents potentially bundling the same SVG twice (if the same SVG is used by `ui` and `client` packages, for instance). There's no need to mock `.svg` files for tests as they already in as react components (prebuilt at imported package's build time).
+
+The challenge, however, is that currently we don't have type declaration support for built SVGs: all SVGs are, in fact, react components, but are imported as `any`,
+which doesn't cause problems in a way of false positives, but is not completely kosher (we don't like `any` assertions). However, this is a problem for another day.
+Another challenge has to to with tree-shaking, where, however externalized, all SVGs from the `packages/svg` get bundled in the final app.
+
+#### Using SVGs
+
+In order to use SVGs, you can import svg (as named import from `@eisbuk/svg`). If the SVG doesn't yet exist in the package, please provide a new one and add it as an export in `packages/svg/src/index.ts`, like so:
+
+```typescript
+import NewSVG from "./new-svg.svg";
+
+export {
+  // ...other exports
+  NewSVG,
+};
+```
+
+#### Default setup (how SVGs are processed)
+
+We're bundling SVGs using vite and SVGR plugin. By default values for `width` and `height` propertes on each SVG are replaced with `100%` allowing us to control the size of an SVG using a container element. In order to be able to color and SVG using `color: <css-color-property>`, all colours hardcoded in an SVG source file need to be replaced with `currentColor`. This has to be done manually as automating this could produce a myriad of problems.
+
 ### @eisbuk/e2e
 
 A package containing automated, e2e tests using Cypress. All of the Cypress code, setup + integration are there and e2e tests should be ran from there (with assumption that some form of emulators/dev-server are already running)
