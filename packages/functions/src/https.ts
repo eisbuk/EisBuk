@@ -32,8 +32,11 @@ import {
 export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization, ...email }: SendMailPayload, { auth }) => {
-      await checkUser(organization, auth);
+    async (
+      { organization, checkAuth = true, ...email }: SendMailPayload,
+      { auth }
+    ) => {
+      checkAuth && (await checkUser(organization, auth));
 
       checkRequiredFields(email, ["to", "subject", "html"]);
 

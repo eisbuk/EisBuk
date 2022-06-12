@@ -152,6 +152,8 @@ export enum Prompt {
 
   FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
+  EnterEmailTitle = "Prompt.EnterEmailTitle",
+  EnterEmailMessage = "Prompt.EnterEmailMessage",
 }
 
 export enum ActionButton {

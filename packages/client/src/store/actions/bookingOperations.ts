@@ -1,13 +1,4 @@
-import {
-  deleteDoc,
-  doc,
-  collection,
-  getFirestore,
-  setDoc,
-  query,
-  where,
-  getDocs,
-} from "@firebase/firestore";
+import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
 
 import {
   BookingSubCollection,
@@ -33,10 +24,6 @@ import { enqueueNotification, showErrSnackbar } from "./appActions";
 const getBookingsPath = () =>
   `${Collection.Organizations}/${getOrganization()}/${
     OrgSubCollection.Bookings
-  }`;
-const getCustomersPath = () =>
-  `${Collection.Organizations}/${getOrganization()}/${
-    OrgSubCollection.Customers
   }`;
 
 /**
@@ -169,33 +156,13 @@ export const createCalendarEvents =
  * Send email of ics file
  */
 interface sendICSFile {
-  (payload: {
-    secretKey: Customer["secretKey"];
-    icsFile: string;
-  }): FirestoreThunk;
+  (payload: { icsFile: string; email: string }): FirestoreThunk;
 }
 
 export const sendICSFile: sendICSFile =
-  ({ secretKey, icsFile }) =>
+  ({ icsFile, email }) =>
   async (dispatch) => {
     try {
-      const db = getFirestore();
-
-      const colRef = collection(db, getCustomersPath());
-
-      const customerQuery = query(colRef, where("secretKey", "==", secretKey));
-      const customer = await getDocs(customerQuery);
-
-      if (customer.size !== 1) throw new Error("Customer not found");
-
-      let email = "";
-      let name = "";
-      customer.forEach((doc) => {
-        const { email: customerEmail, name: customerName } = doc.data();
-        email = customerEmail;
-        name = customerName;
-      });
-
       const subject = "Calendario prenotazioni Igor Ice Team";
 
       const html = `<p>Ciao ${name},</p>
@@ -209,6 +176,7 @@ export const sendICSFile: sendICSFile =
         subject,
         filename: "bookedSlots.ics",
         content: icsFile,
+        checkAuth: false,
       } as EmailMessage;
 
       await createCloudFunctionCaller(handler, payload)();

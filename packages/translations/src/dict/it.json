@@ -139,7 +139,9 @@
     "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
 
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
-    "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni."
+    "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
+    "EnterEmailTitle": "Inserisci la tua Email qui sotto",
+    "EnterEmailMessage": "Il tuo calendario verrà inviato a questo indirizzo email"
   },
   "ActionButton": {
     "SignIn": "Accedi",

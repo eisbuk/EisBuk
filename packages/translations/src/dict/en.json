@@ -139,7 +139,9 @@
     "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
 
     "FinalizeBookingsTitle": "Finalize Bookings",
-    "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month."
+    "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month.",
+    "EnterEmailTitle": "Enter your Email below",
+    "EnterEmailMessage": "Your calendar will be sent to this email address"
   },
   "ActionButton": {
     "SignIn": "Signin",

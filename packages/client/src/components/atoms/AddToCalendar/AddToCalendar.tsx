@@ -1,5 +1,5 @@
-import React from "react";
-import { useTranslation, ActionButton } from "@eisbuk/translations";
+import React, { useState } from "react";
+import { useTranslation, ActionButton, Prompt } from "@eisbuk/translations";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
@@ -25,6 +25,8 @@ import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
 
 import { __organization__ } from "@/lib/constants";
 
+import InputDialog from "@/components/atoms/InputDialog";
+
 interface Props {
   /**
    * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
@@ -46,6 +48,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
   const { t } = useTranslation();
 
+  const [emailDialog, setEmailDialog] = useState(false);
+
   const monthStr = (Object.values(bookedSlots!)[0].date || "").substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
@@ -53,7 +57,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
   const { displayName = "", location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
 
-  const handleClick = () => {
+  const handleClick = (email: string) => {
     let icalendar = {} as ICalendar;
 
     const previousCalendarUids = Object.keys(previousCalendar).length
@@ -100,18 +104,29 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     createCancelledEvents(previousCalendarUids, icalendar, displayName);
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
-    dispatch(sendICSFile({ secretKey: secretKey, icsFile: icsFile }));
+    dispatch(sendICSFile({ icsFile: icsFile, email }));
   };
+
   return (
-    <div className={classes.container}>
-      <Button
-        data-testid={__addToCalendarButtonId__}
-        onClick={handleClick}
-        variant="contained"
+    <>
+      <div className={classes.container}>
+        <Button
+          data-testid={__addToCalendarButtonId__}
+          onClick={() => setEmailDialog(true)}
+          variant="contained"
+        >
+          {t(ActionButton.AddToCalendar)}
+        </Button>
+      </div>
+      <InputDialog
+        title={t(Prompt.EnterEmailTitle)}
+        onSubmit={handleClick}
+        open={emailDialog}
+        setOpen={(open: boolean) => (open ? null : setEmailDialog(false))}
       >
-        {t(ActionButton.AddToCalendar)}
-      </Button>
-    </div>
+        {t(Prompt.EnterEmailMessage)}
+      </InputDialog>
+    </>
   );
 };
 

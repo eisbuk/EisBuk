@@ -127,7 +127,7 @@ const CustomerSlots: React.FC<Props> = ({
   const content = (
     <>
       {countdownProps && <BookingsCountdown {...countdownProps} />}
-      {Object.keys(bookedSlotsByMonth).length && (
+      {Object.keys(bookedSlotsByMonth).length > 0 && (
         <AddToCalendar bookedSlots={bookedSlotsByMonth} slots={rawSlots} />
       )}
       {orderedDates?.map((date) => {

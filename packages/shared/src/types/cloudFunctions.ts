@@ -3,6 +3,7 @@ import { EmailMessage, SMSMessage } from "./firestore";
 export interface SendMailPayload extends EmailMessage {
   organization: string;
   subject: string;
+  checkAuth: boolean;
 }
 
 export interface SendSMSPayload extends SMSMessage {
