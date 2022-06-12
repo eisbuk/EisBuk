@@ -22,7 +22,7 @@ import {
 import { getOrganization } from "@/lib/getters";
 import { defaultCustomerFormValues } from "@/lib/data";
 
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 

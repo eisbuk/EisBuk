@@ -15,7 +15,7 @@ import {
   SlotAttendnace,
 } from "@eisbuk/shared";
 
-import { TestEnvFirestore } from "@/__testSetup__/getTestEnv";
+import { TestEnvFirestore } from "@/__testSetup__/firestore";
 
 import { getOrganization } from "@/lib/getters";
 

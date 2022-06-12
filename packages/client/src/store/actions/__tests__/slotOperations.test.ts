@@ -12,7 +12,7 @@ import {
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { getNewStore } from "@/store/createStore";
 

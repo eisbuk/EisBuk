@@ -7,6 +7,9 @@ import * as firestore from "@firebase/firestore";
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
+import { getTestEnv } from "@/__testSetup__/firestore";
+
+import { getNewStore } from "@/store/createStore";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
 import { showErrSnackbar } from "../appActions";
@@ -19,8 +22,6 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestAttendance } from "../__testUtils__/firestore";
 import { loginDefaultUser } from "@/__testUtils__/auth";
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
-import { getNewStore } from "@/store/createStore";
 
 // test data
 const customerId = "customer-0";
@@ -28,7 +29,9 @@ const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-const attendaceCollectionPath = `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Attendance}`;
+const attendaceCollectionPath = `${
+  Collection.Organizations
+}/${getOrganization()}/${OrgSubCollection.Attendance}`;
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 

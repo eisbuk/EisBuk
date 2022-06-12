@@ -16,7 +16,8 @@ import {
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
+
 import { getNewStore } from "@/store/createStore";
 
 import { getOrganization } from "@/lib/getters";

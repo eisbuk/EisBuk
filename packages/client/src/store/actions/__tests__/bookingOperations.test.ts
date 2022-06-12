@@ -13,7 +13,7 @@ import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getNewStore } from "@/store/createStore";
 
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { Action, NotifVariant } from "@/enums/store";
 

@@ -14,7 +14,7 @@ import {
 
 import { getNewStore } from "@/store/createStore";
 
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { getOrganization } from "@/lib/getters";
 
