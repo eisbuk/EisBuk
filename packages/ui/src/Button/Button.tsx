@@ -64,7 +64,7 @@ const baseClasses = [
 ];
 
 const sizeClassesLookup = {
-  [ButtonSize.Base]: ["px-[10px]", "py-[6px]", "text-sm"],
+  [ButtonSize.Base]: ["px-2.5", "py-[6px]", "text-sm"],
   [ButtonSize.LG]: ["px-[17px]", "py-[9px]", "text-base"],
 };
 

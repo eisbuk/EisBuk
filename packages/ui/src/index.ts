@@ -8,6 +8,7 @@ import NotificationToast from "./NotificationToast";
 import Button from "./Button";
 import UserAvatar from "./UserAvatar";
 import TabItem from "./TabItem";
+import CalendarNav from "./CalendarNav";
 
 export * from "./NotificationToast";
 export * from "./Button";
@@ -19,4 +20,5 @@ export {
   Button,
   TabItem,
   UserAvatar,
+  CalendarNav,
 };
