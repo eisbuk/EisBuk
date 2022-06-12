@@ -21,7 +21,7 @@ const IntervalCardContainer: React.FC<IntervalCardContainerProps> = ({
   const className = [
     "relative",
     ...getContainerSizeClasses(variant, duration),
-    ...getBorderClasses(type, variant, state),
+    ...getOutlineClasses(type, variant, state),
     getBackgroundColor(type, variant, state),
     classes,
   ].join(" ");
@@ -106,41 +106,36 @@ const backgroundColorLookup = {
 };
 // #region backgroundColor
 
-// #region border
-const getBorderClasses = (
+// #region outline
+const getOutlineClasses = (
   type: SlotType,
   variant: IntervalCardVariant,
   state: IntervalCardState
 ) => {
-  const borderVariant =
-    // If variant is not "Booking", the border is same as for "active" state
+  const outlineVariant =
+    // If variant is not "Booking", the outline is same as for "active" state
     variant !== IntervalCardVariant.Booking ? IntervalCardState.Active : state;
 
-  const borderWidth =
-    borderWidthLookup[borderVariant] || borderWidthLookup.default;
+  const outlineWidth =
+    outlineVariant === IntervalCardState.Active ? "outline-4" : "";
 
-  const borderColor =
-    borderColorLookup[type][borderVariant] || borderColorLookup.default;
+  const outlineColor =
+    outlineColorLookup[type][outlineVariant] || outlineColorLookup.default;
 
-  return [borderWidth, borderColor];
+  return ["outline", outlineWidth, outlineColor];
 };
 
-const borderWidthLookup = {
-  [IntervalCardState.Active]: "border-4",
-  default: "border",
-};
-
-const borderColorLookup = {
-  default: "border-gray-200",
+const outlineColorLookup = {
+  default: "outline-gray-200",
   [SlotType.Ice]: {
-    [IntervalCardState.Default]: "border-ice-300",
-    [IntervalCardState.Active]: "border-cyan-500",
-    [IntervalCardState.Faded]: "border-ice-300",
+    [IntervalCardState.Default]: "outline-ice-300",
+    [IntervalCardState.Active]: "outline-cyan-500",
+    [IntervalCardState.Faded]: "outline-ice-300",
   },
   [SlotType.OffIce]: {
-    [IntervalCardState.Active]: "border-yellow-600",
+    [IntervalCardState.Active]: "outline-yellow-600",
   },
 };
-// #endregion border
+// #endregion outline
 
 export default IntervalCardContainer;
