@@ -210,7 +210,7 @@ export class EisbukHttpsError extends functions.https.HttpsError {
  * @param fn an async function we want to execute within timeout boundary
  * @returns `fn`'s resolved value
  */
-export const runWithTimeout = async <T extends any>(
+export const runWithTimeout = async <T>(
   fn: () => Promise<T>,
   { timeout } = { timeout: 5000 }
 ): Promise<T> => {

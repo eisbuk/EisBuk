@@ -67,7 +67,9 @@ As the repo is managed by rush, we use `rush` and `rushx` commands for running o
 
 ### Adding/removing deps from packages
 
-To add a dependency, you can simply run `rush add --package <package_name>` **don't use pnpm add or npm install, etc.**. Additionally, you can add a dependency, manually, to package's `package.json`, after which you need to run `rush update`
+To add a dependency, you can simply run `rush add --package <package_name>` **don't use pnpm add or npm install, etc.**. Additionally, you can add a dependency, manually, to package's `package.json`, after which you need to run `rush update`.
+
+Make sure to check if it's already used elsewhere in the project. `rush check` will notify about inconsistent versions. The script in `.github/update_package.sh` can be used to change a version in all packages. Make sure you run `rush update` and `rush check` after using it.
 
 To remove a dependency, simply remove it from `package.json` and run `rush update`
 

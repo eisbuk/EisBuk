@@ -1,336 +1,465 @@
-name: Build and deploy preview
-
-on:
-  - push
-
+name: OnPush
+"on":
+- push
 jobs:
   build_v14:
+    name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
-      - name: Build app
-        run: |
-          cd packages/client && rushx build:prod | tee build.output
-          echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
-          # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
-          # And store for use in later steps
-          cat build.output|awk '/^dist\// {print}' >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
-        env:
-          REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
-          REACT_APP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
-          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
-          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
-          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
-          REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
-          REACT_APP_SENTRY_ENVIRONMENT: staging
-          REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
-      - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
-      - name: Create Sentry release
-        uses: getsentry/action-release@v1
-        if: steps.has_secret.outputs.HAS_SECRETS
-        env:
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
-          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
-          SENTRY_URL: ${{ secrets.SENTRY_URL }}
-        with:
-          environment: staging
-          sourcemaps: "./packages/client/dist/assets"
-      - name: Deploy preview channel
-        id: deploy
-        if: steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          set -e
-          # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
-          # of the preview channel
-          firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
-          # To pass the info to a later task, use the $GITHUB_ENV file
-          # This horrible contraption converts lines like
-          # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
-          # ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
-          # to a form like this:
-          # igorice=https://igorice--dev-n0jjvnkh.web.app
-          # eisbuk=https://eisbuk--dev-xjkubzx5.web.app
-          # suitable to be included in the $GITHUB_ENV file
-          cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
-          # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
-      - name: Find Comment
-        uses: peter-evans/find-comment@v1
-        if: ${{ github.event.pull_request.number }}
-        id: findcomment
-        with:
-          issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "github-actions[bot]"
-          body-includes: Deployed URLs
-
-      - name: Add preview channel URL to comment on PR
-        uses: peter-evans/create-or-update-comment@v1
-        if: github.event.pull_request.number && steps.has_secret.outputs.HAS_SECRETS
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          comment-id: ${{ steps.findcomment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
-          body: |
-            Deployed URLs:
-              * Igorice: ${{ env.igorice }}
-              * Eisbuk: ${{ env.eisbuk }}
-            ```
-            ${{ env.BUILD_STATS }}
-            ```
-          reactions: heart, hooray, laugh, rocket
-          edit-mode: replace
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Build app
+      run: |
+        cd packages/client && rushx build:prod | tee build.output
+        echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
+        # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
+        # And store for use in later steps
+        cat build.output|awk '/^dist\// {print}' >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+      env:
+        REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+        REACT_APP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+        REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+        REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+        REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+        REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
+        REACT_APP_SENTRY_ENVIRONMENT: staging
+        REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Create Sentry release
+      uses: getsentry/action-release@v1
+      if: steps.has_secret.outputs.HAS_SECRETS
+      env:
+        SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+        SENTRY_URL: ${{ secrets.SENTRY_URL }}
+      with:
+        environment: staging
+        sourcemaps: ./packages/client/dist/assets
+    - name: Deploy preview channel
+      id: deploy
+      if: steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        set -e
+        # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
+        # of the preview channel
+        firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
+        # To pass the info to a later task, use the $GITHUB_ENV file
+        # This horrible contraption converts lines like
+        # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
+        # ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
+        # to a form like this:
+        # igorice=https://igorice--dev-n0jjvnkh.web.app
+        # eisbuk=https://eisbuk--dev-xjkubzx5.web.app
+        # suitable to be included in the $GITHUB_ENV file
+        cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
+        # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+    - name: Find Comment
+      uses: peter-evans/find-comment@v1
+      if: ${{ github.event.pull_request.number }}
+      id: findcomment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: github-actions[bot]
+        body-includes: Deployed URLs
+    - name: Add preview channel URL to comment on PR
+      uses: peter-evans/create-or-update-comment@v1
+      if: github.event.pull_request.number && steps.has_secret.outputs.HAS_SECRETS
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        comment-id: ${{ steps.findcomment.outputs.comment-id }}
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          Deployed URLs:
+            * Igorice: ${{ env.igorice }}
+            * Eisbuk: ${{ env.eisbuk }}
+          ```
+          ${{ env.BUILD_STATS }}
+          ```
+        reactions: heart, hooray, laugh, rocket
+        edit-mode: replace
   test_v14:
+    name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
-      - name: Run tests
-        run: cd packages/client && rushx test:emulators:ci
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
-      - name: Test Report
-        uses: dorny/test-reporter@v1
-        # Do not run on cancelled or if secrets are not available; run in all other cases
-        if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
-        with:
-          name: JEST Tests
-          path: packages/client/junit.xml
-          reporter: jest-junit
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        if: steps.has_secret.outputs.HAS_SECRETS
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: packages/client/coverage/lcov.info
-          base-path: packages/client/
-          flag-name: run-jest
-          parallel: true
-      - name: Create file with gcloud cretentials
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        # To make sure the file contents are not manipulated by the github infrastructure
-        # they're encoded using base64. Here we decode them.
-        # A downside of this approach is that we don't get the default
-        # protection in case of accidental printing of the secret file.
-        run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
-
-      - name: Set destination of test results
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
-        id: results-destination
-
-      - name: Install rclone
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone
-          echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
-        env:
-          RCLONE_CONF: |
-            [gcloud]
-            type = google cloud storage
-            service_account_file = ${{ github.workspace }}/.gcloud.json
-            object_acl = publicRead
-            bucket_acl = publicRead
-            bucket_policy_only = true
-
-      - name: Copy test results to gcloud
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          rclone copy packages/client/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
-      - name: Print gcloud url to view test results
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          echo Check out coverage results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage/lcov-report/index.html
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Run tests
+      run: cd packages/client && rushx test:emulators:ci
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Test Report
+      uses: dorny/test-reporter@v1
+      if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
+      with:
+        name: JEST Tests
+        path: packages/client/junit.xml
+        reporter: jest-junit
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      if: steps.has_secret.outputs.HAS_SECRETS
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: packages/client/coverage/lcov.info
+        base-path: packages/client/
+        flag-name: run-jest
+        parallel: true
+    - name: Create file with gcloud cretentials
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+    - name: Set destination of test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      id: results-destination
+    - name: Install rclone
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+        mkdir -p ~/.config/rclone
+        echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+      env:
+        RCLONE_CONF: |
+          [gcloud]
+          type = google cloud storage
+          service_account_file = ${{ github.workspace }}/.gcloud.json
+          object_acl = publicRead
+          bucket_acl = publicRead
+          bucket_policy_only = true
+    - name: Copy test results to gcloud
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        rclone copy packages/client/coverage gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage --log-level INFO
+    - name: Print gcloud url to view test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        echo Check out coverage results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage/lcov-report/index.html
   run-lint:
+    name: Lint source
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-          key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
-      - name: Lint all the packages
-        run: rush lint:strict
-      - name: Typecheck all the packages
-        run: rush typecheck
-
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Lint all the packages
+      run: rush lint:strict
+    - name: Typecheck all the packages
+      run: rush typecheck
   cypress-run:
+    name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: "14"
-      - name: Cache node modules and firebase emulators
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.rush
-            ~/.pnpm-store
-            common/temp
-            **/node_modules
-            ~/.cache/firebase/emulators
-            ~/.cache/Cypress
-          key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
-      - name: Add rush directory to PATH
-        run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-      - name: Install and build packages
-        run: rush update && rush build
-
-      - name: Build app
-        run: cd packages/client && rushx build:test
-      - name: Cypress run
-        uses: cypress-io/github-action@v2
-        with:
-          start: rush emulators:start
-          # For some reason, this action can also install everything, which doesn't work well with pnpm
-          # Anyway we're using our own instalation as it is, so just skipping this part
-          install: false
-          working-directory: packages/e2e
-          wait-on: http://localhost:8080, http://localhost:5000
-          # skip recording if no 'secrets.CYPRESS_KEY' found
-          # we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
-          record: ${{ secrets.CYPRESS_KEY != 0 }}
-          config-file: cypress-ci.json
-        env:
-          # pass the Dashboard record key as an environment variable
-          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_KEY }}
-          # pass GitHub token to allow accurately detecting a build vs a re-run build
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
-
-      - name: Coveralls
-        uses: coverallsapp/github-action@master
-        if: steps.has_secret.outputs.HAS_SECRETS
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          path-to-lcov: packages/e2e/coverage/lcov.info
-          base-path: packages/e2e
-          flag-name: run-cypress
-          parallel: true
-
-      - name: Create file with gcloud cretentials
-        if: success() || failure()
-        # To make sure the file contents are not manipulated by the github infrastructure
-        # they're encoded using base64. Here we decode them.
-        # A downside of this approach is that we don't get the default
-        # protection in case of accidental printing of the secret file.
-        run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
-
-      - name: Set destination of test results
-        if: success() || failure()
-        run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
-        id: results-destination
-
-      - name: Install rclone
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          curl https://rclone.org/install.sh | sudo bash
-          mkdir -p ~/.config/rclone
-          echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
-        env:
-          RCLONE_CONF: |
-            [gcloud]
-            type = google cloud storage
-            service_account_file = ${{ github.workspace }}/.gcloud.json
-            object_acl = publicRead
-            bucket_acl = publicRead
-            bucket_policy_only = true
-
-      - name: Copy test results to gcloud
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          rclone copy packages/e2e/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
-          rclone copy packages/e2e/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
-
-      - name: Print gcloud url to view test results
-        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-        run: |
-          mkdir result_tabs
-          echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
-          echo Check out coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
-          echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
-          echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
-
+    - name: Checkout
+      uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules, firebase emulators and cypress
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+          ~/.cache/Cypress
+        key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Build app
+      run: cd packages/client && rushx build:test
+    - name: Cypress run
+      uses: cypress-io/github-action@v2
+      with:
+        start: rush emulators:start
+        install: false
+        working-directory: packages/e2e
+        wait-on: http://localhost:8080, http://localhost:5000
+        record: ${{ secrets.CYPRESS_KEY != 0 }}
+        config-file: cypress-ci.json
+      env:
+        CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_KEY }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Coveralls
+      uses: coverallsapp/github-action@master
+      if: steps.has_secret.outputs.HAS_SECRETS
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        path-to-lcov: packages/e2e/coverage/lcov.info
+        base-path: packages/e2e
+        flag-name: run-cypress
+        parallel: true
+    - name: Create file with gcloud cretentials
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+    - name: Set destination of test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      id: results-destination
+    - name: Install rclone
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+        mkdir -p ~/.config/rclone
+        echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+      env:
+        RCLONE_CONF: |
+          [gcloud]
+          type = google cloud storage
+          service_account_file = ${{ github.workspace }}/.gcloud.json
+          object_acl = publicRead
+          bucket_acl = publicRead
+          bucket_policy_only = true
+    - name: Copy test results to gcloud
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        rclone copy packages/e2e/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
+        rclone copy packages/e2e/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
+    - name: Print gcloud url to view test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        mkdir result_tabs
+        echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
+        echo Check out coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
+        echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
+        echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
   finish:
+    name: Coveralls finish
     needs:
-      - cypress-run
-      - test_v14
+    - cypress-run
+    - test_v14
     runs-on: ubuntu-latest
     steps:
-      - name: Check if secrets are available
-        id: has_secret
-        if: success() || failure()
-        run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
-      - name: Finalize Coveralls
-        uses: coverallsapp/github-action@master
-        if: steps.has_secret.outputs.HAS_SECRETS
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel-finished: true
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Finalize Coveralls
+      uses: coverallsapp/github-action@master
+      if: steps.has_secret.outputs.HAS_SECRETS
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        parallel-finished: true
+  rush_check:
+    name: Check dependency versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Check dependency consistency
+      run: ./.github/check-rush.sh
+  client_storybook:
+    name: Build storybook for client
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Build client storybook
+      run: cd packages/client && rushx build-storybook
+    - name: Publish storybook
+      run: echo Publishing storybook to ${{ github.sha }}
+    - name: Create file with gcloud cretentials
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+    - name: Set destination of test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      id: results-destination
+    - name: Install rclone
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+        mkdir -p ~/.config/rclone
+        echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+      env:
+        RCLONE_CONF: |
+          [gcloud]
+          type = google cloud storage
+          service_account_file = ${{ github.workspace }}/.gcloud.json
+          object_acl = publicRead
+          bucket_acl = publicRead
+          bucket_policy_only = true
+    - name: Copy test results to gcloud
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: rclone copy packages/client/storybook-static gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/storybook-client --log-level INFO
+    - name: Print gcloud url to view test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo Check out client storybook at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/storybook-client/index.html >> $GITHUB_STEP_SUMMARY
+  ui_storybook:
+    name: Build storybook for ui
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Check if secrets are available
+      id: has_secret
+      if: success() || failure()
+      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+    - name: Build ui storybook
+      run: cd packages/ui && rushx build-storybook
+    - name: Publish storybook
+      run: echo Publishing storybook to ${{ github.sha }}
+    - name: Create file with gcloud cretentials
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+    - name: Set destination of test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      id: results-destination
+    - name: Install rclone
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: |
+        curl https://rclone.org/install.sh | sudo bash
+        mkdir -p ~/.config/rclone
+        echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+      env:
+        RCLONE_CONF: |
+          [gcloud]
+          type = google cloud storage
+          service_account_file = ${{ github.workspace }}/.gcloud.json
+          object_acl = publicRead
+          bucket_acl = publicRead
+          bucket_policy_only = true
+    - name: Copy test results to gcloud
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: rclone copy packages/ui/storybook-static gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/storybook-ui --log-level INFO
+    - name: Print gcloud url to view test results
+      if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+      run: echo Check out ui storybook at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/storybook-ui/index.html >> $GITHUB_STEP_SUMMARY
