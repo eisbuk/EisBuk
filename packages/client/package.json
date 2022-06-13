@@ -28,7 +28,7 @@
     "formik": "^2.1.5",
     "formik-mui": "^4.0.0-alpha.3",
     "lodash": "^4.17.20",
-    "luxon": "^2.0.2",
+    "luxon": "^2.0.5",
     "moment": "^2.29.2",
     "notistack": "^2.0.3",
     "react": "^16.13.1",
