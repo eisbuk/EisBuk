@@ -40,10 +40,11 @@ module.exports = {
         ".content-container": {
           position: "relative",
           width: "100%",
-          padding: 0,
+          padding: "0 16px",
 
           "@screen md": {
-            maxWidth: rem(1216),
+            maxWidth: rem(1358),
+            padding: "0 71px",
             margin: "0 auto",
           },
         },

@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
-import { CustomerBase } from "@eisbuk//shared";
+import { CustomerBase } from "@eisbuk/shared";
 
-interface UserAvatarProps extends Pick<CustomerBase, "name" | "surname"> {
+export interface UserAvatarProps
+  extends Pick<CustomerBase, "name" | "surname"> {
   avatar?: string;
 }
 
@@ -69,8 +70,8 @@ const avatarClasses = [
   "items-center",
   "justify-center",
   "rounded-full",
-  "h-14",
-  "w-14",
+  "h-10",
+  "w-10",
   "bg-teal-400",
 ];
 
