@@ -8,6 +8,7 @@ importers:
   ../../packages/client:
     specifiers:
       '@babel/core': 7.x
+      '@babel/plugin-proposal-private-methods': ~7.17.12
       '@babel/plugin-transform-runtime': ^7.12.10
       '@babel/preset-typescript': ^7.14.5
       '@cypress/code-coverage': ^3.9.12
@@ -162,6 +163,7 @@ importers:
       yup: 0.32.9
     devDependencies:
       '@babel/core': 7.18.2
+      '@babel/plugin-proposal-private-methods': 7.17.12_@babel+core@7.18.2
       '@babel/plugin-transform-runtime': 7.18.2_@babel+core@7.18.2
       '@babel/preset-typescript': 7.17.12_@babel+core@7.18.2
       '@cypress/code-coverage': 3.10.0_fa83fbc7f1b5fdd8441562899ebc7164
