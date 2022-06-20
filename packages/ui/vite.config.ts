@@ -1,9 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-import svgr from "vite-plugin-svgr";
 import path from "path";
-
-const svgrOptions = require("../scaffold/svgrOptions");
 
 export default defineConfig({
   resolve: {
@@ -37,11 +34,5 @@ export default defineConfig({
     },
     outDir: "dist",
   },
-  plugins: [
-    react(),
-    svgr({
-      exportAsDefault: true,
-      svgrOptions,
-    }),
-  ],
+  plugins: [react()],
 });

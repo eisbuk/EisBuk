@@ -22,5 +22,5 @@ with:
     **/node_modules
     ~/.cache/firebase/emulators
     ~/.cache/Cypress
-  key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+  key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
 #@ end
