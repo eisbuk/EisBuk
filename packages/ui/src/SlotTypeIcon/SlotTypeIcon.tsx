@@ -37,7 +37,6 @@ const baseClasses = [
   "flex",
   "flex-row",
   "items-center",
-  "justify-center",
   "md:flex-row",
 ];
 

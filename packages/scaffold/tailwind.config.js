@@ -31,6 +31,9 @@ module.exports = {
         ice: {
           300: "#dbe9ea",
         },
+        "off-ice": {
+          300: "#f8e3d3",
+        },
       },
     },
   },
