@@ -56,7 +56,13 @@ const containerClasses = [
   "select-none",
 ];
 
-const userNameClasses = ["text-base", "leading-5", "font-medium"];
+const userNameClasses = [
+  "text-base",
+  "leading-5",
+  "font-medium",
+  "text-right",
+  "md:text-justify",
+];
 
 const avatarClasses = [
   "flex",
