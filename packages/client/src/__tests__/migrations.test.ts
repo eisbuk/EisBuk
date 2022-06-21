@@ -5,9 +5,7 @@
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
 import {
-  Collection,
   HTTPSErrors,
-  OrgSubCollection,
   getCustomerBase,
   Category,
   DeprecatedCategory,
