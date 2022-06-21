@@ -15,7 +15,7 @@ import { setUpOrganization } from "@/__testSetup__/node";
 import { getBookingsDocPath, getCustomerDocPath } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { getDocumentRef, waitForCondition } from "@/__testUtils__/helpers";
+import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { saul } from "@/__testData__/customers";
 
@@ -89,10 +89,7 @@ describe("Cloud functions", () => {
       async () => {
         // set up test state
         const { organization } = await setUpOrganization();
-        const saulRef = getDocumentRef(
-          adminDb,
-          getCustomerDocPath(organization, saul.id)
-        );
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
         await saulRef.set({ ...saul, extendedDate: "2022-01-01" });
         // wait for bookings to get created (through data trigger)
         await waitForCondition({
