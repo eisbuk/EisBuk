@@ -1,4 +1,4 @@
-import { configstore, ConfigOptions } from "../configstore";
+import { configstore, ConfigOptions } from "../config/configstore";
 
 /**
  * List project IDs of available firebase credentials

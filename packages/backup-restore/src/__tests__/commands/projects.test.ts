@@ -3,7 +3,7 @@
  */
 
 import { makeProgram } from "../../command";
-import { defaultConfig } from "../../configstore";
+import { defaultConfig } from "../../config/configstore";
 
 afterAll(() => {
   jest.restoreAllMocks();

@@ -1,6 +1,6 @@
 import { OptionValues } from "commander";
 
-import { configstore, ConfigOptions } from "../configstore";
+import { configstore, ConfigOptions } from "../config/configstore";
 
 import { listOptions } from "./config-get";
 
