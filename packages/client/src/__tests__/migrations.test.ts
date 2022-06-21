@@ -126,7 +126,7 @@ describe("Migrations", () => {
     });
   });
 
-  describe.only("'migrateSlotsCategoriesToExplicitMinors'", () => {
+  describe("'migrateSlotsCategoriesToExplicitMinors'", () => {
     testWithEmulator(
       'should replace "pre-competitive" and "course" category entries with corresponging "-minor" category entries, while leaving the existing categories as they are',
       async () => {
