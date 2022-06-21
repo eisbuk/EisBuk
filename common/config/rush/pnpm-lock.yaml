@@ -21,6 +21,7 @@ importers:
       '@typescript-eslint/parser': ^4.33.0
       commander: ^8.3.0
       configstore: ^5.0.0
+      env-paths: ^2.2.1
       eslint: ^7.0.0
       firebase-admin: ^9.4.2
       jest: ^27.5.1
@@ -31,6 +32,7 @@ importers:
       '@eisbuk/shared': link:../shared
       commander: 8.3.0
       configstore: 5.0.1
+      env-paths: 2.2.1
       firebase-admin: 9.12.0
     devDependencies:
       '@babel/core': 7.17.10
@@ -10295,7 +10297,6 @@ packages:
     resolution: {integrity: sha512-+h1lkLKhZMTYjog1VEpJNG7NZJWcuc2DDk/qsqSTRRCOXiLjeQ1d1/udrUGhqMxUgAlwKNZ0cf2uqan5GLuS2A==}
     engines: {node: '>=6'}
     dev: false
-    optional: true
 
   /envinfo/7.8.1:
     resolution: {integrity: sha512-/o+BXHmB7ocbHEAs6F2EnG0ogybVVUdkRunTT2glZU9XAaGmhqskrvKwqXuDfNjEO0LZKWdejEEpnq8aM0tOaw==}
