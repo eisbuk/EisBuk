@@ -8,6 +8,7 @@ import {
 
 import { getConfigOption, listOptions } from "./commands/config-get";
 import { setConfigOption } from "./commands/config-set";
+import { listProjectCredentials } from "./commands/projects";
 
 interface programOptions {
   exitOverride?: boolean;
@@ -57,6 +58,15 @@ export function makeProgram(
     .option("-o, --option <name> ", "Config option name")
     .argument("<value>", "New option value")
     .action(setConfigOption);
+
+  program
+    .command("projects:list")
+    .description("List project IDs of available firebase credentials")
+    .action(listProjectCredentials);
+
+  program.command("projects:add");
+
+  program.command("projects:remove");
 
   program
     .command("backupAllOrgs")
