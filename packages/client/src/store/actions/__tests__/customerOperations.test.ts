@@ -5,7 +5,13 @@
 import * as firestore from "@firebase/firestore";
 import { getDocs, collection, doc, getDoc } from "@firebase/firestore";
 
-import { Customer, Category, EmailMessage, SMSMessage } from "@eisbuk/shared";
+import {
+  Customer,
+  Category,
+  EmailMessage,
+  SMSMessage,
+  OrgSubCollection,
+} from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
@@ -32,11 +38,11 @@ import { getCustomersPath } from "@/utils/firestore";
 import * as firebaseUtils from "@/utils/firebase";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { createTestStore } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
+import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -212,15 +218,12 @@ describe("customerOperations", () => {
     // bookings link we're using throughout
     const bookingsLink = `https://test-hostname.com${Routes.CustomerArea}/${saul.secretKey}`;
 
-    // test state for all tests
-    const getState = () =>
-      createTestStore({
-        data: {
-          customers: {
-            [saul.id]: saul,
-          },
-        },
-      });
+    // Create test store with the same state for all tests
+    const store = getNewStore();
+    store.dispatch(
+      updateLocalDocuments(OrgSubCollection.Customers, { [saul.id]: saul })
+    );
+    const { getState } = store;
 
     // mocks we're using to test calling the right cloud function
     const mockSendMail = jest.fn();

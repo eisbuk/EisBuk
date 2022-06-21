@@ -2,6 +2,8 @@ import { luxon2ISODate } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
+import { AttendanceSortBy } from "@/enums/other";
+
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
 import {
@@ -9,7 +11,6 @@ import {
   compareCustomersBookedIntervals,
 } from "@/utils/customers";
 import { getSlotTimespan } from "@/utils/helpers";
-import { AttendanceSortBy } from "@/enums/other";
 
 export const getSlotsWithAttendance =
   (sortBy = AttendanceSortBy.Alphabetically) =>
