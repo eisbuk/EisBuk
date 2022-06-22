@@ -8,7 +8,10 @@ import {
 
 import { getConfigOption, listOptions } from "./commands/config-get";
 import { setConfigOption } from "./commands/config-set";
-import { listProjectCredentials } from "./commands/projects";
+import {
+  listProjectCredentials,
+  addProjectCredentials,
+} from "./commands/projects";
 
 interface programOptions {
   exitOverride?: boolean;
@@ -64,7 +67,10 @@ export function makeProgram(
     .description("List project IDs of available firebase credentials")
     .action(listProjectCredentials);
 
-  program.command("projects:add");
+  program
+    .command("projects:add")
+    .argument("<filePath>", "Path to firebase service account JSON file")
+    .action(addProjectCredentials);
 
   program.command("projects:remove");
 
