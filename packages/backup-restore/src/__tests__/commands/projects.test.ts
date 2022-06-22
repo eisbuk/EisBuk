@@ -5,8 +5,6 @@
 import { makeProgram } from "../../command";
 import { defaultConfig } from "../../config/configstore";
 
-// import { configStoreSpy } from "./config-set.test";
-
 afterAll(() => {
   jest.restoreAllMocks();
 });
@@ -32,4 +30,14 @@ test("projects:add adds firebase credentials to xdg-specific app data path", asy
   // const program = makeProgram({ exitOverride: true });
   // program.parseAsync(["node", "eisbuk", "projects:add", "serviceAccount.json"]);
   // expect(configStoreSpy).toBeCalledWith(ConfigOptions.Projects, ["fake-id"]);
+});
+
+test("projects:add adds firebase credentials to xdg-specific app data path", async () => {
+  // const mockProjectId = "fake-id";
+  // const configStoreSpy = jest.spyOn(configstore, "set").mockImplementation();
+  // jest.spyOn(fs, "access").mockResolvedValue();
+  // jest.spyOn(fs, "rm").mockResolvedValue();
+  // const program = makeProgram({ exitOverride: true });
+  // program.parseAsync(["node", "eisbuk", "projects:remove", mockProjectId]);
+  // expect(configStoreSpy).toBeCalledWith(ConfigOptions.Projects, []);
 });

@@ -11,6 +11,7 @@ import { setConfigOption } from "./commands/config-set";
 import {
   listProjectCredentials,
   addProjectCredentials,
+  removeProjectCredentials,
 } from "./commands/projects";
 
 interface programOptions {
@@ -72,7 +73,10 @@ export function makeProgram(
     .argument("<filePath>", "Path to firebase service account JSON file")
     .action(addProjectCredentials);
 
-  program.command("projects:remove");
+  program
+    .command("projects:remove")
+    .argument("<projectId>", "Firebase service account ID")
+    .action(removeProjectCredentials);
 
   program
     .command("backupAllOrgs")

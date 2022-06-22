@@ -47,7 +47,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
 
     const hasAppDataDir = await exists(paths.data);
     if (hasAppDataDir) {
-      fs.mkdir(paths.data);
+      fs.mkdir(paths.data, { recursive: true });
     }
 
     await fs.writeFile(writePath, serviceAccountJson, "utf-8");
@@ -66,4 +66,37 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
 /**
  * Remov firebase project credentials from XDG-specific AppData locaiton
  */
-export function removeProjectCredentials(): void {}
+export async function removeProjectCredentials(
+  projectId: string
+): Promise<void> {
+  try {
+    // Check credentials.json exists, and if so remove it
+    const credentialsPath = `${paths.data}/${projectId}.json`;
+
+    const hasCredentials = await exists(credentialsPath);
+
+    if (!hasCredentials) {
+      throw new Error(FsErrors.FILE_NOT_FOUND);
+    }
+
+    await fs.rm(credentialsPath);
+
+    // Update config
+    const projects = configstore.get(ConfigOptions.Projects) as Array<string>;
+
+    const newProjectsList = projects.filter((id) => id !== projectId);
+
+    configstore.set(ConfigOptions.Projects, newProjectsList);
+
+    // If this was activeProject, set active to null
+    const activeProject = configstore.get(
+      ConfigOptions.ActiveProject
+    ) as string;
+
+    if (activeProject === projectId) {
+      configstore.set(ConfigOptions.ActiveProject, null);
+    }
+  } catch (err: any) {
+    console.error(err);
+  }
+}
