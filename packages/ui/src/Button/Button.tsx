@@ -14,8 +14,8 @@ export enum ButtonColor {
 export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   color?: ButtonColor;
-  StartAdornment?: React.FC;
-  EndAdornment?: React.FC;
+  startAdornment?: JSX.Element | null;
+  endAdornment?: JSX.Element | null;
   disabled?: boolean;
   as?: keyof JSX.IntrinsicElements;
 }
@@ -23,8 +23,8 @@ export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
 const Button: React.FC<ButtonProps> = ({
   size = ButtonSize.Base,
   color,
-  StartAdornment,
-  EndAdornment,
+  startAdornment,
+  endAdornment,
   children,
   className: classes,
   disabled = false,
@@ -39,17 +39,17 @@ const Button: React.FC<ButtonProps> = ({
   ].join(" ");
 
   return React.createElement(as, { ...props, className, disabled }, [
-    StartAdornment && (
+    startAdornment && (
       <div key="start-adornment" className="mr-1">
-        <StartAdornment />
+        {startAdornment}
       </div>
     ),
 
     children,
 
-    EndAdornment && (
+    endAdornment && (
       <div key="end-adornment" className="ml-1">
-        <EndAdornment />
+        {endAdornment}
       </div>
     ),
   ]);
@@ -64,7 +64,7 @@ const baseClasses = [
 ];
 
 const sizeClassesLookup = {
-  [ButtonSize.Base]: ["px-[10px]", "py-[6px]", "text-sm"],
+  [ButtonSize.Base]: ["px-2.5", "py-[6px]", "text-sm"],
   [ButtonSize.LG]: ["px-[17px]", "py-[9px]", "text-base"],
 };
 

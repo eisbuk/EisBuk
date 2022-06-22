@@ -156,7 +156,7 @@ export interface SlotInterface {
   /**
    * Notes on the slot
    */
-  notes: string;
+  notes?: string;
 }
 
 /**

@@ -1,0 +1,34 @@
+#@ def install_rclone():
+name: Install rclone
+if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+run: |
+  curl https://rclone.org/install.sh | sudo bash
+  mkdir -p ~/.config/rclone
+  echo "${RCLONE_CONF}" > ~/.config/rclone/rclone.conf
+env:
+  RCLONE_CONF: |
+    [gcloud]
+    type = google cloud storage
+    service_account_file = ${{ github.workspace }}/.gcloud.json
+    object_acl = publicRead
+    bucket_acl = publicRead
+    bucket_policy_only = true
+#@ end
+
+#@ def install_gcloud_credentials():
+name: Create file with gcloud cretentials
+if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+
+#! To make sure the file contents are not manipulated by the github infrastructure
+#! they're encoded using base64. Here we decode them.
+#! A downside of this approach is that we don't get the default
+#! protection in case of accidental printing of the secret file.
+run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
+#@ end
+
+#@ def set_results_destination(action_id="results-destination"):
+name: Set destination of test results
+if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+id: #@ action_id
+#@ end

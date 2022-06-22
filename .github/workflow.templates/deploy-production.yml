@@ -1,0 +1,54 @@
+#! YAML library files must be named *.lib.yml
+#@ load("cache.lib.yml", "cache_node", "cache_cypress")
+#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+
+name: Deploy to production
+
+"on":
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    environment: Production
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Install expect
+        run: sudo apt-get -y install expect
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - #@ cache_node()
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
+      - name: Build app
+        run: cd packages/client && rushx build:prod
+        env:
+          REACT_APP_FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
+          REACT_APP_DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.FIREBASE_MESSAGING_SENDER_ID }}
+          REACT_APP_FIREBASE_AUTH_DOMAIN: ${{ secrets.FIREBASE_AUTH_DOMAIN }}
+          REACT_APP_FIREBASE_STORAGE_BUCKET: ${{ secrets.FIREBASE_STORAGE_BUCKET }}
+          REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
+          REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
+          REACT_APP_SENTRY_ENVIRONMENT: production
+          REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
+      - name: Deploy to firebase
+        run: rush deploy:production
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+      - name: Create Sentry release
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+        with:
+          environment: production
+          sourcemaps: "./packages/client/dist/assets"

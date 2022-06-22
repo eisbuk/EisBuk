@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 
-import { CustomerBase } from "@eisbuk//shared";
+import { CustomerBase } from "@eisbuk/shared";
 
-interface UserAvatarProps extends Pick<CustomerBase, "name" | "surname"> {
+export interface UserAvatarProps
+  extends Pick<CustomerBase, "name" | "surname"> {
   avatar?: string;
 }
 
@@ -56,15 +57,21 @@ const containerClasses = [
   "select-none",
 ];
 
-const userNameClasses = ["text-base", "leading-5", "font-medium"];
+const userNameClasses = [
+  "text-base",
+  "leading-5",
+  "font-medium",
+  "text-right",
+  "md:text-justify",
+];
 
 const avatarClasses = [
   "flex",
   "items-center",
   "justify-center",
   "rounded-full",
-  "h-14",
-  "w-14",
+  "h-10",
+  "w-10",
   "bg-teal-400",
 ];
 

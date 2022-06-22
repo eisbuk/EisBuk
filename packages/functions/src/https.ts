@@ -1,7 +1,6 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import pRetry from "p-retry";
-import nodemailer from "nodemailer";
 import {
   throwUnauth,
   checkSecretKey,
@@ -52,31 +51,7 @@ export const sendEmail = functions
         .doc()
         .set(email);
 
-      // XXX - testing - actually send the email using nodemailer
-      // we use localhost port 2500 as SMTP server.
-      // The command
-      // docker run -it -p 2500:2500 -p 9571:8080 -p 8085:8085 --rm marcopas/docker-mailslurper
-      // will start a local mailslurper server.
-      // You can see the emails you send on http://localhost:9571/
-      if (process.env.BUILD_ENV !== "production") {
-        const transporter = nodemailer.createTransport({
-          host: "localhost",
-          port: 2500,
-          secure: false,
-        });
 
-        await transporter.sendMail({
-          ...email,
-          from: "eisbuk@localhost",
-          attachments: [
-            {
-              content: email.content,
-              filename: "bookedSlots.ics",
-              contentType: "text/calendar",
-            },
-          ],
-        });
-      }
       return { ...email, organization, success: true };
     }
   );
