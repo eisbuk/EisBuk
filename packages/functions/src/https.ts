@@ -2,7 +2,16 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import pRetry from "p-retry";
 import nodemailer from "nodemailer";
-
+import {
+  throwUnauth,
+  checkSecretKey,
+  checkUser,
+  createSMSReqOptions,
+  sendRequest,
+  EisbukHttpsError,
+  runWithTimeout,
+  checkRequiredFields,
+} from "./utils";
 import {
   Collection,
   SendMailPayload,
@@ -17,15 +26,6 @@ import {
 
 import { __smsUrl__, __functionsZone__ } from "./constants";
 
-import {
-  checkUser,
-  createSMSReqOptions,
-  sendRequest,
-  EisbukHttpsError,
-  runWithTimeout,
-  checkRequiredFields,
-} from "./utils";
-
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
  */
@@ -33,10 +33,15 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      { organization, checkAuth = true, ...email }: SendMailPayload,
+      { organization, secretKey, ...email }: SendMailPayload,
       { auth }
     ) => {
-      checkAuth && (await checkUser(organization, auth));
+      if (
+        !(await checkUser(organization, auth)) &&
+        !(await checkSecretKey({ organization, secretKey }))
+      ) {
+        throwUnauth();
+      }
 
       checkRequiredFields(email, ["to", "subject", "html"]);
 

@@ -104,7 +104,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     createCancelledEvents(previousCalendarUids, icalendar, displayName);
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
-    dispatch(sendICSFile({ icsFile: icsFile, email }));
+    dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
   };
 
   return (

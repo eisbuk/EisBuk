@@ -156,11 +156,15 @@ export const createCalendarEvents =
  * Send email of ics file
  */
 interface sendICSFile {
-  (payload: { icsFile: string; email: string }): FirestoreThunk;
+  (payload: {
+    icsFile: string;
+    email: string;
+    secretKey: Customer["secretKey"];
+  }): FirestoreThunk;
 }
 
 export const sendICSFile: sendICSFile =
-  ({ icsFile, email }) =>
+  ({ icsFile, email, secretKey }) =>
   async (dispatch) => {
     try {
       const subject = "Calendario prenotazioni Igor Ice Team";
@@ -176,7 +180,7 @@ export const sendICSFile: sendICSFile =
         subject,
         filename: "bookedSlots.ics",
         content: icsFile,
-        checkAuth: false,
+        secretKey: secretKey,
       } as EmailMessage;
 
       await createCloudFunctionCaller(handler, payload)();
