@@ -16,7 +16,7 @@ import {
 
 import { __functionsZone__ } from "./constants";
 
-import { checkUser } from "./utils";
+import { checkUser, throwUnauth } from "./utils";
 
 const uuidv4 = v4;
 
@@ -31,7 +31,7 @@ interface Payload {
 export const createTestData = functions
   .region(__functionsZone__)
   .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
-    await checkUser(organization, context.auth);
+    if (!(await checkUser(organization, context.auth))) throwUnauth();
 
     functions.logger.info(`Creating ${numUsers} test users`);
     functions.logger.error(`Creating ${numUsers} test users`);

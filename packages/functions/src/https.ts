@@ -32,7 +32,7 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      { organization, secretKey, ...email }: SendMailPayload,
+      { organization, secretKey = "", ...email }: SendMailPayload,
       { auth }
     ) => {
       if (
@@ -51,7 +51,6 @@ export const sendEmail = functions
         .doc()
         .set(email);
 
-
       return { ...email, organization, success: true };
     }
   );
@@ -62,7 +61,7 @@ export const sendEmail = functions
 export const sendSMS = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization, ...sms }: SendSMSPayload, { auth }) => {
-    await checkUser(organization, auth);
+    if (!(await checkUser(organization, auth))) throwUnauth();
 
     // check payload
     checkRequiredFields(sms, ["message", "to"]);

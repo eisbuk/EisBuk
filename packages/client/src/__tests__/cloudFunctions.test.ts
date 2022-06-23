@@ -54,7 +54,7 @@ describe("Cloud functions", () => {
     const organization = getOrganization();
 
     testWithEmulator(
-      "should reject if user not authenticaten (and not an admin)",
+      "should reject if user not authenticated (and not an admin)",
       async () => {
         await signOut(auth);
         await expect(

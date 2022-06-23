@@ -109,6 +109,7 @@ export const checkSecretKey = async ({
   secretKey: Customer["secretKey"];
   organization: string;
 }): Promise<boolean> => {
+  if (!secretKey) return false;
   const db = admin.firestore();
   const orgRef = db.collection(Collection.Organizations).doc(organization);
 
