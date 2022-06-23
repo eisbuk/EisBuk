@@ -14,8 +14,8 @@ import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 import { bookings } from "../__testData__/bookings";
 
-import { backupSingleOrgToFs, backupSingleOrganization } from "../";
-import * as backupService from "../backup";
+import { backupSingleOrgToFs } from "../commands/backup";
+import * as backupService from "../firestore/backup";
 
 import { FirestoreErrors } from "../types";
 
@@ -169,7 +169,9 @@ describe("With subcollection data", () => {
   });
 
   test("Returns full org data", async () => {
-    const result = await backupSingleOrganization(__testOrganization__);
+    const result = await backupService.backupSingleOrganization(
+      __testOrganization__
+    );
 
     const expectedOrgData = {
       id: __testOrganization__,

@@ -12,8 +12,8 @@ import { bookings } from "../__testData__/bookings";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import { restoreSingleOrgFromFs } from "../";
-import * as restoreService from "../restore";
+import { restoreSingleOrgFromFs } from "../commands/restore";
+import * as restoreService from "../firestore/restore";
 
 import { ISubCollectionData, FsErrors } from "../types";
 

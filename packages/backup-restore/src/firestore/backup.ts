@@ -2,6 +2,7 @@ import admin, { firestore } from "firebase-admin";
 
 import { Collection } from "@eisbuk/shared";
 import {
+  IOrgData,
   IOperationFailure,
   IOperationSuccess,
   IOrgRootData,
@@ -9,7 +10,69 @@ import {
   ISubCollectionPath,
   ISubCollections,
   FirestoreErrors,
-} from "./types";
+} from "../types";
+
+//* * #region backupScripts */
+
+/**
+ * backupSingleOrganization - Returns root document and subcollection data for a single organization
+ * @param {string} orgId - An organization id
+ * @returns An organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
+ */
+export async function backupSingleOrganization(
+  orgId: string
+): Promise<IOperationSuccess<IOrgData> | IOperationFailure> {
+  try {
+    const orgsOp = await getOrg(orgId);
+
+    if (orgsOp.ok === true) {
+      const org = orgsOp.data;
+
+      const subCollectionData = await getAllSubCollections(org.id);
+
+      const data = { subCollections: subCollectionData, ...org };
+
+      return { ok: true, data };
+    } else {
+      throw new Error(orgsOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
+
+/**
+ * backupAllOrganizations - Returns root document and subcollection data for all organizations
+ * @returns An array of Organizations: { id: string, data: DocumentData, subcollections: SubcollectionData }
+ */
+export async function backupAllOrganizations(): Promise<
+  IOperationSuccess<IOrgData[]> | IOperationFailure
+> {
+  try {
+    const orgsOp = await getOrgs();
+
+    if (orgsOp.ok === true) {
+      const orgs = orgsOp.data;
+
+      const getFullOrgDataOps = orgs.map(async (org) => {
+        const subCollectionData = await getAllSubCollections(org.id);
+        return { subCollections: subCollectionData, ...org };
+      });
+
+      const orgData = await Promise.all(getFullOrgDataOps);
+
+      return { ok: true, data: orgData };
+    } else {
+      throw new Error(orgsOp.message);
+    }
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
+
+//* * #endregion backupScripts */
+
+//* * #region backupUtils */
 
 /**
  * getOrg - Returns a single organization by id
@@ -154,3 +217,5 @@ export async function getOrgSubCollectionPaths(
 
   return subCollectionPaths;
 }
+
+//* * #endregion backupUtils */

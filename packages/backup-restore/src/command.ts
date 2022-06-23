@@ -1,11 +1,7 @@
 import { Command } from "commander";
 
-import {
-  backupAllOrgsToFs,
-  backupSingleOrgToFs,
-  restoreSingleOrgFromFs,
-} from "./";
-
+import backup from "./commands/backup";
+import restore from "./commands/restore";
 import { getConfigOption, listOptions } from "./commands/config-get";
 import { setConfigOption } from "./commands/config-set";
 import {
@@ -80,24 +76,16 @@ export function makeProgram(
     .action(removeProjectCredentials);
 
   program
-    .command("backupAllOrgs")
-    .description(
-      "Backup all organization data to JSON files in the current working directory."
-    )
-    .hook("preAction", useFirebase)
-    .action(backupAllOrgsToFs);
-
-  program
     .command("backup")
     .description(
-      "Backup a single organization to a JSON file in the current working directory."
+      "Backup organization(s) to JSON in the current working directory."
     )
     .argument(
-      "<orgId>",
-      "The name of the organization that data will be read from."
+      "[orgId]",
+      "Id of the organization that data should be read from. If this is not provided, all organizations will be read."
     )
     .hook("preAction", useFirebase)
-    .action(backupSingleOrgToFs);
+    .action(backup);
 
   program
     .command("restore")
@@ -107,7 +95,7 @@ export function makeProgram(
       "Path to a JSON file of organisation data that will restore/overwrite production data."
     )
     .hook("preAction", useFirebase)
-    .action(restoreSingleOrgFromFs);
+    .action(restore);
 
   return program;
 }

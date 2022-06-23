@@ -6,7 +6,8 @@ import admin from "firebase-admin";
 import { adminDb } from "../__testSetup__/adminDb";
 
 import { makeProgram } from "../command";
-import * as services from "../index";
+import * as backup from "../commands/backup";
+import * as restore from "../commands/restore";
 
 jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
@@ -17,7 +18,7 @@ afterAll(() => {
 
 test("backupAllOrgs command", async () => {
   const commandSpy = jest
-    .spyOn(services, "backupAllOrgsToFs")
+    .spyOn(backup, "backupAllOrgsToFs")
     .mockImplementation();
 
   const program = makeProgram({ exitOverride: true });
@@ -29,7 +30,7 @@ test("backupAllOrgs command", async () => {
 
 test("backup command", async () => {
   const commandSpy = jest
-    .spyOn(services, "backupSingleOrgToFs")
+    .spyOn(backup, "backupSingleOrgToFs")
     .mockImplementation();
 
   const program = makeProgram({ exitOverride: true });
@@ -47,7 +48,7 @@ test("backup command", async () => {
 
 test("restore command", async () => {
   const commandSpy = jest
-    .spyOn(services, "restoreSingleOrgFromFs")
+    .spyOn(restore, "restoreSingleOrgFromFs")
     .mockImplementation();
 
   const program = makeProgram({ exitOverride: true });

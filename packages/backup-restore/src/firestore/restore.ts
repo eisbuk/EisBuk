@@ -7,7 +7,33 @@ import {
   IOrgRootData,
   IOrgData,
   ISubCollectionData,
-} from "./types";
+} from "../types";
+
+//* * #region restoreScripts */
+
+/**
+ * restoreOrganizations - Set all data for an array of organizations
+ * @param {IOrgData[]} orgs - An array of organizations to write: { id, data, subCollections }
+ */
+export async function restoreOrganizations(
+  orgs: IOrgData[]
+): Promise<IOperationSuccess<string> | IOperationFailure> {
+  try {
+    const writeOrgOps = orgs.map(async (org) => {
+      await setOrganization(org);
+    });
+
+    await Promise.all(writeOrgOps);
+
+    return { ok: true, data: "OK" };
+  } catch (err: any) {
+    return { ok: false, message: err.message };
+  }
+}
+
+//* #endregion restoreScripts */
+
+//* * #region restoreUtils */
 
 /**
  * setOrganization - Set all organisation data
@@ -110,3 +136,5 @@ export async function setSubCollectionData(
   await Promise.all(subDocWriteOps);
   return;
 }
+
+//* #endregion restoreUtils */
