@@ -43,13 +43,19 @@ export const sendEmail = functions
       }
 
       checkRequiredFields(email, ["to", "subject", "html"]);
-
+      const objToBeStored = {
+        message: {
+          subject: email.subject,
+          html: email.html,
+        },
+        to: email.to,
+      };
       // add email to firestore, firing data trigger
       await admin
         .firestore()
         .collection(Collection.EmailQueue)
         .doc()
-        .set(email);
+        .set(objToBeStored);
 
       return { ...email, organization, success: true };
     }
