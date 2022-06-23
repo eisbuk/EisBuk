@@ -3,7 +3,7 @@ import path from "path";
 
 import { FsErrors } from "../lib/types";
 
-import * as restoreService from "../firestore/restore";
+import * as restoreService from "../firestore/restoreService";
 import { exists } from "../lib/helpers";
 
 /**

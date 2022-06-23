@@ -1,8 +1,7 @@
 /**
  * @jest-environment node
  */
-import fs from "fs/promises";
-import path from "path";
+
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
 
@@ -14,8 +13,7 @@ import { waitForCondition } from "../__testUtils__/waitForCondition";
 import { saul, walt, defaultUser } from "../__testData__/customers";
 import { bookings } from "../__testData__/bookings";
 
-import { backupSingleOrgToFs } from "../commands/backup";
-import * as backupService from "../firestore/backup";
+import * as backupService from "../firestore/backupService";
 
 import { FirestoreErrors } from "../lib/types";
 
@@ -189,28 +187,6 @@ describe("With subcollection data", () => {
     } else {
       throw new Error(result.message);
     }
-  });
-
-  test("Writes orgData to .json files", async () => {
-    const spy = jest.spyOn(fs, "writeFile").mockImplementation();
-
-    await backupSingleOrgToFs(__testOrganization__);
-
-    const expectedFileBasename = `${__testOrganization__}.json`;
-    const expectedOrgData = {
-      id: __testOrganization__,
-      data: orgRootData,
-      subCollections: {
-        customers: customersSubColData,
-        bookings: bookingsSubColData,
-      },
-    };
-
-    const [firstCall] = spy.mock.calls;
-    const [resultPath, resultJson] = firstCall;
-
-    expect(path.basename(resultPath as string)).toEqual(expectedFileBasename);
-    expect(JSON.parse(resultJson as string)).toEqual(expectedOrgData);
   });
 });
 

@@ -1,7 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-import * as backupService from "../firestore/backup";
+import * as backupService from "../firestore/backupService";
 
 /**
  * Get config option

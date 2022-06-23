@@ -1,7 +1,6 @@
 /**
  * @jest-environment node
  */
-import fs from "fs/promises";
 import admin, { firestore } from "firebase-admin";
 import { v4 as uuid } from "uuid";
 
@@ -12,10 +11,9 @@ import { bookings } from "../__testData__/bookings";
 
 import { OrgSubCollection, Collection } from "@eisbuk/shared";
 
-import { restoreSingleOrgFromFs } from "../commands/restore";
-import * as restoreService from "../firestore/restore";
+import * as restoreService from "../firestore/restoreService";
 
-import { ISubCollectionData, FsErrors } from "../lib/types";
+import { ISubCollectionData } from "../lib/types";
 
 /**
  * Test Data
@@ -143,52 +141,29 @@ test("Set all docs in an array of subcollections", async () => {
   }
 });
 
-test("Reads orgData from a .json file and writes it to db", async () => {
-  const mockJsonData = JSON.stringify(org);
+test("Set all data for an array of organizations", async () => {
+  const res = await restoreService.restoreOrganizations([org]);
 
-  jest.spyOn(fs, "access").mockResolvedValue();
-  jest.spyOn(fs, "readFile").mockResolvedValue(mockJsonData);
+  if (res.ok === true) {
+    const rootResult = await adminDb.doc(orgRootPath).get();
+    const customersResult = await adminDb
+      .collection(customersSubcollectionPath)
+      .get();
+    const bookingsResult = await adminDb
+      .collection(bookingsSubcollectionPath)
+      .get();
 
-  const filePath = "test.json";
+    const rootData = rootResult.data();
+    const customersData = unpackCollectionData(customersResult);
+    const bookingsData = unpackCollectionData(bookingsResult);
 
-  await restoreSingleOrgFromFs(filePath);
-
-  const rootResult = await adminDb.doc(orgRootPath).get();
-  const customersResult = await adminDb
-    .collection(customersSubcollectionPath)
-    .get();
-  const bookingsResult = await adminDb
-    .collection(bookingsSubcollectionPath)
-    .get();
-
-  const rootData = rootResult.data();
-  const customersData = unpackCollectionData(customersResult);
-  const bookingsData = unpackCollectionData(bookingsResult);
-
-  expect(rootData).toEqual(org.data);
-  expect(customersData).toEqual([saul, walt]);
-  expect(bookingsData).toEqual([
-    org.subCollections.bookings[walt.secretKey],
-    org.subCollections.bookings[saul.secretKey],
-  ]);
-});
-
-test("Throws an error if the file doesn't exist", async () => {
-  jest.spyOn(fs, "access").mockRejectedValue(new Error());
-
-  const filePath = "";
-
-  await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
-    FsErrors.FILE_NOT_FOUND
-  );
-});
-
-test("Throws an error if the file is not valid json", async () => {
-  jest.spyOn(fs, "access").mockResolvedValue();
-
-  const filePath = "test.txt";
-
-  await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
-    FsErrors.INVALID_FILE
-  );
+    expect(rootData).toEqual(org.data);
+    expect(customersData).toEqual([saul, walt]);
+    expect(bookingsData).toEqual([
+      org.subCollections.bookings[walt.secretKey],
+      org.subCollections.bookings[saul.secretKey],
+    ]);
+  } else {
+    throw new Error(res.message);
+  }
 });
