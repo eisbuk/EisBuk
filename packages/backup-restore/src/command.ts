@@ -13,6 +13,7 @@ import {
   addProjectCredentials,
   removeProjectCredentials,
 } from "./commands/projects";
+import { useFirebase } from "./hooks/before";
 
 interface programOptions {
   exitOverride?: boolean;
@@ -83,6 +84,7 @@ export function makeProgram(
     .description(
       "Backup all organization data to JSON files in the current working directory."
     )
+    .hook("preAction", useFirebase)
     .action(backupAllOrgsToFs);
 
   program
@@ -94,6 +96,7 @@ export function makeProgram(
       "<orgId>",
       "The name of the organization that data will be read from."
     )
+    .hook("preAction", useFirebase)
     .action(backupSingleOrgToFs);
 
   program
@@ -103,6 +106,7 @@ export function makeProgram(
       "<filePath>",
       "Path to a JSON file of organisation data that will restore/overwrite production data."
     )
+    .hook("preAction", useFirebase)
     .action(restoreSingleOrgFromFs);
 
   return program;
