@@ -103,3 +103,23 @@ const deliverEmail = functions
     })
   );
 ```
+
+## Delivery states
+
+Delivery states are recorded in each process document's `delivery.status` and indicate the current state of the delivery.
+
+- "SUCCESS" - The final success state, execution stops, delivery was successful and the result of delivery execution is stored in `delivery.result` of process document
+
+- "ERROR" - The final error state, execution stops, delivery failed, error(s) are stored in `delivery.errors` of process document
+
+- "PROCESSING" - The operation is being processed (`runTransaction` is trying to complete the delivery)
+
+- "PENDING" - The operation has been enqueued, and is waiting for delivery execution
+
+- "RETRY" - Retry state never happens automatically, but can be triggered manually on "ERROR" status deliveries (by writing directly to the delivery state document). Technically, "RETRY" can be written to the document triggering the retry of the delivery, on any state, but this is not advised as it might produce undesired behaviour.
+
+## Error handling
+
+Each `processDelivery` run is wrapped in a try catch block. If an error occurs in `processDelivery` internally it is logged to the console. Without writing to the process document.
+
+If an error occurs inside of the delivery function (provided by the consumer of `processDelivery`) it will be treated as if it came from the delivery and be written to the process document (in form of errors array)
