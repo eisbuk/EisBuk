@@ -36,7 +36,7 @@ export async function restoreSingleOrgFromFs(filePath: string): Promise<void> {
       throw new Error(FsErrors.INVALID_FILE);
     }
 
-    const data = await fs.readFile(filePath, "utf-8");
+    const data = await fs.readFile(resolvedPath, "utf-8");
     const dataObj = JSON.parse(data);
 
     // TODO: Validate org data before writing => it should only have id, data & subcollections keys
