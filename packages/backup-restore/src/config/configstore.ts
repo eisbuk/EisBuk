@@ -21,7 +21,7 @@ export const defaultConfig: Config = {
   projects: [],
   activeProject: null,
   useEmulators: false,
-  emulatorHost: "localhost:8081",
+  emulatorHost: "localhost:8080",
 };
 
 export const configstore = new Configstore(pkg.name, defaultConfig);
