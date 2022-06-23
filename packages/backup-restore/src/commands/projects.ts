@@ -44,7 +44,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
       serviceAccountJson
     ) as IServiceAccountJson;
 
-    const writePath = `${paths.data}/${project_id}.json`;
+    const writePath = `${paths.data}/${project_id}-credentials.json`;
 
     const hasAppDataDir = await exists(paths.data);
     if (hasAppDataDir) {
@@ -72,7 +72,7 @@ export async function removeProjectCredentials(
 ): Promise<void> {
   try {
     // Check credentials.json exists, and if so remove it
-    const credentialsPath = `${paths.data}/${projectId}.json`;
+    const credentialsPath = `${paths.data}/${projectId}-credentials.json`;
 
     const hasCredentials = await exists(credentialsPath);
 
