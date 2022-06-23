@@ -8,12 +8,7 @@ import {
   deleteDoc,
 } from "@firebase/firestore";
 
-import {
-  Collection,
-  OrgSubCollection,
-  SlotInterface,
-  SlotInterval,
-} from "@eisbuk/shared";
+import { SlotInterface, SlotInterval } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
@@ -25,9 +20,7 @@ import { NotifVariant } from "@/enums/store";
 import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification, showErrSnackbar } from "./appActions";
-
-const getSlotsCollectionPath = () =>
-  `${Collection.Organizations}/${getOrganization()}/${OrgSubCollection.Slots}`;
+import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
 
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
@@ -63,7 +56,7 @@ export const createNewSlot =
   async (dispatch) => {
     try {
       const db = getFirestore();
-      const slotsCollRef = collection(db, getSlotsCollectionPath());
+      const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
 
       const intervals = intervalsArr.reduce(
         (acc, { startTime, endTime }) => ({
@@ -115,7 +108,7 @@ export const updateSlot =
   async (dispatch) => {
     try {
       const db = getFirestore();
-      const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
+      const slotDocRef = doc(db, getSlotDocPath(getOrganization(), slotId));
 
       const intervals = intervalsArr.reduce(
         (acc, { startTime, endTime }) => ({
@@ -160,7 +153,7 @@ export const deleteSlot =
   async (dispatch) => {
     try {
       const db = getFirestore();
-      const slotDocRef = doc(db, getSlotsCollectionPath(), slotId);
+      const slotDocRef = doc(db, getSlotDocPath(getOrganization(), slotId));
 
       await deleteDoc(slotDocRef);
 
