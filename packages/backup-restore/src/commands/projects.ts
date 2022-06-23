@@ -1,12 +1,11 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { ServiceAccount } from "firebase-admin";
-
 import { exists } from "../lib/helpers";
 import { configstore, ConfigOptions } from "../config/configstore";
 import { paths } from "../config/paths";
 
+import { IServiceAccountJson } from "../lib/firebase";
 import { FsErrors } from "../lib/types";
 
 /**
@@ -41,9 +40,11 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
 
     // TODO: Validate json
 
-    const { projectId } = JSON.parse(serviceAccountJson) as ServiceAccount;
+    const { project_id } = JSON.parse(
+      serviceAccountJson
+    ) as IServiceAccountJson;
 
-    const writePath = `${paths.data}/${projectId}.json`;
+    const writePath = `${paths.data}/${project_id}.json`;
 
     const hasAppDataDir = await exists(paths.data);
     if (hasAppDataDir) {
@@ -55,7 +56,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
     // Update config
     const projects = configstore.get(ConfigOptions.Projects) as Array<string>;
 
-    const newProjectsList = [projectId, ...projects];
+    const newProjectsList = [project_id, ...projects];
 
     configstore.set(ConfigOptions.Projects, newProjectsList);
   } catch (err: any) {
