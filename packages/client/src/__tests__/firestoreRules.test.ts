@@ -30,10 +30,11 @@ import {
   getBookedSlotDocPath,
   getBookingsDocPath,
   getCustomerDocPath,
-  getEmailProcessDocPath,
+  getEmailQueueDocPath,
   getSlotDocPath,
   getSlotsByDayDocPath,
   getSlotsPath,
+  getSMSQueueDocPath,
 } from "@/utils/firestore";
 
 describe("Firestore rules", () => {
@@ -951,28 +952,66 @@ describe("Firestore rules", () => {
       async () => {
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
-            setDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")), {
-              message: { html: "Hello world", subject: "Subject" },
-              to: "ikusteu@gmail.com",
+            setDoc(doc(db, getEmailQueueDocPath(organization, "mail-id")), {
+              payload: {
+                message: { html: "Hello world", subject: "Subject" },
+                to: "ikusteu@gmail.com",
+              },
             }),
         });
         // check read
         await assertFails(
-          getDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")))
+          getDoc(doc(db, getEmailQueueDocPath(organization, "mail-id")))
         );
         // check write
         await assertFails(
-          setDoc(doc(db, getEmailProcessDocPath(organization, "new-mail-id")), {
-            message: {
-              html: "Hello from the other side",
-              subject: "Subject 2",
+          setDoc(doc(db, getEmailQueueDocPath(organization, "new-mail-id")), {
+            payload: {
+              message: {
+                html: "Hello from the other side",
+                subject: "Subject 2",
+              },
+              to: "ikusteu@gmail.com",
             },
-            to: "ikusteu@gmail.com",
           })
         );
         // check delete
         await assertFails(
-          deleteDoc(doc(db, getEmailProcessDocPath(organization, "mail-id")))
+          deleteDoc(doc(db, getEmailQueueDocPath(organization, "mail-id")))
+        );
+      }
+    );
+  });
+
+  describe("SMSQueue rules", () => {
+    testWithEmulator(
+      "should not allow anybody read/write access to 'smsQueue' as it's written to only by cloud functions",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setDoc(doc(db, getSMSQueueDocPath(organization, "sms-id")), {
+              payload: {
+                message: "Hello world",
+                to: "ikusteu@gmail.com",
+              },
+            }),
+        });
+        // check read
+        await assertFails(
+          getDoc(doc(db, getSMSQueueDocPath(organization, "sms-id")))
+        );
+        // check write
+        await assertFails(
+          setDoc(doc(db, getSMSQueueDocPath(organization, "new-sms-id")), {
+            payload: {
+              message: "Hello from the other side",
+              to: "ikusteu@gmail.com",
+            },
+          })
+        );
+        // check delete
+        await assertFails(
+          deleteDoc(doc(db, getSMSQueueDocPath(organization, "sms-id")))
         );
       }
     );
