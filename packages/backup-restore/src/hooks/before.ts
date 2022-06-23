@@ -1,6 +1,6 @@
 import fs from "fs/promises";
 
-import { initializeApp, IServiceAccountJson } from "../firebase";
+import { initializeApp, IServiceAccountJson } from "../lib/firebase";
 import { configstore } from "../config/configstore";
 import { paths } from "../config/paths";
 

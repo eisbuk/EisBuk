@@ -10,7 +10,7 @@ import {
   ISubCollectionPath,
   ISubCollections,
   FirestoreErrors,
-} from "../types";
+} from "../lib/types";
 
 //* * #region backupScripts */
 

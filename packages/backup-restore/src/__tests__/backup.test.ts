@@ -17,7 +17,7 @@ import { bookings } from "../__testData__/bookings";
 import { backupSingleOrgToFs } from "../commands/backup";
 import * as backupService from "../firestore/backup";
 
-import { FirestoreErrors } from "../types";
+import { FirestoreErrors } from "../lib/types";
 
 /**
  * Test Data

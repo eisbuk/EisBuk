@@ -1,10 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { FsErrors } from "../types";
+import { FsErrors } from "../lib/types";
 
 import * as restoreService from "../firestore/restore";
-import { exists } from "../helpers";
+import { exists } from "../lib/helpers";
 
 /**
  * Get config option

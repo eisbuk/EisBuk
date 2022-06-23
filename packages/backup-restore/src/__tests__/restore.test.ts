@@ -15,7 +15,7 @@ import { OrgSubCollection, Collection } from "@eisbuk/shared";
 import { restoreSingleOrgFromFs } from "../commands/restore";
 import * as restoreService from "../firestore/restore";
 
-import { ISubCollectionData, FsErrors } from "../types";
+import { ISubCollectionData, FsErrors } from "../lib/types";
 
 /**
  * Test Data

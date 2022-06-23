@@ -3,11 +3,11 @@ import path from "path";
 
 import { ServiceAccount } from "firebase-admin";
 
-import { exists } from "../helpers";
+import { exists } from "../lib/helpers";
 import { configstore, ConfigOptions } from "../config/configstore";
 import { paths } from "../config/paths";
 
-import { FsErrors } from "../types";
+import { FsErrors } from "../lib/types";
 
 /**
  * List project IDs of available firebase credentials

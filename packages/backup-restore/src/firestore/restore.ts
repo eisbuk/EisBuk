@@ -7,7 +7,7 @@ import {
   IOrgRootData,
   IOrgData,
   ISubCollectionData,
-} from "../types";
+} from "../lib/types";
 
 //* * #region restoreScripts */
 
