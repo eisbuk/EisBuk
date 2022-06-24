@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "A lightweight utility used to process a delivery while using the firestore document as a trigger/report",
   "scripts": {
-    "build": "vite build && tsc --project tsconfig.build.json",
+    "build": "LOG_LEVEL=verbose && vite build && tsc --project tsconfig.build.json",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
