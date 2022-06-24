@@ -8,7 +8,7 @@ import { __functionsZone__ } from "../constants";
 import { checkUser, checkRequiredFields } from "../utils";
 
 /**
- * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
+ * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
  */
 export const sendEmail = functions
   .region(__functionsZone__)

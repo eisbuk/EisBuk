@@ -107,7 +107,7 @@ const processDelivery = async (
     // Execute the delivery on "PENDING" (process initiated) or "RETRY" (process manually restarted)
     case DeliveryStatus.Pending:
     case DeliveryStatus.Retry:
-      logger.info("Delivery in progress");
+      logger.info(`Delivery in progress, document id: ${change.after.ref.id} `);
       delivery.status = DeliveryStatus.Processing;
       delivery.leaseExpireTime = Timestamp.fromMillis(Date.now() + 60000);
       await admin.firestore().runTransaction((transaction) => {
@@ -126,7 +126,7 @@ const processDelivery = async (
  * Try and execute the `deliver` functionality and update the
  * delivery status (success/error) with appropriate metadata to
  * process document.
- * @param deliver An async function, the "meat" od the deliver functionality (i.e. email sending functionality)
+ * @param deliver An async function, the "meat" od the deliver functionality (eg. email sending functionality)
  * @param processDocumentRef reference to the process document (with deliver `payload` and `delivery` state)
  */
 const execute = async (
