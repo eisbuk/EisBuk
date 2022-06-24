@@ -67,11 +67,13 @@ export function makeProgram(
 
   program
     .command("projects:add")
+    .description("Save a projects service account JSON")
     .argument("<filePath>", "Path to firebase service account JSON file")
     .action(addProjectCredentials);
 
   program
     .command("projects:remove")
+    .description("Remove a projects service account JSON")
     .argument("<projectId>", "Firebase service account ID")
     .action(removeProjectCredentials);
 

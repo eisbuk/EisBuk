@@ -18,7 +18,7 @@ export function listProjectCredentials(): void {
 
 // TODO: following two functions could be fragmented and tested better
 /**
- * Add firebase project credentials to XDG-specific AppData locaiton
+ * Add firebase project credentials to XDG-specific AppData location
  */
 export async function addProjectCredentials(filePath: string): Promise<void> {
   // Resolve path to file and check it exists
@@ -66,7 +66,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
 }
 
 /**
- * Remov firebase project credentials from XDG-specific AppData locaiton
+ * Remov firebase project credentials from XDG-specific AppData location
  */
 export async function removeProjectCredentials(
   projectId: string
