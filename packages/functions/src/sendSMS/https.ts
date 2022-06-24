@@ -55,7 +55,9 @@ export const updateSMSStatus = functions
       functions.logger.log("GatewayAPI request missing query params", {
         params,
       });
-      res.writeHead(500);
+      // This is an error on GatewayAPI side
+      // Return 'Bad Request' so that the request is retried
+      res.writeHead(400);
       res.end();
     }
 
@@ -63,7 +65,7 @@ export const updateSMSStatus = functions
 
     if (!status) {
       functions.logger.log("No status received with GatewayAPI update");
-      res.writeHead(500);
+      res.writeHead(400);
       res.end();
     }
 
