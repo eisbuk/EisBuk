@@ -41,10 +41,12 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
 
     // TODO: Validate json
 
+    // eslint-disable-next-line
     const { project_id } = JSON.parse(
       serviceAccountJson
     ) as IServiceAccountJson;
 
+    // eslint-disable-next-line
     const writePath = `${paths.data}/${project_id}-credentials.json`;
 
     const hasAppDataDir = await exists(paths.data);
@@ -57,6 +59,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
     // Update config
     const projects = configstore.get(ConfigOptions.Projects) as Array<string>;
 
+    // eslint-disable-next-line
     const newProjectsList = [project_id, ...projects];
 
     configstore.set(ConfigOptions.Projects, newProjectsList);

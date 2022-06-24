@@ -31,14 +31,19 @@ export function initializeApp({
     process.env["FIRESTORE_EMULATOR_HOST"] = emulatorHost;
   }
 
+  // eslint-disable-next-line
   const { project_id, client_email, private_key } = serviceAccount;
 
   const credentials = useEmulator
-    ? { projectId: project_id }
+    ? // eslint-disable-next-line
+      { projectId: project_id }
     : {
         credential: admin.credential.cert({
+          // eslint-disable-next-line
           projectId: project_id,
+          // eslint-disable-next-line
           clientEmail: client_email,
+          // eslint-disable-next-line
           privateKey: private_key,
         }),
       };
