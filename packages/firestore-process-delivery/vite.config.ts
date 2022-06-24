@@ -26,5 +26,5 @@ export default defineConfig({
     },
     outDir: "dist",
   },
-  plugins: [environmentPlugin({ LOG_LEVEL: "verbose" })],
+  plugins: [environmentPlugin({ LOG_LEVEL: "" })],
 });
