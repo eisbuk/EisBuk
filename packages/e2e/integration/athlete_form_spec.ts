@@ -61,13 +61,9 @@ describe("add athlete", () => {
     cy.getAttrWith("name", "phone").clearTypeAndEnter("099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.resetCustomerForm();
-
     // test phone number for edge cases
     cy.getAttrWith("name", "phone").clearTypeAndEnter("foo +099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
-    cy.resetCustomerForm();
 
     cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222 868 foo");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
@@ -78,12 +74,8 @@ describe("add athlete", () => {
     );
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.resetCustomerForm();
-
     cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
-    cy.resetCustomerForm();
 
     // make sure phone number length can't be "cheated" with too much whitespace
     cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 099   11");
@@ -94,8 +86,6 @@ describe("add athlete", () => {
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
-
-    cy.resetCustomerForm();
 
     cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(

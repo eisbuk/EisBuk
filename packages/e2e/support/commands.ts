@@ -161,7 +161,6 @@ export default (): void => {
       .contains(i18n.t(ActionButton.Cancel) as string)
       // use force as button will be detached after click
       .click({ force: true });
-
     // open new form
     cy.getAttrWith("data-testid", "add-athlete").click();
   });
