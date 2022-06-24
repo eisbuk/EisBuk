@@ -1,30 +1,29 @@
 /**
  * @jest-environment node
  */
-import fs from "fs/promises";
+import backupCmd from "../../commands/backup";
 
 import * as backup from "../../commands/backup/backup";
-import * as backupService from "../../firestore/backupService";
-
-const testOrgId = "test-org-id";
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-describe("backupSingleOrgToFs:", () => {
-  const { backupSingleOrgToFs } = backup;
+describe("Backup command", () => {
+  jest.spyOn(backup, "backupAllOrgsToFs").mockImplementation();
+  jest.spyOn(backup, "backupSingleOrgToFs").mockImplementation();
 
-  test("Catches an error if the restore service fails", async () => {
-    jest.spyOn(fs, "readFile").mockResolvedValue("{}");
+  test("backs up all orgs if no orgId is passed", async () => {
+    await backupCmd();
 
-    const mockRestoreServiceError = "Error reading from DB";
-    jest
-      .spyOn(backupService, "backupSingleOrganization")
-      .mockRejectedValue({ ok: false, message: mockRestoreServiceError });
+    expect(backup.backupAllOrgsToFs).toBeCalled();
+  });
 
-    await expect(backupSingleOrgToFs(testOrgId)).rejects.toThrow(
-      mockRestoreServiceError
-    );
+  test("backs up all orgs if no orgId is passed", async () => {
+    const testOrgId = "test-org-id";
+
+    await backupCmd(testOrgId);
+
+    expect(backup.backupSingleOrgToFs).toBeCalledWith(testOrgId);
   });
 });
