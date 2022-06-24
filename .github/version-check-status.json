@@ -2,7 +2,6 @@
   "mismatchedVersions": [
     {
       "dependencyName": "@firebase/app",
-
       "versions": [
         {
           "projects": ["@eisbuk/client"],
@@ -35,7 +34,10 @@
           "version": "9.1.1"
         },
         {
-          "projects": ["@eisbuk/functions"],
+          "projects": [
+            "@eisbuk/firestore-process-delivery",
+            "@eisbuk/functions"
+          ],
           "version": "^8.2.4"
         }
       ]
