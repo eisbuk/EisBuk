@@ -123,6 +123,14 @@ const AttendanceCard: React.FC<Props> = ({
     dispatch(markAttendance({ customerId, slotId, attendedInterval }));
   };
 
+  const createAttendanceThunk = (payload: {
+    customerId: string;
+    attendedInterval: string;
+  }) => markAttendance({ slotId, ...payload });
+
+  const createAbsenceThunk = (customerId: string) =>
+    markAbsence({ slotId, customerId });
+
   return (
     <div className={classes.container}>
       <ListItem className={classes.listHeader}>
@@ -144,21 +152,13 @@ const AttendanceCard: React.FC<Props> = ({
               intervals={orderedIntervals}
               markAttendance={({ attendedInterval }) =>
                 dispatch(
-                  markAttendance({
+                  createAttendanceThunk({
                     attendedInterval,
-                    slotId,
                     customerId: customer.id,
                   })
                 )
               }
-              markAbsence={() =>
-                dispatch(
-                  markAbsence({
-                    slotId,
-                    customerId: customer.id,
-                  })
-                )
-              }
+              markAbsence={() => dispatch(createAbsenceThunk(customer.id))}
             />
           )
       )}
@@ -172,21 +172,13 @@ const AttendanceCard: React.FC<Props> = ({
               intervals={orderedIntervals}
               markAttendance={({ attendedInterval }) =>
                 dispatch(
-                  markAttendance({
+                  createAttendanceThunk({
                     attendedInterval,
-                    slotId,
                     customerId: customer.id,
                   })
                 )
               }
-              markAbsence={() =>
-                dispatch(
-                  markAbsence({
-                    slotId,
-                    customerId: customer.id,
-                  })
-                )
-              }
+              markAbsence={() => dispatch(createAbsenceThunk(customer.id))}
             />
           )
       )}

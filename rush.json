@@ -408,6 +408,14 @@
     {
       "packageName": "@eisbuk/backup-restore",
       "projectFolder": "packages/backup-restore"
+    },
+    {
+      "packageName": "@eisbuk/ui",
+      "projectFolder": "packages/ui"
+    },
+    {
+      "packageName": "@eisbuk/svg",
+      "projectFolder": "packages/svg"
     }
   ]
 }

@@ -60,7 +60,6 @@ const getColor = ({ name, surname }: { name: string; surname: string }) => {
   return avatarColors[h];
 };
 
-// ***** Region Main Component ***** //
 export const EisbukAvatar: React.FC<
   Customer & { className?: string } & { wrap?: boolean }
 > = ({
@@ -123,13 +122,19 @@ export const EisbukAvatar: React.FC<
   let additionalClass = classes[getColor({ name, surname })];
 
   switch (category) {
+    // For Competitive
     case Category.Competitive:
       variant = "square";
       break;
-    case Category.PreCompetitive:
+
+    // For other minors
+    case Category.CourseMinors:
+    case Category.PreCompetitiveMinors:
       variant = "rounded";
       additionalClass += " " + classes.rounded;
       break;
+
+    // For all adults (this will include backwards compatibility for deprecated "adults" category)
     default:
       variant = "circular";
       break;

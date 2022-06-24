@@ -9,6 +9,12 @@ export default defineConfig({
       fileName: (fmt) => (fmt === "es" ? "index.es.js" : "index.js"),
       formats: ["es", "cjs"],
     },
+    rollupOptions: {
+      external: ["react"],
+      output: {
+        exports: "named",
+      },
+    },
     outDir: "dist",
   },
 });

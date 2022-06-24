@@ -6,7 +6,7 @@ import { FirestoreSchema } from "@eisbuk/shared";
  * @returns a defined value or `null` (or promise which resolves to such value) the values is
  * the yelded to cypress' iterator (void or undefined will cause and error with iterator and is illegal in cypress)
  */
-export interface TaskHandler<A extends any = undefined, R = null> {
+export interface TaskHandler<A = undefined, R = null> {
   (payload: A): R | PromiseLike<R>;
 }
 

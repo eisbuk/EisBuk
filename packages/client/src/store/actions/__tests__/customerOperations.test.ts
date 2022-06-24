@@ -6,20 +6,20 @@ import * as firestore from "@firebase/firestore";
 import { getDocs, collection, doc, getDoc } from "@firebase/firestore";
 
 import {
-  Collection,
   Customer,
-  OrgSubCollection,
   Category,
   EmailMessage,
   SMSMessage,
+  OrgSubCollection,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
+
 import { getNewStore } from "@/store/createStore";
 
-import { getOrganization } from "@/lib/getters";
+import * as getters from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
@@ -34,19 +34,15 @@ import {
 } from "../customerOperations";
 import * as appActions from "../appActions";
 
+import { getCustomersPath } from "@/utils/firestore";
 import * as firebaseUtils from "@/utils/firebase";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { createTestStore } from "@/__testUtils__/firestore";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
-import { loginDefaultUser } from "@/__testUtils__/auth";
 
 import { saul } from "@/__testData__/customers";
-
-const customersPath = `${Collection.Organizations}/${getOrganization()}/${
-  OrgSubCollection.Customers
-}`;
+import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -70,10 +66,6 @@ jest
   .spyOn(appActions, "enqueueNotification")
   .mockImplementation(mockEnqueueSnackbar as any);
 
-/**
- * A mock function we're passing as `dispatch` to thunk in order
- * to test appropriate actions being dispatched to the store
- */
 const mockDispatch = jest.fn();
 
 /**
@@ -84,17 +76,10 @@ const mockDispatch = jest.fn();
  */
 const getState = () => ({} as any);
 
-/**
- * A spy of `getFirebase` function which we're occasionally mocking to throw error
- * for error handling tests
- */
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
 
-xdescribe("customerOperations", () => {
-  beforeEach(async () => {
-    await loginDefaultUser();
-  });
-
+describe("customerOperations", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -103,13 +88,15 @@ xdescribe("customerOperations", () => {
     testWithEmulator(
       "should create a new entry in 'customers' collection (with server assigned id)",
       async () => {
-        const db = await getTestEnv({});
+        const { db, organization } = await getTestEnv({});
         const noIdSaul = stripIdAndSecretKey(saul);
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with customer data
         await updateCustomer(noIdSaul)(mockDispatch, getState);
-        const customersRef = collection(db, customersPath);
+        const customersRef = collection(db, getCustomersPath(organization));
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { secretKey, id, ...saulInDb } = (
           await getDocs(customersRef)
@@ -135,20 +122,23 @@ xdescribe("customerOperations", () => {
       async () => {
         // setup test state
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) =>
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
             setupTestCustomer({
               customer: saul,
               store,
               db,
+              organization,
             }),
         });
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // create a thunk with updated customer data
-        const saulDocRef = doc(db, customersPath, saul.id);
+        const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
         const saulInDb = (await getDoc(saulDocRef)).data() as Customer;
-        const updatedSaul = { ...saulInDb, category: Category.Course };
+        const updatedSaul = { ...saulInDb, category: Category.CourseAdults };
         const testThunk = updateCustomer(updatedSaul);
         // run the thunk with mocked data
         await testThunk(store.dispatch, store.getState);
@@ -159,7 +149,7 @@ xdescribe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
-      getFirestoreSpy.mockImplementationOnce(() => {
+      getFirestoreSpy.mockImplementation(() => {
         throw new Error();
       });
       // run thunk
@@ -176,19 +166,22 @@ xdescribe("customerOperations", () => {
       async () => {
         // setup test state
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) =>
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
             setupTestCustomer({
               customer: saul,
               store,
               db,
+              organization,
             }),
         });
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with updated customer data
         await deleteCustomer(saul)(mockDispatch, store.getState);
-        const saulDocRef = doc(db, customersPath, saul.id);
+        const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
         const deletedSaul = (await getDoc(saulDocRef)).data() as Customer;
         expect(deletedSaul).toEqual({
           ...saul,
@@ -211,7 +204,7 @@ xdescribe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
-      getFirestoreSpy.mockImplementationOnce(() => {
+      getFirestoreSpy.mockImplementation(() => {
         throw new Error();
       });
       // run thunk
@@ -225,15 +218,12 @@ xdescribe("customerOperations", () => {
     // bookings link we're using throughout
     const bookingsLink = `https://test-hostname.com${Routes.CustomerArea}/${saul.secretKey}`;
 
-    // test state for all tests
-    const getState = () =>
-      createTestStore({
-        data: {
-          customers: {
-            [saul.id]: saul,
-          },
-        },
-      });
+    // Create test store with the same state for all tests
+    const store = getNewStore();
+    store.dispatch(
+      updateLocalDocuments(OrgSubCollection.Customers, { [saul.id]: saul })
+    );
+    const { getState } = store;
 
     // mocks we're using to test calling the right cloud function
     const mockSendMail = jest.fn();
@@ -336,8 +326,9 @@ xdescribe("customerOperations", () => {
       "should add appropriate 'extendedDate' to the customer structure and show success notification",
       async () => {
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) => setupTestCustomer({ db, store, customer: saul }),
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setupTestCustomer({ db, store, customer: saul, organization }),
         });
         // verify that the customer doesn't have an extended date
         const customerInStore =
@@ -345,13 +336,18 @@ xdescribe("customerOperations", () => {
         expect(customerInStore.extendedDate).toBeFalsy();
         // create and run the thunk
         const extendedDate = "2022-01-01";
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
+        // make sure that the db used by the thunk is test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
         await extendBookingDate(saul.id, extendedDate)(
           mockDispatch,
           () => ({} as any)
         );
         // exteneded date should be created in `customers` entry
-        const updatedCustomer = await getDoc(doc(db, customersPath, saul.id));
+        const updatedCustomer = await getDoc(
+          doc(db, getCustomersPath(organization), saul.id)
+        );
         const data = updatedCustomer.data();
         expect(data!.extendedDate).toEqual(extendedDate);
         // check for success notification
@@ -371,7 +367,8 @@ xdescribe("customerOperations", () => {
       "should show error notification if function call unsuccessful",
       async () => {
         // intentionally cause error to test error handling
-        getFirestoreSpy.mockImplementationOnce = () => {
+        getFirestoreSpy.mockImplementation = () => {
+          console.log("this ran");
           throw new Error();
         };
         await extendBookingDate(saul.id, "2022-01-01")(

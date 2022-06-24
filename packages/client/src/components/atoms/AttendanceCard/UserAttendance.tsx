@@ -2,9 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useTranslation } from "@eisbuk/translations";
 
 import ListItem from "@mui/material/ListItem";
-import ListItemAvatar from "@mui/material/ListItemAvatar";
-import ListItemSecondaryAction from "@mui/material/ListItemSecondaryAction";
-import ListItemText from "@mui/material/ListItemText";
+import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -52,11 +50,6 @@ const UserAttendance: React.FC<Props> = ({
   const { t } = useTranslation();
 
   const classes = useStyles();
-  const listItemClass = [
-    classes.listItem,
-    attendedInterval ? "" : classes.absent,
-    customer.deleted ? classes.deleted : "",
-  ].join(" ");
 
   /**
    * Local (boolean) state for attended/absent.
@@ -71,11 +64,9 @@ const UserAttendance: React.FC<Props> = ({
     attendedInterval || bookedInterval!
   );
 
-  /**
-   * In an edge case of some other client (browser or different browser window)
-   * updates the booked interval (or boolean attendance state) we wish to reflect that
-   * update locally as well
-   */
+  // In an edge case of some other client (browser or different browser window)
+  // updates the booked interval (or boolean attendance state) we wish to reflect that
+  // update locally as well
   useEffect(() => {
     if (attendedInterval) {
       setSelectedInterval(attendedInterval);
@@ -123,18 +114,48 @@ const UserAttendance: React.FC<Props> = ({
     debMarkAttendance({ attendedInterval: value });
   };
 
-  /**
-   * We're disabling attendance button while `localAttended` (boolean) syncs with state in firestore (`attendedInterval !== null`)
-   * and when switchig through intervals -> `selectedInterval` and `attendedInterval` (from firestore) are not the same
-   * the second doesn't apply if `attendedInterval = null` (as that would cause problems and isn't exactly expected behavior).
-   */
+  // We're disabling attendance button while `localAttended` (boolean) syncs with state in firestore (`attendedInterval !== null`)
+  // and when switchig through intervals -> `selectedInterval` and `attendedInterval` (from firestore) are not the same
+  // the second doesn't apply if `attendedInterval = null` (as that would cause problems and isn't exactly expected behavior).
   const disableButton =
     localAttended !== Boolean(attendedInterval) ||
     Boolean(attendedInterval && attendedInterval !== selectedInterval);
 
+  const isAbsent = !attendedInterval;
+  const backgroundColor = isAbsent ? classes.bgAbsent : classes.bgWhite;
+  const shadowColor = isAbsent ? classes.shadowAbsent : classes.shadowWhite;
+
+  // Container setup
+  const listItemClass = [
+    classes.container,
+    backgroundColor,
+    customer.deleted ? classes.deleted : "",
+  ].join(" ");
+
+  // Avatar/name setup
+  const customerString = [
+    `${customer.name} ${customer.surname}`,
+    customer.deleted ? `(${t("Flags.Deleted")})` : "",
+  ]
+    .join(" ")
+    .trim();
+
+  // Interval picker setup
+  const intervalContainerClasses = [
+    classes.intervalContainer,
+    backgroundColor,
+    shadowColor,
+  ].join(" ");
+
+  // Attendance button setup
   const attendanceButton = bookedInterval ? "👍" : "🗑️";
   const absenceButton = "👎";
-  const buttonClass = [
+  const buttonContainerClasses = [
+    classes.buttonContainer,
+    backgroundColor,
+    shadowColor,
+  ].join(" ");
+  const buttonClasses = [
     !bookedInterval
       ? classes.trashCan
       : localAttended
@@ -143,62 +164,98 @@ const UserAttendance: React.FC<Props> = ({
     classes.button,
   ].join(" ");
 
-  const attendnaceControl = (
-    <div className={classes.actionsContainer}>
-      <IntervalPicker
-        disabled={!localAttended}
-        intervals={intervals}
-        attendedInterval={selectedInterval}
-        bookedInterval={bookedInterval}
-        onChange={handleIntervalChange}
-      />
-      <Button
-        className={buttonClass}
-        data-testid={__attendanceButton__}
-        variant="contained"
-        size="small"
-        onClick={handleClick}
-        disabled={disableButton}
-      >
-        {localAttended ? attendanceButton : absenceButton}
-      </Button>
-    </div>
-  );
-
-  const customerString = [
-    `${customer.name} ${customer.surname}`,
-    customer.deleted ? `(${t("Flags.Deleted")})` : "",
-  ]
-    .join(" ")
-    .trim();
-
   return (
-    <ListItem className={listItemClass}>
-      <ListItemAvatar className={classes.avatarContainer}>
+    <ListItem style={{}} className={listItemClass}>
+      <div className={classes.avatarContainer}>
         <EisbukAvatar {...customer} />
-      </ListItemAvatar>
-      <ListItemText primary={customerString} />
-      <ListItemSecondaryAction>{attendnaceControl}</ListItemSecondaryAction>
+        <Typography style={{ margin: "0 0.75rem" }}>
+          {customerString}
+        </Typography>
+      </div>
+      <div className={buttonContainerClasses}>
+        <Button
+          className={buttonClasses}
+          data-testid={__attendanceButton__}
+          variant="contained"
+          size="small"
+          onClick={handleClick}
+          disabled={disableButton}
+          style={{ justifySelf: "end" }}
+        >
+          {localAttended ? attendanceButton : absenceButton}
+        </Button>
+      </div>
+      <div className={intervalContainerClasses}>
+        <IntervalPicker
+          disabled={!localAttended}
+          intervals={intervals}
+          attendedInterval={selectedInterval}
+          bookedInterval={bookedInterval}
+          onChange={handleIntervalChange}
+          style={{ justifySelf: "center" }}
+        />
+      </div>
     </ListItem>
   );
 };
 
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
-  avatarContainer: {
-    display: "none",
+  // Blocks
+  container: {
+    position: "relative",
+    display: "flex",
+    flexWrap: "wrap",
     [theme.breakpoints.up("sm")]: {
-      display: "block",
+      flexDirection: "row",
+      flexWrap: "nowrap",
+      justifyContent: "space-between",
     },
   },
-  absent: {
-    backgroundColor: theme.palette.absent || theme.palette.grey[500],
+  avatarContainer: {
+    margin: theme.spacing(1),
+    display: "flex",
+    width: "100%",
+    justifyContent: "start",
+    alignItems: "center",
+    whiteSpace: "nowrap",
+  },
+  intervalContainer: {
+    display: "flex",
+    width: "100%",
+    justifyContent: "center",
+    [theme.breakpoints.up("sm")]: {
+      width: "auto",
+      position: "absolute",
+      right: "6rem",
+    },
+    margin: theme.spacing(1),
+  },
+  buttonContainer: {
+    position: "absolute",
+    top: "0.75rem",
+    right: "1.5rem",
+    height: "2.75rem",
   },
   button: {
-    marginLeft: "1.5rem",
-    [theme.breakpoints.up("md")]: {
-      marginLeft: "none",
-    },
+    height: "2.75rem",
+  },
+
+  // Colors
+  bgAbsent: {
+    backgroundColor: theme.palette.absent || theme.palette.grey[500],
+  },
+  bgWhite: {
+    backgroundColor: "#FFFF",
+  },
+  shadowWhite: {
+    boxShadow: "0 4px 8px 12px white",
+  },
+  shadowAbsent: {
+    boxShadow: `0 4px 8px 12px ${theme.palette.absent}`,
+  },
+  deleted: {
+    opacity: 0.5,
   },
   trashCan: {
     background: "rgba(0, 0, 0, 0.1)",
@@ -208,17 +265,6 @@ const useStyles = makeStyles((theme: ETheme) => ({
   },
   absentButton: {
     background: theme.palette.secondary.main,
-  },
-  listItem: {
-    padding: theme.spacing(1),
-  },
-  actionsContainer: {
-    minWidth: 120,
-    display: "flex",
-    flexDirection: "row",
-  },
-  deleted: {
-    opacity: 0.5,
   },
 }));
 // #endregion Styles

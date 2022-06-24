@@ -1,0 +1,26 @@
+#@ def cache_node():
+name: Cache node modules and firebase emulators
+uses: actions/cache@v2
+with:
+  path: |
+    ~/.rush
+    ~/.pnpm-store
+    common/temp
+    **/node_modules
+    ~/.cache/firebase/emulators
+  key: ${{ runner.os }}-modules-emulators-node14-v4-${{ hashFiles('**/pnpm-lock.yaml') }}
+#@ end
+
+#@ def cache_cypress():
+name: Cache node modules, firebase emulators and cypress
+uses: actions/cache@v2
+with:
+  path: |
+    ~/.rush
+    ~/.pnpm-store
+    common/temp
+    **/node_modules
+    ~/.cache/firebase/emulators
+    ~/.cache/Cypress
+  key: ${{ runner.os }}-modules-emulators-cypress-node14-v4-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+#@ end

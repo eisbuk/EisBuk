@@ -85,7 +85,10 @@ const renderWeekPickerDay =
         }
       >
         {jump === "day" ? (
-          <PickersDay {...pickersDayProps} />
+          <PickersDay
+            {...(pickersDayProps as PickersDayProps<DateTime> &
+              React.RefAttributes<HTMLDivElement>)}
+          />
         ) : (
           <CustomPickersDay
             {...pickersDayProps}

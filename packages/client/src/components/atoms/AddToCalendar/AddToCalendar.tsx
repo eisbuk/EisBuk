@@ -9,8 +9,12 @@ import makeStyles from "@mui/styles/makeStyles";
 import Button from "@mui/material/Button";
 
 import { LocalStore } from "@/types/store";
-import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
+
 import { getAboutOrganization } from "@/store/selectors/app";
+
+import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
+
+import { __organization__ } from "@/lib/constants";
 
 interface Props {
   /**
@@ -23,9 +27,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {} }) => {
   const classes = useStyles();
 
   const { displayName = "", location = "" } =
-    useSelector(getAboutOrganization) || {};
+    useSelector(getAboutOrganization)[__organization__] || {};
   const { t } = useTranslation();
-
   const handleClick = () => {
     let icalendar = {} as ICalendar;
 

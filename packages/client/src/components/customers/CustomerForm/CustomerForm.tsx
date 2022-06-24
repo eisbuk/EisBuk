@@ -20,13 +20,14 @@ import Cake from "@mui/icons-material/Cake";
 import LocalHospital from "@mui/icons-material/LocalHospital";
 import Payment from "@mui/icons-material/Payment";
 
-import { Category, Customer } from "@eisbuk/shared";
+import { Category, Customer, DeprecatedCategory } from "@eisbuk/shared";
 import i18n, {
   useTranslation,
   CustomerLabel,
   CustomerFormTitle,
   ValidationMessage,
   ActionButton,
+  CategoryLabel,
 } from "@eisbuk/translations";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -87,9 +88,19 @@ const CustomerForm: React.FC<Props> = ({
 
   const { t } = useTranslation();
 
-  const categoryOptions = Object.keys(Category).map((categoryKey) => ({
-    value: Category[categoryKey],
-    label: t(`Category.${categoryKey}`),
+  // Include deprecated categories for backwards compatibility
+  type CategoryString = DeprecatedCategory | Category;
+
+  const deprecatedCategories: CategoryString[] =
+    Object.values(DeprecatedCategory);
+  const availableCategories = (
+    Object.values(Category) as CategoryString[]
+  ).concat(deprecatedCategories);
+
+  const categoryOptions = availableCategories.map((category) => ({
+    value: category,
+    label: t(CategoryLabel[category]),
+    disabled: deprecatedCategories.includes(category),
   }));
 
   const editCustomerTitle = `${t(CustomerFormTitle.EditCustomer)} (${

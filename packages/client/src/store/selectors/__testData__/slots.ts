@@ -4,8 +4,6 @@ import { Category, SlotType, luxon2ISODate, SlotsByDay } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
-import { createTestStore } from "@/__testUtils__/firestore";
-
 import { baseSlot } from "@/__testData__/slots";
 
 /**
@@ -38,7 +36,7 @@ const prevoiusWeek = {
   "2021-08-24": {
     ["slot-1"]: {
       ...baseSlot,
-      categories: [Category.PreCompetitive],
+      categories: [Category.PreCompetitiveAdults],
       id: "slot-1",
       type: SlotType.OffIce,
     },
@@ -46,7 +44,7 @@ const prevoiusWeek = {
   "2021-08-25": {
     ["slot-2"]: {
       ...baseSlot,
-      categories: [Category.Course],
+      categories: [Category.CourseMinors],
       id: "slot-2",
       type: SlotType.OffIce,
     },
@@ -61,7 +59,7 @@ export const currentWeekPrevMonth = {
     ["slot-3"]: {
       ...baseSlot,
       id: "slot-3",
-      categories: [Category.Competitive, Category.Course],
+      categories: [Category.Competitive, Category.CourseMinors],
       type: SlotType.Ice,
     },
   },
@@ -85,7 +83,7 @@ const currentWeekThisMonthCompetitive = {
     ["slot-4"]: {
       ...baseSlot,
       id: "slot-4",
-      categories: [Category.Competitive, Category.PreCompetitive],
+      categories: [Category.Competitive, Category.PreCompetitiveMinors],
       type: SlotType.Ice,
     },
   },
@@ -108,7 +106,7 @@ const currentWeekNonCompetitive = {
     ["slot-6"]: {
       ...baseSlot,
       id: "slot-6",
-      categories: [Category.PreCompetitive],
+      categories: [Category.PreCompetitiveAdults],
       type: SlotType.Ice,
     },
   },
@@ -116,7 +114,7 @@ const currentWeekNonCompetitive = {
     ["slot-7"]: {
       ...baseSlot,
       id: "slot-7",
-      categories: [Category.PreCompetitive],
+      categories: [Category.PreCompetitiveAdults],
       type: SlotType.OffIce,
     },
   },
@@ -145,7 +143,7 @@ const nextWeekCompetitive = {
     ["slot-8"]: {
       ...baseSlot,
       id: "slot-8",
-      categories: [Category.Competitive, Category.PreCompetitive],
+      categories: [Category.Competitive, Category.PreCompetitiveMinors],
       type: SlotType.Ice,
     },
   },
@@ -167,7 +165,7 @@ const nextWeekNonCompetitive = {
     ["slot-10"]: {
       ...baseSlot,
       id: "slot-10",
-      categories: [Category.PreCompetitive],
+      categories: [Category.PreCompetitiveAdults],
       type: SlotType.Ice,
     },
   },
@@ -175,7 +173,7 @@ const nextWeekNonCompetitive = {
     ["slot-11"]: {
       ...baseSlot,
       id: "slot-11",
-      categories: [Category.PreCompetitive],
+      categories: [Category.PreCompetitiveAdults],
       type: SlotType.OffIce,
     },
   },
@@ -253,20 +251,3 @@ export const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
   ["2021-09"]: fullCurrentMonth,
 };
 // #endregion testData
-
-// #region inputTestData
-/**
- * Test store populated with slots we're using to test the selector
- */
-export const testStore = createTestStore({
-  data: { slotsByDay },
-  date: DateTime.fromISO(currentWeekStartDate),
-});
-/**
- * Test store without slots entry, to test falling back to empty days
- */
-export const noSlotsStore = createTestStore({
-  data: { slotsByDay: null },
-  date: DateTime.fromISO(currentWeekStartDate),
-});
-// #endregion inputTestData

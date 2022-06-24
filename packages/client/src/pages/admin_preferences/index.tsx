@@ -21,24 +21,22 @@ import Divider from "@mui/material/Divider";
 import { updateOrganization } from "@/store/actions/organizationOperations";
 
 import { getLocalAuth } from "@/store/selectors/auth";
+import { getOrganizationSettings } from "@/store/selectors/app";
+
+import { isEmpty } from "@/utils/helpers";
 
 import AdminsField from "./AdminsField";
 import FormSection from "@/components/atoms/FormSection";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import { getOrganizationSettings } from "@/store/selectors/app";
 
-interface Props {
-  organization: OrganizationData;
-}
-// trying to get the key of smsFrom in organization
 const smsFields = [
   {
     name: "smsFrom",
-    label: OrganizationLabel[OrganizationLabel.SmsFrom],
+    label: OrganizationLabel.SmsFrom,
   },
   {
     name: "smsTemplate",
-    label: OrganizationLabel[OrganizationLabel.SmsTemplate],
+    label: OrganizationLabel.SmsTemplate,
     multiline: true,
   },
 ];
@@ -46,15 +44,15 @@ const smsFields = [
 const emailFields = [
   {
     name: "emailNameFrom",
-    label: OrganizationLabel[OrganizationLabel.EmailNameFrom],
+    label: OrganizationLabel.EmailNameFrom,
   },
   {
     name: "emailFrom",
-    label: OrganizationLabel[OrganizationLabel.EmailFrom],
+    label: OrganizationLabel.EmailFrom,
   },
   {
     name: "emailTemplate",
-    label: OrganizationLabel[OrganizationLabel.EmailTemplate],
+    label: OrganizationLabel.EmailTemplate,
     multiline: true,
   },
 ];
@@ -62,24 +60,25 @@ const emailFields = [
 const generalFields = [
   {
     name: "displayName",
-    label: OrganizationLabel[OrganizationLabel.DisplayName],
+    label: OrganizationLabel.DisplayName,
   },
-  { name: "location", label: OrganizationLabel[OrganizationLabel.Location] },
+  { name: "location", label: OrganizationLabel.Location },
 ];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
-  SmsFrom: Yup.string()
+  smsFrom: Yup.string()
     .matches(/^[a-z0-9]+$/, i18n.t(ValidationMessage.InvalidSmsFrom))
     .max(11, i18n.t(ValidationMessage.InvalidSmsFromLength)),
+  displayName: Yup.string().required(),
 });
 // #endregion validations
-const OrganizationSettings: React.FC<Props> = () => {
-  const { t } = useTranslation();
-  const classes = useStyles();
+const OrganizationSettings: React.FC = () => {
   const dispatch = useDispatch();
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
+  const { t } = useTranslation();
+  const classes = useStyles();
 
   const handleSubmit = (
     orgData: OrganizationData,
@@ -89,17 +88,38 @@ const OrganizationSettings: React.FC<Props> = () => {
   };
 
   const currentUser = userAuthInfo?.email || "";
+
+  if (isEmpty(organization)) {
+    return null;
+  }
+
+  const initialValues: OrganizationData = {
+    // Set up fallbacks
+    admins: [],
+    displayName: "",
+    emailFrom: "",
+    emailNameFrom: "",
+    emailTemplate: "",
+    existingSecrets: [],
+    location: "",
+    smsFrom: "",
+    smsTemplate: "",
+
+    // Override fallbacks with any defined organizaiton data
+    ...organization,
+  };
+
   return (
     <>
       <AppbarAdmin />
       <div className={classes.title}>
         <Typography variant="h4">{`${
-          organization.displayName || "Organization"
+          organization?.displayName || "Organization"
         }  Settings`}</Typography>
       </div>
       <div className={classes.content}>
         <Formik
-          {...{ initialValues: { ...organization } }}
+          {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
           validateOnChange={false}
           validationSchema={OrganizationValidation}
@@ -107,6 +127,7 @@ const OrganizationSettings: React.FC<Props> = () => {
           {({ isSubmitting, isValidating, handleReset }) => (
             <>
               <AdminsField currentUser={currentUser} />
+
               <Divider />
               <Form className={classes.form}>
                 <FormControl component="fieldset">

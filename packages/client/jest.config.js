@@ -4,7 +4,6 @@ module.exports = {
     "\\.svg": "<rootDir>/src/__mocks__/svg.ts",
     "@mui/styles/makeStyles": "<rootDir>/src/__mocks__/makeStyles.ts",
   },
-  globalSetup: "<rootDir>/src/__testSetup__/initTests.ts",
   collectCoverageFrom: [
     "src/**/*.{ts,tsx}",
     "src/*.{ts,tsx}",

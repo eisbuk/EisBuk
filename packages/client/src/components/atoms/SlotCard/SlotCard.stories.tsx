@@ -5,14 +5,14 @@ import { SlotInterface } from "@eisbuk/shared";
 
 import SlotCard from "./SlotCard";
 
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot, createIntervals } from "@/__testData__/slots";
 
 /**
  * Decorator used to prevent slots diaplayed from stratching to full width
  */
 const decorators: ComponentMeta<typeof SlotCard>["decorators"] = [
   (Story) => (
-    <div style={{ width: 500 }}>
+    <div style={{ maxWidth: 500 }}>
       <Story />
     </div>
   ),
@@ -24,17 +24,22 @@ export default {
   decorators,
 } as ComponentMeta<typeof SlotCard>;
 
-const baseProps: SlotInterface = {
-  ...baseSlot,
-};
-
 export const Default = (): JSX.Element => (
-  <SlotCard {...baseProps} notes="Pista 1" />
+  <SlotCard {...baseSlot} notes="Pista 1" />
 );
 
 const adminViewWithActionButtonsProps = { enableEdit: true };
 export const AdminViewWithActionButtons = (): JSX.Element => (
-  <SlotCard {...baseProps} {...adminViewWithActionButtonsProps} />
+  <SlotCard {...baseSlot} {...adminViewWithActionButtonsProps} />
+);
+
+const aBunchOfIntervals: SlotInterface = {
+  ...baseSlot,
+  intervals: { ...baseSlot.intervals, ...createIntervals(11) },
+};
+
+export const ABunchOfIntervalsWithActionButtons = (): JSX.Element => (
+  <SlotCard {...aBunchOfIntervals} {...adminViewWithActionButtonsProps} />
 );
 
 export const Selected = (): JSX.Element => {
@@ -42,7 +47,7 @@ export const Selected = (): JSX.Element => {
   const [selected, setSelected] = useState(true);
   return (
     <SlotCard
-      {...baseProps}
+      {...baseSlot}
       enableEdit
       selected={selected}
       onClick={() => setSelected(!selected)}
