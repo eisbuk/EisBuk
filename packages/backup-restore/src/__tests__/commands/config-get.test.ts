@@ -3,37 +3,61 @@
  */
 
 import { makeProgram } from "../../command";
-import { defaultConfig, ConfigOptions } from "../../config/configstore";
+import {
+  defaultConfig,
+  ConfigOptions,
+  configstore,
+} from "../../config/configstore";
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-test("config:get returns default config", async () => {
-  // const consoleSpy = jest.spyOn(console, "log").mockImplementation();
-  // const program = makeProgram({ exitOverride: true });
-  // program.parseAsync([
-  //   "node",
-  //   "eisbuk",
-  //   "config:get",
-  //   "-o",
-  //   ConfigOptions.EmulatorHost,
-  // ]);
-  // program.parseAsync([
-  //   "node",
-  //   "eisbuk",
-  //   "config:get",
-  //   "-o",
-  //   ConfigOptions.UseEmulators,
-  // ]);
-  // program.parseAsync([
-  //   "node",
-  //   "eisbuk",
-  //   "config:get",
-  //   "-o",
-  //   ConfigOptions.ActiveProject,
-  // ]);
-  // expect(consoleSpy).toBeCalledWith(defaultConfig.emulatorHost);
-  // expect(consoleSpy).toBeCalledWith(defaultConfig.useEmulators);
-  // expect(consoleSpy).toBeCalledWith(defaultConfig.activeProject);
+describe("config:get", () => {
+  const configStoreSpy = jest.spyOn(configstore, "get");
+  const consoleSpy = jest.spyOn(console, "log").mockImplementation();
+
+  const program = makeProgram({ exitOverride: true });
+
+  test("Returns default activeProject config", () => {
+    configStoreSpy.mockReturnValue(defaultConfig.activeProject);
+
+    program.parseAsync([
+      "node",
+      "eisbuk",
+      "config:get",
+      "-o",
+      ConfigOptions.ActiveProject,
+    ]);
+
+    expect(consoleSpy).toBeCalledWith(defaultConfig.activeProject);
+  });
+
+  test("Returns default emulatorHost config", () => {
+    configStoreSpy.mockReturnValue(defaultConfig.emulatorHost);
+
+    program.parseAsync([
+      "node",
+      "eisbuk",
+      "config:get",
+      "-o",
+      ConfigOptions.EmulatorHost,
+    ]);
+
+    expect(consoleSpy).toBeCalledWith(defaultConfig.emulatorHost);
+  });
+
+  test("Returns default activeProject config", () => {
+    configStoreSpy.mockReturnValue(defaultConfig.useEmulators);
+
+    program.parseAsync([
+      "node",
+      "eisbuk",
+      "config:get",
+      "-o",
+      ConfigOptions.UseEmulators,
+    ]);
+
+    expect(consoleSpy).toBeCalledWith(defaultConfig.useEmulators);
+  });
 });

@@ -13,14 +13,14 @@ export enum ConfigOptions {
 export interface Config {
   projects: string[];
   activeProject: string | null;
-  useEmulators: boolean;
+  useEmulators: string;
   emulatorHost: string;
 }
 
 export const defaultConfig: Config = {
   projects: [],
   activeProject: null,
-  useEmulators: false,
+  useEmulators: "false",
   emulatorHost: "localhost:8080",
 };
 
