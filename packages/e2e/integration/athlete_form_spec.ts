@@ -58,44 +58,46 @@ describe("add athlete", () => {
     cy.getAttrWith("data-testid", "add-athlete").click();
 
     // test phone number without "+" or "00" prepended to it
-    cy.getAttrWith("name", "phone").clearAndType("099 2222 868\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     cy.resetCustomerForm();
 
     // test phone number for edge cases
-    cy.getAttrWith("name", "phone").clearAndType("foo +099 2222 868\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("foo +099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     cy.resetCustomerForm();
 
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222 868 foo\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222 868 foo");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test too long and too short phone numbers
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222 86877777777777\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter(
+      "+099 2222 86877777777777"
+    );
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     cy.resetCustomerForm();
 
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     cy.resetCustomerForm();
 
     // make sure phone number length can't be "cheated" with too much whitespace
-    cy.getAttrWith("name", "phone").clearAndType("+385 099   11\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 099   11");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
-    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("00385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
 
     cy.resetCustomerForm();
 
-    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868\n");
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );

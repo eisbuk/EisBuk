@@ -61,6 +61,14 @@ declare global {
        * @param {string} label button label
        * @param {number} eq optional element index (if multiple elements found)
        */
+      clearTypeAndEnter: (input: string) => Chainable<Element>;
+      /**
+       * A convenience method to avoid typing `get("button").contains(<label>).click()` each time.
+       * Always uses `click({ force: true })` to avoid failing on buttons detatched after click.
+       * After entering the given string it types a newline (useful to submit a form).
+       * @param {string} label button label
+       * @param {number} eq optional element index (if multiple elements found)
+       */
       clickButton: (label: string, eq?: number) => Chainable<Element>;
       /**
        * A utility wrapper around cy.intercept. Allows us to intercept the message the specified number
@@ -163,6 +171,16 @@ export default (): void => {
     "clearAndType",
     { prevSubject: "element" },
     (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
+  );
+
+  Cypress.Commands.add(
+    "clearTypeAndEnter",
+    { prevSubject: "element" },
+    (el: Element, input: string) =>
+      cy
+        .wrap(el)
+        .clear()
+        .type(input + "\n")
   );
 
   Cypress.Commands.add("clickButton", (label: string, eq = 0) => {
