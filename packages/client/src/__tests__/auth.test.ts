@@ -2,70 +2,28 @@
  * @jest-environment node
  */
 
-import { doc, getDoc } from "@firebase/firestore";
 import {
   httpsCallable,
   HttpsCallableResult,
   FunctionsError,
 } from "@firebase/functions";
 
-import {
-  Collection,
-  AuthStatus,
-  OrgSubCollection,
-  HTTPSErrors,
-} from "@eisbuk/shared";
+import { Collection, AuthStatus, HTTPSErrors } from "@eisbuk/shared";
 
-import { adminDb, db, functions } from "@/__testSetup__/firestoreSetup";
+import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
 
 import { CloudFunction } from "@/enums/functions";
 
+import { getCustomerDocPath } from "@/utils/firestore";
+
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { loginWithEmail } from "@/__testUtils__/auth";
-import { deleteCollection } from "@/__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
-
-const organization = "auth-test-organization";
-const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
-const customersRef = orgRef.collection(OrgSubCollection.Customers);
+import { setUpOrganization } from "@/__testSetup__/node";
 
 describe("Test authentication", () => {
-  afterEach(async () => {
-    await Promise.all([deleteCollection(customersRef), orgRef.delete()]);
-  });
-
-  describe("Test organization data access", () => {
-    testWithEmulator(
-      "should only let admin access the organization data (by email)",
-      async () => {
-        const orgDefinition = {
-          admins: ["test@example.com"],
-        };
-        await adminDb
-          .collection(Collection.Organizations)
-          .doc("default")
-          .set(orgDefinition);
-        // We haven't logged in yet, so we won't be authorized access
-        const defaultOrgDoc = doc(db, Collection.Organizations, "default");
-        let error;
-        try {
-          (await getDoc(defaultOrgDoc)).data();
-        } catch (e) {
-          error = true;
-        }
-        expect(error).toBe(true);
-
-        // After login we'll be able to read and write documents in our organization
-        await loginWithEmail("test@example.com");
-        const org = (await getDoc(defaultOrgDoc)).data();
-        expect(org).toEqual(orgDefinition);
-      }
-    );
-  });
-
-  describe.only("Test queryAuthStatus", () => {
-    const queryAuthStatus = (authString: string) =>
+  describe("Test queryAuthStatus", () => {
+    const queryAuthStatus = (organization: string, authString: string) =>
       httpsCallable(
         functions,
         CloudFunction.QueryAuthStatus
@@ -77,8 +35,11 @@ describe("Test authentication", () => {
       "should successfully query admin status using email",
       async () => {
         // set up test state with saul as admin
-        await orgRef.set({ admins: [saul.email] }, { merge: true });
-        const res = await queryAuthStatus(saul.email!);
+        const { organization } = await setUpOrganization();
+        await adminDb
+          .doc([Collection.Organizations, organization].join("/"))
+          .set({ admins: [saul.email] }, { merge: true });
+        const res = await queryAuthStatus(organization, saul.email!);
         const {
           data: { isAdmin },
         } = res;
@@ -90,10 +51,11 @@ describe("Test authentication", () => {
       "should successfully query customer status using email",
       async () => {
         // set up test state with saul as customer, but not an admin
-        await customersRef.doc(saul.id).set(saul);
+        const { organization } = await setUpOrganization();
+        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         const {
           data: { isAdmin, bookingsSecretKey },
-        } = await queryAuthStatus(saul.email!);
+        } = await queryAuthStatus(organization, saul.email!);
         expect(isAdmin).toEqual(false);
         expect(bookingsSecretKey).toEqual(saul.secretKey);
       }
@@ -103,10 +65,11 @@ describe("Test authentication", () => {
       "should successfully query customer status using phone",
       async () => {
         // set up test state with saul as customer, but not an admin
-        await customersRef.doc(saul.id).set(saul);
+        const { organization } = await setUpOrganization();
+        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         const {
           data: { isAdmin, bookingsSecretKey },
-        } = await queryAuthStatus(saul.phone!);
+        } = await queryAuthStatus(organization, saul.phone!);
         expect(isAdmin).toEqual(false);
         expect(bookingsSecretKey).toEqual(saul.secretKey);
       }

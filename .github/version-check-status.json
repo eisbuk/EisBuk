@@ -1,0 +1,44 @@
+{
+  "mismatchedVersions": [
+    {
+      "dependencyName": "@firebase/app",
+
+      "versions": [
+        {
+          "projects": ["@eisbuk/client"],
+          "version": "0.7.2"
+        },
+        {
+          "projects": ["@eisbuk/e2e"],
+          "version": "^0.7.20"
+        }
+      ]
+    },
+    {
+      "dependencyName": "@firebase/firestore",
+      "versions": [
+        {
+          "projects": ["@eisbuk/client"],
+          "version": "3.1.0"
+        },
+        {
+          "projects": ["@eisbuk/e2e"],
+          "version": "^3.4.7"
+        }
+      ]
+    },
+    {
+      "dependencyName": "firebase",
+      "versions": [
+        {
+          "projects": ["@eisbuk/client"],
+          "version": "9.1.1"
+        },
+        {
+          "projects": ["@eisbuk/functions"],
+          "version": "^8.2.4"
+        }
+      ]
+    }
+  ]
+}

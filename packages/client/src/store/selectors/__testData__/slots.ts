@@ -4,8 +4,6 @@ import { Category, SlotType, luxon2ISODate, SlotsByDay } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
-import { createTestStore } from "@/__testUtils__/firestore";
-
 import { baseSlot } from "@/__testData__/slots";
 
 /**
@@ -253,20 +251,3 @@ export const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
   ["2021-09"]: fullCurrentMonth,
 };
 // #endregion testData
-
-// #region inputTestData
-/**
- * Test store populated with slots we're using to test the selector
- */
-export const testStore = createTestStore({
-  data: { slotsByDay },
-  date: DateTime.fromISO(currentWeekStartDate),
-});
-/**
- * Test store without slots entry, to test falling back to empty days
- */
-export const noSlotsStore = createTestStore({
-  data: { slotsByDay: null },
-  date: DateTime.fromISO(currentWeekStartDate),
-});
-// #endregion inputTestData

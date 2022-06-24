@@ -3,20 +3,16 @@
  */
 
 import * as firestore from "@firebase/firestore";
+import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 
-import {
-  Category,
-  Collection,
-  OrgSubCollection,
-  SlotType,
-} from "@eisbuk/shared";
+import { Category, SlotType } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { getTestEnv } from "@/__testSetup__/getTestEnv";
+import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { getNewStore } from "@/store/createStore";
 
-import { getOrganization } from "@/lib/getters";
+import * as getters from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
 
@@ -26,18 +22,13 @@ import * as appActions from "../appActions";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
 
-import { loginDefaultUser } from "@/__testUtils__/auth";
-
 import {
   initialSlotIds,
   initialSlots,
   testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
-
-const slotsCollectionPath = `${Collection.Organizations}/${getOrganization()}/${
-  OrgSubCollection.Slots
-}`;
+import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -61,16 +52,10 @@ jest
   .spyOn(appActions, "enqueueNotification")
   .mockImplementation(mockEnqueueSnackbar as any);
 
-/**
- * A mock function we're passing to `setupTestSlots` and returning as `dispatch`
- */
 const mockDispatch = jest.fn();
 
-/**
- * A spy of `getFirebase` function which we're occasionally mocking to throw error
- * for error handling tests
- */
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
 
 /**
  * Passing this for typesafety where the actual `store.getState` isn't needed
@@ -79,7 +64,6 @@ const dummyGetState = () => ({} as any);
 
 describe("Slot operations ->", () => {
   beforeEach(async () => {
-    await loginDefaultUser();
     jest.clearAllMocks();
   });
 
@@ -89,15 +73,18 @@ describe("Slot operations ->", () => {
       async () => {
         // set up initial state
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) => setupTestSlots({ db, store, slots: initialSlots }),
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
+            setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
         getFirestoreSpy.mockReturnValueOnce(db as any);
+        // make sure test uses the test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
         await createNewSlot(testFormValues)(mockDispatch, store.getState);
-        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
-        const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
+        const slotsCollRef = collection(db, getSlotsPath(organization));
+        const slotsInFS = (await getDocs(slotsCollRef)).docs;
         // check that the new slot was created
         expect(slotsInFS.length).toEqual(3);
         // since we're not setting the id manually, we're finding our test slot by filtering out initial slot ids
@@ -144,16 +131,19 @@ describe("Slot operations ->", () => {
         // set up initial state
         const slotId = "test-slot";
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) =>
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
             setupTestSlots({
               db,
               store,
               slots: { ...initialSlots, [slotId]: { ...testSlot, id: slotId } },
+              organization,
             }),
         });
         // make sure test uses the test firestore db
         getFirestoreSpy.mockReturnValueOnce(db as any);
+        // make sure test uses the test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // updates we're applying to slot
         const updates = {
           categories: Object.values(Category),
@@ -172,8 +162,8 @@ describe("Slot operations ->", () => {
           id: slotId,
         })(mockDispatch, store.getState);
         // check that the slot is properly updated
-        const slotDocRef = firestore.doc(db, slotsCollectionPath, slotId);
-        const testSlotInFS = (await firestore.getDoc(slotDocRef)).data();
+        const slotDocRef = doc(db, getSlotDocPath(organization, slotId));
+        const testSlotInFS = (await getDoc(slotDocRef)).data();
         expect(testSlotInFS).toEqual({
           ...testSlot,
           id: slotId,
@@ -220,21 +210,24 @@ describe("Slot operations ->", () => {
         // set up initial state
         const slotId = "test-slot";
         const store = getNewStore();
-        const db = await getTestEnv({
-          setup: (db) =>
+        const { db, organization } = await getTestEnv({
+          setup: (db, { organization }) =>
             setupTestSlots({
               db,
               store,
               slots: { ...initialSlots, [slotId]: { ...testSlot, id: slotId } },
+              organization,
             }),
         });
         // make sure test uses the test firestore db
         getFirestoreSpy.mockReturnValueOnce(db as any);
+        // make sure test uses the test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
         await deleteSlot(slotId)(mockDispatch, store.getState);
         // check that the slot was deleted from db
-        const slotsCollRef = firestore.collection(db, slotsCollectionPath);
-        const slotsInFS = (await firestore.getDocs(slotsCollRef)).docs;
+        const slotsCollRef = collection(db, getSlotsPath(organization));
+        const slotsInFS = (await getDocs(slotsCollRef)).docs;
         expect(slotsInFS.length).toEqual(2);
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
