@@ -38,8 +38,9 @@ export enum DeliveryStatus {
 
 /**
  * Interface of a process document. The `delivery` part contains
- * the delivery state data and is updated by processDelivery functionality.
- * The document will probably be filled with other data used for a particular delivery functionality.
+ * the delivery state data and is updated by `processDelivery` functionality.
+ *
+ * The `payload` property should house the payload sent to the deliver function (eg. email data for email sending functionality).
  */
 export interface ProcessDocument<P = Record<string, any>> {
   delivery: {
@@ -121,6 +122,10 @@ interface ErrorHelper {
   ): DeliverResultTuple<DeliveryStatus.Error>;
 }
 
+/**
+ * Deliver function (used to attempt the delivery, eg. send email), should adhere to
+ * this type so that the rest of the `processDelivery` can record state and process further.
+ */
 export interface DeliverCallback {
   (helpers: {
     /**

@@ -8,38 +8,6 @@ import {
   DeliveryQueue,
 } from "../enums/firestore";
 
-// #region organizations
-/** @TODO Uncomment this when we find a way to add organization templates for server emails */
-// /**
-//  * A config to be used for mail service, including mailing server
-//  * config as well as message template
-//  */
-// export interface OrgMailConfig {
-//   /**
-//    * SMTP transporter config for nodemailer
-//    */
-//   config: {
-//     host: string;
-//     port: number;
-//     auth: { user: string; pass: string };
-//   };
-//   /**
-//    * Template data for all emails sent from organization
-//    */
-//   template: {
-//     /**
-//      * Received email will show this address as `from`.
-//      *
-//      * _note: doesn't work with gmail, as gmail always uses the authenticated user as `from`_
-//      */
-//     from: string;
-//     /**
-//      * A subject for email template (i.e. "Link to manage your bookings")
-//      */
-//     subject: string;
-//   };
-// }
-
 /**
  * Organization data record included in each organization (other than nested collections)
  */

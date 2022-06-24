@@ -306,7 +306,7 @@ const constructValidationErrors = (
  *
  * https://www.npmjs.com/package/ajv-errors
  *
- * If any errors encountered, the function processes the ajv errors into string error message strings
+ * If any errors encountered, the function processes the ajv errors into error message strings
  * and returns them as an array
  *
  * Additionally, the function accepts a type parameter representing interface of the validated object,
