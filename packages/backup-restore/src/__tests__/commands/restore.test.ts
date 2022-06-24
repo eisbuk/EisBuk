@@ -1,34 +1,53 @@
 /**
  * @jest-environment node
  */
-import admin from "firebase-admin";
+import fs from "fs/promises";
 
-import { adminDb } from "../../__testSetup__/adminDb";
+import * as restore from "../../commands/restore/restore";
+import * as restoreService from "../../firestore/restoreService";
 
-import { makeProgram } from "../../command";
-import * as restore from "../../commands/restore";
-
-jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
-jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
+import { FsErrors } from "../../lib/types";
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-test("restore command", async () => {
-  const commandSpy = jest
-    .spyOn(restore, "restoreSingleOrgFromFs")
-    .mockImplementation();
+describe("restoreSingleOrgFromFs:", () => {
+  const { restoreSingleOrgFromFs } = restore;
 
-  const program = makeProgram({ exitOverride: true });
+  test("Catches an error if the file doesn't exist", async () => {
+    jest.spyOn(fs, "access").mockRejectedValue(false);
 
-  const filePath = "test.json";
+    const filePath = "";
 
-  program.parseAsync(["node", "eisbuk", "restore", filePath]);
+    await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+      FsErrors.FILE_NOT_FOUND
+    );
+  });
 
-  const [firstCall] = commandSpy.mock.calls;
-  const [resultPath] = firstCall;
+  test("Catches an error if the file is not valid json", async () => {
+    jest.spyOn(fs, "access").mockResolvedValue();
 
-  expect(commandSpy).toHaveBeenCalled();
-  expect(resultPath).toBe(filePath);
+    const filePath = "test.txt";
+
+    await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+      FsErrors.INVALID_FILE
+    );
+  });
+
+  test("Catches an error if the restore service fails", async () => {
+    jest.spyOn(fs, "readFile").mockResolvedValue("{}");
+    jest.spyOn(fs, "access").mockResolvedValue();
+
+    const mockRestoreServiceError = "Error writing to DB";
+    jest
+      .spyOn(restoreService, "restoreOrganizations")
+      .mockRejectedValue({ ok: false, message: mockRestoreServiceError });
+
+    const filePath = "test.json";
+
+    await expect(restoreSingleOrgFromFs(filePath)).rejects.toThrow(
+      mockRestoreServiceError
+    );
+  });
 });

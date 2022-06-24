@@ -1,21 +1,10 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { FsErrors } from "../lib/types";
+import { FsErrors } from "../../lib/types";
 
-import * as restoreService from "../firestore/restoreService";
-import { exists } from "../lib/helpers";
-
-/**
- * Get config option
- */
-export default async function restore(filePath: string): Promise<void> {
-  try {
-    await restoreSingleOrgFromFs(filePath);
-  } catch (err: any) {
-    console.error(err);
-  }
-}
+import * as restoreService from "../../firestore/restoreService";
+import { exists } from "../../lib/helpers";
 
 /**
  * restoreSingleOrgFromFs - Read an organizations data from JSON & write it back to the db

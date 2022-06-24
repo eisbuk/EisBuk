@@ -1,46 +1,30 @@
 /**
  * @jest-environment node
  */
-import admin from "firebase-admin";
+import fs from "fs/promises";
 
-import { adminDb } from "../../__testSetup__/adminDb";
+import * as backup from "../../commands/backup/backup";
+import * as backupService from "../../firestore/backupService";
 
-import { makeProgram } from "../../command";
-import * as backup from "../../commands/backup";
-
-jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
-jest.spyOn(admin, "initializeApp").mockImplementation((() => {}) as any);
+const testOrgId = "test-org-id";
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-test("backupAllOrgs command", async () => {
-  const commandSpy = jest
-    .spyOn(backup, "backupAllOrgsToFs")
-    .mockImplementation();
+describe("backupSingleOrgToFs:", () => {
+  const { backupSingleOrgToFs } = backup;
 
-  const program = makeProgram({ exitOverride: true });
+  test("Catches an error if the restore service fails", async () => {
+    jest.spyOn(fs, "readFile").mockResolvedValue("{}");
 
-  program.parseAsync(["node", "eisbuk", "backupAllOrgs"]);
+    const mockRestoreServiceError = "Error reading from DB";
+    jest
+      .spyOn(backupService, "backupSingleOrganization")
+      .mockRejectedValue({ ok: false, message: mockRestoreServiceError });
 
-  expect(commandSpy).toHaveBeenCalled();
-});
-
-test("backup command", async () => {
-  const commandSpy = jest
-    .spyOn(backup, "backupSingleOrgToFs")
-    .mockImplementation();
-
-  const program = makeProgram({ exitOverride: true });
-
-  const orgId = "testOrg";
-
-  program.parseAsync(["node", "eisbuk", "backup", orgId]);
-
-  const [firstCall] = commandSpy.mock.calls;
-  const [resultPath] = firstCall;
-
-  expect(commandSpy).toHaveBeenCalled();
-  expect(resultPath).toBe(orgId);
+    await expect(backupSingleOrgToFs(testOrgId)).rejects.toThrow(
+      mockRestoreServiceError
+    );
+  });
 });

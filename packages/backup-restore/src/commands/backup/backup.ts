@@ -1,22 +1,7 @@
 import fs from "fs/promises";
 import path from "path";
 
-import * as backupService from "../firestore/backupService";
-
-/**
- * Get config option
- */
-export default async function backup(orgId?: string): Promise<void> {
-  try {
-    if (orgId) {
-      await backupSingleOrgToFs(orgId);
-    } else {
-      await backupAllOrgsToFs();
-    }
-  } catch (err: any) {
-    console.error(err);
-  }
-}
+import * as backupService from "../../firestore/backupService";
 
 /**
  * backupSingleOrgToFs - Write a single organization to a JSON file in the current working directory
