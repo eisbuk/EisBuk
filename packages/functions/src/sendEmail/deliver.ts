@@ -38,7 +38,10 @@ const getSMTPPreferences = async (
   if (!secretsData) {
     throw new Error(__noSecretsError);
   }
-  return secretsData;
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { smsAuthToken, ...smtpPreferences } = secretsData;
+  return smtpPreferences;
 };
 
 /**
@@ -57,13 +60,13 @@ const processSMTPPreferences = ({
 
   // Add `auth` field only if auth data provided
   ...(smtpUser || smtpPass
-    ? {}
-    : {
+    ? {
         auth: {
           user: smtpUser,
           pass: smtpPass,
         },
-      }),
+      }
+    : {}),
 });
 // #region SMTPPreferences
 
