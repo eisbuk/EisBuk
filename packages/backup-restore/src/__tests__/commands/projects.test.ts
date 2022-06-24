@@ -3,39 +3,56 @@
  */
 
 import { makeProgram } from "../../command";
-import { defaultConfig } from "../../config/configstore";
+import { defaultConfig, configstore } from "../../config/configstore";
+
+import * as projectCmds from "../../commands/projects";
+
+const addProjectCmdSpy = jest
+  .spyOn(projectCmds, "addProjectCredentials")
+  .mockImplementation();
+
+const removeProjectCmdSpy = jest
+  .spyOn(projectCmds, "removeProjectCredentials")
+  .mockImplementation();
 
 afterAll(() => {
   jest.restoreAllMocks();
 });
 
-test("projects:list returns a list of project IDs whose credentials are stored", async () => {
-  // const consoleSpy = jest.spyOn(console, "log").mockImplementation();
-  // const program = makeProgram({ exitOverride: true });
-  // program.parseAsync(["node", "eisbuk", "projects:list"]);
-  // expect(consoleSpy).toBeCalledWith(defaultConfig.projects);
-});
+describe("Project commands", () => {
+  const configStoreSpy = jest.spyOn(configstore, "get");
+  const consoleSpy = jest.spyOn(console, "log").mockImplementation();
 
-test("projects:add adds firebase credentials to xdg-specific app data path", async () => {
-  // TODO: Figure out why this won't work, or re-structure configstore
-  // const mockServiceAccountJson = JSON.stringify({
-  //   projectId: "fake-id",
-  // });
-  // const configStoreSpy = jest.spyOn(configstore, "set").mockImplementation();
-  // jest.spyOn(fs, "access").mockResolvedValue();
-  // jest.spyOn(fs, "readFile").mockResolvedValue(mockServiceAccountJson);
-  // jest.spyOn(fs, "writeFile").mockResolvedValue();
-  // const program = makeProgram({ exitOverride: true });
-  // program.parseAsync(["node", "eisbuk", "projects:add", "serviceAccount.json"]);
-  // expect(configStoreSpy).toBeCalledWith(ConfigOptions.Projects, ["fake-id"]);
-});
+  const program = makeProgram({ exitOverride: true });
 
-test("projects:add adds firebase credentials to xdg-specific app data path", async () => {
-  // const mockProjectId = "fake-id";
-  // const configStoreSpy = jest.spyOn(configstore, "set").mockImplementation();
-  // jest.spyOn(fs, "access").mockResolvedValue();
-  // jest.spyOn(fs, "rm").mockResolvedValue();
-  // const program = makeProgram({ exitOverride: true });
-  // program.parseAsync(["node", "eisbuk", "projects:remove", mockProjectId]);
-  // expect(configStoreSpy).toBeCalledWith(ConfigOptions.Projects, []);
+  test("projects:list returns a list of project IDs whose credentials are stored", async () => {
+    configStoreSpy.mockReturnValue(defaultConfig.projects);
+
+    program.parseAsync(["node", "eisbuk", "projects:list"]);
+
+    expect(consoleSpy).toBeCalledWith(defaultConfig.projects);
+  });
+
+  // TODO: following two tests could be more extensive (see "commands/projects" src file)
+  test("projects:add is invoked with a filePath", async () => {
+    const testFilePath = "serviceAccount.json";
+
+    program.parseAsync(["node", "eisbuk", "projects:add", testFilePath]);
+
+    const [callOne] = addProjectCmdSpy.mock.calls;
+    const [argOne] = callOne;
+
+    expect(argOne).toBe(testFilePath);
+  });
+
+  test("projects:add is invoked with a filePath", async () => {
+    const testOrgId = "test-org-id";
+
+    program.parseAsync(["node", "eisbuk", "projects:remove", testOrgId]);
+
+    const [callOne] = removeProjectCmdSpy.mock.calls;
+    const [argOne] = callOne;
+
+    expect(argOne).toBe(testOrgId);
+  });
 });

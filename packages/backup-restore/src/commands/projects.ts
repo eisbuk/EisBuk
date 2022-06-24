@@ -16,6 +16,7 @@ export function listProjectCredentials(): void {
   console.log(projects);
 }
 
+// TODO: following two functions could be fragmented and tested better
 /**
  * Add firebase project credentials to XDG-specific AppData locaiton
  */
