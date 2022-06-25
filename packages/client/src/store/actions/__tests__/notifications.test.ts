@@ -1,6 +1,6 @@
 import { NotifVariant } from "@/enums/store";
 import { getNewStore } from "@/store/createStore";
-import { NotificationInterface } from "@/store/reducers/notificationsReducer";
+import { NotificationInterface } from "@/types/store";
 import {
   enqueueNotification,
   evictNotification,
