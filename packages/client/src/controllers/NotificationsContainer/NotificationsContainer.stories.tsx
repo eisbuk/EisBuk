@@ -1,10 +1,16 @@
-import React, { useRef, useState } from "react";
+import React, { useRef } from "react";
 import { ComponentMeta } from "@storybook/react";
-import { v4 as uuid } from "uuid";
+import { Provider as StoreProvider } from "react-redux";
 
 import { Layout } from "@eisbuk/ui";
 
 import { NotifVariant } from "@/enums/store";
+
+import { getNewStore } from "@/store/createStore";
+import {
+  enqueueNotification,
+  evictNotification,
+} from "@/store/actions/notificationsActions";
 
 import NotificationsContainer from "./NotificationsContainer";
 
@@ -13,52 +19,40 @@ export default {
   component: NotificationsContainer,
 } as ComponentMeta<typeof NotificationsContainer>;
 
-export const Default = (): JSX.Element => {
-  const [active, setActive] = useState<
-    | {
-        key: string;
-        message: string;
-        variant: NotifVariant;
-      }
-    | undefined
-  >();
+const store = getNewStore();
 
+export const Default = (): JSX.Element => {
   const variants = Object.values(NotifVariant);
 
   const nextVariant = useRef(0);
 
   const generateNotif = () => {
-    const key = uuid();
     const message = "Hello";
     const variant = variants[nextVariant.current];
     nextVariant.current = (nextVariant.current + 1) % 2;
-    setActive({ key, message, variant });
+    store.dispatch(enqueueNotification({ message, variant }));
   };
 
   const clearNotif = () => {
-    setActive(undefined);
+    store.dispatch(evictNotification());
   };
 
   return (
-    <div>
-      <Layout
-        Notifications={({ className }) => (
-          <NotificationsContainer className={className} active={active} />
-        )}
-      />
+    <StoreProvider store={store}>
+      <Layout Notifications={NotificationsContainer} />
       <br />
       <button
         className="bg-gray-200 rounded-md px-4 py-1 m-2"
         onClick={generateNotif}
       >
-        Generate notif
+        Enqueue notif
       </button>
       <button
         className="bg-gray-200 rounded-md px-4 py-1 m-2"
         onClick={clearNotif}
       >
-        Clear notif
+        Next notif
       </button>
-    </div>
+    </StoreProvider>
   );
 };
