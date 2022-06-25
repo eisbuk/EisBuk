@@ -1,6 +1,7 @@
-import { NotifVariant } from "@/enums/store";
 import { Reducer } from "redux";
 import { v4 as uuid } from "uuid";
+
+import { NotifVariant } from "@/enums/store";
 
 export interface NotificationInterface {
   key: string;
