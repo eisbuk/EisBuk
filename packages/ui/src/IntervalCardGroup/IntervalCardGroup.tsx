@@ -2,11 +2,13 @@ import React from "react";
 
 import { SlotInterface } from "@eisbuk/shared";
 
+import IntervalCard, { IntervalCardState } from "../IntervalCard";
+
 interface BookingCardGroupProps extends SlotInterface {
   /**
    * Booked interval for a slot, used to control the rendering
    */
-  bookedInterval: string | null;
+  bookedInterval?: string | null;
   /**
    * Disable all `IntervalCard`s rendered by this instance
    */
@@ -31,6 +33,36 @@ interface BookingCardGroupProps extends SlotInterface {
  *
  * The booking/canceling is controlled through `onBook` and `onCancel` handlers.
  */
-const BookingCardGroup: React.FC<BookingCardGroupProps> = () => null;
+const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
+  bookedInterval = null,
+  intervals,
+  onBook = () => {},
+  onCancel = () => {},
+  ...slot
+}) => {
+  const intervalsToRender = Object.keys(intervals || {});
+
+  return (
+    <>
+      {intervalsToRender.map((intervalKey) => {
+        // Get `startTime` and `endTime`
+        const interval = intervals[intervalKey];
+
+        const isActive = intervalKey === bookedInterval;
+
+        return (
+          <IntervalCard
+            key={intervalKey}
+            state={
+              isActive ? IntervalCardState.Active : IntervalCardState.Default
+            }
+            {...{ ...slot, interval, onCancel }}
+            onBook={() => onBook(intervalKey)}
+          />
+        );
+      })}
+    </>
+  );
+};
 
 export default BookingCardGroup;
