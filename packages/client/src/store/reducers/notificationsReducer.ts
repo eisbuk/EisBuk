@@ -39,6 +39,12 @@ const notificationsReducer: Reducer<
       const newNotification = { ...action.payload, key: uuid() };
       return { queue: [...state.queue, newNotification] };
 
+    case NotificationAction.Next:
+      if (state.queue.length > 1) {
+        return { queue: state.queue.slice(1) };
+      }
+      return state;
+
     default:
       return state;
   }

@@ -10,3 +10,8 @@ export const enqueueNotification = (
   type: NotificationAction.Enqueue,
   payload: notification,
 });
+
+export const nextNotification =
+  (): NotificationReducerAction<NotificationAction.Next> => ({
+    type: NotificationAction.Next,
+  });
