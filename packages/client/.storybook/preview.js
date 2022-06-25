@@ -3,6 +3,8 @@ import { muiTheme } from "storybook-addon-material-ui5";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 
+import "@eisbuk/ui/dist/style.css";
+
 import { available as availableThemes } from "@/themes";
 
 import { store } from "@/store";
