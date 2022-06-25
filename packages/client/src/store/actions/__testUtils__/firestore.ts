@@ -1,9 +1,8 @@
 import { AnyAction, Store } from "redux";
-import { doc, setDoc, collection } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 import { v4 as uuid } from "uuid";
 
 import {
-  Collection,
   OrgSubCollection,
   SlotInterface,
   SlotsByDay,
@@ -15,9 +14,7 @@ import {
   SlotAttendnace,
 } from "@eisbuk/shared";
 
-import { TestEnvFirestore } from "@/__testSetup__/getTestEnv";
-
-import { getOrganization } from "@/lib/getters";
+import { TestEnvFirestore } from "@/__testSetup__/firestore";
 
 import { LocalStore } from "@/types/store";
 
@@ -27,23 +24,13 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "@/store/actions/copyPaste";
-
-/**
- * A stored path to test organization in firestore
- */
-const orgPath = [Collection.Organizations, getOrganization()].join("/");
-/**
- * A path to `slots` collection in test organization
- */
-const slotsPath = [orgPath, OrgSubCollection.Slots].join("/");
-/**
- * A path to `customers` collection in test organization
- */
-const customersPath = [orgPath, OrgSubCollection.Customers].join("/");
-/*
- * A path to `slots` collection in test organization
- */
-const attendancePath = [orgPath, OrgSubCollection.Attendance].join("/");
+import {
+  getAttendanceDocPath,
+  getBookedSlotDocPath,
+  getBookingsDocPath,
+  getCustomerDocPath,
+  getSlotDocPath,
+} from "@/utils/firestore";
 
 interface AdminSetupFunction<
   T extends Record<string, any> = Record<string, never>
@@ -61,14 +48,17 @@ interface AdminSetupFunction<
  */
 export const setupTestAttendance: AdminSetupFunction<{
   attendance: Record<string, SlotAttendnace>;
-}> = async ({ attendance, db, store }) => {
+  organization: string;
+}> = async ({ attendance, db, store, organization }) => {
   // set attendance to store
   store.dispatch(updateLocalDocuments(OrgSubCollection.Attendance, attendance));
 
   // set desired values to emulated db
-  const attendanceCollRef = collection(db, attendancePath);
   const updates = Object.keys(attendance).map((slotId) =>
-    setDoc(doc(attendanceCollRef, slotId), attendance[slotId])
+    setDoc(
+      doc(db, getAttendanceDocPath(organization, slotId)),
+      attendance[slotId]
+    )
   );
 
   await Promise.all(updates);
@@ -79,14 +69,17 @@ export const setupTestAttendance: AdminSetupFunction<{
  */
 export const setupTestSlots: AdminSetupFunction<{
   slots: Record<string, SlotInterface>;
-}> = async ({ db, store, slots }) => {
+  organization: string;
+}> = async ({ db, store, slots, organization }) => {
   // aggregate slots (to slotsByDay) and update to store
   const slotsByDay = aggregateSlots(slots);
   store.dispatch(updateLocalDocuments(OrgSubCollection.SlotsByDay, slotsByDay));
   // update slots to firestore
   const slotIds = Object.keys(slots);
   await Promise.all(
-    slotIds.map((slotId) => setDoc(doc(db, slotsPath, slotId), slots[slotId]))
+    slotIds.map((slotId) =>
+      setDoc(doc(db, getSlotDocPath(organization, slotId)), slots[slotId])
+    )
   );
 };
 /**
@@ -110,40 +103,21 @@ export const setupCopyPaste: AdminSetupFunction<{
   }
 };
 /**
- * Creates a new redux store and new test environment firestore.
- * Populates both with customer's booking entry, booked slots and
- * slots created from booked slots data and customer's category
- * @param {Object} payload
- * @param {Object} payload.bookedSlots a record of `bookedSlots` for customer
- * @param {Object} payload.customer customer object
- * @param {Firestore} payload.db customer object
- * @param {Store} payload.store customer object
+ * Set up `bookings` data in emulated store and populate redux store
+ * with given and `bookings` customer doc and `bookedSlots`
  */
-export const setupTestBookings = async ({
+export const setupTestBookings: AdminSetupFunction<{
+  bookedSlots: Required<CustomerBookings>["bookedSlots"];
+  customer: Customer;
+  organization: string;
+}> = async ({
   db,
   store,
   bookedSlots,
   customer,
-}: {
-  db: TestEnvFirestore;
-  store: Store<LocalStore, AnyAction>;
-  bookedSlots: Required<CustomerBookings>["bookedSlots"];
-  customer: Customer;
+  organization,
 }): Promise<void> => {
   const { secretKey } = customer;
-
-  /** Path to customer's bookings */
-  const customerBookingsPath = [
-    Collection.Organizations,
-    getOrganization(),
-    OrgSubCollection.Bookings,
-    secretKey,
-  ].join("/");
-  /** Path to booked slots collection */
-  const bookedSlotsPath = [
-    customerBookingsPath,
-    BookingSubCollection.BookedSlots,
-  ].join("/");
 
   const slotIds = Object.keys(bookedSlots);
 
@@ -158,10 +132,16 @@ export const setupTestBookings = async ({
     slotIds.reduce(
       (acc, slotId) => [
         ...acc,
-        setDoc(doc(db, bookedSlotsPath, slotId), bookedSlots[slotId]),
+        setDoc(
+          doc(db, getBookedSlotDocPath(organization, secretKey, slotId)),
+          bookedSlots[slotId]
+        ),
       ],
       [
-        setDoc(doc(db, customerBookingsPath), getCustomerBase(customer)),
+        setDoc(
+          doc(db, getBookingsDocPath(organization, secretKey)),
+          getCustomerBase(customer)
+        ),
       ] as Promise<any>[]
     )
   );
@@ -171,16 +151,15 @@ export const setupTestBookings = async ({
  */
 export const setupTestCustomer: AdminSetupFunction<{
   customer: CustomerLoose;
-}> = async ({ customer, db, store }) => {
-  const customersRef = collection(db, customersPath);
-
+  organization: string;
+}> = async ({ customer, db, store, organization }) => {
   // id customer id or secretKey not provided, generate locally
   const id = customer.id || uuid();
   const secretKey = customer.secretKey || uuid();
   const customerEntry = { ...customer, id, secretKey };
 
   // udpate firestore
-  await setDoc(doc(customersRef, id), customerEntry);
+  await setDoc(doc(db, getCustomerDocPath(organization, id)), customerEntry);
 
   // set customer to the store
   store.dispatch(

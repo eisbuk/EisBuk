@@ -4,8 +4,6 @@ import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import { createTestStore } from "@/__testUtils__/firestore";
-
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
 import { walt, jian, saul } from "@/__testData__/customers";
@@ -30,7 +28,7 @@ const intervals15Keys = Object.keys(intervals15);
 /**
  * Customer we're using for tests
  */
-const customers = {
+export const attendanceCustomers = {
   [walt.id]: walt,
   [jian.id]: jian,
   [saul.id]: saul,
@@ -59,7 +57,7 @@ const nextDayISO = luxon2ISODate(testDateLuxon.plus({ days: 1 }));
 /**
  * `slotsByDay` entry in test store
  */
-export const slotsByDay = {
+export const attendanceSlotsByDay = {
   [monthString]: {
     [testDate]: slotsForADay,
     [nextDayISO]: slotsForNextDay,
@@ -166,14 +164,6 @@ export const attendance: LocalStore["firestore"]["data"]["attendance"] = {
     },
   },
 };
-
-/**
- * Store populated with test data for attendance selector test
- */
-export const testStore = createTestStore({
-  data: { attendance, customers, slotsByDay },
-  date: testDateLuxon,
-});
 
 /**
  * The struct we're expecting to receive for selector's test result (for test date)

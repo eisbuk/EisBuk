@@ -8,8 +8,6 @@ import {
 } from "@firebase/firestore";
 
 import {
-  Collection,
-  OrgSubCollection,
   CustomerLoose,
   CustomerBase,
   Customer,
@@ -34,11 +32,7 @@ import {
 import { getCustomersRecord } from "@/store/selectors/customers";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
-
-const getCustomersCollPath = () =>
-  `${Collection.Organizations}/${getOrganization()}/${
-    OrgSubCollection.Customers
-  }`;
+import { getCustomersPath } from "@/utils/firestore";
 
 /**
  * Creates firestore async thunk:
@@ -56,9 +50,12 @@ export const updateCustomer =
       const { id, ...updatedData } = customer;
       let docRef: DocumentReference<DocumentData>;
       if (id) {
-        docRef = doc(db, getCustomersCollPath(), id);
+        docRef = doc(db, getCustomersPath(getOrganization()), id);
       } else {
-        const customersCollRef = collection(db, getCustomersCollPath());
+        const customersCollRef = collection(
+          db,
+          getCustomersPath(getOrganization())
+        );
         docRef = doc(customersCollRef);
       }
 
@@ -92,7 +89,7 @@ export const deleteCustomer =
   async (dispatch) => {
     try {
       const db = getFirestore();
-      const docRef = doc(db, getCustomersCollPath(), customer.id);
+      const docRef = doc(db, getCustomersPath(getOrganization()), customer.id);
 
       await setDoc(docRef, { deleted: true }, { merge: true });
 
@@ -189,7 +186,7 @@ export const extendBookingDate =
     try {
       const db = getFirestore();
       await setDoc(
-        doc(db, getCustomersCollPath(), customerId),
+        doc(db, getCustomersPath(getOrganization()), customerId),
         { extendedDate },
         { merge: true }
       );

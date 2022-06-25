@@ -1,51 +1,54 @@
-import { getFirestore } from "@firebase/firestore";
+import { getFirestore, doc, setDoc } from "@firebase/firestore";
 
 import {
-  Collection,
   Customer,
-  OrgSubCollection,
   CustomerAttendance,
   SlotAttendnace,
   SlotInterface,
 } from "@eisbuk/shared";
 
-import { getOrganization } from "@/lib/getters";
-
 import { FirestoreThunk } from "@/types/store";
 
-import { showErrSnackbar } from "./appActions";
-import { doc, setDoc } from "firebase/firestore";
+import { getOrganization } from "@/lib/getters";
 
-const getAttendanceCollPath = () =>
-  `${Collection.Organizations}/${getOrganization()}/${
-    OrgSubCollection.Attendance
-  }`;
+import { showErrSnackbar } from "./appActions";
+
+import { getAttendanceDocPath } from "@/utils/firestore";
+
+interface UpdateAttendance<
+  P extends Record<string, any> = Record<string, unknown>
+> {
+  (
+    payload: {
+      slotId: SlotInterface["id"];
+      customerId: Customer["id"];
+    } & P
+  ): FirestoreThunk;
+}
 
 /**
  * Function called to mark attendance (with apropriate interval) for customer on given slot:
  * - if customer had booked, updates `attended` interval
  * - if customer had not booked creates a new entry with `booked = null` and `attended` the value of provided interval
  *
- * @param - { slotId, customerId, attendedInterval }
- * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
- * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
+ * @param {Object} payload
+ * @param {string} payload.slotId
+ * @param {string} payload.customerId
+ * @param {string} payload.attendedInterval
+ * @returns {FirestoreThunk} a ReduxThunk, reading necessary data from `firestore` entry in redux store
+ * and dispatching updates to firestore (which then update local store through web sockets, beyond functionality of this Thunk)
  */
-export const markAttendance =
-  ({
-    attendedInterval,
-    slotId,
-    customerId,
-  }: {
-    slotId: SlotInterface["id"];
-    customerId: Customer["id"];
-    attendedInterval: string;
-  }): FirestoreThunk =>
+export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
+  ({ attendedInterval, slotId, customerId }) =>
   async (dispatch, getState) => {
     try {
       const localState = getState();
 
       const db = getFirestore();
-      const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
+      const slotToUpdate = doc(
+        db,
+        getAttendanceDocPath(getOrganization(), slotId)
+      );
 
       // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
       const localAttendnaceEntry =
@@ -74,24 +77,23 @@ export const markAttendance =
  * - if customer had booked and didn't arrive, marks attended interval as `null`
  * - if customer had not booked (attendance was there by mistake probably), removes customer from slots attendance
  *
- * @param - { slotId, customerId }
+ * @param {Object} payload
+ * @param {string} payload.slotId
+ * @param {string} payload.customerId
  * @returns a ReduxThunk, reading necessary data from `firestore` entry in redux store
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
  */
-export const markAbsence =
-  ({
-    slotId,
-    customerId,
-  }: {
-    slotId: SlotInterface["id"];
-    customerId: Customer["id"];
-  }): FirestoreThunk =>
+export const markAbsence: UpdateAttendance =
+  ({ slotId, customerId }) =>
   async (dispatch, getState) => {
     try {
       const localState = getState();
 
       const db = getFirestore();
-      const slotToUpdate = doc(db, getAttendanceCollPath(), slotId);
+      const slotToUpdate = doc(
+        db,
+        getAttendanceDocPath(getOrganization(), slotId)
+      );
 
       // get attendnace entry from local store (to not overwrite the rest of the doc when updating)
       const localAttendnaceEntry =
