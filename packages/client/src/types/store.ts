@@ -26,6 +26,7 @@ import { ModalState } from "@/features/modal/types";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
+import { NotificationsState } from "@/store/reducers/notificationsReducer";
 
 // #region app
 /**
@@ -286,6 +287,7 @@ export interface LocalStore {
   copyPaste: CopyPasteState;
   auth: AuthState;
   modal: ModalState;
+  notifications: NotificationsState;
 }
 // #endregion FullStore
 
