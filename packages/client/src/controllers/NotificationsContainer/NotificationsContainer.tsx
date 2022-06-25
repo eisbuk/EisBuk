@@ -1,29 +1,28 @@
 import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 
 import { NotificationToast, NotificationToastVariant } from "@eisbuk/ui";
 
-import { NotifVariant } from "@/enums/store";
-
-/** This is @TEMP until other parts are integrated */
-interface Notif {
-  key: string;
-  message: string;
-  variant: NotifVariant;
-}
+import { getActiveNotification } from "@/store/selectors/notifications";
+import { NotificationInterface } from "@/store/reducers/notificationsReducer";
 
 /**
  * A controller component used to display notifications in an orderly fashion. It connects to the store
  * and receives from it the active notification.
  */
 const NotificationsContainer: React.FC<{
-  active?: Notif;
   className?: string;
-}> = ({ active, className = "" }) => {
+}> = ({ className = "" }) => {
+  const activeNotification = useSelector(getActiveNotification);
+
   // Current Toast is currently shown one. It has an entry animation and stays in place
-  const [currentToast, setCurrentToast] = useState<Notif | null>(null);
+  const [currentToast, setCurrentToast] =
+    useState<NotificationInterface | null>(null);
   // Exit Toast is the previously shown toast. I is set here so that it's rendered anew (when exiting)
   // for a limited time (enough to show the exit animation) and then removed.
-  const [exitToast, setExitToast] = useState<Notif | null>(null);
+  const [exitToast, setExitToast] = useState<NotificationInterface | null>(
+    null
+  );
 
   // Control the removal of exit toast from the DOM after the exit animation is finished
   useEffect(() => {
@@ -46,8 +45,8 @@ const NotificationsContainer: React.FC<{
   // When new toast comes in, set it as active and set the previous one (if any) to exit
   useEffect(() => {
     setExitToast(currentToast || null);
-    setCurrentToast(active || null);
-  }, [active]);
+    setCurrentToast(activeNotification || null);
+  }, [activeNotification]);
 
   return (
     <div className={["relative h-10 w-full", className].join(" ")}>
