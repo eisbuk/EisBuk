@@ -38,6 +38,7 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
   intervals,
   onBook = () => {},
   onCancel = () => {},
+  disabled: isDisabled,
   ...slot
 }) => {
   const intervalsToRender = Object.keys(intervals || {});
@@ -49,14 +50,21 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
         const interval = intervals[intervalKey];
 
         const isActive = intervalKey === bookedInterval;
+        // Display fadded if booked interval exists, but is not this interval (some other card is booked)
+        const isFadded = bookedInterval && intervalKey !== bookedInterval;
+
+        const state = isDisabled
+          ? IntervalCardState.Disabled
+          : isActive
+          ? IntervalCardState.Active
+          : isFadded
+          ? IntervalCardState.Faded
+          : IntervalCardState.Default;
 
         return (
           <IntervalCard
             key={intervalKey}
-            state={
-              isActive ? IntervalCardState.Active : IntervalCardState.Default
-            }
-            {...{ ...slot, interval, onCancel }}
+            {...{ ...slot, interval, onCancel, state }}
             onBook={() => onBook(intervalKey)}
           />
         );

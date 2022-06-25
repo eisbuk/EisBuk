@@ -38,10 +38,18 @@ export const Interactive = (): JSX.Element => {
   );
 
   return (
-    <IntervalCardGroup
-      {...{ ...dummySlot, bookedInterval }}
-      onBook={(interval) => setBookedInterval(interval)}
-      onCancel={() => setBookedInterval(null)}
-    />
+    <div className="flex flex-wrap gap-4 items-end">
+      <IntervalCardGroup
+        {...{ ...dummySlot, bookedInterval }}
+        onBook={(interval) => setBookedInterval(interval)}
+        onCancel={() => setBookedInterval(null)}
+      />
+    </div>
   );
 };
+
+export const Disabled = (): JSX.Element => (
+  <div className="flex flex-wrap gap-4 items-end">
+    <IntervalCardGroup disabled {...{ ...dummySlot }} />
+  </div>
+);
