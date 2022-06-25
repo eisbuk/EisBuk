@@ -86,18 +86,18 @@ const getBackgroundColor = (
   variant: IntervalCardVariant,
   state: IntervalCardState
 ) => {
-  const isActive =
-    variant === IntervalCardVariant.Booking &&
-    state === IntervalCardState.Active;
-  const isFaded =
-    variant === IntervalCardVariant.Booking &&
-    state === IntervalCardState.Faded;
+  const isActive = state === IntervalCardState.Active;
 
-  return isActive
+  // Disabled cards and all non-booking variants have white background without hover
+  const isWhite =
+    state === IntervalCardState.Disabled ||
+    variant !== IntervalCardVariant.Booking;
+
+  return isWhite
+    ? "bg-white"
+    : isActive
     ? backgroundColorLookup[type]
-    : isFaded
-    ? "bg-gray-100"
-    : "bg-white";
+    : "bg-white hover:bg-gray-100";
 };
 
 const backgroundColorLookup = {
@@ -130,7 +130,6 @@ const outlineColorLookup = {
   [SlotType.Ice]: {
     [IntervalCardState.Default]: "outline-ice-300",
     [IntervalCardState.Active]: "outline-cyan-500",
-    [IntervalCardState.Faded]: "outline-ice-300",
   },
   [SlotType.OffIce]: {
     [IntervalCardState.Active]: "outline-yellow-600",

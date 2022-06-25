@@ -50,15 +50,11 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
         const interval = intervals[intervalKey];
 
         const isActive = intervalKey === bookedInterval;
-        // Display fadded if booked interval exists, but is not this interval (some other card is booked)
-        const isFadded = bookedInterval && intervalKey !== bookedInterval;
 
         const state = isDisabled
           ? IntervalCardState.Disabled
           : isActive
           ? IntervalCardState.Active
-          : isFadded
-          ? IntervalCardState.Faded
           : IntervalCardState.Default;
 
         return (

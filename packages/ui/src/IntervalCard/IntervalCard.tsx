@@ -56,7 +56,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
     <IntervalCardContainer
       {...{ ...containerProps, state, duration, type, variant }}
     >
-      <div className="relative h-full w-full">
+      <div className="relative h-full w-full cursor-default select-none">
         {variant !== IntervalCardVariant.Booking && dateString}
 
         {timestring}
