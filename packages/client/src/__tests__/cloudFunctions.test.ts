@@ -61,8 +61,42 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ organization, html, subject })
+          )({ organization, message: { html, subject } })
         ).rejects.toThrow(HTTPSErrors.Unauth);
+      }
+    );
+    testWithEmulator(
+      "should not reject if user not admin but has secretKey",
+      async () => {
+        const saulPath = [
+          Collection.Organizations,
+          getOrganization(),
+          OrgSubCollection.Customers,
+          saul.id,
+        ].join("/");
+        const saulRef = getDocumentRef(adminDb, saulPath);
+        await saulRef.set(saul);
+
+        await signOut(auth);
+
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({
+            organization,
+            secretKey: saul.secretKey,
+            to,
+            message: { html, subject },
+          })
+        ).resolves.toEqual({
+          data: {
+            message: { html, subject },
+            to,
+            organization,
+            success: true,
+          },
+        });
       }
     );
 
@@ -73,13 +107,13 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ to, html, subject })
+          )({ to, message: { html, subject } })
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
 
     testWithEmulator(
-      "should reject if no recipient, html or subject provided",
+      "should reject if no recipient or message provided",
       async () => {
         try {
           await httpsCallable(
@@ -88,7 +122,22 @@ describe("Cloud functions", () => {
           )({ organization });
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: to, subject, html`
+            `${HTTPSErrors.MissingParameter}: to, message`
+          );
+        }
+      }
+    );
+    testWithEmulator(
+      "should reject if message has no html or subject provided",
+      async () => {
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization, to, message: {} });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: html, subject`
           );
         }
       }
