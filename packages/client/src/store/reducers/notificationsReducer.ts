@@ -45,6 +45,9 @@ const notificationsReducer: Reducer<
       }
       return state;
 
+    case NotificationAction.Evict:
+      return { queue: state.queue.slice(1) };
+
     default:
       return state;
   }

@@ -1,7 +1,11 @@
 import { NotifVariant } from "@/enums/store";
 import { getNewStore } from "@/store/createStore";
 import { NotificationInterface } from "@/store/reducers/notificationsReducer";
-import { enqueueNotification, nextNotification } from "../notificationsActions";
+import {
+  enqueueNotification,
+  evictNotification,
+  nextNotification,
+} from "../notificationsActions";
 
 const testNotification1 = {
   variant: NotifVariant.Success,
@@ -81,6 +85,34 @@ describe("Notifications actions", () => {
 
       expect(queue.length).toEqual(1);
       expect(firstNotificaiton).toEqual(testNotification1);
+    });
+  });
+
+  describe("evictNotification", () => {
+    test("should remove the first notification regardless of additional notifications being enqueued or not", () => {
+      const store = getNewStore();
+      setupQueue(store, [testNotification1, testNotification2]);
+
+      // Evict once, removing the first notification while the second enqueued becomes the first
+      store.dispatch(evictNotification());
+      const { queue: queue1 } = store.getState().notifications;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [{ key, ...firstNotificaiton1 }] = queue1;
+      expect(queue1.length).toEqual(1);
+      expect(firstNotificaiton1).toEqual(testNotification2);
+
+      // Evict again to assure the norification will get removed, regardless of it being the only one in the queue
+      // resulting in an empty queue
+      store.dispatch(evictNotification());
+      const { queue: queue2 } = store.getState().notifications;
+      expect(queue2).toEqual([]);
+    });
+
+    test("should not break if performed on an empty queue", () => {
+      const store = getNewStore();
+      store.dispatch(evictNotification());
+      const { queue } = store.getState().notifications;
+      expect(queue).toEqual([]);
     });
   });
 });
