@@ -4,7 +4,7 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import { HTTPSErrors, BookingsErrors} from "@eisbuk/shared";
+import { HTTPSErrors, BookingsErrors } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
@@ -18,7 +18,6 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { saul } from "@/__testData__/customers";
-
 
 describe("Cloud functions", () => {
   describe("ping", () => {
@@ -56,9 +55,8 @@ describe("Cloud functions", () => {
       async () => {
         const { organization } = await setUpOrganization(false);
 
-       
-        await adminDb.doc(getCustomerDocPath(organization,saul.id)).set(saul)
-       
+        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+
         await expect(
           httpsCallable(
             functions,
@@ -95,7 +93,6 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if no recipient or message provided",
       async () => {
-        let error = new Error();
         const { organization } = await setUpOrganization();
         try {
           await httpsCallable(
@@ -124,7 +121,6 @@ describe("Cloud functions", () => {
             `${HTTPSErrors.MissingParameter}: html, subject`
           );
         }
-       
       }
     );
   });
@@ -218,4 +214,3 @@ describe("Cloud functions", () => {
     );
   });
 });
-
