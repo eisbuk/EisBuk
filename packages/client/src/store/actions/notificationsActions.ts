@@ -1,5 +1,6 @@
+import { NotificationInterface } from "@/types/store";
+
 import {
-  NotificationInterface,
   NotificationReducerAction,
   NotificationAction,
 } from "../reducers/notificationsReducer";

@@ -3,8 +3,9 @@ import { useSelector } from "react-redux";
 
 import { NotificationToast, NotificationToastVariant } from "@eisbuk/ui";
 
+import { NotificationInterface } from "@/types/store";
+
 import { getActiveNotification } from "@/store/selectors/notifications";
-import { NotificationInterface } from "@/store/reducers/notificationsReducer";
 
 /**
  * A controller component used to display notifications in an orderly fashion. It connects to the store
