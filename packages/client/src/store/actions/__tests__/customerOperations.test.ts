@@ -261,11 +261,11 @@ xdescribe("customerOperations", () => {
         const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
 
         expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.subject).toBeDefined();
+        expect(sentMail.message.subject).toBeDefined();
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
-        expect(sentMail.html.includes(bookingsLink)).toBeTruthy();
-        expect(sentMail.html.includes(saul.name)).toBeTruthy();
+        expect(sentMail.message.subject.includes(bookingsLink)).toBeTruthy();
+        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

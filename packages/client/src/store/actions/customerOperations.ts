@@ -150,8 +150,10 @@ export const sendBookingsLink: SendBookingsLink =
           handler: CloudFunction.SendEmail,
           payload: {
             to: email,
-            html,
-            subject,
+            message: {
+              html,
+              subject,
+            },
           } as EmailMessage,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },

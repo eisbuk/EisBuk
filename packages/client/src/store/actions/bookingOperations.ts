@@ -176,10 +176,16 @@ export const sendICSFile: sendICSFile =
       const handler = CloudFunction.SendEmail;
       const payload = {
         to: email,
-        html,
-        subject,
-        filename: "bookedSlots.ics",
-        content: icsFile,
+        message: {
+          html,
+          subject,
+          attachments: [
+            {
+              filename: "bookedSlots.ics",
+              content: icsFile,
+            },
+          ],
+        },
         secretKey: secretKey,
       } as EmailMessage;
 

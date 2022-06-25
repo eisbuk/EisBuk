@@ -295,11 +295,16 @@ export type SlotAttendnace = {
 // #region cloudSentMessages
 export interface EmailMessage {
   to: string;
-  subject: string;
-  html: string;
-  content: string;
+  message: {
+    subject: string;
+    html: string;
+    attachments?: Attachment[];
+  };
 }
-
+interface Attachment {
+  filename: string;
+  content: string | Buffer;
+}
 export interface SMSMessage {
   to: string;
   message: string;
