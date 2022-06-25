@@ -15,3 +15,8 @@ export const nextNotification =
   (): NotificationReducerAction<NotificationAction.Next> => ({
     type: NotificationAction.Next,
   });
+
+export const evictNotification =
+  (): NotificationReducerAction<NotificationAction.Evict> => ({
+    type: NotificationAction.Evict,
+  });
