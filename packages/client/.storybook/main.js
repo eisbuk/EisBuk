@@ -7,6 +7,15 @@ module.exports = {
     "@storybook/addon-essentials",
     "@storybook/addon-a11y",
     "storybook-addon-material-ui5",
+    {
+      name: "@storybook/addon-postcss",
+      options: {
+        postcssLoaderOptions: {
+          // When using postCSS 8
+          implementation: require("postcss"),
+        },
+      },
+    },
   ],
   webpackFinal: (config) => {
     const src = path.resolve(process.cwd(), "src");
@@ -27,7 +36,7 @@ module.exports = {
 
     // if fileloader exists, exclude for '.svg'
     const fileLoaderRule = config.module.rules.find((rule) =>
-      rule.test.test(".svg")
+      rule?.test?.test(".svg")
     );
     if (fileLoaderRule) {
       fileLoaderRule.exclude = /\.svg$/;
