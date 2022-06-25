@@ -1,32 +1,7 @@
 import { Reducer } from "redux";
 import { v4 as uuid } from "uuid";
 
-import { NotifVariant } from "@/enums/store";
-
-export interface NotificationInterface {
-  key: string;
-  message: string;
-  variant: NotifVariant;
-}
-
-/**
- * Notification porton of the store is in charge of enqueueing notifications and displaying them
- * in an orderly manner.
- */
-export interface NotificationsState {
-  /**
-   * Queue houses all notifications showing or to be shown, where
-   * the first one (queue[0]) is the one currently shown.
-   */
-  queue: NotificationInterface[];
-  /**
-   * This flag is `true` in special cases where there's only one notification in store,
-   * but has been shown for long enough that it can be replaced with the new one.
-   *
-   * If `false`, any new notification being added will simply be enqueued at the end of the queue
-   */
-  canEvict: boolean;
-}
+import { NotificationsState, NotificationInterface } from "@/types/store";
 
 export enum NotificationAction {
   Enqueue = "@@NOTIFICATION/ENQUEUE",
