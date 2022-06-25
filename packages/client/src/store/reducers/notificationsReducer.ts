@@ -10,6 +10,7 @@ export interface NotificationInterface {
 
 export interface NotificationsState {
   queue: NotificationInterface[];
+  canEvict: boolean;
 }
 
 export enum NotificationAction {
@@ -28,6 +29,7 @@ export type NotificationReducerAction<A extends NotificationAction> =
 
 const initialState: NotificationsState = {
   queue: [],
+  canEvict: true,
 };
 
 const notificationsReducer: Reducer<
@@ -37,16 +39,22 @@ const notificationsReducer: Reducer<
   switch (action.type) {
     case NotificationAction.Enqueue:
       const newNotification = { ...action.payload, key: uuid() };
-      return { queue: [...state.queue, newNotification] };
+      return {
+        ...state,
+        queue: state.canEvict
+          ? [newNotification]
+          : [...state.queue, newNotification],
+        canEvict: false,
+      };
 
     case NotificationAction.Next:
       if (state.queue.length > 1) {
-        return { queue: state.queue.slice(1) };
+        return { ...state, queue: state.queue.slice(1) };
       }
-      return state;
+      return { ...state, canEvict: true };
 
     case NotificationAction.Evict:
-      return { queue: state.queue.slice(1) };
+      return { canEvict: false, queue: state.queue.slice(1) };
 
     default:
       return state;
