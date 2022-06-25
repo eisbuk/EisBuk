@@ -25,11 +25,6 @@ module.exports = {
       "@assets": path.join(__dirname, "..", "src", "assets"),
     };
 
-    const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test(".svg")
-    );
-    fileLoaderRule.exclude = /\.svg$/;
-
     return config;
   },
 };

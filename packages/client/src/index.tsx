@@ -1,7 +1,12 @@
+// Main CSS is imported here to signal the bundler the usage of Tailwind
+// in order to generate a PostCSS built css file next to the bundle
+import "./main.css";
+
 import React from "react";
 import ReactDOM from "react-dom";
 
 // import "@eisbuk/translations";
+import "@eisbuk/ui/dist/style.css";
 
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
