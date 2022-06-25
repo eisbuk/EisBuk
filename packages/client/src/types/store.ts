@@ -24,6 +24,7 @@ import {
 import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
 import { DocumentData } from "firebase/firestore";
+import { NotificationsState } from "@/store/reducers/notificationsReducer";
 
 // #region app
 /**
@@ -281,6 +282,7 @@ export interface LocalStore {
   app: AppState;
   copyPaste: CopyPasteState;
   auth: AuthState;
+  notifications: NotificationsState;
 }
 // #endregion FullStore
 
