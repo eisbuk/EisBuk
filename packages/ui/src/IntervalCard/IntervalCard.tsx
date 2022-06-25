@@ -70,7 +70,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
 
       {variant !== IntervalCardVariant.Simple && (
         <BookingButton
-          className="absolute right-2 bottom-2"
+          className="absolute right-2 bottom-2 min-w-[85px]"
           {...{ type, variant, state, duration }}
           onClick={handleBookingClick}
         />
