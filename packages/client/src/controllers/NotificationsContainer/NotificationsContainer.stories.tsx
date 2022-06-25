@@ -2,8 +2,11 @@ import React, { useRef, useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 import { v4 as uuid } from "uuid";
 
-import NotificationsContainer from "./NotificationsContainer";
+import { Layout } from "@eisbuk/ui";
+
 import { NotifVariant } from "@/enums/store";
+
+import NotificationsContainer from "./NotificationsContainer";
 
 export default {
   title: "Notifications Container",
@@ -38,7 +41,11 @@ export const Default = (): JSX.Element => {
 
   return (
     <div>
-      <NotificationsContainer {...{ active }} />
+      <Layout
+        Notifications={({ className }) => (
+          <NotificationsContainer className={className} active={active} />
+        )}
+      />
       <br />
       <button
         className="bg-gray-200 rounded-md px-4 py-1 m-2"
