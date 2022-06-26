@@ -46,6 +46,7 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   className,
   deadline,
   month,
+  onFinalize,
   as = "div",
   ...props
 }) => {
@@ -78,11 +79,16 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
         <ExclamationCircle />
       </span>,
       <span
+        key="countdown-message"
         className="max-w-[200px] text-center md:max-w-none md:whitespace-nowrap"
         dangerouslySetInnerHTML={{ __html: countdownMessage }}
       />,
       variant === BookingsCountdownVariant.SecondDeadline && (
-        <Button className="w-3/4 text-white bg-gray-500 tracking-wider active:bg-gray-600 md:w-auto md:absolute md:right-2">
+        <Button
+          key="finalize-button"
+          className="w-3/4 text-white bg-gray-500 tracking-wider active:bg-gray-600 md:w-auto md:absolute md:right-2"
+          onClick={onFinalize}
+        >
           {i18n.t(ActionButton.FinalizeBookings)}
         </Button>
       ),
