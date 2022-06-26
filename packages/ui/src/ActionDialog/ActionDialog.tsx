@@ -28,14 +28,14 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
     <div>{children}</div>
     <div className="flex space-x-2">
       <Button
-        className="text-gray-700 font-medium bg-gray-100 hover:bg-opacity-0"
+        className="!text-gray-700 font-medium bg-gray-100 hover:bg-opacity-0"
         size={ButtonSize.LG}
         onClick={onCancel}
       >
         {cancelLabel}
       </Button>
       <Button
-        className="text-red-700 bg-red-200 hover:bg-red-100"
+        className="!text-red-700 bg-red-200 hover:bg-red-100"
         size={ButtonSize.LG}
         onClick={onConfirm}
       >
