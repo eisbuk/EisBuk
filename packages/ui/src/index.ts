@@ -14,6 +14,7 @@ import IntervalCard from "./IntervalCard";
 import ActionDialog from "./ActionDialog";
 import IntervalCardGroup from "./IntervalCardGroup";
 import SlotsDayContainer from "./SlotsDayContainer";
+import BookingsCountdown from "./BookingsCountdown";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -33,4 +34,5 @@ export {
   ActionDialog,
   IntervalCardGroup,
   SlotsDayContainer,
+  BookingsCountdown,
 };
