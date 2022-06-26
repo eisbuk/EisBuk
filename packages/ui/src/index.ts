@@ -32,7 +32,10 @@ export {
   SlotTypeIcon,
   IntervalCard,
   ActionDialog,
+<<<<<<< HEAD
   IntervalCardGroup,
   SlotsDayContainer,
+=======
+>>>>>>> 3acb53e5 (Scaffold BookingsCountdownContainer)
   BookingsCountdown,
 };
