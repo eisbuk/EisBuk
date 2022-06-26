@@ -20,16 +20,19 @@ export const Variants = (): JSX.Element => (
   <>
     <h1 className="text-lg font-bold mb-4">Variant: "first-deadline"</h1>
     <BookingsCountdown
+      className="mb-8 w-sm"
       {...{ countdownDate, message }}
       variant={BookingsCountdownVariant.FirstDeadline}
     />
     <h1 className="text-lg font-bold mb-4">Variant: "second-deadline"</h1>
     <BookingsCountdown
+      className="mb-8 w-sm"
       {...{ countdownDate, message }}
       variant={BookingsCountdownVariant.SecondDeadline}
     />
     <h1 className="text-lg font-bold mb-4">Variant: "bookings-locked"</h1>
     <BookingsCountdown
+      className="mb-8 w-sm"
       {...{ countdownDate, message }}
       variant={BookingsCountdownVariant.BookingsLocked}
     />
