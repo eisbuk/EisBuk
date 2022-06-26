@@ -1,7 +1,10 @@
 import React from "react";
 import { DateTime } from "luxon";
 
+import i18n, { BookingCountdownMessage } from "@eisbuk/translations";
 import { ExclamationCircle } from "@eisbuk/svg";
+
+import useCountdown from "./useCountdown";
 
 export enum BookingsCountdownVariant {
   FirstDeadline = "first-deadline",
@@ -13,16 +16,15 @@ interface BookingsCountdownProps extends React.HTMLAttributes<HTMLElement> {
   /**
    * Date to countdown to (in luxon `DateTime` format)
    */
-  countdownDate: DateTime;
+  deadline: DateTime | null;
+  /**
+   * The date the countdown/locked bookings message is for
+   */
+  month: DateTime;
   /**
    * first/second deadline, or bookings locked message
    */
   variant: BookingsCountdownVariant;
-  /**
-   * Text of the message to render on the countdown element.
-   * I can feature html tags (such as `<strong>`).
-   */
-  message: string;
   /**
    * A handler fired when "finalize bookings" button is clicked
    */
@@ -37,10 +39,26 @@ interface BookingsCountdownProps extends React.HTMLAttributes<HTMLElement> {
 const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   variant,
   className,
-  message,
+  deadline,
+  month,
   as = "div",
   ...props
 }) => {
+  const countdown = useCountdown(deadline, "hour");
+  const message = variantMessageLookup[variant];
+
+  const countdownMessage = i18n.t(message, {
+    ...(countdown
+      ? // bookings locked message (no deadline, no countdown) doesn't accept any props
+        {
+          days: countdown.days,
+          hours: countdown.hours,
+          date: deadline,
+          month: month,
+        }
+      : { month }),
+  });
+
   return React.createElement(
     as,
     {
@@ -53,7 +71,7 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
       </span>,
       <span
         className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
-        dangerouslySetInnerHTML={{ __html: message }}
+        dangerouslySetInnerHTML={{ __html: countdownMessage }}
       />,
     ]
   );
@@ -62,14 +80,15 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
 const baseClasses = [
   "px-4",
   "py-3",
+  "flex",
+  "flex-row",
+  "items-center",
+  "justify-evenly",
   "border-2",
   "rounded-lg",
-  "text-gray-500",
   "text-base",
   "select-none",
-  "flex",
-  "items-center",
-  "flex-row",
+  "md:justify-start",
 ];
 
 const getColorClasses = (variant: BookingsCountdownVariant) =>
@@ -85,6 +104,15 @@ const variantColorLookup = {
     "text-gray-500",
     "border-gray-300",
   ],
+};
+
+const variantMessageLookup = {
+  [BookingsCountdownVariant.FirstDeadline]:
+    BookingCountdownMessage.FirstDeadline,
+  [BookingsCountdownVariant.SecondDeadline]:
+    BookingCountdownMessage.FirstDeadline,
+  [BookingsCountdownVariant.BookingsLocked]:
+    BookingCountdownMessage.BookingsLocked,
 };
 
 export default BookingsCountdown;
