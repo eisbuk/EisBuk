@@ -20,7 +20,7 @@ const Layout: React.FC<LayoutProps> = ({
   children,
 }) => {
   return (
-    <div>
+    <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
       <header className="bg-gray-800">
         <div className="content-container">
           <div className={getHeaderRowClasses("top")}>
@@ -40,14 +40,14 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="w-full flex justify-center items-center gap-4 md:gap-3 md:justify-start md:max-w-1/2">
               {additionalButtons}
             </div>
-            <div className="fixed bottom-[27px] left-4 right-4 md:static">
+            <div className="fixed z-100 bottom-[27px] left-4 right-4 md:static">
               {Notifications && <Notifications className="w-full md:w-auto" />}
             </div>
           </div>
         </div>
       </header>
 
-      <main>{children}</main>
+      <main className="flex overflow-y-scroll">{children}</main>
     </div>
   );
 };
