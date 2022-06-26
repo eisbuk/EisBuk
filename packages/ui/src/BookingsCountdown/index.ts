@@ -1,3 +1,7 @@
-import BookingsCountdown from "./BookingsCountdown";
+import BookingsCountdown, {
+  BookingsCountdownVariant,
+} from "./BookingsCountdown";
+
+export { BookingsCountdownVariant };
 
 export default BookingsCountdown;

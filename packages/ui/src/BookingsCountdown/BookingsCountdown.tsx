@@ -34,7 +34,7 @@ interface BookingsCountdownProps extends React.HTMLAttributes<HTMLElement> {
    * A handler fired when "finalize bookings" button is clicked
    */
   onFinalize?: () => void;
-  as?: keyof JSX.IntrinsicElements;
+  as?: keyof JSX.IntrinsicAttributes;
 }
 
 /**
