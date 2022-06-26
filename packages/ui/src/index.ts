@@ -11,6 +11,7 @@ import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
 import Layout from "./Layout";
 import IntervalCard from "./IntervalCard";
+import BookingsCountdown from "./BookingsCountdown";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -27,4 +28,5 @@ export {
   CalendarNav,
   SlotTypeIcon,
   IntervalCard,
+  BookingsCountdown,
 };
