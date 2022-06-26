@@ -1,8 +1,13 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import i18n, { BookingCountdownMessage } from "@eisbuk/translations";
+import i18n, {
+  BookingCountdownMessage,
+  ActionButton,
+} from "@eisbuk/translations";
 import { ExclamationCircle } from "@eisbuk/svg";
+
+import Button from "../Button";
 
 import useCountdown from "./useCountdown";
 
@@ -66,18 +71,27 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
       className: [getColorClasses(variant), className].join(" "),
     },
     [
-      <span key="exclamation-circle" className="w-6 h-6 mb-2 md:mb-0 md:mr-2">
+      <span
+        key="exclamation-circle"
+        className="hidden w-6 h-6 mb-2 md:block md:mb-0 md:mr-2"
+      >
         <ExclamationCircle />
       </span>,
       <span
-        className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
+        className="max-w-[200px] text-center md:max-w-none md:whitespace-nowrap"
         dangerouslySetInnerHTML={{ __html: countdownMessage }}
       />,
+      variant === BookingsCountdownVariant.SecondDeadline && (
+        <Button className="w-3/4 text-white bg-gray-500 tracking-wider active:bg-gray-600 md:w-auto md:absolute md:right-2">
+          {i18n.t(ActionButton.FinalizeBookings)}
+        </Button>
+      ),
     ]
   );
 };
 
 const baseClasses = [
+  "relative",
   "px-4",
   "py-3",
   "flex",
@@ -88,6 +102,8 @@ const baseClasses = [
   "rounded-lg",
   "text-base",
   "select-none",
+  "flex-wrap",
+  "gap-3",
   "md:justify-start",
 ];
 
@@ -95,11 +111,11 @@ const getColorClasses = (variant: BookingsCountdownVariant) =>
   [...baseClasses, ...variantColorLookup[variant]].join(" ");
 
 const variantColorLookup = {
-  [BookingsCountdownVariant.FirstDeadline]: ["text-red-600", "border-red-400"],
-  [BookingsCountdownVariant.SecondDeadline]: [
+  [BookingsCountdownVariant.FirstDeadline]: [
     "text-yellow-600",
     "border-yellow-500",
   ],
+  [BookingsCountdownVariant.SecondDeadline]: ["text-red-600", "border-red-400"],
   [BookingsCountdownVariant.BookingsLocked]: [
     "text-gray-500",
     "border-gray-300",
