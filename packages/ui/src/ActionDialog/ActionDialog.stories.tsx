@@ -15,7 +15,7 @@ export const Default = (): JSX.Element => (
         title="Cancel booking for"
         cancelLabel="Go Back"
         confirmLabel="Confirm Cancellation"
-        setOpen={() => {}}
+        onCancel={() => {}}
         onConfirm={() => {}}
       >
         This is a placeholder message for a Simple Interval Card, but also stunt
