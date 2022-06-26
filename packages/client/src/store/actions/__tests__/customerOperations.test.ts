@@ -254,7 +254,7 @@ describe("customerOperations", () => {
         expect(sentMail.message.subject).toBeDefined();
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
-        expect(sentMail.message.subject.includes(bookingsLink)).toBeTruthy();
+        expect(sentMail.message.html.includes(bookingsLink)).toBeTruthy();
         expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
 
         // check for success notification
