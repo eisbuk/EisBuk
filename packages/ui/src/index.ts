@@ -11,6 +11,8 @@ import TabItem from "./TabItem";
 import CalendarNav from "./CalendarNav";
 import Layout from "./Layout";
 import IntervalCard from "./IntervalCard";
+import ActionDialog from "./ActionDialog";
+import SlotsDayContainer from "./SlotsDayContainer";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -27,4 +29,6 @@ export {
   CalendarNav,
   SlotTypeIcon,
   IntervalCard,
+  ActionDialog,
+  SlotsDayContainer,
 };
