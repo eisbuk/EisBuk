@@ -21,12 +21,14 @@ describe("add athlete", () => {
     cy.getAttrWith("data-testid", "add-athlete").click();
 
     cy.fillInCustomerData(saul);
-
+    // The phone number for saul is wrong, so we'll fix it
+    cy.getAttrWith("name", "phone").clear();
+    cy.getAttrWith("name", "phone").type("+4911111111111");
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
 
-  it.only("allows customer form submission with minimal fields", () => {
+  it("allows customer form submission with minimal fields", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
@@ -58,52 +60,36 @@ describe("add athlete", () => {
     cy.getAttrWith("data-testid", "add-athlete").click();
 
     // test phone number without "+" or "00" prepended to it
-    cy.getAttrWith("name", "phone").clearAndType("099 2222 868");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
-    cy.resetCustomerForm();
 
     // test phone number for edge cases
-    cy.getAttrWith("name", "phone").clearAndType("foo +099 2222 868");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("foo +099 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.resetCustomerForm();
-
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222 868 foo");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222 868 foo");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test too long and too short phone numbers
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222 86877777777777");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter(
+      "+099 2222 86877777777777"
+    );
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.resetCustomerForm();
-
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
-    cy.resetCustomerForm();
 
     // make sure phone number length can't be "cheated" with too much whitespace
-    cy.getAttrWith("name", "phone").clearAndType("+385 099   11");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 099   11");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
-    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("00385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
 
-    cy.resetCustomerForm();
-
-    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
-    cy.getAttrWith("type", "submit").click();
+    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
@@ -148,5 +134,22 @@ describe("add athlete", () => {
     // all of the data above should be submitable
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${archer.name} ${archer.surname} update`);
+  });
+
+  it("prefills the number field of the first athlete", () => {
+    cy.visit(PrivateRoutes.Athletes);
+    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("name", "subscriptionNumber").should("have.value", "1");
+  });
+  it("prefills the number field with max + 1", () => {
+    cy.initAdminApp().then((organization) =>
+      cy.updateFirestore(organization, ["saul_with_extended_date.json"])
+    );
+    cy.visit(PrivateRoutes.Athletes);
+    // We need to wait for athletes to be loaded: if we click the "Add athlete"
+    // button too early we'll get a default value of 1
+    cy.contains("Saul Goodman"); // I will only speak in the presence of my lawyer!
+    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("name", "subscriptionNumber").should("have.value", "42");
   });
 });
