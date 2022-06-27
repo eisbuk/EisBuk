@@ -3,6 +3,8 @@ name: CypressMatrix
   push:
     branches:
     - cypress-matrix/**
+  schedule:
+  - cron: 30 5 * * 1,3
 jobs:
   cypress-run:
     name: Cypress browser tests
