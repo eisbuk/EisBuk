@@ -30,6 +30,7 @@ import useTitle from "@/hooks/useTitle";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { isEmpty } from "@/utils/helpers";
+import { getNewSubscriptionNumber } from "./utils";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -39,6 +40,7 @@ const CustomersPage: React.FC = () => {
   useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList(true));
+  const subscriptionNumber = getNewSubscriptionNumber(customers);
 
   const [addAthleteDialog, setAddAthleteDialog] = useState(false);
 
@@ -70,6 +72,7 @@ const CustomersPage: React.FC = () => {
         <CustomerForm
           open={addAthleteDialog}
           onClose={toggleAddAthleteDialog}
+          customer={{ subscriptionNumber }}
           updateCustomer={(customer) => dispatch(updateCustomer(customer))}
         />
       </Grid>

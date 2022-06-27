@@ -39,6 +39,10 @@ describe("login", () => {
 
   describe("Email login", () => {
     beforeEach(() => {
+      // This test was failing from time to time: Cypress would enter the test
+      // with an already logged in user
+      cy.clearCookies();
+      cy.visit(PrivateRoutes.Root);
       // start email auth flow
       cy.clickButton(t(AuthTitle.SignInWithEmail));
     });
