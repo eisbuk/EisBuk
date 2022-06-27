@@ -13,6 +13,7 @@ import Layout from "./Layout";
 import IntervalCard from "./IntervalCard";
 import ActionDialog from "./ActionDialog";
 import IntervalCardGroup from "./IntervalCardGroup";
+import SlotsDayContainer from "./SlotsDayContainer";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -31,4 +32,5 @@ export {
   IntervalCard,
   ActionDialog,
   IntervalCardGroup,
+  SlotsDayContainer,
 };
