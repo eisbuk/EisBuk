@@ -21,7 +21,9 @@ describe("add athlete", () => {
     cy.getAttrWith("data-testid", "add-athlete").click();
 
     cy.fillInCustomerData(saul);
-
+    // The phone number for saul is wrong, so we'll fix it
+    cy.getAttrWith("name", "phone").clear();
+    cy.getAttrWith("name", "phone").type("+4911111111111");
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
