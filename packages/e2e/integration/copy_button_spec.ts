@@ -17,11 +17,15 @@ describe("Copy Button", () => {
     cy.visit(PrivateRoutes.Slots);
     cy.getAttrWith("data-testid", "enable-edit-toggle").click();
 
+    const traslatedDate = i18n.t(DateFormat.Full, {
+      date: testDateLuxon,
+    });
+    // Make sure to wait enough time for the slots to be fetched:
+    // The word "competitive" will appear only when slots are displayed.
+    cy.contains("competitive");
     cy.getAttrWith(
       "aria-label",
-      `${i18n.t(AdminAria.CopySlots)} ${i18n.t(DateFormat.Full, {
-        date: testDateLuxon,
-      })}`
+      `${i18n.t(AdminAria.CopySlots)} ${traslatedDate}`
     )
       .click() // We really need two click statements here - I'm not sure why
       .click({ force: true })
@@ -29,9 +33,7 @@ describe("Copy Button", () => {
 
     cy.getAttrWith(
       "aria-label",
-      `${i18n.t(AdminAria.CopiedSlotsBadge)} ${i18n.t(DateFormat.Full, {
-        date: testDateLuxon,
-      })}`
+      `${i18n.t(AdminAria.CopiedSlotsBadge)} ${traslatedDate}`
     ).within(() => {
       cy.get(".BaseBadge-badge").should("be.visible");
       return undefined;
