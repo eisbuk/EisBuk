@@ -6,13 +6,13 @@
       "certificateExpiration": "2001-01-01",
       "id": "saul",
       "email": "saul@better.call",
-      "phone": "123456777",
+      "phone": "+123456777",
       "birthday": "2001-01-01",
       "covidCertificateReleaseDate": "2021-01-01",
       "covidCertificateSuspended": true,
       "category": "competitive",
       "secretKey": "123445",
-      "subscriptionNumber": "",
+      "subscriptionNumber": "41",
       "extendedDate": "2022-01-05"
     }
   }

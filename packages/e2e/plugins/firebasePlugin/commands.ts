@@ -103,7 +103,11 @@ const addFirebaseCommands = (): void => {
   /**
    * Set up app for testing
    */
-  Cypress.Commands.add("initAdminApp", async () => {
+  Cypress.Commands.add("initAdminApp", () => {
+    // TODO: this clearcookies should in theory not be necessary: cypress should take
+    // care of this. But we're observing in tests, sometimes the user is already logged
+    // in, and thus the test fails.
+    cy.clearCookies();
     // create a random organization name in order to run each test
     // against it's own organization, using the same db without conflicts
     const organization = uuidv4();
@@ -112,12 +116,14 @@ const addFirebaseCommands = (): void => {
       win.localStorage.setItem("organization", organization);
     });
     // create a default organization (containing the default user as an admin)
-    await httpsCallable(
-      functions,
-      CloudFunction.CreateDefaultUser
-    )({ organization });
+    cy.wrap(
+      httpsCallable(
+        functions,
+        CloudFunction.CreateDefaultUser
+      )({ organization })
+    );
 
-    return organization;
+    return cy.wrap(organization);
   });
 
   Cypress.Commands.add("addAuthUser", async (payload) => {

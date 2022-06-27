@@ -1,0 +1,78 @@
+#! YAML library files must be named *.lib.yml
+#@ load("cache.lib.yml", "cache_node", "cache_cypress")
+#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+#@ load("secrets.lib.yml", "check_secrets")
+#@ load("rclone.lib.yml", "install_rclone")
+#@ load("rclone.lib.yml", "install_gcloud_credentials")
+#@ load("rclone.lib.yml", "set_results_destination")
+#@ load("storybook.lib.yml", "build_storybook")
+
+#! You can run this workflow bu pushing to a branch with the name
+#! cypress-matrix/<anything>
+
+name: CypressMatrix
+
+"on":
+  push:
+    branches:
+      - 'cypress-matrix/**'
+  schedule:
+    - cron: '30 5 * * 1,3'
+
+jobs:
+  cypress-run:
+    name: Cypress browser tests
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        dummy1: [1,2,3,4,5,6]
+        dummy2: [1,2,3,4,5,6]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "14"
+      - #@ cache_cypress()
+      - #@ rush_add_path()
+      - #@ rush_update()
+      - #@ rush_build()
+      - name: Build app
+        run: cd packages/client && rushx build:test
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        with:
+          start: rush emulators:start
+          #! We're using our own instalation as it is, so just skipping this part
+          install: false
+          working-directory: packages/e2e
+          wait-on: http://localhost:8080, http://localhost:5000
+          record: false
+          config-file: cypress-ci.json
+      - #@ check_secrets()
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        if: steps.has_secret.outputs.HAS_SECRETS
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: packages/e2e/coverage/lcov.info
+          base-path: packages/e2e
+          flag-name: run-cypress
+          parallel: true
+      - #@ install_gcloud_credentials()
+      - #@ set_results_destination(additional_id="-${{ matrix.dummy1 }}-${{ matrix.dummy2 }}")
+      - #@ install_rclone()
+      - name: Copy test results to gcloud
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+        run: |
+          rclone copy packages/e2e/reports/html/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/ --log-level INFO
+          rclone copy packages/e2e/coverage/ gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress --log-level INFO
+      - name: Print gcloud url to view test results
+        if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
+        run: |
+          mkdir result_tabs
+          echo Check out test results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html
+          echo Check out coverage result: https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/index.html
+          echo "[Check out test results](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/index.html)" > result_tabs/cypress.md
+          echo "[Check out coverage result](https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage-cypress/lcov-report/index.html)" >> result_tabs/cypress.md
