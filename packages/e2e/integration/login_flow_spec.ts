@@ -30,10 +30,7 @@ describe("login", () => {
       .then((organization) =>
         cy.updateFirestore(organization, ["customers.json"])
       )
-      .then(() => {
-        cy.visit(PrivateRoutes.Root);
-        return cy.clearCookies();
-      });
+      .then(() => cy.visit(PrivateRoutes.Root));
   });
 
   afterEach(() => {
