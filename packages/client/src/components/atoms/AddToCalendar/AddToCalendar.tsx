@@ -160,7 +160,7 @@ const createCancelledEvents = (
   displayName: string
 ) => {
   Object.values(previousCalendar).forEach((uid) => {
-    const start = DateTime.utc()
+    const start = DateTime.local()
       .set({
         year: Number(uid.substring(8, 12)),
         month: Number(uid.substring(12, 14)),
@@ -168,8 +168,10 @@ const createCancelledEvents = (
         hour: Number(uid.substring(0, 2)),
         minute: Number(uid.substring(2, 4)),
       })
+      .setZone("utc")
       .toJSDate();
-    const end = DateTime.utc()
+
+    const end = DateTime.local()
       .set({
         year: Number(uid.substring(8, 12)),
         month: Number(uid.substring(12, 14)),
@@ -177,6 +179,7 @@ const createCancelledEvents = (
         hour: Number(uid.substring(4, 6)),
         minute: Number(uid.substring(6, 8)),
       })
+      .setZone("utc")
       .toJSDate();
 
     icalendar.addEvent(
