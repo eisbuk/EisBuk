@@ -78,7 +78,7 @@ jobs:
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}-${{ matrix.dummy1 }}-${{ matrix.dummy2 }}"
       id: results-destination
     - name: Install rclone
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS

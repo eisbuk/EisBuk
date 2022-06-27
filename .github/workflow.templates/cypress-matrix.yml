@@ -61,7 +61,7 @@ jobs:
           flag-name: run-cypress
           parallel: true
       - #@ install_gcloud_credentials()
-      - #@ set_results_destination()
+      - #@ set_results_destination(additional_id="-${{ matrix.dummy1 }}-${{ matrix.dummy2 }}")
       - #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
