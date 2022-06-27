@@ -50,7 +50,7 @@ jobs:
     - name: Build packages
       run: rush build
     - name: Build app
-      run: cd packages/client && rushx build:test
+      run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
