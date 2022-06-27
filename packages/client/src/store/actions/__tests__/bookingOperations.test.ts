@@ -26,21 +26,6 @@ import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 
-
-// mock functions and app packages because they
-// get imported by utils/firebase used inside bookingActions
-jest.mock("@firebase/functions", () => ({
-  getFunctions: jest.fn(),
-  httpsCallable: () => jest.fn(),
-}));
-jest.mock("@/utils/firebase", () => ({
-  createCloudFunctionCaller: jest.fn(),
-}));
-
-jest.mock("@firebase/app", () => ({
-  ...jest.requireActual("@firebase/app"),
-  getApp: jest.fn(),
-}));
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
  * Here we're using the same implmentation as the original function (action creator),
