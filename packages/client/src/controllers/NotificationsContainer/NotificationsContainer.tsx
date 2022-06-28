@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
 
 import { NotificationToast, NotificationToastVariant } from "@eisbuk/ui";
 
 import { NotificationInterface } from "@/types/store";
 
-import { getActiveNotification } from "@/store/selectors/notifications";
+import useNotifications from "@/hooks/useNotifications";
 
 /**
  * A controller component used to display notifications in an orderly fashion. It connects to the store
@@ -14,12 +13,13 @@ import { getActiveNotification } from "@/store/selectors/notifications";
 const NotificationsContainer: React.FC<{
   className?: string;
 }> = ({ className = "" }) => {
-  const activeNotification = useSelector(getActiveNotification);
+  const { active: activeNotification, handleRemoveNotification } =
+    useNotifications({ timeouts: { minTimeout: 3000, maxTimeout: 4000 } });
 
   // Current Toast is currently shown one. It has an entry animation and stays in place
   const [currentToast, setCurrentToast] =
     useState<NotificationInterface | null>(null);
-  // Exit Toast is the previously shown toast. I is set here so that it's rendered anew (when exiting)
+  // Exit Toast is the previously shown toast. It is set here so that it's rendered anew (when exiting)
   // for a limited time (enough to show the exit animation) and then removed.
   const [exitToast, setExitToast] = useState<NotificationInterface | null>(
     null
@@ -56,6 +56,7 @@ const NotificationsContainer: React.FC<{
           className="!absolute top-0 right-0 z-10 animate-slide-in"
           key={currentToast?.key}
           variant={currentToast?.variant as unknown as NotificationToastVariant}
+          onClose={handleRemoveNotification}
         >
           {currentToast?.message}
         </NotificationToast>
@@ -65,6 +66,7 @@ const NotificationsContainer: React.FC<{
           className="!absolute top-0 right-0 z-0 animate-pop-out"
           key={exitToast?.key}
           variant={exitToast?.variant as unknown as NotificationToastVariant}
+          onClose={handleRemoveNotification}
         >
           {exitToast?.message}
         </NotificationToast>
