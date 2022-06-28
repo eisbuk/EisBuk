@@ -3,7 +3,6 @@ import { SlotInterface, SlotInterval } from "@eisbuk/shared";
 export enum IntervalCardState {
   Default = "default",
   Active = "active",
-  Faded = "faded",
   Disabled = "disabled",
 }
 
