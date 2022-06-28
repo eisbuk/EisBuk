@@ -6,7 +6,9 @@ import { ModalAction, ModalReducerAction, ModalState } from "./types";
  * @param {string} payload.component name of a (whitelisted) component should be rendered inside a modal
  * @param {Object} payload.props appropriate props for the component rendered within modal
  */
-export const openModal = (payload: ModalState): ModalReducerAction => ({
+export const openModal = (
+  payload: NonNullable<ModalState>
+): ModalReducerAction => ({
   type: ModalAction.Open,
   payload,
 });
