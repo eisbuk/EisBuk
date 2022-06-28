@@ -1,7 +1,7 @@
 import { Command } from "commander";
 
 import backup from "./commands/backup";
-import restore from "./commands/restore";
+import restore, { useConfirmRestore } from "./commands/restore";
 import { getConfigOption, listOptions } from "./commands/config-get";
 import { setConfigOption } from "./commands/config-set";
 import {
@@ -9,7 +9,7 @@ import {
   addProjectCredentials,
   removeProjectCredentials,
 } from "./commands/projects";
-import { useFirebase } from "./hooks/before";
+import { useFirebase } from "./hooks";
 
 interface programOptions {
   exitOverride?: boolean;
@@ -97,6 +97,7 @@ export function makeProgram(
       "Path to a JSON file of organisation data that will restore/overwrite production data."
     )
     .hook("preAction", useFirebase)
+    .hook("preAction", useConfirmRestore)
     .action(restore);
 
   return program;

@@ -1,10 +1,15 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { FsErrors } from "../../lib/types";
+import { Command } from "commander";
 
 import * as restoreService from "../../firestore/restoreService";
+
+import { configstore, ConfigOptions } from "../../config/configstore";
+import { useConfirmPrompt } from "../../hooks";
+
 import { exists } from "../../lib/helpers";
+import { FsErrors } from "../../lib/types";
 
 /**
  * restoreSingleOrgFromFs - Read an organizations data from JSON & write it back to the db
@@ -40,4 +45,22 @@ export async function restoreSingleOrgFromFs(filePath: string): Promise<void> {
   } catch (err: any) {
     throw new Error(err.message);
   }
+}
+
+/**
+ * Prompts user to confirm potentially destructive restore action before continuing
+ */
+export async function useConfirmRestore(
+  _: Command,
+  actionCommand: Command
+): Promise<void> {
+  const activeProject = configstore.get(ConfigOptions.ActiveProject);
+
+  const [filePath] = actionCommand.args;
+  const file = path.basename(filePath);
+
+  const message = `Restoring organization in project: "${activeProject}" with the contents of ${file}.
+  Any existing organisation data will be overwritten: Are you sure you want to continue?`;
+
+  await useConfirmPrompt(message);
 }

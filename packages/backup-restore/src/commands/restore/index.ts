@@ -1,4 +1,4 @@
-import { restoreSingleOrgFromFs } from "./restore";
+import { restoreSingleOrgFromFs, useConfirmRestore } from "./restore";
 
 /**
  * Restore command
@@ -10,3 +10,5 @@ export default async function restore(filePath: string): Promise<void> {
     console.error(err);
   }
 }
+
+export { useConfirmRestore };
