@@ -39,20 +39,21 @@ export const Default = (): JSX.Element => {
 
   return (
     <StoreProvider store={store}>
-      <Layout Notifications={NotificationsContainer} />
-      <br />
-      <button
-        className="bg-gray-200 rounded-md px-4 py-1 m-2"
-        onClick={generateNotif}
-      >
-        Enqueue notif
-      </button>
-      <button
-        className="bg-gray-200 rounded-md px-4 py-1 m-2"
-        onClick={clearNotif}
-      >
-        Next notif
-      </button>
+      <Layout Notifications={NotificationsContainer}>
+        <br />
+        <button
+          className="bg-gray-200 rounded-md px-4 py-1 m-2"
+          onClick={generateNotif}
+        >
+          Enqueue notif
+        </button>
+        <button
+          className="bg-gray-200 rounded-md px-4 py-1 m-2"
+          onClick={clearNotif}
+        >
+          Next notif
+        </button>
+      </Layout>
     </StoreProvider>
   );
 };
