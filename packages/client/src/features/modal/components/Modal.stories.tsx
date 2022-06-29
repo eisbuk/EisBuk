@@ -7,7 +7,7 @@ import { Button, Layout } from "@eisbuk/ui";
 import { getNewStore } from "@/store/createStore";
 
 import Modal from "./Modal";
-import { openModal } from "./actions";
+import { openModal } from "../actions";
 import { testSlot } from "@/store/actions/__testData__/slotOperations";
 
 export default {

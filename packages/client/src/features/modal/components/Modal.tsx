@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import componentWhitelist from "./components";
+import { componentWhitelist } from "../components";
 
-import { closeModal } from "./actions";
-import { getModal } from "./selectors";
+import { closeModal } from "../actions";
+import { getModal } from "../selectors";
 
 /**
  * Main component for the `modal` feature. I uses the state in store to render an appropriate

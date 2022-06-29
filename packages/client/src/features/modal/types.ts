@@ -1,4 +1,4 @@
-import componentWhitelist from "./components";
+import { componentWhitelist } from "./components";
 
 export enum ModalAction {
   Open = "@@MODAL/OPEN",
