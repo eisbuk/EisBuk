@@ -13,14 +13,14 @@ interface Timeouts {
   minTimeout?: number;
   maxTimeout?: number;
 }
-interface useNotificationsHook {
+interface UseNotificationsHook {
   (timeouts: Timeouts): {
     active: NotificationInterface | undefined;
     handleRemoveNotification: () => void;
   };
 }
 
-const useNotifications: useNotificationsHook = ({
+const useNotifications: UseNotificationsHook = ({
   minTimeout = 3000,
   maxTimeout = 4000,
 }) => {
@@ -33,9 +33,6 @@ const useNotifications: useNotificationsHook = ({
   const afterMaxTimeout = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    afterMinTimeout.current && clearTimeout(afterMinTimeout.current);
-    afterMaxTimeout.current && clearTimeout(afterMaxTimeout.current);
-
     afterMinTimeout.current = setTimeout(() => {
       dispatch(nextNotification());
     }, minTimeout);
