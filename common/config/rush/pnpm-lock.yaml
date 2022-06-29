@@ -29,6 +29,7 @@ importers:
       jest: ^27.5.1
       p-retry: ^4.6.1
       typescript: ~4.6.3
+      typescript-bundle: ~1.0.18
       uuid: ^8.3.2
     dependencies:
       '@eisbuk/shared': link:../shared
@@ -37,6 +38,7 @@ importers:
       env-paths: 2.2.1
       firebase-admin: 9.12.0
       inquirer: 8.2.4
+      typescript-bundle: 1.0.18
     devDependencies:
       '@babel/core': 7.18.5
       '@babel/plugin-transform-runtime': 7.18.5_@babel+core@7.18.5
@@ -6887,12 +6889,6 @@ packages:
 
   /@types/node/16.11.41:
     resolution: {integrity: sha512-mqoYK2TnVjdkGk8qXAVGc/x9nSaTpSrFaGFm43BUH3IdoBV0nta6hYaGmdOvIMlbHJbUEVen3gvwpwovAZKNdQ==}
-
-  /@types/nodemailer/6.4.4:
-    resolution: {integrity: sha512-Ksw4t7iliXeYGvIQcSIgWQ5BLuC/mljIEbjf615svhZL10PE9t+ei8O9gDaD3FPCasUJn9KTLwz2JFJyiiyuqw==}
-    dependencies:
-      '@types/node': 16.11.38
-    dev: true
 
   /@types/normalize-package-data/2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
@@ -20718,6 +20714,11 @@ packages:
   /typedarray/0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
     dev: true
+
+  /typescript-bundle/1.0.18:
+    resolution: {integrity: sha512-ZtzMZPzW3bnL4c+jBjgSHxlnW9TdWQjFS5RLk4k0YJb85zv78rdslf13mKXUgHZjTeEyO8R59IQ4WqSdlEXhAw==}
+    hasBin: true
+    dev: false
 
   /typescript/4.6.4:
     resolution: {integrity: sha512-9ia/jWHIEbo49HfjrLGfKbZSuWo9iTMwXO+Ca3pRsSpbsMbc7/IU8NKdCZVRRBafVPGnoJeFL76ZOAA84I9fEg==}

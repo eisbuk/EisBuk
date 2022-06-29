@@ -1,0 +1,16 @@
+{
+  "extends": "../scaffold/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "baseUrl": ".",
+    "outFile": "dist/cli.js",
+    "sourceMap": true,
+    "removeComments": false,
+    "declaration": true,
+    "module": "system",
+    "types": ["node", "jest"],
+    "isolatedModules": false
+  },
+  "exclude": ["node_modules"],
+  "include": ["./src/cli.ts"]
+}

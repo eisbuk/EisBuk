@@ -13,11 +13,11 @@
   },
   "types": "dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "build-link": "tsc && pnpm link --global",
+    "build": "tsc-bundle tsconfig-build.json && chmod 755 dist/cli.js && sed -i '1 i #!/usr/bin/env node' dist/cli.js",
+    "build-link": "rushx build && pnpm link --global",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
-    "typecheck": "tsc",
+    "typecheck": "tsc --noEmit",
     "test": "bash -c '(trap \"kill 0\" SIGINT; firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles src\")'"
   },
   "dependencies": {
@@ -26,7 +26,8 @@
     "commander": "^8.3.0",
     "configstore": "^5.0.0",
     "env-paths": "^2.2.1",
-    "inquirer": "^8.0.0"
+    "inquirer": "^8.0.0",
+    "typescript-bundle": "~1.0.18"
   },
   "devDependencies": {
     "@babel/core": "7.x",
