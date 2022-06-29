@@ -18,6 +18,7 @@ import AthletesPage from "@/pages/customers";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
+import CustomerAreaPageWIP from "@/pages/customer_area_wip";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
@@ -69,6 +70,10 @@ const AppContent: React.FC = () => {
         <Route
           path={`${Routes.CustomerArea}/:secretKey/:customerRoute?`}
           component={CustomerAreaPage}
+        />
+        <Route
+          path={`${Routes.CustomerArea}_wip/:secretKey`}
+          component={CustomerAreaPageWIP}
         />
         <Route path={Routes.Unauthorized} component={Unauthorized} exact />
         <Route path={Routes.NotRegistered} component={NotRegistered} exact />
