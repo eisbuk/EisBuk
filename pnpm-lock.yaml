@@ -97,6 +97,7 @@ importers:
       clsx: ^1.1.1
       cypress: ^8.7.0
       cypress-mochawesome-reporter: ^2.3.0
+      datebook: ^7.0.8
       debugging-aid: ^0.5.3
       eslint-config-google: ^0.14.0
       eslint-import-resolver-typescript: ^2.4.0
@@ -166,6 +167,7 @@ importers:
       "@sentry/react": 6.19.6_react@16.14.0
       "@sentry/tracing": 6.19.6
       clsx: 1.1.1
+      datebook: 7.0.8
       firebase: 9.1.1
       firebase-tools: 9.23.3
       firebaseui: 6.0.1_firebase@9.1.1
@@ -12073,6 +12075,15 @@ packages:
     resolution: { integrity: sha1-+v1Ej3IRXvHitzkVWukvK+bCjdE= }
     dev: true
 
+  /datebook/7.0.8:
+    resolution:
+      {
+        integrity: sha512-+EYcW6Ly06MBjGuJUEfJPb4ZrBa9VutxGAbErBy9NOqOlaSmxnChEAEetyo+uyseFNvGNuO593frXcQJDnGpYw==,
+      }
+    dependencies:
+      file-saver: 2.0.5
+    dev: false
+
   /dateformat/3.0.3:
     resolution:
       {
@@ -14636,6 +14647,13 @@ packages:
       schema-utils: 3.1.1
       webpack: 4.46.0
     dev: true
+
+  /file-saver/2.0.5:
+    resolution:
+      {
+        integrity: sha512-P9bmyZ3h/PRG+Nzga+rbdI4OEpNDzAVyy74uVO9ATgzLK6VtAsYybF/+TOCvrc0MO793d6+42lLyZTw7/ArVzA==,
+      }
+    dev: false
 
   /file-system-cache/1.0.5:
     resolution: { integrity: sha1-hCWbNqK7uNPW6xAh0xMv/mTP/08= }

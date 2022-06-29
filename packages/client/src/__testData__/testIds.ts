@@ -9,6 +9,11 @@ export const __confirmDialogYesId__ = "confirm-dialog-yes-button";
 export const __confirmDialogNoId__ = "confirm-dialog-no-button";
 // #endregion ConfirmDialog
 
+// #region ConfirmDialog
+export const __inputDialogSubmitId__ = "input-dialog-submit-button";
+export const __emailInput__ = "input-dialog-email-input";
+// #endregion ConfirmDialog
+
 // #region SlotOperationButtons
 export const __newSlotButtonId__ = "new-slot-button";
 export const __editSlotButtonId__ = "edit-slot-button";

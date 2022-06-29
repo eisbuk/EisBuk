@@ -18,7 +18,10 @@ import { testDate, testDateLuxon } from "./date";
  * @returns
  */
 const createIntervalEntry = (startHour: number, duration: number) => {
-  const startTimeLuxon = DateTime.fromObject({ hour: startHour });
+  const startTimeLuxon = DateTime.fromObject(
+    { hour: startHour },
+    { zone: "utc" }
+  );
   const endTimeLuxon = startTimeLuxon.plus({ hours: duration });
 
   const startTime = startTimeLuxon.toISOTime().substring(0, 5);

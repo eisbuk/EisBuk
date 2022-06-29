@@ -149,6 +149,11 @@ service cloud.firestore {
             checkBookedSlotCategory(slotId)  
           )
         }
+        match /calendar/{date} {
+          // Anybody with secret key should be able to read and write 
+          allow read, write: if true;
+          
+        }
       }
       // #endregion bookings-checks
       
