@@ -1,7 +1,4 @@
-import fs from "fs";
 import Configstore from "configstore";
-
-const pkg = JSON.parse(fs.readFileSync("./package.json", "utf8"));
 
 export enum ConfigOptions {
   Projects = "projects",
@@ -24,4 +21,7 @@ export const defaultConfig: Config = {
   emulatorHost: "localhost:8080",
 };
 
-export const configstore = new Configstore(pkg.name, defaultConfig);
+export const configstore = new Configstore(
+  "@eisbuk/backup-restore",
+  defaultConfig
+);
