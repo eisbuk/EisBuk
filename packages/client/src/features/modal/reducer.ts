@@ -1,6 +1,6 @@
 import { Reducer } from "redux";
 
-import { ModalState, ModalReducerAction } from "./types";
+import { ModalState, ModalReducerAction, ModalAction } from "./types";
 
 /**
  * A reducer for modal state. Should be used to define a reducer for a property
@@ -8,7 +8,19 @@ import { ModalState, ModalReducerAction } from "./types";
  * against it, and a `Modal` component can be used (as a singleton) to render a modal.
  */
 const modalReducer: Reducer<ModalState, ModalReducerAction> = (
-  state = null
-): ModalState => state;
+  state = null,
+  action
+): ModalState => {
+  switch (action.type) {
+    case ModalAction.Open:
+      return action.payload;
+
+    case ModalAction.Close:
+      return null;
+
+    default:
+      return state;
+  }
+};
 
 export default modalReducer;
