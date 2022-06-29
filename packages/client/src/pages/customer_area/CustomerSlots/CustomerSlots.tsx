@@ -44,6 +44,13 @@ interface Props {
    */
   slots: SlotsByDay;
   /**
+   * used for inferring slot type for a booked slot in addToCalendar
+   * @TODO remove this once ice and off ice slots are not separated anymore
+   * Record of slots grouped by day's ISO date (day),
+   * keyed by slotId within each day.
+   */
+  rawSlots: SlotsByDay;
+  /**
    * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
    * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
    */
@@ -65,6 +72,7 @@ interface Props {
  */
 const CustomerSlots: React.FC<Props> = ({
   slots,
+  rawSlots,
   bookedSlots,
   view = CustomerRoute.BookIce,
 }) => {
@@ -119,10 +127,9 @@ const CustomerSlots: React.FC<Props> = ({
   const content = (
     <>
       {countdownProps && <BookingsCountdown {...countdownProps} />}
-      {countdownProps?.deadline === null &&
-        Object.keys(bookedSlotsByMonth).length && (
-          <AddToCalendar bookedSlots={bookedSlotsByMonth} />
-        )}
+      {Object.keys(bookedSlotsByMonth).length > 0 && (
+        <AddToCalendar bookedSlots={bookedSlotsByMonth} slots={rawSlots} />
+      )}
       {orderedDates?.map((date) => {
         const luxonDay = DateTime.fromISO(date);
         const slostForDay = slots[date] || {};

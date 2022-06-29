@@ -13,7 +13,6 @@ import { enqueueNotification, showErrSnackbar } from "./appActions";
 
 const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}`;
-
 export const updateOrganization =
   (
     orgData: OrganizationData,

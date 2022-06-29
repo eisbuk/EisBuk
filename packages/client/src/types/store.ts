@@ -9,6 +9,7 @@ import { User } from "@firebase/auth";
 import {
   AuthStatus,
   BookingSubCollection,
+  CalendarEvents,
   Collection,
   Customer,
   CustomerBase,
@@ -162,6 +163,7 @@ export interface FirestoreData {
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;
   };
+  [BookingSubCollection.Calendar]: CalendarEvents;
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
   [Collection.PublicOrgInfo]: {
@@ -219,7 +221,8 @@ export type CollectionSubscription =
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings
   | OrgSubCollection.Attendance
-  | BookingSubCollection.BookedSlots;
+  | BookingSubCollection.BookedSlots
+  | BookingSubCollection.Calendar;
 /**
  * Whitelisted actions for firestore reducer
  */

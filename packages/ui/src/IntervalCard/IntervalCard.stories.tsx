@@ -113,9 +113,6 @@ export const States = (): JSX.Element => (
       <StorybookItem height={160} label="Active">
         <IntervalCard {...baseSlot} state={IntervalCardState.Active} />
       </StorybookItem>
-      <StorybookItem height={160} label="Faded">
-        <IntervalCard {...baseSlot} state={IntervalCardState.Faded} />
-      </StorybookItem>
       <StorybookItem height={160} label="Disabled">
         <IntervalCard {...baseSlot} state={IntervalCardState.Disabled} />
       </StorybookItem>
@@ -133,13 +130,6 @@ export const States = (): JSX.Element => (
         <IntervalCard
           {...baseSlot}
           state={IntervalCardState.Active}
-          type={SlotType.OffIce}
-        />
-      </StorybookItem>
-      <StorybookItem height={160} label="Faded">
-        <IntervalCard
-          {...baseSlot}
-          state={IntervalCardState.Faded}
           type={SlotType.OffIce}
         />
       </StorybookItem>

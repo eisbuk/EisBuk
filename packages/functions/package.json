@@ -30,7 +30,8 @@
     "retry": "^0.13.1",
     "ts-node": "^10.5.0",
     "unix-timestamp": "^0.2.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "nodemailer": "~6.7.3"
   },
   "devDependencies": {
     "@firebase/app-types": "^0.7.0",

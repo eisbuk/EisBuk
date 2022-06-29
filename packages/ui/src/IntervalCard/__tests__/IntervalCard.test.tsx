@@ -67,12 +67,6 @@ describe("IntervalCard", () => {
     },
     {
       variant: IntervalCardVariant.Booking,
-      state: IntervalCardState.Faded,
-      onBook: true,
-      onCancel: false,
-    },
-    {
-      variant: IntervalCardVariant.Booking,
       state: IntervalCardState.Disabled,
       onBook: false,
       onCancel: false,
@@ -88,12 +82,6 @@ describe("IntervalCard", () => {
     {
       variant: IntervalCardVariant.Calendar,
       state: IntervalCardState.Active,
-      onBook: false,
-      onCancel: true,
-    },
-    {
-      variant: IntervalCardVariant.Calendar,
-      state: IntervalCardState.Faded,
       onBook: false,
       onCancel: true,
     },

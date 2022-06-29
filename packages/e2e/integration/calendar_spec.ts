@@ -2,10 +2,11 @@ import { DateTime, DateTimeUnit } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
 import i18n, {
-  createDateTitle,
   ActionButton,
   AdminAria,
   BookingAria,
+  createDateTitle,
+  NotificationMessage,
 } from "@eisbuk/translations";
 
 import {
@@ -15,14 +16,13 @@ import {
   __dayWithSlots__,
 } from "../temp";
 
-import path from "path";
-
-import testCustomers from "../__testData__/customers.json";
-import extendedDateCustomers from "../__testData__/saul_with_extended_date.json";
+import { customers } from "../__testData__/customers.json";
+import { customers as customersWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
 
 // extract gus from test data .json
-const gus = testCustomers.customers.gus as Customer;
-const saul = extendedDateCustomers.customers.saul as Customer;
+const gus = customers.gus as Customer;
+
+const saul = customersWithExtendedDate.saul as Customer;
 
 const testDateLuxon = DateTime.fromISO("2022-01-04");
 
@@ -31,7 +31,7 @@ const openCalendar = (
   jump: DateTimeUnit = "week"
 ) => cy.contains(i18n.t(createDateTitle(date, jump)) as string).click();
 
-describe("Date Switcher", () => {
+xdescribe("Date Switcher", () => {
   describe("Customer calendar view", () => {
     beforeEach(() => {
       cy.setClock(testDateLuxon.toMillis());
@@ -95,29 +95,26 @@ describe("Date Switcher", () => {
   });
 });
 describe("Download ics file to Add To Calendar", () => {
-  it("downloads ics file", () => {
-    const downloadsFolder = Cypress.config("downloadsFolder");
-
+  it("checks email was sent and calendar collection was updated successfully", () => {
     cy.setClock(testDateLuxon.toMillis());
 
     cy.initAdminApp().then((organization) =>
       cy.updateFirestore(organization, [
-        "saul_with_extended_date.json",
         "slots.json",
+        "saul_with_extended_date.json",
       ])
     );
-    cy.task("deleteFolder", downloadsFolder);
     cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
     cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
     cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
       .first()
       .click({ force: true });
 
-    cy.contains(i18n.t(ActionButton.FinalizeBookings).toString()).click();
-    cy.contains("Yes").click();
-
     cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
-    const filename = path.join(downloadsFolder, "Booked_Slots.ics");
-    cy.readFile(filename);
+    cy.getAttrWith("type", "email").type(saul.email || "valid@email.com");
+    cy.getAttrWith("type", "submit").click();
+
+    cy.contains(i18n.t(NotificationMessage.SlotsAddedToCalendar) as string);
+    cy.contains(i18n.t(NotificationMessage.EmailSent) as string);
   });
 });

@@ -54,6 +54,7 @@ const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
 const { secretKey } = saul;
 
 // #region testData
+
 /**
  * Intervals available for booking
  */
@@ -84,6 +85,7 @@ const testSlot = {
   id: bookingId,
   categories: [saul.category],
 };
+
 // #endregion testData
 
 describe("Booking Notifications", () => {

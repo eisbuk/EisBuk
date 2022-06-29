@@ -6,7 +6,12 @@ import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
 
-import { Collection, HTTPSErrors } from "@eisbuk/shared";
+import {
+  Collection,
+  Customer,
+  HTTPSErrors,
+  OrgSubCollection,
+} from "@eisbuk/shared";
 
 type Auth = CallableContext["auth"];
 
@@ -27,23 +32,23 @@ export const roundTo = (val: number, modbase: number): number =>
 
 /**
  * Receives an organization name and an auth info object as
- * provided by the Firebase SDK. Raises an unauthorized exception
- * if the user is not authorized to manage the given organization
+ * provided by the Firebase SDK. Returns a boolean promise
+ * of whether or not the user is authorized to manage the given organization
  * @param organization
  * @param auth
  */
 export const checkUser = async (
   organization?: string,
   auth?: Auth
-): Promise<void | never> => {
+): Promise<boolean | never> => {
   if (!organization || !auth || !auth.token) {
-    throwUnauth();
+    return false;
   }
 
   const token = auth!.token!;
   const authString = token.email || token.phone_number;
   if (!authString) {
-    throwUnauth();
+    return false;
   }
 
   const org = await admin
@@ -52,7 +57,8 @@ export const checkUser = async (
     .doc(organization!)
     .get();
 
-  if (!isOrgAdmin(org.data()?.admins, auth)) throwUnauth();
+  if (!isOrgAdmin(org.data()?.admins, auth)) return false;
+  return true;
 };
 
 /**
@@ -79,12 +85,39 @@ const isOrgAdmin = (admins: string[] | undefined, auth: Auth): boolean => {
 /**
  * Throws unauthorized https error
  */
-const throwUnauth = (): never => {
+export const throwUnauth = (): never => {
   throw new functions.https.HttpsError(
     "permission-denied",
     HTTPSErrors.Unauth,
     "The function must be called while authenticated with a user that is an admin of the given organization."
   );
+};
+
+/**
+ * A way to "Authenticate" a non-logged in user
+ * Receives an organization name and a secretKey
+ * returns a boolean promise depending on whether a booking
+ * exists with that secretKey or not
+ * @param args.organization
+ * @param args.secretKey
+ * @returns {Promise<boolean>}
+ */
+export const checkSecretKey = async ({
+  secretKey,
+  organization,
+}: {
+  secretKey: Customer["secretKey"];
+  organization: string;
+}): Promise<boolean> => {
+  if (!secretKey) return false;
+  const db = admin.firestore();
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+
+  const hasBooking = (
+    await orgRef.collection(OrgSubCollection.Bookings).doc(secretKey).get()
+  ).exists;
+
+  return hasBooking;
 };
 
 /**
