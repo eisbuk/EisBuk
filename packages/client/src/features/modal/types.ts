@@ -20,7 +20,8 @@ type GetComponentProps<C extends WhitelistedComponents> = Omit<
   Parameters<typeof componentWhitelist[C]>[0],
   // Omit the 'onClose' handler as it is specified by the Modal component
   // and it shouldn't be stored in `modal` store state.
-  "onClose"
+  // Same goes for "className"
+  "onClose" | "className"
 >;
 
 /**

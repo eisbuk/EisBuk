@@ -12,11 +12,13 @@ import { getSecretKey } from "@/utils/localStorage";
 interface CancelBookingContent extends SlotInterface {
   interval: SlotInterval;
   onClose: () => void;
+  className?: string;
 }
 
 const CancelBookingDialog: React.FC<CancelBookingContent> = ({
   interval,
   onClose,
+  className,
   ...slotProps
 }) => {
   const dispatch = useDispatch();
@@ -31,7 +33,7 @@ const CancelBookingDialog: React.FC<CancelBookingContent> = ({
     <ActionDialog
       title={i18n.t(Prompt.CancelBookingTitle)}
       onCancel={onClose}
-      {...{ onConfirm }}
+      {...{ onConfirm, className }}
     >
       <IntervalCard
         {...{ ...slotProps, interval }}
