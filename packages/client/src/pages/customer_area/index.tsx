@@ -59,6 +59,7 @@ const CustomerArea: React.FC = () => {
     OrgSubCollection.Bookings,
     Collection.PublicOrgInfo,
     BookingSubCollection.BookedSlots,
+    BookingSubCollection.Calendar,
     OrgSubCollection.SlotsByDay,
   ]);
 
@@ -114,6 +115,7 @@ const CustomerArea: React.FC = () => {
           <CustomerSlots
             view={CustomerRoute.BookIce}
             slots={bookIceSlots}
+            rawSlots={rawSlots}
             {...{ bookedSlots }}
           />
         </Route>
@@ -123,6 +125,7 @@ const CustomerArea: React.FC = () => {
           <CustomerSlots
             view={CustomerRoute.BookOffIce}
             slots={bookOffIceSlots}
+            rawSlots={rawSlots}
             {...{ bookedSlots }}
           />
         </Route>

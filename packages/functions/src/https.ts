@@ -1,7 +1,16 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import pRetry from "p-retry";
-
+import {
+  throwUnauth,
+  checkSecretKey,
+  checkUser,
+  createSMSReqOptions,
+  sendRequest,
+  EisbukHttpsError,
+  runWithTimeout,
+  checkRequiredFields,
+} from "./utils";
 import {
   Collection,
   SendMailPayload,
@@ -16,25 +25,26 @@ import {
 
 import { __smsUrl__, __functionsZone__ } from "./constants";
 
-import {
-  checkUser,
-  createSMSReqOptions,
-  sendRequest,
-  EisbukHttpsError,
-  runWithTimeout,
-  checkRequiredFields,
-} from "./utils";
-
 /**
  * Stores email data to `emailQueue` collection, triggering firestore-send-email extension.
  */
 export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization, ...email }: SendMailPayload, { auth }) => {
-      await checkUser(organization, auth);
+    async (
+      { organization, secretKey = "", ...email }: SendMailPayload,
+      { auth }
+    ) => {
+      if (
+        !(await checkUser(organization, auth)) &&
+        !(await checkSecretKey({ organization, secretKey }))
+      ) {
+        throwUnauth();
+      }
 
-      checkRequiredFields(email, ["to", "subject", "html"]);
+      checkRequiredFields(email, ["to", "message"]);
+      const { message } = email;
+      checkRequiredFields(message, ["html", "subject"]);
 
       // add email to firestore, firing data trigger
       await admin
@@ -53,7 +63,7 @@ export const sendEmail = functions
 export const sendSMS = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization, ...sms }: SendSMSPayload, { auth }) => {
-    await checkUser(organization, auth);
+    if (!(await checkUser(organization, auth))) throwUnauth();
 
     // check payload
     checkRequiredFields(sms, ["message", "to"]);

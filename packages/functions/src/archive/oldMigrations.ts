@@ -22,7 +22,7 @@ import {
 
 import { __functionsZone__ } from "../constants";
 
-import { checkUser } from "../utils";
+import { checkUser, throwUnauth } from "../utils";
 
 // #region migrateSlotsToPluralCategories
 /**
@@ -33,7 +33,7 @@ import { checkUser } from "../utils";
 export const migrateSlotsToPluralCategories = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }, context) => {
-    await checkUser(organization, context.auth);
+    if (!(await checkUser(organization, context.auth))) throwUnauth();
 
     const org = admin.firestore().collection("organizations").doc(organization);
     const existing = await org.collection("slots").get();
@@ -321,7 +321,7 @@ export const addIdsToCustomers = functions
 export const unifyOffIceLabels = functions
   .region("europe-west6")
   .https.onCall(async ({ organization }, { auth }) => {
-    checkUser(organization, auth);
+    if (!checkUser(organization, auth)) throwUnauth();
 
     const firestore = admin.firestore();
     const batch = firestore.batch();

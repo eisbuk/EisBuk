@@ -14,7 +14,7 @@ import {
 
 import { __functionsZone__ } from "./constants";
 
-import { checkUser } from "./utils";
+import { checkUser, throwUnauth } from "./utils";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -24,7 +24,7 @@ export const pruneSlotsByDay = functions
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
-      await checkUser(organization, auth);
+      if (!(await checkUser(organization, auth))) throwUnauth();
 
       try {
         const db = admin.firestore();
@@ -89,7 +89,7 @@ export const pruneSlotsByDay = functions
 export const deleteOrphanedBookings = functions
   .region("europe-west6")
   .https.onCall(async ({ organization }, { auth }) => {
-    await checkUser(organization, auth);
+    if (!(await checkUser(organization, auth))) throwUnauth();
 
     const orgRef = admin
       .firestore()
@@ -120,7 +120,7 @@ export const deleteOrphanedBookings = functions
 export const migrateCategoriesToExplicitMinors = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }, { auth }) => {
-    await checkUser(organization, auth);
+    if (!(await checkUser(organization, auth))) throwUnauth();
 
     const batch = admin.firestore().batch();
 

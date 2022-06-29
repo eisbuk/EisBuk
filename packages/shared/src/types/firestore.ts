@@ -243,6 +243,16 @@ export interface CustomerBookings extends CustomerBase {
     [slotId: string]: CustomerBookingEntry;
   };
 }
+/**
+ * Bookings added to calendar
+ */
+export interface CalendarEvents {
+  /**
+   * Slots the customer has booked and added to calendar, keyed by iso date and containing uids of events booked
+   */
+
+  [monthStr: string]: { [uids: string]: string[] };
+}
 
 // #endregion bookings
 
@@ -285,10 +295,16 @@ export type SlotAttendnace = {
 // #region cloudSentMessages
 export interface EmailMessage {
   to: string;
-  subject: string;
-  html: string;
+  message: {
+    subject: string;
+    html: string;
+    attachments?: Attachment[];
+  };
 }
-
+interface Attachment {
+  filename: string;
+  content: string | Buffer;
+}
 export interface SMSMessage {
   to: string;
   message: string;

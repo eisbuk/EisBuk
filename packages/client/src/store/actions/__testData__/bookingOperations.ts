@@ -16,6 +16,10 @@ export const bookedSlots: Required<CustomerBookings>["bookedSlots"] = {
   ["slot-0"]: baseBooking,
   ["slot-1"]: baseBooking,
 };
+
+export const slotsByDay = {
+  [testDate]: { ["slot-0"]: { ...baseSlot }, ["slot-1"]: { ...baseSlot } },
+};
 /**
  * Id of a test slot we're providing bookings for
  */
