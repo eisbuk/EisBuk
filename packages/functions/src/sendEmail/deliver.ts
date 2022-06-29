@@ -101,12 +101,34 @@ const EmailSchema: JSONSchemaType<SendEmailObject> = {
       pattern: emailPattern,
       errorMessage: __invalidEmailError,
     },
-    subject: { type: "string" },
-    html: { type: "string" },
+    message: {
+      type: "object",
+      required: ["subject", "html"],
+      properties: {
+        subject: { type: "string" },
+        html: { type: "string" },
+        attachments: {
+          type: "array",
+          items: {
+            type: "object",
+            properties: {
+              filename: {
+                type: "string",
+              },
+              content: {
+                type: "string",
+              },
+            },
+            required: ["filename", "content"],
+          },
+          nullable: true,
+        },
+      },
+    },
   },
   additionalProperties: false,
   type: "object",
-  required: ["from", "html", "subject", "to"],
+  required: ["from", "message", "to"],
 };
 
 /**
