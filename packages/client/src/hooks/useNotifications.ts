@@ -1,40 +1,37 @@
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import {
   nextNotification,
   evictNotification,
 } from "@/store/actions/notificationsActions";
 import { getActiveNotification } from "@/store/selectors/notifications";
-import { NotificationInterface } from "@/types/store";
-import { useEffect, useRef } from "react";
-import { useDispatch, useSelector } from "react-redux";
 
-interface useNotificationsParams {
-  timeouts: {
-    minTimeout?: number;
-    maxTimeout?: number;
+import { NotificationInterface } from "@/types/store";
+
+interface Timeouts {
+  minTimeout?: number;
+  maxTimeout?: number;
+}
+interface useNotificationsHook {
+  (timeouts: Timeouts): {
+    active: NotificationInterface | undefined;
+    handleRemoveNotification: () => void;
   };
 }
 
-interface useNotifications {
-  active: NotificationInterface;
-  handleRemoveNotification: () => void;
-}
-
-const useNotifications: (timeouts: useNotificationsParams) => {
-  active: NotificationInterface;
-  handleRemoveNotification: () => void;
-} = ({ timeouts: { minTimeout = 3000, maxTimeout = 4000 } }) => {
+const useNotifications: useNotificationsHook = ({
+  minTimeout = 3000,
+  maxTimeout = 4000,
+}) => {
   const dispatch = useDispatch();
   const active = useSelector(getActiveNotification);
   const handleRemoveNotification = () => {
     dispatch(evictNotification());
   };
-  console.log({ active });
   const afterMinTimeout = useRef<NodeJS.Timeout | null>(null);
   const afterMaxTimeout = useRef<NodeJS.Timeout | null>(null);
 
-  /**
-   * Possible bug: when I click next when it's exiting/other one is entering it's skipped
-   */
   useEffect(() => {
     afterMinTimeout.current && clearTimeout(afterMinTimeout.current);
     afterMaxTimeout.current && clearTimeout(afterMaxTimeout.current);
@@ -46,6 +43,11 @@ const useNotifications: (timeouts: useNotificationsParams) => {
     afterMaxTimeout.current = setTimeout(() => {
       dispatch(evictNotification());
     }, maxTimeout);
+
+    return () => {
+      afterMinTimeout.current && clearTimeout(afterMinTimeout.current);
+      afterMaxTimeout.current && clearTimeout(afterMaxTimeout.current);
+    };
   }, [active]);
 
   return { active, handleRemoveNotification };

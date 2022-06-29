@@ -14,7 +14,7 @@ const NotificationsContainer: React.FC<{
   className?: string;
 }> = ({ className = "" }) => {
   const { active: activeNotification, handleRemoveNotification } =
-    useNotifications({ timeouts: { minTimeout: 3000, maxTimeout: 4000 } });
+    useNotifications({ minTimeout: 3000, maxTimeout: 4000 });
 
   // Current Toast is currently shown one. It has an entry animation and stays in place
   const [currentToast, setCurrentToast] =
