@@ -162,6 +162,9 @@ const useStyles = makeStyles((theme) => ({
       width: "80%",
       margin: "0.5rem 10%",
     },
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 
