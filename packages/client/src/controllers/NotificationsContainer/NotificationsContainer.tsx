@@ -4,7 +4,7 @@ import { NotificationToast, NotificationToastVariant } from "@eisbuk/ui";
 
 import { NotificationInterface } from "@/types/store";
 
-import useNotifications from "@/hooks/useNotifications";
+import { useNotifications } from "@/controllers/NotificationsContainer/NotificationsContext";
 
 /**
  * A controller component used to display notifications in an orderly fashion. It connects to the store
@@ -13,8 +13,7 @@ import useNotifications from "@/hooks/useNotifications";
 const NotificationsContainer: React.FC<{
   className?: string;
 }> = ({ className = "" }) => {
-  const { active: activeNotification, handleRemoveNotification } =
-    useNotifications({ minTimeout: 3000, maxTimeout: 4000 });
+  const { activeNotification, handleRemoveNotification } = useNotifications();
 
   // Current Toast is currently shown one. It has an entry animation and stays in place
   const [currentToast, setCurrentToast] =
