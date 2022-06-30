@@ -31,7 +31,7 @@ import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  const dispatch = useDispatch();
+  useSecretKey();
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -42,23 +42,8 @@ const CustomerArea: React.FC = () => {
     BookingSubCollection.Calendar,
   ]);
 
-  // Get secret key and store it to localStorage
-  // for easier access
-  const { secretKey } = useParams<{
-    secretKey: string;
-  }>();
-  useEffect(() => {
-    setSecretKey(secretKey);
-
-    return () => {
-      // remove secretKey from local storage on unmount
-      unsetSecretKey();
-    };
-  }, [secretKey]);
-
-  // CalendarNav controlls
-  const date = useSelector(getCalendarDay);
-  const changeDate = (date: DateTime) => dispatch(changeCalendarDate(date));
+  const calendarNavProps = useDate();
+  const { date } = calendarNavProps;
 
   // Get customer data necessary for rendering/functoinality
   const customerData = useSelector(getBookingsCustomer);
@@ -82,7 +67,8 @@ const CustomerArea: React.FC = () => {
 
   return (
     <Layout additionalButtons={additionalButtons} user={customerData}>
-      <CalendarNav date={date} onChange={changeDate} jump="month" />
+      <CalendarNav {...calendarNavProps} jump="month" />
+
       <div className="content-container">
         <div className="px-[44px]">
           {daysToRender && renderDays(daysToRender)}
@@ -90,6 +76,52 @@ const CustomerArea: React.FC = () => {
       </div>
     </Layout>
   );
+};
+
+/**
+ * Secret key logic abstracted away in a hook for easier readability
+ */
+const useSecretKey = () => {
+  // Secret key is provided as a route param to the customer_area page
+  const { secretKey } = useParams<{
+    secretKey: string;
+  }>();
+
+  /**
+   * @TODO this disables the user (admin)
+   * from looking at bookings for multiple
+   * customers in different tabs and we should find
+   * a way around it (probably store the key in store)
+   */
+  // Store secretKey to localStorage
+  // for easier access
+  useEffect(() => {
+    setSecretKey(secretKey);
+
+    return () => {
+      // remove secretKey from local storage on unmount
+      unsetSecretKey();
+    };
+  }, [secretKey]);
+
+  return secretKey;
+};
+
+/**
+ * Date logic abstracted away in a hook for readability.
+ * Reads current date from Redux store and handles updates of the current date.
+ * The returned structure can directly be passed as props to CalendarNav component
+ */
+const useDate = (): Pick<
+  Parameters<typeof CalendarNav>[0],
+  "date" | "onChange"
+> => {
+  const dispatch = useDispatch();
+
+  const date = useSelector(getCalendarDay);
+  const onChange = (date: DateTime) => dispatch(changeCalendarDate(date));
+
+  return { date, onChange };
 };
 
 const renderDays = (days: SlotsByDay) =>
