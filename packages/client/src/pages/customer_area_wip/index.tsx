@@ -35,18 +35,16 @@ const CustomerArea: React.FC = () => {
 
   return (
     <Layout additionalButtons={additionalButtons} user={saul}>
-      <div className="w-full">
-        <CalendarNav date={testDate} jump="month" />
-        <div className="content-container">
-          <div className="px-[44px]">
-            {daysToRender.map((day) => (
-              <SlotsDayContainer key={day.toISODate()} date={day}>
-                {slotsToRender.map((slot) => (
-                  <IntervalCardGroup key={slot.type} {...slot} />
-                ))}
-              </SlotsDayContainer>
-            ))}
-          </div>
+      <CalendarNav date={testDate} jump="month" />
+      <div className="content-container">
+        <div className="px-[44px]">
+          {daysToRender.map((day) => (
+            <SlotsDayContainer key={day.toISODate()} date={day}>
+              {slotsToRender.map((slot) => (
+                <IntervalCardGroup key={slot.type} {...slot} />
+              ))}
+            </SlotsDayContainer>
+          ))}
         </div>
       </div>
     </Layout>
