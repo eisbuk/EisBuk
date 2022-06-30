@@ -1,7 +1,0 @@
-{
-  "name": "@eisbuk/firestore",
-  "version": "1.0.0",
-  "scripts": {
-    "build": ""
-  }
-}
