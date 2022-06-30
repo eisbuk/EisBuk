@@ -64,7 +64,11 @@ const Modal: React.FC = () => {
         onClick={handleClose}
         className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
       />
-      <Component {...props} className="center-absolute" onClose={handleClose} />
+      <Component
+        {...(props as any)}
+        className="center-absolute"
+        onClose={handleClose}
+      />
     </div>
   );
 
