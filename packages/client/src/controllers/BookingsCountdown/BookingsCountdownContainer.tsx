@@ -1,11 +1,15 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { BookingsCountdownVariant, BookingsCountdown } from "@eisbuk/ui";
 import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import { getCalendarDay } from "@/store/selectors/app";
-import { getCountdownProps } from "@/store/selectors/bookings";
+import {
+  getBookingsCustomer,
+  getCountdownProps,
+} from "@/store/selectors/bookings";
+import { openModal } from "@/features/modal/actions";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   as?: keyof JSX.IntrinsicAttributes;
@@ -17,15 +21,23 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
  * state to the store (for bookings finalisation).
  */
 const BookingsCountdownContainer: React.FC<Props> = (props) => {
+  const dispatch = useDispatch();
+
   const currentDate = useSelector(getCalendarDay);
   const countdownProps = useSelector(getCountdownProps(currentDate));
+  const { id: customerId } = useSelector(getBookingsCustomer)!;
 
   if (!countdownProps) return null;
 
   const { deadline, message, month } = countdownProps;
 
   const handleFinalize = () => {
-    /** There should be a confirmation dialog, so this is @TODO until the modal component is developed */
+    dispatch(
+      openModal({
+        component: "FinalizeBookingsDialog",
+        props: { customerId, month },
+      })
+    );
   };
 
   return (
