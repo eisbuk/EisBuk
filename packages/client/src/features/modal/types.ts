@@ -20,25 +20,35 @@ type GetComponentProps<C extends WhitelistedComponents> = Omit<
   Parameters<typeof componentWhitelist[C]>[0],
   // Omit the 'onClose' handler as it is specified by the Modal component
   // and it shouldn't be stored in `modal` store state.
-  // Same goes for "className"
-  "onClose" | "className"
+  // Same goes for "className" and "children" (which should never be passed to a modal component)
+  "onClose" | "className" | "children"
 >;
+
+/**
+ * This is some heavy ninjutsu which I won't even begin to try to explain.
+ *
+ * It essentially allows us to infer from `component` what should the `props` interface be,
+ * rather infering props as an intersection of all props for all whitelisted components.
+ */
+type ModalStateMap = {
+  [C in WhitelistedComponents]: {
+    /**
+     * Component to render inside the modal component.
+     */
+    component: C;
+    /**
+     * Props to be passed to the component rendered inside the modal.
+     */
+    props: GetComponentProps<C>;
+  };
+};
 
 /**
  * State of `modal` portion of the store with `
  */
 export type ModalState<
-  V extends WhitelistedComponents = WhitelistedComponents
-> = {
-  /**
-   * Component to render inside the modal component.
-   */
-  component: string;
-  /**
-   * Props to be passed to the component rendered inside the modal.
-   */
-  props: GetComponentProps<V>;
-} | null;
+  C extends WhitelistedComponents = WhitelistedComponents
+> = ModalStateMap[C] | null;
 
 // There are only two variants to this type. If number of variants gets bigger,
 // it can be extended to more generic types/lookups
