@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Dispatch } from "redux";
 
-import { Unsubscribe } from "@firebase/firestore";
+import { Unsubscribe, DocumentData } from "@firebase/firestore";
 import { User } from "@firebase/auth";
 
 import {
@@ -22,9 +22,10 @@ import {
   SlotsById,
 } from "@eisbuk/shared";
 
+import { ModalState } from "@/features/modal/types";
+
 import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
-import { DocumentData } from "firebase/firestore";
 
 // #region app
 /**
@@ -284,6 +285,7 @@ export interface LocalStore {
   app: AppState;
   copyPaste: CopyPasteState;
   auth: AuthState;
+  modal: ModalState;
 }
 // #endregion FullStore
 

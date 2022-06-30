@@ -138,6 +138,7 @@
     "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
     "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
 
+    "CancelBookingTitle": "Cancel booking for",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
