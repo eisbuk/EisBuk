@@ -16,17 +16,17 @@ const dummySlot: SlotInterface = {
   categories: [Category.Competitive],
   date: "2022-01-01",
   intervals: {
-    "09:00-11:00": {
+    "09:00-10:00": {
       startTime: "09:00",
-      endTime: "11:00",
+      endTime: "10:00",
     },
     "09:00-10:30": {
       startTime: "09:00",
       endTime: "10:30",
     },
-    "09:00-10:00": {
+    "09:00-11:00": {
       startTime: "09:00",
-      endTime: "10:00",
+      endTime: "11:00",
     },
   },
   notes: "Rink 1",
