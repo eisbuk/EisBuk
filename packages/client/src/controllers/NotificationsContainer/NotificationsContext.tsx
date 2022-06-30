@@ -23,7 +23,7 @@ const NotificationsContext = createContext<
   NotificationsContextValue | undefined
 >(undefined);
 
-const NotificationsProvider: React.FC<{
+export const NotificationsProvider: React.FC<{
   children: React.ReactNode;
   timeouts: Timeouts;
 }> = ({ children, timeouts: { minTimeout, maxTimeout } }) => {
@@ -60,7 +60,8 @@ const NotificationsProvider: React.FC<{
     </NotificationsContext.Provider>
   );
 };
-const useNotifications = () => {
+
+export const useNotifications = () => {
   const context = useContext(NotificationsContext);
   if (context === undefined) {
     throw new Error(
@@ -70,5 +71,3 @@ const useNotifications = () => {
 
   return context;
 };
-
-export { NotificationsProvider, NotificationsContext, useNotifications };
