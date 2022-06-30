@@ -40,7 +40,7 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="w-full flex justify-center items-center gap-4 md:gap-3 md:justify-start md:max-w-1/2">
               {additionalButtons}
             </div>
-            <div className="fixed z-100 bottom-[27px] left-4 right-4 md:static">
+            <div className="fixed z-50 bottom-[27px] left-4 right-4 md:static">
               {Notifications && <Notifications className="w-full md:w-auto" />}
             </div>
           </div>
