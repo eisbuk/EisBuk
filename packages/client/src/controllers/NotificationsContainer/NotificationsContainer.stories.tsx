@@ -7,10 +7,7 @@ import { Layout } from "@eisbuk/ui";
 import { NotifVariant } from "@/enums/store";
 
 import { getNewStore } from "@/store/createStore";
-import {
-  enqueueNotification,
-  evictNotification,
-} from "@/store/actions/notificationsActions";
+import { enqueueNotification } from "@/store/actions/notificationsActions";
 
 import NotificationsContainer from "./NotificationsContainer";
 import { NotificationsProvider } from "@/controllers/NotificationsContainer/NotificationsContext";
@@ -34,13 +31,9 @@ export const Default = (): JSX.Element => {
     store.dispatch(enqueueNotification({ message, variant }));
   };
 
-  const clearNotif = () => {
-    store.dispatch(evictNotification());
-  };
-
   return (
     <StoreProvider store={store}>
-      <NotificationsProvider timeouts={{ minTimeout: 6000, maxTimeout: 10000 }}>
+      <NotificationsProvider timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}>
         <Layout Notifications={NotificationsContainer}>
           <br />
           <button
@@ -48,12 +41,6 @@ export const Default = (): JSX.Element => {
             onClick={generateNotif}
           >
             Enqueue notif
-          </button>
-          <button
-            className="bg-gray-200 rounded-md px-4 py-1 m-2"
-            onClick={clearNotif}
-          >
-            Next notif
           </button>
         </Layout>
       </NotificationsProvider>
