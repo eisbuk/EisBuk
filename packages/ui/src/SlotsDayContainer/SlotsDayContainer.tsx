@@ -4,16 +4,17 @@ import { DateTime } from "luxon";
 import i18n, { DateFormat } from "@eisbuk/translations";
 
 interface SlotsDayContainerProps {
-  date: DateTime;
+  date: string;
   className?: string;
   children?: React.ReactNode | React.ReactNode[];
 }
 
 const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
-  date,
+  date: dateISO,
   className,
   children,
 }) => {
+  const date = DateTime.fromISO(dateISO);
   const dateString = i18n.t(DateFormat.Full, { date });
 
   const containerClasses = [
