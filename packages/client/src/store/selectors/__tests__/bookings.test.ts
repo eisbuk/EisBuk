@@ -1,11 +1,13 @@
 import { DateTime } from "luxon";
 
 import { getCustomerBase, OrgSubCollection } from "@eisbuk/shared";
+import { BookingsCountdownVariant } from "@eisbuk/ui";
 
 import { Action } from "@/enums/store";
-import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import { getNewStore } from "@/store/createStore";
+
+import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getIsBookingAllowed, getCountdownProps } from "../bookings";
 
@@ -111,9 +113,10 @@ describe("Selectors ->", () => {
     test("should display countdown for currently observed month (based on redux date)", () => {
       const store = getNewStore();
       const currentDate = mockDate.plus({ months: 2 });
+      store.dispatch(changeCalendarDate(currentDate));
       const expectedRes = {
         // if not in extended date period, should always show first deadline
-        message: BookingCountdownMessage.FirstDeadline,
+        variant: BookingsCountdownVariant.FirstDeadline,
         month: currentDate.startOf("month"),
         deadline: currentDate
           // bookings are locked before the month begins
@@ -123,9 +126,7 @@ describe("Selectors ->", () => {
           .minus({ days: 5 })
           .endOf("day"),
       };
-      expect(getCountdownProps(currentDate)(store.getState())).toEqual(
-        expectedRes
-      );
+      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
     });
 
     test("should display countdown for second deadline if extended date belongs to observed month", () => {
@@ -136,6 +137,7 @@ describe("Selectors ->", () => {
       // we're testing for `extendedDate` which hasn't yet passed
       const extendedDateLuxon = mockDate.plus({ days: 2 }).endOf("day");
       const extendedDate = extendedDateLuxon.toISODate();
+      store.dispatch(changeCalendarDate(currentDate));
       // grant (saul) our test customer an extended date for february ("2022-02-07")
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Bookings, {
@@ -143,36 +145,32 @@ describe("Selectors ->", () => {
         })
       );
       const expectedRes = {
-        message: BookingCountdownMessage.SecondDeadline,
+        variant: BookingsCountdownVariant.SecondDeadline,
         month: currentDate.startOf("month"),
         deadline: extendedDateLuxon,
       };
-      expect(getCountdownProps(currentDate)(store.getState())).toEqual(
-        expectedRes
-      );
+      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
     });
 
     test("should not display any countdown for admin", () => {
       const store = getNewStore();
       const currentDate = mockDate.plus({ months: 2 });
+      store.dispatch(changeCalendarDate(currentDate));
       store.dispatch({ type: Action.UpdateAdminStatus, payload: true });
-      expect(getCountdownProps(currentDate)(store.getState())).toEqual(
-        undefined
-      );
+      expect(getCountdownProps(store.getState())).toEqual(undefined);
     });
 
     test("should display bookings are locked message (instead of countdown) if bookings for this period are locked", () => {
       const store = getNewStore();
       // bookings for a current month (the month we're in) should (trivially) be locked
       const currentDate = mockDate;
+      store.dispatch(changeCalendarDate(currentDate));
       const expectedRes = {
-        message: BookingCountdownMessage.BookingsLocked,
+        variant: BookingsCountdownVariant.BookingsLocked,
         deadline: null,
         month: currentDate.startOf("month"),
       };
-      expect(getCountdownProps(currentDate)(store.getState())).toEqual(
-        expectedRes
-      );
+      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
     });
   });
 });

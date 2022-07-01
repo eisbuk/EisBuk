@@ -1,14 +1,12 @@
 import { DateTime } from "luxon";
 
+import { BookingsCountdownVariant, CountdownProps } from "@eisbuk/ui";
 import { CustomerBase, CustomerBookingEntry } from "@eisbuk/shared";
-
-import { BookingCountdownMessage } from "@eisbuk/translations";
 
 import { LocalStore } from "@/types/store";
 
-import { BookingsCountdownProps } from "@/components/atoms/BookingsCountdown";
-
 import { getIsAdmin } from "@/store/selectors/auth";
+import { getCalendarDay } from "./app";
 
 import { getMonthDiff } from "@/utils/date";
 
@@ -88,45 +86,47 @@ export const getIsBookingAllowed =
  * @returns `undefined` if admin (or should be hidden), otherwise returns an object
  * containing countdown `message`, booking `month`, and countdown `deadline`
  */
-export const getCountdownProps =
-  (currentDate: DateTime) =>
-  (state: LocalStore): BookingsCountdownProps | undefined => {
-    // return early if admin (no countdown is shown)
-    const isAdmin = getIsAdmin(state);
-    if (isAdmin) {
-      return undefined;
-    }
+export const getCountdownProps = (
+  state: LocalStore
+): CountdownProps | undefined => {
+  // return early if admin (no countdown is shown)
+  const isAdmin = getIsAdmin(state);
+  if (isAdmin) {
+    return undefined;
+  }
 
-    const month = currentDate.startOf("month");
+  const currentDate = getCalendarDay(state);
 
-    if (!getIsBookingAllowed(currentDate)(state)) {
-      return {
-        month,
-        deadline: null,
-        message: BookingCountdownMessage.BookingsLocked,
-      };
-    }
+  const month = currentDate.startOf("month");
 
-    const monthsDeadline = getMonthDeadline(currentDate);
-    const extendedDate = getExtendedDate(state);
+  if (!getIsBookingAllowed(currentDate)(state)) {
+    return {
+      month,
+      deadline: null,
+      variant: BookingsCountdownVariant.BookingsLocked,
+    };
+  }
 
-    const isExtendedDateAplicable =
-      extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
+  const monthsDeadline = getMonthDeadline(currentDate);
+  const extendedDate = getExtendedDate(state);
 
-    if (isExtendedDateAplicable) {
-      return {
-        month,
-        deadline: extendedDate.endOf("day"),
-        message: BookingCountdownMessage.SecondDeadline,
-      };
-    } else {
-      return {
-        month,
-        deadline: monthsDeadline,
-        message: BookingCountdownMessage.FirstDeadline,
-      };
-    }
-  };
+  const isExtendedDateAplicable =
+    extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
+
+  if (isExtendedDateAplicable) {
+    return {
+      month,
+      deadline: extendedDate.endOf("day"),
+      variant: BookingsCountdownVariant.SecondDeadline,
+    };
+  } else {
+    return {
+      month,
+      deadline: monthsDeadline,
+      variant: BookingsCountdownVariant.FirstDeadline,
+    };
+  }
+};
 
 // #region temp
 /** @TEMP should be read from admin preferences in the store */

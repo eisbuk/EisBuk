@@ -1,10 +1,8 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { BookingsCountdownVariant, BookingsCountdown } from "@eisbuk/ui";
-import { BookingCountdownMessage } from "@eisbuk/translations";
+import { BookingsCountdown } from "@eisbuk/ui";
 
-import { getCalendarDay } from "@/store/selectors/app";
 import {
   getBookingsCustomer,
   getCountdownProps,
@@ -23,15 +21,14 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
 const BookingsCountdownContainer: React.FC<Props> = (props) => {
   const dispatch = useDispatch();
 
-  const currentDate = useSelector(getCalendarDay);
-  const countdownProps = useSelector(getCountdownProps(currentDate));
+  const countdownProps = useSelector(getCountdownProps);
   const { id: customerId } = useSelector(getBookingsCustomer) || {};
 
   if (!countdownProps || !customerId) return null;
 
-  const { deadline, message, month } = countdownProps;
-
   const handleFinalize = () => {
+    const { month } = countdownProps;
+
     dispatch(
       openModal({
         component: "FinalizeBookingsDialog",
@@ -43,24 +40,10 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
   return (
     <BookingsCountdown
       {...props}
-      {...{ deadline, month }}
-      variant={messageVariantLookup[message]}
+      {...countdownProps}
       onFinalize={handleFinalize}
     />
   );
-};
-
-/**
- * This is a dirty conversion back and forth (converter back into the message inside the component).
- * It is, however, @TEMP for compatibility with existing code and `getCountdownProps` should be rewritten a bit with the new component interface.
- */
-const messageVariantLookup = {
-  [BookingCountdownMessage.FirstDeadline]:
-    BookingsCountdownVariant.FirstDeadline,
-  [BookingCountdownMessage.SecondDeadline]:
-    BookingsCountdownVariant.SecondDeadline,
-  [BookingCountdownMessage.BookingsLocked]:
-    BookingsCountdownVariant.BookingsLocked,
 };
 
 export default BookingsCountdownContainer;
