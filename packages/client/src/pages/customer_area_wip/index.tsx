@@ -26,6 +26,7 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
+import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
 /**
  * Customer area page component
@@ -43,19 +44,11 @@ const CustomerArea: React.FC = () => {
   ]);
 
   const calendarNavProps = useDate();
-  const { date } = calendarNavProps;
 
   // Get customer data necessary for rendering/functoinality
   const customerData = useSelector(getBookingsCustomer);
 
-  const slotsTimeframe = "month";
-  const slotsSelector = customerData
-    ? getSlotsForCustomer(
-        customerData.category,
-        slotsTimeframe,
-        date.startOf("month")
-      )
-    : () => undefined;
+  const slotsSelector = customerData ? getSlotsForCustomer : () => undefined;
   const daysToRender = useSelector(slotsSelector);
 
   const additionalButtons = (
@@ -68,9 +61,9 @@ const CustomerArea: React.FC = () => {
   return (
     <Layout additionalButtons={additionalButtons} user={customerData}>
       <CalendarNav {...calendarNavProps} jump="month" />
-
       <div className="content-container">
-        <div className="px-[44px]">
+        <div className="px-[44px] py-4">
+          <BookingsCountdownContainer />
           {daysToRender && renderDays(daysToRender)}
         </div>
       </div>

@@ -13,6 +13,7 @@ import { store } from "@/store";
 import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
+import { Modal } from "@/features/modal/components";
 
 import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
 
@@ -32,6 +33,7 @@ const App: React.FC = () => {
               <Notifier />
               <CssBaseline />
               <AppContent />
+              <Modal />
             </SnackbarProvider>
           </LocalizationProvider>
         </ThemeProvider>

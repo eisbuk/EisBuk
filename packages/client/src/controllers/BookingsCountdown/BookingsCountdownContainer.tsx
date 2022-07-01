@@ -25,9 +25,9 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
 
   const currentDate = useSelector(getCalendarDay);
   const countdownProps = useSelector(getCountdownProps(currentDate));
-  const { id: customerId } = useSelector(getBookingsCustomer)!;
+  const { id: customerId } = useSelector(getBookingsCustomer) || {};
 
-  if (!countdownProps) return null;
+  if (!countdownProps || !customerId) return null;
 
   const { deadline, message, month } = countdownProps;
 
