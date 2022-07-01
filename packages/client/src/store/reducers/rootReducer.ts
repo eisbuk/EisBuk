@@ -5,6 +5,7 @@ import authReducer from "./authReducer";
 import copyPasteReducer from "./copyPasteReducer";
 import firestoreReducer from "@/react-redux-firebase/reducer";
 import modalReducer from "@/features/modal/reducer";
+import notificationsReducer from "@/features/notifications/reducer";
 
 const rootReducer = combineReducers({
   firestore: firestoreReducer,
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   copyPaste: copyPasteReducer,
   auth: authReducer,
   modal: modalReducer,
+  notifications: notificationsReducer,
 });
 
 export default rootReducer;

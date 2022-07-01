@@ -23,6 +23,7 @@ import {
 } from "@eisbuk/shared";
 
 import { ModalState } from "@/features/modal/types";
+import { NotificationsState } from "@/features/notifications/types";
 
 import { Action, NotifVariant } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
@@ -286,6 +287,7 @@ export interface LocalStore {
   copyPaste: CopyPasteState;
   auth: AuthState;
   modal: ModalState;
+  notifications: NotificationsState;
 }
 // #endregion FullStore
 
