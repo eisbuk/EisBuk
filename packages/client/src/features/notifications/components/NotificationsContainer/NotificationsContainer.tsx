@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 
 import { NotificationToast, NotificationToastVariant } from "@eisbuk/ui";
 
-import { NotificationInterface } from "@/types/store";
+import { NotificationInterface } from "../../types";
 
-import { useNotifications } from "@/controllers/NotificationsContainer/NotificationsContext";
+import { useNotifications } from "../../hooks";
 
 /**
  * A controller component used to display notifications in an orderly fashion. It connects to the store

@@ -1,14 +1,11 @@
 import * as React from "react";
-import { useEffect, useRef, createContext, useContext } from "react";
+import { useEffect, useRef, createContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  nextNotification,
-  evictNotification,
-} from "@/store/actions/notificationsActions";
-import { getActiveNotification } from "@/store/selectors/notifications";
+import { nextNotification, evictNotification } from "./actions";
+import { getActiveNotification } from "./selectors";
 
-import { NotificationInterface } from "@/types/store";
+import { NotificationInterface } from "./types";
 
 interface Timeouts {
   minTimeout?: number;
@@ -19,7 +16,7 @@ interface NotificationsContextValue {
   handleRemoveNotification: () => void;
 }
 
-const NotificationsContext = createContext<
+export const NotificationsContext = createContext<
   NotificationsContextValue | undefined
 >(undefined);
 
@@ -59,15 +56,4 @@ export const NotificationsProvider: React.FC<{
       {children}
     </NotificationsContext.Provider>
   );
-};
-
-export const useNotifications = () => {
-  const context = useContext(NotificationsContext);
-  if (context === undefined) {
-    throw new Error(
-      "useNotifications must be used within a NotificationsProvider"
-    );
-  }
-
-  return context;
 };

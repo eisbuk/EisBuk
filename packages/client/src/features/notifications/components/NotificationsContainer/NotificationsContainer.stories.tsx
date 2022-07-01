@@ -7,10 +7,10 @@ import { Layout } from "@eisbuk/ui";
 import { NotifVariant } from "@/enums/store";
 
 import { getNewStore } from "@/store/createStore";
-import { enqueueNotification } from "@/store/actions/notificationsActions";
+import { enqueueNotification } from "../../actions";
 
 import NotificationsContainer from "./NotificationsContainer";
-import { NotificationsProvider } from "@/controllers/NotificationsContainer/NotificationsContext";
+import { NotificationsProvider } from "../../context";
 
 export default {
   title: "Notifications Container",

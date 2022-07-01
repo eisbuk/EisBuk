@@ -1,11 +1,14 @@
+import { NotificationInterface } from "../types";
+
 import { NotifVariant } from "@/enums/store";
+
 import { getNewStore } from "@/store/createStore";
-import { NotificationInterface } from "@/types/store";
+
 import {
   enqueueNotification,
   evictNotification,
   nextNotification,
-} from "../notificationsActions";
+} from "../actions";
 
 // #region tableTestRunner
 interface TestParams {

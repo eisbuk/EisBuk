@@ -1,21 +1,11 @@
 import { Reducer } from "redux";
 import { v4 as uuid } from "uuid";
 
-import { NotificationsState, NotificationInterface } from "@/types/store";
-
-export enum NotificationAction {
-  Enqueue = "@@NOTIFICATION/ENQUEUE",
-  Next = "@@NOTIFICATION/NEXT",
-  Evict = "@@NOTIFICATION/EVICT",
-}
-
-export type NotificationReducerAction<A extends NotificationAction> =
-  A extends NotificationAction.Enqueue
-    ? {
-        type: NotificationAction.Enqueue;
-        payload: Omit<NotificationInterface, "key">;
-      }
-    : { type: A };
+import {
+  NotificationsState,
+  NotificationReducerAction,
+  NotificationAction,
+} from "./types";
 
 const initialState: NotificationsState = {
   queue: [],

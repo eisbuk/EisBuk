@@ -1,9 +1,8 @@
-import { NotificationInterface } from "@/types/store";
-
 import {
+  NotificationInterface,
   NotificationReducerAction,
   NotificationAction,
-} from "../reducers/notificationsReducer";
+} from "./types";
 
 export const enqueueNotification = (
   notification: Omit<NotificationInterface, "key">
