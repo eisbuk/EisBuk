@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { DateTime } from "luxon";
-
 import {
   SlotsByDay,
   Category,
@@ -11,6 +8,8 @@ import {
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
+import { getCalendarDay } from "./app";
+import { getBookingsCustomer } from "./bookings";
 
 // #region localHelpers
 interface CategoryFilter {
@@ -71,62 +70,42 @@ const filterSlotsByCategory = (
 // #endregion localHelpers
 
 /**
- * Get `slotsByDay` entry from store, filtered according to `timeframe`, `startDate` and `category`
- * @param category category of customer viewing the slots
- * @param timeframe "week" | "month"
- * @param startDate start of timeframe
- * @returns created selector
+ * Get `slotsByDay` entry, from store, for current month filtered according to customer's category.
+ * Both the `category` and `date` are read directly from store.
  */
-export const getSlotsForCustomer =
-  (
-    category: Category | DeprecatedCategory,
-    timeframe: "week" | "month",
-    startDate: DateTime
-  ) =>
-  // eslint-disable-next-line consistent-return
-  (state: LocalStore): SlotsByDay => {
-    const allSlotsInStore = state.firestore.data?.slotsByDay;
+export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
+  const date = getCalendarDay(state);
+  const category = getBookingsCustomer(state)?.category;
 
-    // return early if no slots in store
-    if (!allSlotsInStore) return {};
+  // Return early if no category found in store
+  // this should never happen and is an internal app error
+  if (!category) {
+    console.error(
+      "No category found in store, check store entries for bookings customer"
+    );
+    return {};
+  }
 
-    switch (timeframe) {
-      case "month":
-        // get slots for current month
-        const monthString = startDate.toISO().substring(0, 7);
-        const slotsForAMonth = allSlotsInStore[monthString] || {};
+  const allSlotsInStore = state.firestore.data?.slotsByDay;
 
-        // filter slots from each day with respect to category
-        return Object.keys(slotsForAMonth).reduce((acc, date) => {
-          const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
-            slotsForAMonth[date],
-            category
-          );
+  // Return early if no slots in store
+  if (!allSlotsInStore) return {};
 
-          return !isFilteredDayEmpty
-            ? { ...acc, [date]: filteredSlotsDay }
-            : acc;
-        }, {} as SlotsByDay);
+  // Get slots for current month
+  const monthString = date.startOf("month").toISO().substring(0, 7);
+  const slotsForAMonth = allSlotsInStore[monthString] || {};
 
-      case "week":
-        // get all week dates
-        const weekDates = Array(7)
-          .fill(startDate.startOf("week"))
-          .map((startDate, i) => luxon2ISODate(startDate.plus({ days: i })));
+  // Filter slots from each day with respect to category
+  return Object.keys(slotsForAMonth).reduce((acc, date) => {
+    const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
+      slotsForAMonth[date],
+      category
+    );
 
-        // filter slots within each day with respect to category
-        const filteredDays = weekDates.reduce((acc, date) => {
-          const monthStaring = date.substring(0, 7);
-          const slotsMonth = allSlotsInStore[monthStaring] || {};
-          const slotsDay = slotsMonth[date] || {};
-
-          const [newDay] = filterSlotsByCategory(slotsDay, category);
-          return { ...acc, [date]: newDay };
-        }, {} as SlotsByDay);
-
-        return filteredDays;
-    }
-  };
+    // Add date to the acc object only if date not empty
+    return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
+  }, {} as SlotsByDay);
+};
 
 /**
  * Get slots for admin view, with respect to current date
