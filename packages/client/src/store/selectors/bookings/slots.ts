@@ -97,7 +97,10 @@ const filterSlotsByCategory = (
   return [filteredRecord, isEmptyWhenFiltered];
 };
 
-type SlotsForBooking = { date: string; slots: SlotInterface[] }[];
+type SlotsForBooking = {
+  date: string;
+  slots: (SlotInterface & { interval?: string })[];
+}[];
 
 export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
   const slotsMonth = getSlotsForCustomer(state);

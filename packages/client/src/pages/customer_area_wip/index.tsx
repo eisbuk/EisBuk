@@ -15,6 +15,7 @@ import {
   BookingSubCollection,
   Collection,
   OrgSubCollection,
+  SlotInterface,
 } from "@eisbuk/shared";
 
 import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
@@ -28,12 +29,14 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
+import { bookInterval } from "@/store/actions/bookingOperations";
+import { openModal } from "@/features/modal/actions";
 
 /**
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  useSecretKey();
+  const secretKey = useSecretKey();
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -51,6 +54,8 @@ const CustomerArea: React.FC = () => {
 
   const daysToRender = useSelector(getSlotsForBooking);
 
+  const { handleBooking, handleCancellation } = useBooking(secretKey);
+
   const additionalButtons = (
     <>
       <TabItem Icon={Calendar as any} label="Book" />
@@ -67,8 +72,13 @@ const CustomerArea: React.FC = () => {
 
           {daysToRender.map(({ date, slots }) => (
             <SlotsDayContainer date={date}>
-              {slots.map((slot) => (
-                <IntervalCardGroup {...slot} />
+              {slots.map(({ interval, ...slot }) => (
+                <IntervalCardGroup
+                  onBook={handleBooking(slot)}
+                  onCancel={handleCancellation(slot, interval)}
+                  bookedInterval={interval}
+                  {...slot}
+                />
               ))}
             </SlotsDayContainer>
           ))}
@@ -122,6 +132,33 @@ const useDate = (): Pick<
   const onChange = (date: DateTime) => dispatch(changeCalendarDate(date));
 
   return { date, onChange };
+};
+
+/**
+ * Slot booking and cancel logic, abstracted away in a hook for readability.
+ */
+const useBooking = (secretKey: string) => {
+  const dispatch = useDispatch();
+
+  return {
+    handleBooking:
+      ({ date, id: slotId }: SlotInterface) =>
+      (bookedInterval: string) =>
+        dispatch(bookInterval({ slotId, bookedInterval, date, secretKey })),
+
+    handleCancellation: (slot: SlotInterface, interval?: string) => () => {
+      if (!interval) return;
+
+      const [startTime, endTime] = interval.split("-");
+
+      dispatch(
+        openModal({
+          component: "CancelBookingDialog",
+          props: { ...slot, interval: { startTime, endTime } },
+        })
+      );
+    },
+  };
 };
 
 export default CustomerArea;
