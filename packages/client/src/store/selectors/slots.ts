@@ -5,13 +5,13 @@ import {
   luxon2ISODate,
   DeprecatedCategory,
   CategoryUnion,
+  SlotInterface,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 import { getCalendarDay } from "./app";
-import { getBookingsCustomer } from "./bookings";
+import { getBookedSlots, getBookingsCustomer } from "./bookings";
 
-// #region localHelpers
 interface CategoryFilter {
   (categories: CategoryUnion[]): boolean;
 }
@@ -67,7 +67,29 @@ const filterSlotsByCategory = (
 
   return [filteredRecord, isEmptyWhenFiltered];
 };
-// #endregion localHelpers
+
+type SlotsForBooking = { date: string; slots: SlotInterface[] }[];
+
+export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
+  const slotsMonth = getSlotsForCustomer(state);
+  const bookedSlots = getBookedSlots(state);
+  const customerData = getBookingsCustomer(state);
+
+  const daysToRender = Object.keys(slotsMonth);
+  if (!daysToRender.length || !customerData) {
+    return [];
+  }
+
+  return daysToRender.map((date) => ({
+    date,
+    slots: Object.values(slotsMonth[date]).map((slot) =>
+      // If slot booked add interval to the return structure
+      bookedSlots[slot.id]
+        ? { ...slot, interval: bookedSlots[slot.id].interval }
+        : slot
+    ),
+  }));
+};
 
 /**
  * Get `slotsByDay` entry, from store, for current month filtered according to customer's category.

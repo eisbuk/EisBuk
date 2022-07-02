@@ -15,18 +15,17 @@ import {
   BookingSubCollection,
   Collection,
   OrgSubCollection,
-  SlotsByDay,
-  SlotsById,
 } from "@eisbuk/shared";
+
+import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
-import { getSlotsForCustomer } from "@/store/selectors/slots";
+import { getSlotsForBooking } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
-import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
 /**
  * Customer area page component
@@ -48,8 +47,7 @@ const CustomerArea: React.FC = () => {
   // Get customer data necessary for rendering/functoinality
   const customerData = useSelector(getBookingsCustomer);
 
-  const slotsSelector = customerData ? getSlotsForCustomer : () => undefined;
-  const daysToRender = useSelector(slotsSelector);
+  const daysToRender = useSelector(getSlotsForBooking);
 
   const additionalButtons = (
     <>
@@ -64,7 +62,14 @@ const CustomerArea: React.FC = () => {
       <div className="content-container">
         <div className="px-[44px] py-4">
           <BookingsCountdownContainer />
-          {daysToRender && renderDays(daysToRender)}
+
+          {daysToRender.map(({ date, slots }) => (
+            <SlotsDayContainer date={date}>
+              {slots.map((slot) => (
+                <IntervalCardGroup {...slot} />
+              ))}
+            </SlotsDayContainer>
+          ))}
         </div>
       </div>
     </Layout>
@@ -116,17 +121,5 @@ const useDate = (): Pick<
 
   return { date, onChange };
 };
-
-const renderDays = (days: SlotsByDay) =>
-  Object.keys(days).map((date) => (
-    <SlotsDayContainer date={DateTime.fromISO(date)}>
-      {renderSlots(days[date])}
-    </SlotsDayContainer>
-  ));
-
-const renderSlots = (slots: SlotsById): JSX.Element[] =>
-  Object.values(slots).map((slot) => (
-    <IntervalCardGroup key={slot.id} {...slot} />
-  ));
 
 export default CustomerArea;
