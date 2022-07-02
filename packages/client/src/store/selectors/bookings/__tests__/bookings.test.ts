@@ -1,25 +1,153 @@
 import { DateTime } from "luxon";
 
-import { getCustomerBase, OrgSubCollection } from "@eisbuk/shared";
+import {
+  Category,
+  DeprecatedCategory,
+  getCustomerBase,
+  OrgSubCollection,
+} from "@eisbuk/shared";
 import { BookingsCountdownVariant } from "@eisbuk/ui";
+
+import { LocalStore } from "@/types/store";
 
 import { Action } from "@/enums/store";
 
 import { getNewStore } from "@/store/createStore";
 
+import {
+  getIsBookingAllowed,
+  getCountdownProps,
+  getSlotsForCustomer,
+} from "../index";
+
 import { changeCalendarDate } from "@/store/actions/appActions";
-
-import { getIsBookingAllowed, getCountdownProps } from "../bookings";
-
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { saul } from "@/__testData__/customers";
+import {
+  currentMonthStartDate,
+  expectedMonthCustomer,
+  slotsByDay,
+} from "../../__testData__/slots";
+import { baseSlot } from "@/__testData__/slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
 const dateNowSpy = jest.spyOn(Date, "now").mockReturnValue(mockDate.toMillis());
 
+const setupBookingsTest = ({
+  category,
+  date,
+  slotsByDay,
+}: {
+  category: Category | DeprecatedCategory;
+  date: DateTime;
+  slotsByDay: NonNullable<LocalStore["firestore"]["data"]["slotsByDay"]>;
+}): ReturnType<typeof getNewStore> => {
+  const store = getNewStore();
+
+  store.dispatch(changeCalendarDate(date));
+  store.dispatch(
+    updateLocalDocuments(OrgSubCollection.Bookings, {
+      [saul.secretKey]: {
+        ...getCustomerBase(saul),
+        category,
+      },
+    })
+  );
+  store.dispatch(updateLocalDocuments(OrgSubCollection.SlotsByDay, slotsByDay));
+
+  return store;
+};
+
 describe("Selectors ->", () => {
+  describe("'getSlotsForCustomer' > ", () => {
+    test("should get slots for a month with respect to 'startDate' and provided category", () => {
+      const date = DateTime.fromISO(currentMonthStartDate);
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        slotsByDay,
+        date,
+      });
+      const res = getSlotsForCustomer(store.getState());
+      expect(res).toEqual(expectedMonthCustomer);
+    });
+
+    const courseAdultsSlot = {
+      ...baseSlot,
+      id: "course",
+      categories: [Category.CourseAdults],
+    };
+    const preCompetitiveAdultsSlot = {
+      ...baseSlot,
+      id: "pre-competitive",
+      categories: [Category.PreCompetitiveAdults],
+    };
+    const adultsSlot = {
+      ...baseSlot,
+      id: "adults",
+      categories: [DeprecatedCategory.Adults as unknown as Category],
+    };
+    const competitiveSlot = {
+      ...baseSlot,
+      id: "competitive",
+      categories: [Category.Competitive],
+    };
+
+    test('should display both "pre-competitive-adults" and "course-adults" slots to unsorted "adults" customers', () => {
+      const date = DateTime.fromISO(baseSlot.date);
+      const currentMonthString = baseSlot.date.substring(0, 7);
+      const store = setupBookingsTest({
+        category: DeprecatedCategory.Adults,
+        date,
+        slotsByDay: {
+          [currentMonthString]: {
+            ["2021-03-01"]: {
+              [courseAdultsSlot.id]: courseAdultsSlot,
+              [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
+              [competitiveSlot.id]: competitiveSlot,
+            },
+          },
+        },
+      });
+      const res = getSlotsForCustomer(store.getState());
+      // Should only filter the "competitive" slot
+      expect(res).toEqual({
+        ["2021-03-01"]: {
+          [courseAdultsSlot.id]: courseAdultsSlot,
+          [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
+        },
+      });
+    });
+
+    test('should display slots with category "adults" to both "pre-competitive-adults" and "course-adults" customers', () => {
+      const date = DateTime.fromISO(baseSlot.date);
+      const currentMonthString = baseSlot.date.substring(0, 7);
+      const store = setupBookingsTest({
+        category: Category.CourseAdults,
+        date,
+        slotsByDay: {
+          [currentMonthString]: {
+            /** @TODO_TESTS hardcoded test date, make this a bit more concise */
+            ["2021-03-01"]: {
+              [courseAdultsSlot.id]: courseAdultsSlot,
+              [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
+              [adultsSlot.id]: adultsSlot,
+              [competitiveSlot.id]: competitiveSlot,
+            },
+          },
+        },
+      });
+      const res = getSlotsForCustomer(store.getState());
+      expect(res).toEqual({
+        ["2021-03-01"]: {
+          [courseAdultsSlot.id]: courseAdultsSlot,
+          [adultsSlot.id]: adultsSlot,
+        },
+      });
+    });
+  });
+
   describe("Test 'getCanBook' selector", () => {
     test("should allow admin to book at all times", () => {
       /** @TODO this is flaky */

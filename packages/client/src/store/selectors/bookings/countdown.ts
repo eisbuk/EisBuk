@@ -1,61 +1,14 @@
 import { DateTime } from "luxon";
 
 import { BookingsCountdownVariant, CountdownProps } from "@eisbuk/ui";
-import { CustomerBase, CustomerBookingEntry } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCalendarDay } from "./app";
+import { getCalendarDay } from "@/store/selectors/app";
+import { getBookingsCustomer } from "./customer";
 
 import { getMonthDiff } from "@/utils/date";
-
-/**
- * Get customer info for bookings from local store
- * @param state Local Redux Store
- * @returns customer data (Bookings meta)
- */
-export const getBookingsCustomer = (
-  state: LocalStore
-): CustomerBase | undefined => {
-  // get extended date (if any)
-  const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
-  if (bookingsInStore.length > 1) {
-    /** @TODO */
-    // this shouldn't happen in production and we're working on a way to fix it completely
-    // this is just a reporting feature in case it happens
-    console.error(
-      "There seem to be multiple entries in 'firestore.data.bookings' part of the local store"
-    );
-  }
-
-  return bookingsInStore[0];
-};
-
-/**
- * Get subscribed slots from state
- * @param state Local Redux Store
- * @returns record of subscribed slots
- */
-export const getBookedSlots = (
-  state: LocalStore
-): Record<string, CustomerBookingEntry> =>
-  state.firestore.data?.bookedSlots || {};
-/**
- * Get subscribed slots from state for a specific month
- * @param state Local Redux Store
- * @returns record of subscribed slots
- */
-export const getBookedSlotsByMonth =
-  (month: number) =>
-  (state: LocalStore): Record<string, CustomerBookingEntry> =>
-    Object.entries(state.firestore.data?.bookedSlots || {}).reduce(
-      (acc, [slotId, CustomerBookingEntry]) =>
-        DateTime.fromISO(CustomerBookingEntry.date).month === month
-          ? { ...acc, [slotId]: CustomerBookingEntry }
-          : acc,
-      {}
-    );
 
 /**
  * A selector used to check if booking is allowed for currently observed slots.
@@ -164,31 +117,3 @@ const getExtendedDate = (state: LocalStore): DateTime | undefined => {
  */
 const getMonthDeadline = (date = DateTime.now()) =>
   date.minus({ months: 1 }).endOf("month").minus({ days: lockingPeriod });
-
-// /**
-//  * Gets first month available for booking with respect to
-//  * provided (optional) `extendedDate` and current date
-//  * @param extendedDate
-//  * @returns
-//  */
-// const getBookingMonth = (extendedDate?: DateTime): DateTime => {
-//   const currentMonthDeadline = getMonthDeadline();
-
-//   // if `extendedDate` not provided or has passed, only take current month deadline into account
-//   if (!extendedDate || extendedDate.diffNow().milliseconds < 0) {
-//     return currentMonthDeadline.diffNow().milliseconds > 0
-//       ? // if current month deadline hasn't yet passed, the booking month is, trivially the next month
-//         currentMonthDeadline.plus({ months: 1 }).startOf("month")
-//       : // if current month deadline has passed, only the month after the next month is available for booking
-//         currentMonthDeadline.plus({ months: 2 });
-//   }
-
-//   return extendedDate.diff(currentMonthDeadline).milliseconds < 0
-//     ? // `extendedDate`, for current month is at the start of the current month
-//       // i.e. extended date for February is "20XX-02-06"
-//       extendedDate.startOf("month")
-//     : // `extendedDate` is an extension of current deadline in the same month (for the next month)
-//       // i.e. extended date for February is "20XX-01-29" and the deadline for February is "20XX-01-27"
-//       extendedDate.plus({ months: 1 }).startOf("month");
-// };
-// // #endregion helpers

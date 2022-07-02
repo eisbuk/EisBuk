@@ -20,8 +20,10 @@ import {
 import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
-import { getBookingsCustomer } from "@/store/selectors/bookings";
-import { getSlotsForBooking } from "@/store/selectors/slots";
+import {
+  getBookingsCustomer,
+  getSlotsForBooking,
+} from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 

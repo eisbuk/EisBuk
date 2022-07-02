@@ -21,8 +21,8 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 import {
   getBookingsCustomer,
   getBookedSlots,
+  getSlotsForCustomer,
 } from "@/store/selectors/bookings";
-import { getSlotsForCustomer } from "@/store/selectors/slots";
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCalendarDay } from "@/store/selectors/app";
 
