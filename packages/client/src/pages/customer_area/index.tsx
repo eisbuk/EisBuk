@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
+import { CalendarNav, CalendarNavProps, Layout, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -118,10 +118,7 @@ const useSecretKey = () => {
  * Reads current date from Redux store and handles updates of the current date.
  * The returned structure can directly be passed as props to CalendarNav component
  */
-const useDate = (): Pick<
-  Parameters<typeof CalendarNav>[0],
-  "date" | "onChange"
-> => {
+const useDate = (): Pick<CalendarNavProps, "date" | "onChange"> => {
   const dispatch = useDispatch();
 
   const date = useSelector(getCalendarDay);

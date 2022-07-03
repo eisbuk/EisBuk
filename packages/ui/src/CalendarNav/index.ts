@@ -1,3 +1,5 @@
-import CalendarNav from "./CalendarNav";
+import CalendarNav, { CalendarNavProps } from "./CalendarNav";
+
+export type { CalendarNavProps };
 
 export default CalendarNav;
