@@ -2,6 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { BookingsCountdown, EmptySpace } from "@eisbuk/ui";
+import i18n, { Alerts } from "@eisbuk/translations";
 
 import {
   getBookingsCustomer,
@@ -32,9 +33,9 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
   // hence a different component
   if (isMonthEmpty) {
     return (
-      <EmptySpace
-        {...props}
-      >{`No slots are currently available for the month of <strong>May</strong>`}</EmptySpace>
+      <EmptySpace {...props}>
+        {i18n.t(Alerts.NoSlots, { currentDate: countdownProps.month })}
+      </EmptySpace>
     );
   }
 
