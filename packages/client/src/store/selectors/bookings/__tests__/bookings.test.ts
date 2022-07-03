@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
 import {
+  BookingSubCollection,
   Category,
   DeprecatedCategory,
   getCustomerBase,
@@ -31,7 +32,7 @@ import {
   slotsByDay,
 } from "../../__testData__/slots";
 import { baseSlot } from "@/__testData__/slots";
-import { getMonthEmptyForBooking } from "../slots";
+import { getBookingsForCalendar, getMonthEmptyForBooking } from "../slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
@@ -361,5 +362,59 @@ describe("Selectors ->", () => {
         wantRes: false,
       },
     ]);
+  });
+
+  describe("getBookingsForCalendar", () => {
+    test.only("should return a list of booked slots with corresponding booked intervals", () => {
+      const monthStr = "2022-01";
+
+      // We're using 3 days, each with one slot
+      const days = ["2022-01-01", "2022-01-02", "2022-01-03"];
+      const [day1, day2, day3] = days;
+
+      // Construct slots for all 3 days
+      const [slot1, bookedSlot, slot3] = Array(3)
+        .fill(null)
+        .map((_, i) => ({
+          ...baseSlot,
+          // Results in: slot-1, slot-2, slot-3
+          id: `slot-${i + 1}`,
+          // All slots should be of required category
+          categories: [Category.Competitive],
+          date: days[i],
+        }));
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        // Any day from the test month would do
+        date: DateTime.fromISO(day3),
+        slotsByDay: {
+          [monthStr]: {
+            [day1]: { [slot1.id]: slot1 },
+            [day2]: { [bookedSlot.id]: bookedSlot },
+            [day3]: { [slot3.id]: slot3 },
+          },
+        },
+      });
+
+      // Book second slot (`bookedSlot`)
+      const bookedIntervalKey = Object.keys(baseSlot.intervals)[0];
+      const bookedInterval = baseSlot.intervals[bookedIntervalKey];
+
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [bookedSlot.id]: {
+            date: bookedSlot.date,
+            interval: bookedIntervalKey,
+          },
+        })
+      );
+      expect(getBookingsForCalendar(store.getState())).toEqual([
+        {
+          ...bookedSlot,
+          interval: bookedInterval,
+        },
+      ]);
+    });
   });
 });

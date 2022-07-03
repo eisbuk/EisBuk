@@ -1,42 +1,31 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { DateTime } from "luxon";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import {
-  CalendarNav,
-  IntervalCardGroup,
-  Layout,
-  SlotsDayContainer,
-  TabItem,
-} from "@eisbuk/ui";
+import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle } from "@eisbuk/svg";
 import {
   BookingSubCollection,
   Collection,
   OrgSubCollection,
-  SlotInterface,
 } from "@eisbuk/shared";
 
-import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
+import BookView from "./views/Book";
+import CalendarView from "./views/Calendar";
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
-import {
-  getBookingsCustomer,
-  getSlotsForBooking,
-} from "@/store/selectors/bookings";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
-import { bookInterval } from "@/store/actions/bookingOperations";
-import { openModal } from "@/features/modal/actions";
 
 /**
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  const secretKey = useSecretKey();
+  useSecretKey();
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -52,36 +41,36 @@ const CustomerArea: React.FC = () => {
   // Get customer data necessary for rendering/functoinality
   const customerData = useSelector(getBookingsCustomer);
 
-  const daysToRender = useSelector(getSlotsForBooking);
-
-  const { handleBooking, handleCancellation } = useBooking(secretKey);
-
+  // Get appropriate view to render
+  const views = {
+    BookView,
+    CalendarView,
+  };
+  const [view, setView] = useState<keyof typeof views>("BookView");
   const additionalButtons = (
     <>
-      <TabItem Icon={Calendar as any} label="Book" />
-      <TabItem Icon={AccountCircle as any} label="Calendar" />
+      <TabItem
+        Icon={Calendar as any}
+        label="Book"
+        onClick={() => setView("BookView")}
+        active={view === "BookView"}
+      />
+      <TabItem
+        Icon={AccountCircle as any}
+        label="Calendar"
+        onClick={() => setView("CalendarView")}
+        active={view === "CalendarView"}
+      />
     </>
   );
+  const CustomerView = views[view];
 
   return (
     <Layout additionalButtons={additionalButtons} user={customerData}>
       <CalendarNav {...calendarNavProps} jump="month" />
       <div className="content-container">
         <div className="px-[44px] py-4">
-          <BookingsCountdownContainer />
-
-          {daysToRender.map(({ date, slots }) => (
-            <SlotsDayContainer date={date}>
-              {slots.map(({ interval, ...slot }) => (
-                <IntervalCardGroup
-                  onBook={handleBooking(slot)}
-                  onCancel={handleCancellation(slot, interval)}
-                  bookedInterval={interval}
-                  {...slot}
-                />
-              ))}
-            </SlotsDayContainer>
-          ))}
+          <CustomerView />
         </div>
       </div>
     </Layout>
@@ -132,33 +121,6 @@ const useDate = (): Pick<
   const onChange = (date: DateTime) => dispatch(changeCalendarDate(date));
 
   return { date, onChange };
-};
-
-/**
- * Slot booking and cancel logic, abstracted away in a hook for readability.
- */
-const useBooking = (secretKey: string) => {
-  const dispatch = useDispatch();
-
-  return {
-    handleBooking:
-      ({ date, id: slotId }: SlotInterface) =>
-      (bookedInterval: string) =>
-        dispatch(bookInterval({ slotId, bookedInterval, date, secretKey })),
-
-    handleCancellation: (slot: SlotInterface, interval?: string) => () => {
-      if (!interval) return;
-
-      const [startTime, endTime] = interval.split("-");
-
-      dispatch(
-        openModal({
-          component: "CancelBookingDialog",
-          props: { ...slot, interval: { startTime, endTime } },
-        })
-      );
-    },
-  };
 };
 
 export default CustomerArea;

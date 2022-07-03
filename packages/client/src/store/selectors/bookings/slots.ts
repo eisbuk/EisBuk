@@ -6,12 +6,14 @@ import {
   SlotInterface,
   CustomerBookingEntry,
   SlotsByDay,
+  SlotInterval,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
+
 import { isEmpty } from "@/utils/helpers";
 
 interface CategoryFilter {
@@ -146,4 +148,35 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
 
 export const getMonthEmptyForBooking = (state: LocalStore): boolean => {
   return isEmpty(getSlotsForCustomer(state));
+};
+
+type BookingsList = Array<SlotInterface & { interval: SlotInterval }>;
+
+export const getBookingsForCalendar = (
+  state: LocalStore
+): (SlotInterface & { interval: SlotInterval })[] => {
+  // Current month in view is determined by `currentDate` in Redux store
+  const monthString = getCalendarDay(state).toISO().substring(0, 7);
+
+  // Get all booked slots
+  const bookedSlots = getBookedSlots(state);
+
+  // Get only the slots for current month
+  const slotsByMonth = state.firestore.data.slotsByDay || {};
+  const slotsForAMonth = slotsByMonth[monthString] || {};
+
+  return Object.entries(bookedSlots)
+    .reduce((acc, [slotId, { date, interval: bookedInterval }]) => {
+      // If this returns undefined, our slot isn't in date range
+      const dayOfBookedSlot = slotsForAMonth[date];
+      if (!dayOfBookedSlot) {
+        return acc;
+      }
+
+      const bookedSlot = dayOfBookedSlot[slotId];
+      const interval = bookedSlot.intervals[bookedInterval];
+      const completeBookingEntry = { ...bookedSlot, interval };
+      return [...acc, completeBookingEntry];
+    }, [] as BookingsList)
+    .sort((a, b) => (a > b ? -1 : 1));
 };
