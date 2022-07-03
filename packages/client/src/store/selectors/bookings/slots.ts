@@ -117,11 +117,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const category = getBookingsCustomer(state)?.category;
 
   // Return early if no category found in store
-  // this should never happen and is an internal app error
   if (!category) {
-    console.error(
-      "No category found in store, check store entries for bookings customer"
-    );
     return {};
   }
 
