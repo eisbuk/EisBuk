@@ -1,5 +1,3 @@
-import { DateTime } from "luxon";
-
 import {
   Category,
   SlotsById,
@@ -14,6 +12,7 @@ import { LocalStore } from "@/types/store";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
+import { isEmpty } from "@/utils/helpers";
 
 interface CategoryFilter {
   (categories: CategoryUnion[]): boolean;
@@ -28,22 +27,6 @@ export const getBookedSlots = (
   state: LocalStore
 ): Record<string, CustomerBookingEntry> =>
   state.firestore.data?.bookedSlots || {};
-
-/**
- * Get subscribed slots from state for a specific month
- * @param state Local Redux Store
- * @returns record of subscribed slots
- */
-export const getBookedSlotsByMonth =
-  (month: number) =>
-  (state: LocalStore): Record<string, CustomerBookingEntry> =>
-    Object.entries(state.firestore.data?.bookedSlots || {}).reduce(
-      (acc, [slotId, CustomerBookingEntry]) =>
-        DateTime.fromISO(CustomerBookingEntry.date).month === month
-          ? { ...acc, [slotId]: CustomerBookingEntry }
-          : acc,
-      {}
-    );
 
 /**
  * An util higher order function returning the condition for category filtering
@@ -159,4 +142,8 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
     // Add date to the acc object only if date not empty
     return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
   }, {} as SlotsByDay);
+};
+
+export const getMonthEmptyForBooking = (state: LocalStore): boolean => {
+  return isEmpty(getSlotsForCustomer(state));
 };

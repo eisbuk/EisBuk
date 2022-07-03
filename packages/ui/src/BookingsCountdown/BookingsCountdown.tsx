@@ -38,7 +38,7 @@ type BookingsCountdownProps = React.HTMLAttributes<HTMLElement> &
      * A handler fired when "finalize bookings" button is clicked
      */
     onFinalize?: () => void;
-    as?: keyof JSX.IntrinsicAttributes;
+    as?: keyof JSX.IntrinsicElements;
   };
 
 /**

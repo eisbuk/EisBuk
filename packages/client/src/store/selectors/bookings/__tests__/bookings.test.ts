@@ -5,6 +5,7 @@ import {
   DeprecatedCategory,
   getCustomerBase,
   OrgSubCollection,
+  SlotsByDay,
 } from "@eisbuk/shared";
 import { BookingsCountdownVariant } from "@eisbuk/ui";
 
@@ -30,6 +31,7 @@ import {
   slotsByDay,
 } from "../../__testData__/slots";
 import { baseSlot } from "@/__testData__/slots";
+import { getMonthEmptyForBooking } from "../slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
@@ -300,5 +302,64 @@ describe("Selectors ->", () => {
       };
       expect(getCountdownProps(store.getState())).toEqual(expectedRes);
     });
+  });
+
+  describe("getMonthEmptyForBooking", () => {
+    interface TestParams {
+      name: string;
+      category: Category;
+
+      slotsByDay: SlotsByDay;
+      wantRes: boolean;
+    }
+
+    const runTableTests = (tests: TestParams[]) =>
+      tests.forEach(({ name, category, slotsByDay, wantRes }) =>
+        test(name, () => {
+          const date = DateTime.fromISO(baseSlot.date);
+          const currentMonthString = baseSlot.date.substring(0, 7);
+          const store = setupBookingsTest({
+            category,
+            date,
+            slotsByDay: { [currentMonthString]: slotsByDay },
+          });
+          expect(getMonthEmptyForBooking(store.getState())).toEqual(wantRes);
+        })
+      );
+
+    runTableTests([
+      {
+        name: "should return true if there are no slots in a month",
+        category: Category.Competitive,
+        slotsByDay: {},
+        wantRes: true,
+      },
+      {
+        name: "should return true if there are slots in a month, but not of the required category",
+        category: Category.Competitive,
+        slotsByDay: {
+          [baseSlot.date]: {
+            ["diff-category-slot"]: {
+              ...baseSlot,
+              categories: [Category.CourseAdults],
+            },
+          },
+        },
+        wantRes: true,
+      },
+      {
+        name: "should return false if there are slots available for booking in the required month for the required category",
+        category: Category.Competitive,
+        slotsByDay: {
+          [baseSlot.date]: {
+            ["diff-category-slot"]: {
+              ...baseSlot,
+              categories: [Category.Competitive],
+            },
+          },
+        },
+        wantRes: false,
+      },
+    ]);
   });
 });
