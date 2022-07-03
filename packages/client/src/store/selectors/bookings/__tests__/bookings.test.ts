@@ -365,7 +365,7 @@ describe("Selectors ->", () => {
   });
 
   describe("getBookingsForCalendar", () => {
-    test.only("should return a list of booked slots with corresponding booked intervals", () => {
+    test("should return a list of booked slots with corresponding booked intervals", () => {
       const monthStr = "2022-01";
 
       // We're using 3 days, each with one slot
