@@ -13,10 +13,10 @@ import { getTestEnv } from "@/__testSetup__/firestore";
 
 import * as getters from "@/lib/getters";
 
-import { Action, NotifVariant } from "@/enums/store";
+import { NotifVariant } from "@/enums/store";
 
 import { bookInterval, cancelBooking } from "../bookingOperations";
-import * as appActions from "../appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookedSlotDocPath, getBookedSlotsPath } from "@/utils/firestore";
 
@@ -25,28 +25,6 @@ import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
-
-/**
- * Mock `enqueueSnackbar` implementation for easier testing.
- * Here we're using the same implmentation as the original function (action creator),
- * only omitting the notification key (as this is simpler)
- */
-const mockEnqueueSnackbar = ({
-  // we're omitting the key as it is, in most cases, signed with date and random number
-  // and this is easier than mocking `Date` object to always return the same value
-  // and seeding random to given value
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
-  ...notification
-}: Parameters<typeof appActions.enqueueNotification>[0]) => ({
-  type: Action.EnqueueNotification,
-  payload: { ...notification },
-});
-
-// mock `enqueueSnackbar` in component
-jest
-  .spyOn(appActions, "enqueueNotification")
-  .mockImplementation(mockEnqueueSnackbar as any);
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
@@ -151,12 +129,9 @@ describe("Booking Notifications", () => {
         });
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
-          appActions.enqueueNotification({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.BookingSuccess),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -179,7 +154,12 @@ describe("Booking Notifications", () => {
         });
         const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
@@ -226,12 +206,9 @@ describe("Booking Notifications", () => {
         expect(bookedSlotsForCustomer.docs.length).toEqual(2);
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
-          appActions.enqueueNotification({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.BookingCanceled),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -251,7 +228,12 @@ describe("Booking Notifications", () => {
         });
         const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });

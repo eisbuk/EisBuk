@@ -13,6 +13,7 @@ import {
 
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
@@ -66,7 +67,11 @@ const CustomerArea: React.FC = () => {
   const CustomerView = views[view];
 
   return (
-    <Layout additionalButtons={additionalButtons} user={customerData}>
+    <Layout
+      Notifications={NotificationsContainer}
+      additionalButtons={additionalButtons}
+      user={customerData}
+    >
       <CalendarNav {...calendarNavProps} jump="month" />
       <div className="content-container">
         <div className="px-[44px] py-4">
