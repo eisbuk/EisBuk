@@ -35,6 +35,19 @@ jest.mock(
       mockUseFirestoreSubscribe(...params)
 );
 
+// The following mocks are here as to not break the app
+// and keep the test somewhat sandboxed
+jest.mock("@/store/actions/bookingOperations", () => ({
+  bookSlot: jest.fn(),
+  cancelBooking: jest.fn(),
+}));
+jest.mock("@/features/notifications/hooks", () => ({
+  useNotifications: () => ({
+    active: undefined,
+    handleRemoveNotification: jest.fn(),
+  }),
+}));
+
 // Set up test store
 const testStore = getNewStore();
 testStore.dispatch(
