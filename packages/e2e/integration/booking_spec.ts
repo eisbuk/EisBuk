@@ -17,7 +17,8 @@ import testCustomers from "../__testData__/customers.json";
 // extract saul from test data .json
 const saul = testCustomers.customers.saul as Customer;
 
-describe("Booking flow", () => {
+/** @TEMP skip as it uses the old customer_area page */
+xdescribe("Booking flow", () => {
   describe("Test for not-an-admin", () => {
     it("doesn't allow booking past the booking deadline for a given month", () => {
       // our test data starts with this date so we're using it as reference point
