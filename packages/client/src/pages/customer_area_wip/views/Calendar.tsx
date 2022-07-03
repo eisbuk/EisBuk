@@ -1,12 +1,16 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
+import i18n, { Alerts } from "@eisbuk/translations";
+import { EmptySpace, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
+
 import { getBookingsForCalendar } from "@/store/selectors/bookings";
-import { IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
 import { openModal } from "@/features/modal/actions";
+import { getCalendarDay } from "@/store/selectors/app";
 
 const CalendarView: React.FC = () => {
   const dispatch = useDispatch();
+  const currentDate = useSelector(getCalendarDay);
 
   const bookedSlots = useSelector(getBookingsForCalendar);
 
@@ -21,16 +25,21 @@ const CalendarView: React.FC = () => {
     );
   };
 
-  return (
+  const slotsToRender = bookedSlots.map((props) => (
+    <IntervalCard
+      key={props.id}
+      onCancel={() => handleCancellation(props)}
+      variant={IntervalCardVariant.Calendar}
+      {...props}
+    />
+  ));
+
+  return slotsToRender.length ? (
     <div className="w-full flex flex-wrap gap-[30px] py-12">
-      {bookedSlots.map((props) => (
-        <IntervalCard
-          onCancel={() => handleCancellation(props)}
-          variant={IntervalCardVariant.Calendar}
-          {...props}
-        />
-      ))}
+      {slotsToRender}
     </div>
+  ) : (
+    <EmptySpace>{i18n.t(Alerts.NoBookings, { currentDate })}</EmptySpace>
   );
 };
 

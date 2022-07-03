@@ -256,7 +256,8 @@
     "UpcomingBirthdays": "Prossimi Compleanni"
   },
   "Alerts": {
-    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
+    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
+    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Inizio",
