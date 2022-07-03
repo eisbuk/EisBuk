@@ -27,7 +27,7 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
 
   return (
     <div className={[...containerClasses, className].join(" ")}>
-      <h1 className="text-2xl font-normal leading-none text-gray-700 mb-8">
+      <h1 className="text-2xl font-normal leading-none text-gray-700 mb-8 cursor-normal select-none">
         {dateString}
       </h1>
       <div className="flex flex-wrap items-end gap-6 min-h-[146px]">
