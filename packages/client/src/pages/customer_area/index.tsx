@@ -51,12 +51,14 @@ const CustomerArea: React.FC = () => {
   const additionalButtons = (
     <>
       <TabItem
+        key="book-view-button"
         Icon={Calendar as any}
         label="Book"
         onClick={() => setView("BookView")}
         active={view === "BookView"}
       />
       <TabItem
+        key="calendar-view-button"
         Icon={AccountCircle as any}
         label="Calendar"
         onClick={() => setView("CalendarView")}

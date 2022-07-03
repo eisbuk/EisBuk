@@ -23,9 +23,10 @@ const BookView: React.FC = () => {
       <BookingsCountdownContainer />
 
       {daysToRender.map(({ date, slots }) => (
-        <SlotsDayContainer date={date}>
+        <SlotsDayContainer key={date} date={date}>
           {slots.map(({ interval, ...slot }) => (
             <IntervalCardGroup
+              key={slot.id}
               onBook={handleBooking(slot)}
               onCancel={handleCancellation(slot, interval)}
               bookedInterval={interval}
