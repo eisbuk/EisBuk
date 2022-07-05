@@ -173,16 +173,16 @@
     {
       "commandKind": "global",
       "name": "emulators:start",
-      "summary": "Starts Firebase emulators for local development.",
-      "description": "Starts Firebase emulators suite, using config from firebase.json in order to set up emulator for each service at its predefined port. Starts Firebase emulator dashpord at http://localhost:4000",
-      "shellCommand": "bash -c '(trap \"kill 0\" SIGINT; pnpm -C packages/functions build & firebase emulators:start --project eisbuk)'"
+      "summary": "DEPRECATED - Starts Firebase emulators for local development.",
+      "description": "DEPRECATED - Starts Firebase emulators suite, using config from firebase.json in order to set up emulator for each service at its predefined port. Starts Firebase emulator dashboard at http://localhost:4000",
+      "shellCommand": "echo Deprecated: please use the emulators-start script in the common/scripts directory"
     },
     {
       "commandKind": "global",
       "name": "emulators:inspect",
-      "summary": "Starts Firebase emulators for local development with inspect feature.",
-      "description": "Starts Firebase emulators suite, using config from firebase.json, in the same way as 'emulators:start' with added functionality of allowing you to connect with a debugger, for instance chrome from chrome://inspect/#devices or from the VSCode debugger.",
-      "shellCommand": "bash -c '(trap \"kill 0\" SIGINT; pnpm -C packages/functions watch & firebase emulators:start --project eisbuk --inspect-functions 9229)'"
+      "summary": "DEPRECATED - Starts Firebase emulators for local development with inspect feature.",
+      "description": "DEPRECATED - Starts Firebase emulators suite, using config from firebase.json, in the same way as 'emulators:start' with added functionality of allowing you to connect with a debugger, for instance chrome from chrome://inspect/#devices or from the VSCode debugger.",
+      "shellCommand": "echo Deprecated: please use the command emulators-start '--inspect-functions 9229'"
     },
 
     /**

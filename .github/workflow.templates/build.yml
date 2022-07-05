@@ -182,7 +182,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: rush emulators:start
+          start: emulators-start
 
           #! For some reason, this action can also install everything, which doesn't work well with pnpm
           #! Anyway we're using our own instalation as it is, so just skipping this part
