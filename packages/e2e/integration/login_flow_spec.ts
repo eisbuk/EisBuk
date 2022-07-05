@@ -183,6 +183,10 @@ describe("login", () => {
 
   describe("Phone login", () => {
     beforeEach(() => {
+      // This test was failing from time to time: Cypress would enter the test
+      // with an already logged in user
+      cy.clearCookies();
+      cy.visit(PrivateRoutes.Root);
       // start email auth flow
       cy.clickButton(t(AuthTitle.SignInWithPhone));
     });
@@ -261,6 +265,10 @@ describe("login", () => {
 
   describe("Email link login", () => {
     beforeEach(() => {
+      // This test was failing from time to time: Cypress would enter the test
+      // with an already logged in user
+      cy.clearCookies();
+      cy.visit(PrivateRoutes.Root);
       cy.clickButton(t(AuthTitle.SignInWithEmailLink));
     });
 

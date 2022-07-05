@@ -27,8 +27,7 @@ describe("Copy Button", () => {
       "aria-label",
       `${i18n.t(AdminAria.CopySlots)} ${traslatedDate}`
     )
-      .click() // We really need two click statements here - I'm not sure why
-      .click({ force: true })
+      .click()
       .blur();
 
     cy.getAttrWith(
