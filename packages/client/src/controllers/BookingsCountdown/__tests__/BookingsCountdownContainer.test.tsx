@@ -21,6 +21,7 @@ import { getModal } from "@/features/modal/selectors";
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
 import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@/__testData__/slots";
 
 describe("BookingsCountdown", () => {
   test("should open a finalize bookings modal on 'Finalize' button click", () => {
@@ -34,6 +35,20 @@ describe("BookingsCountdown", () => {
     store.dispatch(
       updateLocalDocuments(OrgSubCollection.Bookings, {
         [saul.secretKey]: { ...saul, extendedDate },
+      })
+    );
+    // Set at least one slot to store as to not show the no-slots message
+    store.dispatch(
+      updateLocalDocuments(OrgSubCollection.SlotsByDay, {
+        ["2022-01"]: {
+          ["2022-01-01"]: {
+            [baseSlot.id]: {
+              ...baseSlot,
+              date: "2022-01-01",
+              categories: [saul.category],
+            },
+          },
+        },
       })
     );
     store.dispatch(changeCalendarDate(month));

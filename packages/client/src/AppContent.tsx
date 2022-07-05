@@ -67,7 +67,7 @@ const AppContent: React.FC = () => {
         />
 
         <Route
-          path={`${Routes.CustomerArea}/:secretKey/:customerRoute?`}
+          path={`${Routes.CustomerArea}/:secretKey`}
           component={CustomerAreaPage}
         />
         <Route path={Routes.Unauthorized} component={Unauthorized} exact />

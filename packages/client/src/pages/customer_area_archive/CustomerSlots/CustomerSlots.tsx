@@ -21,10 +21,7 @@ import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import BookingCardGroup from "@/components/atoms/BookingCardGroup";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import {
-  getBookedSlotsByMonth,
-  getCountdownProps,
-} from "@/store/selectors/bookings";
+import { getCountdownProps } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { orderByWeekDay, orderByDate } from "./utils";

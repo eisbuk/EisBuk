@@ -283,6 +283,7 @@ export enum BookingAria {
 // #region alerts
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
+  NoBookings = "Alerts.NoBookings",
 }
 // #endregion alerts
 
