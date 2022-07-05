@@ -51,6 +51,7 @@ const ExtendedDateField: React.FC<Props> = ({ customer, onClose }) => {
           {displayValue}
         </span>
         <Button
+          className={classes.buttonPrimary}
           color="primary"
           onClick={() => setOpenConfirmDialog(true)}
           variant="contained"
@@ -79,10 +80,15 @@ const ExtendedDateField: React.FC<Props> = ({ customer, onClose }) => {
   );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   field: { display: "flex", justifyContent: "space-between", flexWrap: "wrap" },
   bold: {
     fontWeight: "bold",
+  },
+  buttonPrimary: {
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 

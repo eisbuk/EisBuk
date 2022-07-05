@@ -6,6 +6,8 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import Typography from "@mui/material/Typography";
 
+import makeStyles from "@mui/styles/makeStyles";
+
 import { useTranslation, AuthMessage } from "@eisbuk/translations";
 
 import { signOut } from "@/store/actions/authOperations";
@@ -68,6 +70,8 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const logOut = () => dispatch(signOut());
   const { t } = useTranslation();
 
+  const classes = useStyles();
+
   return (
     <Paper style={style}>
       <Typography component="h1" variant="h2">
@@ -81,11 +85,21 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
         <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
       </Typography>
 
-      <Button variant="contained" onClick={logOut}>
+      <Button
+        className={classes.buttonPrimary}
+        variant="contained"
+        onClick={logOut}
+      >
         {t(AuthMessage.TryAgain)}
       </Button>
     </Paper>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
+}));
 
 export default Unauthorized;

@@ -189,6 +189,7 @@ const SlotForm: React.FC<Props> = ({
                   Boolean(Object.keys(errors).length) &&
                   (isSubmitting || isValidating)
                 }
+                className={classes.buttonPrimary}
                 color="primary"
                 aria-label={
                   slotToEdit
@@ -238,6 +239,9 @@ const useStyles = makeStyles((theme) =>
         margin: theme.spacing(2),
       },
     },
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    buttonPrimary: { backgroundColor: theme.palette.primary.main },
   })
 );
 // #endregion styles

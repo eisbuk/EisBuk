@@ -201,6 +201,7 @@ const CustomerForm: React.FC<Props> = ({
                 disabled={isSubmitting}
                 variant="contained"
                 color="primary"
+                className={classes.buttonPrimary}
               >
                 {t(ActionButton.Save)}
               </Button>
@@ -265,6 +266,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
 }));
 // #endregion styles
 
