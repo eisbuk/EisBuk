@@ -109,4 +109,4 @@ const getHeaderRowClasses = (
   return [...displayClasses, ...baseClasses, ...additionalClasses].join(" ");
 };
 
-export default { Layout };
+export default Layout;

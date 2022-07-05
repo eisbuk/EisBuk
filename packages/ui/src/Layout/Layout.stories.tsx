@@ -55,13 +55,15 @@ const user = {
 };
 export const Default = (): JSX.Element => (
   <BrowserRouter>
-    <Layout {...{ user }}>{dummyContent}</Layout>
+    <Layout isAdmin={true} {...{ user }}>
+      {dummyContent}
+    </Layout>
   </BrowserRouter>
 );
 
 export const CustomerArea = (): JSX.Element => (
   <BrowserRouter>
-    <Layout {...{ additionalButtons, Notifications, user }}>
+    <Layout isAdmin={false} {...{ additionalButtons, Notifications, user }}>
       {dummyContent}
     </Layout>
   </BrowserRouter>
