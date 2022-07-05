@@ -138,6 +138,7 @@
     "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
     "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
 
+    "CancelBookingTitle": "Cancel booking for",
     "FinalizeBookingsTitle": "Finalize Bookings",
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month.",
     "EnterEmailTitle": "Enter your Email below",
@@ -255,7 +256,8 @@
     "UpcomingBirthdays": "Upcoming Birthdays"
   },
   "Alerts": {
-    "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}"
+    "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}",
+    "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Start",

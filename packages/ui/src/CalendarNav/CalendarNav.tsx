@@ -5,7 +5,7 @@ import { createDateTitle } from "@eisbuk/translations";
 
 import DateNavigation from "./DateNavigation";
 
-interface CalendarNavProps
+export interface CalendarNavProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "onChange"> {
   /**
    * Current value for date (kept outside the component)

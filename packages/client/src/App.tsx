@@ -13,10 +13,12 @@ import { store } from "@/store";
 import AppContent from "@/AppContent";
 
 import Notifier from "@/components/Notifier";
+import { Modal } from "@/features/modal/components";
 
 import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
+import { NotificationsProvider } from "./features/notifications/context";
 
 const App: React.FC = () => {
   // connect auth to store to recieve firebase SDK's auth updates
@@ -29,9 +31,14 @@ const App: React.FC = () => {
         <ThemeProvider theme={currentTheme}>
           <LocalizationProvider dateAdapter={DateAdapter}>
             <SnackbarProvider maxSnack={3}>
-              <Notifier />
-              <CssBaseline />
-              <AppContent />
+              <NotificationsProvider
+                timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
+              >
+                <Notifier />
+                <CssBaseline />
+                <AppContent />
+                <Modal />
+              </NotificationsProvider>
             </SnackbarProvider>
           </LocalizationProvider>
         </ThemeProvider>

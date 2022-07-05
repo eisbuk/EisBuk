@@ -32,7 +32,10 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
       ),
     },
     [
-      <span dangerouslySetInnerHTML={{ __html: children }} />,
+      <span
+        className="md:whitespace-nowrap"
+        dangerouslySetInnerHTML={{ __html: children }}
+      />,
       <button
         onClick={() => onClose()}
         key="close-button"

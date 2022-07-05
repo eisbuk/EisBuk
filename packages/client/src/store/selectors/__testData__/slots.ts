@@ -246,7 +246,9 @@ export const expectedMonthCustomer = currentMonthCompetitive;
 /**
  * A full `slotsByDay` test store input
  */
-export const slotsByDay: LocalStore["firestore"]["data"]["slotsByDay"] = {
+export const slotsByDay: NonNullable<
+  LocalStore["firestore"]["data"]["slotsByDay"]
+> = {
   ["2021-08"]: fullPrevoiusMonth,
   ["2021-09"]: fullCurrentMonth,
 };

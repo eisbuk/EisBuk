@@ -94,7 +94,8 @@ xdescribe("Date Switcher", () => {
     });
   });
 });
-describe("Download ics file to Add To Calendar", () => {
+/** @TEMP skip as it uses the old customer_area page */
+xdescribe("Download ics file to Add To Calendar", () => {
   it("checks email was sent and calendar collection was updated successfully", () => {
     cy.setClock(testDateLuxon.toMillis());
 

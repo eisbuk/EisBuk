@@ -4,6 +4,8 @@ import { SlotInterface } from "@eisbuk/shared";
 
 import IntervalCard, { IntervalCardState } from "../IntervalCard";
 
+import { sortIntervals } from "../utils/helpers";
+
 interface BookingCardGroupProps extends SlotInterface {
   /**
    * Booked interval for a slot, used to control the rendering
@@ -41,7 +43,7 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
   disabled: isDisabled,
   ...slot
 }) => {
-  const intervalsToRender = Object.keys(intervals || {});
+  const intervalsToRender = Object.keys(intervals || {}).sort(sortIntervals);
 
   return (
     <>

@@ -10,7 +10,7 @@ import { FirestoreThunk } from "@/types/store";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
-import { enqueueNotification, showErrSnackbar } from "./appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
@@ -48,16 +48,17 @@ export const bookInterval: UpdateBooking<{
       // show success message
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.BookingSuccess),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -78,16 +79,17 @@ export const cancelBooking: UpdateBooking =
       // show success message
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.BookingCanceled),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 /**
@@ -117,16 +119,15 @@ export const createCalendarEvents =
       // show success message
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.SlotsAddedToCalendar),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch({
+        message: i18n.t(NotificationMessage.Error),
+        vatiant: NotifVariant.Error,
+      });
     }
   };
 
@@ -171,16 +172,14 @@ export const sendICSFile: sendICSFile =
 
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.EmailSent),
-
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch({
+        message: i18n.t(NotificationMessage.Error),
+        variant: NotifVariant.Error,
+      });
     }
   };

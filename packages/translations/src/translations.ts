@@ -150,6 +150,7 @@ export enum Prompt {
   ExtendBookingDateTitle = "Prompt.ExtendBookingDateTitle",
   ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
 
+  CancelBookingTitle = "Prompt.CancelBookingTitle",
   FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
   EnterEmailTitle = "Prompt.EnterEmailTitle",
@@ -282,6 +283,7 @@ export enum BookingAria {
 // #region alerts
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
+  NoBookings = "Alerts.NoBookings",
 }
 // #endregion alerts
 

@@ -1,6 +1,5 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
-import { DateTime } from "luxon";
 
 import { Category, SlotInterface, SlotType } from "@eisbuk/shared";
 
@@ -12,8 +11,7 @@ export default {
   component: SlotsDayContainer,
 } as ComponentMeta<typeof SlotsDayContainer>;
 
-const dateISO = "2022-01-01";
-const date = DateTime.fromISO(dateISO);
+const date = "2022-01-01";
 
 const iceSlot: SlotInterface = {
   id: "ice-slot",
@@ -33,7 +31,7 @@ const iceSlot: SlotInterface = {
   },
   categories: [Category.Competitive],
   type: SlotType.Ice,
-  date: dateISO,
+  date,
   notes: "Rink 1",
 };
 const offIceSlot = {
