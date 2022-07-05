@@ -10,6 +10,7 @@ import {
   __confirmDialogYesId__,
   __confirmDialogNoId__,
 } from "@/__testData__/testIds";
+import makeStyles from "@mui/styles/makeStyles";
 
 interface Props {
   title: string;
@@ -39,6 +40,8 @@ const ConfirmDialog: React.FC<Props> = ({
     setOpen(false);
   };
 
+  const classes = useStyles();
+
   return (
     <Dialog open={open} onClose={() => setOpen(false)}>
       <DialogTitle>{title}</DialogTitle>
@@ -49,6 +52,7 @@ const ConfirmDialog: React.FC<Props> = ({
           onClick={handleReject}
           color="secondary"
           data-testid={__confirmDialogNoId__}
+          className={classes.buttonSecondary}
         >
           No
         </Button>
@@ -57,6 +61,7 @@ const ConfirmDialog: React.FC<Props> = ({
           onClick={handleConfirm}
           color="primary"
           data-testid={__confirmDialogYesId__}
+          className={classes.buttonPrimary}
         >
           Yes
         </Button>
@@ -64,5 +69,14 @@ const ConfirmDialog: React.FC<Props> = ({
     </Dialog>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  buttonPrimary: {
+    backgroundColor: theme.palette.primary.main,
+  },
+  buttonSecondary: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+}));
 
 export default ConfirmDialog;

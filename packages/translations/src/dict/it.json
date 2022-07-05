@@ -138,7 +138,7 @@
     "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
     "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
 
-    "CancelBookingTitle": "Cancel booking for",
+    "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
@@ -256,7 +256,8 @@
     "UpcomingBirthdays": "Prossimi Compleanni"
   },
   "Alerts": {
-    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
+    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
+    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

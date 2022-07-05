@@ -43,7 +43,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v2
         with:
-          start: rush emulators:start
+          start: emulators-start
           #! We're using our own instalation as it is, so just skipping this part
           install: false
           working-directory: packages/e2e

@@ -133,7 +133,12 @@ const BookingCard: React.FC<Props> = ({
   const actionButton = (
     <Button
       disabled={disabled}
-      className={classes.actionButton}
+      className={[
+        classes.actionButton,
+        // The following is a workaround to not overrule the Mui base button styles
+        // by Tailwind's preflight reset
+        booked ? classes.buttonSecondary : classes.buttonPrimary,
+      ].join(" ")}
       onClick={handleClick}
       color={booked ? "secondary" : "primary"}
       variant="contained"
@@ -213,6 +218,12 @@ const useStyles = makeStyles((theme) =>
       bottom: 0,
       width: "52%",
       height: "2.25rem",
+    },
+    buttonPrimary: {
+      backgroundColor: theme.palette.primary.main,
+    },
+    buttonSecondary: {
+      backgroundColor: theme.palette.secondary.main,
     },
     fadeOverlay: {
       position: "absolute",

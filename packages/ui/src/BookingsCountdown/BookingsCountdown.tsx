@@ -17,7 +17,7 @@ export enum BookingsCountdownVariant {
   BookingsLocked = "bookings-locked",
 }
 
-interface BookingsCountdownProps extends React.HTMLAttributes<HTMLElement> {
+export interface CountdownProps {
   /**
    * Date to countdown to (in luxon `DateTime` format)
    */
@@ -30,12 +30,16 @@ interface BookingsCountdownProps extends React.HTMLAttributes<HTMLElement> {
    * first/second deadline, or bookings locked message
    */
   variant: BookingsCountdownVariant;
-  /**
-   * A handler fired when "finalize bookings" button is clicked
-   */
-  onFinalize?: () => void;
-  as?: keyof JSX.IntrinsicAttributes;
 }
+
+type BookingsCountdownProps = React.HTMLAttributes<HTMLElement> &
+  CountdownProps & {
+    /**
+     * A handler fired when "finalize bookings" button is clicked
+     */
+    onFinalize?: () => void;
+    as?: keyof JSX.IntrinsicElements;
+  };
 
 /**
  * A presentational component showing a countdown for bookings with a provided message

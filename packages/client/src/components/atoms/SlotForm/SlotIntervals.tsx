@@ -71,6 +71,9 @@ const useStyles = makeStyles((theme) =>
     addInterval: {
       marginTop: theme.spacing(3),
       borderRadius: theme.spacing(100),
+      // The following is a workaround to not overrule the Mui base button styles
+      // by Tailwind's preflight reset
+      backgroundColor: theme.palette.primary.main,
     },
     buttonContainer: {
       display: "flex",

@@ -241,7 +241,7 @@ jobs:
     - name: Cypress run
       uses: cypress-io/github-action@v2
       with:
-        start: rush emulators:start
+        start: emulators-start
         install: false
         working-directory: packages/e2e
         wait-on: http://localhost:8080, http://localhost:5000

@@ -111,6 +111,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     <>
       <div className={classes.container}>
         <Button
+          className={classes.buttonPrimary}
           data-testid={__addToCalendarButtonId__}
           onClick={() => setEmailDialog(true)}
           variant="contained"
@@ -208,13 +209,16 @@ const getPreviousCalendarUids = (
 // #endregion helpers
 
 // #region styles
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   container: {
     padding: "0.5rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "space-evenly",
+  },
+  buttonPrimary: {
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 // #endregion styles

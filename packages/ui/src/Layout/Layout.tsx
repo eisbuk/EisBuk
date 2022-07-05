@@ -81,7 +81,7 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      <main className="flex overflow-y-scroll">{children}</main>
+      <main className="overflow-y-scroll">{children}</main>
     </div>
   );
 };

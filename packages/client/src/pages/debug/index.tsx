@@ -16,6 +16,7 @@ import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import useTitle from "@/hooks/useTitle";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
+import makeStyles from "@mui/styles/makeStyles";
 
 const auth = getAuth();
 
@@ -35,7 +36,10 @@ export const createAdminTestUsers = async (): Promise<void> => {
 };
 
 const DebugPage: React.FC = () => {
+  const classes = useStyles();
+
   useTitle("Debug");
+
   return (
     <Container maxWidth="sm">
       <AppbarAdmin />
@@ -43,6 +47,7 @@ const DebugPage: React.FC = () => {
         <Button
           onClick={createAdminTestUsers}
           color="secondary"
+          className={classes.buttonSecondary}
           variant="contained"
         >
           Create admin test users
@@ -54,6 +59,7 @@ const DebugPage: React.FC = () => {
             numUsers: 10,
           })}
           color="primary"
+          className={classes.buttonPrimary}
           variant="contained"
         >
           Create test users
@@ -63,6 +69,7 @@ const DebugPage: React.FC = () => {
         <Button
           onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
           color="primary"
+          className={classes.buttonPrimary}
           variant="contained"
         >
           Create test slots
@@ -72,6 +79,7 @@ const DebugPage: React.FC = () => {
         <Button
           onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
           color="primary"
+          className={classes.buttonPrimary}
           variant="contained"
         >
           Prune slots by day
@@ -83,6 +91,7 @@ const DebugPage: React.FC = () => {
             CloudFunction.DeleteOrphanedBookings
           )}
           color="primary"
+          className={classes.buttonPrimary}
           variant="contained"
         >
           Delete orphaned bookings
@@ -94,6 +103,7 @@ const DebugPage: React.FC = () => {
             CloudFunction.MigrateCategoriesToExplicitMinors
           )}
           color="primary"
+          className={classes.buttonPrimary}
           variant="contained"
         >
           Migrate categories to explicit minors
@@ -102,4 +112,13 @@ const DebugPage: React.FC = () => {
     </Container>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  buttonPrimary: {
+    background: theme.palette.primary.main,
+  },
+  buttonSecondary: {
+    background: theme.palette.secondary.main,
+  },
+}));
 export default DebugPage;

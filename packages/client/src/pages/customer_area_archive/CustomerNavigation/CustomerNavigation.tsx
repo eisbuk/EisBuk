@@ -85,6 +85,7 @@ const CustomerNavigation: React.FC = () => {
           onChange={handleChange}
         >
           <LinkTab
+            // classes={{ selected: classes.buttonPrimary }}
             customerRoute={CustomerRoute.BookIce}
             icon={<EventNoteIcon />}
             disabled={customerRouteInPathname === CustomerRoute.BookIce}
@@ -138,6 +139,9 @@ const useStyles = makeStyles((theme) => ({
   customerNav: {
     backgroundColor: theme.palette.secondary.main,
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
 }));
 // #endregion styles
 
