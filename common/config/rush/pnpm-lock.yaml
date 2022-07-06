@@ -548,6 +548,7 @@ importers:
       postcss: ~8.4.13
       react: ^16.13.1
       react-dom: ^16.13.1
+      react-router-dom: ~6.3.0
       storybook-addon-pseudo-states: ~1.9.0
       tailwindcss: ~3.0.24
       typescript: ~4.6.3
@@ -557,6 +558,7 @@ importers:
       '@eisbuk/svg': link:../svg
       '@eisbuk/translations': link:../translations
       luxon: 2.4.0
+      react-router-dom: 6.3.0_react-dom@16.14.0+react@16.14.0
     devDependencies:
       '@babel/core': 7.18.5
       '@babel/plugin-transform-runtime': 7.18.5_@babel+core@7.18.5
@@ -13134,6 +13136,12 @@ packages:
       value-equal: 1.0.1
     dev: false
 
+  /history/5.3.0:
+    resolution: {integrity: sha512-ZqaKwjjrAYUYfLG+htGaIIZ4nioX2L70ZUMIFysS3xvBsSG4x/n1V6TXV3N8ZYNuFGlDirFg32T7B6WOUPDYcQ==}
+    dependencies:
+      '@babel/runtime': 7.18.3
+    dev: false
+
   /hmac-drbg/1.0.1:
     resolution: {integrity: sha512-Tti3gMqLdZfhOQY1Mzf/AanLiqh1WTiJgEj26ZuYQ9fbkLomzGchCws4FyrSd4VkpBfiNhaE1On+lOz894jvXg==}
     dependencies:
@@ -18141,6 +18149,18 @@ packages:
       tiny-warning: 1.0.3
     dev: false
 
+  /react-router-dom/6.3.0_react-dom@16.14.0+react@16.14.0:
+    resolution: {integrity: sha512-uaJj7LKytRxZNQV8+RbzJWnJ8K2nPsOOEuX7aQstlMZKQT0164C+X2w6bnkqU3sjtLvpd5ojrezAyfZ1+0sStw==}
+    peerDependencies:
+      react: '>=16.8'
+      react-dom: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 16.14.0
+      react-dom: 16.14.0_react@16.14.0
+      react-router: 6.3.0_react@16.14.0
+    dev: false
+
   /react-router/5.3.3_react@16.14.0:
     resolution: {integrity: sha512-mzQGUvS3bM84TnbtMYR8ZjKnuPJ71IjSzR+DE6UkUqvN4czWIqEs17yLL8xkAycv4ev0AiN+IGrWu88vJs/p2w==}
     peerDependencies:
@@ -18157,6 +18177,15 @@ packages:
       react-is: 16.13.1
       tiny-invariant: 1.2.0
       tiny-warning: 1.0.3
+    dev: false
+
+  /react-router/6.3.0_react@16.14.0:
+    resolution: {integrity: sha512-7Wh1DzVQ+tlFjkeo+ujvjSqSJmkt1+8JO+T5xklPlgrh70y7ogx75ODRW0ThWhY7S+6yEDks8TYrtQe/aoboBQ==}
+    peerDependencies:
+      react: '>=16.8'
+    dependencies:
+      history: 5.3.0
+      react: 16.14.0
     dev: false
 
   /react-sizeme/3.0.2:
