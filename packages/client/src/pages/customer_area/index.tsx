@@ -21,12 +21,15 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
+import { getIsAdmin } from "@/store/selectors/auth";
 
 /**
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
   useSecretKey();
+
+  const isAdmin = useSelector(getIsAdmin);
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -70,6 +73,7 @@ const CustomerArea: React.FC = () => {
 
   return (
     <Layout
+      isAdmin={isAdmin}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
       user={customerData}

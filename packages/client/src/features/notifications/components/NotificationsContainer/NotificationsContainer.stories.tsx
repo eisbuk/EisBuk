@@ -34,7 +34,7 @@ export const Default = (): JSX.Element => {
   return (
     <StoreProvider store={store}>
       <NotificationsProvider timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}>
-        <Layout Notifications={NotificationsContainer}>
+        <Layout isAdmin={false} Notifications={NotificationsContainer}>
           <br />
           <button
             className="bg-gray-200 rounded-md px-4 py-1 m-2"

@@ -19,7 +19,7 @@ const store = getNewStore();
 
 export const CancelBookingsDialog = (): JSX.Element => (
   <StoreProvider store={store}>
-    <Layout>
+    <Layout isAdmin={false}>
       <Button
         onClick={() =>
           store.dispatch(
