@@ -5,7 +5,6 @@ import { EisbukLogo, People, LibraryBooks, Calendar } from "@eisbuk/svg";
 import UserAvatar, { UserAvatarProps } from "../UserAvatar";
 import AdminBar from "./AdminBar";
 import { NavigationLabel, useTranslation } from "@eisbuk/translations";
-import { PrivateRoutes } from "@eisbuk/client/src/enums/routes";
 
 interface LayoutProps {
   Logo?: React.FC;
@@ -19,6 +18,11 @@ interface Item {
   Icon: string;
   label: string;
   slug: string;
+}
+enum PrivateRoutes {
+  Root = "/",
+  Athletes = "/athletes",
+  Slots = "/slots",
 }
 
 const Layout: React.FC<LayoutProps> = ({
