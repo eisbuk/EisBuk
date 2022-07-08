@@ -5,9 +5,6 @@ import "./main.css";
 import React from "react";
 import ReactDOM from "react-dom";
 
-// import "@eisbuk/translations";
-import "@eisbuk/ui/dist/style.css";
-
 import * as Sentry from "@sentry/react";
 import { Integrations } from "@sentry/tracing";
 

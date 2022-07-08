@@ -6,8 +6,6 @@ import { Provider } from "react-redux";
 // Import stylesheet importing tailwind to allow
 // for tailwind styles creation for stories
 import "../src/main.css";
-// Import styles from ui package
-import "@eisbuk/ui/dist/style.css";
 
 import { available as availableThemes } from "@/themes";
 
