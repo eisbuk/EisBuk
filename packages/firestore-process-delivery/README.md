@@ -73,6 +73,18 @@ const deliverEmail = functions
   );
 ```
 
+### Flow chart
+
+```mermaid
+graph TD
+    A[Record written to queue] -->|onWrite| B
+    B[Run processDelivery] --> C{Did the delivery succeed?}
+    C -->|Yes| E
+    C -->|No| D
+    D[Write 'ERROR' stauts] --> |change status from 'ERROR' into 'RETRY'<br>either directly or through a cloud function | B
+    E[Write `SUCCESS` status]
+```
+
 ### Reporting metadata
 
 Some deliveries might have multiple success states. An example, using email sending might be that we're using a service to which we send a request with the email payload. The successful delivery (in scope of this delivery process) is when the email sending service receives our request. However, the status of the request (on service provider's side) might be (for instance) `delivered`, `accepted`, `waiting`. All three are accaptable (success) states. However, we might want to check and/or update the state on provider's side and have that somehow logged to out process document.
@@ -117,6 +129,25 @@ Delivery states are recorded in each process document's `delivery.status` and in
 - "PENDING" - The operation has been enqueued, and is waiting for delivery execution
 
 - "RETRY" - Retry state never happens automatically, but can be triggered manually on "ERROR" status deliveries (by writing directly to the delivery state document). Technically, "RETRY" can be written to the document triggering the retry of the delivery, on any state, but this is not advised as it might produce undesired behaviour.
+
+### Flow Chart
+
+```mermaid
+stateDiagram-v2
+
+    [*] --> PENDING
+    PENDING --> PROCESSING
+    PROCESSING --> SUCCESS
+    PROCESSING --> ERROR
+    RETRY --> PROCESSING
+    SUCCESS --> [*]
+
+    state if_state <<choice>>
+
+    ERROR --> if_state
+    if_state --> RETRY: manual update
+    if_state --> [*]:no action
+```
 
 ## Error handling
 
