@@ -8,9 +8,9 @@ import { getDocs, collection, doc, getDoc } from "@firebase/firestore";
 import {
   Customer,
   Category,
-  EmailMessage,
   SMSMessage,
   OrgSubCollection,
+  EmailPayload,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -248,7 +248,7 @@ describe("customerOperations", () => {
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
-        const sentMail = mockSendMail.mock.calls[0][0] as EmailMessage;
+        const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
 
         expect(sentMail.to).toEqual(saul.email);
         expect(sentMail.message.subject).toBeDefined();

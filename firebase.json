@@ -5,7 +5,7 @@
   },
   "functions": {
     "predeploy": [
-      "cd \"$RESOURCE_DIR\" && rushx build",
+      "rush build",
       "sed -i '/\"@eisbuk\\/shared/d\"' \"$RESOURCE_DIR/package.json\""
     ],
     "postdeploy": [
