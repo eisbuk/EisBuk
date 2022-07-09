@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import { DateTime } from "luxon";
 
 import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { Printer } from "@eisbuk/svg";
@@ -10,12 +11,12 @@ import List from "@mui/material/List";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { OrgSubCollection } from "@eisbuk/shared";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import AttendanceCard from "@/components/atoms/AttendanceCard";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCalendarDay } from "@/store/selectors/app";
 import {
@@ -26,7 +27,6 @@ import {
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { adminLinks } from "@/data/navigation";
-import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();

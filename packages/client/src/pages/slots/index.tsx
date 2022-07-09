@@ -12,6 +12,7 @@ import {
 } from "@eisbuk/ui";
 
 import { AdminAria, useTranslation } from "@eisbuk/translations";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -39,7 +40,6 @@ import {
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
 import { changeCalendarDate } from "@/store/actions/appActions";
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 

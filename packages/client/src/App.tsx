@@ -14,7 +14,7 @@ import AppContent from "@/AppContent";
 
 import { Modal } from "@/features/modal/components";
 
-import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
+import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
 import { NotificationsProvider } from "./features/notifications/context";

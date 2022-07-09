@@ -6,6 +6,7 @@
     "@eisbuk/shared": "workspace:*",
     "@eisbuk/translations": "workspace:*",
     "@eisbuk/ui": "workspace:*",
+    "@eisbuk/react-redux-firebase-firestore": "workspace:*",
     "@eisbuk/svg": "workspace:*",
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",

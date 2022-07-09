@@ -15,7 +15,7 @@ import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
