@@ -10,7 +10,7 @@ import { CollectionSubscription } from "../types";
 
 import { FirestoreListenerConstraint } from "../thunks/subscribe";
 
-import { getOrganization } from "./getters";
+import { getOrganization } from "../config";
 
 const getSecretKey = () => localStorage.getItem("secretKey") || "";
 

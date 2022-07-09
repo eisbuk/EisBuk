@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 import { Collection, luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 
-import { getOrganization } from "../../utils/getters";
+import { getOrganization } from "../../config";
 
 import { TestEnvSetup } from "../__testUtils__/utils";
 

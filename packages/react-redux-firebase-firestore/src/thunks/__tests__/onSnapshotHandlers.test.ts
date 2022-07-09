@@ -2,7 +2,7 @@ import { collection, onSnapshot, setDoc, doc } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
-import { getOrganization } from "../../utils/getters";
+import { getOrganization } from "../../config";
 
 import { getTestStore } from "../../__testUtils__/store";
 

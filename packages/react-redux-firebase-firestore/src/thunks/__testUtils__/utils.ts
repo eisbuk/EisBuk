@@ -8,7 +8,7 @@ import "../../__testSetup__/firestoreSetup";
 
 import { Collection } from "@eisbuk/shared";
 
-import { getOrganization } from "../../utils/getters";
+import { getOrganization } from "../../config";
 
 const defaultUser = { email: "eisbuk@eisbuk" };
 

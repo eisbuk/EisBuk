@@ -6,3 +6,4 @@ export { reducer, useFirestoreSubscribe, usePaginateFirestore };
 
 export * from "./types";
 export * from "./actions";
+export { registerOrganization } from "./config";

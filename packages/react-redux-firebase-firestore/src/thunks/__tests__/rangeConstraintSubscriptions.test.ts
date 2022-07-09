@@ -16,7 +16,7 @@ import {
   testSlots,
   slotsCollPath,
 } from "../__testData__/slots";
-import { getOrganization } from "../../utils/getters";
+import { getOrganization } from "../../config";
 
 import { testWithEmulator } from "../../__testUtils__/envUtils";
 
