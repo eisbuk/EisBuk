@@ -4,7 +4,7 @@
     "indexes": "packages/firebase/firestore.indexes.json"
   },
   "functions": {
-    "predeploy": ["rush build"],
+    "predeploy": ["cd packages/functions && rushx build"],
     "source": "packages/functions"
   },
   "emulators": {
