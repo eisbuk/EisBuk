@@ -26,6 +26,15 @@ const consumerId = "subscribe-hook-1";
  */
 const dummyConsumerId = "some-other-consumer";
 
+// We're mocking a thunk calling out to firestore
+// which we're not currently testing and would produce problems
+// of firebase app not being initialised
+jest.mock("../subscribe", () => ({
+  // The function in question is a HOF returning a thunk,
+  // therefore, the mock needs to return a function returning a promise
+  updateSubscription: () => () => Promise.resolve(),
+}));
+
 describe("Firestore subscriptions", () => {
   afterEach(() => {
     cleanup();

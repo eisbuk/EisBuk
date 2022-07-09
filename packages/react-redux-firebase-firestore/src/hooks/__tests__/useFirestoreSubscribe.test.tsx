@@ -18,6 +18,15 @@ import { isEmpty } from "../../utils/helpers";
 
 import { testHookWithRedux } from "../../__testUtils__/testHooksWithRedux";
 
+// We're mocking a thunk calling out to firestore
+// which we're not currently testing and would produce problems
+// of firebase app not being initialised
+jest.mock("../../thunks/subscribe", () => ({
+  // The function in question is a HOF returning a thunk,
+  // therefore, the mock needs to return a function returning a promise
+  updateSubscription: () => () => Promise.resolve(),
+}));
+
 describe("Firestore subscriptions", () => {
   describe("useFirestoreSubscribe", () => {
     test("should subscribe to collections passed in as params (if not subscribed already)", () => {
