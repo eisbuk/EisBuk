@@ -11,8 +11,11 @@ export default defineConfig({
     },
     rollupOptions: {
       external: [
+        "@firebase/app",
+        "@firebase/auth",
         "@firebase/firestore",
-        "@google-cloud/firestore",
+        "firebase",
+        "firebase-tools",
         "luxon",
         "react",
         "react-redux",

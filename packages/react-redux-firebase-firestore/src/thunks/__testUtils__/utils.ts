@@ -4,6 +4,8 @@ import {
 } from "@firebase/rules-unit-testing";
 import { setDoc, doc } from "@firebase/firestore";
 
+import "../../__testSetup__/firestoreSetup";
+
 import { Collection } from "@eisbuk/shared";
 
 import { getOrganization } from "../../utils/getters";
