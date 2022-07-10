@@ -1,7 +1,20 @@
-import { Customer } from "@eisbuk/shared";
-import i18n, { Prompt } from "@eisbuk/translations";
+import { Customer, EmailPayload, SMSMessage } from "@eisbuk/shared";
+import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
+
+import { FirestoreThunk } from "@/types/store";
 
 import { SendBookingLinkMethod } from "@/enums/other";
+import { CloudFunction } from "@/enums/functions";
+import { NotifVariant } from "@/enums/store";
+import { Routes } from "@/enums/routes";
+
+import {
+  enqueueNotification,
+  showErrSnackbar,
+} from "@/store/actions/appActions";
+
+import { getOrganization } from "@/lib/getters";
+import { createCloudFunctionCaller } from "@/utils/firebase";
 
 interface GetDialogPrompt {
   (
@@ -53,3 +66,70 @@ export const getDialogPrompt: GetDialogPrompt = (props) => {
       };
   }
 };
+
+interface SendBookingsLink {
+  (
+    payload: { method: SendBookingLinkMethod; bookingsLink: string } & Customer
+  ): FirestoreThunk;
+}
+
+export const sendBookingsLink: SendBookingsLink =
+  ({ name, method, email, phone, secretKey, bookingsLink }) =>
+  async (dispatch) => {
+    try {
+      const subject = "prenotazioni lezioni di Igor Ice Team";
+
+      if (!secretKey) {
+        // this should be unreachable
+        // (email button should be disabled in case secret key or email are not provided)
+        throw new Error();
+      }
+
+      const html = `<p>Ciao ${name},</p>
+      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
+      <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
+
+      const sms = `Ciao ${name},
+      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
+      ${bookingsLink}`;
+
+      const config = {
+        [SendBookingLinkMethod.Email]: {
+          handler: CloudFunction.SendEmail,
+          payload: {
+            to: email,
+            message: {
+              html,
+              subject,
+            },
+          } as EmailPayload,
+          successMessage: i18n.t(NotificationMessage.EmailSent),
+        },
+        [SendBookingLinkMethod.SMS]: {
+          handler: CloudFunction.SendSMS,
+          payload: { to: phone, message: sms } as SMSMessage,
+          successMessage: i18n.t(NotificationMessage.SMSSent),
+        },
+      };
+
+      const { handler, payload, successMessage } = config[method];
+
+      await createCloudFunctionCaller(handler, payload)();
+
+      dispatch(
+        enqueueNotification({
+          key: new Date().getTime() + Math.random(),
+          message: successMessage,
+          closeButton: true,
+          options: {
+            variant: NotifVariant.Success,
+          },
+        })
+      );
+    } catch (error) {
+      dispatch(showErrSnackbar);
+    }
+  };
+
+export const getBookingsLink = (secretKey: string) =>
+  `https://${window.location.host}${Routes.CustomerArea}/${secretKey}`;

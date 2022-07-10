@@ -1,4 +1,5 @@
 import React from "react";
+import { useDispatch } from "react-redux";
 
 import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
@@ -8,7 +9,7 @@ import { BaseModalProps } from "../../types";
 
 import { SendBookingLinkMethod } from "@/enums/other";
 
-import { getDialogPrompt } from "./utils";
+import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
 
 type SendBookingsLinkProps = BaseModalProps &
   Customer & { method: SendBookingLinkMethod };
@@ -16,13 +17,19 @@ type SendBookingsLinkProps = BaseModalProps &
 const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   onClose,
   className,
-  ...methodProps
+  method,
+  ...customer
 }) => {
+  const dispatch = useDispatch();
+
+  const bookingsLink = getBookingsLink(customer.secretKey);
+
   const onConfirm = () => {
+    dispatch(sendBookingsLink({ ...customer, method, bookingsLink }));
     onClose();
   };
 
-  const { title, body, disabled } = getDialogPrompt(methodProps);
+  const { title, body, disabled } = getDialogPrompt({ ...customer, method });
 
   return (
     <ActionDialog
