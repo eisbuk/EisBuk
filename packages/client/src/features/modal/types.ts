@@ -1,8 +1,9 @@
 import { componentWhitelist } from "./components";
 
-export enum ModalAction {
-  Open = "@@MODAL/OPEN",
-  Close = "@@MODAL/CLOSE",
+// #region component
+export interface BaseModalProps {
+  onClose: () => void;
+  className?: string;
 }
 
 /**
@@ -23,6 +24,13 @@ type GetComponentProps<C extends WhitelistedComponents> = Omit<
   // Same goes for "className" and "children" (which should never be passed to a modal component)
   "onClose" | "className" | "children"
 >;
+// #endregion component
+
+// #region Redux
+export enum ModalAction {
+  Open = "@@MODAL/OPEN",
+  Close = "@@MODAL/CLOSE",
+}
 
 /**
  * This is some heavy ninjutsu which I won't even begin to try to explain.
@@ -59,3 +67,4 @@ export type ModalReducerAction =
       type: ModalAction.Close;
     }
   | { type: ModalAction.Open; payload: ModalPayload };
+// #endregion Redux
