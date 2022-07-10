@@ -22,12 +22,12 @@ const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
     onClose();
   };
 
-  const { title, body } = getDialogPrompt(methodProps);
+  const { title, body, disabled } = getDialogPrompt(methodProps);
 
   return (
     <ActionDialog
       onCancel={onClose}
-      {...{ title, onConfirm, className }}
+      {...{ title, onConfirm, className, disabled }}
       cancelLabel={i18n.t(ActionButton.Cancel)}
       confirmLabel={i18n.t(ActionButton.Send)}
     >

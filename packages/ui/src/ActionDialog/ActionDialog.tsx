@@ -9,6 +9,7 @@ export interface ActionDialogProps extends React.HTMLAttributes<HTMLElement> {
   onConfirm: () => void;
   confirmLabel?: string;
   cancelLabel?: string;
+  disabled?: boolean;
 }
 
 const ActionDialog: React.FC<ActionDialogProps> = ({
@@ -17,6 +18,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
   onConfirm = () => {},
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  disabled,
   children,
   className = "",
 }) => (
@@ -40,6 +42,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
         className="w-full !text-red-700 bg-red-200 hover:bg-red-100 md:w-auto"
         size={ButtonSize.LG}
         onClick={onConfirm}
+        disabled={disabled}
       >
         {confirmLabel}
       </Button>
