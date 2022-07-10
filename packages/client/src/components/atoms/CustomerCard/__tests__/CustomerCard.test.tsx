@@ -50,14 +50,6 @@ jest.mock("react-router-dom", () => ({
 }));
 
 /**
- * A mock implementation we're using to test dispatching of `deleteCustomer`
- * action. We're returning an action object, rather that annonymus thunk (not comparable)
- */
-const mockDeleteCustomerImplementation = (payload: Customer) => ({
-  type: "delete",
-  payload,
-});
-/**
  * A mock implementation we're using to test dispatching of `updateCustomer`
  * action. We're returning an action object, rather that annonymus thunk (not comparable)
  */
@@ -66,9 +58,6 @@ const mockUpdateCustomerImplementation = (payload: Customer) => ({
   payload,
 });
 
-jest
-  .spyOn(customerActions, "deleteCustomer")
-  .mockImplementation(mockDeleteCustomerImplementation as any);
 jest
   .spyOn(customerActions, "updateCustomer")
   .mockImplementation(mockUpdateCustomerImplementation as any);
@@ -89,18 +78,10 @@ describe("Customer Card", () => {
       cleanup();
     });
 
-    /** @TODO  cypress test */
-    test("should dispatch 'deleteCustomer' after dialog confirmation", () => {
+    test("should open 'DeleteCustomerDialog' modal on delete button click", () => {
       screen.getByTestId(__customerDeleteId__).click();
-
-      // check proper rendering of confirm delete dialog message
-      screen.getByText(
-        `${i18n.t(Prompt.DeleteCustomer)} ${saul.name} ${saul.surname}?`
-      );
-      // confirm deletion
-      screen.getByText("Yes").click();
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockDeleteCustomerImplementation(saul)
+        openModal({ component: "DeleteCustomerDialog", props: saul })
       );
     });
 
