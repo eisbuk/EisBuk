@@ -1,10 +1,9 @@
 import React from "react";
 
-import { EisbukLogo, People, LibraryBooks, Calendar } from "@eisbuk/svg";
+import { EisbukLogo } from "@eisbuk/svg";
 
 import UserAvatar, { UserAvatarProps } from "../UserAvatar";
 import AdminBar from "./AdminBar";
-import { NavigationLabel, useTranslation } from "@eisbuk/translations";
 
 interface LayoutProps {
   Logo?: React.FC;
@@ -13,16 +12,12 @@ interface LayoutProps {
   Notifications?: React.FC<{ className?: string }>;
   children?: React.ReactNode[] | React.ReactNode;
   isAdmin: boolean;
+  adminsLink: LinkItem[];
 }
-interface Item {
+export interface LinkItem {
   Icon: string;
   label: string;
   slug: string;
-}
-enum PrivateRoutes {
-  Root = "/",
-  Athletes = "/athletes",
-  Slots = "/slots",
 }
 
 const Layout: React.FC<LayoutProps> = ({
@@ -31,34 +26,17 @@ const Layout: React.FC<LayoutProps> = ({
   user,
   Notifications,
   children,
+  adminsLink,
 }) => {
-  const { t } = useTranslation();
-
-  const adminsLink: Item[] = [
-    {
-      label: t(NavigationLabel.Attendance),
-      Icon: Calendar,
-      slug: PrivateRoutes.Root,
-    },
-    {
-      label: "Slots",
-      Icon: LibraryBooks,
-      slug: PrivateRoutes.Slots,
-    },
-    {
-      label: t(NavigationLabel.Athletes),
-      Icon: People,
-      slug: PrivateRoutes.Athletes,
-    },
-  ];
-
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
       <header className="bg-gray-800">
         <div className="content-container">
-          <div className={getHeaderRowClasses("top")}>
-            <AdminBar isAdmin adminLinks={adminsLink} />
-          </div>
+          <AdminBar
+            className={getHeaderRowClasses("top")}
+            isAdmin
+            adminLinks={adminsLink}
+          />
         </div>
         <div className="content-container">
           <div className={getHeaderRowClasses("top")}>

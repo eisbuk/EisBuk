@@ -2,7 +2,7 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { BrowserRouter } from "react-router-dom";
 
-import { AccountCircle, Calendar } from "@eisbuk/svg";
+import { AccountCircle, Calendar, TestSVG } from "@eisbuk/svg";
 
 import Layout from "./Layout";
 import TabItem from "../TabItem";
@@ -46,7 +46,23 @@ const dummyContent = (
     </div>
   </div>
 );
-
+const adminsLink = [
+  {
+    label: "Attendance",
+    Icon: TestSVG,
+    slug: "",
+  },
+  {
+    label: "Slots",
+    Icon: TestSVG,
+    slug: "",
+  },
+  {
+    label: "Athletes",
+    Icon: TestSVG,
+    slug: "",
+  },
+];
 const user = {
   name: "Salvo",
   surname: "Simonetti",
@@ -55,7 +71,7 @@ const user = {
 };
 export const Default = (): JSX.Element => (
   <BrowserRouter>
-    <Layout isAdmin={true} {...{ user }}>
+    <Layout adminsLink={adminsLink} isAdmin={true} {...{ user }}>
       {dummyContent}
     </Layout>
   </BrowserRouter>
@@ -63,7 +79,11 @@ export const Default = (): JSX.Element => (
 
 export const CustomerArea = (): JSX.Element => (
   <BrowserRouter>
-    <Layout isAdmin={false} {...{ additionalButtons, Notifications, user }}>
+    <Layout
+      adminsLink={adminsLink}
+      isAdmin={false}
+      {...{ additionalButtons, Notifications, user }}
+    >
       {dummyContent}
     </Layout>
   </BrowserRouter>

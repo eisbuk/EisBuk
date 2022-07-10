@@ -1,38 +1,35 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import Button from "../Button";
+import { LinkItem } from "./Layout";
 import MobileHamburgerMenu from "./MobileHamburgerMenu";
 
-interface Item {
-  Icon: string;
-  label: string;
-  slug: string;
-}
 interface AdminBarProps {
   isAdmin?: boolean;
-  adminLinks: Item[];
+  adminLinks: LinkItem[];
+  className?: string;
 }
 
-const AdminBar: React.FC<AdminBarProps> = ({ isAdmin, adminLinks }) => {
+const AdminBar: React.FC<AdminBarProps> = ({
+  isAdmin,
+  adminLinks,
+  className,
+}) => {
   return (
-    <div>
+    <div className={`${className} rounded-full`}>
       <MobileHamburgerMenu adminLinks={adminLinks} />
-      <div className={getHeaderRowClasses()}>
+      <div className={baseClasses.join(" ")}>
         {isAdmin &&
-          adminLinks.map(({ Icon, label, slug }, i) => {
+          adminLinks.map(({ Icon, label, slug }) => {
             return (
-              <div
-                className={[
-                  `flex items-center justify-center border-2`,
-                  getRoundedClass(i, adminLinks.length),
-                ].join(" ")}
-              >
-                <div className="w-12 h-8 p-2">
-                  <Icon />
-                </div>
-                <div className="pr-4">
-                  <Link to={slug}>{label}</Link>
-                </div>
-              </div>
+              <Link to={slug}>
+                <Button
+                  className="w-32 flex justify-center items-center border-r-2 p-1"
+                  startAdornment={<Icon />}
+                >
+                  {label}
+                </Button>
+              </Link>
             );
           })}
       </div>
@@ -40,32 +37,28 @@ const AdminBar: React.FC<AdminBarProps> = ({ isAdmin, adminLinks }) => {
   );
 };
 
-/** Get styles for top / botton row of the header */
-const getHeaderRowClasses = () => {
-  const baseClasses = [
-    "translate-x-80",
-    "translate-y-2",
-    "flex",
-    "h-10",
-    "text-white",
-    "hidden",
-    "md:flex",
-    "items-center",
-  ];
+const baseClasses = [
+  "flex",
+  "h-10",
+  "text-white",
+  "hidden",
+  "md:flex",
+  "items-center",
+  "md:justify-end",
+  "border-2",
+  "rounded-full",
+];
 
-  return [...baseClasses].join(" ");
-};
+// const getRoundedClass = (index: number, length: number) => {
+//   switch (index) {
+//     case 0:
+//       return "rounded-full rounded-r-none";
 
-const getRoundedClass = (index: number, length: number) => {
-  switch (index) {
-    case 0:
-      return "rounded-full rounded-r-none";
-
-    case length - 1:
-      return "rounded-full rounded-l-none";
-    default:
-      return "";
-  }
-};
+//     case length - 1:
+//       return "rounded-full rounded-l-none";
+//     default:
+//       return "";
+//   }
+// };
 
 export default AdminBar;
