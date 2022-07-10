@@ -36,6 +36,7 @@ import {
   __sendBookingsEmailId__,
   __sendBookingsSMSId__,
 } from "../__testData__/testIds";
+import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -133,25 +134,15 @@ describe("Customer Card", () => {
   });
 
   describe("Test email button", () => {
-    test("should call sendBookingsLink function on email button click, after confirming with the dialog, passing appropriate customer id and method", () => {
-      // mock thunk creator to identity function for easier testing
-      const sendMailSpy = jest
-        .spyOn(customerActions, "sendBookingsLink")
-        .mockImplementation((payload) => payload as any);
+    test("should open a 'SendBookingsLinkDialog' modal with method = \"email\" on email button click", () => {
       render(<CustomerCard onClose={() => {}} customer={saul} />);
       screen.getByTestId(__sendBookingsEmailId__).click();
-      // the function shouldn't be called before confirmation
-      expect(sendMailSpy).not.toHaveBeenCalled();
-      screen.getByText(i18n.t(Prompt.SendEmailTitle) as string);
-      screen.getByText(
-        i18n.t(Prompt.ConfirmEmail, { email: saul.email }) as string
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SendBookingsLinkDialog",
+          props: { ...saul, method: SendBookingLinkMethod.Email },
+        })
       );
-      screen.getByText("Yes").click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
-        customerId: saul.id,
-        method: SendBookingLinkMethod.Email,
-      });
     });
 
     test("should disable the button if secretKey not defined", () => {
@@ -182,25 +173,15 @@ describe("Customer Card", () => {
   });
 
   describe("Test SMS button", () => {
-    test("should call sendBookingsLink function on sms button click, after confirming with the dialog, passing appropriate customer id and method", () => {
-      // mock thunk creator to identity function for easier testing
-      const sendBookingsSpy = jest
-        .spyOn(customerActions, "sendBookingsLink")
-        .mockImplementation((payload) => payload as any);
+    test("should open a 'SendBookingsLinkDialog' modal with method = \"sms\" on sms button click", () => {
       render(<CustomerCard onClose={() => {}} customer={saul} />);
       screen.getByTestId(__sendBookingsSMSId__).click();
-      // the function shouldn't be called before confirmation
-      expect(sendBookingsSpy).not.toHaveBeenCalled();
-      screen.getByText(i18n.t(Prompt.SendSMSTitle) as string);
-      screen.getByText(
-        i18n.t(Prompt.ConfirmSMS, { phone: saul.phone }) as string
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SendBookingsLinkDialog",
+          props: { ...saul, method: SendBookingLinkMethod.SMS },
+        })
       );
-      screen.getByText("Yes").click();
-      expect(mockDispatch).toHaveBeenCalledWith({
-        bookingsLink: `https://localhost${Routes.CustomerArea}/${saul.secretKey}`,
-        customerId: saul.id,
-        method: SendBookingLinkMethod.SMS,
-      });
     });
 
     test("should disable the button if secretKey not defined", () => {
