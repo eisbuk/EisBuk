@@ -23,9 +23,8 @@ const DeleteCustomerDialog: React.FC<DeleteCustomerProps> = ({
     onClose();
   };
 
-  const title = `${i18n.t(Prompt.DeleteCustomer)} ${customer?.name} ${
-    customer?.surname
-  }?`;
+  const { name, surname } = customer;
+  const title = i18n.t(Prompt.DeleteCustomer, { name, surname });
 
   const body = i18n.t(Prompt.NonReversible);
 
@@ -34,6 +33,7 @@ const DeleteCustomerDialog: React.FC<DeleteCustomerProps> = ({
       onCancel={onClose}
       {...{ title, onConfirm, className }}
       cancelLabel={i18n.t(ActionButton.Cancel)}
+      confirmLabel={i18n.t(ActionButton.Delete)}
     >
       {body}
     </ActionDialog>

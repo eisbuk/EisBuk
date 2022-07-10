@@ -128,7 +128,7 @@
   },
 
   "Prompt": {
-    "DeleteCustomer": "Are you sure you want to remove",
+    "DeleteCustomer": "Are you sure you want to remove {{ name }} {{ surname }}?",
     "DeleteSlot": "Are you sure you want to delete the",
 
     "NonReversible": "This action is non-reversible",
@@ -181,7 +181,8 @@
     "Dismiss": "Dismiss",
     "Submit": "Submit",
     "Verify": "Verify",
-    "Add": "Add"
+    "Add": "Add",
+    "Delete": "Delete"
   },
 
   "Notification": {

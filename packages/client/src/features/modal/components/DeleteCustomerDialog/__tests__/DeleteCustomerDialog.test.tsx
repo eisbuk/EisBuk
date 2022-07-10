@@ -45,7 +45,7 @@ describe("DeleteCustomerDialog", () => {
   });
 
   test("should call delete customer with customer data and close the modal on confirm", () => {
-    screen.getByText("Confirm").click();
+    screen.getByText(i18n.t(ActionButton.Delete) as string).click();
     expect(mockDispatch).toHaveBeenCalledWith(mockDeleteCustomer(saul));
     expect(mockOnClose).toHaveBeenCalled();
   });

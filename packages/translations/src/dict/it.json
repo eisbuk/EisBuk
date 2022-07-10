@@ -128,7 +128,7 @@
   },
 
   "Prompt": {
-    "DeleteCustomer": "Sei sicuro di voler rimuovere",
+    "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
 
     "NonReversible": "Questa azione non è reversibile",
@@ -180,7 +180,9 @@
     "Resend": "Invia di nuovo",
     "Dismiss": "Ignora",
     "Submit": "Invia",
-    "Verify": "verifica"
+    "Verify": "verifica",
+    "Add": "Add",
+    "Delete": "Delete"
   },
 
   "Notification": {
