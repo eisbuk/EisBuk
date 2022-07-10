@@ -147,8 +147,13 @@ export enum Prompt {
 
   SendEmailTitle = "Prompt.SendEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
+  NoEmailTitle = "Prompt.NoEmailTitle",
+  NoEmailMessage = "Prompt.NoEmailMessage",
   SendSMSTitle = "Prompt.SendSMSTitle",
   ConfirmSMS = "Prompt.ConfirmSMS",
+  NoPhoneTitle = "Prompt.NoPhoneTitle",
+  NoPhoneMessage = "Prompt.NoPhoneMessage",
+
   ExtendBookingDateTitle = "Prompt.ExtendBookingDateTitle",
   ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
 

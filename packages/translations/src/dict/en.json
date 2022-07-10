@@ -135,8 +135,13 @@
 
     "SendEmailTitle": "Confirm email",
     "ConfirmEmail": "Are you sure you want to send an email to: {{ email }}?",
+    "NoEmailTitle": "No email found",
+    "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
     "SendSMSTitle": "Confirm SMS",
     "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?",
+    "NoPhoneTitle": "No phone number found",
+    "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
+
     "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
     "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
 

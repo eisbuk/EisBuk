@@ -135,8 +135,13 @@
 
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
+    "NoEmailTitle": "No email found",
+    "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
+    "NoPhoneTitle": "No phone number found",
+    "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
+
     "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
     "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
 
