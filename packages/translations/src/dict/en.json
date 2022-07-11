@@ -142,8 +142,8 @@
     "NoPhoneTitle": "No phone number found",
     "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
 
-    "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
-    "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
+    "ExtendBookingDateTitle": "Extend booking date for {{ name }} {{ surname }}:",
+    "ExtendBookingDateBody": "Please enter an extended date for {{ name }} {{ surname }}'s bookings",
 
     "CancelBookingTitle": "Cancel booking for",
     "FinalizeBookingsTitle": "Finalize Bookings",

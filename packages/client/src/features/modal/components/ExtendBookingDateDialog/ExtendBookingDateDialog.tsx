@@ -27,15 +27,18 @@ const ExtendBookingDateDialog: React.FC<ExtendBookingDateProps> = ({
 
   const [extendedDateInput, setExtendedDateInput] = useState("");
 
+  const { name, surname } = customer;
   const title = i18n.t(Prompt.ExtendBookingDateTitle, {
-    customer: `${customer.name} ${customer.surname}`,
+    name,
+    surname,
   });
 
   const body = (
     <>
-      <p>
+      <p className="mb-4">
         {i18n.t(Prompt.ExtendBookingDateBody, {
-          customer: `${customer.name} ${customer.surname}`,
+          name,
+          surname,
         })}
       </p>
       <DateInput
