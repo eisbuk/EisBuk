@@ -3,8 +3,9 @@ import { DateTime } from "luxon";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
+import { NavigationLabel, useTranslation } from "@eisbuk/translations";
 import { CalendarNav, CalendarNavProps, Layout, TabItem } from "@eisbuk/ui";
-import { Calendar, AccountCircle } from "@eisbuk/svg";
+import { Calendar, AccountCircle, TestSVG } from "@eisbuk/svg";
 import {
   BookingSubCollection,
   Collection,
@@ -22,6 +23,7 @@ import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
 import { getIsAdmin } from "@/store/selectors/auth";
+import { PrivateRoutes } from "@/enums/routes";
 
 /**
  * Customer area page component
@@ -51,6 +53,7 @@ const CustomerArea: React.FC = () => {
     CalendarView,
   };
   const [view, setView] = useState<keyof typeof views>("BookView");
+
   const additionalButtons = (
     <>
       <TabItem
@@ -69,11 +72,31 @@ const CustomerArea: React.FC = () => {
       />
     </>
   );
+
+  const { t } = useTranslation();
+  const adminsLink = [
+    {
+      label: t(NavigationLabel.Attendance),
+      Icon: TestSVG,
+      slug: PrivateRoutes.Root,
+    },
+    {
+      label: "Slots",
+      Icon: TestSVG,
+      slug: PrivateRoutes.Slots,
+    },
+    {
+      label: t(NavigationLabel.Athletes),
+      Icon: TestSVG,
+      slug: PrivateRoutes.Athletes,
+    },
+  ];
   const CustomerView = views[view];
 
   return (
     <Layout
       isAdmin={isAdmin}
+      adminsLink={adminsLink}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
       user={customerData}
