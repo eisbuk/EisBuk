@@ -5,6 +5,7 @@ import FinalizeBookingsDialog from "./FinalizeBookingsDialog";
 import SendBookingsLinkDialog from "./SendBookingsLinkDialog";
 import DeleteCustomerDialog from "./DeleteCustomerDialog";
 import ExtendBookingDateDialog from "./ExtendBookingDateDialog";
+import DeleteSlotDialog from "./DeleteSlotDialog";
 
 /**
  * A whitelist of components to be renderd inside of modal.
@@ -15,6 +16,7 @@ export const componentWhitelist = {
   SendBookingsLinkDialog,
   DeleteCustomerDialog,
   ExtendBookingDateDialog,
+  DeleteSlotDialog,
 };
 
 export { Modal };
