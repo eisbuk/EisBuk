@@ -129,7 +129,7 @@
 
   "Prompt": {
     "DeleteCustomer": "Are you sure you want to remove {{ name }} {{ surname }}?",
-    "DeleteSlot": "Are you sure you want to delete the",
+    "DeleteSlot": "Are you sure you want to delete the slot:",
 
     "NonReversible": "This action is non-reversible",
 

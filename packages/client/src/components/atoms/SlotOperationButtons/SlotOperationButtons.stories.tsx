@@ -110,12 +110,7 @@ export const DisabledPaste = (): JSX.Element => (
 
 export const deleteWithDialog = (): JSX.Element => (
   <SlotOperationButtons {...baseProps}>
-    <DeleteButton
-      confirmDialog={{
-        title: "Confirm delete",
-        description: "Are you sure you want to proceed",
-      }}
-    />
+    <DeleteButton />
   </SlotOperationButtons>
 );
 // #endregion buttonVariants

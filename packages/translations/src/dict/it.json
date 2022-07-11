@@ -129,7 +129,7 @@
 
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
-    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
 
     "NonReversible": "Questa azione non è reversibile",
 
