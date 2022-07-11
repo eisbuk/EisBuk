@@ -13,11 +13,7 @@ import {
 import "@testing-library/jest-dom";
 
 import { Customer } from "@eisbuk/shared";
-import i18n, {
-  ActionButton,
-  CustomerFormTitle,
-  Prompt,
-} from "@eisbuk/translations";
+import i18n, { ActionButton, CustomerFormTitle } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 
@@ -210,31 +206,9 @@ describe("Customer Card", () => {
       screen
         .getByText(i18n.t(ActionButton.ExtendBookingDate) as string)
         .click();
-      screen.getByText(
-        i18n.t(Prompt.ExtendBookingDateTitle, {
-          customer: `${saul.name} ${saul.surname}`,
-        }) as string
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({ component: "ExtendBookingDateDialog", props: saul })
       );
-      screen.getByText(
-        i18n.t(Prompt.ExtendBookingDateBody, {
-          customer: `${saul.name} ${saul.surname}`,
-        }) as string
-      );
-    });
-
-    test("should call 'extendBookingDate' after typing in extended date", () => {
-      const extendBookingDateSpy = jest
-        .spyOn(customerActions, "extendBookingDate")
-        .mockImplementation((() => {}) as any);
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
-      screen
-        .getByText(i18n.t(ActionButton.ExtendBookingDate) as string)
-        .click();
-      fireEvent.change(screen.getByRole("textbox"), {
-        target: { value: "2022-01-01" },
-      });
-      screen.getByText(/yes/i).click();
-      expect(extendBookingDateSpy).toHaveBeenCalledWith(saul.id, "2022-01-01");
     });
   });
 });
