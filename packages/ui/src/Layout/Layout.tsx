@@ -11,7 +11,7 @@ interface LayoutProps {
   additionalButtons?: JSX.Element;
   Notifications?: React.FC<{ className?: string }>;
   children?: React.ReactNode[] | React.ReactNode;
-  isAdmin: boolean;
+  isAdmin?: boolean;
   adminsLink: LinkItem[];
 }
 export interface LinkItem {
@@ -25,6 +25,7 @@ const Layout: React.FC<LayoutProps> = ({
   additionalButtons,
   user,
   Notifications,
+  isAdmin = false,
   children,
   adminsLink,
 }) => {
@@ -34,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({
         <div className="content-container">
           <AdminBar
             className={getHeaderRowClasses("top")}
-            isAdmin
+            isAdmin={isAdmin}
             adminLinks={adminsLink}
           />
         </div>

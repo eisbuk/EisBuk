@@ -81,7 +81,6 @@ export const CustomerArea = (): JSX.Element => (
   <BrowserRouter>
     <Layout
       adminsLink={adminsLink}
-      isAdmin={false}
       {...{ additionalButtons, Notifications, user }}
     >
       {dummyContent}
