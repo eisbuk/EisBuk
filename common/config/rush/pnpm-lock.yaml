@@ -653,6 +653,7 @@ importers:
       '@types/luxon': 2.3.2
       '@types/react': 17.0.47
       '@types/react-dom': 17.0.17
+      '@types/react-router-dom': 5.3.3
       '@types/testing-library__jest-dom': 5.14.5
       '@typescript-eslint/eslint-plugin': 5.30.5_aea3421fb39ada40c0c3dfcb1bacaa77
       '@typescript-eslint/parser': 5.30.5_eslint@8.19.0+typescript@4.6.4
