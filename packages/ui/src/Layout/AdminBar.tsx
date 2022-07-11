@@ -23,12 +23,9 @@ const AdminBar: React.FC<AdminBarProps> = ({
           adminLinks.map(({ Icon, label, slug }) => {
             return (
               <Link to={slug}>
-                <Button
-                  className="w-32 flex justify-center items-center border-r-2 p-1"
-                  startAdornment={<Icon />}
-                >
-                  {label}
-                </Button>
+                <div className="w-32 border-r-2 p-1">
+                  <Button startAdornment={<Icon />}>{label}</Button>
+                </div>
               </Link>
             );
           })}
@@ -48,17 +45,5 @@ const baseClasses = [
   "border-2",
   "rounded-full",
 ];
-
-// const getRoundedClass = (index: number, length: number) => {
-//   switch (index) {
-//     case 0:
-//       return "rounded-full rounded-r-none";
-
-//     case length - 1:
-//       return "rounded-full rounded-l-none";
-//     default:
-//       return "";
-//   }
-// };
 
 export default AdminBar;
