@@ -11,8 +11,8 @@ import {
   CustomerLoose,
   CustomerBase,
   Customer,
-  EmailMessage,
   SMSMessage,
+  EmailPayload,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -151,7 +151,7 @@ export const sendBookingsLink: SendBookingsLink =
               html,
               subject,
             },
-          } as EmailMessage,
+          } as EmailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },
         [SendBookingLinkMethod.SMS]: {

@@ -7,18 +7,16 @@ export enum Collection {
    *
    * This can be changed, but the change should be reflected in firestore extension setup as well.
    */
-  EmailQueue = "mail",
-  /**
-   * A separate "secrets" collection for each organization.
-   * "Hidden away" from client by firestore.rules, can only be
-   * accessed from cloud function environment and written to from the client.
-   */
   Secrets = "secrets",
   /**
    * A collection for each organization for fields in
    * an organization we want made public and accessible for customers
    */
   PublicOrgInfo = "publicOrgInfo",
+  /**
+   * All process delivery queues (such as email, SMS) are stored here, on per-organization basis
+   */
+  DeliveryQueues = "deliveryQueues",
 }
 
 export enum OrgSubCollection {
@@ -32,6 +30,11 @@ export enum OrgSubCollection {
 export enum BookingSubCollection {
   BookedSlots = "bookedSlots",
   Calendar = "calendar",
+}
+
+export enum DeliveryQueue {
+  EmailQueue = "emailQueue",
+  SMSQueue = "SMSQueue",
 }
 // endregion
 

@@ -390,6 +390,10 @@
       "projectFolder": "packages/translations"
     },
     {
+      "packageName": "@eisbuk/firestore-process-delivery",
+      "projectFolder": "packages/firestore-process-delivery"
+    },
+    {
       "packageName": "@eisbuk/client",
       "projectFolder": "packages/client"
     },
