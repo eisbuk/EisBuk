@@ -4,8 +4,6 @@ import { Formik, Field, Form } from "formik";
 import * as yup from "yup";
 
 import Typography from "@mui/material/Typography";
-import Dialog from "@mui/material/Dialog";
-import DialogTitle from "@mui/material/DialogTitle";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 import TextField from "@mui/material/TextField";
@@ -74,7 +72,7 @@ const validationSchema = yup.object().shape({
 });
 // #endregion validation
 
-interface Props {
+export interface SlotFormProps {
   /**
    * ISO date of the slot we're creating (only the day, without the time of day and timezone).
    */
@@ -85,21 +83,18 @@ interface Props {
    */
   slotToEdit?: SlotInterface;
   /**
-   * Control showing of the modal (and in effect the form).
-   */
-  open?: boolean;
-  /**
    * Function called on submit or cancel button click.
    * Should be used to close the dialog modal.
    */
   onClose: () => void;
+  className?: string;
 }
 
-const SlotForm: React.FC<Props> = ({
+const SlotForm: React.FC<SlotFormProps> = ({
   date: dateFromProps,
   slotToEdit,
   onClose,
-  open,
+  className,
 }) => {
   const classes = useStyles();
   const dispatch = useDispatch();
@@ -140,12 +135,8 @@ const SlotForm: React.FC<Props> = ({
   }));
 
   return (
-    <Dialog
-      className={classes.container}
-      open={Boolean(open)}
-      onClose={onClose}
-    >
-      <DialogTitle>{title}</DialogTitle>
+    <div className={[classes.container, className].join(" ")}>
+      <h1 className="text-4xl p-4">{title}</h1>
       <Formik
         {...{ initialValues, validationSchema }}
         onSubmit={handleSubmit}
@@ -205,7 +196,7 @@ const SlotForm: React.FC<Props> = ({
           </Form>
         )}
       </Formik>
-    </Dialog>
+    </div>
   );
 };
 
@@ -213,12 +204,11 @@ const SlotForm: React.FC<Props> = ({
 const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
-      "& .MuiDialog-paper": {
-        [theme.breakpoints.down("sm")]: {
-          margin: 0,
-          width: "100%",
-        },
-      },
+      maxWidth: "600px",
+      background: "white",
+      padding: "0.75rem",
+      borderRadius: 6,
+      width: "100vw",
     },
     typeTitle: {
       letterSpacing: 1,
