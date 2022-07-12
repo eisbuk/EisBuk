@@ -64,6 +64,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
 
 const useStyles = makeStyles((theme) => ({
   container: {
+    borderRadius: 6,
     height: "100%",
     width: "90vw",
     position: "relative",
