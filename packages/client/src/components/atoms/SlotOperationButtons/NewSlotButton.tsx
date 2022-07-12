@@ -1,17 +1,16 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
+import { useDispatch } from "react-redux";
 
 import IconButton from "@mui/material/IconButton";
 
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
-import { luxon2ISODate } from "@eisbuk/shared";
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotButtonProps } from "@/types/components";
 
-import SlotForm from "@/components/atoms/SlotForm";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import {
@@ -21,6 +20,7 @@ import {
 } from "@/lib/errorMessages";
 
 import { __newSlotButtonId__ } from "@/__testData__/testIds";
+import { openModal } from "@/features/modal/actions";
 
 /**
  * Button to create a new slot. Opens up a blank SlotForm 'onClick' to
@@ -34,11 +34,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const { t } = useTranslation();
-
-  const [openForm, setOpenForm] = useState(false);
-
-  const showForm = () => setOpenForm(true);
-  const closeForm = () => setOpenForm(false);
+  const dispatch = useDispatch();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOpeartionButtons` context
@@ -65,24 +61,27 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  // luxon day processed to ISO string (for form's input)
-  const date = luxon2ISODate(luxonDate);
+  const openForm = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(
+      openModal({
+        component: "SlotForm",
+        props: { date: luxonDate?.toISODate() },
+      })
+    );
+  };
 
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
-        onClick={showForm}
-        data-testid={__newSlotButtonId__}
-        aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
-          date: luxonDate,
-        })}`}
-        // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
-      >
-        <AddCircleOutlineIcon />
-      </IconButton>
-      <SlotForm open={openForm} onClose={closeForm} date={date} />
-    </>
+    <IconButton
+      size={size || iconSize}
+      onClick={openForm}
+      data-testid={__newSlotButtonId__}
+      aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
+        date: luxonDate,
+      })}`}
+    >
+      <AddCircleOutlineIcon />
+    </IconButton>
   );
 };
 
