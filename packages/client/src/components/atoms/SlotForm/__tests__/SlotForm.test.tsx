@@ -38,7 +38,6 @@ import {
   __timeIntervalFieldId__,
   __deleteIntervalId__,
 } from "../__testData__/testIds";
-import { __slotFormId__ } from "@/__testData__/testIds";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { slotToFormValues } from "../utils";
 import { baseSlot } from "@/__testData__/slots";
@@ -92,15 +91,6 @@ describe("SlotForm ->", () => {
       });
       // intervals field
       screen.getByTestId(__timeIntervalFieldId__);
-    });
-
-    test("should not render of 'open = false'", () => {
-      // verify slot form id is being used
-      screen.getByTestId(__slotFormId__);
-      cleanup();
-      // run the actual test
-      render(<SlotForm {...baseProps} open={false} />);
-      expect(screen.queryByTestId(__slotFormId__)).toEqual(null);
     });
 
     test('should render a deprecated "adults" category for backwards compatibility', () => {

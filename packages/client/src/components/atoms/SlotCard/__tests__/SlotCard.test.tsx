@@ -9,7 +9,6 @@ import SlotCard from "../SlotCard";
 
 import { __slotId__ } from "../__testData__/testIds";
 import {
-  __slotFormId__,
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
@@ -72,7 +71,12 @@ describe("SlotCard", () => {
 
     test("should open slot form on edit slot click", () => {
       screen.getByTestId(__editSlotButtonId__).click();
-      screen.getByTestId(__slotFormId__);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SlotForm",
+          props: { date: baseSlot.date, slotToEdit: baseSlot },
+        })
+      );
     });
 
     test("should initiate delete-slot flow on delete button click", () => {
