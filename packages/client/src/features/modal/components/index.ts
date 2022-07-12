@@ -1,4 +1,4 @@
-import Modal from "./Modal";
+import Modal, { ModalContainer } from "./Modal";
 
 import CancelBookingDialog from "./CancelBookingDialog";
 import FinalizeBookingsDialog from "./FinalizeBookingsDialog";
@@ -21,4 +21,4 @@ export const componentWhitelist = {
   AddAttendedCustomersDialog,
 };
 
-export { Modal };
+export { Modal, ModalContainer };

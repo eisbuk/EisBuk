@@ -57,11 +57,7 @@ const Modal: React.FC = () => {
   };
 
   const content = (
-    <div className="fixed top-0 right-0 bottom-0 left-0 z-[999999]">
-      <div
-        onClick={handleClose}
-        className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
-      />
+    <ModalContainer onClose={handleClose}>
       {modals.map(({ component, props }, i) => {
         const Component = componentWhitelist[component];
 
@@ -74,12 +70,25 @@ const Modal: React.FC = () => {
           />
         );
       })}
-    </div>
+    </ModalContainer>
   );
 
   // Render a modal element in a different div ('id="modal"') then the app one
   // using React portal
   return modalContainer && ReactDOM.createPortal(content, modalContainer);
 };
+
+export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
+  children,
+  onClose = () => {},
+}) => (
+  <div className="fixed top-0 right-0 bottom-0 left-0 z-[999999]">
+    <div
+      onClick={onClose}
+      className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
+    />
+    <div className="center-absolute">{children}</div>
+  </div>
+);
 
 export default Modal;
