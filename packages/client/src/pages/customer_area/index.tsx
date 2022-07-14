@@ -74,7 +74,7 @@ const CustomerArea: React.FC = () => {
   );
 
   const { t } = useTranslation();
-  const adminsLink = [
+  const adminLinks = [
     {
       label: t(NavigationLabel.Attendance),
       Icon: TestSVG,
@@ -96,7 +96,7 @@ const CustomerArea: React.FC = () => {
   return (
     <Layout
       isAdmin={isAdmin}
-      adminsLink={adminsLink}
+      adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
       user={customerData}

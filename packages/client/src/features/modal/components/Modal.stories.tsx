@@ -9,6 +9,7 @@ import { getNewStore } from "@/store/createStore";
 import Modal from "./Modal";
 import { openModal } from "../actions";
 import { testSlot } from "@/store/actions/__testData__/slotOperations";
+import { Calendar } from "@eisbuk/svg";
 
 export default {
   title: "Modal",
@@ -16,10 +17,26 @@ export default {
 } as ComponentMeta<typeof Modal>;
 
 const store = getNewStore();
-
+const adminLinks = [
+  {
+    label: "Attendance",
+    Icon: Calendar,
+    slug: "",
+  },
+  {
+    label: "Slots",
+    Icon: Calendar,
+    slug: "",
+  },
+  {
+    label: "Athletes",
+    Icon: Calendar,
+    slug: "",
+  },
+];
 export const CancelBookingsDialog = (): JSX.Element => (
   <StoreProvider store={store}>
-    <Layout isAdmin={false}>
+    <Layout adminLinks={adminLinks}>
       <Button
         onClick={() =>
           store.dispatch(

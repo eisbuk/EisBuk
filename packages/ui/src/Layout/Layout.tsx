@@ -12,7 +12,7 @@ interface LayoutProps {
   Notifications?: React.FC<{ className?: string }>;
   children?: React.ReactNode[] | React.ReactNode;
   isAdmin?: boolean;
-  adminsLink: LinkItem[];
+  adminLinks?: LinkItem[];
 }
 export interface LinkItem {
   Icon: string;
@@ -27,19 +27,18 @@ const Layout: React.FC<LayoutProps> = ({
   Notifications,
   isAdmin = false,
   children,
-  adminsLink,
+  adminLinks,
 }) => {
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
       <header className="bg-gray-800">
         <div className="content-container">
-          <AdminBar
-            className={getHeaderRowClasses("top")}
-            isAdmin={isAdmin}
-            adminLinks={adminsLink}
-          />
-        </div>
-        <div className="content-container">
+          {isAdmin && adminLinks && (
+            <AdminBar
+              className={getHeaderRowClasses("top")}
+              adminLinks={adminLinks}
+            />
+          )}
           <div className={getHeaderRowClasses("top")}>
             <div className="h-5 w-[86px] text-white">{<Logo />}</div>
 

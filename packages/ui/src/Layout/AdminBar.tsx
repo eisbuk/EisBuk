@@ -5,30 +5,28 @@ import { LinkItem } from "./Layout";
 import MobileHamburgerMenu from "./MobileHamburgerMenu";
 
 interface AdminBarProps {
-  isAdmin?: boolean;
   adminLinks: LinkItem[];
   className?: string;
 }
 
-const AdminBar: React.FC<AdminBarProps> = ({
-  isAdmin,
-  adminLinks,
-  className,
-}) => {
+const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
   return (
-    <div className={`${className} rounded-full`}>
+    <div className={`${className} md:justify-end`}>
       <MobileHamburgerMenu adminLinks={adminLinks} />
       <div className={baseClasses.join(" ")}>
-        {isAdmin &&
-          adminLinks.map(({ Icon, label, slug }) => {
-            return (
-              <Link to={slug}>
-                <div className="w-32 border-r-2 p-1">
-                  <Button startAdornment={<Icon />}>{label}</Button>
-                </div>
-              </Link>
-            );
-          })}
+        {adminLinks.map(({ Icon, label, slug }, i) => {
+          return (
+            <Link to={slug}>
+              <div
+                className={`min-w-36 p-1 ${
+                  i !== adminLinks.length - 1 ? `border-r-2` : ""
+                }`}
+              >
+                <Button startAdornment={<Icon />}>{label}</Button>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
@@ -41,9 +39,8 @@ const baseClasses = [
   "hidden",
   "md:flex",
   "items-center",
-  "md:justify-end",
   "border-2",
-  "rounded-full",
+  "rounded-lg ",
 ];
 
 export default AdminBar;
