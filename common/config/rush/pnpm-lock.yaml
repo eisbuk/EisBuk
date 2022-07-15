@@ -619,6 +619,7 @@ importers:
       eslint-plugin-react: ^7.29.4
       eslint-plugin-react-hooks: ^4.4.0
       eslint-plugin-unused-imports: ^2.0.0
+      formik: ^2.1.5
       jest: ^27.5.1
       luxon: ^2.0.5
       postcss: ~8.4.13
@@ -633,6 +634,7 @@ importers:
       '@eisbuk/svg': link:../svg
       '@eisbuk/translations': link:../translations
       '@tailwindcss/forms': 0.5.2_tailwindcss@3.0.24
+      formik: 2.2.9_react@16.14.0
       luxon: 2.4.0
     devDependencies:
       '@babel/core': 7.18.6
