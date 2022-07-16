@@ -19,7 +19,7 @@ const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
           <Link
             key={label + i}
             className={[
-              "min-w-36 p-[0.1px] hover:bg-white/5 active:bg-white/10 ",
+              "min-w-36 h-full hover:bg-white/5 active:bg-white/10 ",
               i === 0 ? "bg-cyan-700" : "text-opacity-80",
               slug === location.pathname ? "bg-cyan-700" : "text-opacity-80",
             ].join(" ")}
@@ -34,6 +34,7 @@ const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
 };
 
 const baseClasses = [
+  "overflow-hidden",
   "flex",
   "h-10",
   "text-white",
