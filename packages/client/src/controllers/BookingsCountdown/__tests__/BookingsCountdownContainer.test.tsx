@@ -9,19 +9,25 @@ import { DateTime } from "luxon";
 import i18n, { ActionButton } from "@eisbuk/translations";
 import { OrgSubCollection } from "@eisbuk/shared";
 
-import { ModalState } from "@/features/modal/types";
+import { ModalPayload } from "@/features/modal/types";
 
 import BookingsCountdownContainer from "../BookingsCountdownContainer";
 
 import { getNewStore } from "@/store/createStore";
 import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 import { changeCalendarDate } from "@/store/actions/appActions";
-import { getModal } from "@/features/modal/selectors";
+import { openModal } from "@/features/modal/actions";
 
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
+
+const mockDispatch = jest.fn();
+jest.mock("react-redux", () => ({
+  ...jest.requireActual("react-redux"),
+  useDispatch: () => mockDispatch,
+}));
 
 describe("BookingsCountdown", () => {
   test("should open a finalize bookings modal on 'Finalize' button click", () => {
@@ -56,12 +62,10 @@ describe("BookingsCountdown", () => {
     // provided 'month'
     renderWithRedux(<BookingsCountdownContainer />, store);
     screen.getByText(i18n.t(ActionButton.FinalizeBookings) as string).click();
-    // Check that the modal state has been updated with appropriate values
-    const wantModal: ModalState = {
+    const wantModal: ModalPayload = {
       component: "FinalizeBookingsDialog",
       props: { customerId: saul.id, month },
     };
-    const modal = getModal(store.getState());
-    expect(modal).toEqual(wantModal);
+    expect(mockDispatch).toHaveBeenCalledWith(openModal(wantModal));
   });
 });

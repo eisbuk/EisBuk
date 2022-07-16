@@ -46,9 +46,11 @@ type ModalStateMap = {
 /**
  * State of `modal` portion of the store with `
  */
-export type ModalState<
+export type ModalPayload<
   C extends WhitelistedComponents = WhitelistedComponents
-> = ModalStateMap[C] | null;
+> = ModalStateMap[C];
+
+export type ModalState = ModalPayload[];
 
 // There are only two variants to this type. If number of variants gets bigger,
 // it can be extended to more generic types/lookups
@@ -56,4 +58,4 @@ export type ModalReducerAction =
   | {
       type: ModalAction.Close;
     }
-  | { type: ModalAction.Open; payload: NonNullable<ModalState> };
+  | { type: ModalAction.Open; payload: ModalPayload };
