@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Button from "../Button";
 import { LinkItem } from "./Layout";
 import MobileHamburgerMenu from "./MobileHamburgerMenu";
@@ -10,23 +10,24 @@ interface AdminBarProps {
 }
 
 const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
+  const location = useLocation();
   return (
-    <div className={`${className} md:justify-end`}>
+    <div className={[className, "md:justify-end"].join(" ")}>
       <MobileHamburgerMenu adminLinks={adminLinks} />
       <div className={baseClasses.join(" ")}>
-        {adminLinks.map(({ Icon, label, slug }, i) => {
-          return (
-            <Link to={slug}>
-              <div
-                className={`min-w-36 p-1 ${
-                  i !== adminLinks.length - 1 ? `border-r-2` : ""
-                }`}
-              >
-                <Button startAdornment={<Icon />}>{label}</Button>
-              </div>
-            </Link>
-          );
-        })}
+        {adminLinks.map(({ Icon, label, slug }, i) => (
+          <Link
+            key={label + i}
+            className={[
+              "min-w-36 p-[0.1px] hover:bg-white/5 active:bg-white/10 ",
+              i === 0 ? "bg-cyan-700" : "text-opacity-80",
+              slug === location.pathname ? "bg-cyan-700" : "text-opacity-80",
+            ].join(" ")}
+            to={slug}
+          >
+            <Button startAdornment={<Icon />}>{label}</Button>
+          </Link>
+        ))}
       </div>
     </div>
   );
@@ -37,10 +38,11 @@ const baseClasses = [
   "h-10",
   "text-white",
   "hidden",
-  "md:flex",
   "items-center",
   "border-2",
-  "rounded-lg ",
+  "rounded-lg",
+  "divide-x-2",
+  "md:flex",
 ];
 
 export default AdminBar;

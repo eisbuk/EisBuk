@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { NavigationLabel, useTranslation } from "@eisbuk/translations";
 import { CalendarNav, CalendarNavProps, Layout, TabItem } from "@eisbuk/ui";
-import { Calendar, AccountCircle, TestSVG } from "@eisbuk/svg";
+import { Calendar, AccountCircle } from "@eisbuk/svg";
 import {
   BookingSubCollection,
   Collection,
@@ -77,17 +77,17 @@ const CustomerArea: React.FC = () => {
   const adminLinks = [
     {
       label: t(NavigationLabel.Attendance),
-      Icon: TestSVG,
+      Icon: Calendar,
       slug: PrivateRoutes.Root,
     },
     {
       label: "Slots",
-      Icon: TestSVG,
+      Icon: Calendar,
       slug: PrivateRoutes.Slots,
     },
     {
       label: t(NavigationLabel.Athletes),
-      Icon: TestSVG,
+      Icon: Calendar,
       slug: PrivateRoutes.Athletes,
     },
   ];

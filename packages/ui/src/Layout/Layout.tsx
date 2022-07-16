@@ -39,9 +39,9 @@ const Layout: React.FC<LayoutProps> = ({
               adminLinks={adminLinks}
             />
           )}
+
           <div className={getHeaderRowClasses("top")}>
             <div className="h-5 w-[86px] text-white">{<Logo />}</div>
-
             {user && <UserAvatar {...user} />}
           </div>
 
