@@ -25,7 +25,9 @@ const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
             ].join(" ")}
             to={slug}
           >
-            <Button startAdornment={<Icon />}>{label}</Button>
+            <Button className="h-full" startAdornment={<Icon />}>
+              {label}
+            </Button>
           </Link>
         ))}
       </div>
