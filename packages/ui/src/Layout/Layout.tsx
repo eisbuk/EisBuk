@@ -15,6 +15,7 @@ interface LayoutProps {
   adminLinks?: LinkItem[];
 }
 export interface LinkItem {
+  /** @TODO This should be an SVG component */
   Icon: string;
   label: string;
   slug: string;

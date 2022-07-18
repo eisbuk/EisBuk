@@ -10,26 +10,36 @@ interface AdminBarProps {
 }
 
 const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
-  const location = useLocation();
+  const { pathname: currentPath } = useLocation();
+
   return (
     <div className={[className, "md:justify-end"].join(" ")}>
       <MobileHamburgerMenu adminLinks={adminLinks} />
       <div className={baseClasses.join(" ")}>
-        {adminLinks.map(({ Icon, label, slug }, i) => (
-          <Link
-            key={label + i}
-            className={[
-              "min-w-36 h-full hover:bg-white/5 active:bg-white/10 ",
-              i === 0 ? "bg-cyan-700" : "text-opacity-80",
-              slug === location.pathname ? "bg-cyan-700" : "text-opacity-80",
-            ].join(" ")}
-            to={slug}
-          >
-            <Button className="h-full" startAdornment={<Icon />}>
-              {label}
-            </Button>
-          </Link>
-        ))}
+        {adminLinks.map(({ Icon, label, slug }, i) => {
+          const isActive = currentPath === slug;
+
+          return (
+            <Link
+              key={label + i}
+              className={[
+                "min-w-36 h-full",
+                isActive
+                  ? "bg-cyan-700"
+                  : "text-opacity-80 hover:bg-white/5 active:bg-white/10",
+              ].join(" ")}
+              to={slug}
+            >
+              <Button
+                className="h-full"
+                startAdornment={<Icon />}
+                disabled={isActive}
+              >
+                {label}
+              </Button>
+            </Link>
+          );
+        })}
       </div>
     </div>
   );
