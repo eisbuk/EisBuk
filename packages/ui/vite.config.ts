@@ -21,7 +21,7 @@ export default defineConfig({
     rollupOptions: {
       // React should be used in the main app, and not bundled in
       // as multiple instances of React can cause a bunch of problems
-      external: ["react", "react-dom"],
+      external: ["react", "react-dom", "react-router-dom"],
       output: {
         exports: "named",
 

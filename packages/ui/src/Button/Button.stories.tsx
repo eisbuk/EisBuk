@@ -82,7 +82,10 @@ export const Prototype = (): JSX.Element => (
         </Button>
       </StorybookItem>
       <StorybookItem label="Cancel">
-        <Button className="min-w-[85px]" color={ButtonColor.Error}>
+        <Button
+          className="min-w-[85px] justify-center"
+          color={ButtonColor.Error}
+        >
           Cancel
         </Button>
       </StorybookItem>

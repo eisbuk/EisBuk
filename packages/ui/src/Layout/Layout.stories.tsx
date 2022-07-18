@@ -1,5 +1,6 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
+import { MemoryRouter as Router } from "react-router-dom";
 
 import { AccountCircle, Calendar } from "@eisbuk/svg";
 
@@ -45,19 +46,41 @@ const dummyContent = (
     </div>
   </div>
 );
-
+const adminLinks = [
+  {
+    label: "Attendance",
+    Icon: Calendar,
+    slug: "/attendance",
+  },
+  {
+    label: "Slots",
+    Icon: Calendar,
+    slug: "/slots",
+  },
+  {
+    label: "Athletes",
+    Icon: Calendar,
+    slug: "/athletes",
+  },
+];
 const user = {
   name: "Salvo",
   surname: "Simonetti",
   avatar:
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
-export const Default = (): JSX.Element => (
-  <Layout {...{ user }}>{dummyContent}</Layout>
+export const Admin = (): JSX.Element => (
+  <Router initialEntries={[{ pathname: "/attendance" }]}>
+    <Layout adminLinks={adminLinks} isAdmin={true} {...{ user }}>
+      {dummyContent}
+    </Layout>
+  </Router>
 );
 
 export const CustomerArea = (): JSX.Element => (
-  <Layout {...{ additionalButtons, Notifications, user }}>
-    {dummyContent}
-  </Layout>
+  <Router>
+    <Layout {...{ additionalButtons, Notifications, user }}>
+      {dummyContent}
+    </Layout>
+  </Router>
 );

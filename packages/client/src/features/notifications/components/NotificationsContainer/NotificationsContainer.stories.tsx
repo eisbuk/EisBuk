@@ -11,6 +11,7 @@ import { enqueueNotification } from "../../actions";
 
 import NotificationsContainer from "./NotificationsContainer";
 import { NotificationsProvider } from "../../context";
+import { Calendar } from "@eisbuk/svg";
 
 export default {
   title: "Notifications Container",
@@ -18,7 +19,23 @@ export default {
 } as ComponentMeta<typeof NotificationsContainer>;
 
 const store = getNewStore();
-
+const adminLinks = [
+  {
+    label: "Attendance",
+    Icon: Calendar,
+    slug: "",
+  },
+  {
+    label: "Slots",
+    Icon: Calendar,
+    slug: "",
+  },
+  {
+    label: "Athletes",
+    Icon: Calendar,
+    slug: "",
+  },
+];
 export const Default = (): JSX.Element => {
   const variants = Object.values(NotifVariant);
 
@@ -34,7 +51,7 @@ export const Default = (): JSX.Element => {
   return (
     <StoreProvider store={store}>
       <NotificationsProvider timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}>
-        <Layout Notifications={NotificationsContainer}>
+        <Layout adminLinks={adminLinks} Notifications={NotificationsContainer}>
           <br />
           <button
             className="bg-gray-200 rounded-md px-4 py-1 m-2"
