@@ -20,18 +20,14 @@ const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
           const isActive = currentPath === slug;
 
           return (
-            <Link
-              key={label + i}
-              className={[
-                "min-w-36 h-full",
-                isActive
-                  ? "bg-cyan-700"
-                  : "text-opacity-80 hover:bg-white/5 active:bg-white/10",
-              ].join(" ")}
-              to={slug}
-            >
+            <Link key={label + i} className="min-w-36 h-full" to={slug}>
               <Button
-                className="h-full"
+                className={[
+                  "h-full rounded-none",
+                  isActive
+                    ? "bg-cyan-700"
+                    : "text-opacity-80 hover:bg-white/5 active:bg-white/10",
+                ].join(" ")}
                 startAdornment={<Icon />}
                 disabled={isActive}
               >
