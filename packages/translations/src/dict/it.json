@@ -2,7 +2,8 @@
   "NavigationLabel": {
     "Attendance": "Presenze",
     "Athletes": "Atleti",
-    "Bookings": "Prenotazioni"
+    "Bookings": "Prenotazioni",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Prenota Ice",

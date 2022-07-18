@@ -3,7 +3,6 @@ import { DateTime } from "luxon";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { NavigationLabel, useTranslation } from "@eisbuk/translations";
 import { CalendarNav, CalendarNavProps, Layout, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle } from "@eisbuk/svg";
 import {
@@ -19,11 +18,12 @@ import { NotificationsContainer } from "@/features/notifications/components";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
+import { getIsAdmin } from "@/store/selectors/auth";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
-import { getIsAdmin } from "@/store/selectors/auth";
-import { PrivateRoutes } from "@/enums/routes";
+
+import { adminLinks } from "@/data/navigation";
 
 /**
  * Customer area page component
@@ -73,24 +73,6 @@ const CustomerArea: React.FC = () => {
     </>
   );
 
-  const { t } = useTranslation();
-  const adminLinks = [
-    {
-      label: t(NavigationLabel.Attendance),
-      Icon: Calendar,
-      slug: PrivateRoutes.Root,
-    },
-    {
-      label: "Slots",
-      Icon: Calendar,
-      slug: PrivateRoutes.Slots,
-    },
-    {
-      label: t(NavigationLabel.Athletes),
-      Icon: Calendar,
-      slug: PrivateRoutes.Athletes,
-    },
-  ];
   const CustomerView = views[view];
 
   return (

@@ -3,6 +3,7 @@ import { Category, SlotType, DeprecatedCategory } from "@eisbuk/shared";
 // #region navigation
 export enum NavigationLabel {
   Attendance = "NavigationLabel.Attendance",
+  Slots = "NavigationLabel.Slots",
   Athletes = "NavigationLabel.Athletes",
   Bookings = "NavigationLabel.Bookings",
 }

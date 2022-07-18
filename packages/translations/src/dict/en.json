@@ -2,7 +2,8 @@
   "NavigationLabel": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Bookings": "Bookings"
+    "Bookings": "Bookings",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Book Ice",
