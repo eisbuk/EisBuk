@@ -2,12 +2,11 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-import { CalendarNav, Layout } from "@eisbuk/ui";
+import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { Printer } from "@eisbuk/svg";
 
 import Container from "@mui/material/Container";
 import List from "@mui/material/List";
-import IconButton from "@mui/material/IconButton";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { OrgSubCollection } from "@eisbuk/shared";
@@ -39,14 +38,11 @@ const DashboardPage: React.FC = () => {
   const allCustomers = useSelector(getCustomersList(true));
 
   const printButton = (
-    <IconButton
-      className="h-8 p-1"
-      component={Link}
-      to="/attendance_printable"
-      size="large"
-    >
-      <Printer />
-    </IconButton>
+    <Link to="/attendance_printable">
+      <Button className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10">
+        <Printer />
+      </Button>
+    </Link>
   );
 
   return (
