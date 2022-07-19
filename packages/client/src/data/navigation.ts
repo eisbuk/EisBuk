@@ -1,6 +1,6 @@
 import { LinkItem } from "@eisbuk/ui";
 import i18n, { NavigationLabel } from "@eisbuk/translations";
-import { Calendar, People, LibraryBooks } from "@eisbuk/svg";
+import { Calendar, People, LibraryBooks, Cog } from "@eisbuk/svg";
 
 import { PrivateRoutes } from "@/enums/routes";
 
@@ -19,5 +19,10 @@ export const adminLinks: LinkItem[] = [
     Icon: People,
     label: i18n.t(NavigationLabel.Athletes),
     slug: PrivateRoutes.Athletes,
+  },
+  {
+    Icon: Cog,
+    label: i18n.t(NavigationLabel.OrganizationSettings),
+    slug: PrivateRoutes.AdminPreferences,
   },
 ];

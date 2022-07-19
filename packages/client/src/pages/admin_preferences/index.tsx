@@ -27,7 +27,8 @@ import { isEmpty } from "@/utils/helpers";
 
 import AdminsField from "./AdminsField";
 import FormSection from "@/components/atoms/FormSection";
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
+import { Layout } from "@eisbuk/ui";
+import { adminLinks } from "@/data/navigation";
 
 const smsFields = [
   {
@@ -110,8 +111,7 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <>
-      <AppbarAdmin />
+    <Layout isAdmin adminLinks={adminLinks}>
       <div className={classes.title}>
         <Typography variant="h4">{`${
           organization?.displayName || "Organization"
@@ -161,7 +161,7 @@ const OrganizationSettings: React.FC = () => {
           )}
         </Formik>
       </div>
-    </>
+    </Layout>
   );
 };
 

@@ -3,9 +3,10 @@ import { Category, SlotType, DeprecatedCategory } from "@eisbuk/shared";
 // #region navigation
 export enum NavigationLabel {
   Attendance = "NavigationLabel.Attendance",
-  Slots = "NavigationLabel.Slots",
   Athletes = "NavigationLabel.Athletes",
   Bookings = "NavigationLabel.Bookings",
+  OrganizationSettings = "NavigationLabel.OrganizationSettings",
+  Slots = "NavigationLabel.Slots",
 }
 export enum CustomerNavigationLabel {
   "book_ice" = "CustomerNavigation.BookIce",

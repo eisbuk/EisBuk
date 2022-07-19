@@ -10,6 +10,7 @@ import ChevronRight from "./chevron-right.svg";
 import EisbukLogo from "./logo.svg";
 import People from "./people.svg";
 import LibraryBooks from "./libraryBooks.svg";
+import Cog from "./cog.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -29,4 +30,5 @@ export {
   EisbukLogo,
   People,
   LibraryBooks,
+  Cog,
 };
