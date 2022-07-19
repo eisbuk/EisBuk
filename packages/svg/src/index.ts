@@ -12,6 +12,7 @@ import Cog from "./cog.svg";
 import Users from "./users.svg";
 import ClipboardList from "./clipboard-list.svg";
 import DocumentDuplicate from "./document-duplicate.svg";
+import Printer from "./printer.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -33,4 +34,5 @@ export {
   Users,
   ClipboardList,
   DocumentDuplicate,
+  Printer,
 };
