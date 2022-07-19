@@ -1,20 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
-
-import IconButton from "@mui/material/IconButton";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import PrintIcon from "@mui/icons-material/Print";
+import { useSelector, useDispatch } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-import { Layout } from "@eisbuk/ui";
+import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
+import { Printer } from "@eisbuk/svg";
 
 import { AttendanceSortBy } from "@/enums/other";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import DateNavigation from "@/components/atoms/DateNavigation";
 import AttendanceSheet, {
   AttendanceSheetSlot,
 } from "@/components/atoms/AttendanceSheet";
@@ -25,10 +18,12 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 
+import { changeCalendarDate } from "@/store/actions/appActions";
+
 import { adminLinks } from "@/data/navigation";
 
 const DashboardPage: React.FC = () => {
-  const classes = useStyles();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   useFirestoreSubscribe([
@@ -49,9 +44,12 @@ const DashboardPage: React.FC = () => {
    * `Ctrl` + `P` print shortcut.
    */
   const printButton = (
-    <IconButton onClick={() => window.print()} size="large">
-      <PrintIcon />
-    </IconButton>
+    <Button
+      onClick={() => window.print()}
+      className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10"
+    >
+      <Printer />
+    </Button>
   );
 
   // add a semantically correct HTML title as it
@@ -62,31 +60,20 @@ const DashboardPage: React.FC = () => {
 
   return (
     <Layout isAdmin adminLinks={adminLinks}>
-      <AppbarAdmin className={classes.noPrint} />
-      <DateNavigation
-        className={classes.noPrint}
+      <CalendarNav
+        onChange={(date) => dispatch(changeCalendarDate(date))}
+        date={date}
         jump="day"
-        extraButtons={printButton}
-      >
-        {() => (
-          <AttendanceSheet date={date}>
-            {attendanceSlots.map(
-              (slot) =>
-                slot.customers.length > 0 && <AttendanceSheetSlot {...slot} />
-            )}
-          </AttendanceSheet>
+        additionalContent={printButton}
+      />
+      <AttendanceSheet date={date}>
+        {attendanceSlots.map(
+          (slot) =>
+            slot.customers.length > 0 && <AttendanceSheetSlot {...slot} />
         )}
-      </DateNavigation>
+      </AttendanceSheet>
     </Layout>
   );
 };
-
-const useStyles = makeStyles(() => ({
-  noPrint: {
-    "@media print": {
-      display: "none",
-    },
-  },
-}));
 
 export default DashboardPage;
