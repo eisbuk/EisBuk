@@ -4,11 +4,11 @@ import { FieldProps } from "formik";
 // TODO: Add more obvious disabled input state styles
 
 // TODO: Limit adornments to whitelisted components in "./InputAdornment"
-interface TextInputProps {
+export interface TextInputProps {
   label: string;
-  placeholder: string;
-  helpText: string;
   formikField: FieldProps;
+  placeholder?: string;
+  helpText?: string;
   disabled?: boolean;
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;

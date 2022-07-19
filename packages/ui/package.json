@@ -87,6 +87,7 @@
     "@eisbuk/translations": "workspace:*",
     "@tailwindcss/forms": "^0.5.2",
     "formik": "^2.1.5",
-    "luxon": "^2.0.5"
+    "luxon": "^2.0.5",
+    "yup": "0.32.9"
   }
 }
