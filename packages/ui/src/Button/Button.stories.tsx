@@ -1,6 +1,8 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
+import { Printer } from "@eisbuk/svg";
+
 import Button, { ButtonColor, ButtonSize } from "./Button";
 
 import { StorybookGrid, StorybookItem } from "../utils/storybook";
@@ -116,6 +118,18 @@ export const Prototype = (): JSX.Element => (
           size={ButtonSize.LG}
         >
           Confirm Cancellation
+        </Button>
+      </StorybookItem>
+    </StorybookGrid>
+
+    <h1 className="text-lg font-bold mb-4">Icon Button:</h1>
+    <StorybookGrid className="mb-16">
+      <StorybookItem>
+        <Button
+          className="text-gray-700 h-10 w-10 !p-1 rounded-full hover:bg-gray-100"
+          size={ButtonSize.LG}
+        >
+          <Printer />
         </Button>
       </StorybookItem>
     </StorybookGrid>
