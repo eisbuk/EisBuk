@@ -2,6 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
+import { Layout } from "@eisbuk/ui";
+
 import Container from "@mui/material/Container";
 import List from "@mui/material/List";
 import IconButton from "@mui/material/IconButton";
@@ -10,13 +12,14 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { OrgSubCollection } from "@eisbuk/shared";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import AttendanceCard from "@/components/atoms/AttendanceCard";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCustomersList } from "@/store/selectors/customers";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+
+import { adminLinks } from "@/data/navigation";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
@@ -37,8 +40,7 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <>
-      <AppbarAdmin />
+    <Layout isAdmin adminLinks={adminLinks}>
       <DateNavigation extraButtons={printButton} jump="day">
         {() => (
           <Container className={classes.root} maxWidth="md">
@@ -53,7 +55,7 @@ const DashboardPage: React.FC = () => {
           </Container>
         )}
       </DateNavigation>
-    </>
+    </Layout>
   );
 };
 
