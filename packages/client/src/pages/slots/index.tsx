@@ -3,12 +3,12 @@ import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { OrgSubCollection, SlotInterface } from "@eisbuk/shared";
+import { Layout } from "@eisbuk/ui";
 
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotsWeek } from "@/types/store";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotOperationButtons, {
   // DeleteButton,
@@ -32,6 +32,8 @@ import {
 } from "@/store/actions/copyPaste";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
+
+import { adminLinks } from "@/data/navigation";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -72,8 +74,7 @@ const SlotsPage: React.FC = () => {
     };
 
   return (
-    <>
-      <AppbarAdmin />
+    <Layout isAdmin adminLinks={adminLinks}>
       <DateNavigation {...{ extraButtons }} showToggle>
         {({ toggleState }) => (
           <>
@@ -138,7 +139,7 @@ const SlotsPage: React.FC = () => {
           </>
         )}
       </DateNavigation>
-    </>
+    </Layout>
   );
 };
 
