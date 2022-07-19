@@ -2,10 +2,10 @@ import React, { useEffect, useState } from "react";
 import ReactDOM from "react-dom";
 import { useDispatch, useSelector } from "react-redux";
 
-import { componentWhitelist } from "../components";
+import { componentWhitelist } from "@/features/modal/components";
 
-import { closeModal } from "../actions";
-import { getModal } from "../selectors";
+import { popModal } from "@/features/modal/actions";
+import { getModal } from "@/features/modal/selectors";
 
 /**
  * Main component for the `modal` feature. I uses the state in store to render an appropriate
@@ -46,16 +46,14 @@ const Modal: React.FC = () => {
   // If no modal content in store, don't return anything
   // and skip the following block
   const modal = useSelector(getModal);
-  if (!modal) {
+  if (!modal.length) {
     return null;
   }
 
-  const { component, props } = modal;
-
-  const Component = componentWhitelist[component];
+  const modals = modal;
 
   const handleClose = () => {
-    dispatch(closeModal);
+    dispatch(popModal);
   };
 
   const content = (
@@ -64,11 +62,18 @@ const Modal: React.FC = () => {
         onClick={handleClose}
         className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
       />
-      <Component
-        {...(props as any)}
-        className="center-absolute"
-        onClose={handleClose}
-      />
+      {modals.map(({ component, props }, i) => {
+        const Component = componentWhitelist[component];
+
+        return (
+          <Component
+            key={`${component}-${i}`}
+            {...(props as any)}
+            className="center-absolute"
+            onClose={handleClose}
+          />
+        );
+      })}
     </div>
   );
 
