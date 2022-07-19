@@ -61,6 +61,7 @@ const DashboardPage: React.FC = () => {
   return (
     <Layout isAdmin adminLinks={adminLinks}>
       <CalendarNav
+        className="print:hidden"
         onChange={(date) => dispatch(changeCalendarDate(date))}
         date={date}
         jump="day"
