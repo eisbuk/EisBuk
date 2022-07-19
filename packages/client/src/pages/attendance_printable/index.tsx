@@ -1,15 +1,17 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-
 import IconButton from "@mui/material/IconButton";
 
 import makeStyles from "@mui/styles/makeStyles";
 
 import PrintIcon from "@mui/icons-material/Print";
 
+import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
+import { Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
+
+import { AttendanceSortBy } from "@/enums/other";
 
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import DateNavigation from "@/components/atoms/DateNavigation";
@@ -22,7 +24,8 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import { AttendanceSortBy } from "@/enums/other";
+
+import { adminLinks } from "@/data/navigation";
 
 const DashboardPage: React.FC = () => {
   const classes = useStyles();
@@ -58,7 +61,7 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <>
+    <Layout isAdmin adminLinks={adminLinks}>
       <AppbarAdmin className={classes.noPrint} />
       <DateNavigation
         className={classes.noPrint}
@@ -74,7 +77,7 @@ const DashboardPage: React.FC = () => {
           </AttendanceSheet>
         )}
       </DateNavigation>
-    </>
+    </Layout>
   );
 };
 
