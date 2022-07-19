@@ -62,6 +62,8 @@ const baseClasses = [
   "flex",
   "items-center",
   "gap-2.5",
+  "select-none",
+  "tracking-wide",
 ];
 
 const sizeClassesLookup = {
