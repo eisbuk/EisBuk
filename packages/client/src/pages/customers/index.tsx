@@ -12,13 +12,13 @@ import makeStyles from "@mui/styles/makeStyles";
 import { ETheme } from "@/themes";
 
 import { OrgSubCollection } from "@eisbuk/shared";
+import { Layout } from "@eisbuk/ui";
 import {
   useTranslation,
   ActionButton,
   NavigationLabel,
 } from "@eisbuk/translations";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
 import CustomerForm from "@/components/customers/CustomerForm";
 import CustomerGrid from "@/components/atoms/CustomerGrid";
 
@@ -31,6 +31,8 @@ import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubs
 
 import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
+
+import { adminLinks } from "@/data/navigation";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -51,8 +53,7 @@ const CustomersPage: React.FC = () => {
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
-    <>
-      <AppbarAdmin />
+    <Layout isAdmin adminLinks={adminLinks}>
       {/* {!isLoaded(customers) && <LinearProgress />} */}
       <Grid item xs={12}>
         {
@@ -76,7 +77,7 @@ const CustomersPage: React.FC = () => {
           updateCustomer={(customer) => dispatch(updateCustomer(customer))}
         />
       </Grid>
-    </>
+    </Layout>
   );
 };
 
