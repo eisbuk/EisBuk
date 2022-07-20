@@ -15,14 +15,14 @@ import { getNewStore } from "@/store/createStore";
 
 import * as getters from "@/lib/getters";
 
-import { Action, NotifVariant } from "@/enums/store";
+import { NotifVariant } from "@/enums/store";
 
 import {
   deleteCustomer,
   extendBookingDate,
   updateCustomer,
 } from "../customerOperations";
-import * as appActions from "../appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getCustomersPath } from "@/utils/firestore";
 
@@ -31,28 +31,6 @@ import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
-
-/**
- * Mock `enqueueSnackbar` implementation for easier testing.
- * Here we're using the same implmentation as the original function (action creator),
- * only omitting the notification key (as this is simpler)
- */
-const mockEnqueueSnackbar = ({
-  // we're omitting the key as it is, in most cases, signed with date and random number
-  // and this is easier than mocking `Date` object to always return the same value
-  // and seeding random to given value
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
-  ...notification
-}: Parameters<typeof appActions.enqueueNotification>[0]) => ({
-  type: Action.EnqueueNotification,
-  payload: { ...notification },
-});
-
-// mock `enqueueSnackbar` in component
-jest
-  .spyOn(appActions, "enqueueNotification")
-  .mockImplementation(mockEnqueueSnackbar as any);
 
 const mockDispatch = jest.fn();
 
@@ -92,14 +70,11 @@ describe("customerOperations", () => {
         expect(saulInDb).toEqual(noIdSaul);
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: `${saul.name} ${saul.surname} ${i18n.t(
               NotificationMessage.Updated
             )}`,
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -144,7 +119,12 @@ describe("customerOperations", () => {
       const testThunk = updateCustomer(saul);
       await testThunk(mockDispatch, getState);
       // check err snackbar being called
-      expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     });
   });
 
@@ -177,14 +157,11 @@ describe("customerOperations", () => {
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: `${saul.name} ${saul.surname} ${i18n.t(
               NotificationMessage.Removed
             )}`,
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -198,7 +175,12 @@ describe("customerOperations", () => {
       // run thunk
       await deleteCustomer(saul)(mockDispatch, getState);
       // check err snackbar being called
-      expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     });
   });
 
@@ -233,12 +215,9 @@ describe("customerOperations", () => {
         expect(data!.extendedDate).toEqual(extendedDate);
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.BookingDateExtended),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -249,14 +228,18 @@ describe("customerOperations", () => {
       async () => {
         // intentionally cause error to test error handling
         getFirestoreSpy.mockImplementation = () => {
-          console.log("this ran");
           throw new Error();
         };
         await extendBookingDate(saul.id, "2022-01-01")(
           mockDispatch,
           () => ({} as any)
         );
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
