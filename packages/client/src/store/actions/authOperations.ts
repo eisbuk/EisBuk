@@ -1,6 +1,6 @@
 import { getAuth, User } from "@firebase/auth";
 
-import i18n from "@eisbuk/translations";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { AuthStatus } from "@eisbuk/shared";
 
 import { getOrganization } from "@/lib/getters";
@@ -10,7 +10,8 @@ import { CloudFunction } from "@/enums/functions";
 
 import { AuthReducerAction, FirestoreThunk } from "@/types/store";
 
-import { enqueueNotification } from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
+
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
 /**
@@ -27,21 +28,15 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
 
     dispatch(
       enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t("Notification.LogoutSuccess"),
-        options: {
-          variant: NotifVariant.Success,
-        },
+        message: i18n.t(NotificationMessage.LogoutSuccess),
+        variant: NotifVariant.Success,
       })
     );
   } catch (err) {
     dispatch(
       enqueueNotification({
-        key: new Date().getTime() + Math.random(),
-        message: i18n.t("Notification.LogoutError"),
-        options: {
-          variant: NotifVariant.Error,
-        },
+        message: i18n.t(NotificationMessage.LogoutError),
+        variant: NotifVariant.Error,
       })
     );
   }
