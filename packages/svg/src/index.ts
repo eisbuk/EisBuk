@@ -1,19 +1,19 @@
-import TestSVG from "./SVG.svg";
-import Ice from "./ice.svg";
-import OffIce from "./off-ice.svg";
-import ExclamationCircle from "./exclamation-circle.svg";
-import Close from "./close.svg";
-import AccountCircle from "./account-circle.svg";
-import Calendar from "./calendar.svg";
-import ChevronLeft from "./chevron-left.svg";
-import ChevronRight from "./chevron-right.svg";
-import EisbukLogo from "./logo.svg";
-import Cog from "./cog.svg";
-import User from "./user.svg";
-import Users from "./users.svg";
-import ClipboardList from "./clipboard-list.svg";
-import DocumentDuplicate from "./document-duplicate.svg";
-import Printer from "./printer.svg";
+import TestSVG from "./assets/SVG.svg";
+import Ice from "./assets/ice.svg";
+import OffIce from "./assets/off-ice.svg";
+import ExclamationCircle from "./assets/exclamation-circle.svg";
+import Close from "./assets/close.svg";
+import AccountCircle from "./assets/account-circle.svg";
+import Calendar from "./assets/calendar.svg";
+import ChevronLeft from "./assets/chevron-left.svg";
+import ChevronRight from "./assets/chevron-right.svg";
+import EisbukLogo from "./assets/logo.svg";
+import Cog from "./assets/cog.svg";
+import User from "./assets/user.svg";
+import Users from "./assets/users.svg";
+import ClipboardList from "./assets/clipboard-list.svg";
+import DocumentDuplicate from "./assets/document-duplicate.svg";
+import Printer from "./assets/printer.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
