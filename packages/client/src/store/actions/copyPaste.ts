@@ -7,14 +7,16 @@ import {
   luxon2ISODate,
   fromISO,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
 
-import { Action } from "@/enums/store";
+import { Action, NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
-import { showErrSnackbar } from "./appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
+
 import { getSlotsPath } from "@/utils/firestore";
 
 /**
@@ -173,7 +175,12 @@ export const pasteSlotsDay =
 
       await batch.commit();
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -215,7 +222,12 @@ export const pasteSlotsWeek =
 
       await batch.commit();
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 

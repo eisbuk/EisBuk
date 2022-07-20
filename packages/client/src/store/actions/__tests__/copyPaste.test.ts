@@ -7,8 +7,12 @@ import { collection, getDocs } from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import { fromISO, luxon2ISODate } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import * as getters from "@/lib/getters";
+import { __storybookDate__ } from "@/lib/constants";
+
+import { NotifVariant } from "@/enums/store";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -22,10 +26,10 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "../copyPaste";
-import {
-  changeCalendarDate,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
+import { changeCalendarDate } from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
+
+import { getSlotsPath } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -37,8 +41,6 @@ import {
   testSlots,
   testWeek,
 } from "../__testData__/copyPaste";
-import { __storybookDate__ } from "@/lib/constants";
-import { getSlotsPath } from "@/utils/firestore";
 
 const mockDispatch = jest.fn();
 
@@ -155,7 +157,12 @@ describe("Copy Paste actions", () => {
       // run the faulty thunk
       await pasteSlotsDay(testDateLuxon)(mockDispatch, () => ({} as any));
       // check the error message being enqueued
-      expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     });
   });
 
@@ -214,7 +221,12 @@ describe("Copy Paste actions", () => {
         // run the failing thunk
         await pasteSlotsWeek(testDateLuxon)(mockDispatch, () => ({} as any));
         // check the error message being enqueued
-        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
