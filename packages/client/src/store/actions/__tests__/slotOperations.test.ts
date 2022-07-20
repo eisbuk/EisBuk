@@ -14,10 +14,12 @@ import { getNewStore } from "@/store/createStore";
 
 import * as getters from "@/lib/getters";
 
-import { Action, NotifVariant } from "@/enums/store";
+import { NotifVariant } from "@/enums/store";
 
 import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
-import * as appActions from "../appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
+
+import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
@@ -28,29 +30,6 @@ import {
   testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
-import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
-
-/**
- * Mock `enqueueSnackbar` implementation for easier testing.
- * Here we're using the same implmentation as the original function (action creator),
- * only omitting the notification key (as this is simpler)
- */
-const mockEnqueueSnackbar = ({
-  // we're omitting the key as it is, in most cases, signed with date and random number
-  // and this is easier than mocking `Date` object to always return the same value
-  // and seeding random to given value
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  key,
-  ...notification
-}: Parameters<typeof appActions.enqueueNotification>[0]) => ({
-  type: Action.EnqueueNotification,
-  payload: { ...notification },
-});
-
-// mock `enqueueSnackbar` in component
-jest
-  .spyOn(appActions, "enqueueNotification")
-  .mockImplementation(mockEnqueueSnackbar as any);
 
 const mockDispatch = jest.fn();
 
@@ -98,12 +77,9 @@ describe("Slot operations ->", () => {
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.SlotAdded),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -119,7 +95,12 @@ describe("Slot operations ->", () => {
         // run the thunk
         await createNewSlot(testFormValues)(mockDispatch, dummyGetState);
         // check err snackbar being called
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
@@ -174,12 +155,9 @@ describe("Slot operations ->", () => {
         });
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.SlotUpdated),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -198,7 +176,12 @@ describe("Slot operations ->", () => {
           id: "slot",
         })(mockDispatch, dummyGetState);
         // check err snackbar being called
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
@@ -231,12 +214,9 @@ describe("Slot operations ->", () => {
         expect(slotsInFS.length).toEqual(2);
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.SlotDeleted),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -252,7 +232,12 @@ describe("Slot operations ->", () => {
         // run the failing thunk
         await deleteSlot("id")(mockDispatch, dummyGetState);
         // check err snackbar being called
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
