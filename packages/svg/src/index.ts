@@ -9,6 +9,7 @@ import ChevronLeft from "./chevron-left.svg";
 import ChevronRight from "./chevron-right.svg";
 import EisbukLogo from "./logo.svg";
 import Cog from "./cog.svg";
+import User from "./user.svg";
 import Users from "./users.svg";
 import ClipboardList from "./clipboard-list.svg";
 import DocumentDuplicate from "./document-duplicate.svg";
@@ -31,6 +32,7 @@ export {
   OffIce,
   EisbukLogo,
   Cog,
+  User,
   Users,
   ClipboardList,
   DocumentDuplicate,

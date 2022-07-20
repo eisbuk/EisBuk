@@ -45,7 +45,11 @@ const CustomerArea: React.FC = () => {
   const calendarNavProps = useDate();
 
   // Get customer data necessary for rendering/functoinality
-  const customerData = useSelector(getBookingsCustomer);
+  const { name, surname, photoURL } = useSelector(getBookingsCustomer) || {};
+  const displayCustomer = {
+    displayName: [name, surname].filter((n) => Boolean(n)).join(" ") || "",
+    photoURL,
+  };
 
   // Get appropriate view to render
   const views = {
@@ -81,7 +85,7 @@ const CustomerArea: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
-      user={customerData}
+      user={displayCustomer}
     >
       <CalendarNav {...calendarNavProps} jump="month" />
       <div className="content-container">
