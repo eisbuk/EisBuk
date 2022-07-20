@@ -63,10 +63,10 @@ export const getCountdownProps = (
   const monthsDeadline = getMonthDeadline(currentDate);
   const extendedDate = getExtendedDate(state);
 
-  const isExtendedDateAplicable =
+  const isExtendedDateApplicable =
     extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
 
-  if (isExtendedDateAplicable) {
+  if (isExtendedDateApplicable) {
     return {
       month,
       deadline: extendedDate.endOf("day"),

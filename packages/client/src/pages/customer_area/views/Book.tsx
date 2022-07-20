@@ -6,16 +6,22 @@ import { SlotInterface } from "@eisbuk/shared";
 
 import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
-import { getSlotsForBooking } from "@/store/selectors/bookings";
+import {
+  getIsBookingAllowed,
+  getSlotsForBooking,
+} from "@/store/selectors/bookings";
 
 import { bookInterval } from "@/store/actions/bookingOperations";
 import { openModal } from "@/features/modal/actions";
 
 import { getSecretKey } from "@/utils/localStorage";
+import { getCalendarDay } from "@/store/selectors/app";
 
 const BookView: React.FC = () => {
   const daysToRender = useSelector(getSlotsForBooking);
+  const date = useSelector(getCalendarDay);
 
+  const disabled = !useSelector(getIsBookingAllowed(date));
   const { handleBooking, handleCancellation } = useBooking();
 
   return (
@@ -30,6 +36,7 @@ const BookView: React.FC = () => {
               onBook={handleBooking(slot)}
               onCancel={handleCancellation(slot, interval)}
               bookedInterval={interval}
+              disabled={Boolean(disabled)}
               {...slot}
             />
           ))}

@@ -136,7 +136,7 @@ const variantMessageLookup = {
   [BookingsCountdownVariant.FirstDeadline]:
     BookingCountdownMessage.FirstDeadline,
   [BookingsCountdownVariant.SecondDeadline]:
-    BookingCountdownMessage.FirstDeadline,
+    BookingCountdownMessage.SecondDeadline,
   [BookingsCountdownVariant.BookingsLocked]:
     BookingCountdownMessage.BookingsLocked,
 };
