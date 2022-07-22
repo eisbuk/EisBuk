@@ -34,6 +34,7 @@ import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
 import { changeCalendarDate } from "@/store/actions/appActions";
+import { AdminAria, useTranslation } from "@eisbuk/translations";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -49,6 +50,7 @@ const SlotsPage: React.FC = () => {
   const weekToPaste = useSelector(getWeekFromClipboard);
   const dayToPaste = useSelector(getDayFromClipboard);
 
+  const { t } = useTranslation();
   const [canEdit, setCanEdit] = useState(false);
   const toggleEdit = () => setCanEdit((a) => !a);
   const toggleEditButton = (
@@ -58,6 +60,7 @@ const SlotsPage: React.FC = () => {
       className={
         !canEdit ? "!text-black outline outline-gray-300 border-box" : ""
       }
+      aria-label={t(AdminAria.EnableEdit)}
     >
       Enable Edit
     </Button>

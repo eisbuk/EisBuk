@@ -234,7 +234,8 @@
     "CopySlots": "Copia slot",
     "CopiedSlotsBadge": "Slot copiati",
     "PasteSlots": "Incolla slot",
-    "CreateSlots": "Crea nuovo slot"
+    "CreateSlots": "Crea nuovo slot",
+    "EnableEdit": "Abilita la modifica"
   },
 
   "SlotFormAria": {

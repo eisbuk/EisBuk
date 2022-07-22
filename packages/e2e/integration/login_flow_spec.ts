@@ -47,7 +47,7 @@ describe("login", () => {
       cy.clickButton(t(AuthTitle.SignInWithEmail));
     });
 
-    it("loggs in with existing email", () => {
+    it("logs in with existing email", () => {
       cy.contains(t(AuthTitle.SignInWithEmail));
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Next));

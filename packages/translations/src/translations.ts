@@ -263,6 +263,7 @@ export enum AdminAria {
   CopiedSlotsBadge = "AdminAria.CopiedSlotsBadge",
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
+  EnableEdit = "AdminAria.EnableEdit",
 }
 
 export enum SlotFormAria {
