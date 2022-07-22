@@ -3,17 +3,11 @@
  */
 
 import React from "react";
-import {
-  cleanup,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Customer } from "@eisbuk/shared";
-import i18n, { ActionButton, CustomerFormTitle } from "@eisbuk/translations";
+import i18n, { ActionButton } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 
@@ -81,31 +75,13 @@ describe("Customer Card", () => {
       );
     });
 
-    test("should open 'CustomerForm' on edit click and dispatch 'updateCustomer' with updated values on submit", async () => {
-      const newName = "Jimmy";
-      const newSurname = "McGill";
-
+    test("should open 'CustomerFormDialog' modal on edit click", () => {
       screen.getByTestId(__customerEditId__).click();
-      // check proper rendering of confirm delete dialog message
-      screen.getByText(
-        `${i18n.t(CustomerFormTitle.EditCustomer)} (${saul.name} ${
-          saul.surname
-        })`
-      );
-      // update customer
-      const [nameInput, surnameInput] = screen.getAllByRole("textbox");
-      fireEvent.change(nameInput, { target: { value: newName } });
-      fireEvent.change(surnameInput, { target: { value: newSurname } });
-      // submit form
-      screen.getByText(i18n.t(ActionButton.Save) as string).click();
-      await waitFor(() =>
-        expect(mockDispatch).toHaveBeenCalledWith(
-          mockUpdateCustomerImplementation({
-            ...saul,
-            name: newName,
-            surname: newSurname,
-          })
-        )
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "CustomerFormDialog",
+          props: { customer: saul },
+        })
       );
     });
   });

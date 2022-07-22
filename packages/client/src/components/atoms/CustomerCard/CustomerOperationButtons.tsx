@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 
 import CardActions from "@mui/material/CardActions";
@@ -7,49 +7,38 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { Customer } from "@eisbuk/shared";
-
 import { ActionButtonProps } from "./types";
 
-import CustomerForm from "@/components/customers/CustomerForm";
-
-import { updateCustomer } from "@/store/actions/customerOperations";
+import { openModal } from "@/features/modal/actions";
 
 import {
   __customerDeleteId__,
   __customerEditId__,
 } from "./__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
 
 /**
  * Action buttons for customer operations, rendered as icon buttons (without text)
  */
 const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
   customer,
-  onClose,
   className,
 }) => {
   const dispatch = useDispatch();
 
-  // delete customer flow
   const handleDelete = () => {
     dispatch(openModal({ component: "DeleteCustomerDialog", props: customer }));
   };
 
-  // edit customer flow
-  const [editCustomer, setEditCustomer] = useState(false);
-  const openCustomerForm = () => setEditCustomer(true);
-  const closeCustomerForm = () => setEditCustomer(false);
-  const handleSubmit = (customer: Customer) => {
-    onClose();
-    dispatch(updateCustomer(customer));
-  };
+  const handleEditCustoer = () =>
+    dispatch(
+      openModal({ component: "CustomerFormDialog", props: { customer } })
+    );
 
   return (
     <CardActions {...{ className }}>
       <IconButton
         aria-label="edit"
-        onClick={openCustomerForm}
+        onClick={handleEditCustoer}
         data-testid={__customerEditId__}
         size="large"
       >
@@ -63,13 +52,6 @@ const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
       >
         <DeleteIcon />
       </IconButton>
-
-      <CustomerForm
-        updateCustomer={handleSubmit}
-        open={editCustomer}
-        customer={customer!}
-        onClose={closeCustomerForm}
-      />
     </CardActions>
   );
 };

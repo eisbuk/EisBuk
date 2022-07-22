@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import Fab from "@mui/material/Fab";
@@ -19,15 +19,14 @@ import {
   NavigationLabel,
 } from "@eisbuk/translations";
 
-import CustomerForm from "@/components/customers/CustomerForm";
 import CustomerGrid from "@/components/atoms/CustomerGrid";
-
-import { updateCustomer } from "@/store/actions/customerOperations";
 
 import { getCustomersList } from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+
+import { openModal } from "@/features/modal/actions";
 
 import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
@@ -42,14 +41,21 @@ const CustomersPage: React.FC = () => {
   useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList(true));
-  const subscriptionNumber = getNewSubscriptionNumber(customers);
-
-  const [addAthleteDialog, setAddAthleteDialog] = useState(false);
 
   useFirestoreSubscribe([OrgSubCollection.Customers]);
 
-  const toggleAddAthleteDialog = () =>
-    setAddAthleteDialog(addAthleteDialog ? false : true);
+  const handleAddAthlete = () => {
+    // Get next subscription number to start the customer form
+    // it can still be updated in the form if needed
+    const subscriptionNumber = getNewSubscriptionNumber(customers);
+
+    dispatch(
+      openModal({
+        component: "CustomerFormDialog",
+        props: { customer: { subscriptionNumber } },
+      })
+    );
+  };
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
@@ -66,16 +72,10 @@ const CustomersPage: React.FC = () => {
           color="primary"
           aria-label={t(ActionButton.AddAthlete)}
           className={classes.fab}
-          onClick={toggleAddAthleteDialog}
+          onClick={handleAddAthlete}
         >
           <AddIcon />
         </Fab>
-        <CustomerForm
-          open={addAthleteDialog}
-          onClose={toggleAddAthleteDialog}
-          customer={{ subscriptionNumber }}
-          updateCustomer={(customer) => dispatch(updateCustomer(customer))}
-        />
       </Grid>
     </Layout>
   );
