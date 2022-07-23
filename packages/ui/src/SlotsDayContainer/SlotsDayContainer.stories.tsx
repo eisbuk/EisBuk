@@ -7,6 +7,7 @@ import { PlusCircle, Copy, ClipboardList } from "@eisbuk/svg";
 import SlotsDayContainer from "./SlotsDayContainer";
 import IntervalCard from "../IntervalCard";
 import Button from "../Button";
+import { DateTime } from "luxon";
 
 export default {
   title: "Slots Day Container",
@@ -81,8 +82,23 @@ const additionalContent = (
 
 export const WithButtons = (): JSX.Element => (
   <div className="content-container">
-    <SlotsDayContainer {...{ date, additionalContent }}>
-      <div className="content-container h-80 w-full bg-gray-100 rounded-md border-gray-200" />
-    </SlotsDayContainer>
+    <SlotsDayContainer {...{ date, additionalContent }} />
+  </div>
+);
+
+export const MultipleDays = (): JSX.Element => (
+  <div className="content-container">
+    {Array(7)
+      .fill(null)
+      .map((_, i) => (
+        <SlotsDayContainer
+          {...{
+            date: DateTime.fromISO(date).plus({ days: i }).toISODate(),
+            additionalContent,
+          }}
+        >
+          <div className="content-container h-80 w-full bg-gray-100 rounded-md border-gray-200" />
+        </SlotsDayContainer>
+      ))}
   </div>
 );
