@@ -14,6 +14,8 @@ import Users from "./assets/users.svg";
 import ClipboardList from "./assets/clipboard-list.svg";
 import DocumentDuplicate from "./assets/document-duplicate.svg";
 import Printer from "./assets/printer.svg";
+import Copy from "./assets/copy.svg";
+import PlusCircle from "./assets/plus-circle.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -37,4 +39,6 @@ export {
   ClipboardList,
   DocumentDuplicate,
   Printer,
+  Copy,
+  PlusCircle,
 };
