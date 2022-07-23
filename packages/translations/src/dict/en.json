@@ -2,7 +2,9 @@
   "NavigationLabel": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Bookings": "Bookings"
+    "Bookings": "Bookings",
+    "OrganizationSettings": "Settings",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Book Ice",
@@ -233,7 +235,8 @@
     "CopySlots": "Copy slots from",
     "CopiedSlotsBadge": "Copied slots on",
     "PasteSlots": "Paste copied slots on",
-    "CreateSlots": "Create new slots on"
+    "CreateSlots": "Create new slots on",
+    "EnableEdit": "Enable Edit"
   },
 
   "SlotFormAria": {

@@ -148,7 +148,8 @@ describe("add athlete", () => {
     cy.visit(PrivateRoutes.Athletes);
     // We need to wait for athletes to be loaded: if we click the "Add athlete"
     // button too early we'll get a default value of 1
-    cy.contains("Saul Goodman"); // I will only speak in the presence of my lawyer!
+    cy.contains("Saul"); // I will only speak in the presence of my lawyer!
+    cy.contains("Goodman");
     cy.getAttrWith("data-testid", "add-athlete").click();
     cy.getAttrWith("name", "subscriptionNumber").should("have.value", "42");
   });

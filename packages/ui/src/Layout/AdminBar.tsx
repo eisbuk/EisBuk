@@ -1,5 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+
+import { AdminAria, useTranslation } from "@eisbuk/translations";
+
 import Button from "../Button";
 import { LinkItem } from "./Layout";
 import MobileHamburgerMenu from "./MobileHamburgerMenu";
@@ -12,8 +15,12 @@ interface AdminBarProps {
 const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
   const { pathname: currentPath } = useLocation();
 
+  const { t } = useTranslation();
   return (
-    <div className={[className, "md:justify-end"].join(" ")}>
+    <div
+      aria-label={t(AdminAria.PageNav)}
+      className={[className, "md:justify-end"].join(" ")}
+    >
       <MobileHamburgerMenu adminLinks={adminLinks} />
       <div className={baseClasses.join(" ")}>
         {adminLinks.map(({ Icon, label, slug }, i) => {

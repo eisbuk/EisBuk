@@ -172,6 +172,7 @@ export interface CustomerBase {
   name: string;
   surname: string;
   category: Category;
+  photoURL?: string;
   deleted?: boolean;
   extendedDate?: string;
 }

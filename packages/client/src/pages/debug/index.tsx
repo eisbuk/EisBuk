@@ -1,5 +1,4 @@
 import React from "react";
-import { useSelector } from "react-redux";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -8,18 +7,13 @@ import {
 
 import { Button, ButtonColor, ButtonSize, Layout } from "@eisbuk/ui";
 
-import { NavigationLabel, useTranslation } from "@eisbuk/translations";
-
-import { Calendar } from "@eisbuk/svg";
-
-import { getIsAdmin } from "@/store/selectors/auth";
-
 import { CloudFunction } from "@/enums/functions";
-import { PrivateRoutes } from "@/enums/routes";
 
 import useTitle from "@/hooks/useTitle";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
+
+import { adminLinks } from "@/data/navigation";
 
 const auth = getAuth();
 
@@ -39,31 +33,10 @@ export const createAdminTestUsers = async (): Promise<void> => {
 };
 
 const DebugPage: React.FC = () => {
-  const isAdmin = useSelector(getIsAdmin);
-
-  const { t } = useTranslation();
-
-  const adminLinks = [
-    {
-      label: t(NavigationLabel.Attendance),
-      Icon: Calendar,
-      slug: PrivateRoutes.Root,
-    },
-    {
-      label: "Slots",
-      Icon: Calendar,
-      slug: PrivateRoutes.Slots,
-    },
-    {
-      label: t(NavigationLabel.Athletes),
-      Icon: Calendar,
-      slug: PrivateRoutes.Athletes,
-    },
-  ];
   useTitle("Debug");
 
   return (
-    <Layout adminLinks={adminLinks} isAdmin={isAdmin}>
+    <Layout adminLinks={adminLinks} isAdmin>
       <div className="content-container py-8">
         <div className="p-2">
           <Button

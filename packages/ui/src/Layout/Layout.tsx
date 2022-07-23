@@ -24,7 +24,7 @@ export interface LinkItem {
 const Layout: React.FC<LayoutProps> = ({
   Logo = EisbukLogo,
   additionalButtons,
-  user,
+  user = {},
   Notifications,
   isAdmin = false,
   children,

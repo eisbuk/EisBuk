@@ -38,6 +38,12 @@ const Button: React.FC<ButtonProps> = ({
     classes,
   ].join(" ");
 
+  const content = !children ? null : typeof children === "string" ? (
+    <span>{children}</span>
+  ) : (
+    children
+  );
+
   return React.createElement(as, { ...props, className, disabled }, [
     startAdornment && (
       <div key="start-adornment" className="h-5 shrink-0">
@@ -45,7 +51,7 @@ const Button: React.FC<ButtonProps> = ({
       </div>
     ),
 
-    <span>{children}</span>,
+    content,
 
     endAdornment && (
       <div key="end-adornment" className="h-5 shrink-0">
@@ -62,6 +68,8 @@ const baseClasses = [
   "flex",
   "items-center",
   "gap-2.5",
+  "select-none",
+  "tracking-wide",
 ];
 
 const sizeClassesLookup = {

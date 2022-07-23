@@ -11,7 +11,7 @@ const createSlotSpec = () => {
     cy.signIn();
     cy.visit(PrivateRoutes.Slots);
 
-    cy.getAttrWith("type", "checkbox").click();
+    cy.getAttrWith("aria-label", t(AdminAria.EnableEdit)).click();
     cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false)
       .eq(0)
       // we're doing force: true here since the button isn't visible

@@ -5,6 +5,8 @@ export enum NavigationLabel {
   Attendance = "NavigationLabel.Attendance",
   Athletes = "NavigationLabel.Athletes",
   Bookings = "NavigationLabel.Bookings",
+  OrganizationSettings = "NavigationLabel.OrganizationSettings",
+  Slots = "NavigationLabel.Slots",
 }
 export enum CustomerNavigationLabel {
   "book_ice" = "CustomerNavigation.BookIce",
@@ -261,6 +263,7 @@ export enum AdminAria {
   CopiedSlotsBadge = "AdminAria.CopiedSlotsBadge",
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
+  EnableEdit = "AdminAria.EnableEdit",
 }
 
 export enum SlotFormAria {
