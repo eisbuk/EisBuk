@@ -81,7 +81,7 @@ export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
   children,
   onClose = () => {},
 }) => (
-  <div className="fixed top-0 right-0 bottom-0 left-0 z-[999999]">
+  <div role="dialog" className="fixed top-0 right-0 bottom-0 left-0 z-[999999]">
     <div
       onClick={onClose}
       className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
