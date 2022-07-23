@@ -209,6 +209,8 @@ const useStyles = makeStyles((theme) =>
       padding: "0.75rem",
       borderRadius: 6,
       width: "100vw",
+      maxHeight: "90vh",
+      overflowY: "auto",
     },
     typeTitle: {
       letterSpacing: 1,

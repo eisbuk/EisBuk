@@ -65,7 +65,6 @@ const Modal: React.FC = () => {
           <Component
             key={`${component}-${i}`}
             {...(props as any)}
-            className="center-absolute"
             onClose={handleClose}
           />
         );
@@ -87,7 +86,17 @@ export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
       onClick={onClose}
       className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
     />
-    <div className="center-absolute">{children}</div>
+    {children instanceof Array ? (
+      // We need to split modal components if there are multiple in order to
+      // apply the "centered" styling on each
+      children.map((child) => (
+        <div className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl">
+          {child}
+        </div>
+      ))
+    ) : (
+      <div className="center-absolute">{children}</div>
+    )}
   </div>
 );
 
