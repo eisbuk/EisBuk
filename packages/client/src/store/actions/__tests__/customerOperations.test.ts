@@ -5,13 +5,7 @@
 import * as firestore from "@firebase/firestore";
 import { getDocs, collection, doc, getDoc } from "@firebase/firestore";
 
-import {
-  Customer,
-  Category,
-  SMSMessage,
-  OrgSubCollection,
-  EmailPayload,
-} from "@eisbuk/shared";
+import { Customer, Category } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
@@ -22,27 +16,21 @@ import { getNewStore } from "@/store/createStore";
 import * as getters from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
-import { Routes } from "@/enums/routes";
-import { SendBookingLinkMethod } from "@/enums/other";
-import { CloudFunction } from "@/enums/functions";
 
 import {
   deleteCustomer,
   extendBookingDate,
-  sendBookingsLink,
   updateCustomer,
 } from "../customerOperations";
 import * as appActions from "../appActions";
 
 import { getCustomersPath } from "@/utils/firestore";
-import * as firebaseUtils from "@/utils/firebase";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 /**
  * Mock `enqueueSnackbar` implementation for easier testing.
@@ -212,113 +200,6 @@ describe("customerOperations", () => {
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
     });
-  });
-
-  describe("sendBookingsLink", () => {
-    // bookings link we're using throughout
-    const bookingsLink = `https://test-hostname.com${Routes.CustomerArea}/${saul.secretKey}`;
-
-    // Create test store with the same state for all tests
-    const store = getNewStore();
-    store.dispatch(
-      updateLocalDocuments(OrgSubCollection.Customers, { [saul.id]: saul })
-    );
-    const { getState } = store;
-
-    // mocks we're using to test calling the right cloud function
-    const mockSendMail = jest.fn();
-    const mockSendSMS = jest.fn();
-    jest
-      .spyOn(firebaseUtils, "createCloudFunctionCaller")
-      .mockImplementation((func, payload) =>
-        func === CloudFunction.SendEmail
-          ? () => mockSendMail(payload)
-          : func === CloudFunction.SendSMS
-          ? () => mockSendSMS(payload)
-          : jest.fn()
-      );
-
-    testWithEmulator(
-      "should call a mail sending cloud function if method = 'email'",
-      async () => {
-        await sendBookingsLink({
-          customerId: saul.id,
-          method: SendBookingLinkMethod.Email,
-          bookingsLink,
-        })(mockDispatch, getState);
-        // check results
-        expect(mockSendMail).toHaveBeenCalledTimes(1);
-        const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
-
-        expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.message.subject).toBeDefined();
-        // we're not matching the complete html of message
-        // but are asserting that it contains important parts
-        expect(sentMail.message.html.includes(bookingsLink)).toBeTruthy();
-        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
-
-        // check for success notification
-        expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
-            message: i18n.t(NotificationMessage.EmailSent),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
-          })
-        );
-      }
-    );
-
-    testWithEmulator(
-      "should call an SMS sending cloud function if method = 'sms'",
-      async () => {
-        await sendBookingsLink({
-          customerId: saul.id,
-          method: SendBookingLinkMethod.SMS,
-          bookingsLink,
-        })(mockDispatch, getState);
-        // check results
-        expect(mockSendSMS).toHaveBeenCalledTimes(1);
-        const sentSMS = mockSendSMS.mock.calls[0][0] as SMSMessage;
-
-        expect(sentSMS.to).toEqual(saul.phone);
-        // we're not matching the complete html of message
-        // but are asserting that it contains important parts
-        expect(sentSMS.message.includes(bookingsLink)).toBeTruthy();
-        expect(sentSMS.message.includes(saul.name)).toBeTruthy();
-        // the sms should be clean, without markup
-        expect(sentSMS.message.includes("p>")).toBeFalsy();
-
-        // check for success notification
-        expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
-            message: i18n.t(NotificationMessage.SMSSent),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
-          })
-        );
-      }
-    );
-
-    testWithEmulator(
-      "should show error notification if function call unsuccessful",
-      async () => {
-        // intentionally cause error to test error handling
-        const getState = () => {
-          throw new Error();
-        };
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        await sendBookingsLink({
-          customerId: saul.id,
-          method: SendBookingLinkMethod.Email,
-          bookingsLink,
-        })(mockDispatch, getState);
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
-      }
-    );
   });
 
   describe("extendBookingDate", () => {

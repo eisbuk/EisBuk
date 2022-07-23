@@ -8,13 +8,8 @@ import Box from "@mui/material/Box";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
-import { SlotInterface, SlotInterval, fromISO } from "@eisbuk/shared";
-import i18n, {
-  useTranslation,
-  Prompt,
-  DateFormat,
-  CategoryLabel,
-} from "@eisbuk/translations";
+import { SlotInterface, SlotInterval } from "@eisbuk/shared";
+import i18n, { CategoryLabel } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -58,7 +53,6 @@ const SlotCard: React.FC<SlotCardProps> = ({
   ...slotData
 }) => {
   const classes = useStyles();
-  const { t } = useTranslation();
 
   const canClick = Boolean(onClick);
 
@@ -129,7 +123,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
                   color="textSecondary"
                   key={category}
                 >
-                  {t(CategoryLabel[category])}
+                  {i18n.t(CategoryLabel[category])}
                 </Typography>
               ))}
             </Box>
@@ -168,13 +162,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
               className={classes.actionButtons}
             >
               <EditSlotButton />
-              <DeleteButton
-                confirmDialog={createDeleteConfirmDialog({
-                  date: slotData.date,
-                  startTime,
-                  endTime,
-                })}
-              />
+              <DeleteButton />
             </SlotOperationButtons>
           )}
         </Box>
@@ -183,54 +171,6 @@ const SlotCard: React.FC<SlotCardProps> = ({
   );
 };
 // #endregion componentFunction
-
-// #region localUtils
-/**
- * Creates a confirm dialog for `DeleteButton` on slot.
- * Uses i18n translations of delete confirmation propmt and returns
- * everything as `{title, description}` object
- * @param date date of slot to delete
- * @returns `confirmDialog` object for `DeleteButton`
- */
-const createDeleteConfirmDialog = ({
-  date: isoDate,
-  startTime,
-  endTime,
-}: {
-  date: string;
-  startTime: string;
-  endTime: string;
-}) => {
-  // get luxon date (for i18n function)
-  const date = fromISO(isoDate);
-  // get delete prompt translation
-  const deletePrompt = i18n.t(Prompt.DeleteSlot);
-  // get date localization
-  const confirmDialogDate = i18n.t(DateFormat.DayMonth, {
-    date,
-  });
-  // get time span localization
-  const startTimeString = i18n.t(DateFormat.Time, {
-    date: fromISO(startTime),
-  });
-  const endTimeString = i18n.t(DateFormat.Time, {
-    date: fromISO(endTime),
-  });
-  const confirmDialogTimespan = `(${startTimeString}-${endTimeString})`;
-
-  // join title parts into one string
-  const title = [
-    deletePrompt,
-    confirmDialogDate,
-    confirmDialogTimespan,
-    "slot",
-  ].join(" ");
-
-  // get translated non-reversible-action message
-  const description = i18n.t(Prompt.NonReversible);
-  return { title, description };
-};
-// #endregion localUtils
 
 // #region styles
 const useStyles = makeStyles((theme) =>
@@ -357,7 +297,7 @@ const useStyles = makeStyles((theme) =>
       left: 0,
       top: 0,
       bottom: 0,
-      zIndex: 1000,
+      zIndex: 10,
     },
     rightOverlay: {
       position: "absolute",
@@ -365,7 +305,7 @@ const useStyles = makeStyles((theme) =>
       top: 0,
       right: 0,
       bottom: 0,
-      zIndex: 1000,
+      zIndex: 10,
     },
   })
 );

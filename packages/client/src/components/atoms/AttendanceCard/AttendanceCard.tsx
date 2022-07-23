@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { useDispatch } from "react-redux";
 
 import IconButton from "@mui/material/IconButton";
@@ -16,7 +16,6 @@ import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
 import { CustomerWithAttendance } from "@/types/components";
 
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
-import AddCustomersList from "./AddCustomers";
 
 import {
   markAbsence,
@@ -28,6 +27,7 @@ import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 import { ETheme } from "@/themes";
 
 import { __addCustomersButtonId__ } from "./__testData__/testIds";
+import { openModal } from "@/features/modal/actions";
 
 export interface Props extends SlotInterface {
   /**
@@ -50,14 +50,15 @@ export interface Props extends SlotInterface {
  * booked the slot and allows for manually adding customers who have not booked,
  * but have attended the slot for certain interval
  */
-const AttendanceCard: React.FC<Props> = ({
-  categories,
-  customers: attendedCustomers,
-  intervals,
-  type,
-  id: slotId,
-  allCustomers,
-}) => {
+const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
+  const {
+    categories,
+    customers: attendedCustomers,
+    intervals,
+    type,
+    id: slotId,
+  } = slot;
+
   const classes = useStyles();
   const dispatch = useDispatch();
 
@@ -93,12 +94,6 @@ const AttendanceCard: React.FC<Props> = ({
   );
 
   /**
-   * State we're using to control opening of customer list when adding customers who haven't booked,
-   * but have attended
-   */
-  const [addCustomers, setAddCustomers] = useState<boolean>(false);
-
-  /**
    * Filtered customers to show in add customers list.
    * We're filtering customers not belonging to slot's categories
    * and those already marked as attended
@@ -113,14 +108,17 @@ const AttendanceCard: React.FC<Props> = ({
     [attendedCustomers]
   );
 
-  /**
-   * Function we're passing down to add customers list to handle marking customers as attended
-   */
-  const handleAddCustomer = (customer: Customer) => {
-    const { id: customerId } = customer;
-    const attendedInterval = orderedIntervals[0];
-    // dispatch update to firestore
-    dispatch(markAttendance({ customerId, slotId, attendedInterval }));
+  const openAddCustomers = () => {
+    dispatch(
+      openModal({
+        component: "AddAttendedCustomersDialog",
+        props: {
+          ...slot,
+          customers: filteredCustomers,
+          defaultInterval: orderedIntervals[0],
+        },
+      })
+    );
   };
 
   const createAttendanceThunk = (payload: {
@@ -184,18 +182,12 @@ const AttendanceCard: React.FC<Props> = ({
       )}
       <IconButton
         className={classes.addCustomersButton}
-        onClick={() => setAddCustomers(true)}
+        onClick={openAddCustomers}
         data-testid={__addCustomersButtonId__}
         size="large"
       >
         <AddNew />
       </IconButton>
-      <AddCustomersList
-        open={addCustomers}
-        onClose={() => setAddCustomers(false)}
-        customers={filteredCustomers}
-        onAddCustomer={handleAddCustomer}
-      />
     </div>
   );
 };

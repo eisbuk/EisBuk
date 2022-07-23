@@ -3,16 +3,14 @@
  */
 
 import React from "react";
-import {
-  screen,
-  render,
-  waitForElementToBeRemoved,
-  cleanup,
-} from "@testing-library/react";
+import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
+
+import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
 import NewSlotButton from "../NewSlotButton";
+import { openModal } from "@/features/modal/actions";
 
 import {
   __newSlotButtonWrongContextError,
@@ -20,13 +18,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { ButtonContextType } from "@/enums/components";
-
-import {
-  __newSlotButtonId__,
-  __slotFormId__,
-  __cancelFormId__,
-} from "@/__testData__/testIds";
+import { __newSlotButtonId__ } from "@/__testData__/testIds";
 
 const mockDispatch = jest.fn();
 
@@ -45,7 +37,7 @@ describe("SlotOperationButtons", () => {
     // provided in order to render properly (as it's a requirement)
     const dummyDate = DateTime.fromISO("2021-03-01");
 
-    beforeEach(() => {
+    test("should open 'SlotForm' on click", () => {
       render(
         <SlotOperationButtons
           date={dummyDate}
@@ -54,23 +46,12 @@ describe("SlotOperationButtons", () => {
           <NewSlotButton />
         </SlotOperationButtons>
       );
-    });
-
-    test("should open 'SlotForm' on click", () => {
-      const formOnScreen = screen.queryByTestId(__slotFormId__);
-      // should not appear on screen at first
-      expect(formOnScreen).toEqual(null);
       screen.getByTestId(__newSlotButtonId__).click();
-      screen.getByTestId(__slotFormId__);
-    });
-
-    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
-      // open form
-      screen.getByTestId(__newSlotButtonId__).click();
-      // should close form
-      screen.getByTestId(__cancelFormId__).click();
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId(__slotFormId__)
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SlotForm",
+          props: { date: dummyDate.toISODate() },
+        })
       );
     });
   });

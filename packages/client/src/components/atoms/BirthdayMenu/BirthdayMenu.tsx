@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { CustomersByBirthday } from "@eisbuk/shared";
@@ -20,13 +21,16 @@ import {
 import BirthdayMenuItem from "./BirthdayMenuItem";
 
 import { __birthdayMenu__ } from "@/__testData__/testIds";
-interface Props {
+import { openModal } from "@/features/modal/actions";
+
+interface BirthdayMenuProps {
   customers: CustomersByBirthday[];
-  onClickShowAll: () => void;
 }
-const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
+
+const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
     useState<HTMLElement | null>(null);
@@ -36,8 +40,10 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
   const handleShowAll = () => {
-    onClickShowAll();
+    // Close the small popup (menu)
     setBirthdaysAnchorEl(null);
+    // Open the full birthday - customer list in modal
+    dispatch(openModal({ component: "BirthdayDialog", props: { customers } }));
   };
 
   const calculateTimeDiff = (now: DateTime) =>

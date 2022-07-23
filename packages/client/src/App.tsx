@@ -1,6 +1,7 @@
 import React from "react";
 import { SnackbarProvider } from "notistack";
 import { Provider as ReduxProvider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -26,24 +27,26 @@ const App: React.FC = () => {
   useConnectAuthToStore(getAuth(), store);
 
   return (
-    <ReduxProvider store={store}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={currentTheme}>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <SnackbarProvider maxSnack={3}>
-              <NotificationsProvider
-                timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
-              >
-                <Notifier />
-                <CssBaseline />
-                <AppContent />
-                <Modal />
-              </NotificationsProvider>
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </ReduxProvider>
+    <BrowserRouter>
+      <ReduxProvider store={store}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={currentTheme}>
+            <LocalizationProvider dateAdapter={DateAdapter}>
+              <SnackbarProvider maxSnack={3}>
+                <NotificationsProvider
+                  timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
+                >
+                  <Notifier />
+                  <CssBaseline />
+                  <AppContent />
+                  <Modal />
+                </NotificationsProvider>
+              </SnackbarProvider>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </ReduxProvider>
+    </BrowserRouter>
   );
 };
 

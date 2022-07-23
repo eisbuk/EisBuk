@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch, BrowserRouter } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
@@ -47,34 +47,28 @@ const AppContent: React.FC = () => {
   usePaginateFirestore();
 
   return (
-    <BrowserRouter>
-      <Switch>
-        <LoginRoute path={Routes.Login} component={LoginPage} />
-        <PrivateRoute
-          exact
-          path={PrivateRoutes.Root}
-          component={DashboardPage}
-        />
-        <PrivateRoute path={PrivateRoutes.Athletes} component={AthletesPage} />
-        <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
-        <PrivateRoute
-          path={Routes.AttendancePrintable}
-          component={AttendancePrintable}
-        />
-        <PrivateRoute
-          path={PrivateRoutes.AdminPreferences}
-          component={AdminPreferencesPage}
-        />
+    <Switch>
+      <LoginRoute path={Routes.Login} component={LoginPage} />
+      <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
+      <PrivateRoute path={PrivateRoutes.Athletes} component={AthletesPage} />
+      <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
+      <PrivateRoute
+        path={Routes.AttendancePrintable}
+        component={AttendancePrintable}
+      />
+      <PrivateRoute
+        path={PrivateRoutes.AdminPreferences}
+        component={AdminPreferencesPage}
+      />
 
-        <Route
-          path={`${Routes.CustomerArea}/:secretKey`}
-          component={CustomerAreaPage}
-        />
-        <Route path={Routes.Unauthorized} component={Unauthorized} exact />
-        <Route path={Routes.NotRegistered} component={NotRegistered} exact />
-        <Route path={Routes.Debug} component={DebugPage} />
-      </Switch>
-    </BrowserRouter>
+      <Route
+        path={`${Routes.CustomerArea}/:secretKey`}
+        component={CustomerAreaPage}
+      />
+      <Route path={Routes.Unauthorized} component={Unauthorized} exact />
+      <Route path={Routes.NotRegistered} component={NotRegistered} exact />
+      <Route path={Routes.Debug} component={DebugPage} />
+    </Switch>
   );
 };
 

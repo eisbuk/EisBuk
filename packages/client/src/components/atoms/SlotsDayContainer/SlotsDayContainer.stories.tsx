@@ -45,11 +45,6 @@ export const AdminWithSlots = (): JSX.Element => (
   </SlotsDayContainer>
 );
 
-const confirmDialog = {
-  title: "Test confirm dialog",
-  description: "This is a test confirm dialog description",
-};
-
 const additionalButtons = (
   <SlotOperationButtons
     contextType={ButtonContextType.Day}
@@ -59,7 +54,7 @@ const additionalButtons = (
     <NewSlotButton />
     <CopyButton />
     <PasteButton />
-    <DeleteButton {...{ confirmDialog }} />
+    <DeleteButton />
   </SlotOperationButtons>
 );
 

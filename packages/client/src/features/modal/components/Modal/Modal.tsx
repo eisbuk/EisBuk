@@ -57,11 +57,7 @@ const Modal: React.FC = () => {
   };
 
   const content = (
-    <div className="fixed top-0 right-0 bottom-0 left-0">
-      <div
-        onClick={handleClose}
-        className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
-      />
+    <ModalContainer onClose={handleClose}>
       {modals.map(({ component, props }, i) => {
         const Component = componentWhitelist[component];
 
@@ -69,17 +65,39 @@ const Modal: React.FC = () => {
           <Component
             key={`${component}-${i}`}
             {...(props as any)}
-            className="center-absolute"
             onClose={handleClose}
           />
         );
       })}
-    </div>
+    </ModalContainer>
   );
 
   // Render a modal element in a different div ('id="modal"') then the app one
   // using React portal
   return modalContainer && ReactDOM.createPortal(content, modalContainer);
 };
+
+export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
+  children,
+  onClose = () => {},
+}) => (
+  <div role="dialog" className="fixed top-0 right-0 bottom-0 left-0 z-[999999]">
+    <div
+      onClick={onClose}
+      className="absolute top-0 right-0 bottom-0 left-0 bg-gray-800/50"
+    />
+    {children instanceof Array ? (
+      // We need to split modal components if there are multiple in order to
+      // apply the "centered" styling on each
+      children.map((child) => (
+        <div className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl">
+          {child}
+        </div>
+      ))
+    ) : (
+      <div className="center-absolute">{children}</div>
+    )}
+  </div>
+);
 
 export default Modal;
