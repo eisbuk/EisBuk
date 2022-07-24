@@ -1,8 +1,6 @@
 import React, { createContext } from "react";
 import { DateTime } from "luxon";
 
-import Box from "@mui/material/Box";
-
 import { SlotInterface } from "@eisbuk/shared";
 
 import { ButtonContextType } from "@/enums/components";
@@ -60,11 +58,11 @@ const SlotOperationButtons: React.FC<Props> = ({
   contextType = ButtonContextType.Week,
   ...context
 }) => {
+  const baseClasses = ["flex", "items-center", "p-1", "gap-1"];
+
   return (
     <ButtonGroupContext.Provider value={{ contextType, ...context }}>
-      <Box display="flex" className={className}>
-        {children}
-      </Box>
+      <div className={[...baseClasses, className].join(" ")}>{children}</div>
     </ButtonGroupContext.Provider>
   );
 };
