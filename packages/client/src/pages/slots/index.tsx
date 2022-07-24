@@ -3,7 +3,13 @@ import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { OrgSubCollection, SlotInterface } from "@eisbuk/shared";
-import { Button, ButtonColor, CalendarNav, Layout } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  CalendarNav,
+  Layout,
+  SlotsDayContainer,
+} from "@eisbuk/ui";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -15,7 +21,6 @@ import SlotOperationButtons, {
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
-import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import SlotCard from "@/components/atoms/SlotCard";
 
 import { getAdminSlots } from "@/store/selectors/slots";
@@ -104,46 +109,44 @@ const SlotsPage: React.FC = () => {
         jump="week"
         additionalContent={extraButtons}
       />
+      <div className="content-container">
+        {daysToShow.map((dateISO) => {
+          const date = DateTime.fromISO(dateISO);
 
-      {daysToShow.map((dateISO) => {
-        const date = DateTime.fromISO(dateISO);
+          const additionalButtons = (
+            <SlotOperationButtons
+              contextType={ButtonContextType.Day}
+              slotsToCopy={{
+                day: Boolean(dayToPaste),
+              }}
+              {...{ date }}
+            >
+              <NewSlotButton />
+              <CopyButton />
+              <PasteButton />
+            </SlotOperationButtons>
+          );
 
-        const additionalButtons = (
-          <SlotOperationButtons
-            contextType={ButtonContextType.Day}
-            slotsToCopy={{
-              day: Boolean(dayToPaste),
-            }}
-            {...{ date }}
-          >
-            <NewSlotButton />
-            <CopyButton />
-            <PasteButton />
-          </SlotOperationButtons>
-        );
+          const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
+            (a, b) => {
+              const aTimeString = getSlotTimespan(a.intervals);
+              const bTimeString = getSlotTimespan(b.intervals);
+              return comparePeriods(aTimeString, bTimeString);
+            }
+          );
 
-        const slotsForDay = Object.values(slotsToShow[dateISO]).sort((a, b) => {
-          const aTimeString = getSlotTimespan(a.intervals);
-          const bTimeString = getSlotTimespan(b.intervals);
-          return comparePeriods(aTimeString, bTimeString);
-        });
-
-        return (
-          <SlotsDayContainer
-            key={date.toISO()}
-            {...{
-              date,
-              additionalButtons,
-            }}
-            showAdditionalButtons={canEdit}
-          >
-            {({ WrapElement }) => (
-              <>
+          return (
+            <SlotsDayContainer
+              key={date.toISO()}
+              date={date.toISODate()}
+              additionalContent={canEdit ? additionalButtons : undefined}
+            >
+              <div className="grid gap-4 grid-cols-2">
                 {slotsForDay.map((slot) => {
                   const selected = checkSelected(slot.id, weekToPaste);
 
                   return (
-                    <WrapElement key={slot.id}>
+                    <div className="col-span-2 md:col-span-1">
                       <SlotCard
                         {...{ ...slot, selected }}
                         onClick={
@@ -153,14 +156,14 @@ const SlotsPage: React.FC = () => {
                         }
                         enableEdit={canEdit}
                       />
-                    </WrapElement>
+                    </div>
                   );
                 })}
-              </>
-            )}
-          </SlotsDayContainer>
-        );
-      })}
+              </div>
+            </SlotsDayContainer>
+          );
+        })}
+      </div>
     </Layout>
   );
 };
