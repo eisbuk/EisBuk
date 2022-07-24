@@ -72,21 +72,21 @@ const SlotsPage: React.FC = () => {
   );
 
   const extraButtons = (
-    <SlotOperationButtons
-      className="h-8"
-      slotsToCopy={{ week: Boolean(weekToPaste) }}
-      contextType={ButtonContextType.Week}
-      {...{ date }}
-    >
+    <div className="flex items-center">
       {canEdit && (
-        <>
+        <SlotOperationButtons
+          className="mr-4"
+          slotsToCopy={{ week: Boolean(weekToPaste) }}
+          contextType={ButtonContextType.Week}
+          {...{ date }}
+        >
           {/* <DeleteButton /> */}
           <CopyButton />
           <PasteButton />
-        </>
+        </SlotOperationButtons>
       )}
       {toggleEditButton}
-    </SlotOperationButtons>
+    </div>
   );
 
   const canClick =
