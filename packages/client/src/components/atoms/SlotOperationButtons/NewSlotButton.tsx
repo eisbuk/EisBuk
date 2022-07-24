@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import IconButton from "@mui/material/IconButton";
-
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
@@ -12,6 +10,7 @@ import { ButtonContextType } from "@/enums/components";
 import { SlotButtonProps } from "@/types/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
+import SlotOperationButton from "./SlotOperationButton";
 
 import {
   __slotButtonNoContextError,
@@ -19,8 +18,9 @@ import {
   __newSlotButtonWrongContextError,
 } from "@/lib/errorMessages";
 
-import { __newSlotButtonId__ } from "@/__testData__/testIds";
 import { openModal } from "@/features/modal/actions";
+
+import { __newSlotButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to create a new slot. Opens up a blank SlotForm 'onClick' to
@@ -30,7 +30,7 @@ import { openModal } from "@/features/modal/actions";
  * - not within `SlotOperationButtons` context
  * - no value for `date` has been provided in the context (as it is needed for full functionality)
  */
-export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
+export const NewSlotButton: React.FC<SlotButtonProps> = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const { t } = useTranslation();
@@ -43,7 +43,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { contextType, date: luxonDate, iconSize } = buttonGroupContext;
+  const { contextType, date: luxonDate } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
@@ -72,16 +72,16 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
   };
 
   return (
-    <IconButton
-      size={size || iconSize}
+    <SlotOperationButton
       onClick={openForm}
       data-testid={__newSlotButtonId__}
       aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
         date: luxonDate,
       })}`}
+      // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
     >
       <AddCircleOutlineIcon />
-    </IconButton>
+    </SlotOperationButton>
   );
 };
 

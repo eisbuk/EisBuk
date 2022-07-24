@@ -1,8 +1,6 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import IconButton from "@mui/material/IconButton";
-
 import DeleteIcon from "@mui/icons-material/Delete";
 
 import { ButtonContextType } from "@/enums/components";
@@ -10,6 +8,7 @@ import { ButtonContextType } from "@/enums/components";
 import { SlotButtonProps } from "@/types/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
+import SlotOperationButton from "./SlotOperationButton";
 
 import {
   deleteSlotsDay,
@@ -36,7 +35,7 @@ import { openModal } from "@/features/modal/actions";
  * - under `contextType = "slot"` and no value for `slot` param has been provided within the context
  * - under `contextType = "day" | "week"` and no value for `date` has been provided within the context
  */
-export const DeleteButton: React.FC<SlotButtonProps> = ({ size }) => {
+export const DeleteButton: React.FC<SlotButtonProps> = () => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
@@ -48,7 +47,7 @@ export const DeleteButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { contextType, date, slot, iconSize } = buttonGroupContext;
+  const { contextType, date, slot } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if rendered within `contextType === "slot"` but no value was provided for `slot` within the context
@@ -87,15 +86,12 @@ export const DeleteButton: React.FC<SlotButtonProps> = ({ size }) => {
   };
 
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
-        onClick={handleDelete}
-        data-testid={__deleteButtonId__}
-      >
-        <DeleteIcon />
-      </IconButton>
-    </>
+    <SlotOperationButton
+      onClick={handleDelete}
+      data-testid={__deleteButtonId__}
+    >
+      <DeleteIcon />
+    </SlotOperationButton>
   );
 };
 
