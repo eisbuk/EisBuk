@@ -1,9 +1,8 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+import { PlusCircle } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -80,7 +79,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = () => {
       })}`}
       // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
     >
-      <AddCircleOutlineIcon />
+      <PlusCircle />
     </SlotOperationButton>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Trash } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -90,7 +90,7 @@ export const DeleteButton: React.FC<SlotButtonProps> = () => {
       onClick={handleDelete}
       data-testid={__deleteButtonId__}
     >
-      <DeleteIcon />
+      <Trash />
     </SlotOperationButton>
   );
 };

@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import CreateIcon from "@mui/icons-material/Create";
+import { Pencil } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -68,7 +68,7 @@ export const EditSlotButton: React.FC<SlotButtonProps> = () => {
 
   return (
     <SlotOperationButton onClick={openForm} data-testid={__editSlotButtonId__}>
-      <CreateIcon />
+      <Pencil />
     </SlotOperationButton>
   );
 };

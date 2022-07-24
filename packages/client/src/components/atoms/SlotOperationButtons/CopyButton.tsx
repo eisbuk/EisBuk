@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 
 import Badge from "@mui/material/Badge";
 
-import FileCopyIcon from "@mui/icons-material/FileCopy";
+import { Copy } from "@eisbuk/svg";
 
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
@@ -87,23 +87,23 @@ export const CopyButton: React.FC<SlotButtonProps> = () => {
   const displayBadge = slotsToCopy && slotsToCopy[contextType!] && isCopiedDay;
 
   return (
-    <SlotOperationButton
-      onClick={onCopy}
-      data-testid={__copyButtonId__}
-      aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
-      // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
+    <Badge
+      aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
+        date,
+      })}`}
+      color="secondary"
+      variant="dot"
+      invisible={!displayBadge}
     >
-      <Badge
-        aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
-          date,
-        })}`}
-        color="secondary"
-        variant="dot"
-        invisible={!displayBadge}
+      <SlotOperationButton
+        onClick={onCopy}
+        data-testid={__copyButtonId__}
+        aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
+        // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
       >
-        <FileCopyIcon />
-      </Badge>
-    </SlotOperationButton>
+        <Copy />
+      </SlotOperationButton>
+    </Badge>
   );
 };
 

@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import AssignmentIcon from "@mui/icons-material/Assignment";
-
+import { ClipboardList } from "@eisbuk/svg";
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
@@ -80,7 +79,7 @@ export const PasteButton: React.FC<SlotButtonProps> = () => {
       })}`}
       // aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
     >
-      <AssignmentIcon />
+      <ClipboardList />
     </SlotOperationButton>
   );
 };
