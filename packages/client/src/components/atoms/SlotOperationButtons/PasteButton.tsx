@@ -6,8 +6,6 @@ import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
 import SlotOperationButton from "./SlotOperationButton";
 
@@ -31,7 +29,7 @@ import { __pasteButtonId__ } from "@/__testData__/testIds";
  * - trying to render within `contextType = "slot"` as it makes no sence to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
-export const PasteButton: React.FC<SlotButtonProps> = () => {
+export const PasteButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const { t } = useTranslation();

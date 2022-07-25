@@ -32,10 +32,6 @@ type ContextParams = Partial<{
     [ButtonContextType.Day]: boolean;
     [ButtonContextType.Week]: boolean;
   }>;
-  /**
-   * Material-UI `size` property, passed to all icons within context
-   */
-  iconSize: "small" | "medium";
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(

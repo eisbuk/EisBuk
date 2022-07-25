@@ -67,7 +67,7 @@ const center = {
 const extraButtons = (
   <SlotOperationButtons {...extraButtonProps}>
     <CopyButton />
-    <PasteButton size="medium" />
+    <PasteButton />
     <DeleteButton />
   </SlotOperationButtons>
 );

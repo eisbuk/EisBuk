@@ -5,8 +5,6 @@ import { Trash } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
 import SlotOperationButton from "./SlotOperationButton";
 
@@ -35,7 +33,7 @@ import { openModal } from "@/features/modal/actions";
  * - under `contextType = "slot"` and no value for `slot` param has been provided within the context
  * - under `contextType = "day" | "week"` and no value for `date` has been provided within the context
  */
-export const DeleteButton: React.FC<SlotButtonProps> = () => {
+export const DeleteButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);

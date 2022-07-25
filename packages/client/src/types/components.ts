@@ -19,20 +19,6 @@ export type SvgComponent = OverridableComponent<SvgIconTypeMap<unknown, "svg">>;
 
 // #endregion svg
 
-// #region SlotOperationButtons
-
-export interface SlotButtonProps {
-  /**
-   * Material-UI size prop.
-   * Can be read from context or set explicitly for each button.
-   * Explicitly set takes presedance over value from context,
-   * if none provided fallsback to `medium`
-   */
-  size?: "small" | "medium";
-}
-
-// #endregion SlotOperationButtons
-
 // #region attendanceCard
 export interface CustomerWithAttendance extends Customer {
   bookedInterval: string | null;

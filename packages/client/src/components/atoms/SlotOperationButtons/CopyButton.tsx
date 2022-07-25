@@ -10,8 +10,6 @@ import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
 import SlotOperationButton from "./SlotOperationButton";
 
@@ -38,7 +36,7 @@ import { __copyButtonId__ } from "@/__testData__/testIds";
  * - under `contextType = "slot"` as this functionality is currently unsupported
  * - no value for `date` has been provided in the context (as it is needed in order to dispatch copy action to the store)
  */
-export const CopyButton: React.FC<SlotButtonProps> = () => {
+export const CopyButton: React.FC = () => {
   const dispatch = useDispatch();
   const dayInClipboard = useSelector(getDayFromClipboard) || {};
 

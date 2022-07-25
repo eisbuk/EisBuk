@@ -6,8 +6,6 @@ import { PlusCircle } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
 import SlotOperationButton from "./SlotOperationButton";
 
@@ -29,7 +27,7 @@ import { __newSlotButtonId__ } from "@/__testData__/testIds";
  * - not within `SlotOperationButtons` context
  * - no value for `date` has been provided in the context (as it is needed for full functionality)
  */
-export const NewSlotButton: React.FC<SlotButtonProps> = () => {
+export const NewSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const { t } = useTranslation();

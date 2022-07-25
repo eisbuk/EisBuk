@@ -5,8 +5,6 @@ import { Pencil } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import SlotOperationButton from "./SlotOperationButton";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
@@ -29,7 +27,7 @@ import { __editSlotButtonId__ } from "@/__testData__/testIds";
  * - not within `contextType = "slot"` as it's functionality handles only this scenario
  * - no value for `slot` has been provided within the context (as it is needed for full functionality)
  */
-export const EditSlotButton: React.FC<SlotButtonProps> = () => {
+export const EditSlotButton: React.FC = () => {
   const dispatch = useDispatch();
   const buttonGroupContext = useContext(ButtonGroupContext);
 
