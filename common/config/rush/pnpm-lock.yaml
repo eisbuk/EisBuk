@@ -94,7 +94,6 @@ importers:
       mocha: ^8.2.1
       mochawesome: ^7.0.1
       moment: ^2.29.2
-      notistack: ^2.0.3
       nyc: ^15.1.0
       p-retry: ^4.6.1
       postcss: ~8.4.13
@@ -155,7 +154,6 @@ importers:
       lodash: 4.17.21
       luxon: 2.4.0
       moment: 2.29.4
-      notistack: 2.0.5_cb0b30d11cbaa49d8e61fddcb989b1f8
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
       react-redux: 7.2.8_react-dom@16.14.0+react@16.14.0
@@ -16687,29 +16685,6 @@ packages:
   /normalize-url/4.5.1:
     resolution: {integrity: sha512-9UZCFRHQdNrfTpGg8+1INIg93B6zE0aXMVFkw1WFwvO4SlZywU6aLg5Of0Ap/PgcbSw4LNxvMWXMeugwMCX0AA==}
     engines: {node: '>=8'}
-
-  /notistack/2.0.5_cb0b30d11cbaa49d8e61fddcb989b1f8:
-    resolution: {integrity: sha512-Ig2T1Muqkc1PaSQcEDrK7diKv6cBxw02Iq6uv074ySfgq524TV5lK41diAb6OSsaiWfp3aRt+T3+0MF8m2EcJQ==}
-    peerDependencies:
-      '@emotion/react': ^11.4.1
-      '@emotion/styled': ^11.3.0
-      '@mui/material': ^5.0.0
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@emotion/react':
-        optional: true
-      '@emotion/styled':
-        optional: true
-    dependencies:
-      '@emotion/react': 11.9.3_93e890117d1d14b2f21af3ce9ae02114
-      '@emotion/styled': 11.9.3_bd1bcfaf247d667d161153316e7fd11a
-      '@mui/material': 5.8.7_9512edffdf7ff56b7c98835563f15b4d
-      clsx: 1.2.1
-      hoist-non-react-statics: 3.3.2
-      react: 16.14.0
-      react-dom: 16.14.0_react@16.14.0
-    dev: false
 
   /npm-run-path/2.0.2:
     resolution: {integrity: sha512-lJxZYlT4DW/bRUtFh1MQIWqmLwQfAxnqWG4HhEdjMlkrJYnJn0Jrr2u3mgxqaWsdiBc76TYkTG/mhrnYTuzfHw==}
