@@ -8,10 +8,7 @@ import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 
-import {
-  enqueueNotification,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getOrganization } from "@/lib/getters";
 import { createCloudFunctionCaller } from "@/utils/firebase";
@@ -118,16 +115,17 @@ export const sendBookingsLink: SendBookingsLink =
 
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: successMessage,
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Success,
+        })
+      );
     }
   };
 
