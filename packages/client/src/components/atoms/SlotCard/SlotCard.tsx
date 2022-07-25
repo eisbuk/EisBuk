@@ -158,7 +158,6 @@ const SlotCard: React.FC<SlotCardProps> = ({
             <SlotOperationButtons
               contextType={ButtonContextType.Slot}
               slot={slotData}
-              iconSize="small"
               className={classes.actionButtons}
             >
               <EditSlotButton />

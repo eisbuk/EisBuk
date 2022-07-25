@@ -2,18 +2,16 @@ import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DateTime } from "luxon";
 
-import IconButton from "@mui/material/IconButton";
 import Badge from "@mui/material/Badge";
 
-import FileCopyIcon from "@mui/icons-material/FileCopy";
+import { Copy } from "@eisbuk/svg";
 
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
+import SlotOperationButton from "./SlotOperationButton";
 
 import { copySlotsDay, copySlotsWeek } from "@/store/actions/copyPaste";
 import { getDayFromClipboard } from "@/store/selectors/copyPaste";
@@ -38,7 +36,7 @@ import { __copyButtonId__ } from "@/__testData__/testIds";
  * - under `contextType = "slot"` as this functionality is currently unsupported
  * - no value for `date` has been provided in the context (as it is needed in order to dispatch copy action to the store)
  */
-export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
+export const CopyButton: React.FC = () => {
   const dispatch = useDispatch();
   const dayInClipboard = useSelector(getDayFromClipboard) || {};
 
@@ -53,7 +51,7 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { date, contextType, slotsToCopy, iconSize } = buttonGroupContext;
+  const { date, contextType, slotsToCopy } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -87,26 +85,23 @@ export const CopyButton: React.FC<SlotButtonProps> = ({ size }) => {
   const displayBadge = slotsToCopy && slotsToCopy[contextType!] && isCopiedDay;
 
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
+    <Badge
+      aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
+        date,
+      })}`}
+      color="secondary"
+      variant="dot"
+      invisible={!displayBadge}
+    >
+      <SlotOperationButton
         onClick={onCopy}
         data-testid={__copyButtonId__}
         aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
         // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
       >
-        <Badge
-          aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
-            date,
-          })}`}
-          color="secondary"
-          variant="dot"
-          invisible={!displayBadge}
-        >
-          <FileCopyIcon />
-        </Badge>
-      </IconButton>
-    </>
+        <Copy />
+      </SlotOperationButton>
+    </Badge>
   );
 };
 

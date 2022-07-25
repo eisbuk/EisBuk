@@ -46,11 +46,7 @@ export const AdminWithSlots = (): JSX.Element => (
 );
 
 const additionalButtons = (
-  <SlotOperationButtons
-    contextType={ButtonContextType.Day}
-    date={testDate}
-    iconSize="small"
-  >
+  <SlotOperationButtons contextType={ButtonContextType.Day} date={testDate}>
     <NewSlotButton />
     <CopyButton />
     <PasteButton />
