@@ -22,6 +22,7 @@ import SlotOperationButtons, {
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
 import SlotCard from "@/components/atoms/SlotCard";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -102,7 +103,11 @@ const SlotsPage: React.FC = () => {
     };
 
   return (
-    <Layout isAdmin adminLinks={adminLinks}>
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+    >
       <CalendarNav
         date={currentDate}
         onChange={(date) => dispatch(changeCalendarDate(date))}

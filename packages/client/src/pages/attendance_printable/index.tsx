@@ -11,6 +11,7 @@ import { AttendanceSortBy } from "@/enums/other";
 import AttendanceSheet, {
   AttendanceSheetSlot,
 } from "@/components/atoms/AttendanceSheet";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
@@ -59,7 +60,11 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <Layout isAdmin adminLinks={adminLinks}>
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+    >
       <CalendarNav
         className="print:hidden"
         onChange={(date) => dispatch(changeCalendarDate(date))}

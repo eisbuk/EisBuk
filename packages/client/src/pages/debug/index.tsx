@@ -9,6 +9,8 @@ import { Button, ButtonColor, ButtonSize, Layout } from "@eisbuk/ui";
 
 import { CloudFunction } from "@/enums/functions";
 
+import { NotificationsContainer } from "@/features/notifications/components";
+
 import useTitle from "@/hooks/useTitle";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
@@ -36,7 +38,11 @@ const DebugPage: React.FC = () => {
   useTitle("Debug");
 
   return (
-    <Layout adminLinks={adminLinks} isAdmin>
+    <Layout
+      adminLinks={adminLinks}
+      isAdmin
+      Notifications={NotificationsContainer}
+    >
       <div className="content-container py-8">
         <div className="p-2">
           <Button

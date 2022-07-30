@@ -12,6 +12,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { OrgSubCollection } from "@eisbuk/shared";
 
 import AttendanceCard from "@/components/atoms/AttendanceCard";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCustomersList } from "@/store/selectors/customers";
@@ -46,7 +47,11 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <Layout isAdmin adminLinks={adminLinks}>
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+    >
       <CalendarNav
         date={currentDate}
         onChange={(date) => dispatch(changeCalendarDate(date))}
