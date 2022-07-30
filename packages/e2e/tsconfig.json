@@ -12,5 +12,5 @@
     "declaration": false
   },
   "exclude": ["node_modules", ".eslintrc.js"],
-  "include": ["**/*.ts", "vite.config.ts"]
+  "include": ["**/*.ts", "vite.config.ts", "cypress.config.ts"]
 }
