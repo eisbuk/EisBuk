@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
-import { SnackbarKey, TransitionCloseHandler } from "notistack";
 import { Dispatch } from "redux";
 
 import { Unsubscribe, DocumentData } from "@firebase/firestore";
@@ -25,39 +24,19 @@ import {
 import { ModalState } from "@/features/modal/types";
 import { NotificationsState } from "@/features/notifications/types";
 
-import { Action, NotifVariant } from "@/enums/store";
+import { Action } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
 
 // #region app
 /**
- * Notification interface used to enqueue notification snackbar
- */
-export interface Notification {
-  key: SnackbarKey;
-  message: string;
-  closeButton?: boolean;
-  options?: {
-    variant?: NotifVariant;
-    onClose?: TransitionCloseHandler;
-  };
-  dismissed?: boolean;
-}
-/**
  * Whitelisted actions for app reducer
  */
-export type AppAction =
-  | Action.EnqueueNotification
-  | Action.RemoveNotification
-  | Action.CloseSnackbar
-  | Action.ChangeDay;
+export type AppAction = Action.ChangeDay;
 
 /**
  * Record of payloads for each of the app reducer actions
  */
 interface AppActionPayload {
-  [Action.EnqueueNotification]: Notification;
-  [Action.RemoveNotification]: SnackbarKey;
-  [Action.CloseSnackbar]?: SnackbarKey;
   [Action.ChangeDay]: DateTime;
 }
 /**
