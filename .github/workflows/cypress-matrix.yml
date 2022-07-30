@@ -52,14 +52,14 @@ jobs:
     - name: Build app
       run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
     - name: Cypress run
-      uses: cypress-io/github-action@v2
+      uses: cypress-io/github-action@v4
       with:
         start: emulators-start
         install: false
         working-directory: packages/e2e
         wait-on: http://localhost:8080, http://localhost:5000
         record: false
-        config-file: cypress-ci.json
+        config-file: cypress-ci.config.ts
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
