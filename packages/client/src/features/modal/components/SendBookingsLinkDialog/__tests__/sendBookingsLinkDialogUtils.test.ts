@@ -5,11 +5,11 @@ import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 import { getNewStore } from "@/store/createStore";
 
 import { SendBookingLinkMethod } from "@/enums/other";
-import { Action, NotifVariant } from "@/enums/store";
+import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 import { CloudFunction } from "@/enums/functions";
 
-import * as appActions from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "../utils";
 
@@ -55,6 +55,10 @@ jest.mock("@/utils/firebase", () => ({
 // #endregion sendBookingsLinkSetup
 
 describe("Send bookings link dialog utils", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
   describe("getDialogPrompt", () =>
     runGetDialogTableTests([
       {
@@ -98,30 +102,6 @@ describe("Send bookings link dialog utils", () => {
     ]));
 
   describe("sendBookingsLink", () => {
-    /** The following @TEMP until we migrate the notifications logic the a new one */
-    // #region veryTEMP
-    /**
-     * Mock `enqueueSnackbar` implementation for easier testing.
-     * Here we're using the same implmentation as the original function (action creator),
-     * only omitting the notification key (as this is simpler)
-     */
-    const mockEnqueueSnackbar = ({
-      // we're omitting the key as it is, in most cases, signed with date and random number
-      // and this is easier than mocking `Date` object to always return the same value
-      // and seeding random to given value
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      key,
-      ...notification
-    }: Parameters<typeof appActions.enqueueNotification>[0]) => ({
-      type: Action.EnqueueNotification,
-      payload: { ...notification },
-    });
-    // mock `enqueueSnackbar` in component
-    jest
-      .spyOn(appActions, "enqueueNotification")
-      .mockImplementation(mockEnqueueSnackbar as any);
-    // #region veryTEMP
-
     const mockDispatch = jest.fn();
 
     // bookings link we're using throughout
@@ -155,12 +135,9 @@ describe("Send bookings link dialog utils", () => {
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.EmailSent),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -188,12 +165,9 @@ describe("Send bookings link dialog utils", () => {
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
-          mockEnqueueSnackbar({
+          enqueueNotification({
             message: i18n.t(NotificationMessage.SMSSent),
-            closeButton: true,
-            options: {
-              variant: NotifVariant.Success,
-            },
+            variant: NotifVariant.Success,
           })
         );
       }
@@ -212,7 +186,12 @@ describe("Send bookings link dialog utils", () => {
           method: SendBookingLinkMethod.Email,
           bookingsLink,
         })(mockDispatch, getState);
-        expect(mockDispatch).toHaveBeenCalledWith(appActions.showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });

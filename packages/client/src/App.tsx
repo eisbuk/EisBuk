@@ -1,5 +1,4 @@
 import React from "react";
-import { SnackbarProvider } from "notistack";
 import { Provider as ReduxProvider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
@@ -13,7 +12,6 @@ import { store } from "@/store";
 
 import AppContent from "@/AppContent";
 
-import Notifier from "@/components/Notifier";
 import { Modal } from "@/features/modal/components";
 
 import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
@@ -32,16 +30,13 @@ const App: React.FC = () => {
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={currentTheme}>
             <LocalizationProvider dateAdapter={DateAdapter}>
-              <SnackbarProvider maxSnack={3}>
-                <NotificationsProvider
-                  timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
-                >
-                  <Notifier />
-                  <CssBaseline />
-                  <AppContent />
-                  <Modal />
-                </NotificationsProvider>
-              </SnackbarProvider>
+              <NotificationsProvider
+                timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
+              >
+                <CssBaseline />
+                <AppContent />
+                <Modal />
+              </NotificationsProvider>
             </LocalizationProvider>
           </ThemeProvider>
         </StyledEngineProvider>

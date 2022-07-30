@@ -16,10 +16,7 @@ import { FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
-import {
-  enqueueNotification,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getCustomersPath } from "@/utils/firestore";
 
@@ -51,18 +48,19 @@ export const updateCustomer =
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: `${customer.name} ${customer.surname} ${i18n.t(
             NotificationMessage.Updated
           )}`,
-          options: {
-            variant: NotifVariant.Success,
-          },
-          closeButton: true,
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -84,18 +82,19 @@ export const deleteCustomer =
 
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: `${customer.name} ${customer.surname} ${i18n.t(
             NotificationMessage.Removed
           )}`,
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -113,13 +112,15 @@ export const extendBookingDate =
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.BookingDateExtended),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };

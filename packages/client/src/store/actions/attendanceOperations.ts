@@ -6,12 +6,15 @@ import {
   SlotAttendnace,
   SlotInterface,
 } from "@eisbuk/shared";
+import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
-import { showErrSnackbar } from "./appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getAttendanceDocPath } from "@/utils/firestore";
 
@@ -68,7 +71,12 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
         { merge: true }
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -127,6 +135,11 @@ export const markAbsence: UpdateAttendance =
       // update month document with new values
       await setDoc(slotToUpdate, attendanceEntry);
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };

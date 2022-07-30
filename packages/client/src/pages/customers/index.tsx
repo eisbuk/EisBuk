@@ -20,6 +20,7 @@ import {
 } from "@eisbuk/translations";
 
 import CustomerGrid from "@/components/atoms/CustomerGrid";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getCustomersList } from "@/store/selectors/customers";
 
@@ -59,7 +60,11 @@ const CustomersPage: React.FC = () => {
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
-    <Layout isAdmin adminLinks={adminLinks}>
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+    >
       {/* {!isLoaded(customers) && <LinearProgress />} */}
       <Grid item xs={12}>
         {
