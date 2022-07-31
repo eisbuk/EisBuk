@@ -168,11 +168,13 @@ describe("Customer Card", () => {
 
   describe("Test bookings redirect button", () => {
     test("should redirect to 'bookings' route for a customer on bookings button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      const mockOnClose = jest.fn();
+      render(<CustomerCard onClose={mockOnClose} customer={saul} />);
       screen.getByTestId(__openBookingsId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`
       );
+      expect(mockOnClose).toHaveBeenCalled();
     });
   });
 
