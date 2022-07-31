@@ -37,7 +37,7 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
           {additionalContent}
         </div>
       </div>
-      <div className="flex flex-wrap items-end gap-6 min-h-[146px]">
+      <div className="p-1 flex flex-wrap items-end gap-6 min-h-[146px]">
         {children}
       </div>
     </div>
