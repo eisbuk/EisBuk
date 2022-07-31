@@ -60,7 +60,13 @@ describe("Customer Card", () => {
 
   describe("CustomerOperationButtons", () => {
     beforeEach(() => {
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={saul}
+        />
+      );
     });
 
     afterEach(() => {
@@ -88,7 +94,13 @@ describe("Customer Card", () => {
 
   describe("Test email button", () => {
     test("should open a 'SendBookingsLinkDialog' modal with method = \"email\" on email button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={saul}
+        />
+      );
       screen.getByTestId(__sendBookingsEmailId__).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         openModal({
@@ -103,6 +115,7 @@ describe("Customer Card", () => {
       const { secretKey, ...noSecretKeySaul } = saul;
       render(
         <CustomerCard
+          onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
         />
@@ -117,7 +130,13 @@ describe("Customer Card", () => {
     test("should disable the button if email is not provided", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { email, ...noEmailSaul } = saul;
-      render(<CustomerCard onClose={() => {}} customer={noEmailSaul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={noEmailSaul}
+        />
+      );
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
         "disabled",
         true
@@ -127,7 +146,13 @@ describe("Customer Card", () => {
 
   describe("Test SMS button", () => {
     test("should open a 'SendBookingsLinkDialog' modal with method = \"sms\" on sms button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={saul}
+        />
+      );
       screen.getByTestId(__sendBookingsSMSId__).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         openModal({
@@ -142,6 +167,7 @@ describe("Customer Card", () => {
       const { secretKey, ...noSecretKeySaul } = saul;
       render(
         <CustomerCard
+          onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
         />
@@ -157,7 +183,11 @@ describe("Customer Card", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { phone, ...noPhoneSaul } = saul;
       render(
-        <CustomerCard onClose={() => {}} customer={noPhoneSaul as Customer} />
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={noPhoneSaul as Customer}
+        />
       );
       expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(
         "disabled",
@@ -169,7 +199,13 @@ describe("Customer Card", () => {
   describe("Test bookings redirect button", () => {
     test("should redirect to 'bookings' route for a customer on bookings button click", () => {
       const mockOnClose = jest.fn();
-      render(<CustomerCard onClose={mockOnClose} customer={saul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={mockOnClose}
+          customer={saul}
+        />
+      );
       screen.getByTestId(__openBookingsId__).click();
       expect(mockHistoryPush).toHaveBeenCalledWith(
         `${Routes.CustomerArea}/${saul.secretKey}`
@@ -180,7 +216,13 @@ describe("Customer Card", () => {
 
   describe("Test booking extension button", () => {
     test("should open extend booking prompt on click 'extend booking date' button click", () => {
-      render(<CustomerCard onClose={() => {}} customer={saul} />);
+      render(
+        <CustomerCard
+          onCloseAll={() => {}}
+          onClose={() => {}}
+          customer={saul}
+        />
+      );
       screen
         .getByText(i18n.t(ActionButton.ExtendBookingDate) as string)
         .click();

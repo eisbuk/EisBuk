@@ -44,6 +44,7 @@ describe("SendBookingsLinkDialog", () => {
   test("should call onClose on cancel", () => {
     render(
       <SendBookingsLinkDialog
+        onCloseAll={() => {}}
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
@@ -56,6 +57,7 @@ describe("SendBookingsLinkDialog", () => {
   test("should call onClose on cancel", () => {
     render(
       <SendBookingsLinkDialog
+        onCloseAll={() => {}}
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
@@ -68,6 +70,7 @@ describe("SendBookingsLinkDialog", () => {
   test("should call 'sendBookingsLink' with 'email' method if method = \"email\" and close the modal", () => {
     render(
       <SendBookingsLinkDialog
+        onCloseAll={() => {}}
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
@@ -87,6 +90,7 @@ describe("SendBookingsLinkDialog", () => {
   test("should call 'sendBookingsLink' with 'sms' method if method = \"sms\" and close the modal", () => {
     render(
       <SendBookingsLinkDialog
+        onCloseAll={() => {}}
         {...saul}
         method={SendBookingLinkMethod.SMS}
         onClose={mockOnClose}

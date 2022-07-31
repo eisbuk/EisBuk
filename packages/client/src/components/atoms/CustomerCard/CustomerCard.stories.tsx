@@ -19,5 +19,5 @@ export default {
 } as ComponentMeta<typeof CustomerCard>;
 
 export const Default = (): JSX.Element => (
-  <CustomerCard customer={walt} onClose={(): void => {}} />
+  <CustomerCard customer={walt} onClose={() => {}} onCloseAll={() => {}} />
 );

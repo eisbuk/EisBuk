@@ -31,7 +31,13 @@ jest.mock("react-redux", () => ({
 
 describe("DeleteSlotDialog", () => {
   beforeEach(() => {
-    render(<DeleteSlotDialog {...baseSlot} onClose={mockOnClose} />);
+    render(
+      <DeleteSlotDialog
+        {...baseSlot}
+        onClose={mockOnClose}
+        onCloseAll={() => {}}
+      />
+    );
   });
 
   afterEach(() => {

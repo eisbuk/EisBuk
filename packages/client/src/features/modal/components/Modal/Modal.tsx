@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { componentWhitelist } from "@/features/modal/components";
 
-import { popModal } from "@/features/modal/actions";
+import { closeAllModals, popModal } from "@/features/modal/actions";
 import { getModal } from "@/features/modal/selectors";
 
 /**
@@ -55,6 +55,9 @@ const Modal: React.FC = () => {
   const handleClose = () => {
     dispatch(popModal);
   };
+  const handleCloseAll = () => {
+    dispatch(closeAllModals);
+  };
 
   const content = (
     <ModalContainer onClose={handleClose}>
@@ -66,6 +69,7 @@ const Modal: React.FC = () => {
             key={`${component}-${i}`}
             {...(props as any)}
             onClose={handleClose}
+            onCloseAll={handleCloseAll}
           />
         );
       })}

@@ -5,7 +5,7 @@ import { SlotInterface, SlotType } from "@eisbuk/shared";
 
 import { ModalPayload } from "../types";
 
-import { popModal, openModal } from "../actions";
+import { popModal, openModal, closeAllModals } from "../actions";
 
 import { getModal } from "../selectors";
 
@@ -49,8 +49,8 @@ describe("Modal store tests", () => {
   });
 
   describe("Close modal action", () => {
-    test("should set the store state to 'null' effectively removing the modal from the screen", () => {
-      // Test setup is the test above
+    test("should pop the latest modal from store state effectively removing the modal from the screen", () => {
+      // Setup
       const store = getNewStore();
       store.dispatch(openModal(modal1));
       store.dispatch(openModal(modal2));
@@ -61,6 +61,19 @@ describe("Modal store tests", () => {
       // Close the final modal
       store.dispatch(popModal);
       modalContent = getModal(store.getState());
+      expect(modalContent).toEqual([]);
+    });
+  });
+
+  describe("Close all modals action", () => {
+    test("should remove all modals from the state, removing any modal from the screen", () => {
+      // Setup
+      const store = getNewStore();
+      store.dispatch(openModal(modal1));
+      store.dispatch(openModal(modal2));
+      // Close the top-most modal
+      store.dispatch(closeAllModals);
+      const modalContent = getModal(store.getState());
       expect(modalContent).toEqual([]);
     });
   });

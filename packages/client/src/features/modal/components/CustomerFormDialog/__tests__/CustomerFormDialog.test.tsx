@@ -32,7 +32,13 @@ jest.mock("react-redux", () => ({
 
 describe("CustomerFormDialog", () => {
   beforeEach(() => {
-    render(<CustomerFormDialog onClose={mockOnClose} customer={saul} />);
+    render(
+      <CustomerFormDialog
+        onCloseAll={() => {}}
+        onClose={mockOnClose}
+        customer={saul}
+      />
+    );
   });
 
   afterEach(() => {

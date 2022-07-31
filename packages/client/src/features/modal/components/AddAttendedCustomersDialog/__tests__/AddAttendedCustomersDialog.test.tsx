@@ -42,6 +42,7 @@ describe("AddAttendedCustomersDialog", () => {
   test("should call onClose on 'x' button click", () => {
     render(
       <AddAttendedCustomersDialog
+        onCloseAll={() => {}}
         customers={[saul, walt]}
         onClose={mockOnClose}
         {...{ ...baseSlot, defaultInterval }}
@@ -54,6 +55,7 @@ describe("AddAttendedCustomersDialog", () => {
   test("should add customer as having attended a default interval of given slot on customer click", () => {
     render(
       <AddAttendedCustomersDialog
+        onCloseAll={() => {}}
         customers={[saul, walt]}
         onClose={mockOnClose}
         {...{ ...baseSlot, defaultInterval }}
@@ -76,6 +78,7 @@ describe("AddAttendedCustomersDialog", () => {
   test("should not render 'deleted' customers", () => {
     render(
       <AddAttendedCustomersDialog
+        onCloseAll={() => {}}
         customers={[{ ...saul, deleted: true }, walt]}
         onClose={mockOnClose}
         {...{ ...baseSlot, defaultInterval }}
@@ -90,6 +93,7 @@ describe("AddAttendedCustomersDialog", () => {
   test("should close the modal when last customer listed marked as attended", async () => {
     render(
       <AddAttendedCustomersDialog
+        onCloseAll={() => {}}
         customers={[{ ...saul, deleted: true }, walt]}
         onClose={mockOnClose}
         {...{ ...baseSlot, defaultInterval }}
