@@ -18,6 +18,9 @@ const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   onClose,
   className,
   method,
+  // remove 'onCloseAll' from 'customer'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onCloseAll,
   ...customer
 }) => {
   const dispatch = useDispatch();
