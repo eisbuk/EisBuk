@@ -31,6 +31,7 @@ import { openModal } from "@/features/modal/actions";
 const ActionButtons: React.FC<ActionButtonProps> = ({
   customer,
   className,
+  onClose,
 }) => {
   const { t } = useTranslation();
 
@@ -41,7 +42,10 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
 
   // redirect to customers `bookings` entry flow
   const bookingsRoute = `${Routes.CustomerArea}/${customer?.secretKey}`;
-  const redirectToBookings = () => history.push(bookingsRoute);
+  const redirectToBookings = () => {
+    history.push(bookingsRoute);
+    onClose();
+  };
 
   const openBookingsLinkModal = (method: SendBookingLinkMethod) => () => {
     dispatch(

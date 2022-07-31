@@ -75,7 +75,9 @@ const DashboardPage: React.FC = () => {
       <AttendanceSheet date={date}>
         {attendanceSlots.map(
           (slot) =>
-            slot.customers.length > 0 && <AttendanceSheetSlot {...slot} />
+            slot.customers.length > 0 && (
+              <AttendanceSheetSlot key={slot.id} {...slot} />
+            )
         )}
       </AttendanceSheet>
     </Layout>

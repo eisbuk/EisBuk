@@ -32,7 +32,13 @@ jest.mock("react-redux", () => ({
 
 describe("ExtendBookingDateDialog", () => {
   beforeEach(() => {
-    render(<ExtendBookingDateDialog {...saul} onClose={mockOnClose} />);
+    render(
+      <ExtendBookingDateDialog
+        {...saul}
+        onClose={mockOnClose}
+        onCloseAll={() => {}}
+      />
+    );
   });
 
   afterEach(() => {

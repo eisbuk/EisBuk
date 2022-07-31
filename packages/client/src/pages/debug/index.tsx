@@ -5,7 +5,13 @@ import {
   signInWithEmailAndPassword,
 } from "@firebase/auth";
 
-import { Button, ButtonColor, ButtonSize, Layout } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  ButtonProps,
+  ButtonSize,
+  Layout,
+} from "@eisbuk/ui";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -34,6 +40,18 @@ export const createAdminTestUsers = async (): Promise<void> => {
   }
 };
 
+const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
+  color = ButtonColor.Primary,
+  ...props
+}) => (
+  <Button
+    className="active:opacity-80"
+    {...props}
+    color={color}
+    size={ButtonSize.LG}
+  />
+);
+
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
@@ -45,69 +63,63 @@ const DebugPage: React.FC = () => {
     >
       <div className="content-container py-8">
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createAdminTestUsers}
             color={ButtonColor.Secondary}
-            size={ButtonSize.LG}
           >
             Create admin test users
-          </Button>
+          </DebugPageButton>
         </div>
 
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createCloudFunctionCaller(CloudFunction.CreateTestData, {
               numUsers: 10,
             })}
             color={ButtonColor.Primary}
-            size={ButtonSize.LG}
           >
             Create test users
-          </Button>
+          </DebugPageButton>
         </div>
 
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
             color={ButtonColor.Primary}
-            size={ButtonSize.LG}
           >
             Create test slots
-          </Button>
+          </DebugPageButton>
         </div>
 
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
             color={ButtonColor.Primary}
-            size={ButtonSize.LG}
           >
             Prune slots by day
-          </Button>
+          </DebugPageButton>
         </div>
 
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createCloudFunctionCaller(
               CloudFunction.DeleteOrphanedBookings
             )}
             color={ButtonColor.Primary}
-            size={ButtonSize.LG}
           >
             Delete orphaned bookings
-          </Button>
+          </DebugPageButton>
         </div>
 
         <div className="p-2">
-          <Button
+          <DebugPageButton
             onClick={createCloudFunctionCaller(
               CloudFunction.MigrateCategoriesToExplicitMinors
             )}
             color={ButtonColor.Primary}
-            size={ButtonSize.LG}
           >
             Migrate categories to explicit minors
-          </Button>
+          </DebugPageButton>
         </div>
       </div>
     </Layout>

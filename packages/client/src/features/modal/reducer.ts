@@ -18,6 +18,9 @@ const modalReducer: Reducer<ModalState, ModalReducerAction> = (
     case ModalAction.Close:
       return state.slice(0, -1);
 
+    case ModalAction.CloseAll:
+      return [];
+
     default:
       return state;
   }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { componentWhitelist } from "@/features/modal/components";
 
-import { popModal } from "@/features/modal/actions";
+import { closeAllModals, popModal } from "@/features/modal/actions";
 import { getModal } from "@/features/modal/selectors";
 
 /**
@@ -55,6 +55,9 @@ const Modal: React.FC = () => {
   const handleClose = () => {
     dispatch(popModal);
   };
+  const handleCloseAll = () => {
+    dispatch(closeAllModals);
+  };
 
   const content = (
     <ModalContainer onClose={handleClose}>
@@ -66,6 +69,7 @@ const Modal: React.FC = () => {
             key={`${component}-${i}`}
             {...(props as any)}
             onClose={handleClose}
+            onCloseAll={handleCloseAll}
           />
         );
       })}
@@ -90,7 +94,10 @@ export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
       // We need to split modal components if there are multiple in order to
       // apply the "centered" styling on each
       children.map((child) => (
-        <div className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl">
+        <div
+          key={child.key}
+          className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl"
+        >
           {child}
         </div>
       ))

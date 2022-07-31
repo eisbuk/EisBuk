@@ -77,7 +77,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
               : customer[property] || "-";
 
           return (
-            <>
+            <React.Fragment key={property}>
               <Typography
                 className={classes.property}
                 variant="h6"
@@ -87,7 +87,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
                 <span className={classes.value}>{value}</span>
               </Typography>
               <div className={classes.divider} />
-            </>
+            </React.Fragment>
           );
         })}
       </>

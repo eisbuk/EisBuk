@@ -18,3 +18,11 @@ export const openModal = (payload: ModalPayload): ModalReducerAction => ({
 export const popModal: ModalReducerAction = {
   type: ModalAction.Close,
 };
+
+/**
+ * This is a pure action object (not a function) dispatched
+ * to close an entire modal stack
+ */
+export const closeAllModals: ModalReducerAction = {
+  type: ModalAction.CloseAll,
+};
