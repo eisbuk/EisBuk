@@ -94,7 +94,10 @@ export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
       // We need to split modal components if there are multiple in order to
       // apply the "centered" styling on each
       children.map((child) => (
-        <div className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl">
+        <div
+          key={child.key}
+          className="center-absolute bg-white rounded-lg overflow-hidden shadow-2xl"
+        >
           {child}
         </div>
       ))

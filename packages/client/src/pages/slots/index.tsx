@@ -142,8 +142,8 @@ const SlotsPage: React.FC = () => {
 
           return (
             <SlotsDayContainer
-              key={date.toISO()}
-              date={date.toISODate()}
+              key={dateISO}
+              date={dateISO}
               additionalContent={canEdit ? additionalButtons : undefined}
             >
               <div className="grid gap-4 grid-cols-2">
@@ -151,7 +151,7 @@ const SlotsPage: React.FC = () => {
                   const selected = checkSelected(slot.id, weekToPaste);
 
                   return (
-                    <div className="col-span-2 md:col-span-1">
+                    <div key={slot.id} className="col-span-2 md:col-span-1">
                       <SlotCard
                         {...{ ...slot, selected }}
                         onClick={
