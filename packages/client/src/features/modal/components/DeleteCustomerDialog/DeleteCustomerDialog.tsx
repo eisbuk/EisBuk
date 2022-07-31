@@ -13,6 +13,7 @@ type DeleteCustomerProps = BaseModalProps & Customer;
 
 const DeleteCustomerDialog: React.FC<DeleteCustomerProps> = ({
   onClose,
+  onCloseAll,
   className,
   ...customer
 }) => {
@@ -20,7 +21,7 @@ const DeleteCustomerDialog: React.FC<DeleteCustomerProps> = ({
 
   const onConfirm = () => {
     dispatch(deleteCustomer(customer));
-    onClose();
+    onCloseAll();
   };
 
   const { name, surname } = customer;
