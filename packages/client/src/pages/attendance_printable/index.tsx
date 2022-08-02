@@ -24,6 +24,7 @@ import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,7 +42,9 @@ const DashboardPage: React.FC = () => {
 
   const date = useSelector(getCalendarDay);
 
-  const customersByBirthday = useSelector(getCustomersByBirthday(date.toISO()));
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
 
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />

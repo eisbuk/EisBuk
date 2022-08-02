@@ -35,9 +35,10 @@ const CustomerArea: React.FC = () => {
   useSecretKey();
 
   const isAdmin = useSelector(getIsAdmin);
-  const date = useSelector(getCalendarDay);
 
-  const customersByBirthday = useSelector(getCustomersByBirthday(date.toISO()));
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
 
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />

@@ -60,7 +60,7 @@ const SlotsPage: React.FC = () => {
   const dayToPaste = useSelector(getDayFromClipboard);
 
   const customersByBirthday = useSelector(
-    getCustomersByBirthday(currentDate.toISO())
+    getCustomersByBirthday(DateTime.now())
   );
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />

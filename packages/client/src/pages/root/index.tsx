@@ -26,6 +26,7 @@ import {
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,7 +43,7 @@ const DashboardPage: React.FC = () => {
   const attendanceCards = useSelector(getSlotsWithAttendance());
   const allCustomers = useSelector(getCustomersList(true));
   const customersByBirthday = useSelector(
-    getCustomersByBirthday(currentDate.toISO())
+    getCustomersByBirthday(DateTime.now())
   );
 
   const additionalAdminContent = (

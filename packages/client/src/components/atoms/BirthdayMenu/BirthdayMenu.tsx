@@ -75,7 +75,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
       >
         <Button
           onClick={handleBirthdaysClick}
-          className="h-8 w-8 !p-0.5 ml-2  hover:bg-black/10"
+          className="h-11 w-11 !p-2 ml-2  hover:bg-white/10"
         >
           <Cake />
         </Button>
@@ -125,7 +125,7 @@ const useStyles = makeStyles(() => ({
     fontSize: "20px",
     margin: "10px",
   },
-  pointerCursor: { cursor: "pointer" },
+  pointerCursor: { cursor: "normal", userSelect: "none" },
 
   badge: {
     "& .MuiBadge-anchorOriginTopRightRectangular": {

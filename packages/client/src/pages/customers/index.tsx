@@ -26,7 +26,6 @@ import {
   getCustomersByBirthday,
   getCustomersList,
 } from "@/store/selectors/customers";
-import { getCalendarDay } from "@/store/selectors/app";
 
 import useTitle from "@/hooks/useTitle";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
@@ -37,16 +36,15 @@ import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
 
-  const currentDate = useSelector(getCalendarDay);
-
   const customersByBirthday = useSelector(
-    getCustomersByBirthday(currentDate.toISO())
+    getCustomersByBirthday(DateTime.now())
   );
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />

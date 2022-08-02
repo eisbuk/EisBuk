@@ -26,13 +26,14 @@ import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
-import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
+import { getOrganizationSettings } from "@/store/selectors/app";
 import { getLocalAuth } from "@/store/selectors/auth";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { isEmpty } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const smsFields = [
   {
@@ -85,10 +86,8 @@ const OrganizationSettings: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
-  const currentDate = useSelector(getCalendarDay);
-
   const customersByBirthday = useSelector(
-    getCustomersByBirthday(currentDate.toISO())
+    getCustomersByBirthday(DateTime.now())
   );
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />

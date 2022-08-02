@@ -22,12 +22,12 @@ import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
 
-import { getCalendarDay } from "@/store/selectors/app";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const auth = getAuth();
 
@@ -61,9 +61,9 @@ const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
-  const date = useSelector(getCalendarDay);
-
-  const customersByBirthday = useSelector(getCustomersByBirthday(date.toISO()));
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
 
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />
