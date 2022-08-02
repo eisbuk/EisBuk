@@ -6,6 +6,14 @@ import {
   CustomerLabel,
   // TODO: add "edit" to ActionButton enums
 } from "@eisbuk/translations";
+import {
+  User,
+  Cake,
+  Mail,
+  Phone,
+  ClipboardList,
+  SheildCheck,
+} from "@eisbuk/svg";
 
 import Button, { ButtonSize } from "../../../Button";
 
@@ -75,30 +83,35 @@ const CustomerDetailsForm: React.FC<DisplayProps> = ({
             <TextDescription
               label={t(CustomerLabel.Name)}
               data={customer?.name}
+              Icon={<User />}
             />
           </div>
           <div className="col-span-3">
             <TextDescription
               label={t(CustomerLabel.Surname)}
               data={customer?.surname}
+              Icon={<User />}
             />
           </div>
           <div className="col-span-4">
             <TextDescription
               label={t(CustomerLabel.Birthday)}
               data={customer?.birthday}
+              Icon={<Cake />}
             />
           </div>
           <div className="col-span-3">
             <TextDescription
               label={t(CustomerLabel.Email)}
               data={customer?.email}
+              Icon={<Mail />}
             />
           </div>
           <div className="col-span-3">
             <TextDescription
               label={t(CustomerLabel.Phone)}
               data={customer?.phone}
+              Icon={<Phone />}
             />
           </div>
         </dl>
@@ -109,12 +122,14 @@ const CustomerDetailsForm: React.FC<DisplayProps> = ({
             <TextDescription
               label={t(CustomerLabel.CertificateExpiration)}
               data={customer?.certificateExpiration}
+              Icon={<ClipboardList />}
             />
           </div>
           <div className="col-span-4">
             <TextDescription
               label={t(CustomerLabel.CovidCertificateReleaseDate)}
               data={customer?.covidCertificateReleaseDate}
+              Icon={<SheildCheck />}
             />
           </div>
           <div className="col-span-4">

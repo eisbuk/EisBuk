@@ -9,8 +9,16 @@ import i18n, {
   ValidationMessage,
   ActionButton,
 } from "@eisbuk/translations";
+import {
+  User,
+  Cake,
+  Mail,
+  Phone,
+  ClipboardList,
+  SheildCheck,
+} from "@eisbuk/svg";
 
-import TextInput from "../../../TextInput";
+import TextInput, { IconAdornment } from "../../../TextInput";
 import DateInput from "../../../DateInput";
 import Checkbox from "../../../Checkbox";
 import Button, { ButtonSize } from "../../../Button";
@@ -55,6 +63,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <TextInput
                       formikField={field}
                       label={t(CustomerLabel.Name)}
+                      StartAdornment={
+                        <IconAdornment Icon={User} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -65,6 +76,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <TextInput
                       formikField={field}
                       label={t(CustomerLabel.Surname)}
+                      StartAdornment={
+                        <IconAdornment Icon={User} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -75,6 +89,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <DateInput
                       formikField={field}
                       label={t(CustomerLabel.Birthday)}
+                      StartAdornment={
+                        <IconAdornment Icon={Cake} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -85,6 +102,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <TextInput
                       formikField={field}
                       label={t(CustomerLabel.Email)}
+                      StartAdornment={
+                        <IconAdornment Icon={Mail} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -95,6 +115,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <TextInput
                       formikField={field}
                       label={t(CustomerLabel.Phone)}
+                      StartAdornment={
+                        <IconAdornment Icon={Phone} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -113,6 +136,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <DateInput
                       formikField={field}
                       label={t(CustomerLabel.CertificateExpiration)}
+                      StartAdornment={
+                        <IconAdornment Icon={ClipboardList} position="start" />
+                      }
                     />
                   )}
                 </Field>
@@ -123,6 +149,9 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                     <DateInput
                       formikField={field}
                       label={t(CustomerLabel.CovidCertificateReleaseDate)}
+                      StartAdornment={
+                        <IconAdornment Icon={SheildCheck} position="start" />
+                      }
                     />
                   )}
                 </Field>

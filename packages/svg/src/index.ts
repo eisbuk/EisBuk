@@ -8,6 +8,12 @@ import Calendar from "./calendar.svg";
 import ChevronLeft from "./chevron-left.svg";
 import ChevronRight from "./chevron-right.svg";
 import EisbukLogo from "./logo.svg";
+import ClipboardList from "./clipboard-list.svg";
+import User from "./user.svg";
+import Cake from "./cake.svg";
+import Mail from "./mail.svg";
+import Phone from "./phone.svg";
+import SheildCheck from "./shield-check.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -25,4 +31,10 @@ export {
   Ice,
   OffIce,
   EisbukLogo,
+  ClipboardList,
+  User,
+  Cake,
+  Mail,
+  Phone,
+  SheildCheck,
 };
