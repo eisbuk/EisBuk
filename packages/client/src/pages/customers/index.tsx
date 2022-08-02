@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
-// import LinearProgress from "@mui/material/LinearProgress";
 
 import AddIcon from "@mui/icons-material/Add";
 
@@ -20,9 +19,14 @@ import {
 } from "@eisbuk/translations";
 
 import CustomerGrid from "@/components/atoms/CustomerGrid";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import { getCustomersList } from "@/store/selectors/customers";
+import {
+  getCustomersByBirthday,
+  getCustomersList,
+} from "@/store/selectors/customers";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import useTitle from "@/hooks/useTitle";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
@@ -38,6 +42,15 @@ const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const currentDate = useSelector(getCalendarDay);
+
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(currentDate.toISO())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
 
   useTitle(t(NavigationLabel.Athletes));
 
@@ -64,6 +77,7 @@ const CustomersPage: React.FC = () => {
       isAdmin
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       {/* {!isLoaded(customers) && <LinearProgress />} */}
       <Grid item xs={12}>

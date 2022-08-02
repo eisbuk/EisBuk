@@ -18,6 +18,7 @@ import Copy from "./assets/copy.svg";
 import PlusCircle from "./assets/plus-circle.svg";
 import Trash from "./assets/trash.svg";
 import Pencil from "./assets/pencil.svg";
+import Cake from "./assets/cake.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -45,4 +46,5 @@ export {
   PlusCircle,
   Trash,
   Pencil,
+  Cake,
 };

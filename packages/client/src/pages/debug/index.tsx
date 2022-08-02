@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -15,9 +16,14 @@ import {
 
 import { CloudFunction } from "@/enums/functions";
 
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
+
+import { getCalendarDay } from "@/store/selectors/app";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
@@ -55,11 +61,20 @@ const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
+  const date = useSelector(getCalendarDay);
+
+  const customersByBirthday = useSelector(getCustomersByBirthday(date.toISO()));
+
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
   return (
     <Layout
       adminLinks={adminLinks}
       isAdmin
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       <div className="content-container py-8">
         <div className="p-2">

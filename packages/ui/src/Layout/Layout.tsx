@@ -9,6 +9,7 @@ interface LayoutProps {
   Logo?: React.FC;
   user?: UserAvatarProps;
   additionalButtons?: JSX.Element;
+  additionalAdminContent?: JSX.Element;
   Notifications?: React.FC<{ className?: string }>;
   children?: React.ReactNode[] | React.ReactNode;
   isAdmin?: boolean;
@@ -24,6 +25,7 @@ export interface LinkItem {
 const Layout: React.FC<LayoutProps> = ({
   Logo = EisbukLogo,
   additionalButtons,
+  additionalAdminContent,
   user = {},
   Notifications,
   isAdmin = false,
@@ -38,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({
             <AdminBar
               className={getHeaderRowClasses("top")}
               adminLinks={adminLinks}
+              additionalContent={additionalAdminContent}
             />
           )}
 
