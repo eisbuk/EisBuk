@@ -38,13 +38,11 @@ interface CheckboxDescription {
 const TextDescription: React.FC<TextDescription> = ({ Icon, label, data }) => (
   <div className="space-y-1 min-h-[84px]">
     <dt className="text-sm font-medium text-gray-700">{label}</dt>
-    <div className="flex">
-      <div className="flex items-center mr-1">
-        <div className="pl-3">
-          <div className="h-5 w-5 text-cyan-700">{Icon}</div>
-        </div>
+    <div className="flex items-center mr-1 min-h-[36px]">
+      <div className="pl-3">
+        <div className="h-5 w-5 text-cyan-700">{Icon}</div>
       </div>
-      <dd>{data}</dd>
+      <dd className="pl-4 text-sm">{data}</dd>
     </div>
   </div>
 );
