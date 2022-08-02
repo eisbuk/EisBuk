@@ -20,17 +20,11 @@ import Section from "./Section";
 import { isISODay } from "../../../utils/date";
 import { isValidPhoneNumber } from "../../../utils/helpers";
 
-interface FormInputProps {
-  customer?: Partial<Customer>;
+export interface FormInputProps {
+  customer: Partial<Customer>;
   onCancel?: () => void;
   onSave?: (customer: Customer) => void;
 }
-
-/*
-  TODO:
-    - Icons
-    - Add type="submit" to save button
-*/
 
 const CustomerDetailsForm: React.FC<FormInputProps> = ({
   customer,
@@ -41,10 +35,7 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
 
   return (
     <Formik
-      initialValues={{
-        ...defaultCustomerFormValues,
-        ...customer,
-      }}
+      initialValues={customer}
       validationSchema={CustomerValidation}
       onSubmit={(values, { setSubmitting }) => {
         onSave(values as Customer);
@@ -57,7 +48,7 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
             title="Personal Details"
             subtitle="Manage your personal details"
           >
-            <div className="sm:grid sm:grid-cols-6 gap-x-6 space-y-2 md:border-b-2 md:border-gray-100">
+            <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
               <div className="col-span-3">
                 <Field name="name">
                   {(field: FieldProps) => (
@@ -137,7 +128,7 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
                 </Field>
               </div>
               <div className="col-span-4">
-                <Field name="covidCertificateSuspended">
+                <Field name="covidCertificateSuspended" type="checkbox">
                   {(field: FieldProps) => (
                     <Checkbox
                       formikField={field}
@@ -159,7 +150,6 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
               {t(ActionButton.Cancel)}
             </Button>
             <Button
-              // type="submit"
               className="w-24 !text-gray-700 bg-green-200 hover:bg-green-100"
               size={ButtonSize.LG}
             >
@@ -170,19 +160,6 @@ const CustomerDetailsForm: React.FC<FormInputProps> = ({
       </Form>
     </Formik>
   );
-};
-
-const defaultCustomerFormValues = {
-  name: "",
-  surname: "",
-  email: "",
-  phone: "",
-  birthday: "",
-  category: "",
-  certificateExpiration: "",
-  covidCertificateReleaseDate: "",
-  covidCertificateSuspended: false,
-  subscriptionNumber: "",
 };
 
 const CustomerValidation = Yup.object().shape({

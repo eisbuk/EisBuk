@@ -1,214 +1,142 @@
 import React from "react";
-import { Formik, Form, Field, FieldProps } from "formik";
-import * as Yup from "yup";
 
 import { Customer } from "@eisbuk/shared";
-import i18n, {
+import {
   useTranslation,
   CustomerLabel,
-  ValidationMessage,
-  ActionButton,
+  // TODO: add "edit" to ActionButton enums
 } from "@eisbuk/translations";
 
-import TextInput from "../../../TextInput";
-import DateInput from "../../../DateInput";
-import Checkbox from "../../../Checkbox";
 import Button, { ButtonSize } from "../../../Button";
 
 import Section from "./Section";
 
-import { isISODay } from "../../../utils/date";
-import { isValidPhoneNumber } from "../../../utils/helpers";
-
-interface FormInputProps {
-  customer?: Partial<Customer>;
-  onCancel?: () => void;
-  onSave?: (customer: Customer) => void;
+interface DisplayProps {
+  customer: Partial<Customer>;
+  onEdit: () => void;
 }
 
-/*
-  TODO:
-    - Icons
-    - Add type="submit" to save button
-    - Add Display view
-*/
+interface TextDescription {
+  label: string | undefined;
+  data: string | undefined;
+  Icon?: JSX.Element | null;
+}
 
-const CustomerDetailsForm: React.FC<FormInputProps> = ({
+interface CheckboxDescription {
+  label: string | undefined;
+  data: boolean | undefined;
+}
+
+const TextDescription: React.FC<TextDescription> = ({ Icon, label, data }) => (
+  <div className="space-y-1 min-h-[84px]">
+    <dt className="text-sm font-medium text-gray-700">{label}</dt>
+    <div className="flex">
+      <div className="flex items-center mr-1">
+        <div className="pl-3">
+          <div className="h-5 w-5 text-cyan-700">{Icon}</div>
+        </div>
+      </div>
+      <dd>{data}</dd>
+    </div>
+  </div>
+);
+
+const CheckboxDescription: React.FC<CheckboxDescription> = ({
+  label,
+  data,
+}) => (
+  <div className="relative flex items-start">
+    <dd className="flex items-center h-5">
+      <input
+        disabled={true}
+        aria-hidden
+        type="checkbox"
+        className="h-4 w-4 text-gray-800 border-gray-300 rounded disabled:text-gray-200"
+        checked={data}
+      />
+    </dd>
+    <div className="ml-3 text-sm">
+      <dt className="font-medium text-gray-700">{label}</dt>
+    </div>
+  </div>
+);
+
+const CustomerDetailsForm: React.FC<DisplayProps> = ({
+  onEdit = () => {},
   customer,
-  onCancel = () => {},
-  onSave = () => {},
 }) => {
   const { t } = useTranslation();
 
   return (
-    <Formik
-      initialValues={{
-        ...defaultCustomerFormValues,
-        ...customer,
-      }}
-      validationSchema={CustomerValidation}
-      onSubmit={(values, { setSubmitting }) => {
-        onSave(values as Customer);
-        setSubmitting(false);
-      }}
-    >
-      <Form>
-        <div className="flex flex-col gap-y-10 justify-between">
-          <Section
-            title="Personal Details"
-            subtitle="Manage your personal details"
-          >
-            <div className="sm:grid sm:grid-cols-6 gap-x-6 space-y-2 md:border-b-2 md:border-gray-100">
-              <div className="col-span-3">
-                <Field name="name">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Name)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-3">
-                <Field name="surname">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Surname)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-4">
-                <Field name="birthday">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.Birthday)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-3">
-                <Field name="email">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Email)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-3">
-                <Field name="phone">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Phone)}
-                    />
-                  )}
-                </Field>
-              </div>
-            </div>
-          </Section>
-
-          <Section
-            title="Medical Details"
-            subtitle="Manage your medical details"
-          >
-            <div className="grid sm:grid-cols-6 gap-y-2">
-              <div className="col-span-4">
-                <Field name="certificateExpiration">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.CertificateExpiration)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-4">
-                <Field name="covidCertificateReleaseDate">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.CovidCertificateReleaseDate)}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-4">
-                <Field name="covidCertificateSuspended">
-                  {(field: FieldProps) => (
-                    <Checkbox
-                      formikField={field}
-                      label={t(CustomerLabel.CovidCertificateSuspended)}
-                      helpText="Check this box if your COVID certificate is more than 9 months old"
-                    />
-                  )}
-                </Field>
-              </div>
-            </div>
-          </Section>
-
-          <div className="flex justify-self-end gap-x-2 mt-5">
-            <Button
-              onClick={onCancel}
-              className="w-24 !text-gray-700 font-medium bg-gray-100 hover:bg-gray-50"
-              size={ButtonSize.LG}
-            >
-              {t(ActionButton.Cancel)}
-            </Button>
-            <Button
-              // type="submit"
-              className="w-24 !text-gray-700 bg-green-200 hover:bg-green-100"
-              size={ButtonSize.LG}
-            >
-              {t(ActionButton.Save)}
-            </Button>
+    <div className="flex flex-col gap-y-10 justify-between">
+      <Section title="Personal Details" subtitle="Manage your personal details">
+        <dl className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
+          <div className="col-span-3">
+            <TextDescription
+              label={t(CustomerLabel.Name)}
+              data={customer?.name}
+            />
           </div>
-        </div>
-      </Form>
-    </Formik>
+          <div className="col-span-3">
+            <TextDescription
+              label={t(CustomerLabel.Surname)}
+              data={customer?.surname}
+            />
+          </div>
+          <div className="col-span-4">
+            <TextDescription
+              label={t(CustomerLabel.Birthday)}
+              data={customer?.birthday}
+            />
+          </div>
+          <div className="col-span-3">
+            <TextDescription
+              label={t(CustomerLabel.Email)}
+              data={customer?.email}
+            />
+          </div>
+          <div className="col-span-3">
+            <TextDescription
+              label={t(CustomerLabel.Phone)}
+              data={customer?.phone}
+            />
+          </div>
+        </dl>
+      </Section>
+      <Section title="Medical Details" subtitle="Manage your medical details">
+        <dl className="grid sm:grid-cols-6 gap-y-2">
+          <div className="col-span-4">
+            <TextDescription
+              label={t(CustomerLabel.CertificateExpiration)}
+              data={customer?.certificateExpiration}
+            />
+          </div>
+          <div className="col-span-4">
+            <TextDescription
+              label={t(CustomerLabel.CovidCertificateReleaseDate)}
+              data={customer?.covidCertificateReleaseDate}
+            />
+          </div>
+          <div className="col-span-4">
+            <CheckboxDescription
+              label={t(CustomerLabel.CovidCertificateSuspended)}
+              data={customer?.covidCertificateSuspended}
+            />
+          </div>
+        </dl>
+      </Section>
+
+      <div className="flex justify-self-end gap-x-2 mt-5">
+        <Button
+          onClick={onEdit}
+          className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
+          size={ButtonSize.LG}
+        >
+          Edit
+        </Button>
+      </div>
+    </div>
   );
 };
-
-const defaultCustomerFormValues = {
-  name: "",
-  surname: "",
-  email: "",
-  phone: "",
-  birthday: "",
-  category: "",
-  certificateExpiration: "",
-  covidCertificateReleaseDate: "",
-  covidCertificateSuspended: false,
-  subscriptionNumber: "",
-};
-
-const CustomerValidation = Yup.object().shape({
-  name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  email: Yup.string().email(i18n.t(ValidationMessage.Email)),
-  phone: Yup.string().test({
-    test: (input) => !input || isValidPhoneNumber(input),
-    message: i18n.t(ValidationMessage.InvalidPhone),
-  }),
-  birthday: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
-  }),
-  certificateExpiration: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
-  }),
-  covidCertificateReleaseDate: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
-  }),
-  covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  subscriptionNumber: Yup.number(),
-});
 
 export default CustomerDetailsForm;
