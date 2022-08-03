@@ -15,6 +15,10 @@ import ActionDialog from "./ActionDialog";
 import IntervalCardGroup from "./IntervalCardGroup";
 import SlotsDayContainer from "./SlotsDayContainer";
 import BookingsCountdown from "./BookingsCountdown";
+import TextInput from "./TextInput";
+import DateInput from "./DateInput";
+import Checkbox from "./Checkbox";
+import CustomerDetails from "./Forms/CustomerDetails";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -22,6 +26,7 @@ export * from "./Button";
 export * from "./IntervalCard";
 export * from "./BookingsCountdown";
 export * from "./CalendarNav";
+export * from "./TextInput";
 
 export {
   TestComponent,
@@ -37,4 +42,8 @@ export {
   IntervalCardGroup,
   SlotsDayContainer,
   BookingsCountdown,
+  TextInput,
+  DateInput,
+  Checkbox,
+  CustomerDetails,
 };
