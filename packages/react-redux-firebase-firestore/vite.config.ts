@@ -18,6 +18,7 @@ export default defineConfig({
         "firebase-tools",
         "luxon",
         "react",
+        "react-dom",
         "react-redux",
         "redux",
         "redux-thunk",
