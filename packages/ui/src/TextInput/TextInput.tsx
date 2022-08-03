@@ -4,7 +4,8 @@ import { FieldProps } from "formik";
 // TODO: Add more obvious disabled input state styles
 
 // TODO: Limit adornments to whitelisted components in "./InputAdornment"
-export interface TextInputProps {
+export interface TextInputProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   formikField: FieldProps;
   placeholder?: string;
@@ -22,6 +23,7 @@ const TextInput: React.FC<TextInputProps> = ({
   StartAdornment = null,
   EndAdornment = null,
   disabled = false,
+  ...props
 }) => {
   const { field, meta } = formikField;
   const { name } = field;
@@ -56,6 +58,7 @@ const TextInput: React.FC<TextInputProps> = ({
           disabled={disabled}
           className={inputClasses}
           {...field}
+          {...props}
         />
         <div className="flex items-center ml-1">{EndAdornment}</div>
       </div>

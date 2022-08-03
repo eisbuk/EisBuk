@@ -13,6 +13,39 @@ export const isISODay = (string?: string): boolean =>
   string ? string.length === 10 && DateTime.fromISO(string).isValid : false;
 
 /**
+ * A helper function that parses ISO string and returns a string in european date format
+ * (`dd/mm/yyyy`)
+ *
+ * _if passed `input` is not a valid ISO string, it returns the `input` as is_
+ * @param input ISO string to convert
+ * @returns string
+ */
+export const isoToDate = (input: string): string => {
+  const [year, month, day] = input.split("-");
+  return isISODay(input) ? `${day}/${month}/${year}` : input;
+};
+
+/**
+ * A helper function that parses a valid european date separated by one of (. , / , -)
+ * into an ISOString
+ *
+ * _if passed `input` is not a valid ISO string, it returns the `input` as is_
+ * @param input user date input
+ * @returns string
+ */
+export const dateToISO = (input: string): string => {
+  const [day, month, year] = input.split(/[-/.]/).map(twoDigits);
+  const isoString = `${year}-${month}-${day}`;
+  return isISODay(isoString) ? isoString : input;
+};
+
+const twoDigits = (value: string) =>
+  Number(value).toLocaleString("en-US", {
+    minimumIntegerDigits: 2,
+    useGrouping: false,
+  });
+
+/**
  * @param d1
  * @param d2
  * @returns rounded down (monthly) difference between two months (d1 - d2)
