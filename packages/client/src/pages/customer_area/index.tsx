@@ -15,10 +15,13 @@ import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import { NotificationsContainer } from "@/features/notifications/components";
 
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 import { getIsAdmin } from "@/store/selectors/auth";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
@@ -32,6 +35,14 @@ const CustomerArea: React.FC = () => {
   useSecretKey();
 
   const isAdmin = useSelector(getIsAdmin);
+
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -85,6 +96,7 @@ const CustomerArea: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
+      additionalAdminContent={additionalAdminContent}
       user={displayCustomer}
     >
       <CalendarNav {...calendarNavProps} jump="month" />

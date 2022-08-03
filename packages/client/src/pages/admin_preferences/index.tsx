@@ -22,15 +22,18 @@ import Divider from "@mui/material/Divider";
 
 import AdminsField from "./AdminsField";
 import FormSection from "@/components/atoms/FormSection";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
 import { getOrganizationSettings } from "@/store/selectors/app";
 import { getLocalAuth } from "@/store/selectors/auth";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { isEmpty } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const smsFields = [
   {
@@ -83,6 +86,13 @@ const OrganizationSettings: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
   const handleSubmit = (
     orgData: OrganizationData,
     actions: FormikHelpers<OrganizationData>
@@ -91,7 +101,6 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const currentUser = userAuthInfo?.email || "";
-
   if (isEmpty(organization)) {
     return null;
   }
@@ -117,6 +126,7 @@ const OrganizationSettings: React.FC = () => {
       isAdmin
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       <div className={classes.title}>
         <Typography variant="h4">{`${

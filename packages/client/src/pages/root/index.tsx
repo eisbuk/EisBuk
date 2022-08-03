@@ -12,16 +12,21 @@ import makeStyles from "@mui/styles/makeStyles";
 import { OrgSubCollection } from "@eisbuk/shared";
 
 import AttendanceCard from "@/components/atoms/AttendanceCard";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import { getCustomersList } from "@/store/selectors/customers";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import { getCalendarDay } from "@/store/selectors/app";
+import {
+  getCustomersByBirthday,
+  getCustomersList,
+} from "@/store/selectors/customers";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-import { getCalendarDay } from "@/store/selectors/app";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -37,7 +42,13 @@ const DashboardPage: React.FC = () => {
 
   const attendanceCards = useSelector(getSlotsWithAttendance());
   const allCustomers = useSelector(getCustomersList(true));
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
 
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
   const printButton = (
     <Link to="/attendance_printable">
       <Button className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10">
@@ -51,6 +62,7 @@ const DashboardPage: React.FC = () => {
       isAdmin
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       <CalendarNav
         date={currentDate}

@@ -11,17 +11,19 @@ import {
   SlotsDayContainer,
 } from "@eisbuk/ui";
 
+import { AdminAria, useTranslation } from "@eisbuk/translations";
+
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotsWeek } from "@/types/store";
 
 import SlotOperationButtons, {
-  // DeleteButton,
   CopyButton,
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
 import SlotCard from "@/components/atoms/SlotCard";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
@@ -30,17 +32,18 @@ import {
   getDayFromClipboard,
   getWeekFromClipboard,
 } from "@/store/selectors/copyPaste";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import {
   addSlotToClipboard,
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
+import { changeCalendarDate } from "@/store/actions/appActions";
 import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+
 import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
-import { changeCalendarDate } from "@/store/actions/appActions";
-import { AdminAria, useTranslation } from "@eisbuk/translations";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -55,6 +58,13 @@ const SlotsPage: React.FC = () => {
 
   const weekToPaste = useSelector(getWeekFromClipboard);
   const dayToPaste = useSelector(getDayFromClipboard);
+
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
 
   const { t } = useTranslation();
   const [canEdit, setCanEdit] = useState(false);
@@ -107,6 +117,7 @@ const SlotsPage: React.FC = () => {
       isAdmin
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       <CalendarNav
         date={currentDate}
