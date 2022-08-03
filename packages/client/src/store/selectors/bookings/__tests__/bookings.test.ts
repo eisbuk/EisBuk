@@ -23,7 +23,7 @@ import {
 } from "../index";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import { saul } from "@/__testData__/customers";
 import {

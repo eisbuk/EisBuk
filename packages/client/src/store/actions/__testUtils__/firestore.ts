@@ -18,7 +18,7 @@ import { TestEnvFirestore } from "@/__testSetup__/firestore";
 
 import { LocalStore } from "@/types/store";
 
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import {
   setSlotDayToClipboard,

@@ -3,10 +3,13 @@ import { Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
+import {
+  CollectionSubscription,
+  usePaginateFirestore,
+  useFirestoreSubscribe,
+} from "@eisbuk/react-redux-firebase-firestore";
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
-
-import { CollectionSubscription } from "@/types/store";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
@@ -21,10 +24,6 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
-
-import usePaginateFirestore from "@/react-redux-firebase/hooks/usePaginateFirestore";
-
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 

@@ -10,6 +10,7 @@ import {
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
@@ -17,7 +18,6 @@ import { NotificationsContainer } from "@/features/notifications/components";
 
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getCalendarDay } from "@/store/selectors/app";
 import { getIsAdmin } from "@/store/selectors/auth";

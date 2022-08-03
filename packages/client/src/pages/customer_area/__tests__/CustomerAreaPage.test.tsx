@@ -11,11 +11,11 @@ import {
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import CustomerAreaPage from "../index";
 
 import { getNewStore } from "@/store/createStore";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { getSecretKey } from "@/utils/localStorage";
 
@@ -30,12 +30,11 @@ jest.mock("react-router", () => ({
 }));
 
 const mockUseFirestoreSubscribe = jest.fn();
-jest.mock(
-  "@/react-redux-firebase/hooks/useFirestoreSubscribe",
-  () =>
-    (...params: any[]) =>
-      mockUseFirestoreSubscribe(...params)
-);
+jest.mock("@eisbuk/react-redux-firebase-firestore", () => ({
+  ...jest.requireActual("@eisbuk/react-redux-firebase-firestore"),
+  useFirestoreSubscribe: (...params: any[]) =>
+    mockUseFirestoreSubscribe(...params),
+}));
 
 // The following mocks are here as to not break the app
 // and keep the test somewhat sandboxed

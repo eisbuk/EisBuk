@@ -8,13 +8,13 @@ import { DateTime } from "luxon";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 import { OrgSubCollection } from "@eisbuk/shared";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ModalPayload } from "@/features/modal/types";
 
 import BookingsCountdownContainer from "../BookingsCountdownContainer";
 
 import { getNewStore } from "@/store/createStore";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { openModal } from "@/features/modal/actions";
 

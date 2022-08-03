@@ -8,16 +8,21 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 
+import { registerOrganization } from "@eisbuk/react-redux-firebase-firestore";
+
 import { store } from "@/store";
 
 import AppContent from "@/AppContent";
 
 import { Modal } from "@/features/modal/components";
 
-import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
+import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
 import { NotificationsProvider } from "./features/notifications/context";
+import { getOrganization } from "./lib/getters";
+
+registerOrganization(getOrganization());
 
 const App: React.FC = () => {
   // connect auth to store to recieve firebase SDK's auth updates

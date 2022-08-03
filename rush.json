@@ -412,6 +412,10 @@
     {
       "packageName": "@eisbuk/svg",
       "projectFolder": "packages/svg"
+    },
+    {
+      "packageName": "@eisbuk/react-redux-firebase-firestore",
+      "projectFolder": "packages/react-redux-firebase-firestore"
     }
   ]
 }
