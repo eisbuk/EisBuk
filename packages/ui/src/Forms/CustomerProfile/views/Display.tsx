@@ -15,13 +15,12 @@ import {
   SheildCheck,
 } from "@eisbuk/svg";
 
-import Button, { ButtonSize } from "../../../Button";
+import { isoToDate } from "../../../utils/date";
 
 import Section from "./Section";
 
 interface DisplayProps {
   customer: Partial<Customer>;
-  onEdit: () => void;
 }
 
 interface TextDescription {
@@ -67,10 +66,7 @@ const CheckboxDescription: React.FC<CheckboxDescription> = ({
   </div>
 );
 
-const CustomerDetailsForm: React.FC<DisplayProps> = ({
-  onEdit = () => {},
-  customer,
-}) => {
+const CustomerDetailsForm: React.FC<DisplayProps> = ({ customer }) => {
   const { t } = useTranslation();
 
   return (
@@ -94,7 +90,7 @@ const CustomerDetailsForm: React.FC<DisplayProps> = ({
           <div className="col-span-4">
             <TextDescription
               label={t(CustomerLabel.Birthday)}
-              data={customer?.birthday}
+              data={isoToDate(customer?.birthday || "")}
               Icon={<Cake />}
             />
           </div>
@@ -119,14 +115,14 @@ const CustomerDetailsForm: React.FC<DisplayProps> = ({
           <div className="col-span-4">
             <TextDescription
               label={t(CustomerLabel.CertificateExpiration)}
-              data={customer?.certificateExpiration}
+              data={isoToDate(customer?.certificateExpiration || "")}
               Icon={<ClipboardList />}
             />
           </div>
           <div className="col-span-4">
             <TextDescription
               label={t(CustomerLabel.CovidCertificateReleaseDate)}
-              data={customer?.covidCertificateReleaseDate}
+              data={isoToDate(customer?.covidCertificateReleaseDate || "")}
               Icon={<SheildCheck />}
             />
           </div>
@@ -138,16 +134,6 @@ const CustomerDetailsForm: React.FC<DisplayProps> = ({
           </div>
         </dl>
       </Section>
-
-      <div className="flex justify-self-end gap-x-2 mt-5">
-        <Button
-          onClick={onEdit}
-          className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
-          size={ButtonSize.LG}
-        >
-          Edit
-        </Button>
-      </div>
     </div>
   );
 };
