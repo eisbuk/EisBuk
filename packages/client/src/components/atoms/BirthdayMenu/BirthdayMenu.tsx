@@ -68,7 +68,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
   return (
     <>
       <Badge
-        className={classes.badge}
+        className={[classes.badge, "cursor-normal", "select-none"].join(" ")}
         color="error"
         badgeContent={getTodaysBirthdays}
         data-testid={__birthdayMenu__}
@@ -110,7 +110,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
         })}
         <div
           onClick={handleShowAll}
-          className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
+          className={[classes.birthdayHeader, "cursor-pointer"].join(" ")}
         >
           {t(BirthdayEnums.ShowAll)}
         </div>
@@ -125,7 +125,6 @@ const useStyles = makeStyles(() => ({
     fontSize: "20px",
     margin: "10px",
   },
-  pointerCursor: { cursor: "normal", userSelect: "none" },
 
   badge: {
     "& .MuiBadge-anchorOriginTopRightRectangular": {
