@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import CustomerDetails from "./CustomerDetails";
+import CustomerDetails from "./CustomerProfileForm";
 
 export default {
   title: "Forms / Customer Details",

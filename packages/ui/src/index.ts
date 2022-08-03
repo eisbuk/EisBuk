@@ -18,7 +18,7 @@ import BookingsCountdown from "./BookingsCountdown";
 import TextInput from "./TextInput";
 import DateInput from "./DateInput";
 import Checkbox from "./Checkbox";
-import CustomerDetails from "./Forms/CustomerDetails";
+import CustomerProfileForm from "./Forms/CustomerProfile";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -45,5 +45,5 @@ export {
   TextInput,
   DateInput,
   Checkbox,
-  CustomerDetails,
+  CustomerProfileForm,
 };
