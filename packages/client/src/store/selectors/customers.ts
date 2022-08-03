@@ -28,6 +28,19 @@ export const getCustomersList =
   };
 
 /**
+ * Gets a customer from a list of customers by 'secretKey'
+ * @param secretKey a customers secret string
+ * @returns a customer
+ */
+export const getCustomer = (secretKey: string) => (state: LocalStore) => {
+  const customers = getCustomersList()(state);
+  const [customer] = customers.filter(
+    (customer) => customer.secretKey === secretKey
+  );
+  return customer || {};
+};
+
+/**
  * Creates a selector that gets a list of all the customers whose birthdays are today
  * (not an actual firestore query but rather synced local store entry)
  * @param date DateTime to use as "today"
