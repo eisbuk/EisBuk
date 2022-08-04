@@ -79,12 +79,18 @@ const CustomerDetailsForm: React.FC = () => {
           </div>
           <div className="col-span-3">
             <Field name="phone">
-              {(field: FieldProps) => (
+              {({ field, meta, form }: FieldProps) => (
                 <TextInput
-                  formikField={field}
+                  formikField={{ field, meta, form }}
                   label={t(CustomerLabel.Phone)}
                   StartAdornment={
                     <IconAdornment Icon={<Phone />} position="start" />
+                  }
+                  onBlur={(e) =>
+                    form.setFieldValue(
+                      "phone",
+                      e.target.value.replace(/\s/g, "")
+                    )
                   }
                 />
               )}
