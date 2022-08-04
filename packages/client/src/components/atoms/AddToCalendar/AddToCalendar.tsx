@@ -105,7 +105,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     <>
       <span className="px-4 py-3 flex items-center justify-center">
         <Button
-          className="w-3/4 text-white bg-orange-500 tracking-wider active:bg-orange-600 md:w-auto"
+          className="w-3/4 text-white bg-cyan-700 tracking-wider justify-center active:bg-cyan-800 md:w-auto md:absolute md:right-32"
           onClick={() => setEmailDialog(true)}
         >
           {t(ActionButton.AddToCalendar)}
