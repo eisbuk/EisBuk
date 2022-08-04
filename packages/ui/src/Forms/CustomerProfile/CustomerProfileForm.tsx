@@ -90,7 +90,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                       StartAdornment={
                         <IconAdornment Icon={<User />} position="start" />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -104,7 +104,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                       StartAdornment={
                         <IconAdornment Icon={<User />} position="start" />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -118,7 +118,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                       StartAdornment={
                         <IconAdornment Icon={<Cake />} position="start" />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -132,7 +132,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                       StartAdornment={
                         <IconAdornment Icon={<Mail />} position="start" />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -152,7 +152,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                           e.target.value.replace(/\s/g, "")
                         )
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -177,7 +177,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                           position="start"
                         />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -194,7 +194,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                           position="start"
                         />
                       }
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
@@ -206,7 +206,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                       formikField={field}
                       label={t(CustomerLabel.CovidCertificateSuspended)}
                       helpText="Check this box if your COVID certificate is more than 9 months old"
-                      disabled={isEditing}
+                      disabled={!isEditing}
                     />
                   )}
                 </Field>
