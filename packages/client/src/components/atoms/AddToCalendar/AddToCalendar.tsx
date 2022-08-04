@@ -5,11 +5,10 @@ import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
 
-import makeStyles from "@mui/styles/makeStyles";
-
-import Button from "@mui/material/Button";
-
 import { CalendarEvents, SlotsByDay } from "@eisbuk/shared";
+
+import InputDialog from "@/components/atoms/InputDialog";
+import { Button } from "@eisbuk/ui";
 
 import { LocalStore } from "@/types/store";
 
@@ -21,11 +20,7 @@ import {
   sendICSFile,
 } from "@/store/actions/bookingOperations";
 
-import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
-
 import { __organization__ } from "@/lib/constants";
-
-import InputDialog from "@/components/atoms/InputDialog";
 
 interface Props {
   /**
@@ -41,7 +36,6 @@ interface Props {
 }
 
 const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
-  const classes = useStyles();
   const dispatch = useDispatch();
 
   const { secretKey } = useParams<{ secretKey: string }>();
@@ -50,7 +44,7 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
   const [emailDialog, setEmailDialog] = useState(false);
 
-  const monthStr = (Object.values(bookedSlots!)[0].date || "").substring(0, 7);
+  const monthStr = (Object.values(bookedSlots)[0].date || "").substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
@@ -109,16 +103,14 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
   return (
     <>
-      <div className={classes.container}>
+      <span className="px-4 py-3 flex items-center justify-center">
         <Button
-          className={classes.buttonPrimary}
-          data-testid={__addToCalendarButtonId__}
+          className="w-3/4 text-white bg-orange-500 tracking-wider active:bg-orange-600 md:w-auto"
           onClick={() => setEmailDialog(true)}
-          variant="contained"
         >
           {t(ActionButton.AddToCalendar)}
         </Button>
-      </div>
+      </span>
       <InputDialog
         title={t(Prompt.EnterEmailTitle)}
         onSubmit={handleClick}
@@ -207,20 +199,5 @@ const getPreviousCalendarUids = (
   }, {});
 
 // #endregion helpers
-
-// #region styles
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0.5rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  buttonPrimary: {
-    backgroundColor: theme.palette.primary.main,
-  },
-}));
-// #endregion styles
 
 export default AddToCalendar;

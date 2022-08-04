@@ -64,7 +64,3 @@ export const __notificationButton__ = "notification-button";
 // #region birthdayBadge
 export const __birthdayMenu__ = "birthday-menu";
 // #endregion birthdayBadge
-
-// #region addToCalendar
-export const __addToCalendarButtonId__ = "add-to-calendar";
-// #endregion addToCalendar

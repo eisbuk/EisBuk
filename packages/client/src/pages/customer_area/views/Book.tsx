@@ -5,29 +5,39 @@ import { IntervalCardGroup, SlotsDayContainer } from "@eisbuk/ui";
 import { SlotInterface } from "@eisbuk/shared";
 
 import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
+import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import {
+  getBookedSlotsByMonth,
   getIsBookingAllowed,
   getSlotsForBooking,
+  getSlotsForCustomer,
 } from "@/store/selectors/bookings";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import { bookInterval } from "@/store/actions/bookingOperations";
+
 import { openModal } from "@/features/modal/actions";
 
 import { getSecretKey } from "@/utils/localStorage";
-import { getCalendarDay } from "@/store/selectors/app";
 
 const BookView: React.FC = () => {
   const daysToRender = useSelector(getSlotsForBooking);
+  const slotsByDay = useSelector(getSlotsForCustomer);
   const date = useSelector(getCalendarDay);
 
   const disabled = !useSelector(getIsBookingAllowed(date));
   const { handleBooking, handleCancellation } = useBooking();
 
+  const bookedSlotsByMonth = useSelector(getBookedSlotsByMonth(date.month));
+
   return (
     <>
       <BookingsCountdownContainer />
 
+      {Object.keys(bookedSlotsByMonth).length !== 0 && (
+        <AddToCalendar bookedSlots={bookedSlotsByMonth} slots={slotsByDay} />
+      )}
       {daysToRender.map(({ date, slots }) => (
         <SlotsDayContainer key={date} date={date}>
           {slots.map(({ interval, ...slot }) => (
