@@ -19,12 +19,12 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_node()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
-      - #@ check_secrets()
+          node-version: "16"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
+      -  #@ check_secrets()
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         if: steps.has_secret.outputs.HAS_SECRETS
