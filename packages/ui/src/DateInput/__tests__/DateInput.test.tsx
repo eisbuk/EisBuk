@@ -8,19 +8,21 @@ import { Formik, Field, FieldProps, FormikValues } from "formik";
 
 import DateInput from "../DateInput";
 
-const onChangeSpy = jest.fn();
+const setFieldSpy = jest.fn();
+
+const testFieldName = "test";
 
 const Form = ({ initialValues }: FormikValues) => (
   <Formik initialValues={initialValues} onSubmit={() => {}}>
-    <Field name="test">
+    <Field name={testFieldName}>
       {({ field, form, meta }: FieldProps) => (
         <DateInput
           formikField={{
-            field: {
-              ...field,
-              onChange: onChangeSpy,
+            field,
+            form: {
+              ...form,
+              setFieldValue: setFieldSpy,
             },
-            form,
             meta,
           }}
           label="Test Field"
@@ -47,14 +49,14 @@ describe("Date Input", () => {
       render(<Form initialValues={{ test: "" }} />);
     });
 
-    test("should call 'onChange' on user input", () => {
+    test("should call 'setFieldValue' on user input", () => {
       const testInput = "test";
 
       fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: testInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(testInput);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, testInput, true);
     });
 
     test("should parse european date into ISOString", () => {
@@ -65,7 +67,7 @@ describe("Date Input", () => {
         target: { value: testInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(isoDate);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
     });
 
     test("should parse european date into ISOString with . or -", () => {
@@ -77,13 +79,13 @@ describe("Date Input", () => {
         target: { value: dashInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(isoDate);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
 
       fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dotInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(isoDate);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
     });
 
     test("should parse european date with single digits into ISOString with . or -", () => {
@@ -95,13 +97,13 @@ describe("Date Input", () => {
         target: { value: dashInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(isoDate);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
 
       fireEvent.blur(screen.getByRole("textbox"), {
         target: { value: dotInput },
       });
 
-      expect(onChangeSpy).toHaveBeenCalledWith(isoDate);
+      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
     });
 
     describe("Test processing of received value", () => {
