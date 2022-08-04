@@ -206,7 +206,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         label={t(CustomerLabel.CovidCertificateReleaseDate)}
                         StartAdornment={
                           <IconAdornment
-                            Icon={<SheildCheck />}
+                            Icon={<ShieldCheck />}
                             position="start"
                             disabled={!isEditing}
                           />
