@@ -20,7 +20,5 @@ const customer = {
 };
 
 export const Default = (): JSX.Element => (
-  <>
-    <CustomerProfileForm customer={customer} />
-  </>
+  <CustomerProfileForm customer={customer} />
 );

@@ -28,6 +28,7 @@ const TextInput: React.FC<TextInputProps> = ({
   const hasValidationError = meta.touched && meta.error;
 
   const helpTextColour = hasValidationError ? "text-red-600" : "text-gray-500";
+  const containerBorderWidth = disabled ? "outline-0" : "outline-1 shadow-sm";
   const containerBorderColour = hasValidationError
     ? "outline-red-600"
     : "outline-gray-300";
@@ -36,7 +37,7 @@ const TextInput: React.FC<TextInputProps> = ({
   const inputClasses = inputBaseClasses.join(" ");
   const helpTextClasses = helpTextBaseClasses.concat(helpTextColour).join(" ");
   const containerClasses = containerBaseClasses
-    .concat(containerBorderColour)
+    .concat(containerBorderColour, containerBorderWidth)
     .join(" ");
 
   const supportContent = hasValidationError ? meta.error : helpText;
@@ -81,10 +82,8 @@ const inputBaseClasses = [
 // TODO: focus-within solution will also focus whole container when adornment button or dropdown are clicked
 const containerBaseClasses = [
   "flex",
-  "rounded-md",
   "outline",
-  "outline-1",
-  "shadow-sm",
+  "rounded-md",
   "focus-within:outline-2",
   "focus-within:outline-cyan-700",
 ];

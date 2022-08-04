@@ -1,24 +1,33 @@
 import React, { useState } from "react";
-import { Formik, Form } from "formik";
+import { Formik, Form, Field, FieldProps } from "formik";
 import * as Yup from "yup";
 
 import { Customer } from "@eisbuk/shared";
 import i18n, {
   useTranslation,
   ValidationMessage,
+  CustomerLabel,
   // TODO: add "edit" to ActionButton enums
   ActionButton,
 } from "@eisbuk/translations";
+import {
+  User,
+  Cake,
+  Mail,
+  Phone,
+  ClipboardList,
+  SheildCheck,
+} from "@eisbuk/svg";
 
-import Edit from "./views/Edit";
-import Display from "./views/Display";
+import Button, { ButtonSize } from "../../Button";
+import TextInput, { IconAdornment } from "../../TextInput";
+import DateInput from "../../DateInput";
+import Checkbox from "../../Checkbox";
 
 import { isISODay } from "../../utils/date";
 import { isValidPhoneNumber } from "../../utils/helpers";
 
-import Button, { ButtonSize } from "../../Button";
-
-interface FormInputProps {
+interface FormProps {
   customer: Partial<Customer>;
   onCancel?: () => void;
   onSave?: (customer: Customer) => void;
@@ -35,7 +44,7 @@ const defaultCustomerFormValues = {
   covidCertificateSuspended: false,
 };
 
-const CustomerProfileForm: React.FC<FormInputProps> = ({
+const CustomerProfileForm: React.FC<FormProps> = ({
   customer,
   onCancel = () => {},
   onSave = () => {},
@@ -57,7 +66,7 @@ const CustomerProfileForm: React.FC<FormInputProps> = ({
 
   return (
     <Formik
-      initialValues={customer}
+      initialValues={initialValues}
       validationSchema={CustomerValidation}
       onSubmit={(values, { setSubmitting }) => {
         onSave(values as Customer);
@@ -67,9 +76,146 @@ const CustomerProfileForm: React.FC<FormInputProps> = ({
     >
       <Form>
         <div className="flex flex-col gap-y-10 justify-between">
+          <Section
+            title="Personal Details"
+            subtitle="Manage your personal details"
+          >
+            <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
+              <div className="col-span-3">
+                <Field name="name">
+                  {(field: FieldProps) => (
+                    <TextInput
+                      formikField={field}
+                      label={t(CustomerLabel.Name)}
+                      StartAdornment={
+                        <IconAdornment Icon={<User />} position="start" />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-3">
+                <Field name="surname">
+                  {(field: FieldProps) => (
+                    <TextInput
+                      formikField={field}
+                      label={t(CustomerLabel.Surname)}
+                      StartAdornment={
+                        <IconAdornment Icon={<User />} position="start" />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-4">
+                <Field name="birthday">
+                  {(field: FieldProps) => (
+                    <DateInput
+                      formikField={field}
+                      label={t(CustomerLabel.Birthday)}
+                      StartAdornment={
+                        <IconAdornment Icon={<Cake />} position="start" />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-3">
+                <Field name="email">
+                  {(field: FieldProps) => (
+                    <TextInput
+                      formikField={field}
+                      label={t(CustomerLabel.Email)}
+                      StartAdornment={
+                        <IconAdornment Icon={<Mail />} position="start" />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-3">
+                <Field name="phone">
+                  {({ field, meta, form }: FieldProps) => (
+                    <TextInput
+                      formikField={{ field, meta, form }}
+                      label={t(CustomerLabel.Phone)}
+                      StartAdornment={
+                        <IconAdornment Icon={<Phone />} position="start" />
+                      }
+                      onBlur={(e) =>
+                        form.setFieldValue(
+                          "phone",
+                          e.target.value.replace(/\s/g, "")
+                        )
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+            </div>
+          </Section>
+
+          <Section
+            title="Medical Details"
+            subtitle="Manage your medical details"
+          >
+            <div className="grid sm:grid-cols-6 gap-y-2">
+              <div className="col-span-4">
+                <Field name="certificateExpiration">
+                  {(field: FieldProps) => (
+                    <DateInput
+                      formikField={field}
+                      label={t(CustomerLabel.CertificateExpiration)}
+                      StartAdornment={
+                        <IconAdornment
+                          Icon={<ClipboardList />}
+                          position="start"
+                        />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-4">
+                <Field name="covidCertificateReleaseDate">
+                  {(field: FieldProps) => (
+                    <DateInput
+                      formikField={field}
+                      label={t(CustomerLabel.CovidCertificateReleaseDate)}
+                      StartAdornment={
+                        <IconAdornment
+                          Icon={<SheildCheck />}
+                          position="start"
+                        />
+                      }
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+              <div className="col-span-4">
+                <Field name="covidCertificateSuspended" type="checkbox">
+                  {(field: FieldProps) => (
+                    <Checkbox
+                      formikField={field}
+                      label={t(CustomerLabel.CovidCertificateSuspended)}
+                      helpText="Check this box if your COVID certificate is more than 9 months old"
+                      disabled={isEditing}
+                    />
+                  )}
+                </Field>
+              </div>
+            </div>
+          </Section>
+
           {isEditing ? (
             <>
-              <Edit />
               <div className="flex justify-self-end gap-x-2 mt-5">
                 <Button
                   type="button"
@@ -90,7 +236,6 @@ const CustomerProfileForm: React.FC<FormInputProps> = ({
             </>
           ) : (
             <>
-              <Display customer={initialValues} />
               <div className="flex justify-self-end gap-x-2 mt-5">
                 <Button
                   type="button"
@@ -133,5 +278,19 @@ const CustomerValidation = Yup.object().shape({
   category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   subscriptionNumber: Yup.number(),
 });
+
+const Section: React.FC<{ title: string; subtitle: string }> = ({
+  title,
+  subtitle,
+  children,
+}) => (
+  <div className="md:grid md:grid-cols-3 md:gap-6">
+    <div className="md:col-span-1">
+      <h2 className="text-lg text-cyan-700 font-medium">{title}</h2>
+      <p className="text-sm text-gray-500 font-normal">{subtitle}</p>
+    </div>
+    <div className="mt-5 space-y-6 md:mt-0 md:col-span-2">{children}</div>
+  </div>
+);
 
 export default CustomerProfileForm;
