@@ -12,7 +12,6 @@ import AddToCalendar from "../AddToCalendar";
 
 import { expectedIcsFile } from "../__testData__/testData";
 import {
-  __addToCalendarButtonId__,
   __inputDialogSubmitId__,
   __emailInput__,
 } from "@/__testData__/testIds";
@@ -24,6 +23,7 @@ import {
 import * as bookingActions from "@/store/actions/bookingOperations";
 import { saul } from "@/__testData__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
+import i18n, { ActionButton } from "@eisbuk/translations";
 
 const mockSaul = saul;
 jest.mock("react-router", () => ({
@@ -67,7 +67,7 @@ xdescribe("Add To Calendar", () => {
         renderWithRedux(
           <AddToCalendar bookedSlots={bookedSlots} slots={slotsByDay} />
         );
-        screen.getByTestId(__addToCalendarButtonId__).click();
+        screen.getByText(i18n.t(ActionButton.AddToCalendar) as string).click();
 
         screen
           .getByTestId(__emailInput__)
