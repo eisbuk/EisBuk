@@ -32,7 +32,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.Name)}
                   StartAdornment={
-                    <IconAdornment Icon={User} position="start" />
+                    <IconAdornment Icon={<User />} position="start" />
                   }
                 />
               )}
@@ -45,7 +45,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.Surname)}
                   StartAdornment={
-                    <IconAdornment Icon={User} position="start" />
+                    <IconAdornment Icon={<User />} position="start" />
                   }
                 />
               )}
@@ -58,7 +58,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.Birthday)}
                   StartAdornment={
-                    <IconAdornment Icon={Cake} position="start" />
+                    <IconAdornment Icon={<Cake />} position="start" />
                   }
                 />
               )}
@@ -71,7 +71,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.Email)}
                   StartAdornment={
-                    <IconAdornment Icon={Mail} position="start" />
+                    <IconAdornment Icon={<Mail />} position="start" />
                   }
                 />
               )}
@@ -84,7 +84,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.Phone)}
                   StartAdornment={
-                    <IconAdornment Icon={Phone} position="start" />
+                    <IconAdornment Icon={<Phone />} position="start" />
                   }
                 />
               )}
@@ -102,7 +102,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.CertificateExpiration)}
                   StartAdornment={
-                    <IconAdornment Icon={ClipboardList} position="start" />
+                    <IconAdornment Icon={<ClipboardList />} position="start" />
                   }
                 />
               )}
@@ -115,7 +115,7 @@ const CustomerDetailsForm: React.FC = () => {
                   formikField={field}
                   label={t(CustomerLabel.CovidCertificateReleaseDate)}
                   StartAdornment={
-                    <IconAdornment Icon={SheildCheck} position="start" />
+                    <IconAdornment Icon={<SheildCheck />} position="start" />
                   }
                 />
               )}

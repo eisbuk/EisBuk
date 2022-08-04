@@ -1,7 +1,7 @@
 import React from "react";
 
 interface IconAdornmentProps {
-  Icon: any;
+  Icon: JSX.Element | null;
   position: "start" | "end";
 }
 
@@ -9,14 +9,16 @@ interface AddOnAdornmentProps {
   label: string;
 }
 
-interface ButtonAdornmentProps extends React.HTMLAttributes<HTMLButtonElement> {
-  Icon: any;
+interface ButtonAdornmentProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  Icon: JSX.Element | null;
   label: string;
   disabled?: boolean;
 }
 
-interface DropdownAdornmentProps {
-  name: string;
+interface DropdownAdornmentProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  label: string;
   options: string[];
   disabled?: boolean;
 }
@@ -28,8 +30,8 @@ export const IconAdornment: React.FC<IconAdornmentProps> = ({
   const padding = position === "start" ? "pl-3" : "pr-3";
   return (
     <div className={padding}>
-      <div className="h-5 w-5 text-gray-400">
-        <Icon />
+      <div className="h-5 w-5 text-gray-400" aria-hidden="true">
+        {Icon}
       </div>
     </div>
   );
@@ -46,39 +48,40 @@ export const ButtonAdornment: React.FC<ButtonAdornmentProps> = ({
   label,
   onClick = () => {},
   disabled = false,
+  ...props
 }) => (
   <button
     onClick={onClick}
     disabled={disabled}
     type="button"
     className="h-full -ml-px inline-flex items-center space-x-2 px-4 border-l-[1px] border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-cyan-700 focus:border-cyan-700"
+    {...props}
   >
     <div className="h-5 w-5 text-gray-400" aria-hidden="true">
-      <Icon />
+      {Icon}
     </div>
     <span>{label}</span>
   </button>
 );
 
-/*
-  TODO: Pass Formik FieldProps to connect this dropdown's input to global Form State,
-    or tie into field value? This action depends on use-case
-*/
+// TODO: Pass Formik FieldProps to connect this dropdown's input to global Form State as separate field value, or combine with TextInput field value?
 export const DropdownAdornment: React.FC<DropdownAdornmentProps> = ({
-  name,
   options,
+  label,
   disabled = false,
+  ...props
 }) => (
   <>
-    <label htmlFor={name} className="sr-only">
-      Country
+    <label htmlFor={label} className="sr-only">
+      {label}
     </label>
     <select
-      id={name}
-      name={name}
-      autoComplete={name}
+      id={label}
+      name={label}
+      autoComplete={label}
       disabled={disabled}
       className="focus:ring-cyan-700 focus:border-cyan-700 h-full py-0 pl-3 px-8 border-transparent bg-transparent text-gray-500 text-sm rounded-md"
+      {...props}
     >
       {options.map((opt) => (
         <option>{opt}</option>

@@ -1,9 +1,6 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-// TODO: Add more obvious disabled input state styles
-
-// TODO: Limit adornments to whitelisted components in "./InputAdornment"
 export interface TextInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;

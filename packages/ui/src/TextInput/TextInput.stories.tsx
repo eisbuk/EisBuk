@@ -3,12 +3,6 @@ import { ComponentMeta } from "@storybook/react";
 import { Formik, Form, Field, FieldProps } from "formik";
 import * as yup from "yup";
 
-/*
-  TODO: "Display mode" of TextInput is not handled through disabled state as planned
-    Create DataList or DescriptionList components for Readonly versions of form
-*/
-
-// TODO: Add Icons in mock - e.g User, Cake, Phone - worth just installing Heroicons as a dep and make this easier?
 import { Calendar } from "@eisbuk/svg";
 import TextInput, {
   IconAdornment,
@@ -96,7 +90,7 @@ export const Default = (): JSX.Element => (
               label="Icon"
               placeholder="chris@myriadcode.co"
               StartAdornment={
-                <IconAdornment Icon={Calendar} position="start" />
+                <IconAdornment Icon={<Calendar />} position="start" />
               }
             />
           )}
@@ -118,7 +112,7 @@ export const Default = (): JSX.Element => (
               label="Dropdown"
               EndAdornment={
                 <DropdownAdornment
-                  name="country"
+                  label="country"
                   options={["US", "CA", "EU"]}
                 />
               }
@@ -131,7 +125,9 @@ export const Default = (): JSX.Element => (
               formikField={field}
               label="Button"
               placeholder="John Smith"
-              EndAdornment={<ButtonAdornment Icon={Calendar} label="Sort" />}
+              EndAdornment={
+                <ButtonAdornment Icon={<Calendar />} label="Sort" />
+              }
             />
           )}
         </Field>
