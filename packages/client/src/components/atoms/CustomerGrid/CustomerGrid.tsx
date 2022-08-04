@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useDispatch } from "react-redux";
 
 import TextField from "@mui/material/TextField";
 
@@ -7,29 +8,30 @@ import makeStyles from "@mui/styles/makeStyles";
 import { Customer } from "@eisbuk/shared";
 
 import CustomerGridItem from "./CustomerGridItem";
-import CustomerDialog from "../CustomerCard";
+
+import { openModal } from "@/features/modal/actions";
 
 import { __customersGridId__ } from "@/__testData__/testIds";
-interface Props {
+
+interface CustomerGridProps {
   customers?: Customer[];
   className?: string;
   tableContainerClassName?: string;
 }
 
-const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
+const CustomerGrid: React.FC<CustomerGridProps> = ({
+  customers,
+  className = "",
+}) => {
   const classes = useStyles();
+  const dispatch = useDispatch();
 
   // search flow
   const [searchString, setSearchString] = useState("");
   const searchRegex = new RegExp(searchString, "i");
 
-  const [dialogCustomer, setDialogCustomer] = useState<Customer | null>(null);
-
-  const handleClose = () => {
-    setDialogCustomer(null);
-  };
   const onCustomerClick = (customer: Customer) => {
-    setDialogCustomer(customer);
+    dispatch(openModal({ component: "CustomerCard", props: { customer } }));
   };
 
   return (
@@ -50,9 +52,6 @@ const CustomerGrid: React.FC<Props> = ({ customers, className = "" }) => {
             )
         )}
       </div>
-      {dialogCustomer && (
-        <CustomerDialog onClose={handleClose} customer={dialogCustomer} />
-      )}
     </div>
   );
 };

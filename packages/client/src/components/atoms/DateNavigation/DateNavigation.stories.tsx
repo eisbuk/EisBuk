@@ -23,11 +23,6 @@ export default {
 const defaultDateISO = "2021-03-01";
 const defaultDate = DateTime.fromISO(defaultDateISO);
 
-const confirmDialog = {
-  title: "Confirm Dialog",
-  description: "Confirm you wish to delete",
-};
-
 const extraButtonProps = {
   date: defaultDate,
   slotsToCopy: {
@@ -72,8 +67,8 @@ const center = {
 const extraButtons = (
   <SlotOperationButtons {...extraButtonProps}>
     <CopyButton />
-    <PasteButton size="medium" />
-    <DeleteButton confirmDialog={confirmDialog} />
+    <PasteButton />
+    <DeleteButton />
   </SlotOperationButtons>
 );
 

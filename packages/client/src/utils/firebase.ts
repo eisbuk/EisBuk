@@ -5,9 +5,6 @@ import { getOrganization } from "@/lib/getters";
 
 import { CloudFunction } from "@/enums/functions";
 
-const app = getApp();
-const functions = getFunctions(app, "europe-west6");
-
 /**
  * Invokes cloud function
  * @param functionName function to run
@@ -15,8 +12,12 @@ const functions = getFunctions(app, "europe-west6");
  */
 export const createCloudFunctionCaller =
   (functionName: CloudFunction, payload?: Record<string, any>) =>
-  async (): Promise<any> =>
-    httpsCallable(
+  async (): Promise<any> => {
+    const app = getApp();
+    const functions = getFunctions(app, "europe-west6");
+
+    return httpsCallable(
       functions,
       functionName
     )({ ...payload, organization: getOrganization() });
+  };

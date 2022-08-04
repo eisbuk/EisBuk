@@ -1,22 +1,33 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "@firebase/auth";
 
-import Container from "@mui/material/Container";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
+import {
+  Button,
+  ButtonColor,
+  ButtonProps,
+  ButtonSize,
+  Layout,
+} from "@eisbuk/ui";
 
 import { CloudFunction } from "@/enums/functions";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
 
+import { getCustomersByBirthday } from "@/store/selectors/customers";
+
 import { createCloudFunctionCaller } from "@/utils/firebase";
-import makeStyles from "@mui/styles/makeStyles";
+
+import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const auth = getAuth();
 
@@ -35,90 +46,99 @@ export const createAdminTestUsers = async (): Promise<void> => {
   }
 };
 
-const DebugPage: React.FC = () => {
-  const classes = useStyles();
+const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
+  color = ButtonColor.Primary,
+  ...props
+}) => (
+  <Button
+    className="active:opacity-80"
+    {...props}
+    color={color}
+    size={ButtonSize.LG}
+  />
+);
 
+const DebugPage: React.FC = () => {
   useTitle("Debug");
 
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
   return (
-    <Container maxWidth="sm">
-      <AppbarAdmin />
-      <Box my={4} color="primary">
-        <Button
-          onClick={createAdminTestUsers}
-          color="secondary"
-          className={classes.buttonSecondary}
-          variant="contained"
-        >
-          Create admin test users
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.CreateTestData, {
-            numUsers: 10,
-          })}
-          color="primary"
-          className={classes.buttonPrimary}
-          variant="contained"
-        >
-          Create test users
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
-          color="primary"
-          className={classes.buttonPrimary}
-          variant="contained"
-        >
-          Create test slots
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
-          color="primary"
-          className={classes.buttonPrimary}
-          variant="contained"
-        >
-          Prune slots by day
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(
-            CloudFunction.DeleteOrphanedBookings
-          )}
-          color="primary"
-          className={classes.buttonPrimary}
-          variant="contained"
-        >
-          Delete orphaned bookings
-        </Button>
-      </Box>
-      <Box my={4} color="secondary.main">
-        <Button
-          onClick={createCloudFunctionCaller(
-            CloudFunction.MigrateCategoriesToExplicitMinors
-          )}
-          color="primary"
-          className={classes.buttonPrimary}
-          variant="contained"
-        >
-          Migrate categories to explicit minors
-        </Button>
-      </Box>
-    </Container>
+    <Layout
+      adminLinks={adminLinks}
+      isAdmin
+      Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
+    >
+      <div className="content-container py-8">
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createAdminTestUsers}
+            color={ButtonColor.Secondary}
+          >
+            Create admin test users
+          </DebugPageButton>
+        </div>
+
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(CloudFunction.CreateTestData, {
+              numUsers: 10,
+            })}
+            color={ButtonColor.Primary}
+          >
+            Create test users
+          </DebugPageButton>
+        </div>
+
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
+            color={ButtonColor.Primary}
+          >
+            Create test slots
+          </DebugPageButton>
+        </div>
+
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
+            color={ButtonColor.Primary}
+          >
+            Prune slots by day
+          </DebugPageButton>
+        </div>
+
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(
+              CloudFunction.DeleteOrphanedBookings
+            )}
+            color={ButtonColor.Primary}
+          >
+            Delete orphaned bookings
+          </DebugPageButton>
+        </div>
+
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(
+              CloudFunction.MigrateCategoriesToExplicitMinors
+            )}
+            color={ButtonColor.Primary}
+          >
+            Migrate categories to explicit minors
+          </DebugPageButton>
+        </div>
+      </div>
+    </Layout>
   );
 };
 
-const useStyles = makeStyles((theme) => ({
-  buttonPrimary: {
-    background: theme.palette.primary.main,
-  },
-  buttonSecondary: {
-    background: theme.palette.secondary.main,
-  },
-}));
 export default DebugPage;

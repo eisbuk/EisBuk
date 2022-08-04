@@ -4,17 +4,18 @@
 
 import React from "react";
 import { screen } from "@testing-library/react";
+import { BrowserRouter } from "react-router-dom";
 
 import {
   BookingSubCollection,
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import CustomerAreaPage from "../index";
 
 import { getNewStore } from "@/store/createStore";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
 
 import { getSecretKey } from "@/utils/localStorage";
 
@@ -24,16 +25,16 @@ import { saul } from "@/__testData__/customers";
 
 const mockUseParams = jest.fn();
 jest.mock("react-router", () => ({
+  ...jest.requireActual("react-router"),
   useParams: () => mockUseParams(),
 }));
 
 const mockUseFirestoreSubscribe = jest.fn();
-jest.mock(
-  "@/react-redux-firebase/hooks/useFirestoreSubscribe",
-  () =>
-    (...params: any[]) =>
-      mockUseFirestoreSubscribe(...params)
-);
+jest.mock("@eisbuk/react-redux-firebase-firestore", () => ({
+  ...jest.requireActual("@eisbuk/react-redux-firebase-firestore"),
+  useFirestoreSubscribe: (...params: any[]) =>
+    mockUseFirestoreSubscribe(...params),
+}));
 
 // The following mocks are here as to not break the app
 // and keep the test somewhat sandboxed
@@ -58,7 +59,12 @@ describe("CustomerAreaPage", () => {
   test("should store `secretKey` to `localStorage` on mount and remove on unmount", () => {
     const testKey = "secret-key-123";
     mockUseParams.mockImplementation(() => ({ secretKey: testKey }));
-    const { unmount } = renderWithRedux(<CustomerAreaPage />, testStore);
+    const { unmount } = renderWithRedux(
+      <BrowserRouter>
+        <CustomerAreaPage />
+      </BrowserRouter>,
+      testStore
+    );
     // Should store secret key on mount
     () => expect(getSecretKey()).toEqual(testKey);
     // Should remove secret key on unmount
@@ -67,7 +73,12 @@ describe("CustomerAreaPage", () => {
   });
 
   test("should subscribe to all necessary firestore entries", () => {
-    renderWithRedux(<CustomerAreaPage />, testStore);
+    renderWithRedux(
+      <BrowserRouter>
+        <CustomerAreaPage />
+      </BrowserRouter>,
+      testStore
+    );
     const [subscriptions] = mockUseFirestoreSubscribe.mock.calls[0];
     const wantSubscriptions = [
       OrgSubCollection.SlotsByDay,
@@ -84,7 +95,12 @@ describe("CustomerAreaPage", () => {
   test("should read customer data from the store and render an avatar", () => {
     const { secretKey } = saul;
     mockUseParams.mockImplementation(() => ({ secretKey }));
-    renderWithRedux(<CustomerAreaPage />, testStore);
+    renderWithRedux(
+      <BrowserRouter>
+        <CustomerAreaPage />
+      </BrowserRouter>,
+      testStore
+    );
     const saulRegex = new RegExp(`${saul.name} ${saul.surname}`);
     screen.getByText(saulRegex);
   });

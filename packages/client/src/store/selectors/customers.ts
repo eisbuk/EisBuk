@@ -3,6 +3,7 @@ import { Customer, CustomersByBirthday } from "@eisbuk/shared";
 import { LocalStore } from "@/types/store";
 
 import { compareCustomers } from "@/utils/customers";
+import { DateTime } from "luxon";
 
 /**
  * Get a record of all the customers for current organization from firebase store
@@ -47,7 +48,7 @@ export const getCustomer = (secretKey: string) => (state: LocalStore) => {
  * @returns selector to get a list of customers grouped by birthday
  */
 export const getCustomersByBirthday =
-  (date: string) =>
+  (date: DateTime) =>
   (state: LocalStore): CustomersByBirthday[] => {
     const customersInStore = getCustomersRecord(state);
 
@@ -71,7 +72,7 @@ export const getCustomersByBirthday =
       a.birthday.localeCompare(b.birthday)
     );
     const index = sortedCustomersByBirthday.findIndex(
-      (entry) => date.substring(5) <= entry.birthday
+      (entry) => date.toISODate().substring(5) <= entry.birthday
     );
     const rearrangedCustomers = sortedCustomersByBirthday
       .slice(index === -1 ? 0 : index)

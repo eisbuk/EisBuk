@@ -2,7 +2,9 @@
   "NavigationLabel": {
     "Attendance": "Presenze",
     "Athletes": "Atleti",
-    "Bookings": "Prenotazioni"
+    "Bookings": "Prenotazioni",
+    "OrganizationSettings": "Settings",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Prenota Ice",
@@ -126,17 +128,22 @@
   },
 
   "Prompt": {
-    "DeleteCustomer": "Sei sicuro di voler rimuovere",
-    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+    "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
 
     "NonReversible": "Questa azione non è reversibile",
 
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
+    "NoEmailTitle": "No email found",
+    "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
-    "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
-    "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
+    "NoPhoneTitle": "No phone number found",
+    "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
+
+    "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
+    "ExtendBookingDateBody": "Fino a quando lasciare che {{ name }} {{ surname }} possa prenotare?",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
@@ -174,7 +181,9 @@
     "Dismiss": "Ignora",
     "Submit": "Invia",
     "Verify": "verifica",
-    "Edit": "Modificare"
+    "Edit": "Modificare",
+    "Add": "Add",
+    "Delete": "Delete"
   },
 
   "Notification": {
@@ -233,7 +242,8 @@
     "CopySlots": "Copia slot",
     "CopiedSlotsBadge": "Slot copiati",
     "PasteSlots": "Incolla slot",
-    "CreateSlots": "Crea nuovo slot"
+    "CreateSlots": "Crea nuovo slot",
+    "EnableEdit": "Abilita la modifica"
   },
 
   "SlotFormAria": {

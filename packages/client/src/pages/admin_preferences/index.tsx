@@ -13,21 +13,27 @@ import i18n, {
   useTranslation,
   OrganizationLabel,
 } from "@eisbuk/translations";
+import { Layout } from "@eisbuk/ui";
 
 import makeStyles from "@mui/styles/makeStyles";
 
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import { updateOrganization } from "@/store/actions/organizationOperations";
-
-import { getLocalAuth } from "@/store/selectors/auth";
-import { getOrganizationSettings } from "@/store/selectors/app";
-
-import { isEmpty } from "@/utils/helpers";
 
 import AdminsField from "./AdminsField";
 import FormSection from "@/components/atoms/FormSection";
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import { NotificationsContainer } from "@/features/notifications/components";
+
+import { updateOrganization } from "@/store/actions/organizationOperations";
+import { getOrganizationSettings } from "@/store/selectors/app";
+import { getLocalAuth } from "@/store/selectors/auth";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
+
+import { isEmpty } from "@/utils/helpers";
+
+import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const smsFields = [
   {
@@ -80,6 +86,13 @@ const OrganizationSettings: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
 
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
   const handleSubmit = (
     orgData: OrganizationData,
     actions: FormikHelpers<OrganizationData>
@@ -88,7 +101,6 @@ const OrganizationSettings: React.FC = () => {
   };
 
   const currentUser = userAuthInfo?.email || "";
-
   if (isEmpty(organization)) {
     return null;
   }
@@ -110,8 +122,12 @@ const OrganizationSettings: React.FC = () => {
   };
 
   return (
-    <>
-      <AppbarAdmin />
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
+    >
       <div className={classes.title}>
         <Typography variant="h4">{`${
           organization?.displayName || "Organization"
@@ -161,7 +177,7 @@ const OrganizationSettings: React.FC = () => {
           )}
         </Formik>
       </div>
-    </>
+    </Layout>
   );
 };
 

@@ -1,19 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import IconButton from "@mui/material/IconButton";
-
-import DeleteIcon from "@mui/icons-material/Delete";
+import { Trash } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
-import ConfirmDialog from "@/components/global/ConfirmDialog";
+import SlotOperationButton from "./SlotOperationButton";
 
 import {
-  deleteSlot,
   deleteSlotsDay,
   deleteSlotsWeek,
 } from "@/store/actions/slotOperations";
@@ -25,18 +20,7 @@ import {
 } from "@/lib/errorMessages";
 
 import { __deleteButtonId__ } from "@/__testData__/testIds";
-
-interface Props extends SlotButtonProps {
-  /**
-   * Optional confirm dialog. Used to open up a confirm dialog before dispatching action to store.
-   * Requires title and description (to render the `ConfirmDialog`).
-   * If not provided, the action is dispatched to the store directly `onClick`
-   */
-  confirmDialog?: {
-    title: string;
-    description: string;
-  };
-}
+import { openModal } from "@/features/modal/actions";
 
 /**
  * Button in charge of delete functionality.
@@ -49,14 +33,10 @@ interface Props extends SlotButtonProps {
  * - under `contextType = "slot"` and no value for `slot` param has been provided within the context
  * - under `contextType = "day" | "week"` and no value for `date` has been provided within the context
  */
-export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
+export const DeleteButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
-
-  // used to control showing of confirmation dialog
-  // only used if `confirmDialog` prop has been provided
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOperationButtons` context
@@ -65,7 +45,7 @@ export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
     return null;
   }
 
-  const { contextType, date, slot, iconSize } = buttonGroupContext;
+  const { contextType, date, slot } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if rendered within `contextType === "slot"` but no value was provided for `slot` within the context
@@ -90,7 +70,7 @@ export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
     // choose proper delete function based on `contextType`
     switch (contextType) {
       case ButtonContextType.Slot:
-        dispatch(deleteSlot(slot!.id));
+        dispatch(openModal({ component: "DeleteSlotDialog", props: slot! }));
         break;
 
       case ButtonContextType.Day:
@@ -103,38 +83,13 @@ export const DeleteButton: React.FC<Props> = ({ size, confirmDialog }) => {
     }
   };
 
-  /**
-   * Button's `onClick` handler.
-   * - If `confirmDialog` prop provided, prompts for confirmation
-   * - If no `confirmDialog` prop provided, executes delete immediately
-   */
-  const handleClick = (e: React.SyntheticEvent) => {
-    e.stopPropagation();
-    if (confirmDialog) {
-      setOpenConfirmDialog(true);
-    } else {
-      handleDelete();
-    }
-  };
-
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
-        onClick={handleClick}
-        data-testid={__deleteButtonId__}
-      >
-        <DeleteIcon />
-      </IconButton>
-      <ConfirmDialog
-        title={confirmDialog?.title || ""}
-        open={openConfirmDialog}
-        setOpen={setOpenConfirmDialog}
-        onConfirm={handleDelete}
-      >
-        {confirmDialog?.description || ""}
-      </ConfirmDialog>
-    </>
+    <SlotOperationButton
+      onClick={handleDelete}
+      data-testid={__deleteButtonId__}
+    >
+      <Trash />
+    </SlotOperationButton>
   );
 };
 

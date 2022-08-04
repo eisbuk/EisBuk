@@ -3,22 +3,16 @@
  */
 
 import React from "react";
-import {
-  screen,
-  render,
-  waitForElementToBeRemoved,
-  cleanup,
-} from "@testing-library/react";
+import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
 import { ButtonContextType } from "@/enums/components";
-
-import { SlotInterface } from "@eisbuk/shared";
 
 import SlotOperationButtons from "../SlotOperationButtons";
 import DeleteButton from "../DeleteButton";
 
 import * as slotOperations from "@/store/actions/slotOperations";
+import { openModal } from "@/features/modal/actions";
 
 import {
   __noDateDelete,
@@ -26,11 +20,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import {
-  __deleteButtonId__,
-  __confirmDialogNoId__,
-  __confirmDialogYesId__,
-} from "@/__testData__/testIds";
+import { __deleteButtonId__ } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
@@ -40,20 +30,6 @@ jest.mock("react-redux", () => ({
 }));
 
 // #region mockDeleteActions
-/**
- * Mock implementation of `deleteSlot` function we'll be using to both mock function within component
- * as well as for tests.
- * @param slotId of slot to delete (just like in the original function)
- * @returns function should return a thunk, but we're returning a dummy object with values passed in for easier testing
- */
-const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
-  type: "delete_slot",
-  slotId,
-});
-jest
-  .spyOn(slotOperations, "deleteSlot")
-  .mockImplementation(mockDelSlotImplementation as any);
-
 /**
  * Mock implementation of `deleteSlotsDay` we'll be using to both mock function within component
  * as well as for tests.
@@ -92,8 +68,8 @@ describe("SlotOperationButtons", () => {
     cleanup();
   });
 
-  describe("Test straightforward delete dispatching (withouth the dialog)", () => {
-    test("should dispatch 'deleteSlot' onClick if within \"slot\" context and no prop for dialog has been provided", () => {
+  describe("DeleteButton", () => {
+    test("should open 'DeleteSlotDialog' modal onClick if within \"slot\" context", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Slot}
@@ -104,14 +80,12 @@ describe("SlotOperationButtons", () => {
       );
       // initiate delete
       screen.getByTestId(__deleteButtonId__).click();
-      // create a dummy delete slots day action object with proper values
-      const mockSlotDelAction = mockDelSlotImplementation(baseSlot.id);
-      // test (using mocking tactics explained above) if `deleteSlot`
-      // has been dispatched to the store with proper slot data
-      expect(mockDispatch).toHaveBeenCalledWith(mockSlotDelAction);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({ component: "DeleteSlotDialog", props: baseSlot })
+      );
     });
 
-    test("should dispatch 'deleteSlotsDay' onClick if within \"day\" context and no prop for dialog has been provided", () => {
+    test("should dispatch 'deleteSlotsDay' onClick if within \"day\" context", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Day}
@@ -129,7 +103,7 @@ describe("SlotOperationButtons", () => {
       expect(mockDispatch).toHaveBeenCalledWith(mockDayDelAction);
     });
 
-    test("should dispatch 'deleteSlotsWeek' onClick if within \"week\" context and no prop for dialog has been provided", () => {
+    test("should dispatch 'deleteSlotsWeek' onClick if within \"week\" context", () => {
       render(
         <SlotOperationButtons
           contextType={ButtonContextType.Week}
@@ -145,52 +119,6 @@ describe("SlotOperationButtons", () => {
       // test (using mocking tactics explained above) if `deleteSlotsWeek`
       // has been dispatched to the store with proper date
       expect(mockDispatch).toHaveBeenCalledWith(mockWeekDelAction);
-    });
-  });
-
-  describe("Test delete action dispatching with added dialog confirmation step", () => {
-    // props for dialog we'll use to test rendering the dialog first (before dispatching any delete actions)
-    const testDialog = {
-      title: "Test dialog",
-      description: "This is a test description of confirmation dialog",
-    };
-
-    beforeEach(() => {
-      // we'll be rendering the simplest setup: `contextType="week"` (default)
-      // there's no need to test for each `contextType` but rather focus only on additional confirmation step
-      render(
-        <SlotOperationButtons
-          contextType={ButtonContextType.Week}
-          date={testDate}
-        >
-          <DeleteButton confirmDialog={testDialog} />
-        </SlotOperationButtons>
-      );
-    });
-
-    test("if 'dialog' prop provided, should open a confirm dialog on click (without dispatching the delete function)", () => {
-      screen.getByTestId(__deleteButtonId__).click();
-      // check that no delete function has been called yet
-      expect(mockDispatch).not.toHaveBeenCalled();
-      // check that the dialog has been properly rendered
-      screen.getByText(testDialog.title);
-      screen.getByText(testDialog.description);
-    });
-
-    test("should dispatch delete function after confirming the dialog (if 'dialog' prop are provided)", () => {
-      screen.getByTestId(__deleteButtonId__).click();
-      screen.getByTestId(__confirmDialogYesId__).click();
-      // create a dummy delete slot action object with proper values
-      const mockWeekDelAction = mockDelWeekImplementation(testDate);
-      // test (using mocking tactics explained above) if `deleteSlotsWeek`
-      // has been dispatched to the store with proper date
-      expect(mockDispatch).toHaveBeenCalledWith(mockWeekDelAction);
-    });
-
-    test('should close the dialog on negative confirmation ("No")', async () => {
-      screen.getByTestId(__deleteButtonId__).click();
-      screen.getByTestId(__confirmDialogNoId__).click();
-      await waitForElementToBeRemoved(() => screen.getByText(testDialog.title));
     });
   });
 

@@ -56,32 +56,6 @@ export const AllWeekIcons = (): JSX.Element => (
 // #endregion allButtonsPerContextType
 
 // #region buttonVariants
-export const DifferentSizes = (): JSX.Element => (
-  <>
-    Default (medium):
-    <SlotOperationButtons {...baseProps}>
-      <CopyButton />
-      <PasteButton />
-      <DeleteButton />
-    </SlotOperationButtons>
-    <br />
-    Small:
-    <br />
-    <SlotOperationButtons {...baseProps} iconSize="small">
-      <CopyButton />
-      <PasteButton />
-      <DeleteButton />
-    </SlotOperationButtons>
-    <br />
-    Small sides with medium middle:
-    <SlotOperationButtons {...baseProps} iconSize="small">
-      <CopyButton />
-      <PasteButton size="medium" />
-      <DeleteButton />
-    </SlotOperationButtons>
-  </>
-);
-
 export const CopyVariants = (): JSX.Element => (
   <>
     Default:
@@ -110,12 +84,7 @@ export const DisabledPaste = (): JSX.Element => (
 
 export const deleteWithDialog = (): JSX.Element => (
   <SlotOperationButtons {...baseProps}>
-    <DeleteButton
-      confirmDialog={{
-        title: "Confirm delete",
-        description: "Are you sure you want to proceed",
-      }}
-    />
+    <DeleteButton />
   </SlotOperationButtons>
 );
 // #endregion buttonVariants

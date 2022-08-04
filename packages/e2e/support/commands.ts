@@ -30,7 +30,7 @@ declare global {
         attr: string,
         label: string,
         strict?: boolean
-      ) => Chainable<Element>;
+      ) => Chainable<JQuery<HTMLElement>>;
       /**
        * @param {number} millis milliseconds from UNIX epoch, such as it's received from `Date.now()`.
        */
@@ -54,14 +54,14 @@ declare global {
        * - performs `.blur()` after typing in the value
        * @param {string} input
        */
-      clearAndType: (input: string) => Chainable<Element>;
+      clearAndType: (input: string) => Chainable<JQuery<HTMLElement>>;
       /**
        * A convenience method to avoid typing `get("button").contains(<label>).click()` each time.
        * Always uses `click({ force: true })` to avoid failing on buttons detatched after click.
        * @param {string} label button label
        * @param {number} eq optional element index (if multiple elements found)
        */
-      clearTypeAndEnter: (input: string) => Chainable<Element>;
+      clearTypeAndEnter: (input: string) => Chainable<JQuery<HTMLElement>>;
       /**
        * A convenience method to avoid typing `get("button").contains(<label>).click()` each time.
        * Always uses `click({ force: true })` to avoid failing on buttons detatched after click.
@@ -69,7 +69,10 @@ declare global {
        * @param {string} label button label
        * @param {number} eq optional element index (if multiple elements found)
        */
-      clickButton: (label: string, eq?: number) => Chainable<Element>;
+      clickButton: (
+        label: string,
+        eq?: number
+      ) => Chainable<JQuery<HTMLElement>>;
       /**
        * A utility wrapper around cy.intercept. Allows us to intercept the message the specified number
        * of times, after which the request goes through.
@@ -168,16 +171,16 @@ export default (): void => {
 
   Cypress.Commands.add(
     "clearAndType",
-    { prevSubject: "element" },
-    (el: Element, input: string) => cy.wrap(el).clear().type(input).blur()
+    { prevSubject: ["element"] },
+    ($el, input) => cy.wrap($el).clear().type(input).blur()
   );
 
   Cypress.Commands.add(
     "clearTypeAndEnter",
-    { prevSubject: "element" },
-    (el: Element, input: string) =>
+    { prevSubject: ["element"] },
+    ($el, input) =>
       cy
-        .wrap(el)
+        .wrap($el)
         .clear()
         .type(input + "\n")
   );

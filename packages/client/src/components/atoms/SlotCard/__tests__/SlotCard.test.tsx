@@ -5,20 +5,15 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import { SlotInterface } from "@eisbuk/shared";
-
 import SlotCard from "../SlotCard";
-
-import * as slotOperations from "@/store/actions/slotOperations";
 
 import { __slotId__ } from "../__testData__/testIds";
 import {
-  __confirmDialogYesId__,
-  __slotFormId__,
   __deleteButtonId__,
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/slots";
+import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 
@@ -76,25 +71,19 @@ describe("SlotCard", () => {
 
     test("should open slot form on edit slot click", () => {
       screen.getByTestId(__editSlotButtonId__).click();
-      screen.getByTestId(__slotFormId__);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SlotForm",
+          props: { date: baseSlot.date, slotToEdit: baseSlot },
+        })
+      );
     });
 
-    test("should dispatch delete action on delete confirmation click", () => {
-      // mock implementation of `deleteSlot` used to mock implementation in component and for testing
-      const mockDelSlotImplementation = (slotId: SlotInterface["id"]) => ({
-        type: "delete_slot",
-        slotId,
-      });
-      // mock deleteSlot function
-      jest
-        .spyOn(slotOperations, "deleteSlot")
-        .mockImplementation(mockDelSlotImplementation as any);
-      // open delete dialog
+    test("should initiate delete-slot flow on delete button click", () => {
       screen.getByTestId(__deleteButtonId__).click();
-      // confirm delete dialog
-      screen.getByTestId(__confirmDialogYesId__).click();
-      const mockDeleteAction = mockDelSlotImplementation(baseSlot.id);
-      expect(mockDispatch).toHaveBeenCalledWith(mockDeleteAction);
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({ component: "DeleteSlotDialog", props: baseSlot })
+      );
     });
   });
 

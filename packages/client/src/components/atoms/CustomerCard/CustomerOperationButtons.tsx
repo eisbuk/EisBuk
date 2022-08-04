@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 
 import CardActions from "@mui/material/CardActions";
@@ -7,18 +7,9 @@ import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 
-import { Customer } from "@eisbuk/shared";
-import { useTranslation, Prompt } from "@eisbuk/translations";
-
 import { ActionButtonProps } from "./types";
 
-import ConfirmDialog from "@/components/global/ConfirmDialog";
-import CustomerForm from "@/components/customers/CustomerForm";
-
-import {
-  deleteCustomer,
-  updateCustomer,
-} from "@/store/actions/customerOperations";
+import { openModal } from "@/features/modal/actions";
 
 import {
   __customerDeleteId__,
@@ -30,37 +21,24 @@ import {
  */
 const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
   customer,
-  onClose,
   className,
 }) => {
-  const { t } = useTranslation();
-
   const dispatch = useDispatch();
 
-  // delete customer flow
-  const [deleteDialog, setDeleteDialog] = useState(false);
-  const deleteDialogPrompt = `${t(Prompt.DeleteCustomer)} ${customer?.name} ${
-    customer?.surname
-  }?`;
-  const confirmDelete = () => {
-    onClose();
-    customer && dispatch(deleteCustomer(customer));
+  const handleDelete = () => {
+    dispatch(openModal({ component: "DeleteCustomerDialog", props: customer }));
   };
 
-  // edit customer flow
-  const [editCustomer, setEditCustomer] = useState(false);
-  const openCustomerForm = () => setEditCustomer(true);
-  const closeCustomerForm = () => setEditCustomer(false);
-  const handleSubmit = (customer: Customer) => {
-    onClose();
-    dispatch(updateCustomer(customer));
-  };
+  const handleEditCustoer = () =>
+    dispatch(
+      openModal({ component: "CustomerFormDialog", props: { customer } })
+    );
 
   return (
     <CardActions {...{ className }}>
       <IconButton
         aria-label="edit"
-        onClick={openCustomerForm}
+        onClick={handleEditCustoer}
         data-testid={__customerEditId__}
         size="large"
       >
@@ -68,28 +46,12 @@ const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
       </IconButton>
       <IconButton
         aria-label="delete"
-        onClick={() => setDeleteDialog(true)}
+        onClick={handleDelete}
         data-testid={__customerDeleteId__}
         size="large"
       >
         <DeleteIcon />
       </IconButton>
-
-      <ConfirmDialog
-        open={deleteDialog}
-        title={deleteDialogPrompt}
-        setOpen={setDeleteDialog}
-        onConfirm={confirmDelete}
-      >
-        {t(Prompt.NonReversible)}
-      </ConfirmDialog>
-
-      <CustomerForm
-        updateCustomer={handleSubmit}
-        open={editCustomer}
-        customer={customer!}
-        onClose={closeCustomerForm}
-      />
     </CardActions>
   );
 };

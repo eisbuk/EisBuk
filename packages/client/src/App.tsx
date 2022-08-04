@@ -1,6 +1,6 @@
 import React from "react";
-import { SnackbarProvider } from "notistack";
 import { Provider as ReduxProvider } from "react-redux";
+import { BrowserRouter } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
 
 import CssBaseline from "@mui/material/CssBaseline";
@@ -8,17 +8,21 @@ import LocalizationProvider from "@mui/lab/LocalizationProvider";
 import DateAdapter from "@mui/lab/AdapterLuxon";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 
+import { registerOrganization } from "@eisbuk/react-redux-firebase-firestore";
+
 import { store } from "@/store";
 
 import AppContent from "@/AppContent";
 
-import Notifier from "@/components/Notifier";
 import { Modal } from "@/features/modal/components";
 
-import useConnectAuthToStore from "@/react-redux-firebase/hooks/useConnectAuthToStore";
+import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
 import { currentTheme } from "@/themes";
 import { NotificationsProvider } from "./features/notifications/context";
+import { getOrganization } from "./lib/getters";
+
+registerOrganization(getOrganization());
 
 const App: React.FC = () => {
   // connect auth to store to recieve firebase SDK's auth updates
@@ -26,24 +30,23 @@ const App: React.FC = () => {
   useConnectAuthToStore(getAuth(), store);
 
   return (
-    <ReduxProvider store={store}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={currentTheme}>
-          <LocalizationProvider dateAdapter={DateAdapter}>
-            <SnackbarProvider maxSnack={3}>
+    <BrowserRouter>
+      <ReduxProvider store={store}>
+        <StyledEngineProvider injectFirst>
+          <ThemeProvider theme={currentTheme}>
+            <LocalizationProvider dateAdapter={DateAdapter}>
               <NotificationsProvider
                 timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
               >
-                <Notifier />
                 <CssBaseline />
                 <AppContent />
                 <Modal />
               </NotificationsProvider>
-            </SnackbarProvider>
-          </LocalizationProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
-    </ReduxProvider>
+            </LocalizationProvider>
+          </ThemeProvider>
+        </StyledEngineProvider>
+      </ReduxProvider>
+    </BrowserRouter>
   );
 };
 

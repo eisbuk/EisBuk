@@ -1,6 +1,7 @@
 import React from "react";
 
 import { ChevronRight, ChevronLeft } from "@eisbuk/svg";
+import { AdminAria, useTranslation } from "@eisbuk/translations";
 
 interface DateNavigationProps extends React.HTMLAttributes<HTMLDivElement> {
   content: string;
@@ -20,9 +21,14 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
 }) => {
   const buttonClasses = "w-8 h-full p-1 text-gray-500";
 
+  const { t } = useTranslation();
   return (
     <div className={["h-8", "flex", className].join(" ")}>
-      <button onClick={onPrev} className={buttonClasses}>
+      <button
+        aria-label={t(AdminAria.SeePastDates)}
+        onClick={onPrev}
+        className={buttonClasses}
+      >
         <ChevronLeft />
       </button>
 
@@ -32,7 +38,11 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
         </span>
       </div>
 
-      <button onClick={onNext} className={buttonClasses}>
+      <button
+        aria-label={t(AdminAria.SeeFutureDates)}
+        onClick={onNext}
+        className={buttonClasses}
+      >
         <ChevronRight />
       </button>
     </div>

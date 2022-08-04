@@ -3,29 +3,49 @@ import React from "react";
 import { EisbukLogo } from "@eisbuk/svg";
 
 import UserAvatar, { UserAvatarProps } from "../UserAvatar";
+import AdminBar from "./AdminBar";
 
 interface LayoutProps {
   Logo?: React.FC;
   user?: UserAvatarProps;
   additionalButtons?: JSX.Element;
+  additionalAdminContent?: JSX.Element;
   Notifications?: React.FC<{ className?: string }>;
   children?: React.ReactNode[] | React.ReactNode;
+  isAdmin?: boolean;
+  adminLinks?: LinkItem[];
+}
+export interface LinkItem {
+  /** @TODO This should be an SVG component */
+  Icon: string;
+  label: string;
+  slug: string;
 }
 
 const Layout: React.FC<LayoutProps> = ({
   Logo = EisbukLogo,
   additionalButtons,
-  user,
+  additionalAdminContent,
+  user = {},
   Notifications,
+  isAdmin = false,
   children,
+  adminLinks,
 }) => {
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
       <header className="bg-gray-800">
         <div className="content-container">
+          {isAdmin && adminLinks && (
+            <AdminBar
+              className={getHeaderRowClasses("top")}
+              adminLinks={adminLinks}
+              additionalContent={additionalAdminContent}
+            />
+          )}
+
           <div className={getHeaderRowClasses("top")}>
             <div className="h-5 w-[86px] text-white">{<Logo />}</div>
-
             {user && <UserAvatar {...user} />}
           </div>
 

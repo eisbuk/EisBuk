@@ -1,4 +1,10 @@
-import { SlotType, SlotInterface, SlotInterval } from "@eisbuk/shared";
+import {
+  SlotType,
+  SlotInterface,
+  SlotInterval,
+  Customer,
+  Category,
+} from "@eisbuk/shared";
 
 // #region SlotForm
 export const defaultInterval = {
@@ -22,13 +28,13 @@ export const defaultSlotFormValues: SlotFormValues = {
 // #endregion SlotForm
 
 // #region CustomerForm
-export const defaultCustomerFormValues = {
+export const defaultCustomerFormValues: Omit<Customer, "secretKey" | "id"> = {
   name: "",
   surname: "",
   email: "",
   phone: "",
   birthday: "",
-  category: "",
+  category: "" as Category,
   certificateExpiration: "",
   covidCertificateReleaseDate: "",
   covidCertificateSuspended: false,

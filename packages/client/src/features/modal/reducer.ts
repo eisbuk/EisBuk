@@ -8,15 +8,18 @@ import { ModalState, ModalReducerAction, ModalAction } from "./types";
  * against it, and a `Modal` component can be used (as a singleton) to render a modal.
  */
 const modalReducer: Reducer<ModalState, ModalReducerAction> = (
-  state = null,
+  state = [],
   action
 ): ModalState => {
   switch (action.type) {
     case ModalAction.Open:
-      return action.payload;
+      return [...state, action.payload];
 
     case ModalAction.Close:
-      return null;
+      return state.slice(0, -1);
+
+    case ModalAction.CloseAll:
+      return [];
 
     default:
       return state;

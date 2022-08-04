@@ -27,6 +27,7 @@ export * from "./IntervalCard";
 export * from "./BookingsCountdown";
 export * from "./CalendarNav";
 export * from "./TextInput";
+export * from "./Layout";
 
 export {
   TestComponent,

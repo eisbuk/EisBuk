@@ -16,7 +16,7 @@ import CustomerNavigation from "./CustomerNavigation";
 import AppbarCustomer from "@/components/layout/AppbarCustomer";
 import AppbarAdmin from "@/components/layout/AppbarAdmin";
 
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import {
   getBookingsCustomer,

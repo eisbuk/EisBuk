@@ -1,31 +1,33 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-
-import IconButton from "@mui/material/IconButton";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import PrintIcon from "@mui/icons-material/Print";
-
+import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
+import { Printer } from "@eisbuk/svg";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import DateNavigation from "@/components/atoms/DateNavigation";
+import { AttendanceSortBy } from "@/enums/other";
+
 import AttendanceSheet, {
   AttendanceSheetSlot,
 } from "@/components/atoms/AttendanceSheet";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import { AttendanceSortBy } from "@/enums/other";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
+
+import { changeCalendarDate } from "@/store/actions/appActions";
+
+import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
-  const classes = useStyles();
+  const dispatch = useDispatch();
   const { t } = useTranslation();
 
   useFirestoreSubscribe([
@@ -40,15 +42,26 @@ const DashboardPage: React.FC = () => {
 
   const date = useSelector(getCalendarDay);
 
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
   /**
    * This button, unlike the one in attendance page doesn't link
    * but initiates `window.print` which is very similar (99%) to
    * `Ctrl` + `P` print shortcut.
    */
   const printButton = (
-    <IconButton onClick={() => window.print()} size="large">
-      <PrintIcon />
-    </IconButton>
+    <Button
+      onClick={() => window.print()}
+      className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10"
+    >
+      <Printer />
+    </Button>
   );
 
   // add a semantically correct HTML title as it
@@ -58,32 +71,29 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <>
-      <AppbarAdmin className={classes.noPrint} />
-      <DateNavigation
-        className={classes.noPrint}
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
+    >
+      <CalendarNav
+        className="print:hidden"
+        onChange={(date) => dispatch(changeCalendarDate(date))}
+        date={date}
         jump="day"
-        extraButtons={printButton}
-      >
-        {() => (
-          <AttendanceSheet date={date}>
-            {attendanceSlots.map(
-              (slot) =>
-                slot.customers.length > 0 && <AttendanceSheetSlot {...slot} />
-            )}
-          </AttendanceSheet>
+        additionalContent={printButton}
+      />
+      <AttendanceSheet date={date}>
+        {attendanceSlots.map(
+          (slot) =>
+            slot.customers.length > 0 && (
+              <AttendanceSheetSlot key={slot.id} {...slot} />
+            )
         )}
-      </DateNavigation>
-    </>
+      </AttendanceSheet>
+    </Layout>
   );
 };
-
-const useStyles = makeStyles(() => ({
-  noPrint: {
-    "@media print": {
-      display: "none",
-    },
-  },
-}));
 
 export default DashboardPage;

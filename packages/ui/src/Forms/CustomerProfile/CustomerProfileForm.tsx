@@ -15,7 +15,7 @@ import {
   Mail,
   Phone,
   ClipboardList,
-  SheildCheck,
+  ShieldCheck,
 } from "@eisbuk/svg";
 
 import Button, { ButtonSize } from "../../Button";
