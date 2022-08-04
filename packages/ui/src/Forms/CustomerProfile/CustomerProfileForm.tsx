@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Formik, Form, Field, FieldProps } from "formik";
+import { Formik, Field, FieldProps } from "formik";
 import * as Yup from "yup";
 
 import { Customer } from "@eisbuk/shared";
@@ -59,11 +59,6 @@ const CustomerProfileForm: React.FC<FormProps> = ({
     ...customer,
   };
 
-  const handleCancel = () => {
-    onCancel();
-    toggleEdit();
-  };
-
   return (
     <Formik
       initialValues={initialValues}
@@ -74,182 +69,189 @@ const CustomerProfileForm: React.FC<FormProps> = ({
         toggleEdit();
       }}
     >
-      <Form>
-        <div className="flex flex-col gap-y-10 justify-between">
-          <Section
-            title="Personal Details"
-            subtitle="Manage your personal details"
-          >
-            <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
-              <div className="col-span-3">
-                <Field name="name">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Name)}
-                      StartAdornment={
-                        <IconAdornment Icon={<User />} position="start" />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
+      {({ resetForm, handleSubmit, isSubmitting }) => (
+        <form onSubmit={handleSubmit}>
+          <div className="flex flex-col gap-y-10 justify-between">
+            <Section
+              title="Personal Details"
+              subtitle="Manage your personal details"
+            >
+              <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
+                <div className="col-span-3">
+                  <Field name="name">
+                    {(field: FieldProps) => (
+                      <TextInput
+                        formikField={field}
+                        label={t(CustomerLabel.Name)}
+                        StartAdornment={
+                          <IconAdornment Icon={<User />} position="start" />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-3">
+                  <Field name="surname">
+                    {(field: FieldProps) => (
+                      <TextInput
+                        formikField={field}
+                        label={t(CustomerLabel.Surname)}
+                        StartAdornment={
+                          <IconAdornment Icon={<User />} position="start" />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-4">
+                  <Field name="birthday">
+                    {(field: FieldProps) => (
+                      <DateInput
+                        formikField={field}
+                        label={t(CustomerLabel.Birthday)}
+                        StartAdornment={
+                          <IconAdornment Icon={<Cake />} position="start" />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-3">
+                  <Field name="email">
+                    {(field: FieldProps) => (
+                      <TextInput
+                        formikField={field}
+                        label={t(CustomerLabel.Email)}
+                        StartAdornment={
+                          <IconAdornment Icon={<Mail />} position="start" />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-3">
+                  <Field name="phone">
+                    {({ field, meta, form }: FieldProps) => (
+                      <TextInput
+                        formikField={{ field, meta, form }}
+                        label={t(CustomerLabel.Phone)}
+                        StartAdornment={
+                          <IconAdornment Icon={<Phone />} position="start" />
+                        }
+                        onBlur={(e) =>
+                          form.setFieldValue(
+                            "phone",
+                            e.target.value.replace(/\s/g, "")
+                          )
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
               </div>
-              <div className="col-span-3">
-                <Field name="surname">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Surname)}
-                      StartAdornment={
-                        <IconAdornment Icon={<User />} position="start" />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-4">
-                <Field name="birthday">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.Birthday)}
-                      StartAdornment={
-                        <IconAdornment Icon={<Cake />} position="start" />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-3">
-                <Field name="email">
-                  {(field: FieldProps) => (
-                    <TextInput
-                      formikField={field}
-                      label={t(CustomerLabel.Email)}
-                      StartAdornment={
-                        <IconAdornment Icon={<Mail />} position="start" />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-3">
-                <Field name="phone">
-                  {({ field, meta, form }: FieldProps) => (
-                    <TextInput
-                      formikField={{ field, meta, form }}
-                      label={t(CustomerLabel.Phone)}
-                      StartAdornment={
-                        <IconAdornment Icon={<Phone />} position="start" />
-                      }
-                      onBlur={(e) =>
-                        form.setFieldValue(
-                          "phone",
-                          e.target.value.replace(/\s/g, "")
-                        )
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-            </div>
-          </Section>
+            </Section>
 
-          <Section
-            title="Medical Details"
-            subtitle="Manage your medical details"
-          >
-            <div className="grid sm:grid-cols-6 gap-y-2">
-              <div className="col-span-4">
-                <Field name="certificateExpiration">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.CertificateExpiration)}
-                      StartAdornment={
-                        <IconAdornment
-                          Icon={<ClipboardList />}
-                          position="start"
-                        />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
+            <Section
+              title="Medical Details"
+              subtitle="Manage your medical details"
+            >
+              <div className="grid sm:grid-cols-6 gap-y-2">
+                <div className="col-span-4">
+                  <Field name="certificateExpiration">
+                    {(field: FieldProps) => (
+                      <DateInput
+                        formikField={field}
+                        label={t(CustomerLabel.CertificateExpiration)}
+                        StartAdornment={
+                          <IconAdornment
+                            Icon={<ClipboardList />}
+                            position="start"
+                          />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-4">
+                  <Field name="covidCertificateReleaseDate">
+                    {(field: FieldProps) => (
+                      <DateInput
+                        formikField={field}
+                        label={t(CustomerLabel.CovidCertificateReleaseDate)}
+                        StartAdornment={
+                          <IconAdornment
+                            Icon={<SheildCheck />}
+                            position="start"
+                          />
+                        }
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
+                <div className="col-span-4">
+                  <Field name="covidCertificateSuspended" type="checkbox">
+                    {(field: FieldProps) => (
+                      <Checkbox
+                        formikField={field}
+                        label={t(CustomerLabel.CovidCertificateSuspended)}
+                        helpText="Check this box if your COVID certificate is more than 9 months old"
+                        disabled={!isEditing}
+                      />
+                    )}
+                  </Field>
+                </div>
               </div>
-              <div className="col-span-4">
-                <Field name="covidCertificateReleaseDate">
-                  {(field: FieldProps) => (
-                    <DateInput
-                      formikField={field}
-                      label={t(CustomerLabel.CovidCertificateReleaseDate)}
-                      StartAdornment={
-                        <IconAdornment
-                          Icon={<SheildCheck />}
-                          position="start"
-                        />
-                      }
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-              <div className="col-span-4">
-                <Field name="covidCertificateSuspended" type="checkbox">
-                  {(field: FieldProps) => (
-                    <Checkbox
-                      formikField={field}
-                      label={t(CustomerLabel.CovidCertificateSuspended)}
-                      helpText="Check this box if your COVID certificate is more than 9 months old"
-                      disabled={!isEditing}
-                    />
-                  )}
-                </Field>
-              </div>
-            </div>
-          </Section>
+            </Section>
 
-          {isEditing ? (
-            <>
-              <div className="flex justify-self-end gap-x-2 mt-5">
-                <Button
-                  type="button"
-                  onClick={handleCancel}
-                  className="w-24 !text-gray-700 font-medium bg-gray-100 hover:bg-gray-50"
-                  size={ButtonSize.LG}
-                >
-                  {t(ActionButton.Cancel)}
-                </Button>
-                <Button
-                  type="submit"
-                  className="w-24 !text-gray-700 bg-green-200 hover:bg-green-100"
-                  size={ButtonSize.LG}
-                >
-                  {t(ActionButton.Save)}
-                </Button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="flex justify-self-end gap-x-2 mt-5">
-                <Button
-                  type="button"
-                  onClick={toggleEdit}
-                  className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
-                  size={ButtonSize.LG}
-                >
-                  Edit
-                </Button>
-              </div>
-            </>
-          )}
-        </div>
-      </Form>
+            {isEditing ? (
+              <>
+                <div className="flex justify-self-end gap-x-2 mt-5">
+                  <Button
+                    type="reset"
+                    onClick={() => {
+                      onCancel();
+                      resetForm();
+                      toggleEdit();
+                    }}
+                    className="w-24 !text-gray-700 font-medium bg-gray-100 hover:bg-gray-50"
+                    size={ButtonSize.LG}
+                  >
+                    {t(ActionButton.Cancel)}
+                  </Button>
+                  <Button
+                    type="submit"
+                    className="w-24 !text-gray-700 bg-green-200 hover:bg-green-100"
+                    size={ButtonSize.LG}
+                    disabled={isSubmitting}
+                  >
+                    {t(ActionButton.Save)}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-self-end gap-x-2 mt-5">
+                  <Button
+                    type="button"
+                    onClick={toggleEdit}
+                    className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
+                    size={ButtonSize.LG}
+                  >
+                    Edit
+                  </Button>
+                </div>
+              </>
+            )}
+          </div>
+        </form>
+      )}
     </Formik>
   );
 };
