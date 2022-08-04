@@ -84,7 +84,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         formikField={field}
                         label={t(CustomerLabel.Name)}
                         StartAdornment={
-                          <IconAdornment Icon={<User />} position="start" />
+                          <IconAdornment
+                            Icon={<User />}
+                            position="start"
+                            disabled={!isEditing}
+                          />
                         }
                         disabled={!isEditing}
                       />
@@ -98,7 +102,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         formikField={field}
                         label={t(CustomerLabel.Surname)}
                         StartAdornment={
-                          <IconAdornment Icon={<User />} position="start" />
+                          <IconAdornment
+                            Icon={<User />}
+                            position="start"
+                            disabled={!isEditing}
+                          />
                         }
                         disabled={!isEditing}
                       />
@@ -112,7 +120,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         formikField={field}
                         label={t(CustomerLabel.Birthday)}
                         StartAdornment={
-                          <IconAdornment Icon={<Cake />} position="start" />
+                          <IconAdornment
+                            Icon={<Cake />}
+                            position="start"
+                            disabled={!isEditing}
+                          />
                         }
                         disabled={!isEditing}
                       />
@@ -126,7 +138,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         formikField={field}
                         label={t(CustomerLabel.Email)}
                         StartAdornment={
-                          <IconAdornment Icon={<Mail />} position="start" />
+                          <IconAdornment
+                            Icon={<Mail />}
+                            position="start"
+                            disabled={!isEditing}
+                          />
                         }
                         disabled={!isEditing}
                       />
@@ -140,7 +156,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         formikField={{ field, meta, form }}
                         label={t(CustomerLabel.Phone)}
                         StartAdornment={
-                          <IconAdornment Icon={<Phone />} position="start" />
+                          <IconAdornment
+                            Icon={<Phone />}
+                            position="start"
+                            disabled={!isEditing}
+                          />
                         }
                         onBlur={(e) =>
                           form.setFieldValue(
@@ -171,6 +191,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                           <IconAdornment
                             Icon={<ClipboardList />}
                             position="start"
+                            disabled={!isEditing}
                           />
                         }
                         disabled={!isEditing}
@@ -188,6 +209,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                           <IconAdornment
                             Icon={<SheildCheck />}
                             position="start"
+                            disabled={!isEditing}
                           />
                         }
                         disabled={!isEditing}

@@ -3,6 +3,7 @@ import React from "react";
 interface IconAdornmentProps {
   Icon: JSX.Element | null;
   position: "start" | "end";
+  disabled?: boolean;
 }
 
 interface AddOnAdornmentProps {
@@ -26,11 +27,14 @@ interface DropdownAdornmentProps
 export const IconAdornment: React.FC<IconAdornmentProps> = ({
   Icon,
   position,
+  disabled = false,
 }) => {
   const padding = position === "start" ? "pl-3" : "pr-3";
+  const colour = disabled ? "text-cyan-700" : "text-gray-400";
+
   return (
     <div className={padding}>
-      <div className="h-5 w-5 text-gray-400" aria-hidden="true">
+      <div className={`h-5 w-5 ${colour}`} aria-hidden="true">
         {Icon}
       </div>
     </div>
