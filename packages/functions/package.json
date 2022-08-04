@@ -14,7 +14,7 @@
     "watch": "node build_scripts/watch.js"
   },
   "engines": {
-    "node": "14"
+    "node": "16"
   },
   "main": "dist/index.js",
   "dependencies": {
