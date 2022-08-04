@@ -3,8 +3,8 @@ import { FieldProps } from "formik";
 
 interface CheckboxProps {
   label: string;
-  helpText: string;
   formikField: FieldProps;
+  helpText?: string;
   disabled?: boolean;
 }
 

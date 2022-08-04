@@ -1,5 +1,6 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
+import { Formik, Form, Field, FieldProps } from "formik";
 
 import Checkbox from "./";
 
@@ -8,46 +9,50 @@ export default {
   component: Checkbox,
 } as ComponentMeta<typeof Checkbox>;
 
-// TODO: Fix/tidy mocked Formik FieldProps
-const defaultFormikFieldMock = {
-  field: {
-    name: "test",
-    onChange: () => {},
-    onBlur: () => {},
-  },
-  meta: {
-    error: "",
-    touched: false,
-    initialTouched: false,
-  },
-};
-
 export const Default = (): JSX.Element => (
   <>
     <h1 className="text-lg font-bold mb-4">Default</h1>
     <div className="flex flex-col w-72 space-y-5">
-      <Checkbox
-        // eslint-disable-next-line
-        // @ts-ignore
-        formikField={defaultFormikFieldMock}
-        label="Select an option?"
-        helpText="Unchecked & focssuable"
-      />
-      <Checkbox
-        // eslint-disable-next-line
-        // @ts-ignore
-        formikField={{ ...defaultFormikFieldMock, field: { checked: true } }}
-        label="Select an option?"
-        helpText="Option checked"
-      />
-      <Checkbox
-        // eslint-disable-next-line
-        // @ts-ignore
-        formikField={{ ...defaultFormikFieldMock, field: { checked: true } }}
-        label="Select an option?"
-        helpText="Option checked - readonly"
-        disabled={true}
-      />
+      <Formik
+        initialValues={{
+          default: "",
+          checked: true,
+          disabled: true,
+        }}
+        onSubmit={() => {}}
+      >
+        <Form className="flex flex-col w-72 space-y-5">
+          <Field name="default" type="checkbox">
+            {(field: FieldProps) => (
+              <Checkbox
+                formikField={field}
+                label="Select an option?"
+                helpText="Unchecked & focssuable"
+              />
+            )}
+          </Field>
+
+          <Field name="checked" type="checkbox">
+            {(field: FieldProps) => (
+              <Checkbox
+                formikField={field}
+                label="Select an option?"
+                helpText="Option checked"
+              />
+            )}
+          </Field>
+          <Field name="disabled" type="checkbox">
+            {(field: FieldProps) => (
+              <Checkbox
+                formikField={field}
+                label="Select an option?"
+                helpText="Option checked - readonly"
+                disabled={true}
+              />
+            )}
+          </Field>
+        </Form>
+      </Formik>
     </div>
   </>
 );
