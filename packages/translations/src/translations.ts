@@ -188,6 +188,7 @@ export enum ActionButton {
   Submit = "ActionButton.Submit",
   Verify = "ActionButton.Verify",
   Add = "ActionButton.Add",
+  Edit = "ActionButton.Edit",
 }
 // #endregion dialog
 

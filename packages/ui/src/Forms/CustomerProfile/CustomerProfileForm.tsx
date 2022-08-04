@@ -7,7 +7,6 @@ import i18n, {
   useTranslation,
   ValidationMessage,
   CustomerLabel,
-  // TODO: add "edit" to ActionButton enums
   ActionButton,
 } from "@eisbuk/translations";
 import {
@@ -266,7 +265,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                     className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
                     size={ButtonSize.LG}
                   >
-                    Edit
+                    {t(ActionButton.Edit)}
                   </Button>
                 </div>
               </>
