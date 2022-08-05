@@ -17,6 +17,7 @@ import SlotsDayContainer from "./SlotsDayContainer";
 import BookingsCountdown from "./BookingsCountdown";
 import HoverText from "./HoverText";
 import IconButton from "./IconButton";
+import TextareaEditable from "./TextareaEditable";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -43,4 +44,5 @@ export {
   BookingsCountdown,
   HoverText,
   IconButton,
+  TextareaEditable,
 };
