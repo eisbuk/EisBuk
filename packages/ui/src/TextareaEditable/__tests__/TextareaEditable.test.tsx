@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { Formik, FormikConfig, Field, Form } from "formik";
 
 import TextareaEditable from "../TextareaEditable";
 
@@ -49,6 +50,41 @@ describe("TextareaEditable", () => {
       userEvent.type(textarea, "test-input");
 
       expect(testValue).toEqual("test-input");
+    });
+  });
+
+  describe("Test with Formik", () => {
+    test("should integrate with Formik seamlessly", async () => {
+      const initialValues = { foo: "initial-input" };
+
+      // Create this function logic to call onSubmit with only the values (relevant for testing)
+      // without additional formik helpers
+      const mockSubmit = jest.fn();
+      const onSubmit: FormikConfig<typeof initialValues>["onSubmit"] = (
+        values
+      ) => mockSubmit(values);
+
+      render(
+        <Formik {...{ initialValues, onSubmit }}>
+          <Form>
+            <Field component={TextareaEditable} name="foo" isEditing />
+            <button type="submit" />
+          </Form>
+        </Formik>
+      );
+
+      screen.getByText("initial-input");
+
+      const textarea = screen.getByRole("textbox");
+      const submitButton = screen.getByRole("button");
+
+      userEvent.clear(textarea);
+      userEvent.type(textarea, "test-input");
+      submitButton.click();
+
+      await waitFor(() =>
+        expect(mockSubmit).toHaveBeenCalledWith({ foo: "test-input" })
+      );
     });
   });
 });

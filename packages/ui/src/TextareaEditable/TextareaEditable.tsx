@@ -1,12 +1,14 @@
 import React from "react";
+import { FieldProps } from "formik";
 
-interface TextareaEditableProps extends React.HTMLAttributes<HTMLElement> {
-  /**
-   * A boolean flag to toggle between editing and display mode
-   */
-  isEditing?: boolean;
-  value: string;
-}
+type TextareaEditableProps = React.HTMLAttributes<HTMLElement> &
+  Partial<Pick<FieldProps, "field">> & {
+    /**
+     * A boolean flag to toggle between editing and display mode
+     */
+    isEditing?: boolean;
+    value?: string;
+  };
 
 /**
  * A wysiwyg text area component. On default it show the text while with 'isEditing' turns into
@@ -14,10 +16,13 @@ interface TextareaEditableProps extends React.HTMLAttributes<HTMLElement> {
  */
 const TextareaEditable: React.FC<TextareaEditableProps> = ({
   isEditing,
-  value,
   className: inputClasses = "",
-  ...props
+  field = {},
+  ...initialProps
 }) => {
+  // Transform props to use formik 'field' props if provided
+  const { value, ...props } = { ...initialProps, ...field };
+
   const element: "textarea" | "p" = isEditing ? "textarea" : "p";
 
   // To achieve wysiwyg editable element, we're displaying the text value
