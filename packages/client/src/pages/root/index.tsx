@@ -63,13 +63,15 @@ const DashboardPage: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalAdminContent={additionalAdminContent}
+      calendarNav={
+        <CalendarNav
+          date={currentDate}
+          onChange={(date) => dispatch(changeCalendarDate(date))}
+          jump="day"
+          additionalContent={printButton}
+        />
+      }
     >
-      <CalendarNav
-        date={currentDate}
-        onChange={(date) => dispatch(changeCalendarDate(date))}
-        jump="day"
-        additionalContent={printButton}
-      />
       <Container className={classes.root} maxWidth="md">
         <List>
           {attendanceCards.map((attendanceCard) => (

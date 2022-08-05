@@ -14,6 +14,7 @@ interface LayoutProps {
   children?: React.ReactNode[] | React.ReactNode;
   isAdmin?: boolean;
   adminLinks?: LinkItem[];
+  calendarNav?: JSX.Element;
 }
 export interface LinkItem {
   /** @TODO This should be an SVG component */
@@ -31,6 +32,7 @@ const Layout: React.FC<LayoutProps> = ({
   isAdmin = false,
   children,
   adminLinks,
+  calendarNav,
 }) => {
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
@@ -65,6 +67,7 @@ const Layout: React.FC<LayoutProps> = ({
             </div>
           </div>
         </div>
+        {calendarNav}
       </header>
 
       <main className="overflow-y-scroll">{children}</main>

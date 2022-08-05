@@ -118,13 +118,15 @@ const SlotsPage: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalAdminContent={additionalAdminContent}
+      calendarNav={
+        <CalendarNav
+          date={currentDate}
+          onChange={(date) => dispatch(changeCalendarDate(date))}
+          jump="week"
+          additionalContent={extraButtons}
+        />
+      }
     >
-      <CalendarNav
-        date={currentDate}
-        onChange={(date) => dispatch(changeCalendarDate(date))}
-        jump="week"
-        additionalContent={extraButtons}
-      />
       <div className="content-container">
         {daysToShow.map((dateISO) => {
           const date = DateTime.fromISO(dateISO);

@@ -98,8 +98,8 @@ const CustomerArea: React.FC = () => {
       additionalButtons={additionalButtons}
       additionalAdminContent={additionalAdminContent}
       user={displayCustomer}
+      calendarNav={<CalendarNav {...calendarNavProps} jump="month" />}
     >
-      <CalendarNav {...calendarNavProps} jump="month" />
       <div className="content-container">
         <div className="px-[44px] py-4">
           <CustomerView />
