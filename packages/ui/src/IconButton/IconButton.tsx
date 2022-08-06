@@ -19,7 +19,11 @@ export enum IconButtonBackground {
   Dark = "dark",
 }
 
-interface IconButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+interface IconButtonProps
+  extends React.DetailedHTMLProps<
+    React.ButtonHTMLAttributes<HTMLButtonElement>,
+    HTMLButtonElement
+  > {
   size?: IconButtonSize;
   shape?: IconButtonShape;
   contentSize?: IconButtonContentSize;
@@ -36,16 +40,18 @@ const IconButton: React.FC<IconButtonProps> = ({
   alt,
   children,
   className,
+  disableHover,
   ...props
 }) => (
   <button
     {...props}
     title={alt}
     className={[
+      "overflow-hidden",
       sizeLookup[size],
       borderRadiusLookup[shape],
       contentSizePaddingLookup[contentSize],
-      backgroundColorLookup[hoverBackground],
+      ...(!disableHover ? [backgroundColorLookup[hoverBackground]] : []),
       className,
     ].join(" ")}
   >

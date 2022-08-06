@@ -9,6 +9,7 @@ import IconButton, {
   IconButtonContentSize,
   IconButtonSize,
 } from "../IconButton";
+import NotesSection from "./NotesSection";
 
 const IntervalCardWithNotes: React.FC<IntervalCardWithNotesProps> = ({
   className: inputClasses,
@@ -47,6 +48,11 @@ const IntervalCardWithNotes: React.FC<IntervalCardWithNotesProps> = ({
       >
         <Pencil />
       </IconButton>
+
+      <NotesSection
+        isEditing={isEditing}
+        className="absolute right-0 bottom-0 left-0"
+      />
     </div>
   );
 };
