@@ -42,7 +42,8 @@ const runBookingTableTests = (tests: TestParams[]) => {
         />
       );
 
-      screen.getByRole("button").click();
+      const button = screen.queryByText("Book") || screen.queryByText("Cancel");
+      button!.click();
 
       expect(mockOnBook).toHaveBeenCalledTimes(Number(onBook));
       expect(mockOnCancel).toHaveBeenCalledTimes(Number(onCancel));
@@ -73,23 +74,23 @@ describe("IntervalCard", () => {
     },
 
     // Variant: "Calendar"
-    // {
-    //   variant: IntervalCardVariant.Calendar,
-    //   state: IntervalCardState.Default,
-    //   onBook: false,
-    //   onCancel: true,
-    // },
-    // {
-    //   variant: IntervalCardVariant.Calendar,
-    //   state: IntervalCardState.Active,
-    //   onBook: false,
-    //   onCancel: true,
-    // },
-    // {
-    //   variant: IntervalCardVariant.Calendar,
-    //   state: IntervalCardState.Disabled,
-    //   onBook: false,
-    //   onCancel: false,
-    // },
+    {
+      variant: IntervalCardVariant.Calendar,
+      state: IntervalCardState.Default,
+      onBook: false,
+      onCancel: true,
+    },
+    {
+      variant: IntervalCardVariant.Calendar,
+      state: IntervalCardState.Active,
+      onBook: false,
+      onCancel: true,
+    },
+    {
+      variant: IntervalCardVariant.Calendar,
+      state: IntervalCardState.Disabled,
+      onBook: false,
+      onCancel: false,
+    },
   ]);
 });
