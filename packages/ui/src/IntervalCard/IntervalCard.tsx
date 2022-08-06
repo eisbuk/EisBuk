@@ -6,11 +6,13 @@ import {
   IntervalCardProps,
 } from "./types";
 
-import IntervalCardContainer from "./IntervalCardContainer";
+import BookingButton from "./BookingButton";
+import BookingCardContainer from "./BookingCardContainer";
+import CalendarCardContainer from "./CalendarCardContainer";
+import SimpleCardContainer from "./SimpleCardContainer";
 import CardContent from "./CardContent";
 
 import { calculateDuration } from "./utils";
-import BookingButton from "./BookingButton";
 
 const IntervalCard: React.FC<IntervalCardProps> = ({
   interval,
@@ -42,20 +44,48 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
       ? onCancel()
       : onBook();
 
-  return (
-    <IntervalCardContainer
-      {...{ ...containerProps, state, duration, type, variant }}
-    >
-      <CardContent {...cardContentProps} />
-      {variant !== IntervalCardVariant.Simple && (
-        <BookingButton
-          className="absolute right-2 bottom-2 min-w-[85px] justify-center"
-          {...{ type, variant, state, duration }}
-          onClick={handleBookingClick}
-        />
-      )}
-    </IntervalCardContainer>
-  );
+  switch (variant) {
+    case IntervalCardVariant.Booking:
+      return (
+        <BookingCardContainer
+          {...{ ...containerProps, state, duration, type, variant }}
+        >
+          <CardContent {...cardContentProps} />
+          <BookingButton
+            className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+            {...{ type, variant, state, duration }}
+            onClick={handleBookingClick}
+          />
+        </BookingCardContainer>
+      );
+
+    case IntervalCardVariant.Calendar:
+      return (
+        <CalendarCardContainer
+          {...{ ...containerProps, state, duration, type, variant }}
+        >
+          <CardContent {...cardContentProps} />
+          <BookingButton
+            className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+            {...{ type, variant, state, duration }}
+            onClick={handleBookingClick}
+          />
+        </CalendarCardContainer>
+      );
+
+    case IntervalCardVariant.Simple:
+      return (
+        <SimpleCardContainer
+          {...{ ...containerProps, state, duration, type, variant }}
+        >
+          <CardContent {...cardContentProps} />
+        </SimpleCardContainer>
+      );
+
+    // Won't happen, but let's keep eslint happy
+    default:
+      return null;
+  }
 };
 
 export default IntervalCard;
