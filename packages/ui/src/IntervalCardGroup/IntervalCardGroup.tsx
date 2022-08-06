@@ -2,7 +2,10 @@ import React from "react";
 
 import { SlotInterface } from "@eisbuk/shared";
 
-import IntervalCard, { IntervalCardState } from "../IntervalCard";
+import IntervalCard, {
+  IntervalCardState,
+  IntervalCardVariant,
+} from "../IntervalCard";
 
 import { sortIntervals } from "../utils/helpers";
 
@@ -62,8 +65,9 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
         return (
           <IntervalCard
             key={intervalKey}
-            {...{ ...slot, interval, onCancel, state }}
+            variant={IntervalCardVariant.Booking}
             onBook={() => onBook(intervalKey)}
+            {...{ ...slot, interval, onCancel, state }}
           />
         );
       })}

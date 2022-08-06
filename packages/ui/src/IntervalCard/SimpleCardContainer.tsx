@@ -2,9 +2,9 @@ import React from "react";
 
 import { SlotType } from "@eisbuk/shared";
 
-import { IntervalCardContainerProps } from "./types";
+import { SimpleContainerProps } from "./types";
 
-const SimpleCardContainer: React.FC<IntervalCardContainerProps> = ({
+const SimpleCardContainer: React.FC<SimpleContainerProps> = ({
   type,
   children,
   className: inputClasses,

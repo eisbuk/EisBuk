@@ -1,41 +1,49 @@
 import React from "react";
 
+import { Pencil } from "@eisbuk/svg";
+
 import {
   IntervalCardVariant,
   IntervalCardState,
   IntervalCardProps,
 } from "./types";
 
+import IconButton, {
+  IconButtonContentSize,
+  IconButtonSize,
+} from "../IconButton";
 import BookingButton from "./BookingButton";
 import BookingCardContainer from "./BookingCardContainer";
-import CalendarCardContainer from "./CalendarCardContainer";
+import {
+  CalendarCardExpandableContainer,
+  CalendarCardContainerInner,
+} from "./CalendarCardContainer";
 import SimpleCardContainer from "./SimpleCardContainer";
 import CardContent from "./CardContent";
+import NotesSection from "./NotesSection";
 
 import { calculateDuration } from "./utils";
 
 const IntervalCard: React.FC<IntervalCardProps> = ({
   interval,
-  state = IntervalCardState.Default,
-  variant = IntervalCardVariant.Booking,
+  state,
+  variant,
   type,
   date,
   notes,
   onBook = () => {},
   onCancel = () => {},
-  ...containerProps
+  as,
+  className,
 }) => {
   const duration = calculateDuration(interval.startTime, interval.endTime);
 
   const cardContentProps = {
-    interval,
-    state,
-    variant,
-    type,
     date,
+    interval,
+    type,
+    variant,
     notes,
-    onBook,
-    onCancel,
   };
 
   const handleBookingClick = () =>
@@ -47,9 +55,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   switch (variant) {
     case IntervalCardVariant.Booking:
       return (
-        <BookingCardContainer
-          {...{ ...containerProps, state, duration, type, variant }}
-        >
+        <BookingCardContainer {...{ state, duration, type, as, className }}>
           <CardContent {...cardContentProps} />
           <BookingButton
             className="absolute right-2 bottom-2 min-w-[85px] justify-center"
@@ -61,23 +67,45 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
 
     case IntervalCardVariant.Calendar:
       return (
-        <CalendarCardContainer
-          {...{ ...containerProps, state, duration, type, variant }}
-        >
-          <CardContent {...cardContentProps} />
-          <BookingButton
-            className="absolute right-2 bottom-2 min-w-[85px] justify-center"
-            {...{ type, variant, state, duration }}
-            onClick={handleBookingClick}
-          />
-        </CalendarCardContainer>
+        <CalendarCardExpandableContainer {...{ type, as, className }}>
+          {({ isEditing, setIsEditing }) => (
+            <>
+              <CalendarCardContainerInner {...{ as }}>
+                <CardContent {...cardContentProps} />
+                <BookingButton
+                  className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+                  {...{ type, variant, state, duration }}
+                  onClick={handleBookingClick}
+                />
+              </CalendarCardContainerInner>
+
+              <IconButton
+                className={[
+                  "absolute top-[11px] right-[14px] duration-200",
+                  isEditing
+                    ? "text-teal-700"
+                    : "text-teal-600 hover:text-teal-700",
+                ].join(" ")}
+                size={IconButtonSize.XS}
+                contentSize={IconButtonContentSize.Tight}
+                onClick={() => setIsEditing(!isEditing)}
+                disableHover
+              >
+                <Pencil />
+              </IconButton>
+
+              <NotesSection
+                isEditing={isEditing}
+                className="absolute right-0 bottom-0 left-0"
+              />
+            </>
+          )}
+        </CalendarCardExpandableContainer>
       );
 
     case IntervalCardVariant.Simple:
       return (
-        <SimpleCardContainer
-          {...{ ...containerProps, state, duration, type, variant }}
-        >
+        <SimpleCardContainer {...{ className, as, type }}>
           <CardContent {...cardContentProps} />
         </SimpleCardContainer>
       );
