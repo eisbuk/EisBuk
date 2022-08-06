@@ -15,6 +15,8 @@ import ActionDialog from "./ActionDialog";
 import IntervalCardGroup from "./IntervalCardGroup";
 import SlotsDayContainer from "./SlotsDayContainer";
 import BookingsCountdown from "./BookingsCountdown";
+import HoverText from "./HoverText";
+import IconButton from "./IconButton";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -23,6 +25,7 @@ export * from "./IntervalCard";
 export * from "./BookingsCountdown";
 export * from "./CalendarNav";
 export * from "./Layout";
+export * from "./IconButton";
 
 export {
   TestComponent,
@@ -38,4 +41,6 @@ export {
   IntervalCardGroup,
   SlotsDayContainer,
   BookingsCountdown,
+  HoverText,
+  IconButton,
 };

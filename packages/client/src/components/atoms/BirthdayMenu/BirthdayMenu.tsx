@@ -3,12 +3,11 @@ import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { CustomersByBirthday } from "@eisbuk/shared";
+import { Cake } from "@eisbuk/svg";
 
 import Menu from "@mui/material/Menu";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import IconButton from "@mui/material/IconButton";
-import Cake from "@mui/icons-material/Cake";
 import Badge from "@mui/material/Badge";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -22,6 +21,7 @@ import BirthdayMenuItem from "./BirthdayMenuItem";
 
 import { __birthdayMenu__ } from "@/__testData__/testIds";
 import { openModal } from "@/features/modal/actions";
+import { Button } from "@eisbuk/ui";
 
 interface BirthdayMenuProps {
   customers: CustomersByBirthday[];
@@ -68,14 +68,17 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
   return (
     <>
       <Badge
-        className={classes.badge}
+        className={[classes.badge, "cursor-normal", "select-none"].join(" ")}
         color="error"
         badgeContent={getTodaysBirthdays}
         data-testid={__birthdayMenu__}
       >
-        <IconButton onClick={handleBirthdaysClick} size="large">
+        <Button
+          onClick={handleBirthdaysClick}
+          className="h-11 w-11 !p-2 ml-2  hover:bg-white/10"
+        >
           <Cake />
-        </IconButton>
+        </Button>
       </Badge>
       <Menu
         anchorEl={birthdaysAnchorEl}
@@ -107,7 +110,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
         })}
         <div
           onClick={handleShowAll}
-          className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
+          className={[classes.birthdayHeader, "cursor-pointer"].join(" ")}
         >
           {t(BirthdayEnums.ShowAll)}
         </div>
@@ -122,7 +125,6 @@ const useStyles = makeStyles(() => ({
     fontSize: "20px",
     margin: "10px",
   },
-  pointerCursor: { cursor: "pointer" },
 
   badge: {
     "& .MuiBadge-anchorOriginTopRightRectangular": {

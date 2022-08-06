@@ -8,8 +8,7 @@ import { PrivateRoutes } from "../temp";
 const __birthdayMenu__ = "birthday-menu";
 /** @TEMP */
 
-/** @TEMP skipped until we find a place for them in the new admin bar */
-xdescribe("birthday badge", () => {
+describe("birthday badge", () => {
   beforeEach(() => {
     cy.initAdminApp().then((organization) => {
       return cy.updateFirestore(organization, ["customers.json"]);

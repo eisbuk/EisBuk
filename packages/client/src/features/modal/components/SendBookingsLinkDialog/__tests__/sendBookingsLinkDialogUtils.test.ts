@@ -1,6 +1,6 @@
 import { OrgSubCollection, SMSMessage, EmailPayload } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getNewStore } from "@/store/createStore";
 

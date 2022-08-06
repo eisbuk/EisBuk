@@ -25,6 +25,7 @@ const EmptySpace: React.FC<EmptySpaceProps> = ({
         <ExclamationCircle />
       </span>,
       <span
+        key="content"
         className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
         dangerouslySetInnerHTML={{ __html: children }}
       />,

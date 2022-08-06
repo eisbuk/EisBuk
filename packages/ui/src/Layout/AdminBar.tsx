@@ -10,9 +10,14 @@ import MobileHamburgerMenu from "./MobileHamburgerMenu";
 interface AdminBarProps {
   adminLinks: LinkItem[];
   className?: string;
+  additionalContent?: JSX.Element;
 }
 
-const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
+const AdminBar: React.FC<AdminBarProps> = ({
+  adminLinks,
+  className = "",
+  additionalContent,
+}) => {
   const { pathname: currentPath } = useLocation();
 
   const { t } = useTranslation();
@@ -44,6 +49,7 @@ const AdminBar: React.FC<AdminBarProps> = ({ adminLinks, className = "" }) => {
           );
         })}
       </div>
+      {additionalContent}
     </div>
   );
 };

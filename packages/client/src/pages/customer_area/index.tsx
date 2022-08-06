@@ -10,20 +10,24 @@ import {
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+// import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
 import {
   getBookedSlotsByMonth,
   getBookingsCustomer,
   getSlotsForCustomer,
 } from "@/store/selectors/bookings";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+
 import { getCalendarDay } from "@/store/selectors/app";
 import { getIsAdmin } from "@/store/selectors/auth";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
@@ -41,6 +45,14 @@ const CustomerArea: React.FC = () => {
   const slotsByDay = useSelector(getSlotsForCustomer);
 
   const bookedSlotsByMonth = useSelector(getBookedSlotsByMonth(date.month));
+
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
 
   // Subscribe to necessary collections
   useFirestoreSubscribe([
@@ -100,6 +112,7 @@ const CustomerArea: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
+      additionalAdminContent={additionalAdminContent}
       user={displayCustomer}
     >
       <CalendarNav

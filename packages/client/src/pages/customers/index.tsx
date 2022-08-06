@@ -3,7 +3,6 @@ import { useSelector, useDispatch } from "react-redux";
 
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
-// import LinearProgress from "@mui/material/LinearProgress";
 
 import AddIcon from "@mui/icons-material/Add";
 
@@ -20,12 +19,16 @@ import {
 } from "@eisbuk/translations";
 
 import CustomerGrid from "@/components/atoms/CustomerGrid";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import { getCustomersList } from "@/store/selectors/customers";
+import {
+  getCustomersByBirthday,
+  getCustomersList,
+} from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { openModal } from "@/features/modal/actions";
 
@@ -33,11 +36,19 @@ import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
 
 import { adminLinks } from "@/data/navigation";
+import { DateTime } from "luxon";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
 
   useTitle(t(NavigationLabel.Athletes));
 
@@ -64,6 +75,7 @@ const CustomersPage: React.FC = () => {
       isAdmin
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
     >
       {/* {!isLoaded(customers) && <LinearProgress />} */}
       <Grid item xs={12}>

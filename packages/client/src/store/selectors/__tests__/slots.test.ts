@@ -4,7 +4,7 @@ import { OrgSubCollection } from "@eisbuk/shared";
 
 import { getNewStore } from "@/store/createStore";
 
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getAdminSlots } from "../slots";
