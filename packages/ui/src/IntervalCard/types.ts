@@ -18,29 +18,48 @@ export enum IntervalDuration {
   "2h",
 }
 
-export interface IntervalCardContainerProps
-  extends Pick<SlotInterface, "type"> {
-  state: IntervalCardState;
+export type IntervalCardProps = Pick<
+  SlotInterface,
+  "type" | "date" | "notes"
+> & {
+  interval: SlotInterval;
+  onBook?: () => void;
+  onCancel?: () => void;
+  state?: IntervalCardState;
   variant: IntervalCardVariant;
-  duration: IntervalDuration;
-  children: React.ReactNode | React.ReactNode[];
   as?: keyof JSX.IntrinsicElements;
   className?: string;
+};
+
+export type BookingButtonProps = Pick<
+  IntervalCardProps,
+  "state" | "variant" | "type"
+> & { duration: IntervalDuration };
+
+// #region containerProps
+export interface CalendarContainerRenderFn {
+  (props: { isEditing: boolean; setIsEditing: (isEditing: boolean) => void }):
+    | React.ReactNode
+    | React.ReactNode[];
 }
 
-export type BookingButtonProps = Omit<
-  IntervalCardContainerProps,
-  "as" | "children"
+export type CalendarContainerProps = Pick<
+  IntervalCardProps,
+  "type" | "className" | "as"
+> & { children: CalendarContainerRenderFn };
+
+export type CalendarContainerInnerProps = Pick<
+  IntervalCardProps,
+  "as" | "className"
 >;
 
-export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
-  Omit<Partial<IntervalCardContainerProps>, "duration" | "type"> & {
-    interval: SlotInterval;
-    onBook?: () => void;
-    onCancel?: () => void;
-  };
+export type BookingContainerProps = Pick<
+  IntervalCardProps,
+  "type" | "state" | "as" | "className"
+> & { duration: IntervalDuration };
 
-export type IntervalCardWithNotesProps = IntervalCardProps & {
-  onEditStart?: () => void;
-  onSaveNote?: () => void;
-};
+export type SimpleContainerProps = Pick<
+  IntervalCardProps,
+  "type" | "as" | "className"
+>;
+// #endregion containerProps

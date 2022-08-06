@@ -73,23 +73,23 @@ describe("IntervalCard", () => {
     },
 
     // Variant: "Calendar"
-    {
-      variant: IntervalCardVariant.Calendar,
-      state: IntervalCardState.Default,
-      onBook: false,
-      onCancel: true,
-    },
-    {
-      variant: IntervalCardVariant.Calendar,
-      state: IntervalCardState.Active,
-      onBook: false,
-      onCancel: true,
-    },
-    {
-      variant: IntervalCardVariant.Calendar,
-      state: IntervalCardState.Disabled,
-      onBook: false,
-      onCancel: false,
-    },
+    // {
+    //   variant: IntervalCardVariant.Calendar,
+    //   state: IntervalCardState.Default,
+    //   onBook: false,
+    //   onCancel: true,
+    // },
+    // {
+    //   variant: IntervalCardVariant.Calendar,
+    //   state: IntervalCardState.Active,
+    //   onBook: false,
+    //   onCancel: true,
+    // },
+    // {
+    //   variant: IntervalCardVariant.Calendar,
+    //   state: IntervalCardState.Disabled,
+    //   onBook: false,
+    //   onCancel: false,
+    // },
   ]);
 });

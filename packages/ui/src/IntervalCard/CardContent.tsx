@@ -3,17 +3,21 @@ import { DateTime } from "luxon";
 
 import { useTranslation, DateFormat } from "@eisbuk/translations";
 
-import {
-  IntervalDuration,
-  IntervalCardVariant,
-  IntervalCardProps,
-} from "./types";
+import { IntervalDuration, IntervalCardVariant } from "./types";
 
 import SlotTypeIcon from "../SlotTypeIcon";
 
 import { calculateDuration } from "./utils";
 
-const CardContent: React.FC<IntervalCardProps> = ({
+interface Props {
+  interval: any;
+  date: any;
+  variant: any;
+  type: any;
+  notes?: any;
+}
+
+const CardContent: React.FC<Props> = ({
   interval: { startTime, endTime },
   date: dateISO,
   variant = IntervalCardVariant.Booking,

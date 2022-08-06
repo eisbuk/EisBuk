@@ -5,7 +5,7 @@ import { Category, SlotInterface, SlotType } from "@eisbuk/shared";
 import { PlusCircle, Copy, ClipboardList } from "@eisbuk/svg";
 
 import SlotsDayContainer from "./SlotsDayContainer";
-import IntervalCard from "../IntervalCard";
+import IntervalCard, { IntervalCardVariant } from "../IntervalCard";
 import Button from "../Button";
 import { DateTime } from "luxon";
 
@@ -51,15 +51,17 @@ export const WithSlots = (): JSX.Element => (
   <SlotsDayContainer {...{ date }}>
     {Object.keys(iceSlot.intervals).map((key) => (
       <IntervalCard
-        key={`ice-${key}`}
         {...iceSlot}
+        key={`ice-${key}`}
+        variant={IntervalCardVariant.Booking}
         interval={iceSlot.intervals[key]}
       />
     ))}
     {Object.keys(offIceSlot.intervals).map((key) => (
       <IntervalCard
-        key={`off-ice-${key}`}
         {...offIceSlot}
+        key={`off-ice-${key}`}
+        variant={IntervalCardVariant.Booking}
         interval={iceSlot.intervals[key]}
       />
     ))}

@@ -3,14 +3,14 @@ import React from "react";
 import { SlotType } from "@eisbuk/shared";
 
 import {
+  BookingContainerProps,
   IntervalCardState,
   IntervalDuration,
-  IntervalCardContainerProps,
 } from "./types";
 
-const BookingCardContainer: React.FC<IntervalCardContainerProps> = ({
+const BookingCardContainer: React.FC<BookingContainerProps> = ({
   type,
-  state,
+  state = IntervalCardState.Default,
   duration,
   children,
   className: classes,
