@@ -33,6 +33,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
     },
     [
       <span
+        key="content"
         className="md:whitespace-nowrap"
         dangerouslySetInnerHTML={{ __html: children }}
       />,
