@@ -39,3 +39,8 @@ export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
     onBook?: () => void;
     onCancel?: () => void;
   };
+
+export type IntervalCardWithNotesProps = IntervalCardProps & {
+  onEditStart?: () => void;
+  onSaveNote?: () => void;
+};
