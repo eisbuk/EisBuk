@@ -25,6 +25,7 @@ interface IconButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   contentSize?: IconButtonContentSize;
   hoverBackground?: IconButtonBackground;
   alt?: string;
+  disableHover?: boolean;
 }
 
 const IconButton: React.FC<IconButtonProps> = ({

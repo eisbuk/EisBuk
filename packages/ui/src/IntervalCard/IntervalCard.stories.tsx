@@ -6,6 +6,7 @@ import { SlotType } from "@eisbuk/shared";
 import { IntervalCardState, IntervalCardVariant } from "./types";
 
 import IntervalCard from "./IntervalCard";
+import IntervalCardWithNotes from "./IntervalCardWithNotes";
 
 import { StorybookGrid, StorybookItem } from "../utils/storybook";
 
@@ -143,3 +144,5 @@ export const States = (): JSX.Element => (
     </StorybookGrid>
   </>
 );
+
+export const CalendarCard = () => <IntervalCardWithNotes {...baseSlot} />;
