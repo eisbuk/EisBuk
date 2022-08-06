@@ -92,6 +92,7 @@ export const MultipleDays = (): JSX.Element => (
       .fill(null)
       .map((_, i) => (
         <SlotsDayContainer
+          key={i}
           {...{
             date: DateTime.fromISO(date).plus({ days: i }).toISODate(),
             additionalContent,
