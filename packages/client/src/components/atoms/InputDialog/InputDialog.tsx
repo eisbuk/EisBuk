@@ -95,6 +95,7 @@ const InputDialog: React.FC<Props> = ({
                   variant="contained"
                   onClick={handleReject}
                   color="secondary"
+                  className={classes.buttonSecondary}
                 >
                   {t(ActionButton.Cancel)}
                 </Button>
@@ -103,6 +104,7 @@ const InputDialog: React.FC<Props> = ({
                   variant="contained"
                   type="submit"
                   color="primary"
+                  className={classes.buttonPrimary}
                 >
                   {t(ActionButton.Submit)}
                 </Button>
@@ -116,7 +118,7 @@ const InputDialog: React.FC<Props> = ({
 };
 
 // #region styles
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   input: {
     padding: "0.5rem",
     border: "solid 0.25px",
@@ -139,6 +141,10 @@ const useStyles = makeStyles(() => ({
     alignItems: "center",
     justifyContent: "space-evenly",
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
+  buttonSecondary: { backgroundColor: theme.palette.primary.main },
   errorMessage: {
     width: "100%",
     textAlign: "center",
