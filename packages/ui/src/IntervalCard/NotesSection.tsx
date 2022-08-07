@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Formik, FastField, Form } from "formik";
+
 import { ExclamationCircle } from "@eisbuk/svg";
+
+import { NotesSectionProps } from "./types";
 
 import TextareaEditable from "../TextareaEditable";
 import HoverText from "../HoverText";
@@ -10,20 +13,13 @@ import IconButton, {
   IconButtonSize,
 } from "../IconButton";
 
-interface NotesSectionProps {
-  className?: string;
-  notes?: string;
-  isEditing?: boolean;
-  onCancel?: () => void;
-  onSave?: (notes: string) => void;
-}
-
 const NotesSection: React.FC<NotesSectionProps> = ({
   className,
-  notes = "",
+  bookingNotes = "",
   isEditing,
+  onNotesEditStart = () => {},
+  onNotesEditSave = () => {},
   onCancel = () => {},
-  onSave = () => {},
 }) => {
   const actionButtonProps = {
     size: IconButtonSize.XS,
@@ -33,17 +29,23 @@ const NotesSection: React.FC<NotesSectionProps> = ({
     disabled: !isEditing,
   };
 
+  useEffect(() => {
+    if (isEditing) {
+      onNotesEditStart();
+    }
+  }, [isEditing]);
+
   return (
     <Formik
-      initialValues={{ notes }}
-      onSubmit={({ notes }) => {
-        onSave(notes!);
+      initialValues={{ bookingNotes }}
+      onSubmit={({ bookingNotes }) => {
+        onNotesEditSave(bookingNotes!);
       }}
       onReset={() => onCancel()}
     >
       <Form className={className}>
         <FastField
-          name="notes"
+          name="bookingNotes"
           className="w-full h-[105px] border-t border-gray-300"
           component={TextareaEditable}
           isEditing={isEditing}
