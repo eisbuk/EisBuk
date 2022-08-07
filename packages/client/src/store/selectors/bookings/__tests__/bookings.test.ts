@@ -365,7 +365,7 @@ describe("Selectors ->", () => {
   });
 
   describe("getBookingsForCalendar", () => {
-    test("should return a list of booked slots with corresponding booked intervals", () => {
+    test("should return a list of booked slots with corresponding booked interval and bookingNotes", () => {
       const monthStr = "2022-01";
 
       // We're using 3 days, each with one slot
@@ -400,12 +400,15 @@ describe("Selectors ->", () => {
       // Book second slot (`bookedSlot`)
       const bookedIntervalKey = Object.keys(baseSlot.intervals)[0];
       const bookedInterval = baseSlot.intervals[bookedIntervalKey];
+      // Should also receive booking notes with the booked slot
+      const bookingNotes = "Lock up Nancy Pelosi!";
 
       store.dispatch(
         updateLocalDocuments(BookingSubCollection.BookedSlots, {
           [bookedSlot.id]: {
             date: bookedSlot.date,
             interval: bookedIntervalKey,
+            bookingNotes,
           },
         })
       );
@@ -413,6 +416,7 @@ describe("Selectors ->", () => {
         {
           ...bookedSlot,
           interval: bookedInterval,
+          bookingNotes,
         },
       ]);
     });
