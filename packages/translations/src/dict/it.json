@@ -149,7 +149,9 @@
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
-    "EnterEmailMessage": "Il tuo calendario verrà inviato a questo indirizzo email"
+    "EnterEmailMessage": "Il tuo calendario verrà inviato a questo indirizzo email",
+
+    "BookingNotesHelpText": "Make some personal notes..."
   },
   "ActionButton": {
     "SignIn": "Accedi",

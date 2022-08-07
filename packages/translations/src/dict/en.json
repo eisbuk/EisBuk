@@ -149,7 +149,9 @@
     "FinalizeBookingsTitle": "Finalize Bookings",
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month.",
     "EnterEmailTitle": "Enter your Email below",
-    "EnterEmailMessage": "Your calendar will be sent to this email address"
+    "EnterEmailMessage": "Your calendar will be sent to this email address",
+
+    "BookingNotesHelpText": "Make some personal notes..."
   },
   "ActionButton": {
     "SignIn": "Signin",
