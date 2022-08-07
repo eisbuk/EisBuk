@@ -31,8 +31,11 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   type,
   date,
   notes,
+  bookingNotes,
   onBook = () => {},
   onCancel = () => {},
+  onNotesEditStart = () => {},
+  onNotesEditSave = () => {},
   as,
   className,
 }) => {
@@ -70,18 +73,9 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
         <CalendarCardExpandableContainer {...{ type, as, className }}>
           {({ isEditing, setIsEditing }) => (
             <>
-              <CalendarCardContainerInner {...{ as }}>
-                <CardContent {...cardContentProps} />
-                <BookingButton
-                  className="absolute right-2 bottom-2 min-w-[85px] justify-center"
-                  {...{ type, variant, state, duration }}
-                  onClick={handleBookingClick}
-                />
-              </CalendarCardContainerInner>
-
               <IconButton
                 className={[
-                  "absolute top-[11px] right-[14px] duration-200",
+                  "absolute top-[11px] right-[14px] duration-200 z-30",
                   isEditing
                     ? "text-teal-700"
                     : "text-teal-600 hover:text-teal-700",
@@ -94,9 +88,22 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
                 <Pencil />
               </IconButton>
 
+              <CalendarCardContainerInner {...{ as }}>
+                <CardContent {...cardContentProps} />
+                <BookingButton
+                  className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+                  {...{ type, variant, state, duration }}
+                  onClick={handleBookingClick}
+                />
+              </CalendarCardContainerInner>
+
               <NotesSection
-                isEditing={isEditing}
                 className="absolute right-0 bottom-0 left-0"
+                bookingNotes={bookingNotes}
+                isEditing={isEditing}
+                onNotesEditStart={onNotesEditStart}
+                onNotesEditSave={onNotesEditSave}
+                onCancel={() => setIsEditing(false)}
               />
             </>
           )}

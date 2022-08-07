@@ -1,4 +1,8 @@
-import { SlotInterface, SlotInterval } from "@eisbuk/shared";
+import {
+  CustomerBookingEntry,
+  SlotInterface,
+  SlotInterval,
+} from "@eisbuk/shared";
 
 export enum IntervalCardState {
   Default = "default",
@@ -18,18 +22,28 @@ export enum IntervalDuration {
   "2h",
 }
 
-export type IntervalCardProps = Pick<
-  SlotInterface,
-  "type" | "date" | "notes"
-> & {
-  interval: SlotInterval;
-  onBook?: () => void;
-  onCancel?: () => void;
-  state?: IntervalCardState;
-  variant: IntervalCardVariant;
-  as?: keyof JSX.IntrinsicElements;
-  className?: string;
-};
+export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
+  // Booking notes are included in the structure even though they're consumed only by 'calendar' variant
+  // but are optional anyhow
+  Pick<CustomerBookingEntry, "bookingNotes"> & {
+    interval: SlotInterval;
+    state?: IntervalCardState;
+    variant: IntervalCardVariant;
+    onBook?: () => void;
+    onCancel?: () => void;
+    /**
+     * Handler fired when user starts to edit the notes for a booking.
+     * It can be used to close all other notes open for edit, or such.
+     */
+    onNotesEditStart?: () => void;
+    /**
+     * Handler fired when user edits the booking notes.
+     * Should be used to store updates to firestore.
+     */
+    onNotesEditSave?: (bookingNotes: string) => void;
+    as?: keyof JSX.IntrinsicElements;
+    className?: string;
+  };
 
 export type BookingButtonProps = Pick<
   IntervalCardProps,
@@ -63,3 +77,12 @@ export type SimpleContainerProps = Pick<
   "type" | "as" | "className"
 >;
 // #endregion containerProps
+
+export type NotesSectionProps = Pick<
+  IntervalCardProps,
+  "bookingNotes" | "onNotesEditStart" | "onNotesEditSave"
+> & {
+  className?: string;
+  isEditing?: boolean;
+  onCancel?: () => void;
+};
