@@ -88,7 +88,7 @@ const CustomersPage: React.FC = () => {
           data-testid="add-athlete"
           color="primary"
           aria-label={t(ActionButton.AddAthlete)}
-          className={classes.fab}
+          className={[classes.fab, classes.buttonPrimary].join(" ")}
           onClick={handleAddAthlete}
         >
           <AddIcon />
@@ -113,6 +113,9 @@ const useStyles = makeStyles((theme: ETheme) => ({
     bottom: theme.spacing(5),
     right: theme.spacing(5),
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
 }));
 
 export default CustomersPage;
