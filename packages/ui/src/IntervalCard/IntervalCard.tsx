@@ -35,7 +35,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
   onBook = () => {},
   onCancel = () => {},
   onNotesEditStart = () => {},
-  onNotesEditSave = () => {},
+  onNotesEditSave = async () => {},
   as,
   className,
 }) => {
@@ -103,7 +103,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
                 isEditing={isEditing}
                 onNotesEditStart={onNotesEditStart}
                 onNotesEditSave={onNotesEditSave}
-                onCancel={() => setIsEditing(false)}
+                onEditClose={() => setIsEditing(false)}
               />
             </>
           )}

@@ -40,7 +40,7 @@ export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
      * Handler fired when user edits the booking notes.
      * Should be used to store updates to firestore.
      */
-    onNotesEditSave?: (bookingNotes: string) => void;
+    onNotesEditSave?: (bookingNotes: string) => Promise<void>;
     as?: keyof JSX.IntrinsicElements;
     className?: string;
   };
@@ -84,5 +84,5 @@ export type NotesSectionProps = Pick<
 > & {
   className?: string;
   isEditing?: boolean;
-  onCancel?: () => void;
+  onEditClose?: () => void;
 };

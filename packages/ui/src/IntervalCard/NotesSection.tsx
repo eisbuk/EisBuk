@@ -20,7 +20,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   isEditing,
   onNotesEditStart = () => {},
   onNotesEditSave = () => {},
-  onCancel = () => {},
+  onEditClose = () => {},
 }) => {
   const { t } = useTranslation();
 
@@ -41,10 +41,16 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   return (
     <Formik
       initialValues={{ bookingNotes }}
-      onSubmit={({ bookingNotes }) => {
-        onNotesEditSave(bookingNotes!);
+      onSubmit={async ({ bookingNotes }) => {
+        // Await for the notes to get updated before closing
+        // to prevent too soon reseting of the form
+        await onNotesEditSave(bookingNotes!);
+        onEditClose();
       }}
-      onReset={() => onCancel()}
+      onReset={() => onEditClose()}
+      // We're switching the key (forcing rerender and thus a reset)
+      // when the form is closed from outside (using toggle edit button)
+      key={String(isEditing)}
     >
       <Form className={className}>
         <FastField

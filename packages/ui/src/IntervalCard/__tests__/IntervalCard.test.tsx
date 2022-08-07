@@ -99,7 +99,15 @@ describe("IntervalCard", () => {
 
   describe("Test NotesSection in calendar card", () => {
     const mockOnNotesEditStart = jest.fn();
-    const mockOnNotesEditSave = jest.fn();
+    // We're using an async function to handle 'onNotesEditSave' in order
+    // to simulate (and test) real world behaviour where the save will be an
+    // async function writing to db
+    const mockOnNotesEditSave = jest.fn(
+      () =>
+        new Promise<void>((resolve) => {
+          setTimeout(() => resolve(), 100);
+        })
+    );
 
     beforeEach(() => {
       const bookingNotes = "test-notes";
@@ -134,7 +142,7 @@ describe("IntervalCard", () => {
       await waitFor(() => expect(mockOnNotesEditStart).toHaveBeenCalled());
     });
 
-    test("should submit note on edit by firing 'onNotesEditSave'", async () => {
+    test("should submit note on edit by firing 'onNotesEditSave' and leave the edit mode", async () => {
       const [enableEditButton] = screen.getAllByRole("button");
       enableEditButton.click();
 
@@ -150,6 +158,12 @@ describe("IntervalCard", () => {
           "Colourless green ideas sleep furiously"
         )
       );
+      // The textbox should still be there after submit (edit mode is on)
+      // until the 'onNoteEditSave' handler is resolved
+      screen.getByRole("textbox");
+
+      // Should eventually leave edit mode (after approx. 100 millis after 'mockOnNotesEditSave' has resolved)
+      await waitFor(() => expect(screen.queryByRole("textbox")).toBeFalsy());
     });
 
     test("should reset form and leave edit mode on cancel button click", async () => {
@@ -158,14 +172,34 @@ describe("IntervalCard", () => {
 
       const notesInput = screen.getByRole("textbox");
       userEvent.clear(notesInput);
-      // Check that the initial value has been cleared from the form
-      await waitFor(() => expect(screen.queryByText("test-notes")).toBeFalsy());
+      userEvent.type(notesInput, "some-other-note");
+      await screen.findByText("some-other-note");
 
       const [cancelButton] = screen.getAllByRole("button").slice(-2);
       cancelButton.click();
 
       // Notes should be reset to initnial value
       screen.getByText("test-notes");
+      expect(screen.queryByText("some-other-note")).toBeFalsy();
+      // Should exit edit mode (no 'textarea' element)
+      expect(screen.queryByRole("textbox")).toBeFalsy();
+    });
+
+    test("should reset form when switching off of edit mode using toggle edit button", async () => {
+      const [toggleEditButton] = screen.getAllByRole("button");
+      toggleEditButton.click();
+
+      const notesInput = screen.getByRole("textbox");
+      userEvent.clear(notesInput);
+      userEvent.type(notesInput, "some-other-note");
+      await screen.findByText("some-other-note");
+
+      // Close the edit mode from outside (using toggle button)
+      toggleEditButton.click();
+
+      // Notes should be reset to initnial value
+      screen.getByText("test-notes");
+      expect(screen.queryByText("some-other-note")).toBeFalsy();
       // Should exit edit mode (no 'textarea' element)
       expect(screen.queryByRole("textbox")).toBeFalsy();
     });
