@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Pencil } from "@eisbuk/svg";
+import { Annotation } from "@eisbuk/svg";
 
 import {
   IntervalCardVariant,
@@ -85,7 +85,7 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
                 onClick={() => setIsEditing(!isEditing)}
                 disableHover
               >
-                <Pencil />
+                <Annotation />
               </IconButton>
 
               <CalendarCardContainerInner {...{ as }}>
