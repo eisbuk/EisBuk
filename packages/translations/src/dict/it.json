@@ -192,6 +192,8 @@
     "BookingSuccess": "Prenotazione effettuata",
     "BookingCanceled": "Prenotazione rimossa",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+    "BookingNotesUpdated": "Booking notes updated",
+    "BookingNotesError": "Error updating booking notes",
 
     "SlotAdded": "Slot Aggiunto",
     "SlotUpdated": "Slot Aggiornato",

@@ -192,6 +192,8 @@
     "BookingSuccess": "Successfully booked",
     "BookingCanceled": "Booking canceled",
     "BookingCanceledError": "Error cancelling booking",
+    "BookingNotesUpdated": "Booking notes updated",
+    "BookingNotesError": "Error updating booking notes",
 
     "SlotAdded": "Slot Added",
     "SlotUpdated": "Slot Updated",

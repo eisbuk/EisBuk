@@ -15,7 +15,11 @@ import * as getters from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
 
-import { bookInterval, cancelBooking } from "../bookingOperations";
+import {
+  bookInterval,
+  cancelBooking,
+  updateBookingNotes,
+} from "../bookingOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookedSlotDocPath, getBookedSlotsPath } from "@/utils/firestore";
@@ -25,6 +29,7 @@ import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
+import { CustomerBookingEntry } from "@eisbuk/shared";
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
@@ -231,6 +236,96 @@ describe("Booking Notifications", () => {
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
+      }
+    );
+  });
+
+  describe("'updateBookingNote'", () => {
+    testWithEmulator(
+      "should update the 'bookinNote' on a booking and enqueue success notification",
+      async () => {
+        const dummyBooking: CustomerBookingEntry = {
+          date: testSlot.date,
+          interval: Object.keys(testSlot.intervals)[0],
+        };
+        const bookingNotes = "Colourless green ideas sleep furiously";
+        // set up initial state
+        const store = getNewStore();
+        const { db, organization } = await getTestEnv({
+          auth: false,
+          setup: (db, { organization }) =>
+            Promise.all([
+              setupTestSlots({
+                db,
+                store,
+                slots: { [testSlot.id]: testSlot },
+                organization,
+              }),
+              setupTestBookings({
+                db,
+                organization,
+                store,
+                bookedSlots: { [testSlot.id]: dummyBooking },
+                customer: saul,
+              }),
+            ]),
+        });
+        const mockDispatch = jest.fn();
+        // make sure tested thunk uses test generated organization
+        getOrganizationSpy.mockReturnValue(organization);
+        // mock `getFirestore` to return test db
+        getFirestoreSpy.mockReturnValueOnce(db as any);
+        // create a thunk curried with test input values
+        const testThunk = updateBookingNotes({
+          secretKey,
+          slotId: testSlot.id,
+          bookingNotes,
+        });
+        // test updating of the db using created thunk and middleware args from stores' setup
+        await testThunk(mockDispatch, store.getState);
+        // Check updates
+        const updatedBooking = await getDoc(
+          doc(
+            db,
+            getBookedSlotDocPath(organization, saul.secretKey, testSlot.id)
+          )
+        );
+        // the updated booking should contain the same data with 'bookingNotes' added
+        expect(updatedBooking.data()).toEqual({
+          ...dummyBooking,
+          bookingNotes,
+        });
+        // check that the success notification has been enqueued
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.BookingNotesUpdated),
+            variant: NotifVariant.Success,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should enqueue error notification if operation failed",
+      async () => {
+        // intentionally cause an error
+        getFirestoreSpy.mockImplementationOnce(() => {
+          throw new Error();
+        });
+        // run the thunk
+        const testThunk = updateBookingNotes({
+          secretKey,
+          slotId: bookingId,
+          bookingNotes: "",
+        });
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, () => ({} as any));
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.BookingNotesError),
             variant: NotifVariant.Error,
           })
         );

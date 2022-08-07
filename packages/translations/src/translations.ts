@@ -214,6 +214,8 @@ export enum NotificationMessage {
   BookingSuccess = "Notification.BookingSuccess",
   BookingCanceled = "Notification.BookingCanceled",
   BookingCanceledError = "Notification.BookingCanceledError",
+  BookingNotesUpdated = "Notification.BookingNotesUpdated",
+  BookingNotesError = "Notification.BookingNotesError",
 
   SlotAdded = "Notification.SlotAdded",
   SlotUpdated = "Notification.SlotUpdated",
