@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Formik, FastField, Form } from "formik";
 
-import { ExclamationCircle } from "@eisbuk/svg";
+import { QuestionMarkCircle, XCircle, CheckCircle } from "@eisbuk/svg";
 import { useTranslation, Prompt } from "@eisbuk/translations";
 
 import { NotesSectionProps } from "./types";
@@ -59,25 +59,25 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         />
         <div className="relative w-full h-7 border-t border-gray-300">
           <HoverText
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-300 p-0.5"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300"
             text={t(Prompt.BookingNotesHelpText)}
           >
-            <ExclamationCircle />
+            <QuestionMarkCircle />
           </HoverText>
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex gap-2">
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
             <IconButton
               className="text-red-500"
               {...actionButtonProps}
               type="reset"
             >
-              <ExclamationCircle />
+              <XCircle />
             </IconButton>
             <IconButton
               className="text-green-500"
               {...actionButtonProps}
               type="submit"
             >
-              <ExclamationCircle />
+              <CheckCircle />
             </IconButton>
           </div>
         </div>
