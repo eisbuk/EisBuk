@@ -7,6 +7,9 @@ import { EmptySpace, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
 import { getBookingsForCalendar } from "@/store/selectors/bookings";
 import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
+import { updateBookingNotes } from "@/store/actions/bookingOperations";
+
+import { getSecretKey } from "@/utils/localStorage";
 
 const CalendarView: React.FC = () => {
   const dispatch = useDispatch();
@@ -24,11 +27,22 @@ const CalendarView: React.FC = () => {
       })
     );
   };
+  const handleNotesUpdate = (bookingNotes: string, slotId: string) =>
+    dispatch(
+      updateBookingNotes({
+        slotId,
+        secretKey: getSecretKey(),
+        bookingNotes,
+      })
+    );
 
   const slotsToRender = bookedSlots.map((props) => (
     <IntervalCard
       key={props.id}
       onCancel={() => handleCancellation(props)}
+      onNotesEditSave={(bookingNotes) =>
+        handleNotesUpdate(bookingNotes, props.id)
+      }
       variant={IntervalCardVariant.Calendar}
       {...props}
     />
