@@ -87,6 +87,11 @@
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
   },
+  "BookingNotesForm": {
+    "Placeholder": "Personal notes...",
+    "HelpText": "Make some personal notes..."
+  },
+
   "CustomerLabel": {
     "Name": "Nome",
     "Surname": "Cognome",
@@ -149,9 +154,7 @@
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
-    "EnterEmailMessage": "Il tuo calendario verrà inviato a questo indirizzo email",
-
-    "BookingNotesHelpText": "Make some personal notes..."
+    "EnterEmailMessage": "Il tuo calendario verrà inviato a questo indirizzo email"
   },
   "ActionButton": {
     "SignIn": "Accedi",

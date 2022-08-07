@@ -136,6 +136,10 @@ export enum OrganizationLabel {
   SMS = "OrganizationLabel.SMS",
   General = "OrganizationLabel.General",
 }
+export enum BookingNotesForm {
+  Placeholder = "BookingNotesForm.Placeholder",
+  HelpText = "BookingNotesForm.HelpText",
+}
 // #endregion forms
 
 // #region dialog
@@ -162,8 +166,6 @@ export enum Prompt {
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
   EnterEmailTitle = "Prompt.EnterEmailTitle",
   EnterEmailMessage = "Prompt.EnterEmailMessage",
-
-  BookingNotesHelpText = "Prompt.BookingNotesHelpText",
 }
 
 export enum ActionButton {

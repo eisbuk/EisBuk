@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Formik, FastField, Form } from "formik";
 
 import { QuestionMarkCircle, XCircle, CheckCircle } from "@eisbuk/svg";
-import { useTranslation, Prompt } from "@eisbuk/translations";
+import { useTranslation, BookingNotesForm } from "@eisbuk/translations";
 
 import { NotesSectionProps } from "./types";
 
@@ -58,6 +58,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
           className="w-full h-[105px] border-t border-gray-300"
           component={TextareaEditable}
           isEditing={isEditing}
+          placeholder={t(BookingNotesForm.Placeholder)}
           // Fast field runs some sort of memoization
           // by switching the key (when 'isEditing' is toggled)
           // we're ensuring the component gets rerendered (from 'p' to 'textarea' in this case)
@@ -66,7 +67,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         <div className="relative w-full h-7 border-t border-gray-300">
           <HoverText
             className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-300"
-            text={t(Prompt.BookingNotesHelpText)}
+            text={t(BookingNotesForm.HelpText)}
           >
             <QuestionMarkCircle />
           </HoverText>

@@ -27,11 +27,22 @@ const TextareaEditable: React.FC<TextareaEditableProps> = ({
 
   // To achieve wysiwyg editable element, we're displaying the text value
   // as different properties whether we're using 'p' element or 'textarea'
-  const displayedText = isEditing ? { value } : { children: value };
+  const displayedText = isEditing
+    ? { value }
+    : { children: value || props.placeholder };
 
   const className = [...baseClasses, inputClasses].join(" ").trim();
 
-  const innerClasses = "w-full h-full block resize-none focus:outline-none";
+  const innerClasses = [
+    "w-full",
+    "h-full",
+    "block",
+    "resize-none",
+    "focus:outline-none",
+    // If there's no value, we might show a placeholder (even outside edit mode)
+    // so it should be colored as such
+    value ? "text-gray-900" : "text-gray-400",
+  ];
 
   return (
     <div className={className}>
@@ -39,7 +50,7 @@ const TextareaEditable: React.FC<TextareaEditableProps> = ({
         React.HTMLAttributes<HTMLParagraphElement | HTMLTextAreaElement>,
         HTMLParagraphElement | HTMLTextAreaElement
       >(element, {
-        className: innerClasses,
+        className: innerClasses.join(" "),
         ...props,
         ...displayedText,
         // Focus element when switching from non editable to editable
