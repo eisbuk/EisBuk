@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { Formik, FastField, Form } from "formik";
 
 import { ExclamationCircle } from "@eisbuk/svg";
+import { useTranslation, Prompt } from "@eisbuk/translations";
 
 import { NotesSectionProps } from "./types";
 
@@ -21,6 +22,8 @@ const NotesSection: React.FC<NotesSectionProps> = ({
   onNotesEditSave = () => {},
   onCancel = () => {},
 }) => {
+  const { t } = useTranslation();
+
   const actionButtonProps = {
     size: IconButtonSize.XS,
     contentSize: IconButtonContentSize.Tight,
@@ -56,8 +59,8 @@ const NotesSection: React.FC<NotesSectionProps> = ({
         />
         <div className="relative w-full h-7 border-t border-gray-300">
           <HoverText
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full overflow-hidden bg-gray-300 p-0.5"
-            text="hover-text"
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-300 p-0.5"
+            text={t(Prompt.BookingNotesHelpText)}
           >
             <ExclamationCircle />
           </HoverText>
