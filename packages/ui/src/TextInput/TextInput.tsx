@@ -1,10 +1,17 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-export interface TextInputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
+// Formik docs say that this is passed, but it isn't
+type Field = Omit<FieldProps, "meta">;
+
+// Without this, TS will complain that "form" on FieldProps & React.InputHTMLAttributes are not the same
+type InputHTMLAttributes = Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "form"
+>;
+
+export interface TextInputProps extends Field, InputHTMLAttributes {
   label: string;
-  formikField: FieldProps;
   placeholder?: string;
   helpText?: string;
   disabled?: boolean;
@@ -16,16 +23,16 @@ const TextInput: React.FC<TextInputProps> = ({
   label,
   placeholder,
   helpText,
-  formikField,
   StartAdornment = null,
   EndAdornment = null,
   disabled = false,
   ...props
 }) => {
-  const { field, meta } = formikField;
+  const { field, form, ...rest } = props;
   const { name } = field;
+  const { touched, errors } = form;
 
-  const hasValidationError = meta.touched && meta.error;
+  const hasValidationError = touched[name] && errors[name];
 
   const helpTextColour = hasValidationError ? "text-red-600" : "text-gray-500";
   const containerBorderWidth = disabled ? "outline-0" : "outline-1 shadow-sm";
@@ -40,7 +47,7 @@ const TextInput: React.FC<TextInputProps> = ({
     .concat(containerBorderColour, containerBorderWidth)
     .join(" ");
 
-  const supportContent = hasValidationError ? meta.error : helpText;
+  const supportContent = hasValidationError ? errors[name] : helpText;
 
   return (
     <div className="space-y-1">
@@ -56,7 +63,7 @@ const TextInput: React.FC<TextInputProps> = ({
           disabled={disabled}
           className={inputClasses}
           {...field}
-          {...props}
+          {...rest}
         />
         <div className="flex items-center ml-1">{EndAdornment}</div>
       </div>

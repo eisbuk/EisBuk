@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Formik, Field, FieldProps } from "formik";
+import React, { useState, FocusEvent } from "react";
+import { Formik, Field } from "formik";
 import * as Yup from "yup";
 
 import { Customer } from "@eisbuk/shared";
@@ -68,7 +68,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
         toggleEdit();
       }}
     >
-      {({ resetForm, handleSubmit, isSubmitting }) => (
+      {({ resetForm, handleSubmit, isSubmitting, setFieldValue }) => (
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
@@ -77,100 +77,82 @@ const CustomerProfileForm: React.FC<FormProps> = ({
             >
               <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
                 <div className="col-span-3">
-                  <Field name="name">
-                    {(field: FieldProps) => (
-                      <TextInput
-                        formikField={field}
-                        label={t(CustomerLabel.Name)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<User />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={TextInput}
+                    name="name"
+                    label={t(CustomerLabel.Name)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<User />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-3">
-                  <Field name="surname">
-                    {(field: FieldProps) => (
-                      <TextInput
-                        formikField={field}
-                        label={t(CustomerLabel.Surname)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<User />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={TextInput}
+                    name="surname"
+                    label={t(CustomerLabel.Surname)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<User />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-4">
-                  <Field name="birthday">
-                    {(field: FieldProps) => (
-                      <DateInput
-                        formikField={field}
-                        label={t(CustomerLabel.Birthday)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<Cake />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={DateInput}
+                    name="birthday"
+                    label={t(CustomerLabel.Birthday)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<Cake />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-3">
-                  <Field name="email">
-                    {(field: FieldProps) => (
-                      <TextInput
-                        formikField={field}
-                        label={t(CustomerLabel.Email)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<Mail />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={TextInput}
+                    name="email"
+                    label={t(CustomerLabel.Email)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<Mail />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-3">
-                  <Field name="phone">
-                    {({ field, meta, form }: FieldProps) => (
-                      <TextInput
-                        formikField={{ field, meta, form }}
-                        label={t(CustomerLabel.Phone)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<Phone />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
-                        onBlur={(e) =>
-                          form.setFieldValue(
-                            "phone",
-                            e.target.value.replace(/\s/g, "")
-                          )
-                        }
+                  <Field
+                    component={TextInput}
+                    name="phone"
+                    label={t(CustomerLabel.Phone)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<Phone />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    onBlur={(e: FocusEvent<HTMLInputElement>) =>
+                      setFieldValue("phone", e.target.value.replace(/\s/g, ""))
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
               </div>
             </Section>
@@ -181,40 +163,34 @@ const CustomerProfileForm: React.FC<FormProps> = ({
             >
               <div className="grid sm:grid-cols-6 gap-y-2">
                 <div className="col-span-4">
-                  <Field name="certificateExpiration">
-                    {(field: FieldProps) => (
-                      <DateInput
-                        formikField={field}
-                        label={t(CustomerLabel.CertificateExpiration)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<ClipboardList />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={DateInput}
+                    name="certificateExpiration"
+                    label={t(CustomerLabel.CertificateExpiration)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<ClipboardList />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-4">
-                  <Field name="covidCertificateReleaseDate">
-                    {(field: FieldProps) => (
-                      <DateInput
-                        formikField={field}
-                        label={t(CustomerLabel.CovidCertificateReleaseDate)}
-                        StartAdornment={
-                          <IconAdornment
-                            Icon={<ShieldCheck />}
-                            position="start"
-                            disabled={!isEditing}
-                          />
-                        }
+                  <Field
+                    component={DateInput}
+                    name="covidCertificateReleaseDate"
+                    label={t(CustomerLabel.CovidCertificateReleaseDate)}
+                    StartAdornment={
+                      <IconAdornment
+                        Icon={<ShieldCheck />}
+                        position="start"
                         disabled={!isEditing}
                       />
-                    )}
-                  </Field>
+                    }
+                    disabled={!isEditing}
+                  />
                 </div>
                 <div className="col-span-4">
                   <Field

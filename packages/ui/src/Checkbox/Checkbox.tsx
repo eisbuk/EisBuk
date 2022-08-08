@@ -1,7 +1,10 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-interface CheckboxProps extends FieldProps {
+// Formik docs say that this is passed, but it isn't
+type Field = Omit<FieldProps, "meta">;
+
+interface CheckboxProps extends Field {
   label: string;
   helpText?: string;
   disabled?: boolean;

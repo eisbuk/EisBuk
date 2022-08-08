@@ -5,8 +5,8 @@ import { useTranslation, DateFormat } from "@eisbuk/translations";
 import { dateToISO, isoToDate } from "../utils/date";
 import TextInput, { TextInputProps } from "../TextInput";
 
-const DateInput: React.FC<TextInputProps> = ({ formikField, ...props }) => {
-  const { field, form } = formikField;
+const DateInput: React.FC<TextInputProps> = ({ ...props }) => {
+  const { field, form } = props;
 
   const { value: inputValue } = field;
   const { setFieldValue } = form;
@@ -31,17 +31,14 @@ const DateInput: React.FC<TextInputProps> = ({ formikField, ...props }) => {
   };
 
   const _field = {
-    ...formikField,
-    field: {
-      ...field,
-      value: isoToDate(value),
-    },
+    ...field,
+    value: isoToDate(value),
   };
 
   return (
     <TextInput
       {...props}
-      formikField={_field}
+      field={_field}
       placeholder={t(DateFormat.Placeholder)}
       onChange={handleChange}
       onBlur={handleBlur}

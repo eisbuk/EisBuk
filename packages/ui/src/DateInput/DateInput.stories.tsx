@@ -1,6 +1,6 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
-import { Formik, Form, Field, FieldProps } from "formik";
+import { Formik, Form, Field } from "formik";
 
 import DateInput from ".";
 
@@ -27,16 +27,8 @@ export const Default = (): JSX.Element => (
         onSubmit={() => {}}
       >
         <Form>
-          <Field name="default">
-            {(field: FieldProps) => (
-              <DateInput formikField={field} label="Default" />
-            )}
-          </Field>
-          <Field name="withError">
-            {(field: FieldProps) => (
-              <DateInput formikField={field} label="With Error" />
-            )}
-          </Field>
+          <Field name="default" label="Default" component={DateInput} />
+          <Field name="withError" label="With Error" component={DateInput} />
         </Form>
       </Formik>
     </div>
