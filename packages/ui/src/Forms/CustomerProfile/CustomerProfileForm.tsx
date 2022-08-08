@@ -217,16 +217,14 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                   </Field>
                 </div>
                 <div className="col-span-4">
-                  <Field name="covidCertificateSuspended" type="checkbox">
-                    {(field: FieldProps) => (
-                      <Checkbox
-                        formikField={field}
-                        label={t(CustomerLabel.CovidCertificateSuspended)}
-                        helpText="Check this box if your COVID certificate is more than 9 months old"
-                        disabled={!isEditing}
-                      />
-                    )}
-                  </Field>
+                  <Field
+                    name="covidCertificateSuspended"
+                    type="checkbox"
+                    component={Checkbox}
+                    label={t(CustomerLabel.CovidCertificateSuspended)}
+                    helpText="Check this box if your COVID certificate is more than 9 months old"
+                    disabled={!isEditing}
+                  />
                 </div>
               </div>
             </Section>

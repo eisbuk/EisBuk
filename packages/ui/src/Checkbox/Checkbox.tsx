@@ -1,9 +1,8 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-interface CheckboxProps {
+interface CheckboxProps extends FieldProps {
   label: string;
-  formikField: FieldProps;
   helpText?: string;
   disabled?: boolean;
 }
@@ -11,10 +10,10 @@ interface CheckboxProps {
 const Checkbox: React.FC<CheckboxProps> = ({
   label,
   helpText,
-  formikField,
   disabled,
+  ...props
 }) => {
-  const { field } = formikField;
+  const { field } = props;
   const { name } = field;
 
   return (

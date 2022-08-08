@@ -1,6 +1,6 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
-import { Formik, Form, Field, FieldProps } from "formik";
+import { Formik, Form, Field } from "formik";
 
 import Checkbox from "./";
 
@@ -22,35 +22,28 @@ export const Default = (): JSX.Element => (
         onSubmit={() => {}}
       >
         <Form className="flex flex-col w-72 space-y-5">
-          <Field name="default" type="checkbox">
-            {(field: FieldProps) => (
-              <Checkbox
-                formikField={field}
-                label="Select an option?"
-                helpText="Unchecked & focssuable"
-              />
-            )}
-          </Field>
-
-          <Field name="checked" type="checkbox">
-            {(field: FieldProps) => (
-              <Checkbox
-                formikField={field}
-                label="Select an option?"
-                helpText="Option checked"
-              />
-            )}
-          </Field>
-          <Field name="disabled" type="checkbox">
-            {(field: FieldProps) => (
-              <Checkbox
-                formikField={field}
-                label="Select an option?"
-                helpText="Option checked - readonly"
-                disabled={true}
-              />
-            )}
-          </Field>
+          <Field
+            name="default"
+            type="checkbox"
+            component={Checkbox}
+            label="Select an option?"
+            helpText="Unchecked & focussable"
+          />
+          <Field
+            name="checked"
+            type="checkbox"
+            component={Checkbox}
+            label="Select an option?"
+            helpText="Option checked"
+          />
+          <Field
+            name="disabled"
+            type="checkbox"
+            component={Checkbox}
+            label="Select an option?"
+            helpText="Unchecked & focussable"
+            disabled={true}
+          />
         </Form>
       </Formik>
     </div>
