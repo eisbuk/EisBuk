@@ -280,15 +280,19 @@ const CustomerProfileForm: React.FC<FormProps> = ({
 const CustomerValidation = Yup.object().shape({
   name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  email: Yup.string().email(i18n.t(ValidationMessage.Email)),
+  email: Yup.string()
+    .required(i18n.t(ValidationMessage.RequiredField))
+    .email(i18n.t(ValidationMessage.Email)),
   phone: Yup.string().test({
     test: (input) => !input || isValidPhoneNumber(input),
     message: i18n.t(ValidationMessage.InvalidPhone),
   }),
-  birthday: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: i18n.t(ValidationMessage.InvalidDate),
-  }),
+  birthday: Yup.string()
+    .required(i18n.t(ValidationMessage.RequiredField))
+    .test({
+      test: (input) => !input || isISODay(input),
+      message: i18n.t(ValidationMessage.InvalidDate),
+    }),
   certificateExpiration: Yup.string().test({
     test: (input) => !input || isISODay(input),
     message: i18n.t(ValidationMessage.InvalidDate),
