@@ -11,7 +11,8 @@ export enum ButtonColor {
   Error = "error",
 }
 
-export interface ButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps
+  extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   size?: ButtonSize;
   color?: ButtonColor;
   startAdornment?: JSX.Element | null;
