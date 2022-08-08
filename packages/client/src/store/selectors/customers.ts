@@ -35,7 +35,7 @@ export const getCustomersList =
  */
 export const getCustomer = (secretKey: string) => (state: LocalStore) => {
   const customers = getCustomersList()(state);
-  const [customer] = customers.filter(
+  const customer = customers.find(
     (customer) => customer.secretKey === secretKey
   );
   return customer || {};
