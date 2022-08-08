@@ -12,7 +12,7 @@ const DateInput: React.FC<TextInputProps> = ({ formikField, ...props }) => {
   const { setFieldValue } = form;
 
   const { t } = useTranslation();
-  const [value, setValue] = useState("");
+  const [value, setValue] = useState(inputValue || "");
 
   useEffect(() => {
     if (inputValue !== value) {
