@@ -15,15 +15,12 @@ const testFieldName = "test";
 const Form = ({ initialValues }: FormikValues) => (
   <Formik initialValues={initialValues} onSubmit={() => {}}>
     <Field name={testFieldName}>
-      {({ field, form, meta }: FieldProps) => (
+      {({ field, form }: FieldProps) => (
         <DateInput
-          formikField={{
-            field,
-            form: {
-              ...form,
-              setFieldValue: setFieldSpy,
-            },
-            meta,
+          field={field}
+          form={{
+            ...form,
+            setFieldValue: setFieldSpy,
           }}
           label="Test Field"
         />
