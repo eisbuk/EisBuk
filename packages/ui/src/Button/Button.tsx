@@ -40,7 +40,7 @@ const Button: React.FC<ButtonProps> = ({
   ].join(" ");
 
   const content = !children ? null : typeof children === "string" ? (
-    <span>{children}</span>
+    <span key="content">{children}</span>
   ) : (
     children
   );

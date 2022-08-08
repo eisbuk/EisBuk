@@ -19,6 +19,8 @@ import TextInput from "./TextInput";
 import DateInput from "./DateInput";
 import Checkbox from "./Checkbox";
 import CustomerProfileForm from "./Forms/CustomerProfile";
+import HoverText from "./HoverText";
+import IconButton from "./IconButton";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -28,6 +30,7 @@ export * from "./BookingsCountdown";
 export * from "./CalendarNav";
 export * from "./TextInput";
 export * from "./Layout";
+export * from "./IconButton";
 
 export {
   TestComponent,
@@ -47,4 +50,6 @@ export {
   DateInput,
   Checkbox,
   CustomerProfileForm,
+  HoverText,
+  IconButton,
 };
