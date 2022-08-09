@@ -7,8 +7,11 @@ import { ICalendar } from "datebook";
 
 import { CalendarEvents } from "@eisbuk/shared";
 
+import Fab from "@mui/material/Fab";
 import InputDialog from "@/components/atoms/InputDialog";
-import { Button } from "@eisbuk/ui";
+import { Button, IconButton } from "@eisbuk/ui";
+
+import { Calendar } from "@eisbuk/svg";
 
 import { getAboutOrganization, getCalendarDay } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
@@ -94,12 +97,24 @@ const AddToCalendar: React.FC = () => {
     <>
       <Button
         className=" text-white bg-cyan-700 m-auto justify-center
-        position-relative sm:w-1/2
-         active:bg-cyan-800 md:w-auto "
+        position-relative
+         active:bg-cyan-800 md:w-auto  invisible md:visible "
         onClick={() => setEmailDialog(true)}
       >
         {t(ActionButton.AddToCalendar)}
       </Button>
+
+      <Fab
+        color="primary"
+        aria-label={t(ActionButton.AddToCalendar)}
+        className="fixed bg-cyan-700 right-4 bottom-20 md:invisible"
+        onClick={() => setEmailDialog(true)}
+      >
+        <IconButton>
+          <Calendar />
+        </IconButton>
+      </Fab>
+
       <InputDialog
         title={t(Prompt.EnterEmailTitle)}
         onSubmit={handleClick}
