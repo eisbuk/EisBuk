@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { DateTime } from "luxon";
-import { useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 
-import { CalendarNav, CalendarNavProps, Layout, TabItem } from "@eisbuk/ui";
-import { Calendar, AccountCircle } from "@eisbuk/svg";
+import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
+import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
   Collection,
@@ -14,20 +13,32 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
+import ProfileView from "./views/Profile";
+import { useSecretKey, useDate } from "./hooks";
+
 import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import { getBookingsCustomer } from "@/store/selectors/bookings";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
-import { getCalendarDay } from "@/store/selectors/app";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getCustomersByBirthday } from "@/store/selectors/customers";
-import { changeCalendarDate } from "@/store/actions/appActions";
-
-import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
 
 import { adminLinks } from "@/data/navigation";
+
+enum Views {
+  Book = "BookView",
+  Calendar = "CalendarView",
+  Profile = "ProfileView",
+}
+
+// Get appropriate view to render
+const viewsLookup = {
+  [Views.Book]: BookView,
+  [Views.Calendar]: CalendarView,
+  [Views.Profile]: ProfileView,
+};
 
 /**
  * Customer area page component
@@ -63,12 +74,8 @@ const CustomerArea: React.FC = () => {
     photoURL,
   };
 
-  // Get appropriate view to render
-  const views = {
-    BookView,
-    CalendarView,
-  };
-  const [view, setView] = useState<keyof typeof views>("BookView");
+  const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
+  const CustomerView = viewsLookup[view];
 
   const additionalButtons = (
     <>
@@ -76,20 +83,25 @@ const CustomerArea: React.FC = () => {
         key="book-view-button"
         Icon={Calendar as any}
         label="Book"
-        onClick={() => setView("BookView")}
-        active={view === "BookView"}
+        onClick={() => setView(Views.Book)}
+        active={view === Views.Book}
       />
       <TabItem
         key="calendar-view-button"
         Icon={AccountCircle as any}
         label="Calendar"
-        onClick={() => setView("CalendarView")}
-        active={view === "CalendarView"}
+        onClick={() => setView(Views.Calendar)}
+        active={view === Views.Calendar}
+      />
+      <TabItem
+        key="profile-view-button"
+        Icon={ClipboardList as any}
+        label="Profile"
+        onClick={() => setView(Views.Profile)}
+        active={view === Views.Profile}
       />
     </>
   );
-
-  const CustomerView = views[view];
 
   return (
     <Layout
@@ -100,11 +112,13 @@ const CustomerArea: React.FC = () => {
       additionalAdminContent={additionalAdminContent}
       user={displayCustomer}
     >
-      <CalendarNav
+      {view !== "ProfileView" && (
+        <CalendarNav
         {...calendarNavProps}
         additionalContent={<AddToCalendar />}
         jump="month"
       />
+      )}
       <div className="content-container">
         <div className="px-[44px] py-4">
           <CustomerView />
@@ -112,49 +126,6 @@ const CustomerArea: React.FC = () => {
       </div>
     </Layout>
   );
-};
-
-/**
- * Secret key logic abstracted away in a hook for easier readability
- */
-const useSecretKey = () => {
-  // Secret key is provided as a route param to the customer_area page
-  const { secretKey } = useParams<{
-    secretKey: string;
-  }>();
-
-  /**
-   * @TODO this disables the user (admin)
-   * from looking at bookings for multiple
-   * customers in different tabs and we should find
-   * a way around it (probably store the key in store)
-   */
-  // Store secretKey to localStorage
-  // for easier access
-  useEffect(() => {
-    setSecretKey(secretKey);
-
-    return () => {
-      // remove secretKey from local storage on unmount
-      unsetSecretKey();
-    };
-  }, [secretKey]);
-
-  return secretKey;
-};
-
-/**
- * Date logic abstracted away in a hook for readability.
- * Reads current date from Redux store and handles updates of the current date.
- * The returned structure can directly be passed as props to CalendarNav component
- */
-const useDate = (): Pick<CalendarNavProps, "date" | "onChange"> => {
-  const dispatch = useDispatch();
-
-  const date = useSelector(getCalendarDay);
-  const onChange = (date: DateTime) => dispatch(changeCalendarDate(date));
-
-  return { date, onChange };
 };
 
 export default CustomerArea;

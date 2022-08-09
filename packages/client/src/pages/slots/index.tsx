@@ -78,7 +78,7 @@ const SlotsPage: React.FC = () => {
       }
       aria-label={t(AdminAria.EnableEdit)}
     >
-      Enable Edit
+      {t(AdminAria.EnableEdit)}
     </Button>
   );
 
