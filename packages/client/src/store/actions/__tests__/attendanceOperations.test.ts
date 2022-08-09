@@ -4,6 +4,10 @@
 
 import * as firestore from "@firebase/firestore";
 
+import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { NotifVariant } from "@/enums/store";
+
 import * as getters from "@/lib/getters";
 
 import { getTestEnv } from "@/__testSetup__/firestore";
@@ -11,7 +15,7 @@ import { getTestEnv } from "@/__testSetup__/firestore";
 import { getNewStore } from "@/store/createStore";
 
 import { markAbsence, markAttendance } from "../attendanceOperations";
-import { showErrSnackbar } from "../appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getAttendanceDocPath } from "@/utils/firestore";
 
@@ -142,7 +146,12 @@ describe("Attendance operations ->", () => {
           slotId,
           attendedInterval,
         })(mockDispatch, store.getState);
-        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });
@@ -249,7 +258,12 @@ describe("Attendance operations ->", () => {
           customerId,
           slotId,
         })(mockDispatch, store.getState);
-        expect(mockDispatch).toHaveBeenCalledWith(showErrSnackbar);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
+            variant: NotifVariant.Error,
+          })
+        );
       }
     );
   });

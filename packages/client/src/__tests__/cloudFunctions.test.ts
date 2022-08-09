@@ -69,8 +69,10 @@ describe("Cloud functions", () => {
           })
         ).resolves.toEqual({
           data: {
-            message: { html, subject },
-            to,
+            email: {
+              to,
+              message: { html, subject },
+            },
             organization,
             success: true,
           },

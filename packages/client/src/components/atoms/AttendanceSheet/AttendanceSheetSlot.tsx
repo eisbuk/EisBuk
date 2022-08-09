@@ -42,6 +42,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
 
         return (
           <TableRow
+            key={customer.id}
             style={{ backgroundColor: typeColor }}
             className={classes.tableCell}
           >
@@ -88,7 +89,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
           </TableRow>
         );
       })}
-      <Divider className={classes.divider} />
+      <Divider className={classes.divider} component="tr" />
     </TableBody>
   );
 };

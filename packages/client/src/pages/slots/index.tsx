@@ -1,23 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { OrgSubCollection, SlotInterface } from "@eisbuk/shared";
+import {
+  Button,
+  ButtonColor,
+  CalendarNav,
+  Layout,
+  SlotsDayContainer,
+} from "@eisbuk/ui";
+
+import { AdminAria, useTranslation } from "@eisbuk/translations";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ButtonContextType } from "@/enums/components";
 
 import { SlotsWeek } from "@/types/store";
 
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
-import DateNavigation from "@/components/atoms/DateNavigation";
 import SlotOperationButtons, {
-  // DeleteButton,
   CopyButton,
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
-import SlotsDayContainer from "@/components/atoms/SlotsDayContainer";
 import SlotCard from "@/components/atoms/SlotCard";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -25,13 +33,17 @@ import {
   getDayFromClipboard,
   getWeekFromClipboard,
 } from "@/store/selectors/copyPaste";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import {
   addSlotToClipboard,
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import { changeCalendarDate } from "@/store/actions/appActions";
+
 import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
+
+import { adminLinks } from "@/data/navigation";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -47,16 +59,45 @@ const SlotsPage: React.FC = () => {
   const weekToPaste = useSelector(getWeekFromClipboard);
   const dayToPaste = useSelector(getDayFromClipboard);
 
-  const extraButtons = (
-    <SlotOperationButtons
-      slotsToCopy={{ week: Boolean(weekToPaste) }}
-      contextType={ButtonContextType.Week}
-      {...{ date }}
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
+  const { t } = useTranslation();
+  const [canEdit, setCanEdit] = useState(false);
+  const toggleEdit = () => setCanEdit((a) => !a);
+  const toggleEditButton = (
+    <Button
+      onClick={toggleEdit}
+      color={canEdit ? ButtonColor.Primary : undefined}
+      className={
+        !canEdit ? "!text-black outline outline-gray-300 border-box" : ""
+      }
+      aria-label={t(AdminAria.EnableEdit)}
     >
-      {/* <DeleteButton /> */}
-      <CopyButton />
-      <PasteButton />
-    </SlotOperationButtons>
+      {t(AdminAria.EnableEdit)}
+    </Button>
+  );
+
+  const extraButtons = (
+    <div className="flex items-center">
+      {canEdit && (
+        <SlotOperationButtons
+          className="mr-4"
+          slotsToCopy={{ week: Boolean(weekToPaste) }}
+          contextType={ButtonContextType.Week}
+          {...{ date }}
+        >
+          {/* <DeleteButton /> */}
+          <CopyButton />
+          <PasteButton />
+        </SlotOperationButtons>
+      )}
+      {toggleEditButton}
+    </div>
   );
 
   const canClick =
@@ -72,73 +113,74 @@ const SlotsPage: React.FC = () => {
     };
 
   return (
-    <>
-      <AppbarAdmin />
-      <DateNavigation {...{ extraButtons }} showToggle>
-        {({ toggleState }) => (
-          <>
-            {daysToShow.map((dateISO) => {
-              const date = DateTime.fromISO(dateISO);
+    <Layout
+      isAdmin
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+      additionalAdminContent={additionalAdminContent}
+    >
+      <CalendarNav
+        date={currentDate}
+        onChange={(date) => dispatch(changeCalendarDate(date))}
+        jump="week"
+        additionalContent={extraButtons}
+      />
+      <div className="content-container">
+        {daysToShow.map((dateISO) => {
+          const date = DateTime.fromISO(dateISO);
 
-              const additionalButtons = (
-                <SlotOperationButtons
-                  contextType={ButtonContextType.Day}
-                  slotsToCopy={{
-                    day: Boolean(dayToPaste),
-                  }}
-                  {...{ date }}
-                >
-                  <NewSlotButton />
-                  <CopyButton />
-                  <PasteButton />
-                </SlotOperationButtons>
-              );
+          const additionalButtons = (
+            <SlotOperationButtons
+              contextType={ButtonContextType.Day}
+              slotsToCopy={{
+                day: Boolean(dayToPaste),
+              }}
+              {...{ date }}
+            >
+              <NewSlotButton />
+              <CopyButton />
+              <PasteButton />
+            </SlotOperationButtons>
+          );
 
-              const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
-                (a, b) => {
-                  const aTimeString = getSlotTimespan(a.intervals);
-                  const bTimeString = getSlotTimespan(b.intervals);
-                  return comparePeriods(aTimeString, bTimeString);
-                }
-              );
+          const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
+            (a, b) => {
+              const aTimeString = getSlotTimespan(a.intervals);
+              const bTimeString = getSlotTimespan(b.intervals);
+              return comparePeriods(aTimeString, bTimeString);
+            }
+          );
 
-              return (
-                <SlotsDayContainer
-                  key={date.toISO()}
-                  {...{
-                    date,
-                    additionalButtons,
-                  }}
-                  showAdditionalButtons={toggleState}
-                >
-                  {({ WrapElement }) => (
-                    <>
-                      {slotsForDay.map((slot) => {
-                        const selected = checkSelected(slot.id, weekToPaste);
+          return (
+            <SlotsDayContainer
+              key={dateISO}
+              date={dateISO}
+              additionalContent={canEdit ? additionalButtons : undefined}
+            >
+              <div className="grid gap-4 grid-cols-2">
+                {slotsForDay.map((slot) => {
+                  const selected = checkSelected(slot.id, weekToPaste);
 
-                        return (
-                          <WrapElement key={slot.id}>
-                            <SlotCard
-                              {...{ ...slot, selected }}
-                              onClick={
-                                canClick
-                                  ? handleSlotClick({ slot, selected })
-                                  : undefined
-                              }
-                              enableEdit={toggleState}
-                            />
-                          </WrapElement>
-                        );
-                      })}
-                    </>
-                  )}
-                </SlotsDayContainer>
-              );
-            })}
-          </>
-        )}
-      </DateNavigation>
-    </>
+                  return (
+                    <div key={slot.id} className="col-span-2 md:col-span-1">
+                      <SlotCard
+                        {...{ ...slot, selected }}
+                        onClick={
+                          canClick
+                            ? handleSlotClick({ slot, selected })
+                            : undefined
+                        }
+                        enableEdit={canEdit}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </SlotsDayContainer>
+          );
+        })}
+      </div>
+    </Layout>
   );
 };
 

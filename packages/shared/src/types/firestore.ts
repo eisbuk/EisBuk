@@ -1,41 +1,12 @@
+import { ProcessDocument } from "@eisbuk/firestore-process-delivery";
+
 import {
   Category,
   SlotType,
   OrgSubCollection,
   Collection,
+  DeliveryQueue,
 } from "../enums/firestore";
-
-// #region organizations
-/** @TODO Uncomment this when we find a way to add organization templates for server emails */
-// /**
-//  * A config to be used for mail service, including mailing server
-//  * config as well as message template
-//  */
-// export interface OrgMailConfig {
-//   /**
-//    * SMTP transporter config for nodemailer
-//    */
-//   config: {
-//     host: string;
-//     port: number;
-//     auth: { user: string; pass: string };
-//   };
-//   /**
-//    * Template data for all emails sent from organization
-//    */
-//   template: {
-//     /**
-//      * Received email will show this address as `from`.
-//      *
-//      * _note: doesn't work with gmail, as gmail always uses the authenticated user as `from`_
-//      */
-//     from: string;
-//     /**
-//      * A subject for email template (i.e. "Link to manage your bookings")
-//      */
-//     subject: string;
-//   };
-// }
 
 /**
  * Organization data record included in each organization (other than nested collections)
@@ -94,6 +65,22 @@ export interface OrganizationSecrets {
    * Auth token used to authenticate with SMS sending service provider
    */
   smsAuthToken?: string;
+  /**
+   * SMTP service host
+   */
+  smtpHost: string;
+  /**
+   * SMTP port (465 in most cases)
+   */
+  smtpPort: number;
+  /**
+   * SMTP service auth user
+   */
+  smtpUser: string;
+  /**
+   * SMTP service auth password
+   */
+  smtpPass: string;
 }
 // #endregion secrets
 
@@ -185,6 +172,7 @@ export interface CustomerBase {
   name: string;
   surname: string;
   category: Category;
+  photoURL?: string;
   deleted?: boolean;
   extendedDate?: string;
 }
@@ -293,18 +281,54 @@ export type SlotAttendnace = {
 // #endregion attendance
 
 // #region cloudSentMessages
-export interface EmailMessage {
-  to: string;
-  message: {
-    subject: string;
-    html: string;
-    attachments?: Attachment[];
-  };
-}
-interface Attachment {
+/**
+ * Interface for a single attachment in an email.
+ * Email will include an optional array of these items.
+ */
+export interface EmailAttachment {
   filename: string;
   content: string | Buffer;
 }
+/**
+ * `message` portion of an email interface
+ */
+export interface EmailMessage {
+  subject: string;
+  html: string;
+  attachments?: EmailAttachment[];
+}
+/**
+ * Interface used as `payload` in email process-delivery.
+ * It's basically a full email payload without the `from`
+ * field (as it's loaded from organization preferences).
+ */
+export interface EmailPayload {
+  to: string;
+  message: EmailMessage;
+}
+/**
+ * A full email interface, including:
+ * `to`, `from` and `message` (`subject`, `html`, `attachments`).
+ */
+export interface Email extends EmailPayload {
+  from: string;
+}
+/**
+ * A payload used in `sendEmail` cloud function.
+ */
+export interface SendEmailPayload extends EmailPayload {
+  /**
+   * Used to identify an organization where the email is sent from,
+   * as well as which organization to authenticate against.
+   */
+  organization: string;
+  /**
+   * Alternative authentication to enable customers (unauthenticated, but in possession of `secretKey`)
+   * send emails as well. (recovery emails, etc.)
+   */
+  secretKey?: string;
+}
+
 export interface SMSMessage {
   to: string;
   message: string;
@@ -334,11 +358,18 @@ export interface FirestoreSchema {
       };
     };
   };
+  [Collection.DeliveryQueues]: {
+    [organization: string]: {
+      [DeliveryQueue.EmailQueue]: {
+        [id: string]: ProcessDocument<EmailPayload>;
+      };
+      [DeliveryQueue.SMSQueue]: {
+        [id: string]: ProcessDocument<SMSMessage>;
+      };
+    };
+  };
   [Collection.Secrets]: {
     [organization: string]: OrganizationSecrets;
-  };
-  [Collection.EmailQueue]: {
-    [id: string]: EmailMessage;
   };
 }
 

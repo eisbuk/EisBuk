@@ -1,141 +1,125 @@
-import React, { useEffect, useMemo } from "react";
-import { Route, Switch, useParams } from "react-router-dom";
+import React, { useState } from "react";
+import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
 
+import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
+import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
-  OrgSubCollection,
   BookingSubCollection,
   Collection,
+  OrgSubCollection,
 } from "@eisbuk/shared";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-import { CustomerRoute, Routes } from "@/enums/routes";
+import BookView from "./views/Book";
+import CalendarView from "./views/Calendar";
+import ProfileView from "./views/Profile";
+import { useSecretKey, useDate } from "./hooks";
 
-import CustomerSlots from "./CustomerSlots";
-import BookingsCalendar from "./BookingsCalendar";
-import CustomerNavigation from "./CustomerNavigation";
-import AppbarCustomer from "@/components/layout/AppbarCustomer";
-import AppbarAdmin from "@/components/layout/AppbarAdmin";
+import { NotificationsContainer } from "@/features/notifications/components";
 
-import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
+import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
-import {
-  getBookingsCustomer,
-  getBookedSlots,
-} from "@/store/selectors/bookings";
-import { getSlotsForCustomer } from "@/store/selectors/slots";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCalendarDay } from "@/store/selectors/app";
+import { getCustomersByBirthday } from "@/store/selectors/customers";
 
-import { splitSlotsByCustomerRoute } from "./utils";
-import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
+import { adminLinks } from "@/data/navigation";
+
+enum Views {
+  Book = "BookView",
+  Calendar = "CalendarView",
+  Profile = "ProfileView",
+}
+
+// Get appropriate view to render
+const viewsLookup = {
+  [Views.Book]: BookView,
+  [Views.Calendar]: CalendarView,
+  [Views.Profile]: ProfileView,
+};
 
 /**
- * Customer sub routes:
- * - renders the apropriate `customerRoute` within `CustomersPage` and `CustomerNavigation`
- * - catches all `/customers/:secretKey/<customerRoute>` routes
- * - initializes `useFirestoreConnect` with appropriate params
- * - gets all slots and bookings from store (for appropriate timeframe)
- *   and processes to prepare `slots`/`subscribedSlots`/`bookings` props for each respective sub route
- * - renders appropriate sub route with respect to `customerRoute` provided
+ * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  const { customerRoute, secretKey } = useParams<{
-    secretKey: string;
-    customerRoute: CustomerRoute;
-  }>();
+  useSecretKey();
 
-  // store secret key to local storage
-  // for easier access
-  useEffect(() => {
-    setSecretKey(secretKey);
+  const isAdmin = useSelector(getIsAdmin);
 
-    return () => {
-      // remove secretKey from local storage on unmount
-      unsetSecretKey();
-    };
-  }, [secretKey]);
+  const customersByBirthday = useSelector(
+    getCustomersByBirthday(DateTime.now())
+  );
 
+  const additionalAdminContent = (
+    <BirthdayMenu customers={customersByBirthday} />
+  );
+
+  // Subscribe to necessary collections
   useFirestoreSubscribe([
+    OrgSubCollection.SlotsByDay,
     OrgSubCollection.Bookings,
     Collection.PublicOrgInfo,
     BookingSubCollection.BookedSlots,
     BookingSubCollection.Calendar,
-    OrgSubCollection.SlotsByDay,
   ]);
 
-  const customerData = useSelector(getBookingsCustomer);
-  const date = useSelector(getCalendarDay);
+  const calendarNavProps = useDate();
 
-  // only the "calendar" will use "week" timeframe, the rest will use "month"
-  const timeframe = customerRoute === CustomerRoute.Calendar ? "week" : "month";
+  // Get customer data necessary for rendering/functoinality
+  const { name, surname, photoURL } = useSelector(getBookingsCustomer) || {};
+  const displayCustomer = {
+    displayName: [name, surname].filter((n) => Boolean(n)).join(" ") || "",
+    photoURL,
+  };
 
-  // get slots from store for apropriate timespan
-  const slotsSelector = useMemo(
-    () =>
-      customerData && date
-        ? getSlotsForCustomer(customerData.category, timeframe, date)
-        : () => ({}),
-    [date, customerData, timeframe]
-  );
+  const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
+  const CustomerView = viewsLookup[view];
 
-  // get raw slots (slots by day) from store
-  const rawSlots = useSelector(slotsSelector);
-
-  // process slots for each route
-  const {
-    [CustomerRoute.BookIce]: bookIceSlots,
-    [CustomerRoute.BookOffIce]: bookOffIceSlots,
-    [CustomerRoute.Calendar]: calendarSlots,
-  } = splitSlotsByCustomerRoute(rawSlots);
-
-  // create bookings to display
-  const bookedSlots = useSelector(getBookedSlots);
-
-  const isAdmin = useSelector(getIsAdmin);
-
-  const title = customerData
-    ? `${customerData.name} ${customerData.surname}`
-    : "";
-
-  const headers = (
+  const additionalButtons = (
     <>
-      {isAdmin && <AppbarAdmin />}
-      <AppbarCustomer headingText={title} />
+      <TabItem
+        key="book-view-button"
+        Icon={Calendar as any}
+        label="Book"
+        onClick={() => setView(Views.Book)}
+        active={view === Views.Book}
+      />
+      <TabItem
+        key="calendar-view-button"
+        Icon={AccountCircle as any}
+        label="Calendar"
+        onClick={() => setView(Views.Calendar)}
+        active={view === Views.Calendar}
+      />
+      <TabItem
+        key="profile-view-button"
+        Icon={ClipboardList as any}
+        label="Profile"
+        onClick={() => setView(Views.Profile)}
+        active={view === Views.Profile}
+      />
     </>
   );
 
   return (
-    <>
-      {headers}
-      <CustomerNavigation />
-      <Switch>
-        <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookIce}`}
-        >
-          <CustomerSlots
-            view={CustomerRoute.BookIce}
-            slots={bookIceSlots}
-            rawSlots={rawSlots}
-            {...{ bookedSlots }}
-          />
-        </Route>
-        <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.BookOffIce}`}
-        >
-          <CustomerSlots
-            view={CustomerRoute.BookOffIce}
-            slots={bookOffIceSlots}
-            rawSlots={rawSlots}
-            {...{ bookedSlots }}
-          />
-        </Route>
-        <Route
-          path={`${Routes.CustomerArea}/:secretKey/${CustomerRoute.Calendar}`}
-        >
-          <BookingsCalendar slots={calendarSlots} {...{ bookedSlots }} />
-        </Route>
-      </Switch>
-    </>
+    <Layout
+      isAdmin={isAdmin}
+      adminLinks={adminLinks}
+      Notifications={NotificationsContainer}
+      additionalButtons={additionalButtons}
+      additionalAdminContent={additionalAdminContent}
+      user={displayCustomer}
+    >
+      {view !== "ProfileView" && (
+        <CalendarNav {...calendarNavProps} jump="month" />
+      )}
+      <div className="content-container">
+        <div className="px-[44px] py-4">
+          <CustomerView />
+        </div>
+      </div>
+    </Layout>
   );
 };
 

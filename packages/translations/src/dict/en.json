@@ -2,7 +2,9 @@
   "NavigationLabel": {
     "Attendance": "Attendance",
     "Athletes": "Athletes",
-    "Bookings": "Bookings"
+    "Bookings": "Bookings",
+    "OrganizationSettings": "Settings",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Book Ice",
@@ -126,18 +128,24 @@
   },
 
   "Prompt": {
-    "DeleteCustomer": "Are you sure you want to remove",
-    "DeleteSlot": "Are you sure you want to delete the",
+    "DeleteCustomer": "Are you sure you want to remove {{ name }} {{ surname }}?",
+    "DeleteSlot": "Are you sure you want to delete the slot:",
 
     "NonReversible": "This action is non-reversible",
 
     "SendEmailTitle": "Confirm email",
     "ConfirmEmail": "Are you sure you want to send an email to: {{ email }}?",
+    "NoEmailTitle": "No email found",
+    "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
     "SendSMSTitle": "Confirm SMS",
     "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?",
-    "ExtendBookingDateTitle": "Extend booking date for {{ customer }}",
-    "ExtendBookingDateBody": "Please enter an extended date for {{ customer }}'s bookings",
+    "NoPhoneTitle": "No phone number found",
+    "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
 
+    "ExtendBookingDateTitle": "Extend booking date for {{ name }} {{ surname }}:",
+    "ExtendBookingDateBody": "Please enter an extended date for {{ name }} {{ surname }}'s bookings",
+
+    "CancelBookingTitle": "Cancel booking for",
     "FinalizeBookingsTitle": "Finalize Bookings",
     "ConfirmFinalizeBookings": "Are you sure you wish to finalize bookings {{ month, MMMM }}. You won't be able to make any changes for the given month.",
     "EnterEmailTitle": "Enter your Email below",
@@ -173,7 +181,9 @@
     "Dismiss": "Dismiss",
     "Submit": "Submit",
     "Verify": "Verify",
-    "Add": "Add"
+    "Add": "Add",
+    "Edit": "Edit",
+    "Delete": "Delete"
   },
 
   "Notification": {
@@ -232,7 +242,8 @@
     "CopySlots": "Copy slots from",
     "CopiedSlotsBadge": "Copied slots on",
     "PasteSlots": "Paste copied slots on",
-    "CreateSlots": "Create new slots on"
+    "CreateSlots": "Create new slots on",
+    "EnableEdit": "Enable Edit"
   },
 
   "SlotFormAria": {
@@ -255,7 +266,8 @@
     "UpcomingBirthdays": "Upcoming Birthdays"
   },
   "Alerts": {
-    "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}"
+    "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}",
+    "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Start",

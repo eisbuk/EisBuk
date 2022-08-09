@@ -17,6 +17,7 @@ import {
   __debugButtonId__,
   __create100Athletes__,
 } from "@/__testData__/testIds";
+import makeStyles from "@mui/styles/makeStyles";
 
 const app = getApp();
 const functions = getFunctions(app, __functionsZone__);
@@ -48,10 +49,13 @@ const DebugMenu: React.FC = () => {
       }
     };
 
+  const classes = useStyles();
+
   return (
     <>
       <Button
         color="secondary"
+        className={classes.buttonSecondary}
         variant="contained"
         startIcon={<BugReportIcon />}
         onClick={handleClick}
@@ -85,5 +89,11 @@ const DebugMenu: React.FC = () => {
     </>
   );
 };
+
+const useStyles = makeStyles((theme) => ({
+  buttonSecondary: {
+    backgroundColor: theme.palette.secondary.main,
+  },
+}));
 
 export default DebugMenu;

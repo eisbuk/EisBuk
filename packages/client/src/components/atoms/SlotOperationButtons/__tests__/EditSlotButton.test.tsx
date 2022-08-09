@@ -3,12 +3,7 @@
  */
 
 import React from "react";
-import {
-  screen,
-  render,
-  waitForElementToBeRemoved,
-  cleanup,
-} from "@testing-library/react";
+import { screen, render, cleanup } from "@testing-library/react";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -21,15 +16,13 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import {
-  __editSlotButtonId__,
-  __slotFormId__,
-  __cancelFormId__,
-} from "@/__testData__/testIds";
+import { __editSlotButtonId__ } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/slots";
+import { openModal } from "@/features/modal/actions";
 
+const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
-  useDispatch: () => jest.fn(),
+  useDispatch: () => mockDispatch,
 }));
 
 describe("SlotOperationButtons", () => {
@@ -39,36 +32,21 @@ describe("SlotOperationButtons", () => {
   });
 
   describe("'EditSlotButton' functionality test", () => {
-    const notes = "note-used-to-test-form-has-been-opened-with-passed-slot";
-    beforeEach(() => {
+    test("should open 'SlotForm' on click (with current slot as 'slotToEdit')", () => {
       render(
         <SlotOperationButtons
-          slot={{ ...baseSlot, notes }}
+          slot={baseSlot}
           contextType={ButtonContextType.Slot}
         >
           <EditSlotButton />
         </SlotOperationButtons>
       );
-    });
-
-    test("should open 'SlotForm' on click (with current slot as 'slotToEdit')", () => {
-      const formOnScreen = screen.queryByTestId(__slotFormId__);
-      // should not appear on screen at first
-      expect(formOnScreen).toEqual(null);
       screen.getByTestId(__editSlotButtonId__).click();
-      // check if form opened
-      screen.getByTestId(__slotFormId__);
-      // check if slot passed for edit
-      screen.getByText(new RegExp(notes));
-    });
-
-    test("should close 'SlotForm' on forms 'onClose' trigger", async () => {
-      // open form
-      screen.getByTestId(__editSlotButtonId__).click();
-      // should close form
-      screen.getByTestId(__cancelFormId__).click();
-      await waitForElementToBeRemoved(() =>
-        screen.queryByTestId(__slotFormId__)
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "SlotForm",
+          props: { date: baseSlot.date, slotToEdit: baseSlot },
+        })
       );
     });
   });

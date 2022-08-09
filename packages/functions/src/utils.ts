@@ -5,7 +5,10 @@ import admin from "firebase-admin";
 import http from "http";
 import https from "https";
 import { StringDecoder } from "string_decoder";
+import Ajv, { ErrorObject, JSONSchemaType } from "ajv";
+import customizeErrors from "ajv-errors";
 
+import { DeliverResultTuple } from "@eisbuk/firestore-process-delivery";
 import {
   Collection,
   Customer,
@@ -96,8 +99,8 @@ export const throwUnauth = (): never => {
 /**
  * A way to "Authenticate" a non-logged in user
  * Receives an organization name and a secretKey
- * returns a boolean promise depending on whether a booking
- * exists with that secretKey or not
+ * returns a boolean promise depending on whether a customer bookings
+ * entry exists with that secretKey or not
  * @param args.organization
  * @param args.secretKey
  * @returns {Promise<boolean>}
@@ -118,55 +121,6 @@ export const checkSecretKey = async ({
   ).exists;
 
   return hasBooking;
-};
-
-/**
- * A convenience method used to create SMS request options.
- * Used purely for code readability
- * @param url
- * @param token
- * @returns
- */
-export const createSMSReqOptions = (
-  method: "GET" | "POST",
-  url: string,
-  token: string
-): http.RequestOptions & { proto: "http" | "https" } => {
-  let proto: "http" | "https" = "https";
-  let hostname = "";
-  let endpoint = "/";
-  let portString = "";
-
-  // check for protocol in url string (the fallback is https)
-  if (/^https?:\/\//.test(url)) {
-    [proto, hostname] = url.split("://") as ["http" | "https", string];
-  } else {
-    hostname = url;
-  }
-
-  // split hostname and endpoint from url
-  const breakingPoint = hostname.indexOf("/");
-  if (breakingPoint !== -1) {
-    endpoint = hostname.slice(breakingPoint);
-    hostname = hostname.slice(0, breakingPoint);
-  }
-
-  // check for port number
-  if (hostname.includes(":")) {
-    [hostname, portString] = hostname.split(":");
-  }
-
-  const port = Number(portString) || undefined;
-
-  return {
-    proto,
-    hostname,
-    path: [endpoint, `token=${token}`].join("?"),
-    port,
-    // a standard part of each SMS post request we're sending
-    headers: { ["Content-Type"]: "application/json" },
-    method,
-  };
 };
 
 /**
@@ -294,3 +248,92 @@ export const checkRequiredFields = (
     });
   }
 };
+
+// #region JSONValidation
+/**
+ * Reads through provided JSON validation errors and constructs an array
+ * of error messages (with some additional processing if needed)
+ * @param {ErrorObject[]} errs array of ajv error objects
+ * @param {string} prefix this string will be the first member of the erros array
+ * if not provided, falls back to "JSON validation: the following errors occurred:"
+ *
+ * @returns an array of (string) error messages
+ */
+const constructValidationErrors = (
+  errs: ErrorObject[],
+  prefix = "JSON validation: the following errors occurred:"
+): string[] => {
+  // Unknown fields are natively handled a bit weirdly, therefore we're storing the
+  // unkonwn fields in this list and constructing an error afterwards
+  const unknownFields: string[] = [];
+
+  // Process errors and add each (string) error message to the array
+  const errorsArr = errs.reduce(
+    (acc, { instancePath, message, keyword, params }) => {
+      // For additional (unkonwn) properties we're not adding the error to the array
+      // but just storing them in `unkonwnFields` for later use
+      if (keyword === "additionalProperties" && params.additionalProperty) {
+        unknownFields.push(`'${params.additionalProperty}'`);
+        return acc;
+      }
+
+      // Remove starting "/" and replace further "/" steps with "." (the latter is for nested properties)
+      const field = instancePath.slice(1).replace(/\//g, ".");
+
+      const errorMessage = field
+        ? `Error at field '${field}': "${message}"`
+        : `Error: "${message}"`;
+
+      return [...acc, errorMessage];
+    },
+    [prefix]
+  );
+
+  // If unkonwn fields found, add the 'unkonwn fields' error at the end of the errorsArr
+  if (unknownFields.length) {
+    errorsArr.push(
+      "Object can specify only known fields, unkonwn fields found: " +
+        unknownFields.join(", ")
+    );
+  }
+
+  return errorsArr;
+};
+
+/**
+ * Validates a JSON object, using Ajv JSON validator, with respect to provided schema.
+ * The schema supports custom `errorMessages` defined using `ajv-errors`:
+ *
+ * https://www.npmjs.com/package/ajv-errors
+ *
+ * If any errors encountered, the function processes the ajv errors into error message strings
+ * and returns them as an array
+ *
+ * Additionally, the function accepts a type parameter representing interface of the validated object,
+ * if provided, upon successul validation the function also type casts the return type to a required one (validated one)
+ *
+ * @param schema JSON validation schema
+ * @param object object to validate
+ * @returns `[validatedObject, errorsArray, emptyMetadataObject]` tuple
+ */
+export const validateJSON = <T extends Record<string, any>>(
+  schema: JSONSchemaType<T>,
+  object: Record<string, any>,
+  prefix?: string
+): DeliverResultTuple<any, T> => {
+  // Set up Ajv instance with custom error messages (read from schema)
+  const ajv = new Ajv({ allErrors: true });
+  customizeErrors(ajv);
+
+  // Validate object with respect to schema
+  const validate = ajv.compile<T>(schema);
+
+  if (validate(object)) {
+    // Return validated object as type safe
+    return [object, null, {}];
+  }
+
+  // If not validated, return errors
+  return [null, constructValidationErrors(validate.errors || [], prefix), {}];
+};
+// #endregion JSONValidation

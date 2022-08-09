@@ -4,7 +4,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
-import Dialog from "@mui/material/Dialog";
 import IconButton from "@mui/material/IconButton";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -18,6 +17,8 @@ import {
   CustomerLabel,
 } from "@eisbuk/translations";
 
+import { BaseModalProps } from "@/features/modal/types";
+
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 import CustomerOperationButtons from "./CustomerOperationButtons";
 import ActionButtons from "./ActionButtons";
@@ -25,23 +26,20 @@ import ExtendedDateField from "./ExtendedDateField";
 
 import { capitalizeFirst } from "@/utils/helpers";
 
-import { __customersDialogId__ } from "@/__testData__/testIds";
-
-interface Props {
+interface CustomerCardProps extends BaseModalProps {
   customer: Customer | null;
-  onClick?: (customer: Customer) => void;
-  onClose: () => void;
 }
 
 /**
  * A component used to render customer's info in a dialog.
  * Used to inspect/edit/delete customer and perform additional actions
  * like sending of a booking link via sms/email.
- *
- * @param {function} props.onClose on close callback fired when the modal (Dialog) closes
- * @param {object | null} props.customer customer data to display, or `null` -> if `null` the modal is closed and the component hidden
  */
-const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
+const CustomerCard: React.FC<CustomerCardProps> = ({
+  onClose,
+  customer,
+  className = "",
+}) => {
   const { t } = useTranslation();
   const classes = useStyles();
 
@@ -79,7 +77,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
               : customer[property] || "-";
 
           return (
-            <>
+            <React.Fragment key={property}>
               <Typography
                 className={classes.property}
                 variant="h6"
@@ -89,7 +87,7 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
                 <span className={classes.value}>{value}</span>
               </Typography>
               <div className={classes.divider} />
-            </>
+            </React.Fragment>
           );
         })}
       </>
@@ -97,49 +95,39 @@ const CustomerCard: React.FC<Props> = ({ onClose, customer }) => {
   };
 
   return (
-    <Dialog
-      className={classes.dialog}
-      maxWidth="lg"
-      data-testid={__customersDialogId__}
-      open={Boolean(customer)}
-      onClose={onClose}
-    >
-      <Card className={classes.container}>
-        <CardContent>
-          <Box className={classes.topSection}>
-            <EisbukAvatar {...customer!} className={classes.avatar} />
-            <div className={classes.nameContainer}>
-              <Typography variant="h4" className={classes.bold}>
-                {customer?.name}
-              </Typography>
-              <Typography variant="h4">{customer?.surname}</Typography>
-            </div>
-          </Box>
-          <CustomerOperationButtons
-            customer={customer!}
-            className={classes.customerOperationsContainer}
-            {...{ onClose }}
-          />
-          {renderCustomerData(customer!)}
-          <ExtendedDateField customer={customer!} {...{ onClose }} />
-          <div className={classes.divider} />
-        </CardContent>
-        <ActionButtons
-          className={classes.actionButtonsContainer}
+    <Card className={[...containerClasses, className].join(" ")}>
+      <CardContent>
+        <Box className={classes.topSection}>
+          <EisbukAvatar {...customer!} className={classes.avatar} />
+          <div className={classes.nameContainer}>
+            <Typography variant="h4" className={classes.bold}>
+              {customer?.name}
+            </Typography>
+            <Typography variant="h4">{customer?.surname}</Typography>
+          </div>
+        </Box>
+        <CustomerOperationButtons
           customer={customer!}
-          onClose={onClose}
+          className={classes.customerOperationsContainer}
+          {...{ onClose }}
         />
-        <IconButton
-          onClick={onClose}
-          className={classes.exitButton}
-          size="large"
-        >
-          <Close />
-        </IconButton>
-      </Card>
-    </Dialog>
+        {renderCustomerData(customer!)}
+        <ExtendedDateField customer={customer!} {...{ onClose }} />
+        <div className={classes.divider} />
+      </CardContent>
+      <ActionButtons
+        className={classes.actionButtonsContainer}
+        customer={customer!}
+        onClose={onClose}
+      />
+      <IconButton onClick={onClose} className={classes.exitButton} size="large">
+        <Close />
+      </IconButton>
+    </Card>
   );
 };
+
+const containerClasses = ["max-h-[90vh]", "overflow-auto"];
 
 const useStyles = makeStyles((theme) => ({
   dialog: {
@@ -154,9 +142,6 @@ const useStyles = makeStyles((theme) => ({
   },
   bold: {
     fontWeight: "bold",
-  },
-  container: {
-    position: "relative",
   },
   exitButton: {
     position: "absolute",

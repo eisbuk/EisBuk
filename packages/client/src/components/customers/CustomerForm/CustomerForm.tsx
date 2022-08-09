@@ -5,10 +5,6 @@ import { TextField } from "formik-mui";
 
 import { InputProps } from "@mui/material";
 import Button from "@mui/material/Button";
-import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
-import DialogContent from "@mui/material/DialogContent";
-import DialogTitle from "@mui/material/DialogTitle";
 import InputAdornment from "@mui/material/InputAdornment";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -20,7 +16,12 @@ import Cake from "@mui/icons-material/Cake";
 import LocalHospital from "@mui/icons-material/LocalHospital";
 import Payment from "@mui/icons-material/Payment";
 
-import { Category, Customer, DeprecatedCategory } from "@eisbuk/shared";
+import {
+  Category,
+  Customer,
+  CustomerLoose,
+  DeprecatedCategory,
+} from "@eisbuk/shared";
 import i18n, {
   useTranslation,
   CustomerLabel,
@@ -71,18 +72,18 @@ const CustomerValidation = Yup.object().shape({
 // #endregion validations
 
 // #region mainComponent
-interface Props {
-  open: boolean;
-  onClose?: () => void;
+export interface CustomerFormProps {
+  className?: string;
   customer?: Partial<Customer>;
-  updateCustomer?: (customer: Customer) => void;
+  onCancel?: () => void;
+  onUpdateCustomer?: (customer: CustomerLoose) => void;
 }
 
-const CustomerForm: React.FC<Props> = ({
-  open,
+const CustomerForm: React.FC<CustomerFormProps> = ({
   customer,
-  onClose = () => {},
-  updateCustomer = () => {},
+  className = "",
+  onUpdateCustomer = () => {},
+  onCancel = () => {},
 }) => {
   const classes = useStyles();
 
@@ -110,24 +111,31 @@ const CustomerForm: React.FC<Props> = ({
   const title = customer ? editCustomerTitle : newCustomerTitle;
 
   return (
-    <Dialog open={open} onClose={onClose}>
-      <DialogTitle id="form-dialog-title">{title}</DialogTitle>
+    <div
+      className={[
+        className,
+        "max-h-[90vh]",
+        "overflow-y-auto",
+        "rounded-lg",
+        "bg-white",
+        "p-6",
+      ].join(" ")}
+    >
+      <h1 id="form-dialog-title" className="mb-6 text-2xl">
+        {title}
+      </h1>
       <Formik
         validateOnChange={false}
         initialValues={{
           ...defaultCustomerFormValues,
-          ...customer,
+          ...(customer || ({} as Customer)),
         }}
         validationSchema={CustomerValidation}
-        onSubmit={(values, { setSubmitting }) => {
-          updateCustomer(values as Customer);
-          setSubmitting(false);
-          onClose();
-        }}
+        onSubmit={onUpdateCustomer}
       >
         {({ isSubmitting, setFieldValue, values }) => (
           <Form autoComplete="off">
-            <DialogContent>
+            <div className="mb-6 flex flex-col gap-4 items-stretch">
               <input
                 type="hidden"
                 name="id"
@@ -156,7 +164,7 @@ const CustomerForm: React.FC<Props> = ({
                 label={t(CustomerLabel.Phone)}
                 className={classes.field}
                 onBlur={() =>
-                  setFieldValue("phone", values["phone"].replace(/\s/g, ""))
+                  setFieldValue("phone", values["phone"]?.replace(/\s/g, ""))
                 }
                 Icon={Phone}
               />
@@ -191,9 +199,9 @@ const CustomerForm: React.FC<Props> = ({
                 className={classes.field}
                 Icon={Payment}
               />
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={onClose} color="primary">
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={onCancel} color="primary">
                 {t(ActionButton.Cancel)}
               </Button>
               <Button
@@ -201,14 +209,15 @@ const CustomerForm: React.FC<Props> = ({
                 disabled={isSubmitting}
                 variant="contained"
                 color="primary"
+                className={classes.buttonPrimary}
               >
                 {t(ActionButton.Save)}
               </Button>
-            </DialogActions>
+            </div>
           </Form>
         )}
       </Formik>
-    </Dialog>
+    </div>
   );
 };
 // #endregion mainComponent
@@ -265,6 +274,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     marginTop: theme.spacing(1.5),
     marginBottom: theme.spacing(1.5),
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
 }));
 // #endregion styles
 

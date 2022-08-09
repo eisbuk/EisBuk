@@ -2,6 +2,7 @@ import React from "react";
 import { ComponentMeta, ComponentStory } from "@storybook/react";
 
 import CustomerForm from "./CustomerForm";
+import { ModalContainer } from "@/features/modal/components";
 
 export default {
   title: "Customer forms",
@@ -10,11 +11,18 @@ export default {
     updateCustomer: { action: "Customer update" },
     handleClose: { action: "modal closed" },
   },
+  decorators: [
+    (Story) => (
+      <ModalContainer>
+        <Story />
+      </ModalContainer>
+    ),
+  ],
 } as ComponentMeta<typeof CustomerForm>;
 
 const Template: ComponentStory<typeof CustomerForm> = (
   args: Omit<Parameters<typeof CustomerForm>[0], "open">
-) => <CustomerForm open={true} {...args} />;
+) => <CustomerForm {...args} />;
 
 export const Empty = Template.bind({});
 

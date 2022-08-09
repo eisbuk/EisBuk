@@ -5,6 +5,8 @@ export enum NavigationLabel {
   Attendance = "NavigationLabel.Attendance",
   Athletes = "NavigationLabel.Athletes",
   Bookings = "NavigationLabel.Bookings",
+  OrganizationSettings = "NavigationLabel.OrganizationSettings",
+  Slots = "NavigationLabel.Slots",
 }
 export enum CustomerNavigationLabel {
   "book_ice" = "CustomerNavigation.BookIce",
@@ -145,11 +147,17 @@ export enum Prompt {
 
   SendEmailTitle = "Prompt.SendEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
+  NoEmailTitle = "Prompt.NoEmailTitle",
+  NoEmailMessage = "Prompt.NoEmailMessage",
   SendSMSTitle = "Prompt.SendSMSTitle",
   ConfirmSMS = "Prompt.ConfirmSMS",
+  NoPhoneTitle = "Prompt.NoPhoneTitle",
+  NoPhoneMessage = "Prompt.NoPhoneMessage",
+
   ExtendBookingDateTitle = "Prompt.ExtendBookingDateTitle",
   ExtendBookingDateBody = "Prompt.ExtendBookingDateBody",
 
+  CancelBookingTitle = "Prompt.CancelBookingTitle",
   FinalizeBookingsTitle = "Prompt.FinalizeBookingsTitle",
   ConfirmFinalizeBookings = "Prompt.ConfirmFinalizeBookings",
   EnterEmailTitle = "Prompt.EnterEmailTitle",
@@ -187,6 +195,8 @@ export enum ActionButton {
   Submit = "ActionButton.Submit",
   Verify = "ActionButton.Verify",
   Add = "ActionButton.Add",
+  Edit = "ActionButton.Edit",
+  Delete = "ActionButton.Delete",
 }
 // #endregion dialog
 
@@ -260,6 +270,7 @@ export enum AdminAria {
   CopiedSlotsBadge = "AdminAria.CopiedSlotsBadge",
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
+  EnableEdit = "AdminAria.EnableEdit",
 }
 
 export enum SlotFormAria {
@@ -282,6 +293,7 @@ export enum BookingAria {
 // #region alerts
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
+  NoBookings = "Alerts.NoBookings",
 }
 // #endregion alerts
 

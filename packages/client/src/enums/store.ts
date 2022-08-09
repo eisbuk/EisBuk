@@ -20,11 +20,6 @@ export enum Action {
   UpdateAuthInfo = "@@Eisbuk/UPDATE_AUTH_INFO",
   UpdateAdminStatus = "@@Eisbuk/UPDATE_ADMIN_STATUS",
   Logout = "@@Eisbuk/LOGOUT",
-
-  UpdateFirestoreListener = "@@Eisbuk/UPDATE_FIRESTORE_LISTENER",
-  UpdateLocalDocuments = "@@Eisbuk/UPDATE_LOCAL_DOCUMENT",
-  DeleteLocalDocuments = "@@Eisbuk/DELETE_LOCAL_DOCUMENT",
-  DeleteFirestoreListener = "@@Eisbuk/DELETE_FIRESTORE_LISTENER",
 }
 /**
  * Notification variants (success/error)

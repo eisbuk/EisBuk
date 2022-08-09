@@ -1,0 +1,8 @@
+#!/bin/bash
+
+repo_root_dir=$(CDPATH= cd -- "$(dirname -- "$0")"/../.. && pwd)
+
+trap "kill 0" SIGINT
+
+(cd $repo_root_dir/packages/functions && rushx watch ) &
+firebase emulators:start --project eisbuk $@

@@ -40,7 +40,16 @@
 
 ### Installation
 
-The entire repo is manaaged by **Rush** so you need to have Rush installed globally. We're using version `5.66.2` so you can run:
+The entire repo is manaaged by **Rush**.
+You don't need to install `rush` or `pnpm`.
+You'll need to make sure the `common/scripts` directory is found in the system `PATH`.
+If you're using `direnv` this can be achieved by adding the line
+
+```
+PATH_add common/scripts/
+```
+
+to your .envrc file. The scripts directory also contains utility scripts, for instace to start the emulators or run firebase.
 
 ```bash
 npm install -g @microsoft/rush
@@ -61,7 +70,7 @@ As the repo is managed by rush, we use `rush` and `rushx` commands for running o
 - `rushx` is a command similar to `npm run` or `yarn` and is used to run a script from package.json, with a simple caveat: it needs to ba called from within a package, no `--prefix` or `--cwd` options
 - `rush <command>` can be used to run one of the `global`/`bulk` commands on the repo:
 
-  - global command - if we, for instance, run `rush emulators:start` from enywhere in the repo, the firebase emulators will be spun up
+  - global command - if we, for instance, run `rush deploy:eisbuk` from enywhere in the repo, the built assets for the project will be deployed to a staging environment
   - bulk command - if we, for instance, run `rush lint:staged` from anywhere within the repo, the `lint:staged` script of each package.json will be ran, which provides a convenient way linting all of the packages using single command
   - for all global/bluk commands, see [command-line.json](./common/config/rush/command-line.json)
 
@@ -92,11 +101,11 @@ In order to work locally, we're leveraging the power of [firebase emulator suite
 To start the emulators, run:
 
 ```bash
-rush emulators:start
+emulators-start
 ```
 
 This will run emulators for firebase services (auth, functions, firestore and hosting) with emulators dashboard at http://localhost:4000
-Alternatively you can run `rush emulators:inspect` (instead of `emulators:start`), which allows you to connect with a debugger, for instance chrome from chrome://inspect/#devices or from the VSCode debugger.
+You can add `--inspect-functions 9229` to be able to connect with a debugger, for instance chrome from chrome://inspect/#devices or from the VSCode debugger.
 
 With the emulators up and running, you can go ahead and start the dev server for the client app:
 

@@ -10,7 +10,11 @@ import {
 } from "./types";
 
 import Button, { ButtonColor } from "../Button";
-import { ActionButton, useTranslation } from "@eisbuk/translations";
+import {
+  ActionButton,
+  BookingAria,
+  useTranslation,
+} from "@eisbuk/translations";
 
 const BookingButton: React.FC<
   BookingButtonProps & React.HTMLAttributes<HTMLButtonElement>
@@ -38,6 +42,7 @@ const BookingButton: React.FC<
       {...props}
       {...{ color, disabled: isDisabled, className }}
       endAdornment={durationBadge}
+      aria-label={t(BookingAria.BookButton)}
     >
       {label}
     </Button>

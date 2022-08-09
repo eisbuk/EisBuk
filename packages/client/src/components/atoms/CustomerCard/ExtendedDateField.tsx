@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 
 import Typography from "@mui/material/Typography";
@@ -11,35 +11,21 @@ import {
   useTranslation,
   ActionButton,
   CustomerLabel,
-  Prompt,
 } from "@eisbuk/translations";
 
-import ConfirmDialog from "@/components/global/ConfirmDialog";
-import { DateInput } from "@/components/atoms/DateInput";
-
-import { extendBookingDate } from "@/store/actions/customerOperations";
+import { openModal } from "@/features/modal/actions";
 
 interface Props {
   customer: Customer;
   onClose: () => void;
 }
 
-const ExtendedDateField: React.FC<Props> = ({ customer, onClose }) => {
+const ExtendedDateField: React.FC<Props> = ({ customer }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
 
   const displayValue = customer.extendedDate || "-";
-
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [extendedDateInput, setExtendedDateInput] = useState(
-    customer.extendedDate || ""
-  );
-
-  const handleExtendBooking = () => {
-    dispatch(extendBookingDate(customer.id, extendedDateInput));
-    onClose();
-  };
 
   return (
     <>
@@ -51,38 +37,34 @@ const ExtendedDateField: React.FC<Props> = ({ customer, onClose }) => {
           {displayValue}
         </span>
         <Button
+          className={classes.buttonPrimary}
           color="primary"
-          onClick={() => setOpenConfirmDialog(true)}
+          onClick={() =>
+            dispatch(
+              openModal({
+                component: "ExtendBookingDateDialog",
+                props: customer,
+              })
+            )
+          }
           variant="contained"
         >
           {t(ActionButton.ExtendBookingDate)}
         </Button>
-
-        <ConfirmDialog
-          onConfirm={handleExtendBooking}
-          open={openConfirmDialog}
-          setOpen={(open) => (open ? null : setOpenConfirmDialog(false))}
-          title={t(Prompt.ExtendBookingDateTitle, {
-            customer: `${customer.name} ${customer.surname}`,
-          })}
-        >
-          {t(Prompt.ExtendBookingDateBody, {
-            customer: `${customer.name} ${customer.surname}`,
-          })}
-          <DateInput
-            value={extendedDateInput}
-            onChange={(value) => setExtendedDateInput(value)}
-          />
-        </ConfirmDialog>
       </Typography>
     </>
   );
 };
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   field: { display: "flex", justifyContent: "space-between", flexWrap: "wrap" },
   bold: {
     fontWeight: "bold",
+  },
+  buttonPrimary: {
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    backgroundColor: theme.palette.primary.main,
   },
 }));
 

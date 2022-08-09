@@ -9,7 +9,7 @@ import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { enqueueNotification, showErrSnackbar } from "./appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}`;
@@ -27,16 +27,17 @@ export const updateOrganization =
 
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: `${i18n.t(NotificationMessage.Updated)}`,
-          options: {
-            variant: NotifVariant.Success,
-          },
-          closeButton: true,
+          variant: NotifVariant.Success,
         })
       );
       setSubmitting(false);
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };

@@ -13,5 +13,6 @@ module.exports = {
     "!**/node_modules/**",
   ],
   coveragePathIgnorePatterns: ["node_modules", ".*\\.stories\\.tsx"],
+  modulePathIgnorePatterns: ["src/pages/customer_area_archive"],
   testTimeout: 10000,
 };

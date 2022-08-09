@@ -7,7 +7,7 @@ import { screen } from "@testing-library/react";
 
 import SlotsDayContainer from "../SlotsDayContainer";
 
-import * as bookingsSelectors from "@/store/selectors/bookings";
+import * as countdownSelectors from "@/store/selectors/bookings/countdown";
 
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
@@ -55,7 +55,7 @@ describe("SlotsDayContainer", () => {
       const renderProp = jest.fn().mockReturnValue(null);
       // if bookings are allowed they should not be locked (as we're testing down below)
       jest
-        .spyOn(bookingsSelectors, "getIsBookingAllowed")
+        .spyOn(countdownSelectors, "getIsBookingAllowed")
         .mockReturnValue(() => true);
       renderWithRedux(
         <SlotsDayContainer

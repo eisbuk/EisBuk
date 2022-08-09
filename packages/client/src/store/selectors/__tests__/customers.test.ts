@@ -2,7 +2,7 @@ import { OrgSubCollection } from "@eisbuk/shared";
 
 import { getNewStore } from "@/store/createStore";
 
-import { updateLocalDocuments } from "@/react-redux-firebase/actions";
+import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getCustomersByBirthday } from "../customers";
 
@@ -11,6 +11,7 @@ import {
   expectedCustomersBirthdays,
 } from "../__testData__/customers";
 import { jian } from "@/__testData__/customers";
+import { DateTime } from "luxon";
 
 describe("Customer Selectors", () => {
   describe("Customers birthdays", () => {
@@ -19,7 +20,9 @@ describe("Customer Selectors", () => {
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Customers, customers!)
       );
-      const selector = getCustomersByBirthday("2021-12-22");
+      const selector = getCustomersByBirthday(
+        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
+      );
       const res = selector(store.getState());
       expect(res).toEqual(expectedCustomersBirthdays);
     });
@@ -34,7 +37,9 @@ describe("Customer Selectors", () => {
           erlich,
         })
       );
-      const selector = getCustomersByBirthday("2021-12-22");
+      const selector = getCustomersByBirthday(
+        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
+      );
       const res = selector(store.getState());
       // the result should be the same as erlich doesn't have a birthday provided
       expect(res).toEqual(expectedCustomersBirthdays);

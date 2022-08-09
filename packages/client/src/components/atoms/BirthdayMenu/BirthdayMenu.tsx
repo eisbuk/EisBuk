@@ -1,13 +1,13 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
 import { CustomersByBirthday } from "@eisbuk/shared";
+import { Cake } from "@eisbuk/svg";
 
 import Menu from "@mui/material/Menu";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
-import IconButton from "@mui/material/IconButton";
-import Cake from "@mui/icons-material/Cake";
 import Badge from "@mui/material/Badge";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -20,13 +20,17 @@ import {
 import BirthdayMenuItem from "./BirthdayMenuItem";
 
 import { __birthdayMenu__ } from "@/__testData__/testIds";
-interface Props {
+import { openModal } from "@/features/modal/actions";
+import { Button } from "@eisbuk/ui";
+
+interface BirthdayMenuProps {
   customers: CustomersByBirthday[];
-  onClickShowAll: () => void;
 }
-const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
+
+const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
   const classes = useStyles();
   const { t } = useTranslation();
+  const dispatch = useDispatch();
 
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
     useState<HTMLElement | null>(null);
@@ -36,8 +40,10 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
     setBirthdaysAnchorEl(null);
   };
   const handleShowAll = () => {
-    onClickShowAll();
+    // Close the small popup (menu)
     setBirthdaysAnchorEl(null);
+    // Open the full birthday - customer list in modal
+    dispatch(openModal({ component: "BirthdayDialog", props: { customers } }));
   };
 
   const calculateTimeDiff = (now: DateTime) =>
@@ -62,14 +68,17 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
   return (
     <>
       <Badge
-        className={classes.badge}
+        className={[classes.badge, "cursor-normal", "select-none"].join(" ")}
         color="error"
         badgeContent={getTodaysBirthdays}
         data-testid={__birthdayMenu__}
       >
-        <IconButton onClick={handleBirthdaysClick} size="large">
+        <Button
+          onClick={handleBirthdaysClick}
+          className="h-11 w-11 !p-2 ml-2  hover:bg-white/10"
+        >
           <Cake />
-        </IconButton>
+        </Button>
       </Badge>
       <Menu
         anchorEl={birthdaysAnchorEl}
@@ -101,7 +110,7 @@ const BirthdayMenu: React.FC<Props> = ({ customers, onClickShowAll }) => {
         })}
         <div
           onClick={handleShowAll}
-          className={`${classes.birthdayHeader} ${classes.pointerCursor}`}
+          className={[classes.birthdayHeader, "cursor-pointer"].join(" ")}
         >
           {t(BirthdayEnums.ShowAll)}
         </div>
@@ -116,7 +125,6 @@ const useStyles = makeStyles(() => ({
     fontSize: "20px",
     margin: "10px",
   },
-  pointerCursor: { cursor: "pointer" },
 
   badge: {
     "& .MuiBadge-anchorOriginTopRightRectangular": {

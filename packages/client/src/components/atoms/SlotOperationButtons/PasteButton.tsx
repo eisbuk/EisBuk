@@ -1,17 +1,13 @@
 import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
-import IconButton from "@mui/material/IconButton";
-
-import AssignmentIcon from "@mui/icons-material/Assignment";
-
+import { ClipboardList } from "@eisbuk/svg";
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
 import { ButtonGroupContext } from "./SlotOperationButtons";
+import SlotOperationButton from "./SlotOperationButton";
 
 import {
   __slotButtonNoContextError,
@@ -33,7 +29,7 @@ import { __pasteButtonId__ } from "@/__testData__/testIds";
  * - trying to render within `contextType = "slot"` as it makes no sence to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
-export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
+export const PasteButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
@@ -47,7 +43,7 @@ export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { date, contextType, slotsToCopy, iconSize } = buttonGroupContext;
+  const { date, contextType, slotsToCopy } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -72,20 +68,17 @@ export const PasteButton: React.FC<SlotButtonProps> = ({ size }) => {
   const disableButton = !(slotsToCopy && slotsToCopy[contextType!]);
 
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
-        onClick={handlePaste}
-        disabled={disableButton}
-        data-testid={__pasteButtonId__}
-        aria-label={`${t(AdminAria.PasteSlots)} ${t(DateFormat.Full, {
-          date,
-        })}`}
-        // aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
-      >
-        <AssignmentIcon />
-      </IconButton>
-    </>
+    <SlotOperationButton
+      onClick={handlePaste}
+      disabled={disableButton}
+      data-testid={__pasteButtonId__}
+      aria-label={`${t(AdminAria.PasteSlots)} ${t(DateFormat.Full, {
+        date,
+      })}`}
+      // aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
+    >
+      <ClipboardList />
+    </SlotOperationButton>
   );
 };
 

@@ -1,6 +1,5 @@
 import React from "react";
 
-import Dialog, { DialogProps } from "@mui/material/Dialog";
 import Typography from "@mui/material/Typography";
 import IconButton from "@mui/material/IconButton";
 
@@ -14,71 +13,67 @@ import { useTranslation, DateFormat, BirthdayMenu } from "@eisbuk/translations";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 import { DateTime } from "luxon";
 
-interface Props extends Omit<DialogProps, "onClose"> {
-  onClose: () => void;
+interface Props {
+  onClose?: () => void;
   customers: CustomersByBirthday[];
 }
 
-const BirthdayDialog: React.FC<Props> = ({
-  onClose,
-  customers,
-  ...dialogProps
-}) => {
+const BirthdayDialog: React.FC<Props> = ({ onClose = () => {}, customers }) => {
   const classes = useStyles();
   const { t } = useTranslation();
 
   return (
-    <Dialog onClose={onClose} {...dialogProps} maxWidth="md">
-      <div className={classes.container}>
-        <Typography variant="h6" component="h2" className={classes.title}>
-          {t(BirthdayMenu.UpcomingBirthdays)}
-        </Typography>
-        <IconButton
-          className={classes.closeButton}
-          onClick={() => onClose()}
-          size="large"
-        >
-          <Close />
-        </IconButton>
+    <div className={classes.container}>
+      <Typography variant="h6" component="h2" className={classes.title}>
+        {t(BirthdayMenu.UpcomingBirthdays)}
+      </Typography>
+      <IconButton
+        className={classes.closeButton}
+        onClick={onClose}
+        size="large"
+      >
+        <Close />
+      </IconButton>
 
-        <div className={classes.tableContainer}>
-          {customers.map((customer) => {
-            const customerBirthday =
-              customer.birthday === DateTime.now().toISODate().substring(5)
-                ? t(DateFormat.Today)
-                : t(DateFormat.DayMonth, {
-                    date: DateTime.fromISO(`2021-${customer.birthday}`),
-                  });
+      <div className={classes.tableContainer}>
+        {customers.map((customer) => {
+          const customerBirthday =
+            customer.birthday === DateTime.now().toISODate().substring(5)
+              ? t(DateFormat.Today)
+              : t(DateFormat.DayMonth, {
+                  date: DateTime.fromISO(`2021-${customer.birthday}`),
+                });
 
-            return (
-              <div key={customer.birthday}>
-                <div className={classes.birthdayHeader}>{customerBirthday}</div>
+          return (
+            <div key={customer.birthday}>
+              <div className={classes.birthdayHeader}>{customerBirthday}</div>
 
-                {customer.customers.map((cus) => {
-                  return (
-                    !cus.deleted &&
-                    cus.birthday && (
-                      <BirthdayMenuItem
-                        key={cus.id}
-                        customer={cus}
-                        showAll={true}
-                      />
-                    )
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
+              {customer.customers.map((cus) => {
+                return (
+                  !cus.deleted &&
+                  cus.birthday && (
+                    <BirthdayMenuItem
+                      key={cus.id}
+                      customer={cus}
+                      showAll={true}
+                    />
+                  )
+                );
+              })}
+            </div>
+          );
+        })}
       </div>
-    </Dialog>
+    </div>
   );
 };
 
 const useStyles = makeStyles((theme) => ({
   container: {
+    borderRadius: 6,
+    maxWidth: 400,
     height: "100%",
-    width: "35vw",
+    width: "100vw",
     position: "relative",
     paddingTop: "4rem",
     paddingBottom: "0",

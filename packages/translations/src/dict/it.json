@@ -2,7 +2,9 @@
   "NavigationLabel": {
     "Attendance": "Presenze",
     "Athletes": "Atleti",
-    "Bookings": "Prenotazioni"
+    "Bookings": "Prenotazioni",
+    "OrganizationSettings": "Settings",
+    "Slots": "Slots"
   },
   "CustomerNavigation": {
     "BookIce": "Prenota Ice",
@@ -25,8 +27,8 @@
     "DifferentSignInEmail": "Su quale indirizzo mail hai ricevuto questo link?",
     "ResendEmailLink": "Il link che hai seguito nella mail è scaduto. Inviare di nuovo?",
 
-    "EnterSMSCode": "Please enter the code sent to {{ phone }}",
-    "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
+    "EnterSMSCode": "Inserisci il codice che hai ricevuto al numero {{ phone }}",
+    "ResendSMS": "Clicca qui per inviare nuovamente un SMS al numero {{ phone }}. Se il problema persiste contatta gli amministratori",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -120,24 +122,30 @@
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
-    "WeakPassword": "Password should contain at least {{ min }} characters",
+    "WeakPassword": "La password deve contenere almeno {{ min }} caratteri",
     "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
     "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri"
   },
 
   "Prompt": {
-    "DeleteCustomer": "Sei sicuro di voler rimuovere",
-    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot del",
+    "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
+    "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
 
     "NonReversible": "Questa azione non è reversibile",
 
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
+    "NoEmailTitle": "Nessun indirizzo mail registrato",
+    "NoEmailMessage": "Non è presente un indirizzo mail per questo atleta; aggiungi un indirizzo e riprova.",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
-    "ExtendBookingDateTitle": "Lascia prenotare {{ customer }} oltre la solita data",
-    "ExtendBookingDateBody": "Fino a quando lasciare che {{ customer }} possa prenotare?",
+    "NoPhoneTitle": "Numero non trovato",
+    "NoPhoneMessage": "Non è presente un numero di telefono per questo atleta; aggiungi un numero e riprova.",
 
+    "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
+    "ExtendBookingDateBody": "Fino a quando lasciare che {{ name }} {{ surname }} possa prenotare?",
+
+    "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
     "ConfirmFinalizeBookings": "Confermi le prenotazioni di {{ month, MMMM }}? Dopo aver confermato non potrai più cambiare le tue prenotazioni.",
     "EnterEmailTitle": "Inserisci la tua Email qui sotto",
@@ -146,7 +154,7 @@
   "ActionButton": {
     "SignIn": "Accedi",
     "TroubleSigningIn": "Problemi con l'accesso?",
-    "CodeNotReceived": "Didn't receive the code?",
+    "CodeNotReceived": "Non hai ricevuto il codice?",
 
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
@@ -172,7 +180,10 @@
     "Resend": "Invia di nuovo",
     "Dismiss": "Ignora",
     "Submit": "Invia",
-    "Verify": "verifica"
+    "Verify": "verifica",
+    "Edit": "Modificare",
+    "Add": "Add",
+    "Delete": "Delete"
   },
 
   "Notification": {
@@ -231,7 +242,8 @@
     "CopySlots": "Copia slot",
     "CopiedSlotsBadge": "Slot copiati",
     "PasteSlots": "Incolla slot",
-    "CreateSlots": "Crea nuovo slot"
+    "CreateSlots": "Crea nuovo slot",
+    "EnableEdit": "Abilita la modifica"
   },
 
   "SlotFormAria": {
@@ -255,7 +267,8 @@
     "UpcomingBirthdays": "Prossimi Compleanni"
   },
   "Alerts": {
-    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}"
+    "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
+    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

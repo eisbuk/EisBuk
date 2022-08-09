@@ -390,6 +390,10 @@
       "projectFolder": "packages/translations"
     },
     {
+      "packageName": "@eisbuk/firestore-process-delivery",
+      "projectFolder": "packages/firestore-process-delivery"
+    },
+    {
       "packageName": "@eisbuk/client",
       "projectFolder": "packages/client"
     },
@@ -416,6 +420,10 @@
     {
       "packageName": "@eisbuk/svg",
       "projectFolder": "packages/svg"
+    },
+    {
+      "packageName": "@eisbuk/react-redux-firebase-firestore",
+      "projectFolder": "packages/react-redux-firebase-firestore"
     }
   ]
 }

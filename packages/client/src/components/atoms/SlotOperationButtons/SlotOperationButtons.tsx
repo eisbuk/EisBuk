@@ -1,8 +1,6 @@
 import React, { createContext } from "react";
 import { DateTime } from "luxon";
 
-import Box from "@mui/material/Box";
-
 import { SlotInterface } from "@eisbuk/shared";
 
 import { ButtonContextType } from "@/enums/components";
@@ -34,10 +32,6 @@ type ContextParams = Partial<{
     [ButtonContextType.Day]: boolean;
     [ButtonContextType.Week]: boolean;
   }>;
-  /**
-   * Material-UI `size` property, passed to all icons within context
-   */
-  iconSize: "small" | "medium";
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(
@@ -60,11 +54,11 @@ const SlotOperationButtons: React.FC<Props> = ({
   contextType = ButtonContextType.Week,
   ...context
 }) => {
+  const baseClasses = ["flex", "items-center", "gap-1"];
+
   return (
     <ButtonGroupContext.Provider value={{ contextType, ...context }}>
-      <Box display="flex" className={className}>
-        {children}
-      </Box>
+      <div className={[...baseClasses, className].join(" ")}>{children}</div>
     </ButtonGroupContext.Provider>
   );
 };

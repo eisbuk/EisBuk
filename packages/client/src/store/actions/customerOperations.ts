@@ -7,31 +7,17 @@ import {
   setDoc,
 } from "@firebase/firestore";
 
-import {
-  CustomerLoose,
-  CustomerBase,
-  Customer,
-  EmailMessage,
-  SMSMessage,
-} from "@eisbuk/shared";
+import { CustomerLoose, CustomerBase } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
-import { SendBookingLinkMethod } from "@/enums/other";
-import { CloudFunction } from "@/enums/functions";
 
 import { FirestoreThunk } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
-import {
-  enqueueNotification,
-  showErrSnackbar,
-} from "@/store/actions/appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getCustomersRecord } from "@/store/selectors/customers";
-
-import { createCloudFunctionCaller } from "@/utils/firebase";
 import { getCustomersPath } from "@/utils/firestore";
 
 /**
@@ -62,18 +48,19 @@ export const updateCustomer =
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: `${customer.name} ${customer.surname} ${i18n.t(
             NotificationMessage.Updated
           )}`,
-          options: {
-            variant: NotifVariant.Success,
-          },
-          closeButton: true,
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -95,88 +82,19 @@ export const deleteCustomer =
 
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: `${customer.name} ${customer.surname} ${i18n.t(
             NotificationMessage.Removed
           )}`,
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
-      dispatch(showErrSnackbar);
-    }
-  };
-
-interface SendBookingsLink {
-  (payload: {
-    customerId: Customer["id"];
-    method: SendBookingLinkMethod;
-    bookingsLink: string;
-  }): FirestoreThunk;
-}
-
-export const sendBookingsLink: SendBookingsLink =
-  ({ customerId, method, bookingsLink }) =>
-  async (dispatch, getState) => {
-    try {
-      const { email, phone, name, secretKey } = getCustomersRecord(getState())[
-        customerId
-      ];
-
-      const subject = "prenotazioni lezioni di Igor Ice Team";
-
-      if (!secretKey) {
-        // this should be unreachable
-        // (email button should be disabled in case secret key or email are not provided)
-        throw new Error();
-      }
-
-      const html = `<p>Ciao ${name},</p>
-      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
-      <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
-
-      const sms = `Ciao ${name},
-      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
-      ${bookingsLink}`;
-
-      const config = {
-        [SendBookingLinkMethod.Email]: {
-          handler: CloudFunction.SendEmail,
-          payload: {
-            to: email,
-            message: {
-              html,
-              subject,
-            },
-          } as EmailMessage,
-          successMessage: i18n.t(NotificationMessage.EmailSent),
-        },
-        [SendBookingLinkMethod.SMS]: {
-          handler: CloudFunction.SendSMS,
-          payload: { to: phone, message: sms } as SMSMessage,
-          successMessage: i18n.t(NotificationMessage.SMSSent),
-        },
-      };
-
-      const { handler, payload, successMessage } = config[method];
-
-      await createCloudFunctionCaller(handler, payload)();
-
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
-          message: successMessage,
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
         })
       );
-    } catch (error) {
-      dispatch(showErrSnackbar);
     }
   };
 
@@ -194,13 +112,15 @@ export const extendBookingDate =
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.BookingDateExtended),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch (error) {
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };

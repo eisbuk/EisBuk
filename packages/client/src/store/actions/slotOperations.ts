@@ -19,7 +19,7 @@ import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { enqueueNotification, showErrSnackbar } from "./appActions";
+import { enqueueNotification } from "@/features/notifications/actions";
 import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
 
 /**
@@ -77,17 +77,18 @@ export const createNewSlot =
       // show success notification
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.SlotAdded),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
       // show error notification if operation failed
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -129,17 +130,18 @@ export const updateSlot =
       // show success notification
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.SlotUpdated),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
       // show error notification if operation failed
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -160,17 +162,18 @@ export const deleteSlot =
       // show success notification
       dispatch(
         enqueueNotification({
-          key: new Date().getTime() + Math.random(),
           message: i18n.t(NotificationMessage.SlotDeleted),
-          closeButton: true,
-          options: {
-            variant: NotifVariant.Success,
-          },
+          variant: NotifVariant.Success,
         })
       );
     } catch {
       // show error notification if operation failed
-      dispatch(showErrSnackbar);
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 // #endregion newOperations

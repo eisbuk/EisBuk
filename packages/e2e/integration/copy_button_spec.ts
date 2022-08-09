@@ -15,7 +15,7 @@ describe("Copy Button", () => {
   });
   it("should only show badge on copied day copy button", () => {
     cy.visit(PrivateRoutes.Slots);
-    cy.getAttrWith("data-testid", "enable-edit-toggle").click();
+    cy.getAttrWith("aria-label", i18n.t(AdminAria.EnableEdit)).click();
 
     const traslatedDate = i18n.t(DateFormat.Full, {
       date: testDateLuxon,
@@ -27,8 +27,7 @@ describe("Copy Button", () => {
       "aria-label",
       `${i18n.t(AdminAria.CopySlots)} ${traslatedDate}`
     )
-      .click() // We really need two click statements here - I'm not sure why
-      .click({ force: true })
+      .click()
       .blur();
 
     cy.getAttrWith(

@@ -13,6 +13,7 @@
   },
   "types": "dist/index.d.ts",
   "devDependencies": {
+    "@eisbuk/firestore-process-delivery": "workspace:*",
     "@google-cloud/firestore": "^4.13.2",
     "@types/luxon": "^2.0.5",
     "@types/react": "^17.0.13",

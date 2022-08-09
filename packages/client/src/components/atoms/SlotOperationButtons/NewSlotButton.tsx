@@ -1,24 +1,21 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
+import { useDispatch } from "react-redux";
 
-import IconButton from "@mui/material/IconButton";
-
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-
-import { luxon2ISODate } from "@eisbuk/shared";
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+import { PlusCircle } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotButtonProps } from "@/types/components";
-
-import SlotForm from "@/components/atoms/SlotForm";
 import { ButtonGroupContext } from "./SlotOperationButtons";
+import SlotOperationButton from "./SlotOperationButton";
 
 import {
   __slotButtonNoContextError,
   __noDateProvidedError,
   __newSlotButtonWrongContextError,
 } from "@/lib/errorMessages";
+
+import { openModal } from "@/features/modal/actions";
 
 import { __newSlotButtonId__ } from "@/__testData__/testIds";
 
@@ -30,15 +27,11 @@ import { __newSlotButtonId__ } from "@/__testData__/testIds";
  * - not within `SlotOperationButtons` context
  * - no value for `date` has been provided in the context (as it is needed for full functionality)
  */
-export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
+export const NewSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const { t } = useTranslation();
-
-  const [openForm, setOpenForm] = useState(false);
-
-  const showForm = () => setOpenForm(true);
-  const closeForm = () => setOpenForm(false);
+  const dispatch = useDispatch();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOpeartionButtons` context
@@ -47,7 +40,7 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  const { contextType, date: luxonDate, iconSize } = buttonGroupContext;
+  const { contextType, date: luxonDate } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
@@ -65,24 +58,27 @@ export const NewSlotButton: React.FC<SlotButtonProps> = ({ size }) => {
     return null;
   }
 
-  // luxon day processed to ISO string (for form's input)
-  const date = luxon2ISODate(luxonDate);
+  const openForm = (e: React.SyntheticEvent) => {
+    e.preventDefault();
+    dispatch(
+      openModal({
+        component: "SlotForm",
+        props: { date: luxonDate?.toISODate() },
+      })
+    );
+  };
 
   return (
-    <>
-      <IconButton
-        size={size || iconSize}
-        onClick={showForm}
-        data-testid={__newSlotButtonId__}
-        aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
-          date: luxonDate,
-        })}`}
-        // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
-      >
-        <AddCircleOutlineIcon />
-      </IconButton>
-      <SlotForm open={openForm} onClose={closeForm} date={date} />
-    </>
+    <SlotOperationButton
+      onClick={openForm}
+      data-testid={__newSlotButtonId__}
+      aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
+        date: luxonDate,
+      })}`}
+      // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
+    >
+      <PlusCircle />
+    </SlotOperationButton>
   );
 };
 

@@ -3,6 +3,7 @@ import {
   getFunctions,
   connectFunctionsEmulator,
   httpsCallable,
+  HttpsCallableResult,
 } from "@firebase/functions";
 import {
   getAuth,
@@ -38,7 +39,9 @@ declare global {
       /**
        * Create a user in firebase auth and (optionally), if admin to firestore organization
        */
-      addAuthUser: (payload: CreateAuthUserPayload) => Chainable<void>;
+      addAuthUser: (
+        payload: CreateAuthUserPayload
+      ) => Chainable<HttpsCallableResult>;
       /**
        * A sort of a proxy handler: passes organization and file names back to node environment
        * process (using `cy.task` API). The files get read and parsed (JSON)
@@ -126,9 +129,9 @@ const addFirebaseCommands = (): void => {
     return cy.wrap(organization);
   });
 
-  Cypress.Commands.add("addAuthUser", async (payload) => {
-    await httpsCallable(functions, CloudFunction.CreateUser)(payload);
-  });
+  Cypress.Commands.add("addAuthUser", (payload) =>
+    cy.wrap(httpsCallable(functions, CloudFunction.CreateUser)(payload))
+  );
 
   Cypress.Commands.add(
     "updateFirestore",
@@ -147,10 +150,12 @@ const addFirebaseCommands = (): void => {
     cy.task("getSigninLink", { email, projectId })
   );
 
-  Cypress.Commands.add("signOut", () => signOut(getAuth()));
+  Cypress.Commands.add("signOut", () => cy.wrap(signOut(getAuth())));
 
   Cypress.Commands.add("signIn", () =>
-    signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password)
+    cy.wrap(
+      signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password)
+    )
   );
 };
 

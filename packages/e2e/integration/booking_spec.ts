@@ -8,6 +8,7 @@ import i18n, {
   NotificationMessage,
   Prompt,
   createDateTitle,
+  BookingAria,
 } from "@eisbuk/translations";
 
 import { Routes } from "../temp";
@@ -35,18 +36,18 @@ describe("Booking flow", () => {
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
-      // default timespan should be "month" as the default customer navigation position is "book_ice"
-      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
+      // default timespan should be "month"
+      cy.contains(createDateTitle(afterDueDate, "month", i18n.t));
 
       // should show bookings locked message
       cy.contains(
         i18n.t(BookingCountdownMessage.BookingsLocked, {
-          month: testDateLuxon,
+          month: afterDueDate,
         }) as string
       );
 
       // should not allow slot bookings
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
+      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton)).should(
         "have.attr",
         "disabled"
       );
@@ -67,8 +68,9 @@ describe("Booking flow", () => {
       );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
       // should open next month as starting value for `currentDate` (in store)
-      // default timespan should be "month" as the default customer navigation position is "book_ice"
+      // default timespan should be "month"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
       // should display countdown until january deadline
@@ -116,12 +118,11 @@ describe("Booking flow", () => {
       );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      // go back one month (since the bookings open for next month by default)
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
       // should display countdown until `extendedDate` (and second countdown message)
       const extendedDate = DateTime.fromISO("2022-01-05").endOf("day");
+
       cy.contains(
         getCountdownStringMatch({
           message: BookingCountdownMessage.SecondDeadline,
@@ -153,7 +154,11 @@ describe("Booking flow", () => {
           month: testDateLuxon,
         }) as string
       );
-      cy.get("button").contains(/yes/i).click({ force: true });
+      // we're clicking on "Finalize" button inside the modal
+      cy.getAttrWith("id", "modal")
+        .find("button")
+        .contains(i18n.t(ActionButton.FinalizeBookings) as string)
+        .click({ force: true });
 
       // should lock bookings after "finalize" button click
       cy.contains(
@@ -185,8 +190,8 @@ describe("Booking flow", () => {
       cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      // should open next month as starting value for `currentDate` (in store)
-      // default timespan should be "month" as the default customer navigation position is "book_ice"
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
+
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
       // the bookings locked message is not displayed for admin
@@ -219,8 +224,10 @@ describe("Booking flow", () => {
       cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
+
       // should open next month as starting value for `currentDate` (in store)
-      // default timespan should be "month" as the default customer navigation position is "book_ice"
+      // default timespan should be "month"
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
 
       // should not display countdown message

@@ -13,7 +13,7 @@ name: OnPush
   - push
 
 jobs:
-  build_v14:
+  build_v16:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -21,11 +21,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_node()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
+          node-version: "16"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
       - name: Build app
         run: |
           cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:prod | tee build.output
@@ -47,7 +47,7 @@ jobs:
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v3.x
-      - #@ check_secrets()
+      -  #@ check_secrets()
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -101,7 +101,7 @@ jobs:
             ```
           reactions: heart, hooray, laugh, rocket
           edit-mode: replace
-  test_v14:
+  test_v16:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -109,14 +109,14 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_node()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
+          node-version: "16"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci
-      - #@ check_secrets()
+      -  #@ check_secrets()
       - name: Test Report
         uses: dorny/test-reporter@v1
 
@@ -136,9 +136,9 @@ jobs:
           base-path: packages/client/
           flag-name: run-jest
           parallel: true
-      - #@ install_gcloud_credentials()
-      - #@ set_results_destination()
-      - #@ install_rclone()
+      -  #@ install_gcloud_credentials()
+      -  #@ set_results_destination()
+      -  #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
@@ -155,11 +155,11 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_node()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
+          node-version: "16"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
       - name: Lint all the packages
         run: rush lint:strict
       - name: Typecheck all the packages
@@ -172,17 +172,17 @@ jobs:
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_cypress()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
+          node-version: "16"
+      -  #@ cache_cypress()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
       - name: Build app
         run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
-          start: rush emulators:start
+          start: emulators-start
 
           #! For some reason, this action can also install everything, which doesn't work well with pnpm
           #! Anyway we're using our own instalation as it is, so just skipping this part
@@ -195,7 +195,7 @@ jobs:
           #! we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
           record: ${{ secrets.CYPRESS_KEY != 0 }}
 
-          config-file: cypress-ci.json
+          config-file: cypress-ci.config.ts
         env:
           #! pass the Dashboard record key as an environment variable
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_KEY }}
@@ -203,7 +203,7 @@ jobs:
           #! pass GitHub token to allow accurately detecting a build vs a re-run build
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - #@ check_secrets()
+      -  #@ check_secrets()
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -213,9 +213,9 @@ jobs:
           base-path: packages/e2e
           flag-name: run-cypress
           parallel: true
-      - #@ install_gcloud_credentials()
-      - #@ set_results_destination()
-      - #@ install_rclone()
+      -  #@ install_gcloud_credentials()
+      -  #@ set_results_destination()
+      -  #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
@@ -233,10 +233,10 @@ jobs:
     name: Coveralls finish
     needs:
       - cypress-run
-      - test_v14
+      - test_v16
     runs-on: ubuntu-latest
     steps:
-      - #@ check_secrets()
+      -  #@ check_secrets()
       - name: Finalize Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -252,10 +252,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_node()
-      - #@ rush_add_path()
-      - #@ rush_update()
+          node-version: "16"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
       - name: Check dependency consistency
         run: ./.github/check-rush.sh
 

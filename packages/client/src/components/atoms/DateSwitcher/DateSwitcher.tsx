@@ -8,6 +8,7 @@ import Badge from "@mui/material/Badge";
 import PickersDay, { PickersDayProps } from "@mui/lab/PickersDay";
 
 import { styled } from "@mui/material/styles";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 import {
@@ -33,6 +34,8 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
   const end = currentDate.endOf("week");
   const calendarData = useSelector(getCalendarData(currentDate.toISO()));
 
+  const classes = useStyles();
+
   return (
     <>
       <Menu data-testid={__calendarMenuId__} {...MenuProps}>
@@ -42,6 +45,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
             dispatch(changeCalendarDate(currentDate!));
           }}
           renderDay={renderWeekPickerDay(
+            classes.bgPrimary,
             currentDate,
             start,
             end,
@@ -56,6 +60,10 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
 
 const renderWeekPickerDay =
   (
+    // A class name used to paint the background of active elements
+    // A workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    bgActive: string,
     currentDate: DateTime,
     start: DateTime,
     end: DateTime,
@@ -71,6 +79,10 @@ const renderWeekPickerDay =
     const isFirstDay = date.equals(start);
     const isLastDay = date.endOf("day").equals(end);
     const hasSlots = calendarData[date.toISO().substring(0, 10)];
+
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    const bgClass = dayIsBetween || isFirstDay || isLastDay ? bgActive : "";
 
     return (
       <Badge
@@ -99,6 +111,9 @@ const renderWeekPickerDay =
             data-testid={
               dayIsBetween || isFirstDay || isLastDay ? __pickedDay__ : ""
             }
+            // The following is a workaround to not overrule the Mui base button styles
+            // by Tailwind's preflight reset
+            className={bgClass}
           />
         )}
       </Badge>
@@ -133,4 +148,12 @@ const CustomPickersDay = styled(PickersDay, {
     borderBottomLeftRadius: "50%",
   }),
 })) as React.ComponentType<CustomPickerDayProps>;
+
+const useStyles = makeStyles((theme) => ({
+  bgPrimary: {
+    // The following is a workaround to not overrule the Mui base button styles
+    // by Tailwind's preflight reset
+    backgroundColor: theme.palette.primary.main,
+  },
+}));
 export default DateSwitcher;

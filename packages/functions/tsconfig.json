@@ -1,18 +1,15 @@
 {
   "extends": "../scaffold/tsconfig.json",
   "compilerOptions": {
+    "baseUrl": ".",
+
     "lib": ["ESNext", "ESNext.AsyncIterable"],
 
-    "baseUrl": ".",
     "outDir": "dist",
-
     "sourceMap": true,
-
-    "removeComments": true,
-    "noImplicitAny": true,
-
-    "noEmit": true
+    "noEmit": true,
+    "strictNullChecks": true
   },
   "exclude": ["node_modules", "./.eslintrc.js"],
-  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+  "include": ["./src/**/*.ts"]
 }

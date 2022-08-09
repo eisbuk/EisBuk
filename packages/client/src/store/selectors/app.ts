@@ -1,17 +1,7 @@
 import { DateTime } from "luxon";
 
-import { LocalStore, Notification } from "@/types/store";
+import { LocalStore } from "@/types/store";
 import { OrganizationData } from "@eisbuk/shared/dist";
-
-// #region notifications
-/**
- * Get notifications from store
- * @param state Local Redux State
- * @returns notification array
- */
-export const getNotifications = (state: LocalStore): Notification[] =>
-  state.app.notifications;
-// #endregion notifications
 
 /**
  * Get start time of current calendar day

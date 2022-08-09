@@ -1,49 +1,45 @@
 import React, { useState } from "react";
 
-import { CustomerBase } from "@eisbuk/shared";
+import { User } from "@eisbuk/svg";
 
-export interface UserAvatarProps
-  extends Pick<CustomerBase, "name" | "surname"> {
-  avatar?: string;
+export interface UserAvatarProps {
+  displayName?: string;
+  photoURL?: string;
 }
 
-/**
- * Returns initials from provided name and last name
- * @param name
- * @param surname
- * @returns
- */
-const getInitials = (name: string, surname: string): string =>
-  `${name[0]}${surname[0]}`;
-
-const UserAvatar: React.FC<UserAvatarProps> = ({ name, surname, avatar }) => {
-  const [avatarUrl, setAvatarUrl] = useState(avatar);
+const UserAvatar: React.FC<UserAvatarProps> = ({ displayName, photoURL }) => {
+  const [avatarUrl, setAvatarUrl] = useState(photoURL);
 
   const containerClassNames = containerClasses.join(" ");
   const userNameClassNames = userNameClasses.join(" ");
   const avatarClassNames = avatarClasses.join(" ");
 
+  // Get avatar for display
+  // default: if no valid 'photoURL' fall back to the placeholder
+  const displayAvatar = avatarUrl ? (
+    <img
+      className="rounded-full object-cover"
+      src={avatarUrl}
+      onError={({ currentTarget }) => {
+        currentTarget.onerror = null;
+        setAvatarUrl(undefined);
+      }}
+    />
+  ) : (
+    <div className="m-[-2px] mb-[-6px]">
+      <User />
+    </div>
+  );
+
   return (
     <div className={containerClassNames}>
-      <div>
-        <p className={userNameClassNames}>
-          {name} {surname}
-        </p>
-      </div>
-      <div className={avatarClassNames}>
-        {avatarUrl ? (
-          <img
-            className="rounded-full object-cover"
-            src={avatarUrl}
-            onError={({ currentTarget }) => {
-              currentTarget.onerror = null;
-              setAvatarUrl(undefined);
-            }}
-          />
-        ) : (
-          <p className="text-xl tracking-wider">{getInitials(name, surname)}</p>
-        )}
-      </div>
+      {displayName && (
+        <div>
+          <p className={userNameClassNames}>{displayName}</p>
+        </div>
+      )}
+
+      <div className={avatarClassNames}>{displayAvatar}</div>
     </div>
   );
 };
@@ -73,6 +69,7 @@ const avatarClasses = [
   "h-10",
   "w-10",
   "bg-teal-400",
+  "overflow-hidden",
 ];
 
 export default UserAvatar;

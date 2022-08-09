@@ -22,13 +22,15 @@ import { comparePeriods } from "@/utils/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
-import { saul } from "@/__testData__/customers";
+import { gus, saul, walt } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 import {
+  __addCustomersButtonId__,
   __attendanceButton__,
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
+import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -311,6 +313,50 @@ describe("AttendanceCard", () => {
         attendedInterval: intervalKeys[2],
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);
+    });
+  });
+
+  describe("Test opening AddAttendedCustomersDialog modal", () => {
+    test("should open an 'AddAttendedCustomers' modal on 'Add Customers' click", () => {
+      const testSlot = {
+        ...baseSlot,
+        // We're using only one interval for simplicity's sake
+        intervals: {
+          ["10:00-11:00"]: {
+            startTime: "10:00",
+            endTime: "11:00",
+          },
+        },
+      };
+
+      const attendanceCard = {
+        ...testSlot,
+        allCustomers: [saul, walt, gus],
+        // We wish for all customers in the 'allCustomers' array to be eligible for this slot
+        categories: [...new Set([saul.category, walt.category, gus.category])],
+        // We want gus to get filtered out when opening 'AddAttendedCustomersDialog'
+        customers: [
+          {
+            ...gus,
+            bookedInterval: null,
+            attendedInterval: "10:00-11:00",
+          } as CustomerWithAttendance,
+        ],
+      };
+
+      render(<AttendanceCard {...attendanceCard} />);
+
+      screen.getByTestId(__addCustomersButtonId__).click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({
+          component: "AddAttendedCustomersDialog",
+          props: {
+            ...testSlot,
+            customers: [saul, walt],
+            defaultInterval: "10:00-11:00",
+          },
+        })
+      );
     });
   });
 

@@ -15,19 +15,19 @@ steps:
       fetch-depth: 0
   - uses: actions/setup-node@v2
     with:
-      node-version: "14"
-  - #@ cache_node()
-  - #@ rush_add_path()
-  - #@ rush_update()
-  - #@ rush_build()
-  - #@ check_secrets()
+      node-version: "16"
+  -  #@ cache_node()
+  -  #@ rush_add_path()
+  -  #@ rush_update()
+  -  #@ rush_build()
+  -  #@ check_secrets()
   - name: #@ "Build %s storybook" % (package_name)
     run: #@ "cd packages/%s && rushx build-storybook" % (package_name)
   - name: Publish storybook
     run: echo Publishing storybook to ${{ github.sha }}
-  - #@ install_gcloud_credentials()
-  - #@ set_results_destination()
-  - #@ install_rclone()
+  -  #@ install_gcloud_credentials()
+  -  #@ set_results_destination()
+  -  #@ install_rclone()
   - name: Copy test results to gcloud
     if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
     run: #@ "rclone copy packages/%s/storybook-static gcloud:cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/storybook-%s --log-level INFO" % (package_name, package_name)

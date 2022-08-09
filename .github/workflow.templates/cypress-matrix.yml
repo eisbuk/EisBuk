@@ -15,9 +15,9 @@ name: CypressMatrix
 "on":
   push:
     branches:
-      - 'cypress-matrix/**'
+      - "cypress-matrix/**"
   schedule:
-    - cron: '30 5 * * 1,3'
+    - cron: "30 5 * * 1,3"
 
 jobs:
   cypress-run:
@@ -26,31 +26,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        dummy1: [1,2,3,4,5,6]
-        dummy2: [1,2,3,4,5,6]
+        dummy1: [1, 2, 3, 4, 5, 6]
+        dummy2: [1, 2, 3, 4, 5, 6]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
       - uses: actions/setup-node@v2
         with:
-          node-version: "14"
-      - #@ cache_cypress()
-      - #@ rush_add_path()
-      - #@ rush_update()
-      - #@ rush_build()
+          node-version: "16"
+      -  #@ cache_cypress()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
       - name: Build app
         run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v4
         with:
-          start: rush emulators:start
+          start: emulators-start
           #! We're using our own instalation as it is, so just skipping this part
           install: false
           working-directory: packages/e2e
           wait-on: http://localhost:8080, http://localhost:5000
           record: false
-          config-file: cypress-ci.json
-      - #@ check_secrets()
+          config-file: cypress-ci.config.ts
+      -  #@ check_secrets()
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -60,9 +60,9 @@ jobs:
           base-path: packages/e2e
           flag-name: run-cypress
           parallel: true
-      - #@ install_gcloud_credentials()
-      - #@ set_results_destination(additional_id="-${{ matrix.dummy1 }}-${{ matrix.dummy2 }}")
-      - #@ install_rclone()
+      -  #@ install_gcloud_credentials()
+      -  #@ set_results_destination(additional_id="-${{ matrix.dummy1 }}-${{ matrix.dummy2 }}")
+      -  #@ install_rclone()
       - name: Copy test results to gcloud
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |

@@ -8,6 +8,13 @@
     "noEmit": true,
     "declaration": false
   },
-  "exclude": ["node_modules", "dist", "scripts", ".eslintrc.js"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "scripts",
+    ".eslintrc.js",
+    // TODO: remove this after customer-area-rehaul cleanup
+    "src/pages/customer_area_archive/*"
+  ],
   "include": ["src", "vite.config.ts"]
 }
