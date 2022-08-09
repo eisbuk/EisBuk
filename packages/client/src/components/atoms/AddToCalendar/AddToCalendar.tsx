@@ -10,7 +10,7 @@ import { CalendarEvents } from "@eisbuk/shared";
 import InputDialog from "@/components/atoms/InputDialog";
 import { Button } from "@eisbuk/ui";
 
-import { getAboutOrganization } from "@/store/selectors/app";
+import { getAboutOrganization, getCalendarDay } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
 import { getBookingsForCalendar } from "@/store/selectors/bookings";
 
@@ -30,9 +30,9 @@ const AddToCalendar: React.FC = () => {
 
   const [emailDialog, setEmailDialog] = useState(false);
 
-  const bookedSlots = useSelector(getBookingsForCalendar);
+  const bookedSlots = useSelector(getBookingsForCalendar) || {};
 
-  const monthStr = (Object.values(bookedSlots)[0].date || "").substring(0, 7);
+  const monthStr = useSelector(getCalendarDay).toISO().substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
@@ -88,7 +88,6 @@ const AddToCalendar: React.FC = () => {
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
     dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
-    icalendar.download();
   };
 
   return bookedSlots.length ? (
