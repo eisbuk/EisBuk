@@ -27,8 +27,8 @@
     "DifferentSignInEmail": "Su quale indirizzo mail hai ricevuto questo link?",
     "ResendEmailLink": "Il link che hai seguito nella mail è scaduto. Inviare di nuovo?",
 
-    "EnterSMSCode": "Please enter the code sent to {{ phone }}",
-    "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
+    "EnterSMSCode": "Inserisci il codice che hai ricevuto al numero {{ phone }}",
+    "ResendSMS": "Clicca qui per inviare nuovamente un SMS al numero {{ phone }}. Se il problema persiste contatta gli amministratori",
     "SMSDataRatesMayApply": "Se clicchi 'verifica' ti manderemo un SMS."
   },
   "AuthError": {
@@ -122,7 +122,7 @@
     "InvalidDate": "Formato della data non valido (\"dd/mm/yyyy\")",
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
-    "WeakPassword": "Password should contain at least {{ min }} characters",
+    "WeakPassword": "La password deve contenere almeno {{ min }} caratteri",
     "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
     "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri"
   },
@@ -135,12 +135,12 @@
 
     "SendEmailTitle": "Conferma email",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
-    "NoEmailTitle": "No email found",
-    "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
+    "NoEmailTitle": "Nessun indirizzo mail registrato",
+    "NoEmailMessage": "Non è presente un indirizzo mail per questo atleta; aggiungi un indirizzo e riprova.",
     "SendSMSTitle": "Conferma SMS",
     "ConfirmSMS": "Sei sicuro di voler inviare un SMS a: {{ phone }}?",
-    "NoPhoneTitle": "No phone number found",
-    "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
+    "NoPhoneTitle": "Numero non trovato",
+    "NoPhoneMessage": "Non è presente un numero di telefono per questo atleta; aggiungi un numero e riprova.",
 
     "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
     "ExtendBookingDateBody": "Fino a quando lasciare che {{ name }} {{ surname }} possa prenotare?",
@@ -154,7 +154,7 @@
   "ActionButton": {
     "SignIn": "Accedi",
     "TroubleSigningIn": "Problemi con l'accesso?",
-    "CodeNotReceived": "Didn't receive the code?",
+    "CodeNotReceived": "Non hai ricevuto il codice?",
 
     "CreateSlot": "Crea Slot",
     "EditSlot": "Modifica Slot",
