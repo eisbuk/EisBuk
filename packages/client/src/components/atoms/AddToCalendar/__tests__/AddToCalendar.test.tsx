@@ -16,10 +16,7 @@ import {
   __emailInput__,
 } from "@/__testData__/testIds";
 import { renderWithRedux } from "@/__testUtils__/wrappers";
-import {
-  bookedSlots,
-  slotsByDay,
-} from "@/store/actions/__testData__/bookingOperations";
+
 import * as bookingActions from "@/store/actions/bookingOperations";
 import { saul } from "@/__testData__/customers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -64,9 +61,7 @@ xdescribe("Add To Calendar", () => {
     testWithEmulator(
       "should call sendICSFile function when button is clicked",
       () => {
-        renderWithRedux(
-          <AddToCalendar bookedSlots={bookedSlots} slots={slotsByDay} />
-        );
+        renderWithRedux(<AddToCalendar />);
         screen.getByText(i18n.t(ActionButton.AddToCalendar) as string).click();
 
         screen

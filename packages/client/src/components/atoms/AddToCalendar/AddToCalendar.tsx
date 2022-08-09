@@ -5,15 +5,14 @@ import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
 
-import { CalendarEvents, SlotsByDay } from "@eisbuk/shared";
+import { CalendarEvents } from "@eisbuk/shared";
 
 import InputDialog from "@/components/atoms/InputDialog";
 import { Button } from "@eisbuk/ui";
 
-import { LocalStore } from "@/types/store";
-
 import { getAboutOrganization } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
+import { getBookingsForCalendar } from "@/store/selectors/bookings";
 
 import {
   createCalendarEvents,
@@ -22,20 +21,7 @@ import {
 
 import { __organization__ } from "@/lib/constants";
 
-interface Props {
-  /**
-   * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
-   * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
-   */
-  bookedSlots: LocalStore["firestore"]["data"]["bookedSlots"];
-  /**
-   * Record of slots grouped by day's ISO date (day),
-   * keyed by slotId within each day.
-   */
-  slots: SlotsByDay;
-}
-
-const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
+const AddToCalendar: React.FC = () => {
   const dispatch = useDispatch();
 
   const { secretKey } = useParams<{ secretKey: string }>();
@@ -43,6 +29,8 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
   const { t } = useTranslation();
 
   const [emailDialog, setEmailDialog] = useState(false);
+
+  const bookedSlots = useSelector(getBookingsForCalendar);
 
   const monthStr = (Object.values(bookedSlots)[0].date || "").substring(0, 7);
 
@@ -60,23 +48,24 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
     const eventUids: string[] = [];
 
-    Object.entries(bookedSlots).forEach((bookedSlot, i) => {
-      const bookedSlotId = bookedSlot[0];
-      const bookedSlotValue = bookedSlot[1];
-      const slotDate = bookedSlot[1].date;
+    Object.values(bookedSlots).forEach((bookedSlot, i) => {
+      const slotDate = bookedSlot.date;
 
-      const startDate = getStartDate(slotDate, bookedSlotValue.interval);
-      const endDate = getEndDate(slotDate, bookedSlotValue.interval);
-
-      const slotType = slots[slotDate][bookedSlotId].type;
+      const startDate = getDate(slotDate, bookedSlot.interval.startTime);
+      const endDate = getDate(slotDate, bookedSlot.interval.endTime);
 
       const bookedSlotEvent = {
-        title: `Booked ${slotType} Slot at ${displayName}`,
+        title: `Booked ${bookedSlot.type} Slot at ${displayName}`,
         location: location,
         start: startDate,
         end: endDate,
       };
-      const uid = `${bookedSlotValue.interval}${slotDate}`.replace(/[-:]/g, "");
+
+      const uid =
+        `${bookedSlot.interval.startTime}${bookedSlot.interval.endTime}${slotDate}`.replace(
+          /[-:]/g,
+          ""
+        );
       eventUids.push(uid);
       delete previousCalendarUids[uid];
 
@@ -99,18 +88,19 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
     dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
+    icalendar.download();
   };
 
-  return (
+  return bookedSlots.length ? (
     <>
-      <span className="px-4 py-3 flex items-center justify-center">
-        <Button
-          className="w-3/4 text-white bg-cyan-700 tracking-wider justify-center active:bg-cyan-800 md:w-auto md:absolute md:right-32"
-          onClick={() => setEmailDialog(true)}
-        >
-          {t(ActionButton.AddToCalendar)}
-        </Button>
-      </span>
+      <Button
+        className=" text-white bg-cyan-700 m-auto justify-center
+        position-relative sm:w-1/2
+         active:bg-cyan-800 md:w-auto "
+        onClick={() => setEmailDialog(true)}
+      >
+        {t(ActionButton.AddToCalendar)}
+      </Button>
       <InputDialog
         title={t(Prompt.EnterEmailTitle)}
         onSubmit={handleClick}
@@ -120,24 +110,16 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
         {t(Prompt.EnterEmailMessage)}
       </InputDialog>
     </>
-  );
+  ) : null;
 };
 
 // #region helpers
 
-const getStartDate = (date: string, interval: string) =>
+const getDate = (date: string, interval: string) =>
   DateTime.fromISO(date)
     .set({
       hour: Number(interval.substring(0, 2)),
       minute: Number(interval.substring(3, 5)),
-    })
-    .toJSDate();
-
-const getEndDate = (date: string, interval: string) =>
-  DateTime.fromISO(date)
-    .set({
-      hour: Number(interval.substring(6, 8)),
-      minute: Number(interval.substring(9, 11)),
     })
     .toJSDate();
 

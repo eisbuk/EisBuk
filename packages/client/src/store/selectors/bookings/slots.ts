@@ -1,5 +1,3 @@
-import { DateTime } from "luxon";
-
 import {
   Category,
   SlotsById,
@@ -158,7 +156,6 @@ export const getBookingsForCalendar = (
 
   // Get all booked slots
   const bookedSlots = getBookedSlots(state);
-
   // Get only the slots for current month
   const slotsByMonth = state.firestore.data.slotsByDay || {};
   const slotsForAMonth = slotsByMonth[monthString] || {};
@@ -178,19 +175,3 @@ export const getBookingsForCalendar = (
     }, [] as BookingsList)
     .sort((a, b) => (a > b ? -1 : 1));
 };
-
-/**
- * Get subscribed slots from state for a specific month
- * @param state Local Redux Store
- * @returns record of subscribed slots
- */
-export const getBookedSlotsByMonth =
-  (month: number) =>
-  (state: LocalStore): Record<string, CustomerBookingEntry> =>
-    Object.entries(state.firestore.data?.bookedSlots || {}).reduce(
-      (acc, [slotId, CustomerBookingEntry]) =>
-        DateTime.fromISO(CustomerBookingEntry.date).month === month
-          ? { ...acc, [slotId]: CustomerBookingEntry }
-          : acc,
-      {}
-    );

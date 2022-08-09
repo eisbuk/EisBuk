@@ -17,12 +17,7 @@ import CalendarView from "./views/Calendar";
 import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-// import useFirestoreSubscribe from "@/react-redux-firebase/hooks/useFirestoreSubscribe";
-import {
-  getBookedSlotsByMonth,
-  getBookingsCustomer,
-  getSlotsForCustomer,
-} from "@/store/selectors/bookings";
+import { getBookingsCustomer } from "@/store/selectors/bookings";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
 import { getCalendarDay } from "@/store/selectors/app";
@@ -41,10 +36,6 @@ const CustomerArea: React.FC = () => {
   useSecretKey();
 
   const isAdmin = useSelector(getIsAdmin);
-  const date = useSelector(getCalendarDay);
-  const slotsByDay = useSelector(getSlotsForCustomer);
-
-  const bookedSlotsByMonth = useSelector(getBookedSlotsByMonth(date.month));
 
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
@@ -98,12 +89,6 @@ const CustomerArea: React.FC = () => {
     </>
   );
 
-  const addToCalendar = Object.keys(bookedSlotsByMonth).length ? (
-    <AddToCalendar bookedSlots={bookedSlotsByMonth} slots={slotsByDay} />
-  ) : (
-    <></>
-  );
-
   const CustomerView = views[view];
 
   return (
@@ -117,7 +102,7 @@ const CustomerArea: React.FC = () => {
     >
       <CalendarNav
         {...calendarNavProps}
-        additionalContent={addToCalendar}
+        additionalContent={<AddToCalendar />}
         jump="month"
       />
       <div className="content-container">
