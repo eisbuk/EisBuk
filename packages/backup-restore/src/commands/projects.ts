@@ -22,22 +22,15 @@ export function listProjectCredentials(): void {
  */
 export async function addProjectCredentials(filePath: string): Promise<void> {
   // Resolve path to file and check it exists
-  const currentDir = process.cwd();
-  const resolvedPath = path.resolve(currentDir, filePath);
+  const resolvedPath = path.resolve(filePath);
 
   try {
-    const fileExists = await exists(resolvedPath);
-
-    if (!fileExists) {
-      throw new Error(FsErrors.FILE_NOT_FOUND);
-    }
-
     if (path.extname(filePath) !== ".json") {
       throw new Error(FsErrors.INVALID_FILE);
     }
 
     // Copy file, and extract projectId
-    const serviceAccountJson = await fs.readFile(filePath, "utf-8");
+    const serviceAccountJson = await fs.readFile(resolvedPath, "utf-8");
 
     // TODO: Validate json
 
@@ -77,12 +70,6 @@ export async function removeProjectCredentials(
   try {
     // Check credentials.json exists, and if so remove it
     const credentialsPath = `${paths.data}/${projectId}-credentials.json`;
-
-    const hasCredentials = await exists(credentialsPath);
-
-    if (!hasCredentials) {
-      throw new Error(FsErrors.FILE_NOT_FOUND);
-    }
 
     await fs.rm(credentialsPath);
 
