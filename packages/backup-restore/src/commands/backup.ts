@@ -7,7 +7,7 @@ import { Collection } from "@eisbuk/shared";
 /**
  * Backup command
  */
-export default async function (orgId?: string): Promise<void> {
+export default async function _backup(orgId?: string): Promise<void> {
   try {
     if (orgId) {
       const data: any = await backupFromDoc(Collection.Organizations, orgId);

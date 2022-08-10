@@ -11,7 +11,7 @@ import { useConfirmPrompt } from "../hooks";
 /**
  * Restore command
  */
-export default async function (file: string): Promise<void> {
+export default async function _restore(file: string): Promise<void> {
   try {
     const filePath = path.resolve(file);
     const orgJson = await fs.readFile(filePath, "utf-8");
