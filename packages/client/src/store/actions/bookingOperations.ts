@@ -92,6 +92,39 @@ export const cancelBooking: UpdateBooking =
       );
     }
   };
+export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
+  ({ secretKey, slotId, bookingNotes }) =>
+  async (dispatch, getState) => {
+    const organization = getOrganization();
+
+    try {
+      const db = getFirestore();
+
+      const booking = getState().firestore.data.bookedSlots![slotId];
+
+      const bookingDocRef = doc(
+        db,
+        getBookedSlotDocPath(organization, secretKey, slotId)
+      );
+
+      await setDoc(bookingDocRef, { ...booking, bookingNotes });
+
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Success,
+          message: i18n.t(NotificationMessage.BookingNotesUpdated),
+        })
+      );
+    } catch (error) {
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Error,
+          message: i18n.t(NotificationMessage.BookingNotesError),
+        })
+      );
+    }
+  };
+
 /**
  * Keeps track of calendar events created by customer
  */

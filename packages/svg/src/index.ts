@@ -22,6 +22,10 @@ import Cake from "./assets/cake.svg";
 import Mail from "./assets/mail.svg";
 import Phone from "./assets/phone.svg";
 import ShieldCheck from "./assets/shield-check.svg";
+import CheckCircle from "./assets/check-circle.svg";
+import XCircle from "./assets/x-circle.svg";
+import QuestionMarkCircle from "./assets/question-mark-circle.svg";
+import Annotation from "./assets/annotation.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -53,4 +57,8 @@ export {
   Mail,
   Phone,
   ShieldCheck,
+  CheckCircle,
+  XCircle,
+  QuestionMarkCircle,
+  Annotation,
 };

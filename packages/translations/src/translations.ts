@@ -136,6 +136,10 @@ export enum OrganizationLabel {
   SMS = "OrganizationLabel.SMS",
   General = "OrganizationLabel.General",
 }
+export enum BookingNotesForm {
+  Placeholder = "BookingNotesForm.Placeholder",
+  HelpText = "BookingNotesForm.HelpText",
+}
 // #endregion forms
 
 // #region dialog
@@ -212,6 +216,8 @@ export enum NotificationMessage {
   BookingSuccess = "Notification.BookingSuccess",
   BookingCanceled = "Notification.BookingCanceled",
   BookingCanceledError = "Notification.BookingCanceledError",
+  BookingNotesUpdated = "Notification.BookingNotesUpdated",
+  BookingNotesError = "Notification.BookingNotesError",
 
   SlotAdded = "Notification.SlotAdded",
   SlotUpdated = "Notification.SlotUpdated",

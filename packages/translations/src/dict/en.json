@@ -87,6 +87,11 @@
     "StartTime": "Start Time",
     "EndTime": "End Time"
   },
+  "BookingNotesForm": {
+    "Placeholder": "Personal notes...",
+    "HelpText": "Make some personal notes..."
+  },
+
   "CustomerLabel": {
     "Name": "Name",
     "Surname": "Surname",
@@ -190,6 +195,8 @@
     "BookingSuccess": "Successfully booked",
     "BookingCanceled": "Booking canceled",
     "BookingCanceledError": "Error cancelling booking",
+    "BookingNotesUpdated": "Booking notes updated",
+    "BookingNotesError": "Error updating booking notes",
 
     "SlotAdded": "Slot Added",
     "SlotUpdated": "Slot Updated",

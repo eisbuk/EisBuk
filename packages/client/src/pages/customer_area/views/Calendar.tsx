@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector, useStore } from "react-redux";
 
 import i18n, { Alerts } from "@eisbuk/translations";
 import { EmptySpace, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
@@ -7,9 +7,12 @@ import { EmptySpace, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
 import { getBookingsForCalendar } from "@/store/selectors/bookings";
 import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
+import { updateBookingNotes } from "@/store/actions/bookingOperations";
+
+import { getSecretKey } from "@/utils/localStorage";
 
 const CalendarView: React.FC = () => {
-  const dispatch = useDispatch();
+  const { dispatch, getState } = useStore();
   const currentDate = useSelector(getCalendarDay);
 
   const bookedSlots = useSelector(getBookingsForCalendar);
@@ -24,11 +27,23 @@ const CalendarView: React.FC = () => {
       })
     );
   };
+  const handleNotesUpdate = (bookingNotes: string, slotId: string) =>
+    // In order to be able to await this update, we're
+    // using a bit of a different approach to firing a thunk
+    // by runing a thunk explicitly and passing redux' dispatch and get state
+    updateBookingNotes({
+      slotId,
+      secretKey: getSecretKey(),
+      bookingNotes,
+    })(dispatch, getState);
 
   const slotsToRender = bookedSlots.map((props) => (
     <IntervalCard
       key={props.id}
       onCancel={() => handleCancellation(props)}
+      onNotesEditSave={(bookingNotes) =>
+        handleNotesUpdate(bookingNotes, props.id)
+      }
       variant={IntervalCardVariant.Calendar}
       {...props}
     />
