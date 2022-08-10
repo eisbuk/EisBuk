@@ -3,14 +3,6 @@
   "version": "1.0.0",
   "description": "CLI for firestore backup-restore",
   "private": true,
-  "main": "dist/index.js",
-  "exports": {
-    ".": {
-      "import": "./dist/index.es.js",
-      "require": "./dist/index.js",
-      "default": "./dist.index.es.js"
-    }
-  },
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
@@ -26,7 +18,8 @@
     "commander": "^8.3.0",
     "configstore": "^5.0.0",
     "env-paths": "^2.2.1",
-    "inquirer": "^8.0.0"
+    "inquirer": "^8.0.0",
+    "firestore-export-import": "^1.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.x",
