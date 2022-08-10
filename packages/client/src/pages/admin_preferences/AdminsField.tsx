@@ -94,7 +94,9 @@ const AdminsField: React.FC<{
             <Button
               color="primary"
               variant="contained"
-              className={classes.addAdminButton}
+              className={[classes.addAdminButton, classes.buttonPrimary].join(
+                " "
+              )}
               type="submit"
             >
               {t(ActionButton.Add)}
@@ -189,6 +191,9 @@ const useStyles = makeStyles((theme) => ({
   saveButton: {
     marginLeft: "1rem",
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
   smsFromField: {
     width: "21rem",
     marginRight: theme.spacing(2),
