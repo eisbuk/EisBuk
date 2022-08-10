@@ -7,10 +7,14 @@ import { ICalendar } from "datebook";
 
 import { CalendarEvents } from "@eisbuk/shared";
 
-import Fab from "@mui/material/Fab";
 import InputDialog from "@/components/atoms/InputDialog";
-import { Button, IconButton } from "@eisbuk/ui";
-
+import {
+  Button,
+  IconButton,
+  IconButtonContentSize,
+  IconButtonShape,
+  IconButtonSize,
+} from "@eisbuk/ui";
 import { Calendar } from "@eisbuk/svg";
 
 import { getAboutOrganization, getCalendarDay } from "@/store/selectors/app";
@@ -93,27 +97,28 @@ const AddToCalendar: React.FC = () => {
     dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
   };
 
-  return bookedSlots.length ? (
+  // Don't render the component if there are no booked slots to save to calendar
+  if (!bookedSlots.length) return null;
+
+  return (
     <>
       <Button
-        className=" text-white bg-cyan-700 m-auto justify-center
-        position-relative
-         active:bg-cyan-800 md:w-auto  invisible md:visible "
+        className="hidden bg-cyan-700 text-white md:block active:bg-cyan-800"
         onClick={() => setEmailDialog(true)}
       >
         {t(ActionButton.AddToCalendar)}
       </Button>
 
-      <Fab
-        color="primary"
+      <IconButton
         aria-label={t(ActionButton.AddToCalendar)}
-        className="fixed bg-cyan-700 right-4 bottom-20 md:invisible"
+        className="fixed right-6 bottom-8 z-40 bg-cyan-700 text-white shadow-xl md:hidden"
+        size={IconButtonSize.XL}
+        contentSize={IconButtonContentSize.Loose}
+        shape={IconButtonShape.Round}
         onClick={() => setEmailDialog(true)}
       >
-        <IconButton>
-          <Calendar />
-        </IconButton>
-      </Fab>
+        <Calendar />
+      </IconButton>
 
       <InputDialog
         title={t(Prompt.EnterEmailTitle)}
@@ -124,7 +129,7 @@ const AddToCalendar: React.FC = () => {
         {t(Prompt.EnterEmailMessage)}
       </InputDialog>
     </>
-  ) : null;
+  );
 };
 
 // #region helpers
