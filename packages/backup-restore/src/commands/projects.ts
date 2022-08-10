@@ -11,11 +11,12 @@ import { FsErrors } from "../lib/types";
  * List project IDs of available firebase credentials
  */
 export async function listProjectCredentials(): Promise<void> {
-  const projects = await fs.readdir(paths.data);
-  console.log(projects);
+  const _projects = await fs.readdir(paths.data);
+  const projects = _projects.map((p) => p.replace("-credentials.json", ""));
+
+  console.log(...projects);
 }
 
-// TODO: following two functions could be fragmented and tested better
 /**
  * Add firebase project credentials to XDG-specific AppData location
  */

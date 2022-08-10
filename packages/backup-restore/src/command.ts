@@ -57,9 +57,9 @@ export function makeProgram(
     .description(
       "Backup organization(s) to JSON in the current working directory."
     )
-    .option(
+    .requiredOption(
       "-p, --project <projectId>",
-      "active project ID, which determines the firestore instance this action will run against"
+      "ID of the project credentials used as auth against a firestore instance. Credentials should first be stored with `projects:add`"
     )
     .option("-e, --emulators", "use emulator instance / data", false)
     .option("-h, --host", "specify the emulator host", "localhost:8080")
@@ -73,9 +73,9 @@ export function makeProgram(
   program
     .command("restore")
     .description("Restore an organizations data from a JSON file.")
-    .option(
+    .requiredOption(
       "-p, --project <projectId>",
-      "active project ID, which determines the firestore instance this action will run against"
+      "ID of the project credentials used as auth against a firestore instance. Credentials should first be stored with `projects:add`"
     )
     .option("-e, --emulators", "use emulator instance / data", false)
     .option("-h, --host", "specify the emulator host", "localhost:8080")

@@ -21,16 +21,6 @@ afterAll(() => {
 describe("Project commands", () => {
   const program = makeProgram({ exitOverride: true });
 
-  // const consoleSpy = jest.spyOn(console, "log").mockImplementation();
-  // test("projects:list returns a list of project IDs whose credentials are stored", async () => {
-  //   configStoreSpy.mockReturnValue(defaultConfig.projects);
-
-  //   program.parseAsync(["node", "eisbuk", "projects:list"]);
-
-  //   expect(consoleSpy).toBeCalledWith(defaultConfig.projects);
-  // });
-
-  // TODO: following two tests could be more extensive (see "commands/projects" src file)
   test("projects:add is invoked with a filePath", async () => {
     const testFilePath = "serviceAccount.json";
 
