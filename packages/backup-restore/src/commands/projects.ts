@@ -50,7 +50,7 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
     const writePath = `${paths.data}/${project_id}-credentials.json`;
 
     const hasAppDataDir = await exists(paths.data);
-    if (hasAppDataDir) {
+    if (!hasAppDataDir) {
       fs.mkdir(paths.data, { recursive: true });
     }
 
