@@ -1,6 +1,24 @@
 {
   "mismatchedVersions": [
     {
+      "dependencyName": "firebase-admin",
+      "versions": [
+        {
+          "projects": ["@eisbuk/backup-restore"],
+          "version": "^11.0.1"
+        },
+        {
+          "projects": [
+            "@eisbuk/client",
+            "@eisbuk/e2e",
+            "@eisbuk/firestore-process-delivery",
+            "@eisbuk/functions"
+          ],
+          "version": "^9.4.2"
+        }
+      ]
+    },
+    {
       "dependencyName": "@firebase/app",
       "versions": [
         {
@@ -48,24 +66,6 @@
             "@eisbuk/functions"
           ],
           "version": "^8.2.4"
-        }
-      ]
-    },
-    {
-      "dependencyName": "firebase-admin",
-      "versions": [
-        {
-          "projects": [" @eisbuk/backup-restore"],
-          "version": "^11.0.1"
-        },
-        {
-          "projects": [
-            "@eisbuk/client",
-            "@eisbuk/e2e",
-            "@eisbuk/firestore-process-delivery",
-            "@eisbuk/functions"
-          ],
-          "version": "^9.4.2"
         }
       ]
     }
