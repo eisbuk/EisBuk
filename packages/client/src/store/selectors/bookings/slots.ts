@@ -82,7 +82,7 @@ const filterSlotsByCategory = (
   return [filteredRecord, isEmptyWhenFiltered];
 };
 
-export type SlotsForBooking = {
+type SlotsForBooking = {
   date: string;
   slots: (SlotInterface & { interval?: string })[];
 }[];
