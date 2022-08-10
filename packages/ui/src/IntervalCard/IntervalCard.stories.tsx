@@ -42,19 +42,25 @@ export const Sizes = (): JSX.Element => (
   <>
     <StorybookGrid cols={2}>
       <StorybookItem height={240} label="Duration: 1h">
-        <IntervalCard state={IntervalCardState.Active} {...baseSlot} />
+        <IntervalCard
+          {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
+        />
       </StorybookItem>
       <StorybookItem height={240} label="Duration: 1.5h">
         <IntervalCard
-          state={IntervalCardState.Active}
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
           interval={hourAndHalfInterval}
         />
       </StorybookItem>
       <StorybookItem height={240} label="Duration: 2h">
         <IntervalCard
-          state={IntervalCardState.Active}
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
           interval={twoHourInterval}
         />
       </StorybookItem>
@@ -67,7 +73,11 @@ export const Variants = (): JSX.Element => (
     <h1 className="text-lg font-bold mb-4">Type: Ice</h1>
     <StorybookGrid className="mb-8" cols={3}>
       <StorybookItem height={240} label="Book">
-        <IntervalCard {...baseSlot} state={IntervalCardState.Active} />
+        <IntervalCard
+          {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
+        />
       </StorybookItem>
       <StorybookItem height={240} label="Calendar">
         <IntervalCard {...baseSlot} variant={IntervalCardVariant.Calendar} />
@@ -81,6 +91,7 @@ export const Variants = (): JSX.Element => (
       <StorybookItem height={240} label="Book">
         <IntervalCard
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
           state={IntervalCardState.Active}
           type={SlotType.OffIce}
         />
@@ -108,13 +119,25 @@ export const States = (): JSX.Element => (
     <h1 className="text-lg font-bold mb-4">Type: Ice</h1>
     <StorybookGrid className="mb-8" cols={4}>
       <StorybookItem height={160} label="Default">
-        <IntervalCard {...baseSlot} state={IntervalCardState.Default} />
+        <IntervalCard
+          variant={IntervalCardVariant.Booking}
+          {...baseSlot}
+          state={IntervalCardState.Default}
+        />
       </StorybookItem>
       <StorybookItem height={160} label="Active">
-        <IntervalCard {...baseSlot} state={IntervalCardState.Active} />
+        <IntervalCard
+          {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
+        />
       </StorybookItem>
       <StorybookItem height={160} label="Disabled">
-        <IntervalCard {...baseSlot} state={IntervalCardState.Disabled} />
+        <IntervalCard
+          {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Disabled}
+        />
       </StorybookItem>
     </StorybookGrid>
     <h1 className="text-lg font-bold mb-4">Type: Off Ice</h1>
@@ -122,6 +145,7 @@ export const States = (): JSX.Element => (
       <StorybookItem height={160} label="Default">
         <IntervalCard
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
           state={IntervalCardState.Default}
           type={SlotType.OffIce}
         />
@@ -129,6 +153,7 @@ export const States = (): JSX.Element => (
       <StorybookItem height={160} label="Active">
         <IntervalCard
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
           state={IntervalCardState.Active}
           type={SlotType.OffIce}
         />
@@ -136,6 +161,7 @@ export const States = (): JSX.Element => (
       <StorybookItem height={160} label="Disabled">
         <IntervalCard
           {...baseSlot}
+          variant={IntervalCardVariant.Booking}
           state={IntervalCardState.Disabled}
           type={SlotType.OffIce}
         />

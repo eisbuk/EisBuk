@@ -162,17 +162,20 @@ export const getBookingsForCalendar = (
   const slotsForAMonth = slotsByMonth[monthString] || {};
 
   return Object.entries(bookedSlots)
-    .reduce((acc, [slotId, { date, interval: bookedInterval }]) => {
-      // If this returns undefined, our slot isn't in date range
-      const dayOfBookedSlot = slotsForAMonth[date];
-      if (!dayOfBookedSlot) {
-        return acc;
-      }
+    .reduce(
+      (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
+        // If this returns undefined, our slot isn't in date range
+        const dayOfBookedSlot = slotsForAMonth[date];
+        if (!dayOfBookedSlot) {
+          return acc;
+        }
 
-      const bookedSlot = dayOfBookedSlot[slotId];
-      const interval = bookedSlot.intervals[bookedInterval];
-      const completeBookingEntry = { ...bookedSlot, interval };
-      return [...acc, completeBookingEntry];
-    }, [] as BookingsList)
+        const bookedSlot = dayOfBookedSlot[slotId];
+        const interval = bookedSlot.intervals[bookedInterval];
+        const completeBookingEntry = { ...bookedSlot, interval, bookingNotes };
+        return [...acc, completeBookingEntry];
+      },
+      [] as BookingsList
+    )
     .sort((a, b) => (a > b ? -1 : 1));
 };

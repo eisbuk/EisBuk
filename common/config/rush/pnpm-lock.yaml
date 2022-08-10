@@ -23,7 +23,7 @@ importers:
       env-paths: ^2.2.1
       eslint: ^8.13.0
       firebase-admin: ^11.0.1
-      firestore-export-import: ~1.2.0
+      firestore-export-import: ^1.2.0
       inquirer: ^8.0.0
       jest: ^27.5.1
       typescript: ~4.6.3
@@ -767,7 +767,6 @@ importers:
       '@eisbuk/svg': link:../svg
       '@eisbuk/translations': link:../translations
       '@tailwindcss/forms': 0.5.2_tailwindcss@3.0.24
-      formik: 2.2.9_react@16.14.0
       luxon: 2.4.0
       yup: 0.32.9
     devDependencies:
@@ -804,6 +803,7 @@ importers:
       eslint-plugin-react: 7.30.1_eslint@8.19.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.19.0
       eslint-plugin-unused-imports: 2.0.0_c296cfcf20d280cfb2cd3afc88aefdcf
+      formik: 2.2.9_react@16.14.0
       jest: 27.5.1
       postcss: 8.4.14
       react: 16.14.0
@@ -10405,7 +10405,6 @@ packages:
   /deepmerge/2.2.1:
     resolution: {integrity: sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==}
     engines: {node: '>=0.10.0'}
-    dev: false
 
   /deepmerge/4.2.2:
     resolution: {integrity: sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==}
@@ -12638,7 +12637,6 @@ packages:
       react-fast-compare: 2.0.4
       tiny-warning: 1.0.3
       tslib: 1.14.1
-    dev: false
 
   /forwarded/0.2.0:
     resolution: {integrity: sha512-buRG0fpBtRHSTCOASe6hD258tEubFoRLb4ZNA6NxMVHNw2gOcwHo9wyablzMzOA5z9xA9L1KNjk/Nt6MT9aYow==}
@@ -15812,7 +15810,6 @@ packages:
 
   /lodash-es/4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-    dev: false
 
   /lodash._isnative/2.4.1:
     resolution: {integrity: sha512-BOlKGKNHhCHswGOWtmVb5zBygyxN7EmTuzVOSQI6QSoGhG+kvv71gICFS1TBpnqvT1n53txK8CDK3u5D2/GZxQ==}
@@ -18505,7 +18502,6 @@ packages:
 
   /react-fast-compare/2.0.4:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
-    dev: false
 
   /react-i18next/11.18.0_i18next@21.8.13+react@16.14.0:
     resolution: {integrity: sha512-coJujU20xJ5Wa5rHjTyB5LFKZb1yfXo2A+40RRSyAF0FlZRHyy+3C1Mr92x1JPfS7W7v2TWNn8mRhpDFGJwXVg==}

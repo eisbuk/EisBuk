@@ -1,36 +1,53 @@
 import React from "react";
-import { DateTime } from "luxon";
 
-import { useTranslation, DateFormat } from "@eisbuk/translations";
+import { Annotation } from "@eisbuk/svg";
 
 import {
-  IntervalDuration,
   IntervalCardVariant,
   IntervalCardState,
   IntervalCardProps,
 } from "./types";
 
-import IntervalCardContainer from "./IntervalCardContainer";
+import IconButton, {
+  IconButtonContentSize,
+  IconButtonSize,
+} from "../IconButton";
 import BookingButton from "./BookingButton";
-import SlotTypeIcon from "../SlotTypeIcon";
+import BookingCardContainer from "./BookingCardContainer";
+import {
+  CalendarCardExpandableContainer,
+  CalendarCardContainerInner,
+} from "./CalendarCardContainer";
+import SimpleCardContainer from "./SimpleCardContainer";
+import CardContent from "./CardContent";
+import NotesSection from "./NotesSection";
 
 import { calculateDuration } from "./utils";
 
 const IntervalCard: React.FC<IntervalCardProps> = ({
-  interval: { startTime, endTime },
-  date: dateISO,
-  state = IntervalCardState.Default,
-  variant = IntervalCardVariant.Booking,
+  interval,
+  state,
+  variant,
   type,
+  date,
   notes,
+  bookingNotes,
   onBook = () => {},
   onCancel = () => {},
-  ...containerProps
+  onNotesEditStart = () => {},
+  onNotesEditSave = async () => {},
+  as,
+  className,
 }) => {
-  const { t } = useTranslation();
-  const date = DateTime.fromISO(dateISO);
+  const duration = calculateDuration(interval.startTime, interval.endTime);
 
-  const duration = calculateDuration(startTime, endTime);
+  const cardContentProps = {
+    date,
+    interval,
+    type,
+    variant,
+    notes,
+  };
 
   const handleBookingClick = () =>
     variant === IntervalCardVariant.Calendar ||
@@ -38,83 +55,72 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
       ? onCancel()
       : onBook();
 
-  const dateString = (
-    <span className={getDatestringClasses(variant)}>
-      {t(DateFormat.Full, { date })}
-    </span>
-  );
-  const timestring = (
-    <span className={getTimestringClasses(variant, duration)}>
-      {[startTime, endTime].join(" - ")}
-    </span>
-  );
-  const notesElement = (
-    <p className="text-base text-gray-500 font-medium">{notes}</p>
-  );
+  switch (variant) {
+    case IntervalCardVariant.Booking:
+      return (
+        <BookingCardContainer {...{ state, duration, type, as, className }}>
+          <CardContent {...cardContentProps} />
+          <BookingButton
+            className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+            {...{ type, variant, state, duration }}
+            onClick={handleBookingClick}
+          />
+        </BookingCardContainer>
+      );
 
-  return (
-    <IntervalCardContainer
-      {...{ ...containerProps, state, duration, type, variant }}
-    >
-      <div className="relative h-full w-full cursor-default select-none">
-        {variant !== IntervalCardVariant.Booking && dateString}
+    case IntervalCardVariant.Calendar:
+      return (
+        <CalendarCardExpandableContainer {...{ type, as, className }}>
+          {({ isEditing, setIsEditing }) => (
+            <>
+              <IconButton
+                className={[
+                  "absolute top-[11px] right-[14px] duration-200 z-30",
+                  isEditing
+                    ? "text-teal-700"
+                    : "text-teal-600 hover:text-teal-700",
+                ].join(" ")}
+                size={IconButtonSize.XS}
+                contentSize={IconButtonContentSize.Tight}
+                onClick={() => setIsEditing(!isEditing)}
+                disableHover
+              >
+                <Annotation />
+              </IconButton>
 
-        {timestring}
+              <CalendarCardContainerInner {...{ as }}>
+                <CardContent {...cardContentProps} />
+                <BookingButton
+                  className="absolute right-2 bottom-2 min-w-[85px] justify-center"
+                  {...{ type, variant, state, duration }}
+                  onClick={handleBookingClick}
+                />
+              </CalendarCardContainerInner>
 
-        {variant !== IntervalCardVariant.Simple && notesElement}
+              <NotesSection
+                className="absolute right-0 bottom-0 left-0"
+                bookingNotes={bookingNotes}
+                isEditing={isEditing}
+                onNotesEditStart={onNotesEditStart}
+                onNotesEditSave={onNotesEditSave}
+                onEditClose={() => setIsEditing(false)}
+              />
+            </>
+          )}
+        </CalendarCardExpandableContainer>
+      );
 
-        {variant !== IntervalCardVariant.Simple && (
-          <SlotTypeIcon type={type} className="absolute left-0 bottom-0" />
-        )}
-      </div>
+    case IntervalCardVariant.Simple:
+      return (
+        <SimpleCardContainer {...{ className, as, type }}>
+          <CardContent {...cardContentProps} />
+        </SimpleCardContainer>
+      );
 
-      {variant !== IntervalCardVariant.Simple && (
-        <BookingButton
-          className="absolute right-2 bottom-2 min-w-[85px] justify-center"
-          {...{ type, variant, state, duration }}
-          onClick={handleBookingClick}
-        />
-      )}
-    </IntervalCardContainer>
-  );
+    // Won't happen, but let's keep eslint happy
+    default:
+      return null;
+  }
 };
-
-// #region datestringClasses
-const getDatestringClasses = (variant: IntervalCardVariant) =>
-  [
-    "block",
-    "text-base",
-    variant === IntervalCardVariant.Simple ? "font-medium" : "font-semibold",
-  ].join(" ");
-// #endregion datestringClasses
-
-// #region timestringClasses
-const getTimestringClasses = (
-  variant: IntervalCardVariant,
-  duration: IntervalDuration
-) =>
-  [
-    "block",
-    ...(variant !== IntervalCardVariant.Booking
-      ? timestringSizeLookup[variant]
-      : timestringBookingSizeLookup[duration]),
-  ].join(" ");
-
-const timestringBookingSizeLookup = {
-  [IntervalDuration["1h"]]: ["mb-2", "text-lg", "leading-8", "font-semibold"],
-  [IntervalDuration["1.5h"]]: [
-    "mb-2",
-    "text-3xl",
-    "leading-8",
-    "font-semibold",
-  ],
-  [IntervalDuration["2h"]]: ["mb-4", "text-4xl", "leading-10", "font-semibold"],
-};
-
-const timestringSizeLookup = {
-  [IntervalCardVariant.Calendar]: ["mb-4", "text-3xl", "font-semibold"],
-  [IntervalCardVariant.Simple]: ["text-2xl", "font-medium"],
-};
-// #endregion timestringClasses
 
 export default IntervalCard;

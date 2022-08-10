@@ -219,6 +219,10 @@ export interface CustomerBookingEntry {
    * Booked interval for particular slot
    */
   interval: string;
+  /**
+   * Optional personal notes for a particular booking
+   */
+  bookingNotes?: string;
 }
 /**
  * Bookings document for customer

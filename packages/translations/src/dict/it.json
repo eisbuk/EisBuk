@@ -87,6 +87,11 @@
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine"
   },
+  "BookingNotesForm": {
+    "Placeholder": "Personal notes...",
+    "HelpText": "Make some personal notes..."
+  },
+
   "CustomerLabel": {
     "Name": "Nome",
     "Surname": "Cognome",
@@ -190,6 +195,8 @@
     "BookingSuccess": "Prenotazione effettuata",
     "BookingCanceled": "Prenotazione rimossa",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+    "BookingNotesUpdated": "Booking notes updated",
+    "BookingNotesError": "Error updating booking notes",
 
     "SlotAdded": "Slot Aggiunto",
     "SlotUpdated": "Slot Aggiornato",
