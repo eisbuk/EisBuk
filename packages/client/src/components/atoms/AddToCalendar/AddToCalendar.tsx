@@ -103,9 +103,7 @@ const AddToCalendar: React.FC = () => {
   return (
     <>
       <Button
-        className=" text-white bg-cyan-700 m-auto justify-center
-        position-relative
-         active:bg-cyan-800 md:w-auto  invisible md:visible "
+        className="hidden bg-cyan-700 text-white md:block active:bg-cyan-800"
         onClick={() => setEmailDialog(true)}
       >
         {t(ActionButton.AddToCalendar)}
