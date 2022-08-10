@@ -2,8 +2,7 @@ import fs from "fs/promises";
 import path from "path";
 
 import { exists } from "../lib/helpers";
-import { configstore, ConfigOptions } from "../config/configstore";
-import { paths } from "../config/paths";
+import { paths } from "../lib/paths";
 
 import { IServiceAccountJson } from "../lib/firebase";
 import { FsErrors } from "../lib/types";
@@ -11,8 +10,8 @@ import { FsErrors } from "../lib/types";
 /**
  * List project IDs of available firebase credentials
  */
-export function listProjectCredentials(): void {
-  const projects = configstore.get(ConfigOptions.Projects);
+export async function listProjectCredentials(): Promise<void> {
+  const projects = await fs.readdir(paths.data);
   console.log(projects);
 }
 
@@ -48,14 +47,6 @@ export async function addProjectCredentials(filePath: string): Promise<void> {
     }
 
     await fs.writeFile(writePath, serviceAccountJson, "utf-8");
-
-    // Update config
-    const projects = configstore.get(ConfigOptions.Projects) as Array<string>;
-
-    // eslint-disable-next-line
-    const newProjectsList = [project_id, ...projects];
-
-    configstore.set(ConfigOptions.Projects, newProjectsList);
   } catch (err: any) {
     console.error(err);
   }
@@ -72,22 +63,6 @@ export async function removeProjectCredentials(
     const credentialsPath = `${paths.data}/${projectId}-credentials.json`;
 
     await fs.rm(credentialsPath);
-
-    // Update config
-    const projects = configstore.get(ConfigOptions.Projects) as Array<string>;
-
-    const newProjectsList = projects.filter((id) => id !== projectId);
-
-    configstore.set(ConfigOptions.Projects, newProjectsList);
-
-    // If this was activeProject, set active to null
-    const activeProject = configstore.get(
-      ConfigOptions.ActiveProject
-    ) as string;
-
-    if (activeProject === projectId) {
-      configstore.set(ConfigOptions.ActiveProject, null);
-    }
   } catch (err: any) {
     console.error(err);
   }

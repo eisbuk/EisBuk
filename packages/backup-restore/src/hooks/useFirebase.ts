@@ -1,8 +1,8 @@
 import fs from "fs/promises";
+import type { Command } from "commander";
 
 import { initializeApp, IServiceAccountJson } from "../lib/firebase";
-import { configstore } from "../config/configstore";
-import { paths } from "../config/paths";
+import { paths } from "../lib/paths";
 
 /**
  * Command preAction hook to initialises Firebase app using stored config.
@@ -11,11 +11,14 @@ import { paths } from "../config/paths";
  * E.g:
  *  `command.hook("preAction", useFirebase).action(readFromDb)`
  */
-export async function useFirebase(): Promise<void> {
-  const { useEmulators, emulatorHost, activeProject } = configstore.all;
+export async function useFirebase(thisCommand: Command): Promise<void> {
+  const {
+    emulators: useEmulator,
+    host: emulatorHost,
+    project,
+  } = thisCommand.opts();
 
-  const useEmulator = useEmulators === "true";
-  const serviceAccountPath = `${paths.data}/${activeProject}.json`;
+  const serviceAccountPath = `${paths.data}/${project}-credentials.json`;
 
   try {
     const serviceAccountJson = await fs.readFile(serviceAccountPath, "utf-8");
@@ -25,7 +28,7 @@ export async function useFirebase(): Promise<void> {
     ) as IServiceAccountJson;
 
     console.log("Initialising firebase...");
-    console.log(`Connecting to ${activeProject} firestore`);
+    console.log(`Connecting to ${project} firestore`);
 
     if (useEmulator) {
       console.log("Using emulators");

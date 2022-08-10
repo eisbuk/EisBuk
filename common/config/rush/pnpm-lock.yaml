@@ -10,7 +10,6 @@ importers:
       '@eisbuk/shared': workspace:*
       '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ^1.6.2
-      '@types/configstore': ~5.0.1
       '@types/inquirer': ^8.2.1
       '@types/jest': ^27.4.1
       '@types/node': ^16.11.10
@@ -18,20 +17,16 @@ importers:
       '@typescript-eslint/eslint-plugin': ^5.20.0
       '@typescript-eslint/parser': ^5.20.0
       commander: ^8.3.0
-      configstore: ^5.0.0
       env-paths: ^2.2.1
       eslint: ^8.13.0
       firebase-admin: ^11.0.1
       firestore-export-import: ^1.2.0
       inquirer: ^8.0.0
       jest: ^27.5.1
-      p-retry: ^4.6.1
       typescript: ~4.6.3
-      uuid: ^8.3.2
     dependencies:
       '@eisbuk/shared': link:../shared
       commander: 8.3.0
-      configstore: 5.0.1
       env-paths: 2.2.1
       firebase-admin: 11.0.1
       firestore-export-import: 1.2.0
@@ -39,7 +34,6 @@ importers:
     devDependencies:
       '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.6.7
-      '@types/configstore': 5.0.1
       '@types/inquirer': 8.2.1
       '@types/jest': 27.5.2
       '@types/node': 16.11.43
@@ -48,9 +42,7 @@ importers:
       '@typescript-eslint/parser': 5.30.5_eslint@8.19.0+typescript@4.6.4
       eslint: 8.19.0
       jest: 27.5.1
-      p-retry: 4.6.2
       typescript: 4.6.4
-      uuid: 8.3.2
 
   ../../packages/client:
     specifiers:
@@ -6926,10 +6918,6 @@ packages:
     dependencies:
       '@types/connect': 3.4.35
       '@types/node': 16.11.43
-
-  /@types/configstore/5.0.1:
-    resolution: {integrity: sha512-c/QCznvk7bLKGhHETj29rqKufui3jaAxjBhK4R2zUrMG5UG0qTwfWYxBoUbH8JCyDjdCWMIxPJ7/Fdz1UcAnWg==}
-    dev: true
 
   /@types/connect/3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
