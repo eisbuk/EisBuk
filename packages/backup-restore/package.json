@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc",
-    "test": "bash -c '(trap \"kill 0\" SIGINT; firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles src\")'"
+    "test": "jest --watch --runInBand --detectOpenHandles src"
   },
   "dependencies": {
     "@eisbuk/shared": "workspace:*",
@@ -21,6 +21,9 @@
     "firestore-export-import": "^1.2.0"
   },
   "devDependencies": {
+    "@babel/core": "7.x",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-typescript": "^7.14.5",
     "@google-cloud/firestore": "^4.13.2",
     "@grpc/grpc-js": "^1.6.2",
     "@types/jest": "^27.4.1",
