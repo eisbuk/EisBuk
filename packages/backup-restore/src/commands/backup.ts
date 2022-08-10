@@ -10,7 +10,9 @@ import { Collection } from "@eisbuk/shared";
 export default async function (orgId?: string): Promise<void> {
   try {
     if (orgId) {
-      const org = await backupFromDoc(Collection.Organizations, orgId);
+      const data: any = await backupFromDoc(Collection.Organizations, orgId);
+
+      const org = data[Collection.Organizations][orgId];
 
       await writeOrgJson(orgId, org);
     } else {

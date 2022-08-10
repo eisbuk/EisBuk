@@ -37,6 +37,6 @@
     "typescript": "~4.6.3"
   },
   "bin": {
-    "firestore-dump": "./dist/cli.js"
+    "db-dump": "./dist/cli.js"
   }
 }
