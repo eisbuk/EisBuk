@@ -7,9 +7,6 @@ importers:
 
   ../../packages/backup-restore:
     specifiers:
-      '@babel/core': 7.x
-      '@babel/plugin-transform-runtime': ^7.12.10
-      '@babel/preset-typescript': ^7.14.5
       '@eisbuk/shared': workspace:*
       '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ^1.6.2
@@ -25,7 +22,7 @@ importers:
       env-paths: ^2.2.1
       eslint: ^8.13.0
       firebase-admin: ^11.0.1
-      firestore-export-import: ~1.2.0
+      firestore-export-import: ^1.2.0
       inquirer: ^8.0.0
       jest: ^27.5.1
       p-retry: ^4.6.1
@@ -40,9 +37,6 @@ importers:
       firestore-export-import: 1.2.0
       inquirer: 8.2.4
     devDependencies:
-      '@babel/core': 7.18.6
-      '@babel/plugin-transform-runtime': 7.18.6_@babel+core@7.18.6
-      '@babel/preset-typescript': 7.18.6_@babel+core@7.18.6
       '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.6.7
       '@types/configstore': 5.0.1
