@@ -1,25 +1,44 @@
 import fs from "fs/promises";
 import path from "path";
 
-import { backup } from "firestore-export-import";
+import { backup, backupFromDoc } from "firestore-export-import";
 
+import { Collection } from "@eisbuk/shared";
 /**
  * Backup command
  */
-export default async function (): Promise<void> {
+export default async function (orgId?: string): Promise<void> {
   try {
-    // TODO: Pass options.refs or use backupDocRef to only backup certain orgs if passsed
-    const data = await backup("organizations");
+    if (orgId) {
+      const org = await backupFromDoc(Collection.Organizations, orgId);
 
-    const fileName = `eisbuk.json`;
-    const filePath = path.resolve(process.cwd(), fileName);
+      await writeOrgJson(orgId, org);
+    } else {
+      const data: any = await backup(Collection.Organizations);
 
-    const orgDataJson = JSON.stringify(data);
+      const orgs = Object.entries(data[Collection.Organizations]);
 
-    // TODO: write a file for each
-    // { organizations: { x: ..., y: ...}}
-    await fs.writeFile(filePath, orgDataJson, "utf-8");
+      const writePromises = orgs.map(async ([orgId, orgData]) => {
+        await writeOrgJson(orgId, orgData);
+      });
+
+      await Promise.all(writePromises);
+    }
   } catch (err: any) {
     console.error(err);
   }
+}
+
+/**
+ * Write Org JSON helper
+ * @param orgId
+ * @param orgData
+ */
+async function writeOrgJson(orgId: string, orgData: any) {
+  const fileName = `${orgId}.json`;
+  const filePath = path.resolve(fileName);
+
+  const orgJson = JSON.stringify(orgData);
+
+  await fs.writeFile(filePath, orgJson, "utf-8");
 }
