@@ -34,7 +34,7 @@ export async function useFirebase(thisCommand: Command): Promise<void> {
       console.log("Using emulators");
     }
 
-    await initializeApp({
+    initializeApp({
       serviceAccount,
       useEmulator,
       emulatorHost,
