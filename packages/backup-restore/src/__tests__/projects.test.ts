@@ -2,9 +2,9 @@
  * @jest-environment node
  */
 
-import { makeProgram } from "../../command";
+import { makeProgram } from "../command";
 
-import * as projectCmds from "../../commands/projects";
+import * as projectCmds from "../commands/projects";
 
 const addProjectCmdSpy = jest
   .spyOn(projectCmds, "addProjectCredentials")

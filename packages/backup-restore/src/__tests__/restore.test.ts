@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import restoreCmd from "../../commands/restore";
+import restoreCmd from "../commands/restore";
 
 import * as restore from "firestore-export-import";
 

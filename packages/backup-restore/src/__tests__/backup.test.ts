@@ -1,7 +1,7 @@
 /**
  * @jest-environment node
  */
-import backupCmd from "../../commands/backup";
+import backupCmd from "../commands/backup";
 
 import * as backup from "firestore-export-import";
 
