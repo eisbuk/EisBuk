@@ -3,7 +3,6 @@ import { DateTime, DateTimeUnit } from "luxon";
 import { Customer } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
-  AdminAria,
   BookingAria,
   createDateTitle,
   NotificationMessage,
@@ -30,6 +29,8 @@ const openCalendar = (
   date: DateTime = testDateLuxon,
   jump: DateTimeUnit = "week"
 ) => cy.contains(i18n.t(createDateTitle(date, jump)) as string).click();
+
+/** @TEMP skip as it uses the old customer_area page */
 
 xdescribe("Date Switcher", () => {
   describe("Customer calendar view", () => {
@@ -94,8 +95,7 @@ xdescribe("Date Switcher", () => {
     });
   });
 });
-/** @TEMP skip as it uses the old customer_area page */
-xdescribe("Download ics file to Add To Calendar", () => {
+describe("Download ics file to Add To Calendar", () => {
   it("checks email was sent and calendar collection was updated successfully", () => {
     cy.setClock(testDateLuxon.toMillis());
 
@@ -106,7 +106,6 @@ xdescribe("Download ics file to Add To Calendar", () => {
       ])
     );
     cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
-    cy.getAttrWith("aria-label", i18n.t(AdminAria.SeePastDates)).click();
     cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
       .first()
       .click({ force: true });

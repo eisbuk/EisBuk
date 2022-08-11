@@ -156,7 +156,6 @@ export const getBookingsForCalendar = (
 
   // Get all booked slots
   const bookedSlots = getBookedSlots(state);
-
   // Get only the slots for current month
   const slotsByMonth = state.firestore.data.slotsByDay || {};
   const slotsForAMonth = slotsByMonth[monthString] || {};

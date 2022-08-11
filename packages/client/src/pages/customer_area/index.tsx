@@ -17,6 +17,7 @@ import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
 import { NotificationsContainer } from "@/features/notifications/components";
+import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
@@ -112,7 +113,11 @@ const CustomerArea: React.FC = () => {
       user={displayCustomer}
     >
       {view !== "ProfileView" && (
-        <CalendarNav {...calendarNavProps} jump="month" />
+        <CalendarNav
+        {...calendarNavProps}
+        additionalContent={<AddToCalendar />}
+        jump="month"
+      />
       )}
       <div className="content-container">
         <div className="px-[44px] py-4">

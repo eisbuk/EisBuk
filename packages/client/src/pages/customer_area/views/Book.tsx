@@ -10,12 +10,13 @@ import {
   getIsBookingAllowed,
   getSlotsForBooking,
 } from "@/store/selectors/bookings";
+import { getCalendarDay } from "@/store/selectors/app";
 
 import { bookInterval } from "@/store/actions/bookingOperations";
+
 import { openModal } from "@/features/modal/actions";
 
 import { getSecretKey } from "@/utils/localStorage";
-import { getCalendarDay } from "@/store/selectors/app";
 
 const BookView: React.FC = () => {
   const daysToRender = useSelector(getSlotsForBooking);
@@ -27,7 +28,6 @@ const BookView: React.FC = () => {
   return (
     <>
       <BookingsCountdownContainer />
-
       {daysToRender.map(({ date, slots }) => (
         <SlotsDayContainer key={date} date={date}>
           {slots.map(({ interval, ...slot }) => (
