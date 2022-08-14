@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
-import { Dispatch } from "redux";
+import { Dispatch, Reducer, Action as ReducerAction } from "redux";
 
 import { User } from "@firebase/auth";
 
@@ -121,18 +121,6 @@ export interface CopyPasteState {
 }
 // #endregion copyPaste
 
-// #region thunks
-type GetState = () => LocalStore;
-/**
- * Async Thunk in charge of updating the firestore and dispatching action
- * to local store with respect to firestore update outcome
- */
-export interface FirestoreThunk {
-  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
-}
-
-// #endregion thunks
-
 // #region FullStore
 export interface LocalStore {
   firestore: FirestoreState;
@@ -151,3 +139,22 @@ export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {
   [CustomerRoute.Calendar]: S extends SlotsById ? undefined : SlotsById;
 }
 // #endregion mappedValues
+
+// #region misc
+type GetState = () => LocalStore;
+/**
+ * Async Thunk in charge of updating the firestore and dispatching action
+ * to local store with respect to firestore update outcome
+ */
+export interface FirestoreThunk {
+  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
+}
+
+/** Interface used for factory functions returning reducer for a slice of the store */
+export interface ReducerFactory<
+  S extends Record<string, any>,
+  A extends ReducerAction<any>
+> {
+  (initialState?: S extends any[] ? S : Partial<S>): Reducer<S, A>;
+}
+// #endregion misc

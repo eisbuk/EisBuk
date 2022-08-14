@@ -2,7 +2,7 @@ import { OrgSubCollection } from "@eisbuk/shared";
 
 import { FirestoreState } from "../../types";
 
-import firestoreReducer from "../";
+import { createFirestoreReducer } from "../";
 
 import {
   deleteFirestoreListener,
@@ -35,7 +35,7 @@ describe("Firestore reducer", () => {
       };
       // add new listener
       const updateAction = updateFirestoreListener(collection, baseListener);
-      const updatedState = firestoreReducer(initialState, updateAction as any);
+      const updatedState = createFirestoreReducer()(initialState, updateAction);
       expect(updatedState).toEqual({
         ...initialState,
         listeners: {
@@ -62,7 +62,10 @@ describe("Firestore reducer", () => {
       };
       // delete listener
       const deleteListenerAction = deleteFirestoreListener(collection);
-      const updatedState = firestoreReducer(initialState, deleteListenerAction);
+      const updatedState = createFirestoreReducer()(
+        initialState,
+        deleteListenerAction
+      );
       expect(updatedState).toEqual({
         data: {},
         listeners: {
@@ -99,7 +102,7 @@ describe("Firestore reducer", () => {
         OrgSubCollection.Attendance,
         updatedAttendance
       );
-      const updatedState = firestoreReducer(initialState, updateAction);
+      const updatedState = createFirestoreReducer()(initialState, updateAction);
       expect(updatedState).toEqual({
         listeners: {},
         data: {
@@ -127,7 +130,7 @@ describe("Firestore reducer", () => {
         saul.id,
         jian.id,
       ]);
-      const updatedState = firestoreReducer(initialState, updateAction);
+      const updatedState = createFirestoreReducer()(initialState, updateAction);
       expect(updatedState).toEqual({
         data: {
           customers: {

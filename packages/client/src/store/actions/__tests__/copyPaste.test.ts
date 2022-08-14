@@ -26,7 +26,6 @@ import {
   setSlotDayToClipboard,
   setSlotWeekToClipboard,
 } from "../copyPaste";
-import { changeCalendarDate } from "@/store/actions/appActions";
 import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getSlotsPath } from "@/utils/firestore";
@@ -86,7 +85,11 @@ describe("Copy Paste actions", () => {
       "should dispatch 'setSlotDayToClipboard' with appropriate slots",
       async () => {
         // set up test state
-        const store = getNewStore();
+        const store = getNewStore({
+          app: {
+            calendarDay: DateTime.fromISO(__storybookDate__),
+          },
+        });
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
             setupTestSlots({
@@ -96,7 +99,6 @@ describe("Copy Paste actions", () => {
               organization,
             }),
         });
-        store.dispatch(changeCalendarDate(DateTime.fromISO(__storybookDate__)));
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
