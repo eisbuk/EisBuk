@@ -158,14 +158,18 @@ const OrganizationSettings: React.FC = () => {
                     variant="contained"
                     disabled={isSubmitting || isValidating}
                     color="primary"
+                    className={classes.buttonPrimary}
                   >
                     {t(ActionButton.Cancel)}
                   </Button>
                   <Button
                     variant="contained"
-                    className={classes.saveButton}
                     disabled={isSubmitting || isValidating}
                     color="secondary"
+                    className={[
+                      classes.saveButton,
+                      classes.buttonSecondary,
+                    ].join(" ")}
                     aria-label={"save"}
                     type="submit"
                   >
@@ -264,6 +268,10 @@ const useStyles = makeStyles((theme) => ({
   saveButton: {
     marginLeft: "1rem",
   },
+  // The following is a workaround to not overrule the Mui base button styles
+  // by Tailwind's preflight reset
+  buttonPrimary: { backgroundColor: theme.palette.primary.main },
+  buttonSecondary: { backgroundColor: theme.palette.secondary.main },
   smsFromField: {
     width: "21rem",
     marginRight: theme.spacing(2),
