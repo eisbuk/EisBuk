@@ -79,6 +79,7 @@
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-typescript": "^7.14.5",
     "@cypress/code-coverage": "^3.9.12",
+    "@eisbuk/firestore": "workspace:*",
     "@firebase/rules-unit-testing": "^2.0.1",
     "@google-cloud/firestore": "^4.13.2",
     "@grpc/grpc-js": "^1.6.2",

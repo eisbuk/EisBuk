@@ -1,7 +1,7 @@
 {
   "firestore": {
-    "rules": "packages/firebase/firestore.rules",
-    "indexes": "packages/firebase/firestore.indexes.json"
+    "rules": "packages/firestore/firestore.rules",
+    "indexes": "packages/firestore/firestore.indexes.json"
   },
   "functions": {
     "predeploy": ["cd packages/functions && rushx build"],
