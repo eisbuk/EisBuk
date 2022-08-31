@@ -92,7 +92,7 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
   const bookedSlots = getBookedSlots(state);
   const customerData = getBookingsCustomer(state);
 
-  const daysToRender = Object.keys(slotsMonth);
+  const daysToRender = Object.keys(slotsMonth).sort((a, b) => (a < b ? -1 : 1));
   if (!daysToRender.length || !customerData) {
     return [];
   }
