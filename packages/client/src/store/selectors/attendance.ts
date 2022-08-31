@@ -2,15 +2,24 @@ import { luxon2ISODate } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
-import { AttendanceSortBy } from "@/enums/other";
-
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import { compareBookedIntervals, compareCustomerNames } from "@/utils/sort";
 import { getSlotTimespan } from "@/utils/helpers";
+import { CustomerWithAttendance } from "@/types/components";
 
+interface CompareCallback {
+  (c1: CustomerWithAttendance, c2: CustomerWithAttendance): number;
+}
+
+/**
+ * Attendance card selector returns slots with customer attendance, used to create attendance cards.
+ * The slector is a higher order function accepting and (optional) `sortCustomers` function, to be used
+ * as a compare function to sort customers inside the card. If ommited, doesn't sort.
+ * @param sortCustomers
+ * @returns
+ */
 export const getSlotsWithAttendance =
-  (sortBy = AttendanceSortBy.Alphabetically) =>
+  (sortCustomers: CompareCallback = () => 0) =>
   (state: LocalStore): Omit<AttendanceCardProps, "allCustomers">[] => {
     const {
       app: { calendarDay },
@@ -53,15 +62,10 @@ export const getSlotsWithAttendance =
           ...allCustomers[customerId],
           ...slotsAttendance[customerId],
         }))
-
-        // sort customers according to sorting method
-
-        .sort(
-          sortBy === AttendanceSortBy.Alphabetically
-            ? compareCustomerNames
-            : compareBookedIntervals
-        );
+        .sort(sortCustomers);
 
       return { ...slotsInDay[slotId], customers };
     });
   };
+
+export {};
