@@ -42,9 +42,15 @@ export const comparePeriods = (first: string, second: string): number => {
  * @returns
  */
 export const compareCustomerNames = (
-  { name: nm1, surname: sn1 }: Pick<Customer, "name" | "surname">,
-  { name: nm2, surname: sn2 }: Pick<Customer, "name" | "surname">
+  customer1: Pick<Customer, "name" | "surname">,
+  customer2: Pick<Customer, "name" | "surname">
 ) => {
+  const nm1 = customer1.name.toLocaleLowerCase();
+  const sn1 = customer1.surname.toLocaleLowerCase();
+
+  const nm2 = customer2.name.toLocaleLowerCase();
+  const sn2 = customer2.surname.toLocaleLowerCase();
+
   switch (true) {
     // compare surnames
     case sn1 > sn2:
