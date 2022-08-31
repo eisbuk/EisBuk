@@ -26,6 +26,8 @@ import {
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
+import { compareCustomerBookings } from "@/utils/sort";
+
 import { adminLinks } from "@/data/navigation";
 
 const DashboardPage: React.FC = () => {
@@ -40,7 +42,9 @@ const DashboardPage: React.FC = () => {
 
   const currentDate = useSelector(getCalendarDay);
 
-  const attendanceCards = useSelector(getSlotsWithAttendance());
+  const attendanceCards = useSelector(
+    getSlotsWithAttendance(compareCustomerBookings)
+  );
   const allCustomers = useSelector(getCustomersList(true));
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
