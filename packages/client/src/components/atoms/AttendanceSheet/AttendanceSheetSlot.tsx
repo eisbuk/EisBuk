@@ -25,7 +25,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
 
   return (
     <TableBody>
-      {Object.values(customers).map((customer) => {
+      {customers.map((customer) => {
         const bookedStartTime = customer.bookedInterval?.substring(0, 5);
         const bookedEndTime = customer.bookedInterval?.substring(6, 11);
         const attendedStartTime = customer.attendedInterval?.substring(0, 5);

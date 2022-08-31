@@ -5,11 +5,7 @@ import { LocalStore } from "@/types/store";
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
 import { getSlotTimespan } from "@/utils/helpers";
-import { CustomerWithAttendance } from "@/types/components";
-
-interface CompareCallback {
-  (c1: CustomerWithAttendance, c2: CustomerWithAttendance): number;
-}
+import { compareCustomerBookings } from "@/utils/sort";
 
 /**
  * Attendance card selector returns slots with customer attendance, used to create attendance cards.
@@ -18,54 +14,54 @@ interface CompareCallback {
  * @param sortCustomers
  * @returns
  */
-export const getSlotsWithAttendance =
-  (sortCustomers: CompareCallback = () => 0) =>
-  (state: LocalStore): Omit<AttendanceCardProps, "allCustomers">[] => {
-    const {
-      app: { calendarDay },
-      firestore: {
-        data: { customers: allCustomers, slotsByDay, attendance },
-      },
-    } = state;
+export const getSlotsWithAttendance = (
+  state: LocalStore
+): Omit<AttendanceCardProps, "allCustomers">[] => {
+  const {
+    app: { calendarDay },
+    firestore: {
+      data: { customers: allCustomers, slotsByDay, attendance },
+    },
+  } = state;
 
-    // exit early if no slots, attendances or customers exist in store
-    if (!slotsByDay || !attendance || !allCustomers) return [];
+  // exit early if no slots, attendances or customers exist in store
+  if (!slotsByDay || !attendance || !allCustomers) return [];
 
-    const dateISO = luxon2ISODate(calendarDay);
-    const monthString = dateISO.substring(0, 7);
+  const dateISO = luxon2ISODate(calendarDay);
+  const monthString = dateISO.substring(0, 7);
 
-    const slotsForMonth = slotsByDay[monthString];
+  const slotsForMonth = slotsByDay[monthString];
 
-    // exit early if no slots month empty
-    if (!slotsForMonth) return [];
+  // exit early if no slots month empty
+  if (!slotsForMonth) return [];
 
-    const slotsInDay = slotsForMonth[dateISO];
+  const slotsInDay = slotsForMonth[dateISO];
 
-    // exit early if slots day empty
-    if (!slotsInDay) return [];
+  // exit early if slots day empty
+  if (!slotsInDay) return [];
 
-    // get ids for all slots in a day sorted by slot's time
-    const joinIdTimestring = Object.keys(slotsInDay).map((id) => ({
-      id,
-      timestring: getSlotTimespan(slotsInDay[id].intervals),
-    }));
-    const slotIds = joinIdTimestring
-      .sort((a, b) => (a.timestring > b.timestring ? 1 : -1))
-      .map(({ id }) => id);
+  // get ids for all slots in a day sorted by slot's time
+  const joinIdTimestring = Object.keys(slotsInDay).map((id) => ({
+    id,
+    timestring: getSlotTimespan(slotsInDay[id].intervals),
+  }));
+  const slotIds = joinIdTimestring
+    .sort((a, b) => (a.timestring > b.timestring ? 1 : -1))
+    .map(({ id }) => id);
 
-    return slotIds.map((slotId) => {
-      const slotsAttendance = attendance[slotId]?.attendances;
-      const customers: AttendanceCardProps["customers"] = Object.keys(
-        slotsAttendance
-      )
-        .map((customerId) => ({
-          ...allCustomers[customerId],
-          ...slotsAttendance[customerId],
-        }))
-        .sort(sortCustomers);
+  return slotIds.map((slotId) => {
+    const slotsAttendance = attendance[slotId]?.attendances;
+    const customers: AttendanceCardProps["customers"] = Object.keys(
+      slotsAttendance
+    )
+      .map((customerId) => ({
+        ...allCustomers[customerId],
+        ...slotsAttendance[customerId],
+      }))
+      .sort(compareCustomerBookings);
 
-      return { ...slotsInDay[slotId], customers };
-    });
-  };
+    return { ...slotsInDay[slotId], customers };
+  });
+};
 
 export {};
