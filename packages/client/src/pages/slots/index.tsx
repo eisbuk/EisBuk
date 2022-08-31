@@ -41,7 +41,8 @@ import {
 } from "@/store/actions/copyPaste";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
+import { getSlotTimespan } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 import { adminLinks } from "@/data/navigation";
 

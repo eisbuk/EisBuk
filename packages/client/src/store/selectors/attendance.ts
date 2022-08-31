@@ -6,10 +6,7 @@ import { AttendanceSortBy } from "@/enums/other";
 
 import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
 
-import {
-  compareCustomers,
-  compareCustomersBookedIntervals,
-} from "@/utils/customers";
+import { compareBookedIntervals, compareCustomerNames } from "@/utils/sort";
 import { getSlotTimespan } from "@/utils/helpers";
 
 export const getSlotsWithAttendance =
@@ -61,8 +58,8 @@ export const getSlotsWithAttendance =
 
         .sort(
           sortBy === AttendanceSortBy.Alphabetically
-            ? compareCustomers
-            : compareCustomersBookedIntervals
+            ? compareCustomerNames
+            : compareBookedIntervals
         );
 
       return { ...slotsInDay[slotId], customers };
