@@ -1,13 +1,14 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 
 import { SlotInterface } from "@eisbuk/shared";
 
 import BookingCard from "../BookingCard";
 
 import { bookInterval, cancelBooking } from "@/store/actions/bookingOperations";
-import { useParams } from "react-router-dom";
-import { comparePeriods } from "@/utils/helpers";
+
+import { comparePeriods } from "@/utils/sort";
 
 export interface Props extends SlotInterface {
   /**

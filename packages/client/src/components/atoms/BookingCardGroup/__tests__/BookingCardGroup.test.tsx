@@ -13,7 +13,7 @@ import * as bookingOperations from "@/store/actions/bookingOperations";
 
 import { intervals, baseSlot } from "@/__testData__/slots";
 import { testDate } from "@/__testData__/date";
-import { comparePeriods } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 const secretKey = "secret-key";
 
