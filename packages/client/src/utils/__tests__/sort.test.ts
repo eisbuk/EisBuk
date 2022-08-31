@@ -1,4 +1,6 @@
-import { comparePeriods } from "../sort";
+import { Customer } from "@eisbuk/shared";
+
+import { compareCustomerNames, comparePeriods } from "../sort";
 
 interface ComparePeriodsTest {
   name: string;
@@ -6,40 +8,99 @@ interface ComparePeriodsTest {
   want: string[];
 }
 
-/** Table test func */
-function comparePeriodsTableTests(tests: ComparePeriodsTest[]) {
+const comparePeriodsTableTests = (tests: ComparePeriodsTest[]) => {
   tests.forEach(({ name, input, want }) => {
     test(name, () => {
       expect(input.sort(comparePeriods)).toEqual(want);
     });
   });
+};
+
+interface CompareCustomerNamesTest {
+  name: string;
+  input: Pick<Customer, "name" | "surname">[];
+  want: Pick<Customer, "name" | "surname">[];
 }
 
-describe("Test 'comparePeriods' sorting", () => {
-  comparePeriodsTableTests([
-    {
-      name: "should return earlier periods first",
-      input: ["13:30-14:00", "12:30-13:00", "13:00-13:30"],
-      want: ["12:30-13:00", "13:00-13:30", "13:30-14:00"],
-    },
-    {
-      name: "should return longer periods first",
-      input: ["13:00-14:00", "13:00-14:30", "13:00-13:30"],
-      want: ["13:00-14:30", "13:00-14:00", "13:00-13:30"],
-    },
-    {
-      name: "start time should take presedence over interval length",
-      input: ["13:30-15:00", "12:30-13:30", "12:00-12:30"],
-      want: ["12:00-12:30", "12:30-13:30", "13:30-15:00"],
-    },
-    {
-      name: "should not explode when sorting two equal periods",
-      input: ["13:00-15:00", "12:00-14:00", "13:00-15:00"],
-      want: ["12:00-14:00", "13:00-15:00", "13:00-15:00"],
-    },
-  ]);
+const compareCustomerNamesTableTests = (tests: CompareCustomerNamesTest[]) => {
+  tests.forEach(({ name, input, want }) => {
+    test(name, () => {
+      expect(input.sort(compareCustomerNames)).toEqual(want);
+    });
+  });
+};
 
-  test("Edge case: should return 0 if periods are the same (this will be used for composition of compare functions)", () => {
-    expect(comparePeriods("12:00", "12:00")).toEqual(0);
+describe("Sort utils tests", () => {
+  describe("Test 'comparePeriods' sorting", () => {
+    comparePeriodsTableTests([
+      {
+        name: "should return earlier periods first",
+        input: ["13:30-14:00", "12:30-13:00", "13:00-13:30"],
+        want: ["12:30-13:00", "13:00-13:30", "13:30-14:00"],
+      },
+      {
+        name: "should return longer periods first",
+        input: ["13:00-14:00", "13:00-14:30", "13:00-13:30"],
+        want: ["13:00-14:30", "13:00-14:00", "13:00-13:30"],
+      },
+      {
+        name: "start time should take presedence over interval length",
+        input: ["13:30-15:00", "12:30-13:30", "12:00-12:30"],
+        want: ["12:00-12:30", "12:30-13:30", "13:30-15:00"],
+      },
+      {
+        name: "should not explode when sorting two equal periods",
+        input: ["13:00-15:00", "12:00-14:00", "13:00-15:00"],
+        want: ["12:00-14:00", "13:00-15:00", "13:00-15:00"],
+      },
+    ]);
+
+    test("Edge case: should return 0 if periods are the same (this will be used for composition of compare functions)", () => {
+      expect(comparePeriods("12:00", "12:00")).toEqual(0);
+    });
+  });
+
+  describe("Test 'compareCustomerNames' sorting", () => {
+    compareCustomerNamesTableTests([
+      {
+        name: "should sort by surname in ascending order",
+        input: [
+          { name: "Afoo", surname: "Bbar" },
+          { name: "Cfoo", surname: "Abar" },
+          { name: "Bfoo", surname: "Cbar" },
+        ],
+        want: [
+          { name: "Cfoo", surname: "Abar" },
+          { name: "Afoo", surname: "Bbar" },
+          { name: "Bfoo", surname: "Cbar" },
+        ],
+      },
+      {
+        name: "should sort by name if surname the same",
+        input: [
+          { name: "Bbar", surname: "foo" },
+          { name: "Abar", surname: "foo" },
+          { name: "Cbar", surname: "foo" },
+        ],
+        want: [
+          { name: "Abar", surname: "foo" },
+          { name: "Bbar", surname: "foo" },
+          { name: "Cbar", surname: "foo" },
+        ],
+      },
+      {
+        name: "should be case insensitive",
+        input: [
+          { name: "abar", surname: "bfoo" },
+          { name: "bar", surname: "Afoo" },
+          { name: "Bbar", surname: "bfoo" },
+        ],
+        want: [
+          { name: "bar", surname: "Afoo" },
+          { name: "abar", surname: "bfoo" },
+          { name: "Bbar", surname: "bfoo" },
+        ],
+      },
+    ]);
   });
 });
