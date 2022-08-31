@@ -128,12 +128,18 @@ export const comparePeriods = (first: string, second: string): number => {
   const [firstStart, firstEnd] = first.split("-");
   const [secondStart, secondEnd] = second.split("-");
 
-  if (firstStart < secondStart) {
-    return -1;
-  } else if (firstStart > secondStart) {
-    return 1;
-  } else {
-    return firstEnd > secondEnd ? -1 : 1;
+  switch (true) {
+    case first === second:
+      return 0;
+
+    case firstStart < secondStart:
+      return -1;
+
+    case firstStart > secondStart:
+      return 1;
+
+    default:
+      return firstEnd > secondEnd ? -1 : 1;
   }
 };
 
