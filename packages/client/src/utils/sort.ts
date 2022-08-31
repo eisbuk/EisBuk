@@ -72,21 +72,6 @@ export const compareCustomerNames = (
 };
 
 /**
- *
- * `Array.protorype.sort()` callback function:
- *
- * Compares two `{ bookedInterval }` entries using the comparePeriods function,
- * declared above. Used to sort customers in attendance view for some cases.
- * @param param0
- * @param param1
- * @returns
- */
-export const compareBookedIntervals = (
-  { bookedInterval: bi1 }: Pick<CustomerWithAttendance, "bookedInterval">,
-  { bookedInterval: bi2 }: Pick<CustomerWithAttendance, "bookedInterval">
-) => comparePeriods(bi1 || "", bi2 || "");
-
-/**
  * `Array.protorype.sort()` callback function:
  *
  * Compares two customer with booked interval entries (`{ name, surname, bookedInterval }`)
@@ -104,7 +89,7 @@ export const compareCustomerBookings = (
 ): number => {
   const { bookedInterval: bi1 } = customer1;
   const { bookedInterval: bi2 } = customer2;
-  const intervalDeterminant = bi1 && bi2 ? comparePeriods(bi1, bi2) : 0;
+  const intervalDeterminant = comparePeriods(bi1 || "", bi2 || "");
 
   if (intervalDeterminant) {
     return intervalDeterminant;

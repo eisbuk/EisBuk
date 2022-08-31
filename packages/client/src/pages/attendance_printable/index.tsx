@@ -22,8 +22,6 @@ import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { compareBookedIntervals } from "@/utils/sort";
-
 import { adminLinks } from "@/data/navigation";
 
 const DashboardPage: React.FC = () => {
@@ -36,9 +34,7 @@ const DashboardPage: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const attendanceSlots = useSelector(
-    getSlotsWithAttendance(compareBookedIntervals)
-  );
+  const attendanceSlots = useSelector(getSlotsWithAttendance);
 
   const date = useSelector(getCalendarDay);
 
