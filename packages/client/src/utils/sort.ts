@@ -85,3 +85,30 @@ export const compareBookedIntervals = (
   { bookedInterval: bi1 }: Pick<CustomerWithAttendance, "bookedInterval">,
   { bookedInterval: bi2 }: Pick<CustomerWithAttendance, "bookedInterval">
 ) => comparePeriods(bi1 || "", bi2 || "");
+
+/**
+ * `Array.protorype.sort()` callback function:
+ *
+ * Compares two customer with booked interval entries (`{ name, surname, bookedInterval }`)
+ * using the `comparePeriods` function first, and if periods are the same, sorts using `compareCustomerNames`.
+ * @param customer1
+ * @param customer2
+ * @returns
+ */
+export const compareCustomerBookings = (
+  customer1: Pick<
+    CustomerWithAttendance,
+    "name" | "surname" | "bookedInterval"
+  >,
+  customer2: Pick<CustomerWithAttendance, "name" | "surname" | "bookedInterval">
+): number => {
+  const { bookedInterval: bi1 } = customer1;
+  const { bookedInterval: bi2 } = customer2;
+  const intervalDeterminant = bi1 && bi2 ? comparePeriods(bi1, bi2) : 0;
+
+  if (intervalDeterminant) {
+    return intervalDeterminant;
+  }
+
+  return compareCustomerNames(customer1, customer2);
+};

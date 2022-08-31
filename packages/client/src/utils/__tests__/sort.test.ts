@@ -1,6 +1,11 @@
+import { CustomerWithAttendance } from "@/types/components";
 import { Customer } from "@eisbuk/shared";
 
-import { compareCustomerNames, comparePeriods } from "../sort";
+import {
+  compareCustomerBookings,
+  compareCustomerNames,
+  comparePeriods,
+} from "../sort";
 
 interface ComparePeriodsTest {
   name: string;
@@ -26,6 +31,22 @@ const compareCustomerNamesTableTests = (tests: CompareCustomerNamesTest[]) => {
   tests.forEach(({ name, input, want }) => {
     test(name, () => {
       expect(input.sort(compareCustomerNames)).toEqual(want);
+    });
+  });
+};
+
+interface CompareCustomerBookingsTest {
+  name: string;
+  input: Pick<CustomerWithAttendance, "name" | "surname" | "bookedInterval">[];
+  want: Pick<CustomerWithAttendance, "name" | "surname" | "bookedInterval">[];
+}
+
+const compareCustomerBookingsTableTests = (
+  tests: CompareCustomerBookingsTest[]
+) => {
+  tests.forEach(({ name, input, want }) => {
+    test(name, () => {
+      expect(input.sort(compareCustomerBookings)).toEqual(want);
     });
   });
 };
@@ -99,6 +120,37 @@ describe("Sort utils tests", () => {
           { name: "bar", surname: "Afoo" },
           { name: "abar", surname: "bfoo" },
           { name: "Bbar", surname: "bfoo" },
+        ],
+      },
+    ]);
+  });
+
+  describe("Test 'compareCustomerBookings' sorting", () => {
+    compareCustomerBookingsTableTests([
+      {
+        name: "should sort by bookedInterval",
+        input: [
+          { name: "Foo", surname: "Abar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Bbar", bookedInterval: "09:00-10:00" },
+          { name: "Foo", surname: "Cbar", bookedInterval: "11:00-12:00" },
+        ],
+        want: [
+          { name: "Foo", surname: "Bbar", bookedInterval: "09:00-10:00" },
+          { name: "Foo", surname: "Abar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Cbar", bookedInterval: "11:00-12:00" },
+        ],
+      },
+      {
+        name: "if bookedInterval the same, should sort aplhabetically",
+        input: [
+          { name: "Foo", surname: "Bbar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Abar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Cbar", bookedInterval: "10:00-11:00" },
+        ],
+        want: [
+          { name: "Foo", surname: "Abar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Bbar", bookedInterval: "10:00-11:00" },
+          { name: "Foo", surname: "Cbar", bookedInterval: "10:00-11:00" },
         ],
       },
     ]);
