@@ -154,7 +154,7 @@ const createUsers = async (
       surname,
       email: toEmail(`${name}.${surname}@example.com`.toLowerCase()),
       phone: "+385992211333",
-      category: _.sample(Object.values(Category))!,
+      category: [_.sample(Object.values(Category))!],
       certificateExpiration: DateTime.local()
         .plus({ days: _.random(-40, 200) })
         .toISODate(),

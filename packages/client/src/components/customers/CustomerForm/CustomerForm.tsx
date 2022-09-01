@@ -39,7 +39,6 @@ import { currentTheme } from "@/themes";
 
 import DateInput from "@/components/atoms/DateInput";
 import CustomCheckbox from "./CustomCheckbox";
-import RadioSelection from "@/components/atoms/RadioSelection";
 
 import { isISODay } from "@/utils/date";
 import { isValidPhoneNumber } from "@/utils/helpers";
@@ -66,7 +65,10 @@ const CustomerValidation = Yup.object().shape({
     message: ValidationMessage.InvalidDate,
   }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  category: Yup.array()
+    .required(i18n.t(ValidationMessage.RequiredField))
+    .min(1, ValidationMessage.RequiredEntry)
+    .of(Yup.string()),
   subscriptionNumber: Yup.number(),
 });
 // #endregion validations
@@ -175,7 +177,15 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 Icon={Cake}
               />
 
-              <RadioSelection options={categoryOptions} name="category" />
+              <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-96">
+                {categoryOptions.map((cat) => (
+                  <CustomCheckbox
+                    name={cat.label}
+                    label={t(CategoryLabel[`${cat.label}`])}
+                    disabled={cat.disabled}
+                  ></CustomCheckbox>
+                ))}
+              </div>
 
               <DateInput
                 name="certificateExpiration"

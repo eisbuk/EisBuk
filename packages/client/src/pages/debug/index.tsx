@@ -136,6 +136,16 @@ const DebugPage: React.FC = () => {
             Migrate categories to explicit minors
           </DebugPageButton>
         </div>
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(
+              CloudFunction.MigrateCategoriesToArrays
+            )}
+            color={ButtonColor.Primary}
+          >
+            Migrate categories to array
+          </DebugPageButton>
+        </div>
       </div>
     </Layout>
   );

@@ -192,3 +192,37 @@ export const migrateCategoriesToExplicitMinors = functions
 
     return { success: true };
   });
+
+export const migrateCategoriesToArrays = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    if (!(await checkUser(organization, auth))) throwUnauth();
+
+    const batch = admin.firestore().batch();
+
+    const orgRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+    const customersRef = orgRef.collection(OrgSubCollection.Customers);
+
+    const allCustomers = await customersRef.get();
+
+    allCustomers.forEach((customer) => {
+      const data = customer.data() as Customer;
+      const category = data.category;
+
+      if (!Array.isArray(data.category)) {
+        functions.logger.info(`Converted customer: ${data.id}`);
+
+        batch.set(customer.ref, { category: [category] }, { merge: true });
+      }
+      // else {
+      //   functions.logger.error(`Cannot convert customer ${data.id} category as it already is an array`)
+      // }
+    });
+
+    await batch.commit();
+
+    return { success: true };
+  });

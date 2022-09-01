@@ -245,4 +245,59 @@ describe("Migrations", () => {
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
   });
+
+  describe("migrateCategoriesToArray", () => {
+    testWithEmulator("should change category to array", async () => {
+      const { organization } = await setUpOrganization();
+
+      const customer = {
+        ...saul,
+        category: saul.category[0],
+        id: "course-customer",
+      };
+      const customerRef = adminDb.doc(
+        getCustomerDocPath(organization, customer.id)
+      );
+      await customerRef.set(customer);
+
+      await invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
+        organization,
+      });
+
+      expect((await customerRef.get()).data()).toEqual({
+        ...customer,
+        category: [customer.category],
+      });
+    });
+    // Normally when you try to convert an array, firestore throws an INTERNAL error
+    testWithEmulator(
+      "should not throw an error if category is already an array",
+      async () => {
+        const { organization } = await setUpOrganization();
+
+        const customer = {
+          ...saul,
+          id: "course-customer",
+        };
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, customer.id)
+        );
+        await customerRef.set(customer);
+
+        await expect(
+          invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
+            organization,
+          })
+        ).resolves.not.toThrow();
+      }
+    );
+    testWithEmulator("should not allow calls to non-admins", async () => {
+      const { organization } = await setUpOrganization(false);
+      await expect(
+        invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
+          organization,
+        })
+      ).rejects.toThrow(HTTPSErrors.Unauth);
+    });
+  });
 });

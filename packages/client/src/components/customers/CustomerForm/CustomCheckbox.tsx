@@ -9,16 +9,17 @@ import makeStyles from "@mui/styles/makeStyles";
 interface Props {
   name: string;
   label: string;
+  disabled?: boolean;
 }
 
-const CustomCheckbox: React.FC<Props> = ({ name, label }) => {
+const CustomCheckbox: React.FC<Props> = ({ name, label, disabled = false }) => {
   const classes = useStyles();
   const [field] = useField({ name, type: "checkbox" });
 
   return (
     <FormControlLabel
       className={classes.container}
-      control={<Checkbox {...field} />}
+      control={<Checkbox disabled={disabled} {...field} />}
       label={label}
     />
   );

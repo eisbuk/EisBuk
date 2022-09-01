@@ -171,7 +171,7 @@ export interface CustomerBase {
   id: string;
   name: string;
   surname: string;
-  category: Category;
+  category: Category[];
   photoURL?: string;
   deleted?: boolean;
   extendedDate?: string;

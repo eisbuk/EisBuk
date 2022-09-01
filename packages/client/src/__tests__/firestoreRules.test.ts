@@ -555,7 +555,7 @@ describe("Firestore rules", () => {
       await assertSucceeds(
         setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
           ...saul,
-          category: Category.PreCompetitiveAdults,
+          category: [Category.PreCompetitiveAdults],
         })
       );
       // check delete
@@ -772,14 +772,14 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
               ...saul,
-              category: DeprecatedCategory.Adults,
+              category: [DeprecatedCategory.Adults],
             }),
         });
         // Should allow updating, even though category = "adults"
         await assertSucceeds(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
-            category: DeprecatedCategory.Adults,
+            category: [DeprecatedCategory.Adults],
             name: "Jimmy",
           })
         );
@@ -787,7 +787,7 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, "new-customer")), {
             ...saul,
-            category: DeprecatedCategory.Adults,
+            category: [DeprecatedCategory.Adults],
           })
         );
       }
