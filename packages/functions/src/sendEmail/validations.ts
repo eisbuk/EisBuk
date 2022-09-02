@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv";
 
-import { EmailAttachment, Email, EmailMessage } from "@eisbuk/shared";
+import { EmailAttachment, EmailMessage } from "@eisbuk/shared";
 
 import { SMTPPreferences } from "./types";
 
@@ -49,29 +49,12 @@ const EmailAttachmentSchema: JSONSchemaType<EmailAttachment> = {
 };
 
 /**
- * A validation schema for a `message` (`subject`, `html`, `attachments`) field of an email interface
- */
-const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
-  type: "object",
-  required: ["html", "subject"],
-  properties: {
-    subject: { type: "string" },
-    html: { type: "string" },
-    attachments: {
-      type: "array",
-      items: EmailAttachmentSchema,
-      nullable: true,
-    },
-  },
-};
-
-/**
  * Validation schema for a fully constructed email (to be send over SMTP),
  * including `to`, `from` and valid `message`
  */
-export const EmailSchema: JSONSchemaType<Email> = {
+export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
   type: "object",
-  required: ["from", "to", "message"],
+  required: ["from", "to", "subject"],
   properties: {
     from: {
       type: "string",
@@ -83,7 +66,13 @@ export const EmailSchema: JSONSchemaType<Email> = {
       pattern: emailPattern,
       errorMessage: __invalidEmailError,
     },
-    message: EmailMessageSchema,
+    subject: { type: "string" },
+    html: { type: "string" },
+    attachments: {
+      type: "array",
+      items: EmailAttachmentSchema,
+      nullable: true,
+    },
   },
 };
 // #region validations
