@@ -172,20 +172,23 @@ export const migrateCategoriesToExplicitMinors = functions
     // Enqueue customer updates
     allCustomers.forEach((customer) => {
       const data = customer.data() as Customer;
-      let category = data.category as CategoryUnion;
+      const categoryArray = data.category as CategoryUnion[];
 
-      switch (category) {
-        case DeprecatedCategory.Course:
-          category = Category.CourseMinors;
-          break;
-        case DeprecatedCategory.PreCompetitive:
-          category = Category.PreCompetitiveMinors;
-          break;
-        default:
-          // No changes needed, no updates batched
-          return;
-      }
-      batch.set(customer.ref, { category }, { merge: true });
+      categoryArray.forEach((category, i) => {
+        switch (category) {
+          case DeprecatedCategory.Course:
+            categoryArray[i] = Category.CourseMinors;
+            break;
+          case DeprecatedCategory.PreCompetitive:
+            categoryArray[i] = Category.PreCompetitiveMinors;
+            break;
+          default:
+            // No changes needed, no updates batched
+            return;
+        }
+      });
+
+      batch.set(customer.ref, { categoryArray }, { merge: true });
     });
 
     await batch.commit();
