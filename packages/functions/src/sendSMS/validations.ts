@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv";
 
-import { SMSRecipient, SMSAPIPayloed } from "./types";
+import { SMSRecipient, SMSAPIPayload } from "./types";
 
 const SMSRecipientSchema: JSONSchemaType<SMSRecipient> = {
   type: "object",
@@ -8,12 +8,12 @@ const SMSRecipientSchema: JSONSchemaType<SMSRecipient> = {
   required: ["msisdn"],
 };
 
-export const SMSAPIPayloadSchema: JSONSchemaType<SMSAPIPayloed> = {
+export const SMSAPIPayloadSchema: JSONSchemaType<SMSAPIPayload> = {
   type: "object",
-  required: ["message", "smsFrom", "recipients"],
+  required: ["message", "sender", "recipients"],
   properties: {
     message: { type: "string" },
-    smsFrom: {
+    sender: {
       type: "string",
       maxLength: 11,
       errorMessage:
