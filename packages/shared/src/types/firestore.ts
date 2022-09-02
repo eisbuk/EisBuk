@@ -293,14 +293,7 @@ export interface EmailAttachment {
   filename: string;
   content: string | Buffer;
 }
-/**
- * `message` portion of an email interface
- */
-export interface EmailMessage {
-  subject: string;
-  html: string;
-  attachments?: EmailAttachment[];
-}
+
 /**
  * Interface used as `payload` in email process-delivery.
  * It's basically a full email payload without the `from`
@@ -308,15 +301,19 @@ export interface EmailMessage {
  */
 export interface EmailPayload {
   to: string;
-  message: EmailMessage;
+  subject: string;
+  html: string;
+  attachments?: EmailAttachment[];
 }
+
 /**
  * A full email interface, including:
- * `to`, `from` and `message` (`subject`, `html`, `attachments`).
+ * `to`, `from`, `subject`, `html` and `attachments`.
  */
-export interface Email extends EmailPayload {
+export interface EmailMessage extends EmailPayload {
   from: string;
 }
+
 /**
  * A payload used in `sendEmail` cloud function.
  */
