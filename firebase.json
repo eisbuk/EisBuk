@@ -8,9 +8,7 @@
       "cd packages/functions && rushx build",
       "sed -i '/\"workspace:\\*/d\"' \"$RESOURCE_DIR/package.json\""
     ],
-    "postdeploy": [
-      "sed -i -e \\'s/  .dependencies.: {/  \"dependencies\": {\\n    \"@eisbuk\\/shared\": \"1.0.0\",/\\' \"$RESOURCE_DIR/package.json\""
-    ],
+    "postdeploy": ["git restore packages/functions/package.json"],
     "source": "packages/functions"
   },
   "hosting": [
