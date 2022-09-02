@@ -29,7 +29,7 @@ export const sendEmail = functions
         throwUnauth();
       }
 
-      checkRequiredFields(email, ["to", "message", "html", "subject"]);
+      checkRequiredFields(email, ["to", "html", "subject"]);
 
       // add email to firestore, firing data trigger
       await admin
