@@ -3,7 +3,6 @@ import {
   SlotInterface,
   SlotInterval,
   Customer,
-  Category,
 } from "@eisbuk/shared";
 
 // #region SlotForm
@@ -34,7 +33,7 @@ export const defaultCustomerFormValues: Omit<Customer, "secretKey" | "id"> = {
   email: "",
   phone: "",
   birthday: "",
-  category: ["" as Category],
+  category: [],
   certificateExpiration: "",
   covidCertificateReleaseDate: "",
   covidCertificateSuspended: false,

@@ -38,6 +38,8 @@ import { SvgComponent } from "@/types/components";
 import { currentTheme } from "@/themes";
 
 import DateInput from "@/components/atoms/DateInput";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
+
 import CustomCheckbox from "./CustomCheckbox";
 
 import { isISODay } from "@/utils/date";
@@ -110,7 +112,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     customer?.name
   } ${customer?.surname})`;
   const newCustomerTitle = t(CustomerFormTitle.NewCustomer);
-  const title = customer ? editCustomerTitle : newCustomerTitle;
+  const title = customer?.name ? editCustomerTitle : newCustomerTitle;
 
   return (
     <div
@@ -135,7 +137,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         validationSchema={CustomerValidation}
         onSubmit={onUpdateCustomer}
       >
-        {({ isSubmitting, setFieldValue, values }) => (
+        {({ isSubmitting, setFieldValue, values, errors }) => (
           <Form autoComplete="off">
             <div className="mb-6 flex flex-col gap-4 items-stretch">
               <input
@@ -177,14 +179,20 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 Icon={Cake}
               />
 
-              <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-96">
-                {categoryOptions.map((cat) => (
-                  <CustomCheckbox
-                    name={cat.label}
-                    label={t(CategoryLabel[`${cat.label}`])}
-                    disabled={cat.disabled}
-                  ></CustomCheckbox>
-                ))}
+              <div className="flex flex-col ">
+                <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-[30rem]">
+                  {categoryOptions.map((cat) => (
+                    <CustomCheckbox
+                      name="category"
+                      label={t(CategoryLabel[`${cat.label}`])}
+                      disabled={cat.disabled}
+                      value={cat.value}
+                    ></CustomCheckbox>
+                  ))}
+                </div>
+                <ErrorMessage className="w-full whitespace-normal !text-md !ml-1">
+                  {errors.category}
+                </ErrorMessage>
               </div>
 
               <DateInput
@@ -199,6 +207,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 className={classes.field}
                 Icon={LocalHospital}
               />
+
               <CustomCheckbox
                 name="covidCertificateSuspended"
                 label={t(CustomerLabel.CovidCertificateSuspended)}
@@ -287,6 +296,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   // The following is a workaround to not overrule the Mui base button styles
   // by Tailwind's preflight reset
   buttonPrimary: { backgroundColor: theme.palette.primary.main },
+  container: {
+    padding: `0 ${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(2)}px`,
+  },
 }));
 // #endregion styles
 
