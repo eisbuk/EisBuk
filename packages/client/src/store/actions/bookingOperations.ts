@@ -157,10 +157,12 @@ export const createCalendarEvents =
         })
       );
     } catch (error) {
-      dispatch({
-        message: i18n.t(NotificationMessage.Error),
-        vatiant: NotifVariant.Error,
-      });
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
