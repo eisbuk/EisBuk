@@ -14,7 +14,8 @@ import { LocalStore } from "@/types/store";
 import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
-import { isEmpty } from "@/utils/helpers";
+import { getSlotTimespan, isEmpty } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 interface CategoryFilter {
   (categories: CategoryUnion[]): boolean;
@@ -92,6 +93,7 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
   const bookedSlots = getBookedSlots(state);
   const customerData = getBookingsCustomer(state);
 
+  // Sort dates so that the final output is sorted
   const daysToRender = Object.keys(slotsMonth).sort((a, b) => (a < b ? -1 : 1));
   if (!daysToRender.length || !customerData) {
     return [];
@@ -99,12 +101,19 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
 
   return daysToRender.map((date) => ({
     date,
-    slots: Object.values(slotsMonth[date]).map((slot) =>
-      // If slot booked add interval to the return structure
-      bookedSlots[slot.id]
-        ? { ...slot, interval: bookedSlots[slot.id].interval }
-        : slot
-    ),
+    slots: Object.values(slotsMonth[date])
+      .sort(({ intervals: i1 }, { intervals: i2 }) => {
+        const ts1 = getSlotTimespan(i1).replace(" ", "");
+        const ts2 = getSlotTimespan(i2).replace(" ", "");
+
+        return comparePeriods(ts1, ts2);
+      })
+      .map((slot) =>
+        // If slot booked add interval to the return structure
+        bookedSlots[slot.id]
+          ? { ...slot, interval: bookedSlots[slot.id].interval }
+          : slot
+      ),
   }));
 };
 
