@@ -65,13 +65,15 @@ describe("Cloud functions", () => {
             organization,
             secretKey: saul.secretKey,
             to,
-            message: { html, subject },
+            html,
+            subject,
           })
         ).resolves.toEqual({
           data: {
             email: {
               to,
-              message: { html, subject },
+              html,
+              subject,
             },
             organization,
             success: true,
@@ -87,13 +89,13 @@ describe("Cloud functions", () => {
           httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ to, message: { html, subject } })
+          )({ to, html, subject })
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
 
     testWithEmulator(
-      "should reject if no recipient or message provided",
+      "should reject if no recipient or message content provided",
       async () => {
         const { organization } = await setUpOrganization();
         try {
@@ -103,24 +105,7 @@ describe("Cloud functions", () => {
           )({ organization });
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: to, message`
-          );
-        }
-      }
-    );
-    testWithEmulator(
-      "should reject if message has no html or subject provided",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        try {
-          await httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ organization, to, message: {} });
-        } catch (error) {
-          expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: html, subject`
+            `${HTTPSErrors.MissingParameter}: to, html, subject`
           );
         }
       }
