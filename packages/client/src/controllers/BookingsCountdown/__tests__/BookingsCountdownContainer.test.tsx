@@ -51,7 +51,7 @@ describe("BookingsCountdown", () => {
             [baseSlot.id]: {
               ...baseSlot,
               date: "2022-01-01",
-              categories: [saul.category],
+              categories: [...saul.category],
             },
           },
         },

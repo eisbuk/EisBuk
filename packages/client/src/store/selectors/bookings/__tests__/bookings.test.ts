@@ -43,7 +43,7 @@ const setupBookingsTest = ({
   date,
   slotsByDay,
 }: {
-  category: Category | DeprecatedCategory;
+  category: Category[] | DeprecatedCategory[];
   date: DateTime;
   slotsByDay: NonNullable<LocalStore["firestore"]["data"]["slotsByDay"]>;
 }): ReturnType<typeof getNewStore> => {
@@ -68,7 +68,7 @@ describe("Selectors ->", () => {
     test("should get slots for a month with respect to 'startDate' and provided category", () => {
       const date = DateTime.fromISO(currentMonthStartDate);
       const store = setupBookingsTest({
-        category: Category.Competitive,
+        category: [Category.Competitive],
         slotsByDay,
         date,
       });
@@ -101,7 +101,7 @@ describe("Selectors ->", () => {
       const date = DateTime.fromISO(baseSlot.date);
       const currentMonthString = baseSlot.date.substring(0, 7);
       const store = setupBookingsTest({
-        category: DeprecatedCategory.Adults,
+        category: [DeprecatedCategory.Adults],
         date,
         slotsByDay: {
           [currentMonthString]: {
@@ -127,7 +127,7 @@ describe("Selectors ->", () => {
       const date = DateTime.fromISO(baseSlot.date);
       const currentMonthString = baseSlot.date.substring(0, 7);
       const store = setupBookingsTest({
-        category: Category.CourseAdults,
+        category: [Category.CourseAdults],
         date,
         slotsByDay: {
           [currentMonthString]: {
@@ -308,7 +308,7 @@ describe("Selectors ->", () => {
   describe("getMonthEmptyForBooking", () => {
     interface TestParams {
       name: string;
-      category: Category;
+      category: Category[];
 
       slotsByDay: SlotsByDay;
       wantRes: boolean;
@@ -331,13 +331,13 @@ describe("Selectors ->", () => {
     runTableTests([
       {
         name: "should return true if there are no slots in a month",
-        category: Category.Competitive,
+        category: [Category.Competitive],
         slotsByDay: {},
         wantRes: true,
       },
       {
         name: "should return true if there are slots in a month, but not of the required category",
-        category: Category.Competitive,
+        category: [Category.Competitive],
         slotsByDay: {
           [baseSlot.date]: {
             ["diff-category-slot"]: {
@@ -350,7 +350,7 @@ describe("Selectors ->", () => {
       },
       {
         name: "should return false if there are slots available for booking in the required month for the required category",
-        category: Category.Competitive,
+        category: [Category.Competitive],
         slotsByDay: {
           [baseSlot.date]: {
             ["diff-category-slot"]: {
@@ -385,7 +385,7 @@ describe("Selectors ->", () => {
         }));
 
       const store = setupBookingsTest({
-        category: Category.Competitive,
+        category: [Category.Competitive],
         // Any day from the test month would do
         date: DateTime.fromISO(day3),
         slotsByDay: {

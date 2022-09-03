@@ -70,9 +70,8 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
             // if we're rendering category we're applying special formating as
             // translations of multi-word categories are "-" separeted lowercased words
             property === "category"
-              ? capitalizeFirst(t(CategoryLabel[customer.category])).replace(
-                  /-/g,
-                  " "
+              ? customer.category.map((cat) =>
+                  capitalizeFirst(t(CategoryLabel[cat])).replace(/-/g, " ")
                 )
               : customer[property] || "-";
 
@@ -84,6 +83,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
                 key={property}
               >
                 <span className={classes.bold}>{translatedLabel}: </span>
+                {/** @TODO fix this for category array*/}
                 <span className={classes.value}>{value}</span>
               </Typography>
               <div className={classes.divider} />

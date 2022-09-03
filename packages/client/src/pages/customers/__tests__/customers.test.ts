@@ -32,5 +32,5 @@ const CUSTOMER_COOKIECUTTER = {
   id: "id",
   name: "name",
   surname: "surname",
-  category: Category.Competitive,
+  category: [Category.Competitive],
 };

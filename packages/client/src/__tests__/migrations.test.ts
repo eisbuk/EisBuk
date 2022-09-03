@@ -196,12 +196,12 @@ describe("Migrations", () => {
 
         const courseCustomer = {
           ...saul,
-          category: DeprecatedCategory.Course,
+          category: [DeprecatedCategory.Course],
           id: "course-customer",
         };
         const preCompetitiveCustomer = {
           ...saul,
-          category: DeprecatedCategory.PreCompetitive,
+          category: [DeprecatedCategory.PreCompetitive],
           id: "pre-competitive-customer",
         };
 
@@ -227,11 +227,11 @@ describe("Migrations", () => {
         ]);
         expect(resCourse.data()).toEqual({
           ...courseCustomer,
-          category: Category.CourseMinors,
+          category: [Category.CourseMinors],
         });
         expect(resPreCompetitive.data()).toEqual({
           ...preCompetitiveCustomer,
-          category: Category.PreCompetitiveMinors,
+          category: [Category.PreCompetitiveMinors],
         });
       }
     );

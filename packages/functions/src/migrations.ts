@@ -188,7 +188,7 @@ export const migrateCategoriesToExplicitMinors = functions
         }
       });
 
-      batch.set(customer.ref, { categoryArray }, { merge: true });
+      batch.set(customer.ref, { category: categoryArray }, { merge: true });
     });
 
     await batch.commit();

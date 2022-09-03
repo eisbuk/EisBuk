@@ -121,24 +121,22 @@ export const EisbukAvatar: React.FC<
   let variant: Parameters<typeof Avatar>[0]["variant"];
   let additionalClass = classes[getColor({ name, surname })];
 
-  switch (category) {
-    // For Competitive
-    case Category.Competitive:
-      variant = "square";
-      break;
+  // For Competitive
 
+  if (category.includes(Category.Competitive)) {
+    variant = "square";
+  } else if (
     // For other minors
-    case Category.CourseMinors:
-    case Category.PreCompetitiveMinors:
-      variant = "rounded";
-      additionalClass += " " + classes.rounded;
-      break;
-
+    category.includes(Category.CourseMinors) ||
+    category.includes(Category.PreCompetitiveMinors)
+  ) {
+    variant = "rounded";
+    additionalClass += " " + classes.rounded;
+  } else {
     // For all adults (this will include backwards compatibility for deprecated "adults" category)
-    default:
-      variant = "circular";
-      break;
+    variant = "circular";
   }
+
   return wrap ? (
     wrapAvatar(
       <Avatar className={`${className} ${additionalClass}`} variant={variant}>
