@@ -16,7 +16,7 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ButtonContextType } from "@/enums/components";
 
-import { SlotsWeek } from "@/types/store";
+import { LocalStore, SlotsWeek } from "@/types/store";
 
 import SlotOperationButtons, {
   CopyButton,
@@ -51,13 +51,20 @@ const SlotsPage: React.FC = () => {
   const currentDate = useSelector(getCalendarDay);
   const date = currentDate.startOf("week");
 
-  useFirestoreSubscribe([OrgSubCollection.SlotsByDay]);
+  useFirestoreSubscribe([
+    OrgSubCollection.SlotsByDay,
+    OrgSubCollection.Attendance,
+  ]);
 
   const slotsToShow = useSelector(getAdminSlots);
   const daysToShow = Object.keys(slotsToShow);
 
   const weekToPaste = useSelector(getWeekFromClipboard);
   const dayToPaste = useSelector(getDayFromClipboard);
+
+  const attendance = useSelector(
+    (state: LocalStore) => state.firestore.data.attendance || {}
+  );
 
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
@@ -161,10 +168,17 @@ const SlotsPage: React.FC = () => {
                 {slotsForDay.map((slot) => {
                   const selected = checkSelected(slot.id, weekToPaste);
 
+                  // Disable deletion of slots which have already been booked by someone
+                  const slotAttendance = attendance[slot.id]?.attendances || {};
+                  const hasBookings = Boolean(
+                    Object.values(slotAttendance).length
+                  );
+
                   return (
                     <div key={slot.id} className="col-span-2 md:col-span-1">
                       <SlotCard
                         {...{ ...slot, selected }}
+                        disableDelete={hasBookings}
                         onClick={
                           canClick
                             ? handleSlotClick({ slot, selected })
