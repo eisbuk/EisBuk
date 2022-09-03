@@ -135,6 +135,8 @@
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
+    "DeleteSlotDisabledTitle": "Unable to delete",
+    "DeleteSlotDisabled": "Unable to delete the slot, as it has already been booked by one or more athletes",
 
     "NonReversible": "Questa azione non è reversibile",
 

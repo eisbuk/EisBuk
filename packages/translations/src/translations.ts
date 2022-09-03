@@ -146,6 +146,8 @@ export enum BookingNotesForm {
 export enum Prompt {
   DeleteCustomer = "Prompt.DeleteCustomer",
   DeleteSlot = "Prompt.DeleteSlot",
+  DeleteSlotDisabledTitle = "Prompt.DeleteSlotDisabledTitle",
+  DeleteSlotDisabled = "Prompt.DeleteSlotDisabled",
 
   NonReversible = "Prompt.NonReversible",
 
