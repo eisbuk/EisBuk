@@ -35,6 +35,10 @@ export interface SlotCardProps extends SlotInterface {
    */
   enableEdit?: boolean;
   /**
+   * Disable slot deletion (we use this if there are booked intervals on a particular slot)
+   */
+  disableDelete?: boolean;
+  /**
    * Click handler for the entire card, will default to empty function if none is provided
    */
   onClick?: (e: React.SyntheticEvent) => void;
@@ -49,6 +53,7 @@ export interface SlotCardProps extends SlotInterface {
 const SlotCard: React.FC<SlotCardProps> = ({
   selected,
   enableEdit,
+  disableDelete,
   onClick,
   ...slotData
 }) => {
@@ -157,6 +162,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
           {enableEdit && (
             <SlotOperationButtons
               contextType={ButtonContextType.Slot}
+              disableDelete={disableDelete}
               slot={slotData}
               className={classes.actionButtons}
             >
