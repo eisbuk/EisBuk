@@ -193,6 +193,7 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
+  Confirm = "ActionButton.Confirm",
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
   Send = "ActionButton.Send",
