@@ -132,13 +132,14 @@ service cloud.firestore {
             bookingData.date == bookedSlot.data.date &&
             // Check interval integrity
             bookingData.interval in bookedSlot.data.intervals     
+            bookedSlot.
           );
         }
         function checkBookedSlotCategory(slotId) {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
           
-          return customer.data.category in bookedSlot.data.categories
+          return bookedSlot.data.categories.hasAny(customer.data.category)
         }
         match /bookedSlots/{slotId} {
           // Anybody with secret key should be able to read and write (with valid data) to 'bookedSlots'
@@ -172,7 +173,7 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (allows updates even if "adults")
-          request.resource.data.category in getAllCategories() &&
+          request.resource.data.category.hasAny(getAllCategories()) &&
           // Check valid email
           (
             !("email" in request.resource.data) || 
@@ -198,7 +199,7 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (shouldn't allow creation with "adults" category)
-          request.resource.data.category in getCategories() &&
+          request.resource.data.category.hasOnly(getCategories()) &&
           // Check valid email
           (
             !("email" in request.resource.data) || 
