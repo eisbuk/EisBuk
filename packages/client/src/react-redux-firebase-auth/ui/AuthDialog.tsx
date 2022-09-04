@@ -6,8 +6,6 @@ import {
   isSignInWithEmailLink,
 } from "@firebase/auth";
 
-import "firebaseui/dist/firebaseui.css";
-
 import { useTranslation, AuthTitle } from "@eisbuk/translations";
 
 import AuthButton from "./atoms/AuthButton";
