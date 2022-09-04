@@ -285,5 +285,10 @@
     "Athlete": "Athlete",
     "Signature": "Signature",
     "Note": "Note"
+  },
+
+  "Forms": {
+    "ShowPassword": "show password",
+    "HidePassword": "hide password"
   }
 }

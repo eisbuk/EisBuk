@@ -315,3 +315,10 @@ export enum PrintableAttendance {
   Note = "PrintableAttendance.Note",
 }
 // #endregion alerts
+
+// #region forms
+export enum Forms {
+  ShowPassword = "Forms.ShowPassword",
+  HidePassword = "Forms.HidePassword",
+}
+// #endregion forms
