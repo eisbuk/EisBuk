@@ -51,7 +51,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
           {...props}
           size={ButtonSize.MD}
           color={ButtonColor.Primary}
-          className="uppercase"
+          className="uppercase hover:bg-cyan-600 active:bg-cyan-500"
         >
           {children}
         </Button>
@@ -62,7 +62,7 @@ export const ActionButton: React.FC<ActionButtonProps> = ({
         <Button
           {...props}
           size={ButtonSize.MD}
-          className="uppercase !text-cyan-600"
+          className="uppercase !text-cyan-600 hover:bg-gray-100 active:bg-gray-50"
         >
           {children}
         </Button>

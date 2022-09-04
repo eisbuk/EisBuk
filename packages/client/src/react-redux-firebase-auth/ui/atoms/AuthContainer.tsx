@@ -26,7 +26,9 @@ const Content: React.FC = ({ children }) => (
 
 /** Styled container for action buttons */
 export const ActionButtons: React.FC = ({ children }) => (
-  <div className="pt-2 px-6 pb-6 flex justify-end items-center">{children}</div>
+  <div className="pt-2 px-6 pb-6 flex justify-end items-center gap-2">
+    {children}
+  </div>
 );
 
 /** Styled component used as auth dialog footer container */
