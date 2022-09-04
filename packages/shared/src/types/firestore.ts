@@ -43,6 +43,10 @@ export interface OrganizationData {
    */
   smsTemplate?: string;
   /**
+   * A country code prefix for phone numbers
+   */
+  countryCode?: string;
+  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */
@@ -52,6 +56,12 @@ export interface OrganizationData {
    */
   location?: string;
 }
+
+/** Organization data copied over to a new collection shared publicly */
+export type PublicOrganizationData = Pick<
+  OrganizationData,
+  "displayName" | "location" | "emailFrom" | "countryCode"
+>;
 
 // #endregion organizations
 
@@ -358,6 +368,9 @@ export interface FirestoreSchema {
         [slotId: string]: SlotAttendnace;
       };
     };
+  };
+  [Collection.PublicOrgInfo]: {
+    [organization: string]: PublicOrganizationData;
   };
   [Collection.DeliveryQueues]: {
     [organization: string]: {
