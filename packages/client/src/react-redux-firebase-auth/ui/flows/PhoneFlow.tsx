@@ -53,7 +53,11 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   const { wrapSubmit, dialogError, removeDialogError } =
     useAuthFlow<FullFormValues>({});
 
+  /** Country code e.g. `+39` for Italy */
+  const countryCode = "+385";
+
   // #region form
+
   const initialValues = { phone: "", code: "" };
 
   const validationSchema = yup.object().shape({
@@ -61,7 +65,9 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
       .string()
       .required(t(ValidationMessage.RequiredField))
       .test({
-        test: (input) => isValidPhoneNumber(input),
+        // We don't forget to add the country code to the phone input
+        // when validating input
+        test: (input) => isValidPhoneNumber(countryCode + input),
         message: t(ValidationMessage.InvalidPhone),
       }),
     ...(authStep === PhoneAuthStep.EnterSMSCode
@@ -71,7 +77,11 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   // #endregion form
 
   const submitHandlers = {} as Record<PhoneAuthStep, SubmitHandler>;
-  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone }) => {
+  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone: p }) => {
+    // Add country code as prefix to input value
+    const phone = countryCode + p;
+
+    console.log("Submitting phone: ", phone);
     window.recaptchaVerifier = new RecaptchaVerifier(
       "submit-phone",
       {
@@ -120,15 +130,21 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
 
               {message && (
                 <TextMessage>
-                  <AuthTypography variant="body1">
-                    {t(message, { phone })}
+                  <AuthTypography variant="body">
+                    {t(message, { phone: countryCode + phone })}
                   </AuthTypography>
                 </TextMessage>
               )}
 
               <Content>
                 {fieldsLookup[authStep]?.map((inputProps) => (
-                  <AuthTextField {...inputProps} />
+                  <AuthTextField
+                    {...inputProps}
+                    // Add country code as prefix to phone input
+                    {...(inputProps.type === "tel"
+                      ? { prefix: countryCode }
+                      : {})}
+                  />
                 ))}
               </Content>
               <ActionButtons>
@@ -136,14 +152,14 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                   ({ label, nextStep, ...buttonProps }) => (
                     <ActionButton
                       key={label}
-                      {...{
-                        ...buttonProps,
+                      {...buttonProps}
+                      {
                         // add onClick handler only if nextStep specified
                         // (otherwise actions are controlled through `onSubmit`/`onReset`)
                         ...(nextStep
                           ? { onClick: () => setAuthStep(nextStep) }
-                          : {}),
-                      }}
+                          : {})
+                      }
                     >
                       {t(label)}
                     </ActionButton>
@@ -184,7 +200,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       name: "phone",
       id: "phone",
       label: "Phone",
-      type: "text",
+      type: "tel",
       inputMode: "tel",
     },
   ],
