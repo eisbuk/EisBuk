@@ -130,6 +130,7 @@ export enum OrganizationLabel {
   SmsTemplate = "OrganizationLabel.SmsTemplate",
   DisplayName = "OrganizationLabel.DisplayName",
   Location = "OrganizationLabel.Location",
+  CountryCode = "OrganizationLabel.CountryCode",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
   Email = "OrganizationLabel.Email",
