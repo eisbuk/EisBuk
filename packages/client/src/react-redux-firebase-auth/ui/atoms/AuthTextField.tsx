@@ -9,6 +9,7 @@ import {
   TextInputProps,
 } from "@eisbuk/ui";
 import { Eye, EyeOff } from "@eisbuk/svg";
+import i18n, { Forms } from "@eisbuk/translations";
 
 export type AuthTextFieldProps = FieldConfig<string> & Partial<TextInputProps>;
 
@@ -33,7 +34,9 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
 
   // show password visibility button only for password
   if (typeProp === "password") {
-    const hoverText = showText ? "hide password" : "show password";
+    const hoverText = showText
+      ? i18n.t(Forms.HidePassword)
+      : i18n.t(Forms.ShowPassword);
     const icon = showText ? <EyeOff /> : <Eye />;
 
     adornments["EndAdornment"] = (
