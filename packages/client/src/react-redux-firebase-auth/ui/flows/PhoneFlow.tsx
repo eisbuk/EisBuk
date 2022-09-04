@@ -27,6 +27,8 @@ import AuthErrorDialog from "../atoms/AuthErrorDialog";
 import useAuthFlow from "../../hooks/useAuthFlow";
 
 import { isValidPhoneNumber } from "@/utils/helpers";
+import { useSelector } from "react-redux";
+import { getCountryCode } from "@/store/selectors/orgInfo";
 
 declare global {
   interface Window {
@@ -54,7 +56,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
     useAuthFlow<FullFormValues>({});
 
   /** Country code e.g. `+39` for Italy */
-  const countryCode = "+385";
+  const countryCode = useSelector(getCountryCode);
 
   // #region form
 
