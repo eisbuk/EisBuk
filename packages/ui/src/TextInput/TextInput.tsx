@@ -83,7 +83,6 @@ const helpTextBaseClasses = ["mt-2", "text-sm", "min-h-[20px]"];
 const inputBaseClasses = [
   "block",
   "w-full",
-  "rounded-md",
   "border-0",
   "text-sm",
   "focus:outline-0",
