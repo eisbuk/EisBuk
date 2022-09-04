@@ -39,8 +39,12 @@ const AppContent: React.FC = () => {
   const isAdmin = useSelector(getIsAdmin);
 
   const subscribedCollections: CollectionSubscription[] = isAdmin
-    ? [Collection.Organizations, OrgSubCollection.Customers]
-    : [];
+    ? [
+        Collection.Organizations,
+        OrgSubCollection.Customers,
+        Collection.PublicOrgInfo,
+      ]
+    : [Collection.PublicOrgInfo];
 
   useFirestoreSubscribe(subscribedCollections);
   usePaginateFirestore();
