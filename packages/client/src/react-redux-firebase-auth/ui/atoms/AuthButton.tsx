@@ -27,7 +27,10 @@ const AuthButton: React.FC<ButtonProps> = ({
       <span className="table-cell align-middle">
         <img className="inline w-[18px] h-[18px]" src={icon} />
       </span>
-      <span style={{ color }} className="text-sm pl-4 align-middle table-cell">
+      <span
+        style={{ color }}
+        className="pl-4 text-sm font-semibold tracking-tight align-middle table-cell"
+      >
         {label}
       </span>
     </button>

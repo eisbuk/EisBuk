@@ -1,15 +1,13 @@
 import React from "react";
 
-import { ThemeProvider } from "@mui/material";
-
-import { muiDefault as defaultTheme } from "@/themes";
-
 /** Styled component used as auth dialog header container */
 const Header: React.FC = ({ children }) => (
   <div className="pt-6 px-6">
     {typeof children === "string" ? (
       // Provide default styling for title
-      <h1 className="text-xl font-medium leading-6 pb-4">{children}</h1>
+      <h1 className="text-xl font-semibold tracking-tight leading-6 pb-4">
+        {children}
+      </h1>
     ) : (
       children
     )}
@@ -56,14 +54,12 @@ const AuthContainer: React.FC<{
   className?: string;
   children: RenderFunction;
 }> = ({ children, ...props }) => (
-  <ThemeProvider theme={defaultTheme}>
-    <div
-      className="relative rounded shadow-[0px_3px_5px_-1px_rgba(0,0,0,0.20),0px_6px_10px_0px_rgba(0,0,0,0.14),0px_1px_18px_0px_rgba(0,0,0,0.12)]"
-      {...props}
-    >
-      {children({ Header, Content, Footer, TextMessage, ActionButtons })}
-    </div>
-  </ThemeProvider>
+  <div
+    className="relative rounded shadow-[0px_3px_5px_-1px_rgba(0,0,0,0.20),0px_6px_10px_0px_rgba(0,0,0,0.14),0px_1px_18px_0px_rgba(0,0,0,0.12)]"
+    {...props}
+  >
+    {children({ Header, Content, Footer, TextMessage, ActionButtons })}
+  </div>
 );
 
 export default AuthContainer;
