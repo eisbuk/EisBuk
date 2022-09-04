@@ -139,7 +139,7 @@ service cloud.firestore {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
           
-          return bookedSlot.data.categories.hasAny(customer.data.category)
+          return bookedSlot.data.categories.hasOnly(customer.data.category)
         }
         match /bookedSlots/{slotId} {
           // Anybody with secret key should be able to read and write (with valid data) to 'bookedSlots'
