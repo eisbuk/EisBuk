@@ -26,6 +26,8 @@ import CheckCircle from "./assets/check-circle.svg";
 import XCircle from "./assets/x-circle.svg";
 import QuestionMarkCircle from "./assets/question-mark-circle.svg";
 import Annotation from "./assets/annotation.svg";
+import Eye from "./assets/eye.svg";
+import EyeOff from "./assets/eye-off.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -61,4 +63,6 @@ export {
   XCircle,
   QuestionMarkCircle,
   Annotation,
+  Eye,
+  EyeOff,
 };
