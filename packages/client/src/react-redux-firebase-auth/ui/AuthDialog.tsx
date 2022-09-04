@@ -8,8 +8,6 @@ import {
 
 import "firebaseui/dist/firebaseui.css";
 
-import makeStyles from "@mui/styles/makeStyles";
-
 import { useTranslation, AuthTitle } from "@eisbuk/translations";
 
 import AuthButton from "./atoms/AuthButton";
@@ -27,7 +25,6 @@ enum AuthFlow {
 
 const AuthDialog: React.FC = () => {
   const { t } = useTranslation();
-  const classes = useStyles();
 
   const [authFlow, setAuthFlow] = useState<AuthFlow | null>(null);
 
@@ -61,7 +58,7 @@ const AuthDialog: React.FC = () => {
         <AuthContainer>
           {({ Content }) => (
             <Content>
-              <ul className={classes.buttonsContainer}>
+              <ul className="list-none my-4">
                 {buttons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
                     key={label}
@@ -77,14 +74,6 @@ const AuthDialog: React.FC = () => {
       );
   }
 };
-
-const useStyles = makeStyles(() => ({
-  buttonsContainer: {
-    listStyle: "none",
-    margin: "1rem 0",
-    padding: 0,
-  },
-}));
 
 export const buttons = [
   {
