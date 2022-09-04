@@ -1,7 +1,5 @@
 import React from "react";
 
-import makeStyles from "@mui/styles/makeStyles";
-
 interface ButtonProps {
   color?: string;
   backgroundColor?: string;
@@ -16,78 +14,39 @@ const AuthButton: React.FC<ButtonProps> = ({
   backgroundColor,
   color,
   onClick,
-}) => {
-  const classes = useStyles();
+}) => (
+  <li className="mb-4 list-none">
+    <button
+      className={buttonClasses.join(" ")}
+      onClick={onClick}
+      style={{
+        backgroundColor: backgroundColor || "#ffff",
+        color: color || "#0000",
+      }}
+    >
+      <span className="table-cell align-middle">
+        <img className="inline w-[18px] h-[18px]" src={icon} />
+      </span>
+      <span style={{ color }} className="text-sm pl-4 align-middle table-cell">
+        {label}
+      </span>
+    </button>
+  </li>
+);
 
-  return (
-    <li className={classes.listItem}>
-      <button
-        className={classes.authButton}
-        onClick={onClick}
-        style={{
-          backgroundColor: backgroundColor || "#ffff",
-          color: color || "#0000",
-        }}
-      >
-        <span className={classes.iconWrapper}>
-          <img className={classes.icon} src={icon} />
-        </span>
-        <span style={{ color }} className={classes.label}>
-          {label}
-        </span>
-      </button>
-    </li>
-  );
-};
-
-const useStyles = makeStyles(() => ({
-  authButton: {
-    fontWeight: 500,
-    lineHeight: "normal",
-    maxWidth: 220,
-    minHeight: 40,
-    padding: "0.5rem 1rem",
-    width: "100%",
-    textAlign: "left",
-    boxShadow: "0 2px 2px #00000024, 0 3px 1px -2px #0003, 0 1px 5px #0000001f",
-    border: "none",
-    borderRadius: 2,
-    position: "relative",
-    margin: 0,
-    minWidth: 64,
-    display: "inline-block",
-    fontFamily: "Roboto,Helvetica,Arial,sans-serif",
-    fontSize: 14,
-    textTransform: "uppercase",
-    letterSpacing: 0,
-    overflow: "hidden",
-    outline: 0,
-    cursor: "pointer",
-    textDecoration: "none",
-  },
-  listItem: {
-    margin: 0,
-    padding: 0,
-    marginBottom: 15,
-    textAlign: "center",
-    listStyle: "none",
-  },
-  iconWrapper: {
-    display: "table-cell",
-    verticalAlign: "middle",
-  },
-  icon: {
-    display: "inline",
-    height: 18,
-    width: 18,
-  },
-  label: {
-    fontSize: 14,
-    paddingLeft: 16,
-    textTransform: "none",
-    verticalAlign: "middle",
-    display: "table-cell",
-  },
-}));
+const buttonClasses = [
+  "block",
+  "w-full",
+  "max-w-[220px]",
+  "min-w-16",
+  "min-h-10",
+  "px-4",
+  "py-2",
+  "text-sm",
+  "font-medium",
+  "text-left",
+  "rounded-sm",
+  "shadow-[0px_2px_2px_#00000024,0_3px_1px_-2px_#0003,0_1px_5px_#0000001f]",
+];
 
 export default AuthButton;
