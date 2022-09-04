@@ -132,14 +132,13 @@ service cloud.firestore {
             bookingData.date == bookedSlot.data.date &&
             // Check interval integrity
             bookingData.interval in bookedSlot.data.intervals     
-            bookedSlot.
           );
         }
         function checkBookedSlotCategory(slotId) {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
           
-          return bookedSlot.data.categories.hasOnly(customer.data.category)
+          return customer.data.category.hasAny(bookedSlot.data.categories)
         }
         match /bookedSlots/{slotId} {
           // Anybody with secret key should be able to read and write (with valid data) to 'bookedSlots'
@@ -173,7 +172,7 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (allows updates even if "adults")
-          request.resource.data.category.hasAny(getAllCategories()) &&
+          request.resource.data.category.hasOnly(getAllCategories()) &&
           // Check valid email
           (
             !("email" in request.resource.data) || 
