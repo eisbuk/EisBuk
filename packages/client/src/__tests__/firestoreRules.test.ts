@@ -760,7 +760,7 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
-            category: "not-a-valid-category",
+            category: ["not-a-valid-category"],
           })
         );
       }
