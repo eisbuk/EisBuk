@@ -166,57 +166,9 @@ export const attendance: LocalStore["firestore"]["data"]["attendance"] = {
 };
 
 /**
- * The struct we're expecting to receive for selector's test result (for test date)
- */
-export const expectedStructByName: Omit<AttendanceCardProps, "allCustomers">[] =
-  [
-    {
-      ...slotsForADay["slot-0"],
-      customers: [
-        // customers should be sorted alphabetically (surname first)
-        {
-          // surname: goodman
-          ...saul,
-          ...attendance["slot-0"].attendances[saul.id],
-        },
-        {
-          // surname: white
-          ...walt,
-          ...attendance["slot-0"].attendances[walt.id],
-        },
-        {
-          // surname: yang
-          ...jian,
-          ...attendance["slot-0"].attendances[jian.id],
-        },
-      ],
-    },
-    {
-      ...slotsForADay["slot-1"],
-      customers: [
-        {
-          ...jian,
-          ...attendance["slot-1"].attendances[jian.id],
-        },
-      ],
-    },
-    {
-      ...slotsForADay["slot-2"],
-      customers: [
-        {
-          ...walt,
-          ...attendance["slot-2"].attendances[walt.id],
-        },
-      ],
-    },
-  ];
-/**
  * The struct we're expecting to receive for selector's test result (for test date) when sorted by bookedInterval
  */
-export const expectedStructByBookedInterval: Omit<
-  AttendanceCardProps,
-  "allCustomers"
->[] = [
+export const expectedStruct: Omit<AttendanceCardProps, "allCustomers">[] = [
   {
     ...slotsForADay["slot-0"],
     customers: [

@@ -17,7 +17,7 @@ import AttendanceCard from "../AttendanceCard";
 
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { comparePeriods } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 

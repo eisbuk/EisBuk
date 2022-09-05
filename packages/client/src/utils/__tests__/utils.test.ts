@@ -6,12 +6,7 @@ import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "@eisbuk/shared";
 
-import {
-  capitalizeFirst,
-  getOrgFromLocation,
-  isEmpty,
-  comparePeriods,
-} from "../helpers";
+import { capitalizeFirst, getOrgFromLocation, isEmpty } from "../helpers";
 import { isISODay } from "../date";
 
 describe("Helpers", () => {
@@ -86,26 +81,6 @@ describe("Date utils", () => {
 
       expect(isEmpty(["element"])).toEqual(false);
       expect(isEmpty({ foo: "bar" })).toEqual(false);
-    });
-  });
-
-  describe("`comparePeriods` function", () => {
-    test("should return earlier periods first", () => {
-      let original = ["13:30-14:00", "13:00-13:30"];
-      let expected = ["13:00-13:30", "13:30-14:00"];
-      expect(original.sort(comparePeriods)).toEqual(expected);
-      original = ["13:00-13:30", "12:30-13:00"];
-      expected = ["12:30-13:00", "13:00-13:30"];
-      expect(original.sort(comparePeriods)).toEqual(expected);
-    });
-
-    test("should return longer periods (starting at the same time) first", () => {
-      let original = ["13:00-14:00", "13:00-14:30"];
-      let expected = ["13:00-14:30", "13:00-14:00"];
-      expect(original.sort(comparePeriods)).toEqual(expected);
-      original = ["13:00-13:30", "13:00-14:00"];
-      expected = ["13:00-14:00", "13:00-13:30"];
-      expect(original.sort(comparePeriods)).toEqual(expected);
     });
   });
 });

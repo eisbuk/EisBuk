@@ -22,7 +22,8 @@ import {
   markAttendance,
 } from "@/store/actions/attendanceOperations";
 
-import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
+import { getSlotTimespan } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 import { ETheme } from "@/themes";
 

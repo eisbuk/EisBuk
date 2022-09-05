@@ -25,19 +25,17 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
 
   return (
     <TableBody>
-      {Object.values(customers).map((customer) => {
-        const bookedStartTime = customer.bookedInterval?.substring(0, 5);
-        const bookedEndTime = customer.bookedInterval?.substring(6, 11);
-        const attendedStartTime = customer.attendedInterval?.substring(0, 5);
-        const attendedEndTime = customer.attendedInterval?.substring(6, 11);
+      {customers.map((customer) => {
+        if (!customer.bookedInterval) {
+          return null;
+        }
+
+        const bookedStartTime = customer.bookedInterval.substring(0, 5);
+        const bookedEndTime = customer.bookedInterval.substring(6, 11);
 
         const bookedTotalHours = calculateIntervalDuration(
-          bookedStartTime || "",
-          bookedEndTime || ""
-        );
-        const attendedTotalHours = calculateIntervalDuration(
-          attendedStartTime || "",
-          attendedEndTime || ""
+          bookedStartTime,
+          bookedEndTime
         );
 
         return (
@@ -55,7 +53,7 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
                   : classes.offIceInterval
               }
             >
-              {bookedStartTime || attendedStartTime}
+              {bookedStartTime}
             </TableCell>
             <TableCell
               align="center"
@@ -65,10 +63,10 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
                   : classes.offIceInterval
               }
             >
-              {bookedEndTime || attendedEndTime}
+              {bookedEndTime}
             </TableCell>
             <TableCell align="center" className={classes.tableCell}>
-              {bookedTotalHours || attendedTotalHours}
+              {bookedTotalHours}
             </TableCell>
             <TableCell align="center" className={classes.tableCell}>
               {notes}

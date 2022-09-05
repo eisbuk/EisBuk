@@ -20,7 +20,7 @@ import SlotOperationButtons, {
 import SlotTime from "./SlotTime";
 import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 
-import { comparePeriods } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 import { getColorForSlotType } from "@/utils/theme";
 
 import { __slotId__ } from "./__testData__/testIds";
