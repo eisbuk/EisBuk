@@ -45,7 +45,7 @@ export const DeleteButton: React.FC = () => {
     return null;
   }
 
-  const { contextType, date, slot } = buttonGroupContext;
+  const { contextType, date, slot, disableDelete } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if rendered within `contextType === "slot"` but no value was provided for `slot` within the context
@@ -70,7 +70,13 @@ export const DeleteButton: React.FC = () => {
     // choose proper delete function based on `contextType`
     switch (contextType) {
       case ButtonContextType.Slot:
-        dispatch(openModal({ component: "DeleteSlotDialog", props: slot! }));
+        if (disableDelete) {
+          dispatch(
+            openModal({ component: "DeleteSlotDisabledDialog", props: slot! })
+          );
+        } else {
+          dispatch(openModal({ component: "DeleteSlotDialog", props: slot! }));
+        }
         break;
 
       case ButtonContextType.Day:
@@ -87,6 +93,7 @@ export const DeleteButton: React.FC = () => {
     <SlotOperationButton
       onClick={handleDelete}
       data-testid={__deleteButtonId__}
+      className={disableDelete ? "!text-gray-400" : ""}
     >
       <Trash />
     </SlotOperationButton>

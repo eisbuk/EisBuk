@@ -85,6 +85,23 @@ describe("SlotOperationButtons", () => {
       );
     });
 
+    test("should show 'DeleteSlotDisabledDialog' modal onClick if within \"slot\" context and delete disabled", () => {
+      render(
+        <SlotOperationButtons
+          contextType={ButtonContextType.Slot}
+          slot={baseSlot}
+          disableDelete
+        >
+          <DeleteButton />
+        </SlotOperationButtons>
+      );
+      // initiate delete
+      screen.getByTestId(__deleteButtonId__).click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({ component: "DeleteSlotDisabledDialog", props: baseSlot })
+      );
+    });
+
     test("should dispatch 'deleteSlotsDay' onClick if within \"day\" context", () => {
       render(
         <SlotOperationButtons

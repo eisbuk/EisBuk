@@ -14,6 +14,8 @@ type ContextParams = Partial<{
    * Slot to edit/delete/copy.
    * - should be truthy if the buttons are within `slot` context
    * - `undefined` otherwise
+   * - `disabledDelete` is an optional boolean property used to show delete-disabled dialog
+   *    rather than deleting the slot
    */
   slot: SlotInterface;
   /**
@@ -32,6 +34,11 @@ type ContextParams = Partial<{
     [ButtonContextType.Day]: boolean;
     [ButtonContextType.Week]: boolean;
   }>;
+  /**
+   * An optional boolean property used to show delete-disabled dialog
+   * rather than deleting on delete button click
+   */
+  disableDelete?: boolean;
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(

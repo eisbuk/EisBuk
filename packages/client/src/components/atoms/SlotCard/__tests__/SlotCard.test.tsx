@@ -85,6 +85,15 @@ describe("SlotCard", () => {
         openModal({ component: "DeleteSlotDialog", props: baseSlot })
       );
     });
+
+    test("should show delete-disabled dialog on delete button click if delete disabled", () => {
+      cleanup();
+      render(<SlotCard {...baseSlot} enableEdit disableDelete />);
+      screen.getByTestId(__deleteButtonId__).click();
+      expect(mockDispatch).toHaveBeenCalledWith(
+        openModal({ component: "DeleteSlotDisabledDialog", props: baseSlot })
+      );
+    });
   });
 
   describe("Test clicking on slot card", () => {
