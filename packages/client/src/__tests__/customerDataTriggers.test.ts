@@ -109,8 +109,8 @@ describe("Customer triggers", () => {
         condition: (data) =>
           Boolean(
             data &&
-              data.category.every((cat: Category) =>
-                updatedCategory.includes(cat)
+              updatedCategory.every((cat: Category) =>
+                data.category.includes(cat)
               ) &&
               data.deleted === true
           ),

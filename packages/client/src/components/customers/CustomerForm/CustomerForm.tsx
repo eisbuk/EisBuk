@@ -184,7 +184,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                   {categoryOptions.map((cat) => (
                     <CustomCheckbox
                       name="category"
-                      label={t(CategoryLabel[`${cat.label}`])}
+                      label={cat.label}
                       disabled={cat.disabled}
                       value={cat.value}
                     ></CustomCheckbox>
