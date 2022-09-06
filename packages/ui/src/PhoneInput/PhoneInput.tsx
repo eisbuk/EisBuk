@@ -22,26 +22,57 @@ const dummyCountryCodes = [
   },
 ];
 
-const PhoneInput: React.FC<Props> = ({ field: f, ...props }) => {
-  const [prefix, setPrefix] = useState("");
+const initCountryDropdown = (defaultCountry?: string) =>
+  !defaultCountry
+    ? dummyCountryCodes[0].value
+    : // Get dial code for a 'defaultCountry'
+      dummyCountryCodes.find(({ label }) => defaultCountry === label)?.value ||
+      // If country not found, return first country on the list (as default)
+      dummyCountryCodes[0].value;
 
-  const { onChange, value: v, name, ...field } = f as FieldInputProps<string>;
-  const value = v.replace(prefix, "");
+const PhoneInput: React.FC<Props> = ({
+  field: f,
+  defaultCountry,
+  ...props
+}) => {
+  const {
+    onChange,
+    value: fieldValue,
+    name,
+    ...field
+  } = f as FieldInputProps<string>;
 
+  const [countryCode, setCountryCode] = useState(
+    initCountryDropdown(defaultCountry)
+  );
+
+  // Get text input value by removing the country code from the full form value
+  const textValue = fieldValue.replace(countryCode, "");
+
+  // Update form value on text input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Call 'onChange' with the change event as is
-    // but create final value by prepending input with country prefix
-    const value = prefix + e.target.value;
+    const newTextValue = e.target.value;
+    const value = countryCode + newTextValue;
+
     onChange({ target: { name, value } });
+  };
+
+  // Update form value on country code change
+  const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newCountryCode = e.target.value;
+    const value = newCountryCode + textValue;
+
+    onChange({ target: { name, value } });
+    setCountryCode(newCountryCode);
   };
 
   return (
     <TextInput
       {...props}
-      field={{ ...field, value, name, onChange: handleChange }}
+      field={{ ...field, value: textValue, name, onChange: handleChange }}
       StartAdornment={
         <DropdownAdornment
-          onChange={(e) => setPrefix(e.target.value)}
+          onChange={handleCodeChange}
           label="country"
           options={dummyCountryCodes}
         />
