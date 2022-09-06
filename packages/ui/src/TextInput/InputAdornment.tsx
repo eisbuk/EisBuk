@@ -17,10 +17,12 @@ interface ButtonAdornmentProps
   disabled?: boolean;
 }
 
+/** We're allowing dropdown option to get passed as label/value pair or as a string (in place of both those values) */
+type DropdownOption = string | { label: string; value: string };
 interface DropdownAdornmentProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
-  options: string[];
+  options: DropdownOption[];
   disabled?: boolean;
 }
 
@@ -87,9 +89,17 @@ export const DropdownAdornment: React.FC<DropdownAdornmentProps> = ({
       className="focus:ring-cyan-700 focus:border-cyan-700 h-full py-0 pl-3 px-8 border-transparent bg-transparent text-gray-500 text-sm rounded-md"
       {...props}
     >
-      {options.map((opt) => (
-        <option>{opt}</option>
-      ))}
+      {options.map((opt) => {
+        // If string, value is the same as label
+        if (typeof opt === "string") return <option key={opt}>{opt}</option>;
+
+        // If label/value object, render accordingly
+        return (
+          <option value={opt.value} key={opt.label}>
+            {opt.label}
+          </option>
+        );
+      })}
     </select>
   </>
 );
