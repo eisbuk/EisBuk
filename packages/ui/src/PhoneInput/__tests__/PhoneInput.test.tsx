@@ -5,111 +5,116 @@ import { Field, Form, Formik, FormikConfig } from "formik";
 
 import PhoneInput from "../PhoneInput";
 
-describe("PhoneInput", () => {
-  // We only care about the submit valules for this test case
-  const mockSubmit = jest.fn();
-  const handleSubmit: FormikConfig<{ phone: string }>["onSubmit"] = (values) =>
-    mockSubmit(values);
+interface PhoneInputTest {
+  name: string;
+  initialValue: string;
+  defaultCountry?: string;
+  testAction: () => void;
+  wantValue: string;
+}
 
+const runPhoneInputTableTests = (tests: PhoneInputTest[]) =>
+  tests.forEach(
+    ({ name, initialValue, defaultCountry, testAction, wantValue }) => {
+      // We only care about the submit values for this test case
+      const mockSubmit = jest.fn();
+      const handleSubmit: FormikConfig<{ phone: string }>["onSubmit"] = (
+        values
+      ) => mockSubmit(values);
+
+      test(name, async () => {
+        // Setup test
+        render(
+          <Formik
+            initialValues={{ phone: initialValue }}
+            onSubmit={handleSubmit}
+          >
+            <Form>
+              <Field
+                name="phone"
+                component={PhoneInput}
+                defaultCountry={defaultCountry}
+              />
+              <button type="submit">Submit</button>
+            </Form>
+          </Formik>
+        );
+
+        // Run test action
+        testAction();
+
+        // Check results
+        screen.getByRole("button").click();
+        await waitFor(() => {
+          expect(mockSubmit).toHaveBeenCalledWith({ phone: wantValue });
+        });
+      });
+    }
+  );
+
+describe("PhoneInput", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test("should prepend phone input with the selected country dial code", async () => {
-    render(
-      <Formik initialValues={{ phone: "" }} onSubmit={handleSubmit}>
-        <Form>
-          <Field name="phone" component={PhoneInput} />
-          <button type="submit">Submit</button>
-        </Form>
-      </Formik>
-    );
+  runPhoneInputTableTests([
+    {
+      name: "should prepend phone input with the selected country dial code",
+      initialValue: "",
+      testAction: () => {
+        // Select 'HR', Croatia, dial code: "+385"
+        userEvent.selectOptions(
+          screen.getByRole("combobox"),
+          screen.getByRole("option", { name: "HR" })
+        );
 
-    // Select 'HR', Croatia, dial code: "+385"
-    userEvent.selectOptions(
-      screen.getByRole("combobox"),
-      screen.getByRole("option", { name: "HR" })
-    );
+        // Type in a generic phone number (we're expecting this to be prepended with "+385")
+        userEvent.type(screen.getByRole("textbox"), "991234567");
+      },
+      wantValue: "+385991234567",
+    },
 
-    // Type in a generic phone number (we're expecting this to be prepended with "+385")
-    userEvent.type(screen.getByRole("textbox"), "991234567");
+    {
+      name: "should update the value on dial code change",
+      initialValue: "+385991234567",
+      defaultCountry: "HR",
+      testAction: () => {
+        // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
+        userEvent.selectOptions(
+          screen.getByRole("combobox"),
+          screen.getByRole("option", { name: "IT" })
+        );
+      },
+      wantValue: "+39991234567",
+    },
 
-    screen.getByRole("button").click();
-    await waitFor(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({ phone: "+385991234567" });
-    });
-  });
-
-  test("should update the value on dial code change", async () => {
-    render(
-      <Formik
-        initialValues={{ phone: "+385991234567" }}
-        onSubmit={handleSubmit}
-      >
-        <Form>
-          <Field name="phone" component={PhoneInput} defaultCountry="HR" />
-          <button type="submit">Submit</button>
-        </Form>
-      </Formik>
-    );
-
-    // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
-    userEvent.selectOptions(
-      screen.getByRole("combobox"),
-      screen.getByRole("option", { name: "IT" })
-    );
-
-    screen.getByRole("button").click();
-    await waitFor(() => {
-      expect(mockSubmit).toHaveBeenCalledWith({ phone: "+39991234567" });
-    });
-  });
-
-  test("should not update the value on code change if there's no 'textValue'", async () => {
-    render(
-      <Formik initialValues={{ phone: "" }} onSubmit={handleSubmit}>
-        <Form>
-          <Field name="phone" component={PhoneInput} defaultCountry="HR" />
-          <button type="submit">Submit</button>
-        </Form>
-      </Formik>
-    );
-
-    // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
-    userEvent.selectOptions(
-      screen.getByRole("combobox"),
-      screen.getByRole("option", { name: "IT" })
-    );
-
-    screen.getByRole("button").click();
-    await waitFor(() => {
+    {
+      name: "should not update the value on code change if there's no 'textValue'",
+      initialValue: "",
+      defaultCountry: "HR",
+      testAction: () => {
+        // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
+        userEvent.selectOptions(
+          screen.getByRole("combobox"),
+          screen.getByRole("option", { name: "IT" })
+        );
+      },
       // The value should be unchanged as there's no value for phone number aside from country code
-      expect(mockSubmit).toHaveBeenCalledWith({ phone: "" });
-    });
-  });
+      wantValue: "",
+    },
 
-  test("if initialised with the value, should infer the country code from the value", async () => {
-    render(
-      <Formik
-        initialValues={{ phone: "+385991234567" }}
-        onSubmit={handleSubmit}
-      >
-        <Form>
-          <Field name="phone" component={PhoneInput} defaultCountry="IT" />
-          <button type="submit">Submit</button>
-        </Form>
-      </Formik>
-    );
-
-    const textField = screen.getByRole("textbox");
-    userEvent.clear(textField);
-    userEvent.type(textField, "991111111");
-
-    screen.getByRole("button").click();
-    await waitFor(() => {
+    {
+      name: "if initialised with the value, should infer the country code from the value",
+      initialValue: "+385991234567",
+      defaultCountry: "IT",
+      testAction: () => {
+        const textField = screen.getByRole("textbox");
+        userEvent.clear(textField);
+        userEvent.type(textField, "991111111");
+      },
       // Even though IT is set as 'defaultValue' for dial code, the field already had a 'HR' prefixed number
       // and should stay so if not manually changed
-      expect(mockSubmit).toHaveBeenCalledWith({ phone: "+385991111111" });
-    });
-  });
+      wantValue: "+385991111111",
+    },
+  ]);
 });
