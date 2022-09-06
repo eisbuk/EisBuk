@@ -64,4 +64,52 @@ describe("PhoneInput", () => {
       expect(mockSubmit).toHaveBeenCalledWith({ phone: "+39991234567" });
     });
   });
+
+  test("should not update the value on code change if there's no 'textValue'", async () => {
+    render(
+      <Formik initialValues={{ phone: "" }} onSubmit={handleSubmit}>
+        <Form>
+          <Field name="phone" component={PhoneInput} defaultCountry="HR" />
+          <button type="submit">Submit</button>
+        </Form>
+      </Formik>
+    );
+
+    // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
+    userEvent.selectOptions(
+      screen.getByRole("combobox"),
+      screen.getByRole("option", { name: "IT" })
+    );
+
+    screen.getByRole("button").click();
+    await waitFor(() => {
+      // The value should be unchanged as there's no value for phone number aside from country code
+      expect(mockSubmit).toHaveBeenCalledWith({ phone: "" });
+    });
+  });
+
+  test("if initialised with the value, should infer the country code from the value", async () => {
+    render(
+      <Formik
+        initialValues={{ phone: "+385991234567" }}
+        onSubmit={handleSubmit}
+      >
+        <Form>
+          <Field name="phone" component={PhoneInput} defaultCountry="IT" />
+          <button type="submit">Submit</button>
+        </Form>
+      </Formik>
+    );
+
+    const textField = screen.getByRole("textbox");
+    userEvent.clear(textField);
+    userEvent.type(textField, "991111111");
+
+    screen.getByRole("button").click();
+    await waitFor(() => {
+      // Even though IT is set as 'defaultValue' for dial code, the field already had a 'HR' prefixed number
+      // and should stay so if not manually changed
+      expect(mockSubmit).toHaveBeenCalledWith({ phone: "+385991111111" });
+    });
+  });
 });
