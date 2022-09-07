@@ -22,6 +22,7 @@ import CustomerProfileForm from "./Forms/CustomerProfile";
 import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
+import PhoneInput from "./PhoneInput";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -54,4 +55,5 @@ export {
   HoverText,
   IconButton,
   TextareaEditable,
+  PhoneInput,
 };
