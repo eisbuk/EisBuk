@@ -55,7 +55,6 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
 
   return (
     <Field
-      inputProps={{ inputMode }}
       name={name}
       label={name}
       type={type}
