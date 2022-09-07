@@ -1,3 +1,4 @@
+import { FieldProps } from "formik";
 import React from "react";
 
 /** We're allowing dropdown option to get passed as label/value pair or as a string (in place of both those values) */
@@ -58,5 +59,10 @@ const dropdownClasses = [
   "rounded-md",
   "cursor-pointer",
 ];
+
+export const FormikComponent: React.FC<FieldProps & DropdownProps> = ({
+  field,
+  ...props
+}) => <Dropdown {...field} {...props} />;
 
 export default Dropdown;
