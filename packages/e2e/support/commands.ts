@@ -119,7 +119,7 @@ export default (): void => {
       email,
       phone,
       birthday,
-      category,
+      categories,
       certificateExpiration,
       covidCertificateReleaseDate,
       covidCertificateSuspended,
@@ -140,8 +140,10 @@ export default (): void => {
     if (birthday) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(birthday);
     }
-    if (category) {
-      category.forEach((cat: Category) => cy.getAttrWith("value", cat).check());
+    if (categories) {
+      categories.forEach((cat: Category) =>
+        cy.getAttrWith("value", cat).check()
+      );
     }
     if (certificateExpiration) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy")
