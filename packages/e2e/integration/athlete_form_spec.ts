@@ -34,7 +34,7 @@ describe("add athlete", () => {
 
     cy.getAttrWith("name", "name").type(saul.name);
     cy.getAttrWith("name", "surname").type(saul.surname);
-    cy.getAttrWith("value", saul.category[0]).click();
+    cy.getAttrWith("value", saul.categories[0]).click();
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
