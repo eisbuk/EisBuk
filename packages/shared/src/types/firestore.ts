@@ -172,6 +172,8 @@ export interface CustomerBase {
   name: string;
   surname: string;
   categories: Category[];
+  /** @TODO remove when migration to categories is done */
+  category?: Category[];
   photoURL?: string;
   deleted?: boolean;
   extendedDate?: string;

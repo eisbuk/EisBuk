@@ -183,7 +183,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-[30rem]">
                   {categoryOptions.map((cat) => (
                     <CustomCheckbox
-                      name="category"
+                      name="categories"
                       label={cat.label}
                       disabled={cat.disabled}
                       value={cat.value}
