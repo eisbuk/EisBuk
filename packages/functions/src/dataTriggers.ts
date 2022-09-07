@@ -336,7 +336,7 @@ export const createPublicOrgInfo = functions
       "displayName",
       "location",
       "emailFrom",
-      "countryCode",
+      "defaultCountryCode",
     ].reduce(
       (acc, curr) => (orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc),
       {}

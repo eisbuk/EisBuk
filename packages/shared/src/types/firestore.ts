@@ -43,9 +43,10 @@ export interface OrganizationData {
    */
   smsTemplate?: string;
   /**
-   * A country code prefix for phone numbers
+   * A default country code (e.g. "IT") used to get the default dial code prefix
+   * for phone inputs (e.g. "+39")
    */
-  countryCode?: string;
+  defaultCountryCode?: string;
   /**
    * Record of flags inticating that given secrets exists
    * for a given organization
@@ -60,7 +61,7 @@ export interface OrganizationData {
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,
-  "displayName" | "location" | "emailFrom" | "countryCode"
+  "displayName" | "location" | "emailFrom" | "defaultCountryCode"
 >;
 
 // #endregion organizations
