@@ -69,7 +69,7 @@ const generalFields = [
     label: OrganizationLabel.DisplayName,
   },
   { name: "location", label: OrganizationLabel.Location },
-  { name: "countryCode", label: OrganizationLabel.CountryCode },
+  { name: "defaultCountryCode", label: OrganizationLabel.CountryCode },
 ];
 
 // #region validations
@@ -115,7 +115,7 @@ const OrganizationSettings: React.FC = () => {
     emailTemplate: "",
     existingSecrets: [],
     location: "",
-    countryCode: "",
+    defaultCountryCode: "",
     smsFrom: "",
     smsTemplate: "",
 

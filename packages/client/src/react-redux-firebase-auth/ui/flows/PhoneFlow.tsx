@@ -28,7 +28,7 @@ import useAuthFlow from "../../hooks/useAuthFlow";
 
 import { isValidPhoneNumber } from "@/utils/helpers";
 import { useSelector } from "react-redux";
-import { getCountryCode } from "@/store/selectors/orgInfo";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 declare global {
   interface Window {
@@ -56,7 +56,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
     useAuthFlow<FullFormValues>({});
 
   /** Country code e.g. `+39` for Italy */
-  const countryCode = useSelector(getCountryCode);
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
 
   // #region form
 
@@ -69,7 +69,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
       .test({
         // We don't forget to add the country code to the phone input
         // when validating input
-        test: (input) => isValidPhoneNumber(countryCode + input),
+        test: (input) => isValidPhoneNumber(input),
         message: t(ValidationMessage.InvalidPhone),
       }),
     ...(authStep === PhoneAuthStep.EnterSMSCode
@@ -79,11 +79,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   // #endregion form
 
   const submitHandlers = {} as Record<PhoneAuthStep, SubmitHandler>;
-  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone: p }) => {
-    // Add country code as prefix to input value
-    const phone = countryCode + p;
-
-    console.log("Submitting phone: ", phone);
+  submitHandlers[PhoneAuthStep.SignInWithPhone] = async ({ phone }) => {
     window.recaptchaVerifier = new RecaptchaVerifier(
       "submit-phone",
       {
@@ -133,7 +129,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
               {message && (
                 <TextMessage>
                   <AuthTypography variant="body">
-                    {t(message, { phone: countryCode + phone })}
+                    {t(message, { phone })}
                   </AuthTypography>
                 </TextMessage>
               )}
@@ -142,9 +138,9 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                 {fieldsLookup[authStep]?.map((inputProps) => (
                   <AuthTextField
                     {...inputProps}
-                    // Add country code as prefix to phone input
+                    // Pass default country code to phone input
                     {...(inputProps.type === "tel"
-                      ? { prefix: countryCode }
+                      ? { defaultCountryCode }
                       : {})}
                   />
                 ))}

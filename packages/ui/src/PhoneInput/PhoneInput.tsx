@@ -5,25 +5,26 @@ import TextInput, { DropdownAdornment, TextInputProps } from "../TextInput";
 
 import {
   countryCodeOptions,
-  extractCountryPrefix,
-  getDefaultCountryCode,
+  extractCountryDialCode,
+  getDefaultCountryDialCode,
 } from "./data";
 
 interface Props extends Omit<TextInputProps, "type" | "inputMode"> {
-  defaultCountry?: string;
+  defaultCountryCode?: string;
 }
 
 const initCountryDropdown = (
-  defaultCountry: string | undefined,
+  defaultCountryCode: string | undefined,
   fieldValue?: string
 ) => {
   // If field value (phone string) provided, and starts with country prefix
   // try and infer the country
-  let prefix = fieldValue?.startsWith("+") && extractCountryPrefix(fieldValue);
+  let prefix =
+    fieldValue?.startsWith("+") && extractCountryDialCode(fieldValue);
 
   // If no field value, or country not found set a default value
   if (!prefix) {
-    prefix = getDefaultCountryCode(defaultCountry);
+    prefix = getDefaultCountryDialCode(defaultCountryCode);
   }
 
   return prefix;
@@ -31,7 +32,7 @@ const initCountryDropdown = (
 
 const PhoneInput: React.FC<Props> = ({
   field: f,
-  defaultCountry,
+  defaultCountryCode,
   ...props
 }) => {
   const {
@@ -41,17 +42,17 @@ const PhoneInput: React.FC<Props> = ({
     ...field
   } = f as FieldInputProps<string | undefined>;
 
-  const [countryCode, setCountryCode] = useState(() =>
-    initCountryDropdown(defaultCountry, fieldValue)
+  const [dialCode, setDialCode] = useState(() =>
+    initCountryDropdown(defaultCountryCode, fieldValue)
   );
 
   // Get text input value by removing the country code from the full form value
-  const textValue = fieldValue?.replace(countryCode, "");
+  const textValue = fieldValue?.replace(dialCode, "");
 
   // Update form value on text input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTextValue = e.target.value;
-    const value = countryCode + newTextValue;
+    const value = dialCode + newTextValue;
 
     onChange({ target: { name, value } });
   };
@@ -60,7 +61,7 @@ const PhoneInput: React.FC<Props> = ({
   const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newCountryCode = e.target.value;
 
-    setCountryCode(newCountryCode);
+    setDialCode(newCountryCode);
 
     // Don't call on change if there's no phone value besides the dial code
     if (textValue) {
@@ -79,7 +80,7 @@ const PhoneInput: React.FC<Props> = ({
           label="country"
           options={countryCodeOptions}
           className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
-          value={countryCode}
+          value={dialCode}
         />
       }
     />
