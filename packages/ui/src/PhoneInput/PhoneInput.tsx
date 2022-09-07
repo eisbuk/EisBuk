@@ -1,7 +1,8 @@
 import { FieldInputProps } from "formik";
 import React, { useState } from "react";
 
-import TextInput, { DropdownAdornment, TextInputProps } from "../TextInput";
+import TextInput, { TextInputProps } from "../TextInput";
+import Dropdown from "../Dropdown";
 
 import {
   countryCodeOptions,
@@ -75,7 +76,7 @@ const PhoneInput: React.FC<Props> = ({
       {...props}
       field={{ ...field, value: textValue, name, onChange: handleChange }}
       StartAdornment={
-        <DropdownAdornment
+        <Dropdown
           onChange={handleCodeChange}
           label="country"
           options={countryCodeOptions}
