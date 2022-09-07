@@ -78,6 +78,7 @@ const PhoneInput: React.FC<Props> = ({
           onChange={handleCodeChange}
           label="country"
           options={countryCodeOptions}
+          className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
         />
       }
     />
