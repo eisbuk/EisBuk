@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { Field, FieldConfig } from "formik";
 
 import {
-  AddOnAdornment,
   HoverText,
   IconButton,
   TextInput,
   TextInputProps,
+  PhoneInput,
 } from "@eisbuk/ui";
 import { Eye, EyeOff } from "@eisbuk/svg";
 import i18n, { Forms } from "@eisbuk/translations";
@@ -21,7 +21,6 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
   name,
   type: typeProp,
   inputMode,
-  prefix,
   ...props
 }) => {
   const [showText, setShowText] = useState(false);
@@ -52,9 +51,7 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
     );
   }
 
-  if (prefix) {
-    adornments["StartAdornment"] = <AddOnAdornment label={prefix} />;
-  }
+  const component = inputMode === "tel" ? PhoneInput : TextInput;
 
   return (
     <Field
@@ -63,7 +60,7 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
       label={name}
       type={type}
       {...props}
-      component={TextInput}
+      component={component}
       onBlur={() => {}}
       {...adornments}
     />
