@@ -103,9 +103,9 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
   const filteredCustomers = useMemo(
     () =>
       allCustomers.filter(
-        ({ category, id }) =>
+        ({ categories, id }) =>
           categories.some((allowedCategory) =>
-            category.includes(allowedCategory)
+            categories.includes(allowedCategory)
           ) &&
           !attendedCustomers.find(({ id: customerId }) => customerId === id)
       ),

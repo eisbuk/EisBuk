@@ -98,7 +98,7 @@ describe("Customer triggers", () => {
       const updatedSaul = {
         ...saul,
         secretKey,
-        category: updatedCategory,
+        categories: updatedCategory,
         deleted: true,
       };
       await setDoc(saulDocRef, updatedSaul);
@@ -110,7 +110,7 @@ describe("Customer triggers", () => {
           Boolean(
             data &&
               updatedCategory.every((cat: Category) =>
-                data.category.includes(cat)
+                data.categories.includes(cat)
               ) &&
               data.deleted === true
           ),

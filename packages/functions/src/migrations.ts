@@ -172,15 +172,15 @@ export const migrateCategoriesToExplicitMinors = functions
     // Enqueue customer updates
     allCustomers.forEach((customer) => {
       const data = customer.data() as Customer;
-      const categoryArray = data.category as CategoryUnion[];
+      const categories = data.categories as CategoryUnion[];
 
-      categoryArray.forEach((category, i) => {
+      categories.forEach((category, i) => {
         switch (category) {
           case DeprecatedCategory.Course:
-            categoryArray[i] = Category.CourseMinors;
+            categories[i] = Category.CourseMinors;
             break;
           case DeprecatedCategory.PreCompetitive:
-            categoryArray[i] = Category.PreCompetitiveMinors;
+            categories[i] = Category.PreCompetitiveMinors;
             break;
           default:
             // No changes needed, no updates batched
@@ -188,7 +188,7 @@ export const migrateCategoriesToExplicitMinors = functions
         }
       });
 
-      batch.set(customer.ref, { category: categoryArray }, { merge: true });
+      batch.set(customer.ref, { categories }, { merge: true });
     });
 
     await batch.commit();
@@ -196,7 +196,7 @@ export const migrateCategoriesToExplicitMinors = functions
     return { success: true };
   });
 
-export const migrateCategoriesToArrays = functions
+export const customersToPluralCategories = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }, { auth }) => {
     if (!(await checkUser(organization, auth))) throwUnauth();
@@ -212,17 +212,17 @@ export const migrateCategoriesToArrays = functions
     const allCustomers = await customersRef.get();
 
     allCustomers.forEach((customer) => {
-      const data = customer.data() as Customer;
-      const category = data.category;
+      const data = customer.data();
 
-      if (!Array.isArray(data.category)) {
+      if (!data.category) return;
+      const { category, ...noCategoryData } = data;
+      if (!Array.isArray(category)) {
         functions.logger.info(`Converted customer: ${data.id}`);
 
-        batch.set(customer.ref, { category: [category] }, { merge: true });
+        batch.set(customer.ref, { ...noCategoryData, categories: [category] });
+      } else {
+        batch.set(customer.ref, { ...noCategoryData, categories: category });
       }
-      // else {
-      //   functions.logger.error(`Cannot convert customer ${data.id} category as it already is an array`)
-      // }
     });
 
     await batch.commit();

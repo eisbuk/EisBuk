@@ -139,7 +139,7 @@ const DebugPage: React.FC = () => {
         <div className="p-2">
           <DebugPageButton
             onClick={createCloudFunctionCaller(
-              CloudFunction.MigrateCategoriesToArrays
+              CloudFunction.CustomersToPluralCategories
             )}
             color={ButtonColor.Primary}
           >

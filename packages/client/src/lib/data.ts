@@ -33,7 +33,7 @@ export const defaultCustomerFormValues: Omit<Customer, "secretKey" | "id"> = {
   email: "",
   phone: "",
   birthday: "",
-  category: [],
+  categories: [],
   certificateExpiration: "",
   covidCertificateReleaseDate: "",
   covidCertificateSuspended: false,

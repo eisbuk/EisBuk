@@ -196,12 +196,12 @@ describe("Migrations", () => {
 
         const courseCustomer = {
           ...saul,
-          category: [DeprecatedCategory.Course],
+          categories: [DeprecatedCategory.Course],
           id: "course-customer",
         };
         const preCompetitiveCustomer = {
           ...saul,
-          category: [DeprecatedCategory.PreCompetitive],
+          categories: [DeprecatedCategory.PreCompetitive],
           id: "pre-competitive-customer",
         };
 
@@ -227,11 +227,11 @@ describe("Migrations", () => {
         ]);
         expect(resCourse.data()).toEqual({
           ...courseCustomer,
-          category: [Category.CourseMinors],
+          categories: [Category.CourseMinors],
         });
         expect(resPreCompetitive.data()).toEqual({
           ...preCompetitiveCustomer,
-          category: [Category.PreCompetitiveMinors],
+          categories: [Category.PreCompetitiveMinors],
         });
       }
     );
@@ -246,29 +246,34 @@ describe("Migrations", () => {
     });
   });
 
-  describe("migrateCategoriesToArray", () => {
-    testWithEmulator("should change category to array", async () => {
-      const { organization } = await setUpOrganization();
+  describe("customersToPluralCategories", () => {
+    testWithEmulator(
+      "should change customer's category field into an array instead of scalar",
+      async () => {
+        const { organization } = await setUpOrganization();
 
-      const customer = {
-        ...saul,
-        category: saul.category[0],
-        id: "course-customer",
-      };
-      const customerRef = adminDb.doc(
-        getCustomerDocPath(organization, customer.id)
-      );
-      await customerRef.set(customer);
+        const customer = {
+          ...saul,
+          category: saul.categories[0],
+          id: "course-customer",
+        };
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, customer.id)
+        );
+        await customerRef.set(customer);
 
-      await invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
-        organization,
-      });
+        await invokeFunction(CloudFunction.CustomersToPluralCategories)({
+          organization,
+        });
 
-      expect((await customerRef.get()).data()).toEqual({
-        ...customer,
-        category: [customer.category],
-      });
-    });
+        const { category, ...newCustomer } = customer;
+
+        expect((await customerRef.get()).data()).toEqual({
+          ...newCustomer,
+          categories: [category],
+        });
+      }
+    );
     // Normally when you try to convert an array, firestore throws an INTERNAL error
     testWithEmulator(
       "should not throw an error if category is already an array",
@@ -285,7 +290,7 @@ describe("Migrations", () => {
         await customerRef.set(customer);
 
         await expect(
-          invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
+          invokeFunction(CloudFunction.CustomersToPluralCategories)({
             organization,
           })
         ).resolves.not.toThrow();
@@ -294,7 +299,7 @@ describe("Migrations", () => {
     testWithEmulator("should not allow calls to non-admins", async () => {
       const { organization } = await setUpOrganization(false);
       await expect(
-        invokeFunction(CloudFunction.MigrateCategoriesToArrays)({
+        invokeFunction(CloudFunction.CustomersToPluralCategories)({
           organization,
         })
       ).rejects.toThrow(HTTPSErrors.Unauth);

@@ -66,7 +66,7 @@ export const EisbukAvatar: React.FC<
   name,
   surname,
   className,
-  category,
+  categories,
   certificateExpiration,
   covidCertificateReleaseDate,
   covidCertificateSuspended,
@@ -123,12 +123,12 @@ export const EisbukAvatar: React.FC<
 
   // For Competitive
 
-  if (category.includes(Category.Competitive)) {
+  if (categories.includes(Category.Competitive)) {
     variant = "square";
   } else if (
     // For other minors
-    category.includes(Category.CourseMinors) ||
-    category.includes(Category.PreCompetitiveMinors)
+    categories.includes(Category.CourseMinors) ||
+    categories.includes(Category.PreCompetitiveMinors)
   ) {
     variant = "rounded";
     additionalClass += " " + classes.rounded;

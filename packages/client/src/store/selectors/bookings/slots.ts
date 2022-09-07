@@ -119,10 +119,10 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
  */
 export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const date = getCalendarDay(state);
-  const category = getBookingsCustomer(state)?.category;
+  const categories = getBookingsCustomer(state)?.categories;
 
   // Return early if no category found in store
-  if (!category) {
+  if (!categories) {
     return {};
   }
 
@@ -139,7 +139,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   return Object.keys(slotsForAMonth).reduce((acc, date) => {
     const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
       slotsForAMonth[date],
-      category
+      categories
     );
 
     // Add date to the acc object only if date not empty

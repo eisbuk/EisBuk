@@ -499,7 +499,7 @@ describe("Firestore rules", () => {
             setDoc(doc(db, getSlotDocPath(organization, baseSlot.id)), {
               ...testSlot,
               // saul is category = "competitive"
-              category: [Category.PreCompetitiveAdults],
+              categories: [Category.PreCompetitiveAdults],
             }),
         });
         await assertFails(
@@ -555,7 +555,7 @@ describe("Firestore rules", () => {
       await assertSucceeds(
         setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
           ...saul,
-          category: [Category.PreCompetitiveAdults],
+          categories: [Category.PreCompetitiveAdults],
         })
       );
       // check delete
@@ -588,14 +588,14 @@ describe("Firestore rules", () => {
       async () => {
         const { db, organization } = await getTestEnv({});
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { name, surname, category } = saul;
+        const { name, surname, categories } = saul;
         const minimalCustomer: Omit<Omit<Customer, "id">, "secretKey"> = {
           // customer form uses `customerTemplate` as initial/fallback values
           // so it's necessary for this to be allowed to submit (with providing basic data ofc)
           ...defaultCustomerFormValues,
           name,
           surname,
-          category,
+          categories,
         };
         await assertSucceeds(
           setDoc(
@@ -760,7 +760,7 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
-            category: ["not-a-valid-category"],
+            categories: ["not-a-valid-category"],
           })
         );
       }
@@ -772,14 +772,14 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
               ...saul,
-              category: [DeprecatedCategory.Adults],
+              categories: [DeprecatedCategory.Adults],
             }),
         });
         // Should allow updating, even though category = "adults"
         await assertSucceeds(
           setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
             ...saul,
-            category: [DeprecatedCategory.Adults],
+            categories: [DeprecatedCategory.Adults],
             name: "Jimmy",
           })
         );
@@ -787,7 +787,7 @@ describe("Firestore rules", () => {
         await assertFails(
           setDoc(doc(db, getCustomerDocPath(organization, "new-customer")), {
             ...saul,
-            category: [DeprecatedCategory.Adults],
+            categories: [DeprecatedCategory.Adults],
           })
         );
       }

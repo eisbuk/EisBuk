@@ -67,7 +67,7 @@ const CustomerValidation = Yup.object().shape({
     message: ValidationMessage.InvalidDate,
   }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.array()
+  categories: Yup.array()
     .required(i18n.t(ValidationMessage.RequiredField))
     .min(1, ValidationMessage.RequiredEntry)
     .of(Yup.string()),
@@ -191,7 +191,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                   ))}
                 </div>
                 <ErrorMessage className="w-full whitespace-normal !text-md !ml-1">
-                  {errors.category}
+                  {errors.categories}
                 </ErrorMessage>
               </div>
 

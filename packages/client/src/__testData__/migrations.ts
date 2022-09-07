@@ -46,11 +46,11 @@ export const mixedSlots = {
  * A helper function we're using to extract only the `CustomerBase` data from customer (for customers booking data)
  */
 const extractCustomerBase = ({
-  category,
+  categories,
   id,
   name,
   surname,
-}: Customer): CustomerBase => ({ category, id, name, surname });
+}: Customer): CustomerBase => ({ categories, id, name, surname });
 
 const { id: gusId, ...gusBase } = extractCustomerBase(gus);
 const { id: waltId, ...waltBase } = extractCustomerBase(walt);

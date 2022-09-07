@@ -66,7 +66,7 @@ const bookingId = "booked-slot";
 const testSlot = {
   ...baseSlot,
   id: bookingId,
-  categories: saul.category,
+  categories: saul.categories,
 };
 
 // #endregion testData
@@ -120,7 +120,6 @@ describe("Booking Notifications", () => {
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
         );
-        console.log({ bookedSlotsForCustomer });
         // the updated `bookedSlots` should contain 2 default entries and one new (testBooking)
         expect(bookedSlotsForCustomer.docs.length).toEqual(3);
         // check the updated booking
