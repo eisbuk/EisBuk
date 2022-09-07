@@ -57,6 +57,20 @@ describe("PhoneInput", () => {
     jest.clearAllMocks();
   });
 
+  test("should initialise the dropdown with the 'defaultCountry' used as default value", () => {
+    render(
+      <Formik initialValues={{ phone: "" }} onSubmit={() => {}}>
+        <Form>
+          <Field name="phone" component={PhoneInput} defaultCountry="HR" />
+          <button type="submit">Submit</button>
+        </Form>
+      </Formik>
+    );
+
+    // Default country should immediately be shown as a value of dropdown
+    expect(screen.getByRole("combobox")).toHaveProperty("value", "+385");
+  });
+
   runPhoneInputTableTests([
     {
       name: "should prepend phone input with the selected country dial code",
