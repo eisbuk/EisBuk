@@ -8,5 +8,4 @@ export {
   IconAdornment,
   AddOnAdornment,
   ButtonAdornment,
-  DropdownAdornment,
 } from "./InputAdornment";
