@@ -3,44 +3,15 @@ import React, { useState } from "react";
 
 import TextInput, { DropdownAdornment, TextInputProps } from "../TextInput";
 
+import {
+  countryCodeOptions,
+  extractCountryPrefix,
+  getDefaultCountryCode,
+} from "./data";
+
 interface Props extends Omit<TextInputProps, "type" | "inputMode"> {
   defaultCountry?: string;
 }
-
-const dummyCountryCodes = [
-  {
-    label: "IT",
-    value: "+39",
-  },
-  {
-    label: "FR",
-    value: "+33",
-  },
-  {
-    label: "HR",
-    value: "+385",
-  },
-];
-
-const findCountryByPrefix = (prefix: string) =>
-  dummyCountryCodes.find(({ value }) => value === prefix);
-
-const getCountryPrefix = (country: string) =>
-  dummyCountryCodes.find(({ label }) => label === country)?.value || "";
-
-const extractCountryPrefix = (phone: string) => {
-  const country =
-    // Try matching countries with 3 number prefix
-    findCountryByPrefix(phone.substring(0, 4)) ||
-    // If not found, try matching countries with 2 number prefix
-    findCountryByPrefix(phone.substring(0, 3));
-
-  if (country) {
-    return country.value;
-  }
-
-  return "";
-};
 
 const initCountryDropdown = (
   defaultCountry: string | undefined,
@@ -52,12 +23,7 @@ const initCountryDropdown = (
 
   // If no field value, or country not found set a default value
   if (!prefix) {
-    prefix = !defaultCountry
-      ? dummyCountryCodes[0].value
-      : // Get dial code for a 'defaultCountry'
-        getCountryPrefix(defaultCountry) ||
-        // If country prefix not found, return first country on the list (as default)
-        dummyCountryCodes[0].value;
+    prefix = getDefaultCountryCode(defaultCountry);
   }
 
   return prefix;
@@ -73,14 +39,14 @@ const PhoneInput: React.FC<Props> = ({
     value: fieldValue,
     name,
     ...field
-  } = f as FieldInputProps<string>;
+  } = f as FieldInputProps<string | undefined>;
 
   const [countryCode, setCountryCode] = useState(() =>
     initCountryDropdown(defaultCountry, fieldValue)
   );
 
   // Get text input value by removing the country code from the full form value
-  const textValue = fieldValue.replace(countryCode, "");
+  const textValue = fieldValue?.replace(countryCode, "");
 
   // Update form value on text input change
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,7 +77,7 @@ const PhoneInput: React.FC<Props> = ({
         <DropdownAdornment
           onChange={handleCodeChange}
           label="country"
-          options={dummyCountryCodes}
+          options={countryCodeOptions}
         />
       }
     />

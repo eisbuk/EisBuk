@@ -65,7 +65,7 @@ describe("PhoneInput", () => {
         // Select 'HR', Croatia, dial code: "+385"
         userEvent.selectOptions(
           screen.getByRole("combobox"),
-          screen.getByRole("option", { name: "HR" })
+          screen.getByRole("option", { name: "HR (+385)" })
         );
 
         // Type in a generic phone number (we're expecting this to be prepended with "+385")
@@ -82,7 +82,7 @@ describe("PhoneInput", () => {
         // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
         userEvent.selectOptions(
           screen.getByRole("combobox"),
-          screen.getByRole("option", { name: "IT" })
+          screen.getByRole("option", { name: "IT (+39)" })
         );
       },
       wantValue: "+39991234567",
@@ -96,7 +96,7 @@ describe("PhoneInput", () => {
         // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
         userEvent.selectOptions(
           screen.getByRole("combobox"),
-          screen.getByRole("option", { name: "IT" })
+          screen.getByRole("option", { name: "IT (+39)" })
         );
       },
       // The value should be unchanged as there's no value for phone number aside from country code
