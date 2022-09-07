@@ -75,6 +75,7 @@ export const DropdownAdornment: React.FC<DropdownAdornmentProps> = ({
   options,
   label,
   disabled = false,
+  className,
   ...props
 }) => (
   <>
@@ -86,7 +87,7 @@ export const DropdownAdornment: React.FC<DropdownAdornmentProps> = ({
       name={label}
       autoComplete={label}
       disabled={disabled}
-      className="focus:ring-cyan-700 focus:border-cyan-700 h-full py-0 pl-3 px-8 border-transparent bg-transparent text-gray-500 text-sm rounded-md"
+      className={[...dropdownClasses, className].join(" ")}
       {...props}
     >
       {options.map((opt) => {
@@ -103,3 +104,18 @@ export const DropdownAdornment: React.FC<DropdownAdornmentProps> = ({
     </select>
   </>
 );
+
+const dropdownClasses = [
+  "focus:ring-0",
+  "focus:outline-none",
+  "h-full",
+  "py-0",
+  "pl-3",
+  "px-8",
+  "text-center",
+  "border-transparent",
+  "bg-transparent",
+  "text-gray-500",
+  "text-sm",
+  "rounded-md",
+];
