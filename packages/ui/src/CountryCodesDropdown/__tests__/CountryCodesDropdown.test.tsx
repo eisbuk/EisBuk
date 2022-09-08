@@ -13,7 +13,7 @@ describe("CountryCodesDropdown", () => {
     const onChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
       mockOnChange(e.target.value);
 
-    render(<CountryCodesDropdown label="countries" onChange={onChange} />);
+    render(<CountryCodesDropdown onChange={onChange} />);
 
     userEvent.selectOptions(
       screen.getByRole("combobox"),

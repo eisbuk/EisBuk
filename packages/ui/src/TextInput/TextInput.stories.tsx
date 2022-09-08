@@ -93,7 +93,7 @@ export const Default = (): JSX.Element => (
           EndAdornment={
             <Dropdown
               className="!border-none"
-              label="country"
+              name="country"
               options={["US", "CA", "EU"]}
             />
           }

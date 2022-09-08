@@ -5,26 +5,25 @@ import React from "react";
 export type DropdownOption = string | { label: string; value: string };
 export interface DropdownProps
   extends React.SelectHTMLAttributes<HTMLSelectElement> {
-  label: string;
   options: DropdownOption[];
   disabled?: boolean;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
   options,
-  label,
   disabled = false,
   className,
+  name,
   ...props
 }) => (
   <>
-    <label htmlFor={label} className="sr-only">
-      {label}
+    <label htmlFor={name} className="sr-only">
+      {name}
     </label>
     <select
-      id={label}
-      name={label}
-      autoComplete={label}
+      id={name}
+      name={name}
+      autoComplete={name}
       disabled={disabled}
       className={[...dropdownClasses, className].join(" ")}
       {...props}

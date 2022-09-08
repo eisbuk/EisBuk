@@ -140,7 +140,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                     {...inputProps}
                     // Pass default country code to phone input
                     {...(inputProps.type === "tel"
-                      ? { defaultCountryCode }
+                      ? { defaultDialCode: defaultCountryCode }
                       : {})}
                   />
                 ))}
