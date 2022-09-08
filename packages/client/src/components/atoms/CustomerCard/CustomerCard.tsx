@@ -52,7 +52,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
     const renderOrder: (keyof Customer)[] = [
       "name",
       "surname",
-      "category",
+      "categories",
       "email",
       "phone",
       "birthday",
@@ -69,11 +69,16 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
           const value =
             // if we're rendering category we're applying special formating as
             // translations of multi-word categories are "-" separeted lowercased words
-            property === "category"
-              ? capitalizeFirst(t(CategoryLabel[customer.category])).replace(
-                  /-/g,
-                  " "
-                )
+            property === "categories"
+              ? customer.categories
+                  .map(
+                    (cat) =>
+                      `${capitalizeFirst(t(CategoryLabel[cat])).replace(
+                        /-/g,
+                        " "
+                      )}`
+                  )
+                  .join(", ")
               : customer[property] || "-";
 
           return (
@@ -187,7 +192,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(0,0,0,0.4)",
   },
   value: {
-    whiteSpace: "nowrap",
     display: "block",
     [theme.breakpoints.up("sm")]: {
       display: "inline",

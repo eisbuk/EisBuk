@@ -66,7 +66,7 @@ const bookingId = "booked-slot";
 const testSlot = {
   ...baseSlot,
   id: bookingId,
-  categories: [saul.category],
+  categories: saul.categories,
 };
 
 // #endregion testData
@@ -245,7 +245,7 @@ describe("Booking Notifications", () => {
 
   describe("'updateBookingNote'", () => {
     testWithEmulator(
-      "should update the 'bookinNote' on a booking and enqueue success notification",
+      "should update the 'bookingNote' on a booking and enqueue success notification",
       async () => {
         const dummyBooking: CustomerBookingEntry = {
           date: testSlot.date,
