@@ -79,7 +79,7 @@ const PhoneInput: React.FC<Props> = ({
       StartAdornment={
         <CountryCodesDropdown
           onChange={handleCodeChange}
-          label="country"
+          name="dialCode"
           className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
           value={dialCode}
         />
