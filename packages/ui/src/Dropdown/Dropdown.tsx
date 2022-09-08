@@ -2,8 +2,9 @@ import { FieldProps } from "formik";
 import React from "react";
 
 /** We're allowing dropdown option to get passed as label/value pair or as a string (in place of both those values) */
-type DropdownOption = string | { label: string; value: string };
-interface DropdownProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+export type DropdownOption = string | { label: string; value: string };
+export interface DropdownProps
+  extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   options: DropdownOption[];
   disabled?: boolean;

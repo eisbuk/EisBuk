@@ -8,14 +8,14 @@ import PhoneInput from "../PhoneInput";
 interface PhoneInputTest {
   name: string;
   initialValue: string;
-  defaultCountryCode?: string;
+  defaultDialCode?: string;
   testAction: () => void;
   wantValue: string;
 }
 
 const runPhoneInputTableTests = (tests: PhoneInputTest[]) =>
   tests.forEach(
-    ({ name, initialValue, defaultCountryCode, testAction, wantValue }) => {
+    ({ name, initialValue, defaultDialCode, testAction, wantValue }) => {
       // We only care about the submit values for this test case
       const mockSubmit = jest.fn();
       const handleSubmit: FormikConfig<{ phone: string }>["onSubmit"] = (
@@ -33,7 +33,7 @@ const runPhoneInputTableTests = (tests: PhoneInputTest[]) =>
               <Field
                 name="phone"
                 component={PhoneInput}
-                defaultCountryCode={defaultCountryCode}
+                defaultDialCode={defaultDialCode}
               />
               <button type="submit">Submit</button>
             </Form>
@@ -57,11 +57,11 @@ describe("PhoneInput", () => {
     jest.clearAllMocks();
   });
 
-  test("should initialise the dropdown with the 'defaultCountryCode' used as default value", () => {
+  test("should initialise the dropdown with the 'defaultDialCode' used as default value", () => {
     render(
       <Formik initialValues={{ phone: "" }} onSubmit={() => {}}>
         <Form>
-          <Field name="phone" component={PhoneInput} defaultCountryCode="HR" />
+          <Field name="phone" component={PhoneInput} defaultDialCode="+385" />
           <button type="submit">Submit</button>
         </Form>
       </Formik>
@@ -91,7 +91,7 @@ describe("PhoneInput", () => {
     {
       name: "should update the value on dial code change",
       initialValue: "+385991234567",
-      defaultCountryCode: "HR",
+      defaultDialCode: "+385",
       testAction: () => {
         // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
         userEvent.selectOptions(
@@ -105,7 +105,7 @@ describe("PhoneInput", () => {
     {
       name: "should not update the value on code change if there's no 'textValue'",
       initialValue: "",
-      defaultCountryCode: "HR",
+      defaultDialCode: "+385",
       testAction: () => {
         // Switch country from 'HR', to 'IT' (dial code: "+39") without providing input to text field
         userEvent.selectOptions(
@@ -120,7 +120,7 @@ describe("PhoneInput", () => {
     {
       name: "if initialised with the value, should infer the country code from the value",
       initialValue: "+385991234567",
-      defaultCountryCode: "IT",
+      defaultDialCode: "+39",
       testAction: () => {
         const textField = screen.getByRole("textbox");
         userEvent.clear(textField);
