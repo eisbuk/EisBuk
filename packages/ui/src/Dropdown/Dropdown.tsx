@@ -60,9 +60,8 @@ const dropdownClasses = [
   "cursor-pointer",
 ];
 
-export const FormikComponent: React.FC<FieldProps & DropdownProps> = ({
-  field,
-  ...props
-}) => <Dropdown {...field} {...props} />;
+export const FormikComponent: React.FC<
+  Pick<FieldProps, "field"> & DropdownProps
+> = ({ field, ...props }) => <Dropdown {...field} {...props} />;
 
 export default Dropdown;
