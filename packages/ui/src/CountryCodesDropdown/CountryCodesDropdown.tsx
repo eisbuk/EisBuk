@@ -17,9 +17,8 @@ const CountryCodesDropdown: React.FC<CountryCodesProps> = ({
   return <Dropdown value={value} {...props} options={options} />;
 };
 
-export const FormikComponent: React.FC<CountryCodesProps & FieldProps> = ({
-  field,
-  ...props
-}) => <CountryCodesDropdown {...field} {...props} />;
+export const FormikComponent: React.FC<
+  CountryCodesProps & Pick<FieldProps, "field">
+> = ({ field, ...props }) => <CountryCodesDropdown {...field} {...props} />;
 
 export default CountryCodesDropdown;
