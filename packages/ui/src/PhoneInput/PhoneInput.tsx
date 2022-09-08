@@ -2,20 +2,21 @@ import { FieldInputProps } from "formik";
 import React, { useState } from "react";
 
 import TextInput, { TextInputProps } from "../TextInput";
-import Dropdown from "../Dropdown";
 
-import {
-  countryCodeOptions,
+import CountryCodesDropdown, {
   extractCountryDialCode,
   getDefaultCountryDialCode,
-} from "./data";
+} from "../CountryCodesDropdown";
 
 interface Props extends Omit<TextInputProps, "type" | "inputMode"> {
-  defaultCountryCode?: string;
+  /**
+   * Default country dial code (e.g. "+39" for Italy)
+   */
+  defaultDialCode?: string;
 }
 
 const initCountryDropdown = (
-  defaultCountryCode: string | undefined,
+  defaultDialCode: string | undefined,
   fieldValue?: string
 ) => {
   // If field value (phone string) provided, and starts with country prefix
@@ -25,7 +26,7 @@ const initCountryDropdown = (
 
   // If no field value, or country not found set a default value
   if (!prefix) {
-    prefix = getDefaultCountryDialCode(defaultCountryCode);
+    prefix = getDefaultCountryDialCode(defaultDialCode);
   }
 
   return prefix;
@@ -33,7 +34,7 @@ const initCountryDropdown = (
 
 const PhoneInput: React.FC<Props> = ({
   field: f,
-  defaultCountryCode,
+  defaultDialCode,
   ...props
 }) => {
   const {
@@ -44,7 +45,7 @@ const PhoneInput: React.FC<Props> = ({
   } = f as FieldInputProps<string | undefined>;
 
   const [dialCode, setDialCode] = useState(() =>
-    initCountryDropdown(defaultCountryCode, fieldValue)
+    initCountryDropdown(defaultDialCode, fieldValue)
   );
 
   // Get text input value by removing the country code from the full form value
@@ -76,10 +77,9 @@ const PhoneInput: React.FC<Props> = ({
       {...props}
       field={{ ...field, value: textValue, name, onChange: handleChange }}
       StartAdornment={
-        <Dropdown
+        <CountryCodesDropdown
           onChange={handleCodeChange}
           label="country"
-          options={countryCodeOptions}
           className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
           value={dialCode}
         />

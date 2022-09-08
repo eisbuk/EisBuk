@@ -1,5 +1,7 @@
-import Dropdown, { FormikComponent as DropdownFormik } from "./Dropdown";
+import Dropdown from "./Dropdown";
 
-export { DropdownFormik };
+export type { DropdownOption, DropdownProps } from "./Dropdown";
+
+export { FormikComponent as DropdownFormik } from "./Dropdown";
 
 export default Dropdown;
