@@ -1,20 +1,6 @@
 import React from "react";
 import * as Yup from "yup";
-import { Formik, Form, FastField, FieldConfig } from "formik";
-import { TextField } from "formik-mui";
-
-import { InputProps } from "@mui/material";
-import Button from "@mui/material/Button";
-import InputAdornment from "@mui/material/InputAdornment";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import AccountCircle from "@mui/icons-material/AccountCircle";
-import Email from "@mui/icons-material/Email";
-import Phone from "@mui/icons-material/Phone";
-import Cake from "@mui/icons-material/Cake";
-import LocalHospital from "@mui/icons-material/LocalHospital";
-import Payment from "@mui/icons-material/Payment";
+import { Formik, Form, FastField } from "formik";
 
 import {
   Category,
@@ -30,17 +16,19 @@ import i18n, {
   ActionButton,
   CategoryLabel,
 } from "@eisbuk/translations";
+import {
+  TextInput,
+  PhoneInput,
+  IconAdornment,
+  DateInput,
+  Checkbox,
+  Button,
+  ButtonColor,
+  ButtonSize,
+} from "@eisbuk/ui";
+import { AccountCircle, Mail, Cake } from "@eisbuk/svg";
 
 import { defaultCustomerFormValues } from "@/lib/data";
-
-import { SvgComponent } from "@/types/components";
-
-import { currentTheme } from "@/themes";
-
-import DateInput from "@/components/atoms/DateInput";
-import ErrorMessage from "@/components/atoms/ErrorMessage";
-
-import CustomCheckbox from "./CustomCheckbox";
 
 import { isISODay } from "@/utils/date";
 import { isValidPhoneNumber } from "@/utils/helpers";
@@ -69,7 +57,7 @@ const CustomerValidation = Yup.object().shape({
   covidCertificateSuspended: Yup.boolean(),
   categories: Yup.array()
     .required(i18n.t(ValidationMessage.RequiredField))
-    .min(1, ValidationMessage.RequiredEntry)
+    .min(1, i18n.t(ValidationMessage.RequiredEntry))
     .of(Yup.string()),
   subscriptionNumber: Yup.number(),
 });
@@ -89,8 +77,6 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   onUpdateCustomer = () => {},
   onCancel = () => {},
 }) => {
-  const classes = useStyles();
-
   const { t } = useTranslation();
 
   // Include deprecated categories for backwards compatibility
@@ -113,6 +99,74 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   } ${customer?.surname})`;
   const newCustomerTitle = t(CustomerFormTitle.NewCustomer);
   const title = customer?.name ? editCustomerTitle : newCustomerTitle;
+
+  interface FieldSetup {
+    name: string;
+    label: string;
+    // TODO: This should be an SVGComponent
+    Icon?: string;
+    component?: React.FC<any>;
+    fieldSet?: {
+      label: string;
+      value: string;
+      disabled?: boolean;
+    }[];
+  }
+
+  const fields: FieldSetup[] = [
+    {
+      name: "name",
+      label: i18n.t(CustomerLabel.Name),
+      Icon: AccountCircle,
+    },
+    {
+      name: "surname",
+      label: i18n.t(CustomerLabel.Surname),
+      Icon: AccountCircle,
+    },
+    {
+      name: "email",
+      label: i18n.t(CustomerLabel.Email),
+      Icon: Mail,
+    },
+    {
+      name: "phone",
+      label: i18n.t(CustomerLabel.Phone),
+      component: PhoneInput,
+    },
+    {
+      name: "birthday",
+      label: i18n.t(CustomerLabel.Birthday),
+      Icon: Cake,
+    },
+    {
+      name: "categories",
+      label: i18n.t(CustomerLabel.Categories),
+      fieldSet: categoryOptions,
+    },
+    {
+      name: "covidCertificateReleaseDate",
+      label: i18n.t(CustomerLabel.CovidCertificateReleaseDate),
+      Icon: Cake,
+      component: DateInput,
+    },
+    {
+      name: "certificateExpiration",
+      label: i18n.t(CustomerLabel.CertificateExpiration),
+      Icon: Cake,
+      component: DateInput,
+    },
+    {
+      name: "covidCertificateSuspended",
+      label: i18n.t(CustomerLabel.CovidCertificateSuspended),
+      component: Checkbox,
+    },
+    {
+      name: "subscriptionNumber",
+      label: i18n.t(CustomerLabel.CardNumber),
+      Icon: Cake,
+    },
+  ];
 
   return (
     <div
@@ -137,98 +191,74 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         validationSchema={CustomerValidation}
         onSubmit={onUpdateCustomer}
       >
-        {({ isSubmitting, setFieldValue, values, errors }) => (
+        {({ isSubmitting, errors }) => (
           <Form autoComplete="off">
-            <div className="mb-6 flex flex-col gap-4 items-stretch">
+            <div className="mb-6 space-y-4 items-stretch">
               <input
                 type="hidden"
                 name="id"
                 value={(customer && customer.id) || ""}
               />
-              <MyField
-                className={classes.field}
-                name="name"
-                label={t(CustomerLabel.Name)}
-                Icon={AccountCircle}
-              />
-              <MyField
-                className={classes.field}
-                name="surname"
-                label={t(CustomerLabel.Surname)}
-                Icon={AccountCircle}
-              />
-              <MyField
-                name="email"
-                label={t(CustomerLabel.Email)}
-                className={classes.field}
-                Icon={Email}
-              />
-              <MyField
-                name="phone"
-                label={t(CustomerLabel.Phone)}
-                className={classes.field}
-                onBlur={() =>
-                  setFieldValue("phone", values["phone"]?.replace(/\s/g, ""))
+
+              {fields.map(
+                ({ Icon, component, fieldSet, name, label, ...field }) => {
+                  if (fieldSet?.length) {
+                    return (
+                      <div>
+                        {label && (
+                          <h2 className="block mb-4 text-sm font-medium text-gray-700">
+                            {label}
+                          </h2>
+                        )}
+                        <fieldset className="w-64 grid grid-cols-1 gap-2 md:grid-cols-2 md:w-[30rem]">
+                          {fieldSet.map(({ label, disabled, value }) => (
+                            <FastField
+                              className="col-span-1"
+                              name={name}
+                              label={label}
+                              disabled={disabled}
+                              value={value}
+                              component={Checkbox}
+                            />
+                          ))}
+                        </fieldset>
+                        <p className="mt-2 text-sm h-5 text-red-600">
+                          {errors.categories}
+                        </p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <FastField
+                      name={name}
+                      label={label}
+                      {...field}
+                      StartAdornment={
+                        Icon && (
+                          <IconAdornment position="start" Icon={<Icon />} />
+                        )
+                      }
+                      component={component || TextInput}
+                    />
+                  );
                 }
-                Icon={Phone}
-              />
-              <DateInput
-                name="birthday"
-                className={classes.field}
-                label={t(CustomerLabel.Birthday)}
-                Icon={Cake}
-              />
-
-              <div className="flex flex-col ">
-                <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-[30rem]">
-                  {categoryOptions.map((cat) => (
-                    <CustomCheckbox
-                      name="categories"
-                      label={cat.label}
-                      disabled={cat.disabled}
-                      value={cat.value}
-                    ></CustomCheckbox>
-                  ))}
-                </div>
-                <ErrorMessage className="w-full whitespace-normal !text-md !ml-1">
-                  {errors.categories}
-                </ErrorMessage>
-              </div>
-
-              <DateInput
-                name="certificateExpiration"
-                label={t(CustomerLabel.CertificateExpiration)}
-                className={classes.field}
-                Icon={LocalHospital}
-              />
-              <DateInput
-                name="covidCertificateReleaseDate"
-                label={t(CustomerLabel.CovidCertificateReleaseDate)}
-                className={classes.field}
-                Icon={LocalHospital}
-              />
-
-              <CustomCheckbox
-                name="covidCertificateSuspended"
-                label={t(CustomerLabel.CovidCertificateSuspended)}
-              />
-              <MyField
-                name="subscriptionNumber"
-                label={t(CustomerLabel.CardNumber)}
-                className={classes.field}
-                Icon={Payment}
-              />
+              )}
             </div>
+
             <div className="flex justify-end">
-              <Button onClick={onCancel} color="primary">
+              <Button
+                size={ButtonSize.MD}
+                className="!text-cyan-500"
+                onClick={onCancel}
+              >
                 {t(ActionButton.Cancel)}
               </Button>
               <Button
+                size={ButtonSize.MD}
                 type="submit"
                 disabled={isSubmitting}
-                variant="contained"
-                color="primary"
-                className={classes.buttonPrimary}
+                color={ButtonColor.Primary}
               >
                 {t(ActionButton.Save)}
               </Button>
@@ -240,66 +270,5 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   );
 };
 // #endregion mainComponent
-
-// #region MyField
-interface MyFieldProps extends FieldConfig<string> {
-  Icon?: SvgComponent;
-  row?: boolean;
-  label?: string;
-  className?: string;
-  onBlur?: () => void;
-}
-
-const MyField: React.FC<MyFieldProps> = ({ Icon, ...props }) => {
-  let InputProps: InputProps = {};
-
-  if (typeof Icon !== "undefined") {
-    InputProps = {
-      startAdornment: (
-        <InputAdornment position="start">
-          <Icon color="disabled" />
-        </InputAdornment>
-      ),
-    };
-  }
-
-  InputProps.fullWidth = !props.row;
-
-  return (
-    <FastField
-      autoComplete="off"
-      {...{
-        component: TextField,
-        variant: "outlined",
-        InputProps,
-        ...props,
-      }}
-    />
-  );
-};
-// #endregion MyField
-
-// #region styles
-type Theme = typeof currentTheme;
-
-const useStyles = makeStyles((theme: Theme) => ({
-  field: {
-    marginTop: theme.spacing(1),
-    marginBottom: theme.spacing(1),
-    width: "100%",
-  },
-  radioGroup: {
-    justifyContent: "space-evenly",
-    marginTop: theme.spacing(1.5),
-    marginBottom: theme.spacing(1.5),
-  },
-  // The following is a workaround to not overrule the Mui base button styles
-  // by Tailwind's preflight reset
-  buttonPrimary: { backgroundColor: theme.palette.primary.main },
-  container: {
-    padding: `0 ${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(2)}px`,
-  },
-}));
-// #endregion styles
 
 export default CustomerForm;
