@@ -17,6 +17,9 @@ const testHeaders = {
 const testItems = [
   { athlete: "Chris", "2022-09-03": 1.5, "2022-09-04": 2.0 },
   { athlete: "Ivan", "2022-09-03": "-", "2022-09-04": 1.0 },
+  { athlete: "Sussie", "2022-09-03": 1, "2022-09-04": "-" },
+  { athlete: "Pedro", "2022-09-03": 3, "2022-09-04": 1.5 },
+  { athlete: "Giles", "2022-09-03": "-", "2022-09-04": 2.0 },
 ];
 
 export const Default = (): JSX.Element => (

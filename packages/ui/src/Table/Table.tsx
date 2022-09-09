@@ -31,10 +31,13 @@ function Table<T extends TableItem>({
 }: TableProps<T>) {
   return (
     <div className="flex flex-col">
-      <div className="-mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
-          <div className="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-            <table className="min-w-full divide-y divide-gray-300 table-auto">
+          <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <table
+              className="min-w-full divide-y divide-gray-300 table-auto border-separate"
+              style={{ borderSpacing: 0 }}
+            >
               <thead className="bg-gray-50">{renderHeaders(headers)}</thead>
               <tbody className="bg-white">{items.map(renderRow)}</tbody>
             </table>
