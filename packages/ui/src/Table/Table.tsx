@@ -23,12 +23,12 @@ interface TableProps<T extends TableItem> {
 /**
  * Generic simple Table component
  */
-function Table<T extends TableItem>({
+const Table = <T extends TableItem>({
   headers,
   items,
   renderRow = defaultRenderRow,
   renderHeaders = defaultRenderHeaders,
-}: TableProps<T>) {
+}: React.PropsWithChildren<TableProps<T>>) => {
   return (
     <div className="flex flex-col">
       <div className="-mx-4 sm:-mx-6 lg:-mx-8">
@@ -46,7 +46,7 @@ function Table<T extends TableItem>({
       </div>
     </div>
   );
-}
+};
 
 const defaultRenderRow: RenderRow = (item, rowIx, itemArr) => {
   const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
