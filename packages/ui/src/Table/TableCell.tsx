@@ -10,7 +10,7 @@ const TableCell: React.FC<CellProps> = ({
   textAlign = CellTextAlign.Left,
   type = CellType.Data,
 }) => {
-  const as = CellType[type] === "header" ? "th" : "td";
+  const as = type === CellType.Header ? "th" : "td";
 
   const className = [
     ...cellBaseClasses,
