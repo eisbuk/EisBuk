@@ -2,9 +2,7 @@ import React from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
-
-import FormControl from "@mui/material/FormControl";
-import Button from "@mui/material/Button";
+import { DateTime } from "luxon";
 
 import { OrganizationData } from "@eisbuk/shared";
 import i18n, {
@@ -13,12 +11,13 @@ import i18n, {
   useTranslation,
   OrganizationLabel,
 } from "@eisbuk/translations";
-import { Layout, CountryCodesDropdownFormik } from "@eisbuk/ui";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import Typography from "@mui/material/Typography";
-import Divider from "@mui/material/Divider";
+import {
+  Layout,
+  CountryCodesDropdownFormik,
+  Button,
+  ButtonColor,
+  ButtonSize,
+} from "@eisbuk/ui";
 
 import AdminsField from "./AdminsField";
 import FormSection, {
@@ -35,48 +34,6 @@ import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { isEmpty } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
-import { DateTime } from "luxon";
-
-const smsFields = [
-  {
-    name: "smsFrom",
-    label: OrganizationLabel.SmsFrom,
-  },
-  {
-    name: "smsTemplate",
-    label: OrganizationLabel.SmsTemplate,
-    multiline: true,
-  },
-];
-
-const emailFields = [
-  {
-    name: "emailNameFrom",
-    label: OrganizationLabel.EmailNameFrom,
-  },
-  {
-    name: "emailFrom",
-    label: OrganizationLabel.EmailFrom,
-  },
-  {
-    name: "emailTemplate",
-    label: OrganizationLabel.EmailTemplate,
-    multiline: true,
-  },
-];
-
-const generalFields: FormSectionFieldProps[] = [
-  {
-    name: "displayName",
-    label: OrganizationLabel.DisplayName,
-  },
-  { name: "location", label: OrganizationLabel.Location },
-  {
-    name: "defaultCountryCode",
-    label: OrganizationLabel.CountryCode,
-    component: CountryCodesDropdownFormik,
-  },
-];
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -86,19 +43,20 @@ const OrganizationValidation = Yup.object().shape({
   displayName: Yup.string().required(),
 });
 // #endregion validations
+
 const OrganizationSettings: React.FC = () => {
   const dispatch = useDispatch();
+
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
-  const { t } = useTranslation();
-  const classes = useStyles();
-
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
   );
   const additionalAdminContent = (
     <BirthdayMenu customers={customersByBirthday} />
   );
+
+  const { t } = useTranslation();
 
   const handleSubmit = (
     orgData: OrganizationData,
@@ -113,21 +71,11 @@ const OrganizationSettings: React.FC = () => {
   }
 
   const initialValues: OrganizationData = {
-    // Set up fallbacks
-    admins: [],
-    displayName: "",
-    emailFrom: "",
-    emailNameFrom: "",
-    emailTemplate: "",
-    existingSecrets: [],
-    location: "",
-    defaultCountryCode: "",
-    smsFrom: "",
-    smsTemplate: "",
-
-    // Override fallbacks with any defined organizaiton data
+    ...emptyValues,
     ...organization,
   };
+
+  const title = `${organization?.displayName || "Organization"}  Settings`;
 
   return (
     <Layout
@@ -136,47 +84,39 @@ const OrganizationSettings: React.FC = () => {
       Notifications={NotificationsContainer}
       additionalAdminContent={additionalAdminContent}
     >
-      <div className={classes.title}>
-        <Typography variant="h4">{`${
-          organization?.displayName || "Organization"
-        }  Settings`}</Typography>
-      </div>
-      <div className={classes.content}>
+      <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+        <div className="pt-6 pb-8">
+          <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
+            {title}
+          </h1>
+        </div>
         <Formik
           {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
           validationSchema={OrganizationValidation}
         >
           {({ isSubmitting, isValidating, handleReset }) => (
-            <>
+            <div className="md:px-11">
               <AdminsField currentUser={currentUser} />
 
-              <Divider />
-              <Form className={classes.form}>
-                <FormControl component="fieldset">
-                  <FormSection content={generalFields} name="General" />
-                  <FormSection content={emailFields} name="Email" />
-                  <FormSection content={smsFields} name="SMS" />
-                </FormControl>
+              <Form>
+                <FormSection content={generalFields} title="General" />
+                <FormSection content={emailFields} title="Email" />
+                <FormSection content={smsFields} title="SMS" />
 
-                <div className={classes.submitButtonArea}>
+                <div className="py-4 flex justify-end items-center gap-2">
                   <Button
                     onClick={handleReset}
-                    variant="contained"
                     disabled={isSubmitting || isValidating}
-                    color="primary"
-                    className={classes.buttonPrimary}
+                    className="!text-cyan-500"
+                    size={ButtonSize.MD}
                   >
                     {t(ActionButton.Cancel)}
                   </Button>
                   <Button
-                    variant="contained"
                     disabled={isSubmitting || isValidating}
-                    color="secondary"
-                    className={[
-                      classes.saveButton,
-                      classes.buttonSecondary,
-                    ].join(" ")}
+                    color={ButtonColor.Primary}
+                    size={ButtonSize.MD}
                     aria-label={"save"}
                     type="submit"
                   >
@@ -184,7 +124,7 @@ const OrganizationSettings: React.FC = () => {
                   </Button>
                 </div>
               </Form>
-            </>
+            </div>
           )}
         </Formik>
       </div>
@@ -192,97 +132,63 @@ const OrganizationSettings: React.FC = () => {
   );
 };
 
-// #region styles
-const useStyles = makeStyles((theme) => ({
-  field: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(2),
-    width: "21rem",
-  },
-  fieldSection: {
-    display: "flex",
-    flexFlow: "wrap",
-  },
-  sectionTitle: {
-    letterSpacing: 1,
-    fontSize: theme.typography.pxToRem(18),
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.light,
-  },
-  addAdminButton: {
-    marginLeft: theme.spacing(3),
-    borderRadius: theme.spacing(100),
-  },
-  adminFieldGroup: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: "12.5rem",
-  },
-  disabledAdminFieldGroup: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(2),
-    width: "11rem",
-  },
-  adminsList: {
-    display: "flex",
-    flexFlow: "wrap",
-  },
+const emptyValues = {
+  admins: [],
+  displayName: "",
+  emailFrom: "",
+  emailNameFrom: "",
+  emailTemplate: "",
+  existingSecrets: [],
+  location: "",
+  defaultCountryCode: "",
+  smsFrom: "",
+  smsTemplate: "",
+};
 
-  content: {
-    width: "50rem",
-    padding: "3rem",
+// #region fieldSetup
+const generalFields: FormSectionFieldProps[] = [
+  {
+    name: "dislpayName",
+    label: i18n.t(OrganizationLabel.DisplayName),
   },
-  closeButton: {
-    transform: "translate(-150%,-25%)",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    width: "0px",
+  {
+    name: "loaction",
+    label: i18n.t(OrganizationLabel.Location),
   },
-  addAdmin: {
-    marginBottom: theme.spacing(3),
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
+  {
+    name: "defaultCountryCode",
+    label: i18n.t(OrganizationLabel.CountryCode),
+    component: CountryCodesDropdownFormik,
   },
+];
+const emailFields: FormSectionFieldProps[] = [
+  {
+    name: "emailNameFrom",
+    label: i18n.t(OrganizationLabel.EmailNameFrom),
+  },
+  {
+    name: "emailFrom",
+    label: i18n.t(OrganizationLabel.EmailFrom),
+  },
+  {
+    name: "emailTemplate",
+    label: i18n.t(OrganizationLabel.EmailTemplate),
+    multiline: true,
+    rows: 6,
+  },
+];
+const smsFields: FormSectionFieldProps[] = [
+  {
+    name: "smsFrom",
+    label: i18n.t(OrganizationLabel.SmsFrom),
+  },
+  {
+    name: "smsTemplate",
+    label: i18n.t(OrganizationLabel.SmsTemplate),
+    multiline: true,
+    rows: 6,
+  },
+];
+// #endregion fieldSetup
 
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  submitButtonArea: {
-    display: "flex",
-    padding: "8px",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  templateField: {
-    width: "47rem",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    position: "relative",
-    fontWeight: 600,
-    padding: 20,
-    background: theme.palette.primary.main,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.contrastText,
-  },
-  saveButton: {
-    marginLeft: "1rem",
-  },
-  // The following is a workaround to not overrule the Mui base button styles
-  // by Tailwind's preflight reset
-  buttonPrimary: { backgroundColor: theme.palette.primary.main },
-  buttonSecondary: { backgroundColor: theme.palette.secondary.main },
-  smsFromField: {
-    width: "21rem",
-    marginRight: theme.spacing(2),
-  },
-}));
-// #endregion styles
 export default OrganizationSettings;
