@@ -26,7 +26,13 @@ import {
   ButtonColor,
   ButtonSize,
 } from "@eisbuk/ui";
-import { AccountCircle, Mail, Cake } from "@eisbuk/svg";
+import {
+  AccountCircle,
+  Mail,
+  Cake,
+  FolderOpen,
+  Identification,
+} from "@eisbuk/svg";
 
 import { defaultCustomerFormValues } from "@/lib/data";
 
@@ -147,13 +153,13 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     {
       name: "covidCertificateReleaseDate",
       label: i18n.t(CustomerLabel.CovidCertificateReleaseDate),
-      Icon: Cake,
+      Icon: FolderOpen,
       component: DateInput,
     },
     {
       name: "certificateExpiration",
       label: i18n.t(CustomerLabel.CertificateExpiration),
-      Icon: Cake,
+      Icon: FolderOpen,
       component: DateInput,
     },
     {
@@ -164,7 +170,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     {
       name: "subscriptionNumber",
       label: i18n.t(CustomerLabel.CardNumber),
-      Icon: Cake,
+      Icon: Identification,
     },
   ];
 
