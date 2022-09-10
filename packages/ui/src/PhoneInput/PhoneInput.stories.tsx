@@ -7,22 +7,28 @@ import PhoneInput from "./PhoneInput";
 export default {
   title: "Phone Input",
   component: PhoneInput,
-  decorators: [
-    (Story) => (
-      <Formik initialValues={{}} onSubmit={() => {}}>
-        <div className="w-[360px]">
-          <Story />
-        </div>
-      </Formik>
-    ),
-  ],
 } as ComponentMeta<typeof PhoneInput>;
 
 export const Default = (): JSX.Element => (
-  <Field
-    name="phone"
-    label="Phone"
-    placeholder="Phone"
-    component={PhoneInput}
-  />
+  <Formik
+    initialValues={{}}
+    initialErrors={{ phoneError: "This is an error" }}
+    initialTouched={{ phoneError: true }}
+    onSubmit={() => {}}
+  >
+    <div className="w-[360px]">
+      <Field
+        name="phone"
+        label="Phone"
+        placeholder="Phone"
+        component={PhoneInput}
+      />
+      <Field
+        name="phoneError"
+        label="Phone with error"
+        placeholder="Phone"
+        component={PhoneInput}
+      />
+    </div>
+  </Formik>
 );

@@ -41,6 +41,7 @@ const PhoneInput: React.FC<Props> = ({
     onChange,
     value: fieldValue,
     name,
+    onBlur,
     ...field
   } = f as FieldInputProps<string | undefined>;
 
@@ -52,11 +53,24 @@ const PhoneInput: React.FC<Props> = ({
   const textValue = fieldValue?.replace(dialCode, "");
 
   // Update form value on text input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: {
+    // We only need the 'target.value' from the event object for this purpose
+    // so this is easier for type compatibility in other functions calling to this one
+    target: Pick<React.ChangeEvent<HTMLInputElement>["target"], "value">;
+  }) => {
     const newTextValue = e.target.value;
     const value = dialCode + newTextValue;
 
     onChange({ target: { name, value } });
+  };
+
+  // Remove whitespaces onBlur
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value.replaceAll(" ", "");
+    const evt = { target: { name, value } };
+
+    handleChange(evt);
+    onBlur(evt);
   };
 
   // Update form value on country code change
@@ -75,7 +89,13 @@ const PhoneInput: React.FC<Props> = ({
   return (
     <TextInput
       {...props}
-      field={{ ...field, value: textValue, name, onChange: handleChange }}
+      field={{
+        ...field,
+        value: textValue,
+        name,
+        onChange: handleChange,
+        onBlur: handleBlur,
+      }}
       StartAdornment={
         <CountryCodesDropdown
           onChange={handleCodeChange}

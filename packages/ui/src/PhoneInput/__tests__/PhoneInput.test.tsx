@@ -130,5 +130,20 @@ describe("PhoneInput", () => {
       // and should stay so if not manually changed
       wantValue: "+385991111111",
     },
+
+    {
+      name: "should remove the spaces on blur",
+      initialValue: "",
+      defaultDialCode: "+39",
+      testAction: () => {
+        const textField = screen.getByRole("textbox");
+        userEvent.clear(textField);
+        userEvent.type(textField, "99 111 1111");
+        textField.blur();
+      },
+      // Even though IT is set as 'defaultValue' for dial code, the field already had a 'HR' prefixed number
+      // and should stay so if not manually changed
+      wantValue: "+39991111111",
+    },
   ]);
 });
