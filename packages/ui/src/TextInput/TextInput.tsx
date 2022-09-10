@@ -15,6 +15,8 @@ export interface TextInputProps extends Field, InputHTMLAttributes {
   placeholder?: string;
   helpText?: string;
   disabled?: boolean;
+  multiline?: boolean;
+  rows?: number;
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;
 }
@@ -26,6 +28,9 @@ const TextInput: React.FC<TextInputProps> = ({
   StartAdornment,
   EndAdornment,
   disabled = false,
+  multiline,
+  rows = 2,
+  className = "",
   ...props
 }) => {
   const { field, form, ...rest } = props;
@@ -49,6 +54,8 @@ const TextInput: React.FC<TextInputProps> = ({
 
   const supportContent = hasValidationError ? errors[name] : helpText;
 
+  const inputElement = multiline ? "textarea" : "input";
+
   return (
     <div className="space-y-1">
       <label htmlFor={name} className={labelClasses}>
@@ -58,15 +65,18 @@ const TextInput: React.FC<TextInputProps> = ({
         {StartAdornment && (
           <div className="flex items-center mr-1">{StartAdornment}</div>
         )}
-        <input
-          type="text"
-          id={name}
-          placeholder={placeholder}
-          disabled={disabled}
-          className={inputClasses}
-          {...field}
-          {...rest}
-        />
+
+        {React.createElement(inputElement, {
+          type: "text",
+          id: name,
+          placeholder: placeholder,
+          disabled: disabled,
+          className: inputClasses,
+          rows,
+          ...field,
+          ...rest,
+        })}
+
         {EndAdornment && (
           <div className="flex items-center ml-1">{EndAdornment}</div>
         )}
@@ -87,6 +97,7 @@ const inputBaseClasses = [
   "text-sm",
   "focus:outline-0",
   "focus:ring-0",
+  "resize-none",
 ];
 
 // TODO: focus-within solution will also focus whole container when adornment button or dropdown are clicked
