@@ -1,12 +1,12 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import AttendanceReportTable, { DataType } from "./Table";
+import AttendanceVarianceTable, { DataType } from "./Table";
 
 export default {
-  title: "Attendance Report Table",
-  component: AttendanceReportTable,
-} as ComponentMeta<typeof AttendanceReportTable>;
+  title: "Attendance Variance Table",
+  component: AttendanceVarianceTable,
+} as ComponentMeta<typeof AttendanceVarianceTable>;
 
 const testDates = ["2022-09-03", "2022-09-04"];
 
@@ -29,6 +29,6 @@ const testData = [
 export const Default = (): JSX.Element => (
   <>
     <h1 className="text-lg font-bold mb-4">Default</h1>
-    <AttendanceReportTable dates={testDates} data={testData} />
+    <AttendanceVarianceTable dates={testDates} data={testData} />
   </>
 );

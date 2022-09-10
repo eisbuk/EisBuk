@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Table, TableCell, CellType, CellTextAlign } from "../";
+import VarianceBadge from "./VarianceBadge";
 
 export enum DataType {
   Booked = "booked",
@@ -39,7 +40,8 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 
   // TODO: Function to return `Date, Day` from passed in ISO date string
   const dateHeaders = dates.reduce((acc, curDate) => {
-    return (acc[curDate] = "Date, Day");
+    acc[curDate] = "Date, Day";
+    return acc;
   }, {});
 
   const items = data.reduce<RowItem[]>((acc, { athlete, booked, delta }) => {
@@ -130,8 +132,7 @@ const DeltaRowCells: React.FC<{
     <TableCell type={CellType.Title}>""</TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center}>
-      // TODO: define attendanceReportBadge and pass deltas
-      <div>{cellItem}</div>
+      <VarianceBadge delta={cellItem} />
     </TableCell>
   );
 };
