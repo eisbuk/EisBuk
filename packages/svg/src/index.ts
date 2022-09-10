@@ -28,6 +28,8 @@ import QuestionMarkCircle from "./assets/question-mark-circle.svg";
 import Annotation from "./assets/annotation.svg";
 import Eye from "./assets/eye.svg";
 import EyeOff from "./assets/eye-off.svg";
+import Identification from "./assets/identification.svg";
+import FolderOpen from "./assets/folder-open.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
@@ -65,4 +67,6 @@ export {
   Annotation,
   Eye,
   EyeOff,
+  Identification,
+  FolderOpen,
 };
