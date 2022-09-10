@@ -73,6 +73,7 @@ const CustomerValidation = Yup.object().shape({
 export interface CustomerFormProps {
   className?: string;
   customer?: Partial<Customer>;
+  defaultDialCode?: string;
   onCancel?: () => void;
   onUpdateCustomer?: (customer: CustomerLoose) => void;
 }
@@ -80,6 +81,7 @@ export interface CustomerFormProps {
 const CustomerForm: React.FC<CustomerFormProps> = ({
   customer,
   className = "",
+  defaultDialCode,
   onUpdateCustomer = () => {},
   onCancel = () => {},
 }) => {
@@ -106,7 +108,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
   const newCustomerTitle = t(CustomerFormTitle.NewCustomer);
   const title = customer?.name ? editCustomerTitle : newCustomerTitle;
 
-  interface FieldSetup {
+  interface FieldSetup extends Record<string, any> {
     name: string;
     label: string;
     // TODO: This should be an SVGComponent
@@ -139,6 +141,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       name: "phone",
       label: i18n.t(CustomerLabel.Phone),
       component: PhoneInput,
+      defaultDialCode,
     },
     {
       name: "birthday",

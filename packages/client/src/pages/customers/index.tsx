@@ -26,6 +26,7 @@ import {
   getCustomersByBirthday,
   getCustomersList,
 } from "@/store/selectors/customers";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 import useTitle from "@/hooks/useTitle";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -42,6 +43,8 @@ const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const defaultDialCode = useSelector(getDefaultCountryCode);
 
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
@@ -64,7 +67,7 @@ const CustomersPage: React.FC = () => {
     dispatch(
       openModal({
         component: "CustomerFormDialog",
-        props: { customer: { subscriptionNumber } },
+        props: { customer: { subscriptionNumber }, defaultDialCode },
       })
     );
   };
