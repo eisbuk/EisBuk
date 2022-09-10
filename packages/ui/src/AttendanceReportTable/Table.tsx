@@ -1,4 +1,7 @@
 import React from "react";
+import { DateTime } from "luxon";
+
+import { useTranslation, DateFormat } from "@eisbuk/translations";
 
 import { Table, TableCell, CellType, CellTextAlign } from "../";
 import VarianceBadge from "./VarianceBadge";
@@ -35,12 +38,14 @@ interface RowItem {
 }
 
 const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
-  // TODO: Do bottom two need to be run as useState, useEffect? If you want to remount component when dates or data are passed in
-  // Answer, no: but a controlling component / page should
+  const { t } = useTranslation();
 
-  // TODO: Function to return `Date, Day` from passed in ISO date string
   const dateHeaders = dates.reduce((acc, curDate) => {
-    acc[curDate] = "Date, Day";
+    const dateTime = DateTime.fromISO(curDate);
+    const weekday = t(DateFormat.Weekday, { date: dateTime });
+    const day = t(DateFormat.Day, { date: dateTime });
+
+    acc[curDate] = `${weekday}, ${day}`;
     return acc;
   }, {});
 
@@ -69,15 +74,10 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
       renderHeaders={(headers) => {
         return (
           <tr>
-            {Object.keys(headers).map((key) =>
+            {Object.keys(headers).map((key) => (
               // TODO: add "waypoints for weekend dates"
-              key === "athlete" || key === "total" ? (
-                <TableCell type={CellType.Header}>{headers[key]}</TableCell>
-              ) : (
-                // TODO: Render the date header string differently
-                <TableCell type={CellType.Header}>{headers[key]}</TableCell>
-              )
-            )}
+              <TableCell type={CellType.Header}>{headers[key]}</TableCell>
+            ))}
           </tr>
         );
       }}
