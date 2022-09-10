@@ -57,7 +57,7 @@ const TextInput: React.FC<TextInputProps> = ({
   const inputElement = multiline ? "textarea" : "input";
 
   return (
-    <div className="space-y-1">
+    <div className={["space-y-1", className].join(" ")}>
       <label htmlFor={name} className={labelClasses}>
         {label}
       </label>
