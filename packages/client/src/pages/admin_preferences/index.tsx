@@ -145,7 +145,6 @@ const OrganizationSettings: React.FC = () => {
         <Formik
           {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
-          validateOnChange={false}
           validationSchema={OrganizationValidation}
         >
           {({ isSubmitting, isValidating, handleReset }) => (

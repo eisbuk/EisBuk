@@ -1,14 +1,12 @@
 import React from "react";
-import { Field, FieldProps, useFormikContext } from "formik";
+import { Field, FieldProps } from "formik";
+import { TextField } from "formik-mui";
 
-import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 
 import makeStyles from "@mui/styles/makeStyles";
 
 import { useTranslation, OrganizationLabel } from "@eisbuk/translations";
-
-import ErrorMessage from "@/components/atoms/ErrorMessage";
 
 export interface FormSectionFieldProps {
   name: string;
@@ -24,8 +22,6 @@ interface Props {
 const FormSection: React.FC<Props> = ({ name, content }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
-  const { errors } = useFormikContext();
 
   return (
     <div>
@@ -45,7 +41,6 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
                 multiline={multiline}
                 {...(multiline ? { rows: "4" } : {})}
               />
-              {<ErrorMessage>{errors[name]}</ErrorMessage>}
             </div>
           );
         })}
