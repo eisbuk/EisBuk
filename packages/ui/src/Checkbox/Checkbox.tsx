@@ -1,10 +1,9 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-// Formik docs say that this is passed, but it isn't
-type Field = Omit<FieldProps, "meta">;
-
-interface CheckboxProps extends Field {
+interface CheckboxProps
+  extends Pick<FieldProps, "field">,
+    React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   helpText?: string;
   disabled?: boolean;
@@ -14,9 +13,10 @@ const Checkbox: React.FC<CheckboxProps> = ({
   label,
   helpText,
   disabled,
+  field,
+  className = "",
   ...props
 }) => {
-  const { field } = props;
   const { name } = field;
 
   const labelClasses = [
@@ -26,7 +26,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
   const helpTextColor = disabled ? "text-gray-300" : "text-gray-500";
 
   return (
-    <div className="relative flex items-start">
+    <div className={["relative flex items-start", className].join(" ")}>
       <div className="flex items-center h-5">
         <input
           id={name}
@@ -35,6 +35,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
           type="checkbox"
           className="focus:ring-cyan-700 h-4 w-4 text-gray-800 border-gray-300 rounded disabled:text-gray-200"
           {...field}
+          {...props}
         />
       </div>
       <div className="ml-3 text-sm">
