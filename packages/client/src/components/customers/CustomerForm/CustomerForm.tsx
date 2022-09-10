@@ -50,15 +50,15 @@ const CustomerValidation = Yup.object().shape({
   }),
   birthday: Yup.string().test({
     test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
+    message: i18n.t(ValidationMessage.InvalidDate),
   }),
   certificateExpiration: Yup.string().test({
     test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
+    message: i18n.t(ValidationMessage.InvalidDate),
   }),
   covidCertificateReleaseDate: Yup.string().test({
     test: (input) => !input || isISODay(input),
-    message: ValidationMessage.InvalidDate,
+    message: i18n.t(ValidationMessage.InvalidDate),
   }),
   covidCertificateSuspended: Yup.boolean(),
   categories: Yup.array()
@@ -144,6 +144,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
       name: "birthday",
       label: i18n.t(CustomerLabel.Birthday),
       Icon: Cake,
+      component: DateInput,
     },
     {
       name: "categories",
