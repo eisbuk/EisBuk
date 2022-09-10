@@ -198,7 +198,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         validationSchema={CustomerValidation}
         onSubmit={onUpdateCustomer}
       >
-        {({ isSubmitting, errors }) => (
+        {({ isSubmitting, errors, touched }) => (
           <Form autoComplete="off">
             <div className="mb-6 space-y-4 items-stretch">
               <input
@@ -230,7 +230,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                           ))}
                         </fieldset>
                         <p className="mt-2 text-sm h-5 text-red-600">
-                          {errors.categories}
+                          {touched[name] && errors.categories}
                         </p>
                       </div>
                     );
