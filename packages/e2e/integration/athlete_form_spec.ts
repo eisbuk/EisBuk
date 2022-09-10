@@ -23,7 +23,7 @@ describe("add athlete", () => {
     cy.fillInCustomerData(saul);
     // The phone number for saul is wrong, so we'll fix it
     cy.getAttrWith("name", "phone").clear();
-    cy.getAttrWith("name", "phone").type("+4911111111111");
+    cy.getAttrWith("name", "phone").type("11111111111");
     cy.getAttrWith("type", "submit").click();
     cy.contains(`${saul.name} ${saul.surname} update`);
   });
@@ -58,37 +58,31 @@ describe("add athlete", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
-    // test phone number without "+" or "00" prepended to it
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("099 2222 868");
-    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
     // test phone number for edge cases
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("foo +099 2222 868");
+    cy.getAttrWith("name", "phone").clearAndType("foo 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222 868 foo");
+    cy.getAttrWith("name", "phone").clearAndType("2222 868 foo");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test too long and too short phone numbers
-    cy.getAttrWith("name", "phone").clearTypeAndEnter(
-      "+099 2222 86877777777777"
-    );
+    cy.getAttrWith("name", "phone").clearAndType("2222 86877777777777");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("+099 2222");
+    cy.getAttrWith("name", "phone").clearAndType("+099 2222");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // make sure phone number length can't be "cheated" with too much whitespace
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 099   11");
+    cy.getAttrWith("name", "phone").clearAndType("+385 099   11");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("00385 99 2222 868");
+    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
 
-    cy.getAttrWith("name", "phone").clearTypeAndEnter("+385 99 2222 868");
+    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
@@ -124,7 +118,7 @@ describe("add athlete", () => {
       surname: "Archer",
       // test whitespaces in the phone number
       // (should be removed in submitting function passable)
-      phone: "+385 99 6622 545",
+      phone: "999 6622 545",
       // check insanely long, but passable email
       email: "sterling.malory.archer@isis.not-gov.us",
     };
