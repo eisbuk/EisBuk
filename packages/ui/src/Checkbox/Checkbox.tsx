@@ -19,6 +19,12 @@ const Checkbox: React.FC<CheckboxProps> = ({
   const { field } = props;
   const { name } = field;
 
+  const labelClasses = [
+    "font-medium",
+    disabled ? "text-gray-400" : "text-gray-700",
+  ];
+  const helpTextColor = disabled ? "text-gray-300" : "text-gray-500";
+
   return (
     <div className="relative flex items-start">
       <div className="flex items-center h-5">
@@ -32,10 +38,10 @@ const Checkbox: React.FC<CheckboxProps> = ({
         />
       </div>
       <div className="ml-3 text-sm">
-        <label htmlFor={name} className="font-medium text-gray-700">
+        <label htmlFor={name} className={labelClasses.join(" ")}>
           {label}
         </label>
-        <p id="comments-description" className="text-gray-500">
+        <p id={`comments-description-${name}`} className={helpTextColor}>
           {helpText}
         </p>
       </div>
