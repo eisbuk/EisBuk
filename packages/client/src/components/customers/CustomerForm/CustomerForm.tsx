@@ -211,7 +211,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 ({ Icon, component, fieldSet, name, label, ...field }) => {
                   if (fieldSet?.length) {
                     return (
-                      <div>
+                      <div key={name}>
                         {label && (
                           <h2 className="block mb-4 text-sm font-medium text-gray-700">
                             {label}
@@ -238,6 +238,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
 
                   return (
                     <FastField
+                      key={name}
                       name={name}
                       label={label}
                       {...field}
