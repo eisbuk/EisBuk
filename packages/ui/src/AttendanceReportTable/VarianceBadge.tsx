@@ -27,7 +27,7 @@ const VarianceBadge: React.FC<VarianceBadgeProps> = ({ delta }) => {
   return (
     <span className={classes}>
       {!delta ? (
-        <span className="h-6 w-6">
+        <span className="sm:h-6 sm:w-6 h-5 w-5">
           <CheckCircle />
         </span>
       ) : (
@@ -48,7 +48,8 @@ const badgeBaseClasses = [
   "rounded-md",
   "px-2",
   "py-0.5",
-  "text-sm",
+  "sm:text-sm",
+  "text-xs",
   "tracking-wide",
   "font-normal",
 ];

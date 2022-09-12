@@ -50,7 +50,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     const weekday = t(DateFormat.Weekday, { date: dateTime });
     const day = t(DateFormat.Day, { date: dateTime });
 
-    acc[curDate] = `${weekday}, ${day}`;
+    acc[curDate] = `${weekday} ${day}`;
     return acc;
   }, {});
 
@@ -83,9 +83,6 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     return [athleteBooked, athleteDelta, ...acc];
   }, []);
 
-  // TODO: Total row could do with more emphasis
-  // TODO: Booked row should be 0h if delta row has value, but current markup won't allow that as each row content has no knowledge of the other
-  // TODO: Reduce label dates on small screen
   return (
     <Table
       // TODO: header strings require translations

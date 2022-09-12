@@ -39,7 +39,8 @@ const cellBaseClasses = [
   "whitespace-nowrap",
   "px-3",
   "py-4",
-  "text-sm",
+  "sm:text-sm",
+  "text-xs",
 ];
 
 const typeClassLookup = {
