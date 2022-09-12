@@ -35,11 +35,11 @@ const Table = <T extends TableItem>({
         <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
           <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
             <table
-              className="min-w-full divide-y divide-gray-300 table-auto border-collapse"
+              className="min-w-full divide-y divide-gray-300 table-auto border-separate"
               style={{ borderSpacing: 0 }}
             >
-              <thead className="bg-gray-50">{renderHeaders(headers)}</thead>
-              <tbody className="bg-white">{items.map(renderRow)}</tbody>
+              <thead className="bg-white">{renderHeaders(headers)}</thead>
+              <tbody className="bg-gray-50">{items.map(renderRow)}</tbody>
             </table>
           </div>
         </div>

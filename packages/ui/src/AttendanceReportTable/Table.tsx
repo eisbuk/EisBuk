@@ -116,11 +116,11 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
       }}
       renderRow={(rowItem, rowIx) => {
         const { type: rowType, ...data } = rowItem;
-        const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
+        const bgClasses = rowIx % 2 === 0 ? undefined : "bg-white";
+
+        // TODO: this currently doesn't work because of `border-separate` set on parent table
         const borderClasses =
-          rowType === HoursType.Booked
-            ? undefined
-            : "border-b-[1px] border-gray-300";
+          rowType === HoursType.Booked ? "border-b-2" : undefined;
 
         const rowClasses = [borderClasses, bgClasses].join(" ");
 
