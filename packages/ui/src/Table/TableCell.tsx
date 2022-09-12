@@ -3,19 +3,24 @@ import React from "react";
 interface CellProps {
   textAlign?: CellTextAlign;
   type?: CellType;
+  waypoint?: boolean;
 }
 
 const TableCell: React.FC<CellProps> = ({
   children,
   textAlign = CellTextAlign.Left,
   type = CellType.Data,
+  waypoint = false,
 }) => {
   const as = type === CellType.Header ? "th" : "td";
+
+  const accentClasses = waypoint ? ["bg-gray-100"] : [];
 
   const className = [
     ...cellBaseClasses,
     ...typeClassLookup[type],
     ...textClassLookup[textAlign],
+    ...accentClasses,
   ].join(" ");
 
   return React.createElement(as, { className }, [children]);

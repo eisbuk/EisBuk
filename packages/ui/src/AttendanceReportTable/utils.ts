@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import { HoursType } from "./Table";
 
 export type HoursTuple = [booked: number, attended: number];
@@ -71,4 +73,9 @@ export const collectDatesByHoursType = (data: AttendanceWithDeltaData) => {
     },
     { [HoursType.Booked]: {}, [HoursType.Attended]: {}, [HoursType.Delta]: {} }
   );
+};
+
+export const isWeekend = (dateStr: string) => {
+  const dayOfWeek = DateTime.fromISO(dateStr).weekday;
+  return dayOfWeek === 6 || dayOfWeek === 7;
 };

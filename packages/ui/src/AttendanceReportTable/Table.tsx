@@ -9,6 +9,7 @@ import {
   calculateDeltas,
   calculateTotals,
   collectDatesByHoursType,
+  isWeekend,
   type HoursTuple,
 } from "./utils";
 
@@ -40,6 +41,12 @@ interface RowItem {
   [dateStr: string]: string | number | null;
   total: number;
   type: HoursType;
+}
+
+interface RowContent {
+  cellItem: string | number | boolean | null;
+  itemIx: number;
+  date: string;
 }
 
 const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
@@ -92,7 +99,6 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
         return (
           <tr>
             {Object.keys(headers).map((key) => (
-              // TODO: add "waypoints for weekend dates"
               <TableCell
                 type={CellType.Header}
                 textAlign={
@@ -100,6 +106,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                     ? CellTextAlign.Center
                     : CellTextAlign.Left
                 }
+                waypoint={isWeekend(key)}
               >
                 {headers[key]}
               </TableCell>
@@ -117,14 +124,21 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 
         const rowClasses = [borderClasses, bgClasses].join(" ");
 
-        // TODO: Cell Background also depends on if the rowItem key is a date string and "isWeekend" => Object.keys(rowItem)
         return (
           <tr key={rowIx} className={rowClasses}>
-            {Object.values(data).map((cellItem, itemIx) =>
+            {Object.entries(data).map(([date, cellItem], itemIx) =>
               rowType === HoursType.Booked ? (
-                <BookedRowCells cellItem={cellItem} itemIx={itemIx} />
+                <BookedRowCells
+                  cellItem={cellItem}
+                  itemIx={itemIx}
+                  date={date}
+                />
               ) : (
-                <DeltaRowCells cellItem={cellItem} itemIx={itemIx} />
+                <DeltaRowCells
+                  cellItem={cellItem}
+                  itemIx={itemIx}
+                  date={date}
+                />
               )
             )}
           </tr>
@@ -137,26 +151,20 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 export default AttendanceReportTable;
 
 // TODO: better semantic labelling for "Athlete" data, if its shown and/or hidden
-const BookedRowCells: React.FC<{
-  cellItem: string | number | boolean | null;
-  itemIx: number;
-}> = ({ cellItem, itemIx }) =>
+const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
     <TableCell type={CellType.Title}>{cellItem}</TableCell>
   ) : (
-    <TableCell textAlign={CellTextAlign.Center}>
+    <TableCell textAlign={CellTextAlign.Center} waypoint={isWeekend(date)}>
       <div>{cellItem === 0 ? "-" : `${cellItem}h`}</div>
     </TableCell>
   );
 
-const DeltaRowCells: React.FC<{
-  cellItem: string | number | boolean | null;
-  itemIx: number;
-}> = ({ cellItem, itemIx }) =>
+const DeltaRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
     <TableCell type={CellType.Title}></TableCell>
   ) : (
-    <TableCell textAlign={CellTextAlign.Center}>
+    <TableCell textAlign={CellTextAlign.Center} waypoint={isWeekend(date)}>
       {cellItem === null ? "-" : <VarianceBadge delta={cellItem as number} />}
     </TableCell>
   );
