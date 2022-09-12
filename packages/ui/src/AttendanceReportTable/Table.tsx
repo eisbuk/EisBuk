@@ -5,36 +5,36 @@ import { useTranslation, DateFormat } from "@eisbuk/translations";
 
 import { Table, TableCell, CellType, CellTextAlign } from "../";
 import VarianceBadge from "./VarianceBadge";
+import {
+  calculateDeltas,
+  calculateTotals,
+  collectDatesByHoursType,
+  type HoursTuple,
+} from "./utils";
 
-export enum DataType {
+export enum HoursType {
   Booked = "booked",
+  Attended = "attended",
   Delta = "delta",
 }
 
-interface Data {
+export interface TableData {
   athlete: string;
-  booked: {
-    // TODO: Stricter date string match? and *
-    [dateStr: string]: number;
-    total: number;
-  };
-  delta: {
-    // TODO: *
-    [dateStr: string]: number;
-    total: number;
+  hours: {
+    [dateStr: string]: HoursTuple;
   };
 }
 
 interface TableProps {
   dates: string[];
-  data: Data[];
+  data: TableData[];
 }
 
 interface RowItem {
   athlete: string;
-  [dateStr: string]: string | number;
+  [dateStr: string]: string | number | null;
   total: number;
-  type: DataType;
+  type: HoursType;
 }
 
 const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
@@ -49,27 +49,42 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     return acc;
   }, {});
 
-  const items = data.reduce<RowItem[]>((acc, { athlete, booked, delta }) => {
-    // TODO: this will be incomplete: need to spread all dates within range over object,
-    // try to access values from athlete.booked|delta[dateStr], or mark as zero if no access
-    // TODO: Should you also just calculate Delta in this component / Util function (that is also exported) - so data coming in is "booked" | "atended"
-    // You could probably just store these as an array on the same day?
+  const headers = {
+    athlete: "Athletes",
+    ...dateHeaders,
+    total: "Total",
+  };
 
-    // Note that this should always create alternating rows for the same athlete
-    const athleteBooked = { type: DataType.Booked, athlete, ...booked };
-    const athleteDelta = { type: DataType.Delta, athlete, ...delta };
+  const items = data.reduce<RowItem[]>((acc, { athlete, hours }) => {
+    const hoursWithDeltas = calculateDeltas(hours);
 
+    const [totalBooked, , totalDelta] = calculateTotals(hoursWithDeltas);
+    const { booked, delta } = collectDatesByHoursType(hoursWithDeltas);
+
+    const athleteBooked = {
+      type: HoursType.Booked,
+      athlete,
+      ...booked,
+      total: totalBooked,
+    };
+    const athleteDelta = {
+      type: HoursType.Delta,
+      athlete,
+      ...delta,
+      total: totalDelta,
+    };
+
+    // Note: Returns alternating Booked-Delta rows for each athlete
     return [athleteBooked, athleteDelta, ...acc];
   }, []);
 
+  // TODO: Total row could do with more emphasis
+  // TODO: Booked row should be 0h if delta row has value, but current markup won't allow that as each row content has no knowledge of the other
+  // TODO: Reduce label dates on small screen
   return (
     <Table
       // TODO: header strings require translations
-      headers={{
-        athlete: "Athletes",
-        ...dateHeaders,
-        total: "Total",
-      }}
+      headers={headers}
       items={items}
       renderHeaders={(headers) => {
         return (
@@ -82,19 +97,19 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
         );
       }}
       renderRow={(rowItem, rowIx) => {
+        const { type: rowType, ...data } = rowItem;
         const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
+        // TODO: border between athletes - Delta to Booked row
         const borderClasses =
-          rowItem.type === DataType.Booked ? undefined : "border-b-[1px]";
+          rowType === HoursType.Booked ? undefined : "border-b-[1px]";
 
         const rowClasses = [borderClasses, bgClasses].join(" ");
 
-        // TODO: Cell Background also depends on if the rowItem key is a date string and "isWeekend"
-        // Object.keys(rowItem)
-
+        // TODO: Cell Background also depends on if the rowItem key is a date string and "isWeekend" => Object.keys(rowItem)
         return (
           <tr key={rowIx} className={rowClasses}>
-            {Object.values(rowItem).map((cellItem, itemIx) =>
-              rowItem.type === DataType.Booked ? (
+            {Object.values(data).map((cellItem, itemIx) =>
+              rowType === HoursType.Booked ? (
                 <BookedRowCells cellItem={cellItem} itemIx={itemIx} />
               ) : (
                 <DeltaRowCells cellItem={cellItem} itemIx={itemIx} />
@@ -111,28 +126,25 @@ export default AttendanceReportTable;
 
 // TODO: better semantic labelling for "Athlete" data, if its shown and/or hidden
 const BookedRowCells: React.FC<{
-  cellItem: string | number;
+  cellItem: string | number | boolean | null;
   itemIx: number;
-}> = ({ cellItem, itemIx }) => {
-  const numberContent = (num: number) => (num === 0 ? "-" : `${num}h`);
-  return itemIx === 0 ? (
+}> = ({ cellItem, itemIx }) =>
+  itemIx === 0 ? (
     <TableCell type={CellType.Title}>{cellItem}</TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center}>
-      <div>{numberContent(cellItem)}</div>
+      <div>{cellItem === 0 ? "-" : `${cellItem}h`}</div>
     </TableCell>
   );
-};
 
 const DeltaRowCells: React.FC<{
-  cellItem: string | number;
+  cellItem: string | number | boolean | null;
   itemIx: number;
-}> = ({ cellItem, itemIx }) => {
-  return itemIx === 0 ? (
-    <TableCell type={CellType.Title}>""</TableCell>
+}> = ({ cellItem, itemIx }) =>
+  itemIx === 0 ? (
+    <TableCell type={CellType.Title}></TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center}>
-      <VarianceBadge delta={cellItem} />
+      {cellItem === null ? "-" : <VarianceBadge delta={cellItem as number} />}
     </TableCell>
   );
-};

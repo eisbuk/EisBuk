@@ -1,27 +1,50 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import AttendanceVarianceTable, { DataType } from "./Table";
+import AttendanceVarianceTable, { TableData } from "./Table";
 
 export default {
   title: "Attendance Variance Table",
   component: AttendanceVarianceTable,
 } as ComponentMeta<typeof AttendanceVarianceTable>;
 
-const testDates = ["2022-09-03", "2022-09-04"];
+const testDates = [
+  "2022-09-03",
+  "2022-09-04",
+  "2022-09-05",
+  "2022-09-06",
+  "2022-09-07",
+];
 
-const testData = [
+const testData: TableData[] = [
   {
-    athlete: "Chris",
-    [DataType.Booked]: {
-      "2022-09-03": 1.5,
-      "2022-09-04": 2.0,
-      total: 3.5,
+    athlete: "John Doe",
+    hours: {
+      "2022-09-03": [1.5, 0],
+      "2022-09-04": [1.5, 0.5],
+      "2022-09-05": [1.5, 1.5],
+      "2022-09-06": [0, 0],
+      "2022-09-07": [0, 1.5],
     },
-    [DataType.Delta]: {
-      "2022-09-03": +1,
-      "2022-09-04": -0.5,
-      total: 3.5,
+  },
+  {
+    athlete: "Willy Brandt",
+    hours: {
+      "2022-09-03": [1.5, 1],
+      "2022-09-04": [1.5, 1.5],
+      "2022-09-05": [0, 0],
+      "2022-09-06": [0, 0],
+      "2022-09-07": [0, 2],
+    },
+  },
+  {
+    athlete: "Kevin Cosner",
+    hours: {
+      "2022-09-03": [1, 1],
+      "2022-09-04": [1.5, 1.5],
+      "2022-09-05": [0, 0],
+      "2022-09-06": [0, 0],
+      "2022-09-07": [2, 2],
     },
   },
 ];
