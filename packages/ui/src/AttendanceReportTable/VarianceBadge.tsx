@@ -54,9 +54,9 @@ const badgeBaseClasses = [
 ];
 
 const colorClassLookup = {
-  [Variance.Zero]: ["bg-white", "text-green-300"],
-  [Variance.Positive]: ["bg-yellow-100", "text-yellow-800"],
-  [Variance.Negative]: ["bg-red-100", "text-red-800"],
+  [Variance.Zero]: ["text-green-300"],
+  [Variance.Negative]: ["bg-yellow-100", "text-yellow-800"],
+  [Variance.Positive]: ["bg-red-100", "text-red-800"],
 };
 
 export default VarianceBadge;
