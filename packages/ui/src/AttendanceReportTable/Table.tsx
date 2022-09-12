@@ -18,6 +18,11 @@ export enum HoursType {
   Delta = "delta",
 }
 
+enum StaticHeaders {
+  Athletes = "athletes",
+  Total = "total",
+}
+
 export interface TableData {
   athlete: string;
   hours: {
@@ -50,9 +55,9 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
   }, {});
 
   const headers = {
-    athlete: "Athletes",
+    athlete: StaticHeaders.Athletes,
     ...dateHeaders,
-    total: "Total",
+    total: StaticHeaders.Total,
   };
 
   const items = data.reduce<RowItem[]>((acc, { athlete, hours }) => {
@@ -91,7 +96,16 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
           <tr>
             {Object.keys(headers).map((key) => (
               // TODO: add "waypoints for weekend dates"
-              <TableCell type={CellType.Header}>{headers[key]}</TableCell>
+              <TableCell
+                type={CellType.Header}
+                textAlign={
+                  headers[key] !== StaticHeaders.Athletes
+                    ? CellTextAlign.Center
+                    : CellTextAlign.Left
+                }
+              >
+                {headers[key]}
+              </TableCell>
             ))}
           </tr>
         );
@@ -99,9 +113,10 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
       renderRow={(rowItem, rowIx) => {
         const { type: rowType, ...data } = rowItem;
         const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
-        // TODO: border between athletes - Delta to Booked row
         const borderClasses =
-          rowType === HoursType.Booked ? undefined : "border-b-[1px]";
+          rowType === HoursType.Booked
+            ? undefined
+            : "border-b-[1px] border-gray-300";
 
         const rowClasses = [borderClasses, bgClasses].join(" ");
 
