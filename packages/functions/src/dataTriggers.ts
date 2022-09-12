@@ -313,36 +313,38 @@ export const createAttendedSlotOnAttendance = functions
 
     const db = admin.firestore();
 
-    const isCreate = !change.before.exists;
+    // const isCreate = !change.before.exists;
+    const isUpdate = change.after.exists;
     // const isDelete = !change.after.exists;
 
-    if (isCreate) {
+    if (isUpdate) {
       const attendanceData = change.after.data() as SlotAttendnace;
 
-      const customerId = Object.keys(attendanceData.attendances)[0];
-      const attendances = attendanceData.attendances[customerId];
+      Object.keys(attendanceData.attendances).forEach(async (customerId) => {
+        const attendances = attendanceData.attendances[customerId];
 
-      const { secretKey } = (
-        await db
+        const { secretKey } = (
+          await db
+            .collection(Collection.Organizations)
+            .doc(organization)
+            .collection(OrgSubCollection.Customers)
+            .doc(customerId)
+            .get()
+        ).data() as Customer;
+
+        const attendedSlotsEntryRef = db
           .collection(Collection.Organizations)
           .doc(organization)
-          .collection(OrgSubCollection.Customers)
-          .doc(customerId)
-          .get()
-      ).data() as Customer;
+          .collection(OrgSubCollection.Bookings)
+          .doc(secretKey)
+          .collection(BookingSubCollection.AttendedSlots)
+          .doc(bookingId);
 
-      const attendedSlotsEntryRef = db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.Bookings)
-        .doc(secretKey)
-        .collection(BookingSubCollection.AttendedSlots)
-        .doc(bookingId);
-
-      await attendedSlotsEntryRef.set(
-        { date: attendanceData.date, interval: attendances.attendedInterval },
-        { merge: true }
-      );
+        await attendedSlotsEntryRef.set(
+          { date: attendanceData.date, interval: attendances.attendedInterval },
+          { merge: true }
+        );
+      });
     }
   });
 /**
