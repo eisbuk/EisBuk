@@ -269,7 +269,82 @@ export const createAttendanceForBooking = functions
 
     await attendanceRef.set(updatedEntry, { merge: true });
   });
+// SlotAttendnace = {
+//   /**
+//    * ISO date of the slot for easier querying
+//    */
+//   date: string;
+//   /**
+//    * Attendances for slot keyed by customer
+//    */
+//   attendances: {
+//     [customerId: string]: CustomerAttendance;
+//   };
+// };
 
+// CustomerAttendance {
+//   bookedInterval: string | null;
+//   attendedInterval: string | null;
+// }
+
+// entry
+// [slotId: string]: CustomerBookingEntry;
+// {
+//   /**
+//    * ISO date of the booked slot (used for easier querying from store)
+//    */
+//   date: string;
+//   /**
+//    * Booked interval for particular slot
+//    */
+//   interval: string;
+
+// }
+export const createAttendedSlotOnAttendance = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{bookingId}/`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, bookingId } = context.params as Record<
+      string,
+      string
+    >;
+
+    const db = admin.firestore();
+
+    const isCreate = !change.before.exists;
+    // const isDelete = !change.after.exists;
+
+    if (isCreate) {
+      const attendanceData = change.after.data() as SlotAttendnace;
+
+      const customerId = Object.keys(attendanceData.attendances)[0];
+      const attendances = attendanceData.attendances[customerId];
+
+      const { secretKey } = (
+        await db
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Customers)
+          .doc(customerId)
+          .get()
+      ).data() as Customer;
+
+      const attendedSlotsEntryRef = db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Bookings)
+        .doc(secretKey)
+        .collection(BookingSubCollection.AttendedSlots)
+        .doc(bookingId);
+
+      await attendedSlotsEntryRef.set(
+        { date: attendanceData.date, interval: attendances.attendedInterval },
+        { merge: true }
+      );
+    }
+  });
 /**
  * A data trigger used to store `existingSecrets` in organization document,
  * enabling us to verify existance of secrets in document available to client ("organizations/{organization}")

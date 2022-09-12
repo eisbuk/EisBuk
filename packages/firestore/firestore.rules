@@ -134,6 +134,14 @@ service cloud.firestore {
             bookingData.interval in bookedSlot.data.intervals     
           );
         }
+        function checkAttendance(slotId) {
+          let attendanceData = get(/databases/$(database)/documents/organizations/$(organization)/attendance/$(slotId));
+
+          return (
+            // Check date integrity
+            attendanceData.bookedInterval == null 
+          );
+        }
         function checkBookedSlotCategory(slotId) {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
@@ -147,6 +155,19 @@ service cloud.firestore {
           allow create, update: if (
             checkBookingSlot(slotId, request.resource.data) &&
             checkBookedSlotCategory(slotId)  
+          )
+        }
+        match /attendedSlots/{slotId} {
+          // read => anyone
+          // write => admin
+          // Anybody with secret key should be able to read and write (with valid data) to 'attended'
+          allow read: if true;
+          // Check data integrity for create/update
+          allow write: if (
+            isAdmin(organization) &&
+            checkBookingSlot(slotId, request.resource.data) &&
+            // check that attendedInterval == null
+            checkAttendance(slotId)  
           )
         }
         match /calendar/{date} {
