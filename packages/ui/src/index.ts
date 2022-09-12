@@ -23,6 +23,7 @@ import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
 import Table from "./Table";
+import AttendanceReportTable from "./AttendanceReportTable";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -57,4 +58,5 @@ export {
   IconButton,
   TextareaEditable,
   Table,
+  AttendanceReportTable,
 };
