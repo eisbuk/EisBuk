@@ -223,6 +223,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                         <fieldset className="w-64 grid grid-cols-1 gap-2 md:grid-cols-2 md:w-[30rem]">
                           {fieldSet.map(({ label, disabled, value }) => (
                             <FastField
+                              key={label}
                               className="col-span-1"
                               name={name}
                               label={label}
