@@ -17,13 +17,16 @@ export const getDefaultCountryDialCode = (
 
 /**
  * A util used to extract the country dial code from the phone string.
+ * If dial code can't be inferred, returns empty string for dial code
+ * and the full `phone` input as the rest of the phone number.
  * @param {string} phone a string phone number (e.g. "+39991234567")
+ * @returns a touple of [dialCode, restOfThePhoneNumber]
  * @exampe
  * ```
- * extractCountryDialCode("+39991234567") // returns "+39" (for Italy)
+ * extractCountryDialCode("+39991234567") // returns ["+39","991234567"] (for Italy)
  * ```
  */
-export const extractCountryDialCode = (phone: string) => {
+export const splitByDialCode = (phone: string): [string, string] => {
   const country =
     // Try matching countries with 4 number prefix
     findCountryByDialCode(phone.substring(0, 5)) ||
@@ -33,10 +36,10 @@ export const extractCountryDialCode = (phone: string) => {
     findCountryByDialCode(phone.substring(0, 3));
 
   if (country) {
-    return country.dial_code;
+    return [country.dial_code, phone.replace(country.dial_code, "")];
   }
 
-  return "";
+  return ["", phone];
 };
 
 /**

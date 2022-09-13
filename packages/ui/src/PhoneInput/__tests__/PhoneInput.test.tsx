@@ -145,5 +145,19 @@ describe("PhoneInput", () => {
       // and should stay so if not manually changed
       wantValue: "+39991111111",
     },
+
+    {
+      name: "should not update on blur if no text value",
+      initialValue: "",
+      defaultDialCode: "+39",
+      testAction: () => {
+        const textField = screen.getByRole("textbox");
+        userEvent.clear(textField);
+        textField.blur();
+      },
+      // Even though IT is set as 'defaultValue' for dial code, the field already had a 'HR' prefixed number
+      // and should stay so if not manually changed
+      wantValue: "",
+    },
   ]);
 });

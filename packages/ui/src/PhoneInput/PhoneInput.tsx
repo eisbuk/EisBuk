@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import TextInput, { TextInputProps } from "../TextInput";
 
 import CountryCodesDropdown, {
-  extractCountryDialCode,
+  splitByDialCode,
   getDefaultCountryDialCode,
 } from "../CountryCodesDropdown";
 
@@ -15,22 +15,28 @@ interface Props extends Omit<TextInputProps, "type" | "inputMode"> {
   defaultDialCode?: string;
 }
 
-const initCountryDropdown = (
-  defaultDialCode: string | undefined,
-  fieldValue?: string
-) => {
-  // If field value (phone string) provided, and starts with country prefix
-  // try and infer the country
-  let prefix =
-    fieldValue?.startsWith("+") && extractCountryDialCode(fieldValue);
+/**
+ * A function to initialise country dropdown. Tries to infer the
+ * dial code from `fieldValue` (if any). If the `fieldValue` empty ("")
+ * uses the `defaultDialCode` if provided. If no `defaultDialCode` provided
+ * falls back to the dial code of the first country in the country dial code list.
+ *
+ * Written to return a function rather than a value, so that the function is (when used as `useState` initializer)
+ * ran only on init, rather than each time.
+ * @param {string} defaultDialCode an (optional) dial code to use as afallback if one can't be inferred from the `fieldValue`
+ * @param {string} fieldValue a full value of the field (e.g. +399891234567) used to infer the country code from the value
+ */
+const initCountryDropdown =
+  (defaultDialCode: string | undefined, fieldValue: string) => () => {
+    let [prefix] = splitByDialCode(fieldValue);
 
-  // If no field value, or country not found set a default value
-  if (!prefix) {
-    prefix = getDefaultCountryDialCode(defaultDialCode);
-  }
+    // If no field value, or country not found set a default value
+    if (!prefix) {
+      prefix = getDefaultCountryDialCode(defaultDialCode);
+    }
 
-  return prefix;
-};
+    return prefix;
+  };
 
 const PhoneInput: React.FC<Props> = ({
   field: f,
@@ -39,51 +45,50 @@ const PhoneInput: React.FC<Props> = ({
 }) => {
   const {
     onChange,
-    value: fieldValue,
+    value: fieldValue = "",
     name,
     onBlur,
     ...field
   } = f as FieldInputProps<string | undefined>;
 
-  const [dialCode, setDialCode] = useState(() =>
+  // Local state used to control the country code dropdown
+  const [dialCode, setDialCode] = useState(
     initCountryDropdown(defaultDialCode, fieldValue)
   );
 
-  // Get text input value by removing the country code from the full form value
-  const textValue = fieldValue?.replace(dialCode, "");
+  // On each change (as well as initial render), split the dial code and 'textValue' from the full 'fieldValue'
+  const [dc, textValue] = splitByDialCode(fieldValue);
+  // Update the local 'dialCode' only if the dial code extracted from the 'fieldValue' is defined and different from the current one
+  if (dc && dc !== dialCode) {
+    setDialCode(dc);
+  }
 
-  // Update form value on text input change
-  const handleChange = (e: {
-    // We only need the 'target.value' from the event object for this purpose
-    // so this is easier for type compatibility in other functions calling to this one
-    target: Pick<React.ChangeEvent<HTMLInputElement>["target"], "value">;
-  }) => {
+  // On text part of the phone input change, update the full value to the form. If text
+  // deleted. update the empty ("") value, without the 'dialCode'
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTextValue = e.target.value;
-    const value = dialCode + newTextValue;
-
+    const value = newTextValue ? dialCode + newTextValue : "";
     onChange({ target: { name, value } });
   };
 
-  // Remove whitespaces onBlur
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const value = e.target.value.replaceAll(" ", "");
-    const evt = { target: { name, value } };
-
-    handleChange(evt);
-    onBlur(evt);
-  };
-
-  // Update form value on country code change
+  // On dial code change, alway update the local state, but lift updates to
+  // the field, only if 'textValue' defined
   const handleCodeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newCountryCode = e.target.value;
+    const newDialCode = e.target.value;
 
-    setDialCode(newCountryCode);
+    setDialCode(newDialCode);
 
-    // Don't call on change if there's no phone value besides the dial code
     if (textValue) {
-      const value = newCountryCode + textValue;
+      const value = newDialCode + textValue;
       onChange({ target: { name, value } });
     }
+  };
+
+  // Remove whitespaces on blur and lift the event
+  const handleTextBlur = () => {
+    const value = fieldValue.replaceAll(" ", "");
+    onChange({ target: { name, value } });
+    onBlur({ target: { name, value } });
   };
 
   return (
@@ -93,8 +98,8 @@ const PhoneInput: React.FC<Props> = ({
         ...field,
         value: textValue,
         name,
-        onChange: handleChange,
-        onBlur: handleBlur,
+        onChange: handleTextChange,
+        onBlur: handleTextBlur,
       }}
       StartAdornment={
         <CountryCodesDropdown
