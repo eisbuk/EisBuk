@@ -148,7 +148,7 @@ const emptyValues = {
 // #region fieldSetup
 const generalFields: FormSectionFieldProps[] = [
   {
-    name: "dislpayName",
+    name: "displayName",
     label: i18n.t(OrganizationLabel.DisplayName),
   },
   {

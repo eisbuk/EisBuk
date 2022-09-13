@@ -14,7 +14,7 @@ export default {
 
 const generalFields = [
   {
-    name: "dislpayName",
+    name: "displayName",
     label: i18n.t(OrganizationLabel.DisplayName),
   },
   {
