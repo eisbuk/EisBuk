@@ -15,9 +15,20 @@ const Checkbox: React.FC<CheckboxProps> = ({
   disabled,
   field,
   className = "",
+  value,
   ...props
 }) => {
-  const { name } = field;
+  const { name, value: fieldValue, checked: fieldChecked } = field;
+
+  // Check if checkbox is standalone or part of fieldsed.
+  // If part of fieldset, the value will be an array
+  const checked = Array.isArray(fieldValue)
+    ? // If part of fieldset, we check to see if the field is
+      // 'checked' by it being included in array of values
+      fieldValue.includes(value)
+    : // If the checkbox is standalone, checked property will
+      // be correctly passed
+      fieldChecked;
 
   const labelClasses = [
     "font-medium",
@@ -29,13 +40,15 @@ const Checkbox: React.FC<CheckboxProps> = ({
     <div className={["relative flex items-start", className].join(" ")}>
       <div className="flex items-center h-5">
         <input
+          {...field}
+          {...props}
           id={name}
           disabled={disabled}
           aria-describedby="comments-description"
           type="checkbox"
           className="focus:ring-cyan-700 h-4 w-4 text-gray-800 border-gray-300 rounded disabled:text-gray-200"
-          {...field}
-          {...props}
+          value={value}
+          checked={checked}
         />
       </div>
       <div className="ml-3 text-sm">
