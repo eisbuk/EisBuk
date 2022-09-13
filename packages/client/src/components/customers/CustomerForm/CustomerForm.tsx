@@ -240,19 +240,23 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                     );
                   }
 
+                  const additionalProps = Icon
+                    ? {
+                        StartAdornment: (
+                          <IconAdornment position="start" Icon={<Icon />} />
+                        ),
+                      }
+                    : {};
+
                   return (
                     <FastField
+                      {...field}
                       key={name}
                       name={name}
                       label={label}
-                      {...field}
                       autoComplete="off"
-                      StartAdornment={
-                        Icon && (
-                          <IconAdornment position="start" Icon={<Icon />} />
-                        )
-                      }
                       component={component || TextInput}
+                      {...additionalProps}
                     />
                   );
                 }
