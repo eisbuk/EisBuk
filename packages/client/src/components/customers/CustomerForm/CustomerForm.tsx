@@ -246,6 +246,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                       name={name}
                       label={label}
                       {...field}
+                      autoComplete="off"
                       StartAdornment={
                         Icon && (
                           <IconAdornment position="start" Icon={<Icon />} />
