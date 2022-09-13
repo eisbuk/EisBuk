@@ -46,6 +46,7 @@ const cellBaseClasses = [
   "py-4",
   "sm:text-sm",
   "text-xs",
+  "align-middle",
 ];
 
 const typeClassLookup = {

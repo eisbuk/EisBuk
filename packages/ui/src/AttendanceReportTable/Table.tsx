@@ -156,7 +156,7 @@ const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
     <TableCell type={CellType.Title}>{cellItem}</TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center} waypoint={isWeekend(date)}>
-      <div>{cellItem === 0 ? "-" : `${cellItem}h`}</div>
+      <p className="leading-6">{cellItem === 0 ? "-" : `${cellItem}h`}</p>
     </TableCell>
   );
 
