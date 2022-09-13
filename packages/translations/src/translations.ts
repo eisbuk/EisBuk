@@ -314,3 +314,10 @@ export enum PrintableAttendance {
   Note = "PrintableAttendance.Note",
 }
 // #endregion alerts
+
+// #region tables
+export enum AttendanceVarianceHeaders {
+  Athlete = "AttendanceVarianceHeaders.Athlete",
+  Total = "AttendanceVarianceHeaders.Total",
+}
+// #endregion tables

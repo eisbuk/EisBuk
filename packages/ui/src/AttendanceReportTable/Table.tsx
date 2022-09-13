@@ -1,7 +1,11 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import { useTranslation, DateFormat } from "@eisbuk/translations";
+import {
+  useTranslation,
+  DateFormat,
+  AttendanceVarianceHeaders,
+} from "@eisbuk/translations";
 
 import { Table, TableCell, CellType, CellTextAlign } from "../";
 import VarianceBadge from "./VarianceBadge";
@@ -17,11 +21,6 @@ export enum HoursType {
   Booked = "booked",
   Attended = "attended",
   Delta = "delta",
-}
-
-enum StaticHeaders {
-  Athletes = "athletes",
-  Total = "total",
 }
 
 export interface TableData {
@@ -62,9 +61,9 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
   }, {});
 
   const headers = {
-    athlete: StaticHeaders.Athletes,
+    athlete: t(AttendanceVarianceHeaders.Athlete),
     ...dateHeaders,
-    total: StaticHeaders.Total,
+    total: t(AttendanceVarianceHeaders.Total),
   };
 
   const items = data.reduce<RowItem[]>((acc, { athlete, hours }) => {
@@ -92,7 +91,6 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 
   return (
     <Table
-      // TODO: header strings require translations
       headers={headers}
       items={items}
       renderHeaders={(headers) => {
@@ -102,7 +100,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
               <TableCell
                 type={CellType.Header}
                 textAlign={
-                  headers[key] !== StaticHeaders.Athletes
+                  headers[key] !== t(AttendanceVarianceHeaders.Athlete)
                     ? CellTextAlign.Center
                     : CellTextAlign.Left
                 }

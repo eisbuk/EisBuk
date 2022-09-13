@@ -285,5 +285,9 @@
     "Athlete": "Atleta",
     "Signature": "Firma",
     "Note": "Note"
+  },
+  "AttendanceVarianceHeaders": {
+    "Athlete": "Atleta",
+    "Total": "Totale"
   }
 }
