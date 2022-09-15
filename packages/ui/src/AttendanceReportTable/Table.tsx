@@ -150,7 +150,9 @@ export default AttendanceReportTable;
 // TODO: better semantic labelling for "Athlete" data, if its shown and/or hidden
 const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
-    <TableCell type={CellType.Title}>{cellItem}</TableCell>
+    <TableCell type={CellType.Title}>
+      <div className="inline-block w-32 truncate ...">{cellItem}</div>
+    </TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center} isWaypoint={isWeekend(date)}>
       <p className="leading-6">{cellItem === 0 ? "-" : `${cellItem}h`}</p>

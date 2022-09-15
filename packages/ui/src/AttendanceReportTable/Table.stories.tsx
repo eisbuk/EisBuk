@@ -33,7 +33,7 @@ const testDates = [
 
 const testData: TableData[] = [
   {
-    athlete: "John Doe",
+    athlete: "John Longname Doe",
     hours: {
       "2022-09-01": [1.5, 0],
       "2022-09-02": [1.5, 0.5],
