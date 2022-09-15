@@ -36,7 +36,7 @@ import {
   organization as organizationData,
   intervals,
 } from "@/__testData__/dataTriggers";
-import { saul } from "@/__testData__/customers";
+import { saul, walt } from "@/__testData__/customers";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 
@@ -350,12 +350,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           },
         };
         // set attendance for customer
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({
-            ...attendanceWithTestCustomer,
-            attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
-          });
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
+        });
 
         // // get document in attended slots
         const docRes = await waitForCondition({
@@ -406,12 +404,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           },
         };
         // set attendance for customer
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({
-            ...attendanceWithTestCustomer,
-            attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
-          });
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
+        });
 
         // // get document in attended slots
         const docRes = await waitForCondition({
@@ -478,12 +474,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           },
         };
         // set attendance for customer
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({
-            ...attendanceWithTestCustomer,
-            attendances: { ...bookedAttendanceWithTestCustomerAttendances },
-          });
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...bookedAttendanceWithTestCustomerAttendances },
+        });
 
         // // get document in attended slots
         const docRes = await waitForCondition({
@@ -498,6 +492,102 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docRes).toBeUndefined();
       }
     );
+    testWithEmulator("should mark multiple athletes as attended", async () => {
+      const { organization } = await setUpOrganization();
+
+      await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+      await waitForCondition({
+        documentPath: getAttendanceDocPath(organization, slotId),
+        condition: (data) => Boolean(data),
+      });
+
+      // set two customers
+      const customerRef = adminDb.doc(
+        getCustomerDocPath(organization, saul.id)
+      );
+      await customerRef.set(saul);
+
+      const secondCustomerRef = adminDb.doc(
+        getCustomerDocPath(organization, walt.id)
+      );
+      await secondCustomerRef.set(walt);
+
+      const attendance = {
+        [saul.id]: {
+          ...attendanceWithTestCustomer.attendances[saul.id],
+
+          bookedInterval: null,
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...attendance },
+      });
+
+      const nonBookedAttendance = {
+        [saul.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...nonBookedAttendance },
+      });
+
+      const secondNonBookedAttendance = {
+        [saul.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+        [walt.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...secondNonBookedAttendance },
+      });
+
+      // get documents in attended slots
+
+      const docResUpdated = await waitForCondition({
+        documentPath: getAttendedSlotDocPath(
+          organization,
+          saul.secretKey,
+          slotId
+        ),
+        condition: (data) => Boolean(data),
+      });
+
+      const updatedAttendedSlot = {
+        date: baseSlot.date,
+        interval: intervals[1],
+      };
+      const secondDocResUpdated = await waitForCondition({
+        documentPath: getAttendedSlotDocPath(
+          organization,
+          walt.secretKey,
+          slotId
+        ),
+        condition: (data) => Boolean(data),
+      });
+
+      const secondUpdatedAttendedSlot = {
+        date: baseSlot.date,
+        interval: intervals[1],
+      };
+
+      // assert they're both there
+
+      expect(docResUpdated).toEqual(updatedAttendedSlot);
+
+      expect(secondDocResUpdated).toEqual(secondUpdatedAttendedSlot);
+    });
     testWithEmulator(
       "should update document in attendedSlots collection if attended interval changes",
       async () => {
@@ -524,27 +614,23 @@ describe("Cloud functions -> Data triggers ->", () => {
           },
         };
 
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({
-            ...attendanceWithTestCustomer,
-            attendances: { ...attendance },
-          });
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...attendance },
+        });
 
         // update interval
-        const updatedAttendance = {
+        const nonBookedAttendance = {
           [saul.id]: {
             bookedInterval: null,
             attendedInterval: intervals[1],
           },
         };
 
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({
-            ...attendanceWithTestCustomer,
-            attendances: { ...updatedAttendance },
-          });
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedAttendance },
+        });
 
         // get document in attended slots
 

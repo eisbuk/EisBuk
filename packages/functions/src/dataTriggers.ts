@@ -392,14 +392,14 @@ export const createAttendedSlotOnAttendance = functions
         : { [id]: "delete" };
     });
 
-    // eslint-disable-next-line no-async-promise-executor
     const updates = idsMap.map(
       (customer) =>
-        new Promise<void>(async (resolve) => {
+        // eslint-disable-next-line no-async-promise-executor, consistent-return
+        new Promise<FirebaseFirestore.WriteResult | void>(async (resolve) => {
           const customerId = Object.keys(customer)[0];
           const value = Object.values(customer)[0];
 
-          if (value === "noUpdate") resolve();
+          if (value === "noUpdate") return resolve();
 
           const { secretKey } = (
             await db
@@ -419,18 +419,18 @@ export const createAttendedSlotOnAttendance = functions
             .doc(slotId);
 
           value === "update"
-            ? await attendedSlotsEntryRef.set(
-                {
-                  date: currentAttendanceData.date,
-                  interval:
-                    currentAttendanceData.attendances[customerId]
-                      .attendedInterval,
-                },
-                { merge: true }
+            ? resolve(
+                await attendedSlotsEntryRef.set(
+                  {
+                    date: currentAttendanceData.date,
+                    interval:
+                      currentAttendanceData.attendances[customerId]
+                        .attendedInterval,
+                  },
+                  { merge: true }
+                )
               )
-            : await attendedSlotsEntryRef.delete();
-
-          resolve();
+            : resolve(await attendedSlotsEntryRef.delete());
         })
     );
     await Promise.all(updates);
