@@ -138,7 +138,7 @@ service cloud.firestore {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
           
-          return customer.data.category in bookedSlot.data.categories
+          return customer.data.categories.hasAny(bookedSlot.data.categories)
         }
         match /bookedSlots/{slotId} {
           // Anybody with secret key should be able to read and write (with valid data) to 'bookedSlots'
@@ -175,7 +175,7 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (allows updates even if "adults")
-          request.resource.data.category in getAllCategories() &&
+          request.resource.data.categories.hasOnly(getAllCategories()) &&
           // Check valid email
           (
             !("email" in request.resource.data) || 
@@ -201,7 +201,7 @@ service cloud.firestore {
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
           checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (shouldn't allow creation with "adults" category)
-          request.resource.data.category in getCategories() &&
+          request.resource.data.categories.hasOnly(getCategories()) &&
           // Check valid email
           (
             !("email" in request.resource.data) || 

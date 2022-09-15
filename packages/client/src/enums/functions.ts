@@ -16,4 +16,5 @@ export enum CloudFunction {
   PruneSlotsByDay = "pruneSlotsByDay",
   DeleteOrphanedBookings = "deleteOrphanedBookings",
   MigrateCategoriesToExplicitMinors = "migrateCategoriesToExplicitMinors",
+  CustomersToPluralCategories = "customersToPluralCategories",
 }

@@ -46,23 +46,28 @@ export const getAttendedSlots = (
  * @param category category (of a customer we're filtering for)
  * @returns a filtering function used check if slot's categories contain the category or should be filtered out
  */
-const createCategoryFilter = (category: CategoryUnion): CategoryFilter =>
+const createCategoryFilter = (
+  customerCategory: CategoryUnion[]
+): CategoryFilter =>
   // For unspecified "adults" we're showing all the "adult-" prefixed category slots
-  category === DeprecatedCategory.Adults
+  customerCategory.includes(DeprecatedCategory.Adults)
     ? (categories) =>
         categories.includes(DeprecatedCategory.Adults) ||
         categories.includes(Category.CourseAdults) ||
         categories.includes(Category.PreCompetitiveAdults)
     : // For customers belonging to "adult-" prefixed category, we're showing the specific category slots
     // as well as general "adult" slots
-    [Category.PreCompetitiveAdults, Category.CourseAdults].includes(
-        category as Category
+    customerCategory.some((cat) =>
+        [Category.PreCompetitiveAdults, Category.CourseAdults].includes(
+          cat as Category
+        )
       )
     ? (categories) =>
         categories.includes(DeprecatedCategory.Adults) ||
-        categories.includes(category)
+        categories.some((slotCat) => customerCategory.includes(slotCat))
     : // For all non adult categories, we're only displaying the slot if it contains that exact category
-      (categories) => categories.includes(category);
+      (categories) =>
+        categories.some((slotCat) => customerCategory.includes(slotCat));
 
 /**
  * A helper function we're using to filter out slots not within provided category.
@@ -72,7 +77,7 @@ const createCategoryFilter = (category: CategoryUnion): CategoryFilter =>
  */
 const filterSlotsByCategory = (
   slotsRecord: SlotsById,
-  category: CategoryUnion
+  category: CategoryUnion[]
 ): [SlotsById, boolean] => {
   let isEmptyWhenFiltered = true;
 
@@ -132,10 +137,10 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
  */
 export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const date = getCalendarDay(state);
-  const category = getBookingsCustomer(state)?.category;
+  const categories = getBookingsCustomer(state)?.categories;
 
   // Return early if no category found in store
-  if (!category) {
+  if (!categories) {
     return {};
   }
 
@@ -152,7 +157,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   return Object.keys(slotsForAMonth).reduce((acc, date) => {
     const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
       slotsForAMonth[date],
-      category
+      categories
     );
 
     // Add date to the acc object only if date not empty

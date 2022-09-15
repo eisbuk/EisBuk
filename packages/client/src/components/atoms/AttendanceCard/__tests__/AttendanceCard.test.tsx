@@ -333,7 +333,13 @@ describe("AttendanceCard", () => {
         ...testSlot,
         allCustomers: [saul, walt, gus],
         // We wish for all customers in the 'allCustomers' array to be eligible for this slot
-        categories: [...new Set([saul.category, walt.category, gus.category])],
+        categories: [
+          ...new Set([
+            ...saul.categories,
+            ...walt.categories,
+            ...gus.categories,
+          ]),
+        ],
         // We want gus to get filtered out when opening 'AddAttendedCustomersDialog'
         customers: [
           {

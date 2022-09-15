@@ -95,7 +95,7 @@
   "CustomerLabel": {
     "Name": "Nome",
     "Surname": "Cognome",
-    "Category": "Categoria",
+    "Categories": "Categorie",
     "Email": "Email",
     "Phone": "Telefono",
     "DateOfBirth": "Data di nascita",

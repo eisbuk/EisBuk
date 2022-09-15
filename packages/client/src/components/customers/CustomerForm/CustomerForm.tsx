@@ -38,8 +38,9 @@ import { SvgComponent } from "@/types/components";
 import { currentTheme } from "@/themes";
 
 import DateInput from "@/components/atoms/DateInput";
+import ErrorMessage from "@/components/atoms/ErrorMessage";
+
 import CustomCheckbox from "./CustomCheckbox";
-import RadioSelection from "@/components/atoms/RadioSelection";
 
 import { isISODay } from "@/utils/date";
 import { isValidPhoneNumber } from "@/utils/helpers";
@@ -66,7 +67,10 @@ const CustomerValidation = Yup.object().shape({
     message: ValidationMessage.InvalidDate,
   }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+  categories: Yup.array()
+    .required(i18n.t(ValidationMessage.RequiredField))
+    .min(1, ValidationMessage.RequiredEntry)
+    .of(Yup.string()),
   subscriptionNumber: Yup.number(),
 });
 // #endregion validations
@@ -108,7 +112,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
     customer?.name
   } ${customer?.surname})`;
   const newCustomerTitle = t(CustomerFormTitle.NewCustomer);
-  const title = customer ? editCustomerTitle : newCustomerTitle;
+  const title = customer?.name ? editCustomerTitle : newCustomerTitle;
 
   return (
     <div
@@ -133,7 +137,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         validationSchema={CustomerValidation}
         onSubmit={onUpdateCustomer}
       >
-        {({ isSubmitting, setFieldValue, values }) => (
+        {({ isSubmitting, setFieldValue, values, errors }) => (
           <Form autoComplete="off">
             <div className="mb-6 flex flex-col gap-4 items-stretch">
               <input
@@ -175,7 +179,21 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 Icon={Cake}
               />
 
-              <RadioSelection options={categoryOptions} name="category" />
+              <div className="flex flex-col ">
+                <div className="flex flex-col content-between w-64 md:flex-wrap md:h-44 md:w-[30rem]">
+                  {categoryOptions.map((cat) => (
+                    <CustomCheckbox
+                      name="categories"
+                      label={cat.label}
+                      disabled={cat.disabled}
+                      value={cat.value}
+                    ></CustomCheckbox>
+                  ))}
+                </div>
+                <ErrorMessage className="w-full whitespace-normal !text-md !ml-1">
+                  {errors.categories}
+                </ErrorMessage>
+              </div>
 
               <DateInput
                 name="certificateExpiration"
@@ -189,6 +207,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
                 className={classes.field}
                 Icon={LocalHospital}
               />
+
               <CustomCheckbox
                 name="covidCertificateSuspended"
                 label={t(CustomerLabel.CovidCertificateSuspended)}
@@ -277,6 +296,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   // The following is a workaround to not overrule the Mui base button styles
   // by Tailwind's preflight reset
   buttonPrimary: { backgroundColor: theme.palette.primary.main },
+  container: {
+    padding: `0 ${theme.spacing(2)} ${theme.spacing(3)} ${theme.spacing(2)}px`,
+  },
 }));
 // #endregion styles
 

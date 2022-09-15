@@ -100,7 +100,7 @@ export enum SlotFormLabel {
 export enum CustomerLabel {
   Name = "CustomerLabel.Name",
   Surname = "CustomerLabel.Surname",
-  Category = "CustomerLabel.Category",
+  Categories = "CustomerLabel.Categories",
   Email = "CustomerLabel.Email",
   Phone = "CustomerLabel.Phone",
   Birthday = "CustomerLabel.DateOfBirth",
