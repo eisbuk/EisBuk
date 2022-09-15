@@ -44,8 +44,9 @@ interface RowItem {
 
 interface RowContent {
   cellItem: string | number | boolean | null;
-  itemIx: number;
   date: string;
+  itemIx: number;
+  classes?: string;
 }
 
 const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
@@ -72,13 +73,13 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     const [totalBooked, , totalDelta] = calculateTotals(hoursWithDeltas);
     const { booked, delta } = collectDatesByHoursType(hoursWithDeltas);
 
-    const athleteBooked = {
+    const athleteBooked: RowItem = {
       type: HoursType.Booked,
       athlete,
       ...booked,
       total: totalBooked,
     };
-    const athleteDelta = {
+    const athleteDelta: RowItem = {
       type: HoursType.Delta,
       athlete,
       ...delta,
@@ -104,7 +105,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                     ? CellTextAlign.Center
                     : CellTextAlign.Left
                 }
-                waypoint={isWeekend(key)}
+                isWaypoint={isWeekend(key)}
               >
                 {headers[key]}
               </TableCell>
@@ -112,15 +113,12 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
           </tr>
         );
       }}
-      renderRow={(rowItem, rowIx) => {
+      renderRow={(rowItem, rowIx, itemArr) => {
         const { type: rowType, ...data } = rowItem;
-        const bgClasses = rowIx % 2 === 0 ? undefined : "bg-white";
 
-        // TODO: this currently doesn't work because of `border-separate` set on parent table
-        const borderClasses =
-          rowType === HoursType.Booked ? "border-b-2" : undefined;
-
-        const rowClasses = [borderClasses, bgClasses].join(" ");
+        const rowClasses = rowIx % 2 === 0 ? undefined : "bg-white";
+        const cellClasses =
+          rowIx === itemArr.length - 1 ? undefined : "border-b-2";
 
         return (
           <tr key={rowIx} className={rowClasses}>
@@ -136,6 +134,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                   cellItem={cellItem}
                   itemIx={itemIx}
                   date={date}
+                  classes={cellClasses}
                 />
               )
             )}
@@ -153,16 +152,25 @@ const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
     <TableCell type={CellType.Title}>{cellItem}</TableCell>
   ) : (
-    <TableCell textAlign={CellTextAlign.Center} waypoint={isWeekend(date)}>
+    <TableCell textAlign={CellTextAlign.Center} isWaypoint={isWeekend(date)}>
       <p className="leading-6">{cellItem === 0 ? "-" : `${cellItem}h`}</p>
     </TableCell>
   );
 
-const DeltaRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
+const DeltaRowCells: React.FC<RowContent> = ({
+  cellItem,
+  itemIx,
+  date,
+  classes,
+}) =>
   itemIx === 0 ? (
-    <TableCell type={CellType.Title}></TableCell>
+    <TableCell type={CellType.Title} className={classes}></TableCell>
   ) : (
-    <TableCell textAlign={CellTextAlign.Center} waypoint={isWeekend(date)}>
+    <TableCell
+      textAlign={CellTextAlign.Center}
+      isWaypoint={isWeekend(date)}
+      className={classes}
+    >
       {cellItem === null ? "-" : <VarianceBadge delta={cellItem as number} />}
     </TableCell>
   );

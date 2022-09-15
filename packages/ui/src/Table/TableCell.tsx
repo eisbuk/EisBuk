@@ -1,26 +1,28 @@
 import React from "react";
 
-interface CellProps {
+interface CellProps extends React.TableHTMLAttributes<HTMLTableCellElement> {
   textAlign?: CellTextAlign;
   type?: CellType;
-  waypoint?: boolean;
+  isWaypoint?: boolean;
 }
 
 const TableCell: React.FC<CellProps> = ({
   children,
   textAlign = CellTextAlign.Left,
   type = CellType.Data,
-  waypoint = false,
+  isWaypoint = false,
+  className: classes,
 }) => {
   const as = type === CellType.Header ? "th" : "td";
 
-  const accentClasses = waypoint ? ["bg-gray-100"] : [];
+  const accentClasses = isWaypoint ? ["bg-gray-100"] : [];
 
   const className = [
     ...cellBaseClasses,
     ...typeClassLookup[type],
     ...textClassLookup[textAlign],
     ...accentClasses,
+    classes,
   ].join(" ");
 
   return React.createElement(as, { className }, [children]);
