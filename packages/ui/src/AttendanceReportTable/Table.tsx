@@ -94,25 +94,23 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     <Table
       headers={headers}
       items={items}
-      renderHeaders={(headers) => {
-        return (
-          <tr>
-            {Object.keys(headers).map((key) => (
-              <TableCell
-                type={CellType.Header}
-                textAlign={
-                  headers[key] !== t(AttendanceVarianceHeaders.Athlete)
-                    ? CellTextAlign.Center
-                    : CellTextAlign.Left
-                }
-                isWaypoint={isWeekend(key)}
-              >
-                {headers[key]}
-              </TableCell>
-            ))}
-          </tr>
-        );
-      }}
+      renderHeaders={(headers) => (
+        <tr>
+          {Object.keys(headers).map((key) => (
+            <TableCell
+              type={CellType.Header}
+              textAlign={
+                headers[key] !== t(AttendanceVarianceHeaders.Athlete)
+                  ? CellTextAlign.Center
+                  : CellTextAlign.Left
+              }
+              isWaypoint={isWeekend(key)}
+            >
+              {headers[key]}
+            </TableCell>
+          ))}
+        </tr>
+      )}
       renderRow={(rowItem, rowIx, itemArr) => {
         const { type: rowType, ...data } = rowItem;
 
@@ -147,11 +145,13 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 
 export default AttendanceReportTable;
 
-// TODO: better semantic labelling for "Athlete" data, if its shown and/or hidden
 const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
     <TableCell type={CellType.Title}>
-      <div className="inline-block w-32 truncate ...">{cellItem}</div>
+      <p className="inline-block w-32 truncate ...">
+        {cellItem}
+        <span className="sr-only">{HoursType.Booked}</span>
+      </p>
     </TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center} isWaypoint={isWeekend(date)}>
@@ -166,7 +166,9 @@ const DeltaRowCells: React.FC<RowContent> = ({
   classes,
 }) =>
   itemIx === 0 ? (
-    <TableCell type={CellType.Title} className={classes}></TableCell>
+    <TableCell type={CellType.Title} className={classes}>
+      <p className="sr-only">{`${cellItem} ${HoursType.Delta}`}</p>
+    </TableCell>
   ) : (
     <TableCell
       textAlign={CellTextAlign.Center}

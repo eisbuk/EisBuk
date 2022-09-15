@@ -1,6 +1,6 @@
 import React from "react";
 
-interface CellProps extends React.TableHTMLAttributes<HTMLTableCellElement> {
+interface CellProps extends React.TdHTMLAttributes<HTMLTableCellElement> {
   textAlign?: CellTextAlign;
   type?: CellType;
   isWaypoint?: boolean;
@@ -12,8 +12,11 @@ const TableCell: React.FC<CellProps> = ({
   type = CellType.Data,
   isWaypoint = false,
   className: classes,
+  ...props
 }) => {
-  const as = type === CellType.Header ? "th" : "td";
+  const as = type !== CellType.Data ? "th" : "td";
+  const scope =
+    type === CellType.Header ? "col" : type === CellType.Title ? "row" : null;
 
   const accentClasses = isWaypoint ? ["bg-gray-100"] : [];
 
@@ -25,7 +28,7 @@ const TableCell: React.FC<CellProps> = ({
     classes,
   ].join(" ");
 
-  return React.createElement(as, { className }, [children]);
+  return React.createElement(as, { className, scope, ...props }, [children]);
 };
 
 export enum CellType {
