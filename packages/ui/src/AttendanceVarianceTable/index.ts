@@ -1,3 +1,3 @@
-import AttendanceReportTable from "./AttendanceVarianceTable";
+import AttendanceVarianceTable from "./AttendanceVarianceTable";
 
-export default AttendanceReportTable;
+export default AttendanceVarianceTable;
