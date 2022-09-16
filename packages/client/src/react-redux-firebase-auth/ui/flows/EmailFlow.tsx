@@ -142,7 +142,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
 
                 {message && (
                   <TextMessage>
-                    <AuthTypography variant="body1">
+                    <AuthTypography variant="body">
                       {t(message, { email })}
                     </AuthTypography>
                   </TextMessage>

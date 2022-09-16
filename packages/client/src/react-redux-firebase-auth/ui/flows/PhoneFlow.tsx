@@ -27,6 +27,8 @@ import AuthErrorDialog from "../atoms/AuthErrorDialog";
 import useAuthFlow from "../../hooks/useAuthFlow";
 
 import { isValidPhoneNumber } from "@/utils/helpers";
+import { useSelector } from "react-redux";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 declare global {
   interface Window {
@@ -53,7 +55,11 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
   const { wrapSubmit, dialogError, removeDialogError } =
     useAuthFlow<FullFormValues>({});
 
+  /** Country code e.g. `+39` for Italy */
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
+
   // #region form
+
   const initialValues = { phone: "", code: "" };
 
   const validationSchema = yup.object().shape({
@@ -61,6 +67,8 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
       .string()
       .required(t(ValidationMessage.RequiredField))
       .test({
+        // We don't forget to add the country code to the phone input
+        // when validating input
         test: (input) => isValidPhoneNumber(input),
         message: t(ValidationMessage.InvalidPhone),
       }),
@@ -120,7 +128,7 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
 
               {message && (
                 <TextMessage>
-                  <AuthTypography variant="body1">
+                  <AuthTypography variant="body">
                     {t(message, { phone })}
                   </AuthTypography>
                 </TextMessage>
@@ -128,7 +136,13 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
 
               <Content>
                 {fieldsLookup[authStep]?.map((inputProps) => (
-                  <AuthTextField {...inputProps} />
+                  <AuthTextField
+                    {...inputProps}
+                    // Pass default country code to phone input
+                    {...(inputProps.type === "tel"
+                      ? { defaultDialCode: defaultCountryCode }
+                      : {})}
+                  />
                 ))}
               </Content>
               <ActionButtons>
@@ -136,14 +150,14 @@ const PhoneFlow: React.FC<{ onCancel?: () => void }> = ({
                   ({ label, nextStep, ...buttonProps }) => (
                     <ActionButton
                       key={label}
-                      {...{
-                        ...buttonProps,
+                      {...buttonProps}
+                      {
                         // add onClick handler only if nextStep specified
                         // (otherwise actions are controlled through `onSubmit`/`onReset`)
                         ...(nextStep
                           ? { onClick: () => setAuthStep(nextStep) }
-                          : {}),
-                      }}
+                          : {})
+                      }
                     >
                       {t(label)}
                     </ActionButton>
@@ -184,7 +198,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       name: "phone",
       id: "phone",
       label: "Phone",
-      type: "text",
+      type: "tel",
       inputMode: "tel",
     },
   ],

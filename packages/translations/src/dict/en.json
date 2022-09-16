@@ -113,6 +113,7 @@
     "SmsTemplate": "SMS Template",
     "DisplayName": "Organization Name",
     "Location": "Location",
+    "CountryCode": "Country code",
     "Admins": "Admins",
     "AddNewAdmin": "Add New Admin",
     "Email": "Email",
@@ -287,5 +288,10 @@
     "Athlete": "Athlete",
     "Signature": "Signature",
     "Note": "Note"
+  },
+
+  "Forms": {
+    "ShowPassword": "show password",
+    "HidePassword": "hide password"
   }
 }

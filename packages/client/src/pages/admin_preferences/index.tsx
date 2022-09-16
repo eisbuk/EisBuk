@@ -13,7 +13,7 @@ import i18n, {
   useTranslation,
   OrganizationLabel,
 } from "@eisbuk/translations";
-import { Layout } from "@eisbuk/ui";
+import { Layout, CountryCodesDropdownFormik } from "@eisbuk/ui";
 
 import makeStyles from "@mui/styles/makeStyles";
 
@@ -21,7 +21,9 @@ import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
 
 import AdminsField from "./AdminsField";
-import FormSection from "@/components/atoms/FormSection";
+import FormSection, {
+  FormSectionFieldProps,
+} from "@/components/atoms/FormSection";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
@@ -63,12 +65,17 @@ const emailFields = [
   },
 ];
 
-const generalFields = [
+const generalFields: FormSectionFieldProps[] = [
   {
     name: "displayName",
     label: OrganizationLabel.DisplayName,
   },
   { name: "location", label: OrganizationLabel.Location },
+  {
+    name: "defaultCountryCode",
+    label: OrganizationLabel.CountryCode,
+    component: CountryCodesDropdownFormik,
+  },
 ];
 
 // #region validations
@@ -114,6 +121,7 @@ const OrganizationSettings: React.FC = () => {
     emailTemplate: "",
     existingSecrets: [],
     location: "",
+    defaultCountryCode: "",
     smsFrom: "",
     smsTemplate: "",
 
@@ -137,7 +145,6 @@ const OrganizationSettings: React.FC = () => {
         <Formik
           {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
-          validateOnChange={false}
           validationSchema={OrganizationValidation}
         >
           {({ isSubmitting, isValidating, handleReset }) => (

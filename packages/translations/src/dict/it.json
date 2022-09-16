@@ -113,6 +113,7 @@
     "SmsTemplate": "Modello Di SMS",
     "DisplayName": "Nome Dell'Organizzazione",
     "Location": "Posizione",
+    "CountryCode": "Country code",
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
     "Email": "Email",
@@ -288,5 +289,10 @@
     "Athlete": "Atleta",
     "Signature": "Firma",
     "Note": "Note"
+  },
+
+  "Forms": {
+    "ShowPassword": "show password",
+    "HidePassword": "hide password"
   }
 }

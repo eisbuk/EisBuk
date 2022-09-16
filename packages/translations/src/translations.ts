@@ -130,6 +130,7 @@ export enum OrganizationLabel {
   SmsTemplate = "OrganizationLabel.SmsTemplate",
   DisplayName = "OrganizationLabel.DisplayName",
   Location = "OrganizationLabel.Location",
+  CountryCode = "OrganizationLabel.CountryCode",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
   Email = "OrganizationLabel.Email",
@@ -317,3 +318,10 @@ export enum PrintableAttendance {
   Note = "PrintableAttendance.Note",
 }
 // #endregion alerts
+
+// #region forms
+export enum Forms {
+  ShowPassword = "Forms.ShowPassword",
+  HidePassword = "Forms.HidePassword",
+}
+// #endregion forms

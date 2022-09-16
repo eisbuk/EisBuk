@@ -43,6 +43,11 @@ export interface OrganizationData {
    */
   smsTemplate?: string;
   /**
+   * A default country code (e.g. "IT") used to get the default dial code prefix
+   * for phone inputs (e.g. "+39")
+   */
+  defaultCountryCode?: string;
+  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */
@@ -52,6 +57,12 @@ export interface OrganizationData {
    */
   location?: string;
 }
+
+/** Organization data copied over to a new collection shared publicly */
+export type PublicOrganizationData = Pick<
+  OrganizationData,
+  "displayName" | "location" | "emailFrom" | "defaultCountryCode"
+>;
 
 // #endregion organizations
 
@@ -360,6 +371,9 @@ export interface FirestoreSchema {
         [slotId: string]: SlotAttendnace;
       };
     };
+  };
+  [Collection.PublicOrgInfo]: {
+    [organization: string]: PublicOrganizationData;
   };
   [Collection.DeliveryQueues]: {
     [organization: string]: {
