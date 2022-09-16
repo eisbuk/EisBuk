@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { HoursType } from "./Table";
+import { HoursType } from "./AttendanceVarianceTable";
 
 export type HoursTuple = [booked: number, attended: number];
 
