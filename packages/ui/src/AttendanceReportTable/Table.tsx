@@ -147,7 +147,7 @@ export default AttendanceReportTable;
 
 const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (
-    <TableCell type={CellType.Title}>
+    <TableCell type={CellType.Title} className={stickyCellClasses.join(" ")}>
       <p className="inline-block w-32 truncate ...">
         {cellItem}
         <span className="sr-only">{HoursType.Booked}</span>
@@ -166,7 +166,10 @@ const DeltaRowCells: React.FC<RowContent> = ({
   classes,
 }) =>
   itemIx === 0 ? (
-    <TableCell type={CellType.Title} className={classes}>
+    <TableCell
+      type={CellType.Title}
+      className={`${classes} ${stickyCellClasses.join(" ")}`}
+    >
       <p className="sr-only">{`${cellItem} ${HoursType.Delta}`}</p>
     </TableCell>
   ) : (
@@ -178,3 +181,11 @@ const DeltaRowCells: React.FC<RowContent> = ({
       {cellItem === null ? "-" : <VarianceBadge delta={cellItem as number} />}
     </TableCell>
   );
+
+const stickyCellClasses = [
+  "sticky",
+  "left-0",
+  "z-5",
+  "backdrop-blur-3xl",
+  "backdrop-filter",
+];
