@@ -7,9 +7,9 @@
     "Slots": "Slots"
   },
   "CustomerNavigation": {
-    "BookIce": "Book Ice",
-    "BookOffIce": "Book Off-Ice",
-    "Calendar": "Calendar"
+    "Book": "Book",
+    "Calendar": "Calendar",
+    "Profile": "Profile"
   },
 
   "Authorization": {
@@ -103,7 +103,11 @@
     "CardNumber": "Card Number",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
     "CovidCertificateSuspended": "COVID-19 Certificate supsended",
-    "ExtendedBookingDate": "Extended booking date"
+    "ExtendedBookingDate": "Extended booking date",
+    "MedicalDetails": "Medical Details",
+    "ManageMedicalDetails": "Manage your medical details",
+    "PersonalDetails": "Personal Details",
+    "ManagePersonalDetails": "Manage your personal details"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Email Name From",
