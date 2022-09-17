@@ -4,6 +4,7 @@
 
 import React from "react";
 import { screen, render } from "@testing-library/react";
+import * as reactRedux from "react-redux";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -14,6 +15,7 @@ import * as utils from "../utils";
 
 import { saul } from "@/__testData__/customers";
 
+const displayName = "organization";
 const mockOnClose = jest.fn();
 // Mock sendBookingsLink to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
@@ -29,7 +31,10 @@ jest
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
 }));
+const mockSelector = jest.spyOn(reactRedux, "useSelector");
+mockSelector.mockImplementation(() => displayName);
 
 // Bookings link we'll receive from 'getBookingsLink()' inside the component
 // host -> 'localhost' (we're in jest-environment jsdom)
@@ -83,6 +88,7 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.Email,
         bookingsLink: testBookingsLink,
+        displayName,
       })
     );
   });
@@ -103,6 +109,7 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.SMS,
         bookingsLink: testBookingsLink,
+        displayName,
       })
     );
   });

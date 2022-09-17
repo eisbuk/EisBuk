@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
@@ -10,6 +10,7 @@ import { BaseModalProps } from "../../types";
 import { SendBookingLinkMethod } from "@/enums/other";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
+import { getAboutOrganization } from "@/store/selectors/app";
 
 type SendBookingsLinkProps = BaseModalProps &
   Customer & { method: SendBookingLinkMethod };
@@ -26,9 +27,12 @@ const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   const dispatch = useDispatch();
 
   const bookingsLink = getBookingsLink(customer.secretKey);
+  const { displayName } = useSelector(getAboutOrganization);
 
   const onConfirm = () => {
-    dispatch(sendBookingsLink({ ...customer, method, bookingsLink }));
+    dispatch(
+      sendBookingsLink({ ...customer, method, bookingsLink, displayName })
+    );
     onClose();
   };
 
