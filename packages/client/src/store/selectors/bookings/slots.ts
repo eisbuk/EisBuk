@@ -167,7 +167,6 @@ export const getBookingsForCalendar = (
 ): (SlotInterface & { interval: SlotInterval })[] => {
   // Current month in view is determined by `currentDate` in Redux store
   const monthString = getCalendarDay(state).toISO().substring(0, 7);
-
   // Get all booked slots
   const bookedSlots = getBookedSlots(state);
   // Get only the slots for current month
@@ -182,7 +181,6 @@ export const getBookingsForCalendar = (
         if (!dayOfBookedSlot) {
           return acc;
         }
-
         const bookedSlot = dayOfBookedSlot[slotId];
         const interval = bookedSlot.intervals[bookedInterval];
         const completeBookingEntry = { ...bookedSlot, interval, bookingNotes };
@@ -190,5 +188,5 @@ export const getBookingsForCalendar = (
       },
       [] as BookingsList
     )
-    .sort((a, b) => (a > b ? -1 : 1));
+    .sort((a, b) => (a.date < b.date ? -1 : 1));
 };
