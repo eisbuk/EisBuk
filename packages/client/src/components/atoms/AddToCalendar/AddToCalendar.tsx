@@ -102,8 +102,8 @@ const AddToCalendar: React.FC = () => {
         icsFile: icsFile,
         email,
         secretKey,
-        customerName: name,
-        organizationName: displayName,
+        name: name,
+        displayName: displayName,
       })
     );
   };

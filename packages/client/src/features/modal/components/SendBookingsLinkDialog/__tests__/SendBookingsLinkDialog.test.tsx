@@ -13,8 +13,9 @@ import SendBookingsLinkDialog from "../SendBookingsLinkDialog";
 import * as utils from "../utils";
 
 import { saul } from "@/__testData__/customers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
-const displayName = "organization";
+const displayName = __testOrganization__;
 const mockOnClose = jest.fn();
 // Mock sendBookingsLink to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)

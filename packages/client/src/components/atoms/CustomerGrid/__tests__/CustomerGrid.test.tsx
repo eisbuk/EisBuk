@@ -9,6 +9,7 @@ import CustomerGrid from "../CustomerGrid";
 
 import { saul } from "@/__testData__/customers";
 import { openModal } from "@/features/modal/actions";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -22,10 +23,15 @@ describe("CustomerGrid", () => {
   });
 
   test("should open customer in CustomerCard modal on customer click", () => {
-    render(<CustomerGrid customers={[saul]} />);
+    render(
+      <CustomerGrid displayName={__testOrganization__} customers={[saul]} />
+    );
     screen.getByText(saul.name).click();
     expect(mockDispatch).toHaveBeenCalledWith(
-      openModal({ component: "CustomerCard", props: { customer: saul } })
+      openModal({
+        component: "CustomerCard",
+        props: { customer: saul, displayName: __testOrganization__ },
+      })
     );
   });
 });
