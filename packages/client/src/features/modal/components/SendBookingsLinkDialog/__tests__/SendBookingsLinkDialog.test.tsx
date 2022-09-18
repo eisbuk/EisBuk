@@ -4,7 +4,6 @@
 
 import React from "react";
 import { screen, render } from "@testing-library/react";
-import * as reactRedux from "react-redux";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -31,10 +30,7 @@ jest
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
-  useSelector: () => mockSelector,
 }));
-const mockSelector = jest.spyOn(reactRedux, "useSelector");
-mockSelector.mockImplementation(() => displayName);
 
 // Bookings link we'll receive from 'getBookingsLink()' inside the component
 // host -> 'localhost' (we're in jest-environment jsdom)
@@ -53,6 +49,7 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
+        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
@@ -66,6 +63,7 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
+        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
@@ -79,6 +77,7 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
+        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();
@@ -100,6 +99,7 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.SMS}
         onClose={mockOnClose}
+        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();

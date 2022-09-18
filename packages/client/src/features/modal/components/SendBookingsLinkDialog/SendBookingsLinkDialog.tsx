@@ -1,7 +1,7 @@
 import React from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, OrganizationData } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -10,10 +10,11 @@ import { BaseModalProps } from "../../types";
 import { SendBookingLinkMethod } from "@/enums/other";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
-import { getAboutOrganization } from "@/store/selectors/app";
 
 type SendBookingsLinkProps = BaseModalProps &
-  Customer & { method: SendBookingLinkMethod };
+  Customer & { method: SendBookingLinkMethod } & {
+    displayName: OrganizationData["displayName"];
+  };
 
 const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   onClose,
@@ -22,12 +23,12 @@ const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   // remove 'onCloseAll' from 'customer'
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onCloseAll,
+  displayName,
   ...customer
 }) => {
   const dispatch = useDispatch();
 
   const bookingsLink = getBookingsLink(customer.secretKey);
-  const { displayName } = useSelector(getAboutOrganization);
 
   const onConfirm = () => {
     dispatch(
