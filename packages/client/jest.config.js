@@ -15,4 +15,7 @@ module.exports = {
   coveragePathIgnorePatterns: ["node_modules", ".*\\.stories\\.tsx"],
   modulePathIgnorePatterns: ["src/pages/customer_area_archive"],
   testTimeout: 10000,
+  setupFiles: [
+    "<rootDir>/jest.setup.ts"
+  ],
 };
