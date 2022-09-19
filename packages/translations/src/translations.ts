@@ -323,6 +323,13 @@ export enum PrintableAttendance {
 }
 // #endregion alerts
 
+// #region tables
+export enum AttendanceVarianceHeaders {
+  Athlete = "AttendanceVarianceHeaders.Athlete",
+  Total = "AttendanceVarianceHeaders.Total",
+}
+// #endregion tables
+
 // #region forms
 export enum Forms {
   ShowPassword = "Forms.ShowPassword",

@@ -22,6 +22,8 @@ import CustomerProfileForm from "./Forms/CustomerProfile";
 import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
+import Table from "./Table";
+import AttendanceReportTable from "./AttendanceReportTable";
 import PhoneInput from "./PhoneInput";
 import Dropdown, { DropdownFormik } from "./Dropdown";
 import CountryCodesDropdown, {
@@ -37,6 +39,7 @@ export * from "./CalendarNav";
 export * from "./TextInput";
 export * from "./Layout";
 export * from "./IconButton";
+export * from "./Table";
 
 export {
   TestComponent,
@@ -59,6 +62,8 @@ export {
   HoverText,
   IconButton,
   TextareaEditable,
+  Table,
+  AttendanceReportTable,
   PhoneInput,
   Dropdown,
   DropdownFormik,

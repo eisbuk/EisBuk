@@ -293,6 +293,10 @@
     "Signature": "Signature",
     "Note": "Note"
   },
+  "AttendanceVarianceHeaders": {
+    "Athlete": "Athlete",
+    "Total": "Total"
+  },
 
   "Forms": {
     "ShowPassword": "show password",
