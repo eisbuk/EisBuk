@@ -10,6 +10,10 @@ interface AttendanceRecord {
   bookedInterval: number;
 }
 
+interface CustomerAttendance {
+  [customerId: string]: Omit<AttendanceRecord, "customerId">[];
+}
+
 export const getMonthAttendanceVariance = (state: LocalStore) => {
   const {
     app: { calendarDay },
@@ -25,7 +29,8 @@ export const getMonthAttendanceVariance = (state: LocalStore) => {
 
   const monthAttendanceRecords = Object.values(attendance)
     .filter(filterAttendanceByMonth(currentMonth))
-    .reduce(flattenAndConvertAttendanceIntervals, []);
+    .reduce(flattenAndConvertAttendanceIntervals, [])
+    .reduce(collectAttendanceByCustomer, {});
 
   return monthAttendanceRecords;
 };
@@ -56,4 +61,18 @@ export const flattenAndConvertAttendanceIntervals = (
     })
   );
   return [...acc, ...flatAttendanceIntervals];
+};
+
+/**
+ * Collect attendance records in a map by Customer ID
+ */
+const collectAttendanceByCustomer = (
+  acc: CustomerAttendance,
+  { customerId, ...attendanceRecord }: AttendanceRecord
+) => {
+  acc[customerId]
+    ? acc[customerId].push(attendanceRecord)
+    : (acc[customerId] = [attendanceRecord]);
+
+  return acc;
 };
