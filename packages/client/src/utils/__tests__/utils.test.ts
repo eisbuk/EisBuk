@@ -13,7 +13,7 @@ import {
   comparePeriods,
   convertIntervalToNum,
 } from "../helpers";
-import { isISODay } from "../date";
+import { isISODay, generateDatesInRange } from "../date";
 
 describe("Helpers", () => {
   describe("`capitalizeFirst` function", () => {
@@ -136,6 +136,18 @@ describe("Date utils", () => {
       original = ["13:00-13:30", "13:00-14:00"];
       expected = ["13:00-14:00", "13:00-13:30"];
       expect(original.sort(comparePeriods)).toEqual(expected);
+    });
+  });
+
+  describe("`generateDatesInRange` function", () => {
+    test("should return a generator that yields all date strings within a range", () => {
+      const start = DateTime.fromISO("2022-09-01");
+      const end = start.plus({ week: 1 });
+
+      const dates = Array.from(generateDatesInRange(start, end));
+
+      expect(dates.length).toBe(7);
+      expect(dates[6]).toBe("2022-09-07");
     });
   });
 });
