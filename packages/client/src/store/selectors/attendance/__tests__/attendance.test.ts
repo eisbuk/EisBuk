@@ -5,7 +5,7 @@ import { getNewStore } from "@/store/createStore";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { getSlotsWithAttendance } from "../attendance";
+import { getSlotsWithAttendance } from "..";
 import { AttendanceSortBy } from "@/enums/other";
 
 import {
@@ -14,7 +14,7 @@ import {
   attendanceSlotsByDay,
   expectedStructByName,
   expectedStructByBookedInterval,
-} from "../__testData__/attendance";
+} from "../../__testData__/attendance";
 import { testDateLuxon } from "@/__testData__/date";
 
 describe("Selectors ->", () => {
