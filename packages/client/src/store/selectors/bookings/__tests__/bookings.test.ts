@@ -54,7 +54,7 @@ const setupBookingsTest = ({
     updateLocalDocuments(OrgSubCollection.Bookings, {
       [saul.secretKey]: {
         ...getCustomerBase(saul),
-        category,
+        categories: [category],
       },
     })
   );
@@ -309,7 +309,6 @@ describe("Selectors ->", () => {
     interface TestParams {
       name: string;
       category: Category;
-
       slotsByDay: SlotsByDay;
       wantRes: boolean;
     }

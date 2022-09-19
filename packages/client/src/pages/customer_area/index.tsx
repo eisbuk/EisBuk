@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
+import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
 import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
@@ -17,6 +18,7 @@ import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
 import { NotificationsContainer } from "@/features/notifications/components";
+import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 
@@ -81,21 +83,21 @@ const CustomerArea: React.FC = () => {
       <TabItem
         key="book-view-button"
         Icon={Calendar as any}
-        label="Book"
+        label={i18n.t(CustomerNavigationLabel.Book)}
         onClick={() => setView(Views.Book)}
         active={view === Views.Book}
       />
       <TabItem
         key="calendar-view-button"
         Icon={AccountCircle as any}
-        label="Calendar"
+        label={i18n.t(CustomerNavigationLabel.Calendar)}
         onClick={() => setView(Views.Calendar)}
         active={view === Views.Calendar}
       />
       <TabItem
         key="profile-view-button"
         Icon={ClipboardList as any}
-        label="Profile"
+        label={i18n.t(CustomerNavigationLabel.Profile)}
         onClick={() => setView(Views.Profile)}
         active={view === Views.Profile}
       />
@@ -112,7 +114,11 @@ const CustomerArea: React.FC = () => {
       user={displayCustomer}
     >
       {view !== "ProfileView" && (
-        <CalendarNav {...calendarNavProps} jump="month" />
+        <CalendarNav
+          {...calendarNavProps}
+          additionalContent={<AddToCalendar />}
+          jump="month"
+        />
       )}
       <div className="content-container">
         <div className="px-[44px] py-4">

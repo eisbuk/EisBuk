@@ -40,7 +40,7 @@ const DashboardPage: React.FC = () => {
 
   const currentDate = useSelector(getCalendarDay);
 
-  const attendanceCards = useSelector(getSlotsWithAttendance());
+  const attendanceCards = useSelector(getSlotsWithAttendance);
   const allCustomers = useSelector(getCustomersList(true));
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())

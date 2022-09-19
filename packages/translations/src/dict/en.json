@@ -7,9 +7,9 @@
     "Slots": "Slots"
   },
   "CustomerNavigation": {
-    "BookIce": "Book Ice",
-    "BookOffIce": "Book Off-Ice",
-    "Calendar": "Calendar"
+    "Book": "Book",
+    "Calendar": "Calendar",
+    "Profile": "Profile"
   },
 
   "Authorization": {
@@ -95,7 +95,7 @@
   "CustomerLabel": {
     "Name": "Name",
     "Surname": "Surname",
-    "Category": "Category",
+    "Categories": "Categories",
     "Email": "Email",
     "Phone": "Phone",
     "DateOfBirth": "Date Of Birth",
@@ -103,7 +103,11 @@
     "CardNumber": "Card Number",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
     "CovidCertificateSuspended": "COVID-19 Certificate supsended",
-    "ExtendedBookingDate": "Extended booking date"
+    "ExtendedBookingDate": "Extended booking date",
+    "MedicalDetails": "Medical Details",
+    "ManageMedicalDetails": "Manage your medical details",
+    "PersonalDetails": "Personal Details",
+    "ManagePersonalDetails": "Manage your personal details"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Email Name From",
@@ -113,6 +117,7 @@
     "SmsTemplate": "SMS Template",
     "DisplayName": "Organization Name",
     "Location": "Location",
+    "CountryCode": "Country code",
     "Admins": "Admins",
     "AddNewAdmin": "Add New Admin",
     "Email": "Email",
@@ -135,6 +140,8 @@
   "Prompt": {
     "DeleteCustomer": "Are you sure you want to remove {{ name }} {{ surname }}?",
     "DeleteSlot": "Are you sure you want to delete the slot:",
+    "DeleteSlotDisabledTitle": "Unable to delete",
+    "DeleteSlotDisabled": "Unable to delete the slot, as it has already been booked by one or more athletes",
 
     "NonReversible": "This action is non-reversible",
 
@@ -179,6 +186,7 @@
     "Save": "Save",
     "Next": "Next",
     "Cancel": "Cancel",
+    "Confirm": "Confirm",
     "ShowAll": "ShowAll",
     "Done": "Done",
     "Send": "Send",
@@ -288,5 +296,10 @@
   "AttendanceVarianceHeaders": {
     "Athlete": "Athlete",
     "Total": "Total"
+  },
+
+  "Forms": {
+    "ShowPassword": "show password",
+    "HidePassword": "hide password"
   }
 }

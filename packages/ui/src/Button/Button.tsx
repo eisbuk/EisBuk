@@ -1,7 +1,8 @@
 import React from "react";
 
 export enum ButtonSize {
-  Base = "md",
+  Base = "base",
+  MD = "md",
   LG = "lg",
 }
 
@@ -75,6 +76,7 @@ const baseClasses = [
 
 const sizeClassesLookup = {
   [ButtonSize.Base]: ["px-2.5", "py-[6px]", "text-sm"],
+  [ButtonSize.MD]: ["px-4", "py-2", "text-sm"],
   [ButtonSize.LG]: ["px-[17px]", "py-[9px]", "text-base"],
 };
 

@@ -23,8 +23,8 @@ const TextInput: React.FC<TextInputProps> = ({
   label,
   placeholder,
   helpText,
-  StartAdornment = null,
-  EndAdornment = null,
+  StartAdornment,
+  EndAdornment,
   disabled = false,
   ...props
 }) => {
@@ -55,7 +55,9 @@ const TextInput: React.FC<TextInputProps> = ({
         {label}
       </label>
       <div className={containerClasses}>
-        <div className="flex items-center mr-1">{StartAdornment}</div>
+        {StartAdornment && (
+          <div className="flex items-center mr-1">{StartAdornment}</div>
+        )}
         <input
           type="text"
           id={name}
@@ -65,7 +67,9 @@ const TextInput: React.FC<TextInputProps> = ({
           {...field}
           {...rest}
         />
-        <div className="flex items-center ml-1">{EndAdornment}</div>
+        {EndAdornment && (
+          <div className="flex items-center ml-1">{EndAdornment}</div>
+        )}
       </div>
       <p className={helpTextClasses}>{!disabled && supportContent}</p>
     </div>
@@ -79,7 +83,6 @@ const helpTextBaseClasses = ["mt-2", "text-sm", "min-h-[20px]"];
 const inputBaseClasses = [
   "block",
   "w-full",
-  "rounded-md",
   "border-0",
   "text-sm",
   "focus:outline-0",

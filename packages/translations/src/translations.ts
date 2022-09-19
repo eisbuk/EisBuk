@@ -9,9 +9,9 @@ export enum NavigationLabel {
   Slots = "NavigationLabel.Slots",
 }
 export enum CustomerNavigationLabel {
-  "book_ice" = "CustomerNavigation.BookIce",
-  "book_off_ice" = "CustomerNavigation.BookOffIce",
-  "calendar" = "CustomerNavigation.Calendar",
+  Book = "CustomerNavigation.Book",
+  Calendar = "CustomerNavigation.Calendar",
+  Profile = "CustomerNavigation.Profile",
 }
 // #endregion navigation
 
@@ -100,7 +100,7 @@ export enum SlotFormLabel {
 export enum CustomerLabel {
   Name = "CustomerLabel.Name",
   Surname = "CustomerLabel.Surname",
-  Category = "CustomerLabel.Category",
+  Categories = "CustomerLabel.Categories",
   Email = "CustomerLabel.Email",
   Phone = "CustomerLabel.Phone",
   Birthday = "CustomerLabel.DateOfBirth",
@@ -109,6 +109,10 @@ export enum CustomerLabel {
   CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
   CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
   ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
+  MedicalDetails = "CustomerLabel.MedicalDetails",
+  ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
+  PersonalDetails = "CustomerLabel.PersonalDetails",
+  ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -130,6 +134,7 @@ export enum OrganizationLabel {
   SmsTemplate = "OrganizationLabel.SmsTemplate",
   DisplayName = "OrganizationLabel.DisplayName",
   Location = "OrganizationLabel.Location",
+  CountryCode = "OrganizationLabel.CountryCode",
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
   Email = "OrganizationLabel.Email",
@@ -146,6 +151,8 @@ export enum BookingNotesForm {
 export enum Prompt {
   DeleteCustomer = "Prompt.DeleteCustomer",
   DeleteSlot = "Prompt.DeleteSlot",
+  DeleteSlotDisabledTitle = "Prompt.DeleteSlotDisabledTitle",
+  DeleteSlotDisabled = "Prompt.DeleteSlotDisabled",
 
   NonReversible = "Prompt.NonReversible",
 
@@ -191,6 +198,7 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
+  Confirm = "ActionButton.Confirm",
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
   Send = "ActionButton.Send",
@@ -321,3 +329,10 @@ export enum AttendanceVarianceHeaders {
   Total = "AttendanceVarianceHeaders.Total",
 }
 // #endregion tables
+
+// #region forms
+export enum Forms {
+  ShowPassword = "Forms.ShowPassword",
+  HidePassword = "Forms.HidePassword",
+}
+// #endregion forms

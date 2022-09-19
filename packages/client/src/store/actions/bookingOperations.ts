@@ -1,8 +1,12 @@
 import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
 
-import { BookingSubCollection, Customer, SlotInterface } from "@eisbuk/shared";
+import {
+  BookingSubCollection,
+  Customer,
+  SlotInterface,
+  SendEmailPayload,
+} from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
-
 import { NotifVariant } from "@/enums/store";
 import { CloudFunction } from "@/enums/functions";
 
@@ -157,10 +161,12 @@ export const createCalendarEvents =
         })
       );
     } catch (error) {
-      dispatch({
-        message: i18n.t(NotificationMessage.Error),
-        vatiant: NotifVariant.Error,
-      });
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };
 
@@ -186,18 +192,16 @@ export const sendICSFile: sendICSFile =
         <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
 
       const handler = CloudFunction.SendEmail;
-      const payload = {
+      const payload: Omit<SendEmailPayload, "organization"> = {
         to: email,
-        message: {
-          html,
-          subject,
-          attachments: [
-            {
-              filename: "bookedSlots.ics",
-              content: icsFile,
-            },
-          ],
-        },
+        html,
+        subject,
+        attachments: [
+          {
+            filename: "bookedSlots.ics",
+            content: icsFile,
+          },
+        ],
         secretKey: secretKey,
       };
 
@@ -210,9 +214,11 @@ export const sendICSFile: sendICSFile =
         })
       );
     } catch (error) {
-      dispatch({
-        message: i18n.t(NotificationMessage.Error),
-        variant: NotifVariant.Error,
-      });
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
     }
   };

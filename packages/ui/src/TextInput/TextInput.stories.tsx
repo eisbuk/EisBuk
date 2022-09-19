@@ -4,12 +4,9 @@ import { Formik, Form, Field } from "formik";
 import * as yup from "yup";
 
 import { Calendar } from "@eisbuk/svg";
-import TextInput, {
-  IconAdornment,
-  AddOnAdornment,
-  ButtonAdornment,
-  DropdownAdornment,
-} from ".";
+
+import TextInput, { IconAdornment, AddOnAdornment, ButtonAdornment } from ".";
+import Dropdown from "../Dropdown";
 
 export default {
   title: "Forms / TextInput",
@@ -94,7 +91,11 @@ export const Default = (): JSX.Element => (
           label="Dropdown"
           component={TextInput}
           EndAdornment={
-            <DropdownAdornment label="country" options={["US", "CA", "EU"]} />
+            <Dropdown
+              className="!border-none"
+              name="country"
+              options={["US", "CA", "EU"]}
+            />
           }
         />
         <Field

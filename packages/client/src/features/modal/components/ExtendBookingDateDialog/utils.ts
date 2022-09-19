@@ -84,7 +84,7 @@ export const sendBookingsLink: SendBookingsLink =
 
       const html = `<p>Ciao ${name},</p>
       <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
-      <a href="${bookingsLink}">Clicca qui per gestire le tue prenotazioni</a>`;
+      <a href="${bookingsLink}">Clicca qui per prenotare e gestire le tue lezioni</a>`;
 
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
@@ -95,10 +95,8 @@ export const sendBookingsLink: SendBookingsLink =
           handler: CloudFunction.SendEmail,
           payload: {
             to: email,
-            message: {
-              html,
-              subject,
-            },
+            html,
+            subject,
           } as EmailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },

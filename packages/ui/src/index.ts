@@ -24,6 +24,11 @@ import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
 import Table from "./Table";
 import AttendanceReportTable from "./AttendanceReportTable";
+import PhoneInput from "./PhoneInput";
+import Dropdown, { DropdownFormik } from "./Dropdown";
+import CountryCodesDropdown, {
+  CountryCodesDropdownFormik,
+} from "./CountryCodesDropdown";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -59,4 +64,9 @@ export {
   TextareaEditable,
   Table,
   AttendanceReportTable,
+  PhoneInput,
+  Dropdown,
+  DropdownFormik,
+  CountryCodesDropdown,
+  CountryCodesDropdownFormik,
 };

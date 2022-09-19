@@ -12,7 +12,7 @@ import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
-import { __smsUrl__, __functionsZone__ } from "../constants";
+import { __smsUrl__, __functionsZone__, __noSecretsError } from "../constants";
 
 import { SMSResponse } from "./types";
 
@@ -59,6 +59,9 @@ export const deliverSMS = functions
       const smsFrom = orgData.smsFrom || organization.substring(0, 11);
 
       const secretsData = secretsSnap.data() as OrganizationSecrets;
+      if (!secretsData) {
+        throw new Error(__noSecretsError);
+      }
       const authToken = secretsData.smsAuthToken || "";
 
       // Construct request options
@@ -71,7 +74,7 @@ export const deliverSMS = functions
       // Construct and validate SMS data
       const [sms, errs] = validateJSON(SMSAPIPayloadSchema, {
         message,
-        smsFrom,
+        sender: smsFrom,
         recipients: [{ msisdn: to }],
         callback_url: getSMSCallbackUrl(),
       });

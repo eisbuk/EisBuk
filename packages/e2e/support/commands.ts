@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
-import { Customer } from "@eisbuk/shared";
+import { Category, Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
@@ -119,7 +119,7 @@ export default (): void => {
       email,
       phone,
       birthday,
-      category,
+      categories,
       certificateExpiration,
       covidCertificateReleaseDate,
       covidCertificateSuspended,
@@ -140,8 +140,10 @@ export default (): void => {
     if (birthday) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(birthday);
     }
-    if (category) {
-      cy.getAttrWith("value", category).check();
+    if (categories) {
+      categories.forEach((cat: Category) =>
+        cy.getAttrWith("value", cat).check()
+      );
     }
     if (certificateExpiration) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy")
@@ -154,7 +156,7 @@ export default (): void => {
         .type(covidCertificateReleaseDate);
     }
     if (covidCertificateSuspended) {
-      cy.getAttrWith("type", "checkbox").check();
+      cy.getAttrWith("name", "covidCertificateSuspended").check();
     }
   });
 

@@ -332,7 +332,12 @@ export const createPublicOrgInfo = functions
       await publicOrgInfoDocRef.delete();
       return;
     }
-    const updates = ["displayName", "location", "emailFrom"].reduce(
+    const updates = [
+      "displayName",
+      "location",
+      "emailFrom",
+      "defaultCountryCode",
+    ].reduce(
       (acc, curr) => (orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc),
       {}
     );

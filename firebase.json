@@ -1,16 +1,14 @@
 {
   "firestore": {
-    "rules": "packages/firebase/firestore.rules",
-    "indexes": "packages/firebase/firestore.indexes.json"
+    "rules": "packages/firestore/firestore.rules",
+    "indexes": "packages/firestore/firestore.indexes.json"
   },
   "functions": {
     "predeploy": [
       "cd packages/functions && rushx build",
       "sed -i '/\"workspace:\\*/d\"' \"$RESOURCE_DIR/package.json\""
     ],
-    "postdeploy": [
-      "sed -i -e \\'s/  .dependencies.: {/  \"dependencies\": {\\n    \"@eisbuk\\/shared\": \"1.0.0\",/\\' \"$RESOURCE_DIR/package.json\""
-    ],
+    "postdeploy": ["git restore packages/functions/package.json"],
     "source": "packages/functions"
   },
   "hosting": [

@@ -1,12 +1,11 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { DateTime } from "luxon";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 import { Printer } from "@eisbuk/svg";
-
-import { AttendanceSortBy } from "@/enums/other";
 
 import AttendanceSheet, {
   AttendanceSheetSlot,
@@ -24,7 +23,6 @@ import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { adminLinks } from "@/data/navigation";
-import { DateTime } from "luxon";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -36,9 +34,7 @@ const DashboardPage: React.FC = () => {
     OrgSubCollection.SlotsByDay,
   ]);
 
-  const attendanceSlots = useSelector(
-    getSlotsWithAttendance(AttendanceSortBy.BookedInterval)
-  );
+  const attendanceSlots = useSelector(getSlotsWithAttendance);
 
   const date = useSelector(getCalendarDay);
 

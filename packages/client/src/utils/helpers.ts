@@ -115,29 +115,6 @@ export const isEmpty = (input: unknown): boolean =>
     : false;
 
 /**
- * @param {string} first The first time period
- * @param {string} second The second time period
- * @returns number
-
- * Compares two period strings like "13:30-14:00" and "13:15-14:15"
- * Returns -1 if the first period is earlier than the second; if
- * they're equal it returns -1 if the first period is longer than the second one
- * i.e. if its finishing time is later.
- */
-export const comparePeriods = (first: string, second: string): number => {
-  const [firstStart, firstEnd] = first.split("-");
-  const [secondStart, secondEnd] = second.split("-");
-
-  if (firstStart < secondStart) {
-    return -1;
-  } else if (firstStart > secondStart) {
-    return 1;
-  } else {
-    return firstEnd > secondEnd ? -1 : 1;
-  }
-};
-
-/**
  * Check if the phone string is a valid phone number
  */
 export const isValidPhoneNumber = (phone?: string): boolean =>

@@ -172,20 +172,57 @@ export const migrateCategoriesToExplicitMinors = functions
     // Enqueue customer updates
     allCustomers.forEach((customer) => {
       const data = customer.data() as Customer;
-      let category = data.category as CategoryUnion;
+      const categories = data.categories as CategoryUnion[];
 
-      switch (category) {
-        case DeprecatedCategory.Course:
-          category = Category.CourseMinors;
-          break;
-        case DeprecatedCategory.PreCompetitive:
-          category = Category.PreCompetitiveMinors;
-          break;
-        default:
-          // No changes needed, no updates batched
-          return;
+      categories.forEach((category, i) => {
+        switch (category) {
+          case DeprecatedCategory.Course:
+            categories[i] = Category.CourseMinors;
+            break;
+          case DeprecatedCategory.PreCompetitive:
+            categories[i] = Category.PreCompetitiveMinors;
+            break;
+          default:
+            // No changes needed, no updates batched
+            return;
+        }
+      });
+
+      batch.set(customer.ref, { categories }, { merge: true });
+    });
+
+    await batch.commit();
+
+    return { success: true };
+  });
+
+export const customersToPluralCategories = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    if (!(await checkUser(organization, auth))) throwUnauth();
+
+    const batch = admin.firestore().batch();
+
+    const orgRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization);
+    const customersRef = orgRef.collection(OrgSubCollection.Customers);
+
+    const allCustomers = await customersRef.get();
+
+    allCustomers.forEach((customer) => {
+      const data = customer.data();
+
+      if (!data.category) return;
+      const { category, ...noCategoryData } = data;
+      if (!Array.isArray(category)) {
+        functions.logger.info(`Converted customer: ${data.id}`);
+
+        batch.set(customer.ref, { ...noCategoryData, categories: [category] });
+      } else {
+        batch.set(customer.ref, { ...noCategoryData, categories: category });
       }
-      batch.set(customer.ref, { category }, { merge: true });
     });
 
     await batch.commit();

@@ -8,7 +8,7 @@ import { SlotInterface, Customer } from "../firestore";
  */
 export type DeprecatedBookingsMeta = Pick<Customer, "name"> &
   Pick<Customer, "surname"> &
-  Pick<Customer, "category"> & {
+  Pick<Customer, "categories"> & {
     // eslint-disable-next-line camelcase
     customer_id: string;
   };

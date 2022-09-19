@@ -20,7 +20,7 @@ import SlotOperationButtons, {
 import SlotTime from "./SlotTime";
 import SlotTypeIcon from "@/components/atoms/SlotTypeIcon";
 
-import { comparePeriods } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 import { getColorForSlotType } from "@/utils/theme";
 
 import { __slotId__ } from "./__testData__/testIds";
@@ -34,6 +34,10 @@ export interface SlotCardProps extends SlotInterface {
    * Enable edit/delete of the slot in admin view
    */
   enableEdit?: boolean;
+  /**
+   * Disable slot deletion (we use this if there are booked intervals on a particular slot)
+   */
+  disableDelete?: boolean;
   /**
    * Click handler for the entire card, will default to empty function if none is provided
    */
@@ -49,6 +53,7 @@ export interface SlotCardProps extends SlotInterface {
 const SlotCard: React.FC<SlotCardProps> = ({
   selected,
   enableEdit,
+  disableDelete,
   onClick,
   ...slotData
 }) => {
@@ -157,6 +162,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
           {enableEdit && (
             <SlotOperationButtons
               contextType={ButtonContextType.Slot}
+              disableDelete={disableDelete}
               slot={slotData}
               className={classes.actionButtons}
             >

@@ -4,6 +4,8 @@ export enum IconButtonSize {
   XS = "xs",
   MD = "md",
   LG = "lg",
+  XL = "xl",
+  "2XL" = "2xl",
 }
 export enum IconButtonShape {
   Square = "square",
@@ -13,6 +15,7 @@ export enum IconButtonContentSize {
   Tight = "tight",
   Medium = "medium",
   Relaxed = "relaxed",
+  Loose = "loose",
 }
 export enum IconButtonBackground {
   Light = "light",
@@ -63,6 +66,7 @@ const sizeLookup = {
   [IconButtonSize.XS]: "w-5 h-5",
   [IconButtonSize.MD]: "w-8 h-8",
   [IconButtonSize.LG]: "w-11 h-11",
+  [IconButtonSize.XL]: "w-14 h-14",
 };
 const borderRadiusLookup = {
   [IconButtonShape.Square]: "rounded-md",
@@ -72,6 +76,7 @@ const contentSizePaddingLookup = {
   [IconButtonContentSize.Tight]: "p-0",
   [IconButtonContentSize.Medium]: "p-0.5",
   [IconButtonContentSize.Relaxed]: "p-2",
+  [IconButtonContentSize.Loose]: "p-3",
 };
 const backgroundColorLookup = {
   [IconButtonBackground.Light]: "hover:bg-white/10",

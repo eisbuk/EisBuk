@@ -1,30 +1,27 @@
 import React from "react";
-import { Field, useFormikContext } from "formik";
+import { Field, FieldProps } from "formik";
+import { TextField } from "formik-mui";
 
-import TextField from "@mui/material/TextField";
 import Divider from "@mui/material/Divider";
 
 import makeStyles from "@mui/styles/makeStyles";
 
 import { useTranslation, OrganizationLabel } from "@eisbuk/translations";
 
-import ErrorMessage from "@/components/atoms/ErrorMessage";
-
-interface FieldProps {
+export interface FormSectionFieldProps {
   name: string;
   label: OrganizationLabel;
   multiline?: boolean;
+  component?: React.FC<Pick<FieldProps, "field">>;
 }
 interface Props {
   name?: string;
-  content: FieldProps[];
+  content: FormSectionFieldProps[];
 }
 
 const FormSection: React.FC<Props> = ({ name, content }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-
-  const { errors } = useFormikContext();
 
   return (
     <div>
@@ -32,19 +29,18 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
         <h5 className={classes.sectionTitle}>{t(OrganizationLabel[name])}</h5>
       )}
       <div className={classes.fieldSection}>
-        {content.map(({ name, multiline, label }) => {
+        {content.map(({ name, multiline, label, component = TextField }) => {
           return (
             <div key={name}>
               <Field
                 label={t(label)}
                 name={name}
                 className={multiline ? classes.templateField : classes.field}
-                as={TextField}
+                component={component}
                 variant="outlined"
                 multiline={multiline}
                 {...(multiline ? { rows: "4" } : {})}
               />
-              {<ErrorMessage>{errors[name]}</ErrorMessage>}
             </div>
           );
         })}
@@ -57,8 +53,7 @@ const FormSection: React.FC<Props> = ({ name, content }) => {
 // #region styles
 const useStyles = makeStyles((theme) => ({
   field: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
+    marginBottom: theme.spacing(2),
     marginRight: theme.spacing(2),
     width: "21rem",
   },
@@ -67,6 +62,7 @@ const useStyles = makeStyles((theme) => ({
     flexFlow: "wrap",
   },
   sectionTitle: {
+    marginBottom: theme.spacing(2),
     letterSpacing: 1,
     fontSize: theme.typography.pxToRem(18),
     fontFamily: theme.typography.fontFamily,

@@ -22,7 +22,8 @@ import {
   markAttendance,
 } from "@/store/actions/attendanceOperations";
 
-import { comparePeriods, getSlotTimespan } from "@/utils/helpers";
+import { getSlotTimespan } from "@/utils/helpers";
+import { comparePeriods } from "@/utils/sort";
 
 import { ETheme } from "@/themes";
 
@@ -96,13 +97,17 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
   /**
    * Filtered customers to show in add customers list.
    * We're filtering customers not belonging to slot's categories
-   * and those already marked as attended
+   * by checking whether customer category array contains any of the allowed categories
+   * also those already marked as attended
    */
+  //
   const filteredCustomers = useMemo(
     () =>
       allCustomers.filter(
-        ({ category, id }) =>
-          categories.includes(category) &&
+        ({ categories, id }) =>
+          categories.some((allowedCategory) =>
+            categories.includes(allowedCategory)
+          ) &&
           !attendedCustomers.find(({ id: customerId }) => customerId === id)
       ),
     [attendedCustomers]

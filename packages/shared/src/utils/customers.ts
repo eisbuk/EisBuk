@@ -10,14 +10,14 @@ export const getCustomerBase = ({
   id,
   name,
   surname,
-  category,
+  categories,
   extendedDate,
   deleted,
 }: Omit<Customer, "secretKey">): CustomerBase => ({
   id,
   name,
   surname,
-  category,
+  categories,
   // add extended date only if it exists, rather than saving `extendedDate: undefined`
   ...(extendedDate ? { extendedDate } : {}),
   deleted: Boolean(deleted),
