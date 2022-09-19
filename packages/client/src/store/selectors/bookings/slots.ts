@@ -30,6 +30,15 @@ export const getBookedSlots = (
   state: LocalStore
 ): Record<string, CustomerBookingEntry> =>
   state.firestore.data?.bookedSlots || {};
+/**
+ * Get subscribed slots from state
+ * @param state Local Redux Store
+ * @returns record of subscribed slots
+ */
+export const getAttendedSlots = (
+  state: LocalStore
+): Record<string, Omit<CustomerBookingEntry, "bookingNotes">> =>
+  state.firestore.data?.attendedSlots || {};
 
 /**
  * An util higher order function returning the condition for category filtering
@@ -161,6 +170,9 @@ export const getMonthEmptyForBooking = (state: LocalStore): boolean => {
 };
 
 type BookingsList = Array<SlotInterface & { interval: SlotInterval }>;
+type BookedAndAttendedList = Array<
+  SlotInterface & { interval: SlotInterval } & { booked: boolean }
+>;
 
 export const getBookingsForCalendar = (
   state: LocalStore
@@ -189,4 +201,61 @@ export const getBookingsForCalendar = (
       [] as BookingsList
     )
     .sort((a, b) => (a.date < b.date ? -1 : 1));
+};
+
+export const getBookedAndAttendedSlotsForCalendar = (
+  state: LocalStore
+): (SlotInterface & { interval: SlotInterval } & { booked: boolean })[] => {
+  // Current month in view is determined by `currentDate` in Redux store
+  const monthString = getCalendarDay(state).toISO().substring(0, 7);
+
+  // Get all booked slots
+  const bookedSlots = getBookedSlots(state);
+  const attendedSlots = getAttendedSlots(state);
+  // Get only the slots for current month
+  const slotsByMonth = state.firestore.data.slotsByDay || {};
+  const slotsForAMonth = slotsByMonth[monthString] || {};
+
+  const attendedSlotsObj = Object.entries(attendedSlots).reduce(
+    (acc, [slotId, { date, interval: attendedInterval }]) => {
+      // If this returns undefined, our slot isn't in date range
+      const dayOfAttendedSlot = slotsForAMonth[date];
+      if (!dayOfAttendedSlot) {
+        return acc;
+      }
+
+      const attendedSlot = dayOfAttendedSlot[slotId];
+      const interval = attendedSlot.intervals[attendedInterval];
+      const completeAttendanceEntry = {
+        ...attendedSlot,
+        interval,
+        booked: false,
+      };
+      return [...acc, completeAttendanceEntry];
+    },
+    [] as BookedAndAttendedList
+  );
+  const bookedSlotsObj = Object.entries(bookedSlots).reduce(
+    (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
+      // If this returns undefined, our slot isn't in date range
+      const dayOfBookedSlot = slotsForAMonth[date];
+      if (!dayOfBookedSlot) {
+        return acc;
+      }
+
+      const bookedSlot = dayOfBookedSlot[slotId];
+      const interval = bookedSlot.intervals[bookedInterval];
+      const completeBookingEntry = {
+        ...bookedSlot,
+        interval,
+        bookingNotes,
+        booked: true,
+      };
+      return [...acc, completeBookingEntry];
+    },
+    [] as BookedAndAttendedList
+  );
+  return [...attendedSlotsObj, ...bookedSlotsObj].sort((a, b) =>
+    a > b ? -1 : 1
+  );
 };

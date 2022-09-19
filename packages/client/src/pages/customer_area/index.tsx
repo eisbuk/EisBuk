@@ -63,6 +63,7 @@ const CustomerArea: React.FC = () => {
     OrgSubCollection.Bookings,
     Collection.PublicOrgInfo,
     BookingSubCollection.BookedSlots,
+    BookingSubCollection.AttendedSlots,
     BookingSubCollection.Calendar,
   ]);
 
