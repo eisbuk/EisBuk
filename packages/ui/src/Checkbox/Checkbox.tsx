@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import { v4 as uuid } from "uuid";
 import { FieldProps } from "formik";
 
 interface CheckboxProps
@@ -19,6 +20,9 @@ const Checkbox: React.FC<CheckboxProps> = ({
   ...props
 }) => {
   const { name, value: fieldValue, checked: fieldChecked } = field;
+
+  // We need to generate an id for the label to work
+  const [controlId] = useState(uuid);
 
   // Check if checkbox is standalone or part of fieldsed.
   // If part of fieldset, the value will be an array
@@ -42,7 +46,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         <input
           {...field}
           {...props}
-          id={name}
+          id={controlId}
           disabled={disabled}
           aria-describedby="comments-description"
           type="checkbox"
@@ -52,7 +56,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
         />
       </div>
       <div className="ml-3 text-sm">
-        <label htmlFor={name} className={labelClasses.join(" ")}>
+        <label htmlFor={controlId} className={labelClasses.join(" ")}>
           {label}
         </label>
         <p id={`comments-description-${name}`} className={helpTextColor}>

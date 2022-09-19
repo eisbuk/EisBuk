@@ -72,8 +72,8 @@ const CustomerProfileForm: React.FC<FormProps> = ({
         <form onSubmit={handleSubmit}>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
-              title="Personal Details"
-              subtitle="Manage your personal details"
+              title={t(CustomerLabel.PersonalDetails)}
+              subtitle={t(CustomerLabel.ManagePersonalDetails)}
             >
               <div className="sm:grid sm:grid-cols-6 gap-x-6 gap-y-2 md:border-b-2 md:border-gray-100">
                 <div className="col-span-3">
@@ -158,8 +158,8 @@ const CustomerProfileForm: React.FC<FormProps> = ({
             </Section>
 
             <Section
-              title="Medical Details"
-              subtitle="Manage your medical details"
+              title={t(CustomerLabel.MedicalDetails)}
+              subtitle={t(CustomerLabel.ManageMedicalDetails)}
             >
               <div className="grid sm:grid-cols-6 gap-y-2">
                 <div className="col-span-4">
@@ -236,7 +236,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                   <Button
                     type="button"
                     onClick={toggleEdit}
-                    className="w-24 !text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
+                    className="!text-gray-700 font-medium bg-cyan-200 hover:bg-cyan-100"
                     size={ButtonSize.LG}
                   >
                     {t(ActionButton.Edit)}
