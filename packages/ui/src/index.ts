@@ -35,6 +35,7 @@ export * from "./TextInput";
 export * from "./Layout";
 export * from "./IconButton";
 export * from "./Table";
+export * from "./AttendanceVarianceTable";
 
 export {
   TestComponent,

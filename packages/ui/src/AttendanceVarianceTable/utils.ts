@@ -32,6 +32,13 @@ interface HoursByType {
   };
 }
 
+export const padEmptyDates = (dates: string[], athleteHours: Hours) => {
+  return dates.reduce<Hours>((acc, curDate) => {
+    acc[curDate] = athleteHours[curDate] || [0, 0];
+    return acc;
+  }, {});
+};
+
 export const calculateDeltas = (data: Hours) => {
   return Object.entries(data).reduce<AttendanceWithDeltaData>((acc, cur) => {
     const [date, data] = cur;
