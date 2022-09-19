@@ -142,3 +142,31 @@ export const comparePeriods = (first: string, second: string): number => {
  */
 export const isValidPhoneNumber = (phone?: string): boolean =>
   !phone ? false : /^(\+|00)[0-9]{9,16}$/.test(phone.replace(/\s/g, ""));
+
+/**
+ * @param {string | null} interval - String slot interval
+ * Converts a string slot interval to a number e.g:
+ * `null => 0`;
+ * `"09:30 - 11:00" => 1.5`;
+ * `"15:30 - 17:00" => 1.5`;
+ * `"22:30 - 24:00" => 0.5`
+ */
+export const convertIntervalToNum = (interval: string | null) => {
+  if (interval === null) {
+    return 0;
+  }
+
+  const [startTime, endTime] = interval.split("-").map((time) => {
+    const [hours, mins] = time.split(":");
+
+    return Number(hours) * 60 + Number(mins);
+  });
+
+  const intervalNum =
+    startTime < endTime
+      ? (endTime - startTime) / 60
+      : // Handles edge if end has rolled into next day - "23:30 - 01:00";
+        24 - (startTime - endTime) / 60;
+
+  return intervalNum;
+};

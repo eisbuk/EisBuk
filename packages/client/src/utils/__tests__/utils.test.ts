@@ -11,6 +11,7 @@ import {
   getOrgFromLocation,
   isEmpty,
   comparePeriods,
+  convertIntervalToNum,
 } from "../helpers";
 import { isISODay } from "../date";
 
@@ -26,6 +27,35 @@ describe("Helpers", () => {
       const str = "hello-world";
       const want = "Hello-World";
       expect(capitalizeFirst(str)).toEqual(want);
+    });
+  });
+
+  describe("`convertIntervalToNum` function", () => {
+    test("should convert null to 0", () => {
+      const interval = null;
+      const result = convertIntervalToNum(interval);
+      expect(result).toBe(0);
+    });
+
+    test("should convert string to number", () => {
+      const morningStr = "10:30 - 11:00";
+      const avoStr = "16:00 - 17:00";
+      const nightStr = "22:30 - 24:00";
+
+      const morningResult = convertIntervalToNum(morningStr);
+      const avoResult = convertIntervalToNum(avoStr);
+      const eveResult = convertIntervalToNum(nightStr);
+
+      expect(morningResult).toBe(0.5);
+      expect(avoResult).toBe(1);
+      expect(eveResult).toBe(1.5);
+    });
+
+    test("should convert 24 rollover `23:30 - 01:00` string", () => {
+      const rolloverStr = "23:30 - 01:00";
+
+      const rolloverResult = convertIntervalToNum(rolloverStr);
+      expect(rolloverResult).toBe(1.5);
     });
   });
 });
