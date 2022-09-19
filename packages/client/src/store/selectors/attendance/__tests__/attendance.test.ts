@@ -6,7 +6,10 @@ import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getSlotsWithAttendance } from "../slotAttendance";
-import { filterAttendanceByMonth } from "../attendanceVariance";
+import {
+  filterAttendanceByMonth,
+  flattenAndConvertAttendanceIntervals,
+} from "../attendanceVariance";
 
 import { AttendanceSortBy } from "@/enums/other";
 
@@ -64,6 +67,20 @@ describe("Selectors ->", () => {
       // __testsData__/attendance => line 70 tests attendance records
       expect(currentMonth.length).toBe(7);
       expect(nextMonth.length).toBe(0);
+    });
+
+    test("should flatten SlotAttendance docs & convert interval stringss to numbers", () => {
+      const [singleSlotAttendanceDoc] = attendanceArr;
+
+      const [result] = [singleSlotAttendanceDoc].reduce(
+        flattenAndConvertAttendanceIntervals,
+        []
+      );
+
+      expect(result).toHaveProperty("date");
+      expect(result).toHaveProperty("customerId");
+      expect(typeof result.attendedInterval).toBe("number");
+      expect(typeof result.bookedInterval).toBe("number");
     });
   });
 });

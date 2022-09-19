@@ -1,7 +1,14 @@
 import { SlotAttendnace } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
-import { getMonthStr } from "@/utils/helpers";
+import { getMonthStr, convertIntervalToNum } from "@/utils/helpers";
+
+interface AttendanceRecord {
+  date: string;
+  customerId: string;
+  attendedInterval: number;
+  bookedInterval: number;
+}
 
 export const getMonthAttendanceVariance = (state: LocalStore) => {
   const {
@@ -16,9 +23,9 @@ export const getMonthAttendanceVariance = (state: LocalStore) => {
 
   const currentMonth = getMonthStr(calendarDay, 0);
 
-  const monthAttendanceRecords = Object.values(attendance).filter(
-    filterAttendanceByMonth(currentMonth)
-  );
+  const monthAttendanceRecords = Object.values(attendance)
+    .filter(filterAttendanceByMonth(currentMonth))
+    .reduce(flattenAndConvertAttendanceIntervals, []);
 
   return monthAttendanceRecords;
 };
@@ -31,3 +38,22 @@ export const getMonthAttendanceVariance = (state: LocalStore) => {
 export const filterAttendanceByMonth =
   (month: string) => (slotAttendance: SlotAttendnace) =>
     slotAttendance.date.substring(0, 7) === month;
+
+/**
+ * Flattens nested `SlotAttendance.attendances`
+ * and converts attendance interval strings | null to numbners
+ */
+export const flattenAndConvertAttendanceIntervals = (
+  acc: AttendanceRecord[],
+  { attendances, date }: SlotAttendnace
+) => {
+  const flatAttendanceIntervals = Object.entries(attendances).map(
+    ([customerId, { attendedInterval, bookedInterval }]) => ({
+      date,
+      customerId,
+      attendedInterval: convertIntervalToNum(attendedInterval),
+      bookedInterval: convertIntervalToNum(bookedInterval),
+    })
+  );
+  return [...acc, ...flatAttendanceIntervals];
+};
