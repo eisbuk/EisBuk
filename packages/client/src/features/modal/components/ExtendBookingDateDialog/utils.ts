@@ -1,4 +1,9 @@
-import { Customer, EmailPayload, SMSMessage } from "@eisbuk/shared";
+import {
+  Customer,
+  EmailPayload,
+  PublicOrganizationData,
+  SMSMessage,
+} from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 
 import { FirestoreThunk } from "@/types/store";
@@ -10,7 +15,6 @@ import { Routes } from "@/enums/routes";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getOrganization } from "@/lib/getters";
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
 interface GetDialogPrompt {
@@ -66,15 +70,18 @@ export const getDialogPrompt: GetDialogPrompt = (props) => {
 
 interface SendBookingsLink {
   (
-    payload: { method: SendBookingLinkMethod; bookingsLink: string } & Customer
+    payload: {
+      method: SendBookingLinkMethod;
+      bookingsLink: string;
+    } & Customer & { displayName: PublicOrganizationData["displayName"] }
   ): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ name, method, email, phone, secretKey, bookingsLink }) =>
+  ({ name, method, email, phone, secretKey, bookingsLink, displayName }) =>
   async (dispatch) => {
     try {
-      const subject = "prenotazioni lezioni di Igor Ice Team";
+      const subject = `prenotazioni lezioni di ${displayName} Team`;
 
       if (!secretKey) {
         // this should be unreachable
@@ -83,11 +90,11 @@ export const sendBookingsLink: SendBookingsLink =
       }
 
       const html = `<p>Ciao ${name},</p>
-      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:</p>
+      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:</p>
       <a href="${bookingsLink}">Clicca qui per prenotare e gestire le tue lezioni</a>`;
 
       const sms = `Ciao ${name},
-      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
+      Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
       ${bookingsLink}`;
 
       const config = {

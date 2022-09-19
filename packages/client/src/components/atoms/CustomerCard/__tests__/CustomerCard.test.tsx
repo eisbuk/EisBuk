@@ -19,6 +19,8 @@ import CustomerCard from "../CustomerCard";
 import * as customerActions from "@/store/actions/customerOperations";
 
 import { saul } from "@/__testData__/customers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
+
 import {
   __customerDeleteId__,
   __customerEditId__,
@@ -65,6 +67,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
+          displayName={__testOrganization__}
         />
       );
     });
@@ -99,13 +102,18 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
+          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__sendBookingsEmailId__).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         openModal({
           component: "SendBookingsLinkDialog",
-          props: { ...saul, method: SendBookingLinkMethod.Email },
+          props: {
+            ...saul,
+            method: SendBookingLinkMethod.Email,
+            displayName: __testOrganization__,
+          },
         })
       );
     });
@@ -118,6 +126,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
+          displayName={__testOrganization__}
         />
       );
 
@@ -135,6 +144,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noEmailSaul}
+          displayName={__testOrganization__}
         />
       );
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
@@ -151,13 +161,18 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
+          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__sendBookingsSMSId__).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         openModal({
           component: "SendBookingsLinkDialog",
-          props: { ...saul, method: SendBookingLinkMethod.SMS },
+          props: {
+            ...saul,
+            method: SendBookingLinkMethod.SMS,
+            displayName: __testOrganization__,
+          },
         })
       );
     });
@@ -170,6 +185,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
+          displayName={__testOrganization__}
         />
       );
 
@@ -187,6 +203,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noPhoneSaul as Customer}
+          displayName={__testOrganization__}
         />
       );
       expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(
@@ -204,6 +221,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={mockOnClose}
           customer={saul}
+          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__openBookingsId__).click();
@@ -221,6 +239,7 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
+          displayName={__testOrganization__}
         />
       );
       screen

@@ -5,7 +5,7 @@ import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
 
-import { CalendarEvents } from "@eisbuk/shared";
+import { CalendarEvents, Customer } from "@eisbuk/shared";
 
 import InputDialog from "@/components/atoms/InputDialog";
 import {
@@ -27,6 +27,7 @@ import {
 } from "@/store/actions/bookingOperations";
 
 import { __organization__ } from "@/lib/constants";
+import { getCustomer } from "@/store/selectors/customers";
 
 const AddToCalendar: React.FC = () => {
   const dispatch = useDispatch();
@@ -42,6 +43,8 @@ const AddToCalendar: React.FC = () => {
   const monthStr = useSelector(getCalendarDay).toISO().substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
+
+  const { name } = useSelector(getCustomer(secretKey)) as Customer;
 
   const { displayName = "", location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
@@ -94,7 +97,15 @@ const AddToCalendar: React.FC = () => {
     createCancelledEvents(previousCalendarUids, icalendar, displayName);
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
-    dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
+    dispatch(
+      sendICSFile({
+        icsFile: icsFile,
+        email,
+        secretKey,
+        name: name,
+        displayName: displayName,
+      })
+    );
   };
 
   // Don't render the component if there are no booked slots to save to calendar
