@@ -5,7 +5,9 @@ import { getNewStore } from "@/store/createStore";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { getSlotsWithAttendance } from "..";
+import { getSlotsWithAttendance } from "../slotAttendance";
+import { filterAttendanceByMonth } from "../attendanceVariance";
+
 import { AttendanceSortBy } from "@/enums/other";
 
 import {
@@ -40,6 +42,28 @@ describe("Selectors ->", () => {
         testStore.getState()
       );
       expect(res).toEqual(expectedStructByBookedInterval);
+    });
+  });
+
+  describe("Test 'getMonthAttendanceVariance'", () => {
+    const attendanceArr = Object.values(attendance!);
+
+    test("should filter attendance collection by date", () => {
+      const currentMonthStr = testDateLuxon.toISODate().substring(0, 7);
+      const nextMonthStr = testDateLuxon
+        .plus({ month: 1 })
+        .toISODate()
+        .substring(0, 7);
+
+      const currentMonthFilter = filterAttendanceByMonth(currentMonthStr);
+      const nextMonthFilter = filterAttendanceByMonth(nextMonthStr);
+
+      const currentMonth = attendanceArr.filter(currentMonthFilter);
+      const nextMonth = attendanceArr.filter(nextMonthFilter);
+
+      // __testsData__/attendance => line 70 tests attendance records
+      expect(currentMonth.length).toBe(7);
+      expect(nextMonth.length).toBe(0);
     });
   });
 });
