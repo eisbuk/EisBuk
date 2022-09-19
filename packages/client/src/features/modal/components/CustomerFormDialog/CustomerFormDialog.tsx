@@ -12,7 +12,7 @@ import CustomerForm, {
 import { updateCustomer } from "@/store/actions/customerOperations";
 
 type CustomerFormDialogProps = BaseModalProps &
-  Pick<CustomerFormProps, "customer">;
+  Pick<CustomerFormProps, "customer" | "defaultDialCode">;
 
 const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   onClose,
