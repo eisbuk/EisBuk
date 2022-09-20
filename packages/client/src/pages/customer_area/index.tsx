@@ -63,6 +63,7 @@ const CustomerArea: React.FC = () => {
     Collection.PublicOrgInfo,
     BookingSubCollection.BookedSlots,
     BookingSubCollection.Calendar,
+    OrgSubCollection.Customers,
   ]);
 
   const calendarNavProps = useDate();
@@ -114,10 +115,10 @@ const CustomerArea: React.FC = () => {
     >
       {view !== "ProfileView" && (
         <CalendarNav
-        {...calendarNavProps}
-        additionalContent={<AddToCalendar />}
-        jump="month"
-      />
+          {...calendarNavProps}
+          additionalContent={<AddToCalendar />}
+          jump="month"
+        />
       )}
       <div className="content-container">
         <div className="px-[44px] py-4">

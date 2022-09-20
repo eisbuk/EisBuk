@@ -160,7 +160,7 @@ service cloud.firestore {
       // #region customer-checks
       match /customers/{customerId} {
         // Only admins can access customer collection
-        allow read, delete: if isAdmin(organization)
+        allow read: if true
         // Check data integrity 
         allow update: if (
           isAdmin(organization) &&
