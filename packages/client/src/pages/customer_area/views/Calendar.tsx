@@ -10,9 +10,8 @@ import {
 } from "@eisbuk/ui";
 
 import {
-  getBookingsForCalendar,
   getIsBookingAllowed,
-  getBookedAndAttendedSlotsForCalendar
+  getBookedAndAttendedSlotsForCalendar,
 } from "@/store/selectors/bookings";
 import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
