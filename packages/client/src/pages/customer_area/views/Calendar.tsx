@@ -2,9 +2,17 @@ import React from "react";
 import { useSelector, useStore } from "react-redux";
 
 import i18n, { Alerts } from "@eisbuk/translations";
-import { EmptySpace, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
+import {
+  EmptySpace,
+  IntervalCard,
+  IntervalCardState,
+  IntervalCardVariant,
+} from "@eisbuk/ui";
 
-import { getBookingsForCalendar } from "@/store/selectors/bookings";
+import {
+  getBookingsForCalendar,
+  getIsBookingAllowed,
+} from "@/store/selectors/bookings";
 import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
 import { updateBookingNotes } from "@/store/actions/bookingOperations";
@@ -15,7 +23,13 @@ const CalendarView: React.FC = () => {
   const { dispatch, getState } = useStore();
   const currentDate = useSelector(getCalendarDay);
 
+  const disabled = !useSelector(getIsBookingAllowed(currentDate));
+
   const bookedSlots = useSelector(getBookingsForCalendar);
+
+  const state = disabled
+    ? IntervalCardState.Disabled
+    : IntervalCardState.Default;
 
   const handleCancellation = (
     props: Parameters<typeof openModal>[0]["props"]
@@ -45,6 +59,7 @@ const CalendarView: React.FC = () => {
         handleNotesUpdate(bookingNotes, props.id)
       }
       variant={IntervalCardVariant.Calendar}
+      state={state}
       {...props}
     />
   ));
