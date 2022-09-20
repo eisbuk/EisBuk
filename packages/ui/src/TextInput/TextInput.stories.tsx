@@ -109,3 +109,47 @@ export const Default = (): JSX.Element => (
     </Formik>
   </>
 );
+
+export const Multiline = (): JSX.Element => (
+  <div>
+    <p className="mt-4 mb-12 text-gray-500">
+      <em>
+        In order to render a multiline (textarea) element, the component needs
+        to receive the 'multiline = true' prop. Additionally, the number of rows
+        can be specified using the 'rows' prop. If not specified, it falls back
+        to 2
+      </em>
+    </p>
+    <Formik initialValues={{}} onSubmit={() => {}}>
+      <div className="grid grid-cols-2 gap-4">
+        <Field
+          name="tworows"
+          label="Rows: 2"
+          component={TextInput}
+          placeholder="Write some long text"
+          multiline={true}
+          className="col-span-1"
+          rows={2}
+        />
+        <Field
+          name="fiverows"
+          label="Rows: 5"
+          component={TextInput}
+          placeholder="Write some long text"
+          multiline={true}
+          className="col-span-1"
+          rows={5}
+        />
+        <Field
+          name="twelverows"
+          label="Rows: 12"
+          component={TextInput}
+          placeholder="Write some long text"
+          multiline={true}
+          className="col-span-2"
+          rows={12}
+        />
+      </div>
+    </Formik>
+  </div>
+);

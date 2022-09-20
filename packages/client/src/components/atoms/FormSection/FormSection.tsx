@@ -1,142 +1,59 @@
 import React from "react";
 import { Field, FieldProps } from "formik";
-import { TextField } from "formik-mui";
 
-import Divider from "@mui/material/Divider";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import { useTranslation, OrganizationLabel } from "@eisbuk/translations";
+import { TextInput } from "@eisbuk/ui";
 
 export interface FormSectionFieldProps {
   name: string;
-  label: OrganizationLabel;
+  label: string;
   multiline?: boolean;
+  rows?: number;
   component?: React.FC<Pick<FieldProps, "field">>;
 }
 interface Props {
-  name?: string;
+  title?: string;
   content: FormSectionFieldProps[];
 }
 
-const FormSection: React.FC<Props> = ({ name, content }) => {
-  const classes = useStyles();
-  const { t } = useTranslation();
-
+const FormSection: React.FC<Props> = ({ title, content }) => {
   return (
-    <div>
-      {name && (
-        <h5 className={classes.sectionTitle}>{t(OrganizationLabel[name])}</h5>
+    <div className="pb-4 border-t border-gray-300">
+      {title && (
+        <div className="pt-16 pb-8">
+          <h2 className="text-xl text-gray-700 font-medium tracking-wide">
+            {title}
+          </h2>
+        </div>
       )}
-      <div className={classes.fieldSection}>
-        {content.map(({ name, multiline, label, component = TextField }) => {
-          return (
-            <div key={name}>
-              <Field
-                label={t(label)}
-                name={name}
-                className={multiline ? classes.templateField : classes.field}
-                component={component}
-                variant="outlined"
-                multiline={multiline}
-                {...(multiline ? { rows: "4" } : {})}
-              />
-            </div>
-          );
-        })}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {content.map(
+          ({ name, multiline, label, component = TextInput, ...rest }) => {
+            const textareaClasses = "col-span-1 md:col-span-2";
+            const fieldClasses = "col-span-1";
+
+            return (
+              <div
+                className={[
+                  multiline ? textareaClasses : fieldClasses,
+                  "min-h-[60px]",
+                ].join(" ")}
+                key={name}
+              >
+                <Field
+                  label={label}
+                  name={name}
+                  component={component}
+                  variant="outlined"
+                  multiline={multiline}
+                  {...rest}
+                />
+              </div>
+            );
+          }
+        )}
       </div>
-      <Divider />
     </div>
   );
 };
 
-// #region styles
-const useStyles = makeStyles((theme) => ({
-  field: {
-    marginBottom: theme.spacing(2),
-    marginRight: theme.spacing(2),
-    width: "21rem",
-  },
-  fieldSection: {
-    display: "flex",
-    flexFlow: "wrap",
-  },
-  sectionTitle: {
-    marginBottom: theme.spacing(2),
-    letterSpacing: 1,
-    fontSize: theme.typography.pxToRem(18),
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.light,
-  },
-  addAdminButton: {
-    marginLeft: theme.spacing(3),
-    borderRadius: theme.spacing(100),
-  },
-  adminFieldGroup: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(1),
-    width: "12.5rem",
-  },
-  disabledAdminFieldGroup: {
-    display: "flex",
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(2),
-    width: "11rem",
-  },
-  adminsList: {
-    display: "flex",
-    flexFlow: "wrap",
-  },
-
-  content: {
-    width: "50rem",
-    padding: "3rem",
-  },
-  closeButton: {
-    transform: "translate(-150%,-25%)",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    width: "0px",
-  },
-  addAdmin: {
-    marginBottom: theme.spacing(3),
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-
-  form: {
-    display: "flex",
-    flexDirection: "column",
-  },
-  submitButtonArea: {
-    display: "flex",
-    padding: "8px",
-    alignItems: "center",
-    justifyContent: "flex-end",
-  },
-  templateField: {
-    width: "47rem",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(1),
-    marginRight: theme.spacing(2),
-  },
-  title: {
-    position: "relative",
-    fontWeight: 600,
-    padding: 20,
-    background: theme.palette.primary.main,
-    fontFamily: theme.typography.fontFamily,
-    color: theme.palette.primary.contrastText,
-  },
-  saveButton: {
-    marginLeft: "1rem",
-  },
-  smsFromField: {
-    width: "21rem",
-    marginRight: theme.spacing(2),
-  },
-}));
-// #endregion styles
 export default FormSection;

@@ -5,6 +5,7 @@ import {
   Customer,
   SlotInterface,
   SendEmailPayload,
+  OrganizationData,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { NotifVariant } from "@/enums/store";
@@ -178,17 +179,19 @@ interface sendICSFile {
     icsFile: string;
     email: string;
     secretKey: Customer["secretKey"];
+    name: Customer["name"];
+    displayName: OrganizationData["displayName"];
   }): FirestoreThunk;
 }
 
 export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey }) =>
+  ({ icsFile, email, secretKey, displayName, name }) =>
   async (dispatch) => {
     try {
-      const subject = "Calendario prenotazioni Igor Ice Team";
+      const subject = `Calendario prenotazioni ${displayName}`;
 
       const html = `<p>Ciao ${name},</p>
-        <p>Ti inviamo un file per aggiungere le tue prossime lezioni con ${getOrganization()} al tuo calendario:</p>
+        <p>Ti inviamo un file per aggiungere le tue prossime lezioni con ${displayName} al tuo calendario:</p>
         <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
 
       const handler = CloudFunction.SendEmail;

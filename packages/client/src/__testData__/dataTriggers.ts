@@ -9,7 +9,7 @@ import { testDate } from "@/__testData__/date";
 import { saul } from "@/__testData__/customers";
 import { intervals as intervalsRecord } from "@/__testData__/slots";
 
-const intervals = Object.keys(intervalsRecord);
+export const intervals = Object.keys(intervalsRecord);
 
 /**
  * Interval we're using to test booking triggering attendance

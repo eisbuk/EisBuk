@@ -23,16 +23,15 @@ import {
   __sendBookingsSMSId__,
 } from "./__testData__/testIds";
 import { openModal } from "@/features/modal/actions";
+import { OrganizationData } from "@eisbuk/shared";
 
 /**
  * Labeled action buttons to open customer's bookings or send
  * booking link via sms/email, rendered as icon + text
  */
-const ActionButtons: React.FC<ActionButtonProps> = ({
-  customer,
-  className,
-  onClose,
-}) => {
+const ActionButtons: React.FC<
+  ActionButtonProps & { displayName: OrganizationData["displayName"] }
+> = ({ customer, className, onClose, displayName }) => {
   const { t } = useTranslation();
 
   const dispatch = useDispatch();
@@ -51,7 +50,7 @@ const ActionButtons: React.FC<ActionButtonProps> = ({
     dispatch(
       openModal({
         component: "SendBookingsLinkDialog",
-        props: { ...customer, method },
+        props: { ...customer, method, displayName },
       })
     );
   };

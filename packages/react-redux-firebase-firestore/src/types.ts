@@ -50,6 +50,9 @@ export interface FirestoreData {
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;
   };
+  [BookingSubCollection.AttendedSlots]: {
+    [slotId: string]: Omit<CustomerBookingEntry, "bookingNotes">;
+  };
   [BookingSubCollection.Calendar]: CalendarEvents;
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
@@ -108,6 +111,7 @@ export type CollectionSubscription =
   | OrgSubCollection.Bookings
   | OrgSubCollection.Attendance
   | BookingSubCollection.BookedSlots
+  | BookingSubCollection.AttendedSlots
   | BookingSubCollection.Calendar;
 
 /**

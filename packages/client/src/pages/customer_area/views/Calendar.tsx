@@ -12,6 +12,7 @@ import {
 import {
   getBookingsForCalendar,
   getIsBookingAllowed,
+  getBookedAndAttendedSlotsForCalendar
 } from "@/store/selectors/bookings";
 import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -25,7 +26,9 @@ const CalendarView: React.FC = () => {
 
   const disabled = !useSelector(getIsBookingAllowed(currentDate));
 
-  const bookedSlots = useSelector(getBookingsForCalendar);
+  const bookedAndAttendedSlots = useSelector(
+    getBookedAndAttendedSlotsForCalendar
+  );
 
   const state = disabled
     ? IntervalCardState.Disabled
@@ -51,15 +54,17 @@ const CalendarView: React.FC = () => {
       bookingNotes,
     })(dispatch, getState);
 
-  const slotsToRender = bookedSlots.map((props) => (
+  const slotsToRender = bookedAndAttendedSlots.map((props) => (
     <IntervalCard
       key={props.id}
       onCancel={() => handleCancellation(props)}
       onNotesEditSave={(bookingNotes) =>
         handleNotesUpdate(bookingNotes, props.id)
       }
-      variant={IntervalCardVariant.Calendar}
       state={state}
+      variant={
+        props.booked ? IntervalCardVariant.Calendar : IntervalCardVariant.Simple
+      }
       {...props}
     />
   ));

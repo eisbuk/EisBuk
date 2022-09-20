@@ -12,6 +12,7 @@ module.exports = useTSConfig(
       "setupTests.js",
       "nyc-config.js",
       "jest.config.js",
+      "jest.setup.ts",
       "postcss.config.js",
       "tailwind.config.js",
       "src/pages/customer_area_archive/*",

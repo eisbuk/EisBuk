@@ -7,9 +7,9 @@
     "Slots": "Slots"
   },
   "CustomerNavigation": {
-    "BookIce": "Prenota Ice",
-    "BookOffIce": "Prenota Off-Ice",
-    "Calendar": "Riepilogo"
+    "Book": "Prenota",
+    "Calendar": "Riepilogo",
+    "Profile": "Profilo"
   },
 
   "Authorization": {
@@ -103,7 +103,11 @@
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
     "CovidCertificateSuspended": "Certificazione verde sospesa",
-    "ExtendedBookingDate": "Estendi scadenza prenotazioni"
+    "ExtendedBookingDate": "Estendi scadenza prenotazioni",
+    "MedicalDetails": "Dettagli Medici",
+    "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",
+    "PersonalDetails": "Dati personali",
+    "ManagePersonalDetails": "Gestisci i tuoi dati personali"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",
@@ -289,6 +293,10 @@
     "Athlete": "Atleta",
     "Signature": "Firma",
     "Note": "Note"
+  },
+  "AttendanceVarianceHeaders": {
+    "Athlete": "Atleta",
+    "Total": "Totale"
   },
 
   "Forms": {

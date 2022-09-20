@@ -16,6 +16,7 @@ import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "../utils";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 // #region getDialogPromptSetup
 const testPhone = "12345";
@@ -121,6 +122,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
@@ -150,6 +152,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
@@ -185,6 +188,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

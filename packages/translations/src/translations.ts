@@ -9,9 +9,9 @@ export enum NavigationLabel {
   Slots = "NavigationLabel.Slots",
 }
 export enum CustomerNavigationLabel {
-  "book_ice" = "CustomerNavigation.BookIce",
-  "book_off_ice" = "CustomerNavigation.BookOffIce",
-  "calendar" = "CustomerNavigation.Calendar",
+  Book = "CustomerNavigation.Book",
+  Calendar = "CustomerNavigation.Calendar",
+  Profile = "CustomerNavigation.Profile",
 }
 // #endregion navigation
 
@@ -109,6 +109,10 @@ export enum CustomerLabel {
   CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
   CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
   ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
+  MedicalDetails = "CustomerLabel.MedicalDetails",
+  ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
+  PersonalDetails = "CustomerLabel.PersonalDetails",
+  ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -318,6 +322,13 @@ export enum PrintableAttendance {
   Note = "PrintableAttendance.Note",
 }
 // #endregion alerts
+
+// #region tables
+export enum AttendanceVarianceHeaders {
+  Athlete = "AttendanceVarianceHeaders.Athlete",
+  Total = "AttendanceVarianceHeaders.Total",
+}
+// #endregion tables
 
 // #region forms
 export enum Forms {

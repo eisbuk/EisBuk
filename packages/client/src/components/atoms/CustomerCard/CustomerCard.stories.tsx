@@ -5,6 +5,7 @@ import CustomerCard from "./CustomerCard";
 import { ModalContainer } from "@/features/modal/components";
 
 import { walt } from "@/__testData__/customers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 export default {
   title: "Customer Dialog",
@@ -19,5 +20,10 @@ export default {
 } as ComponentMeta<typeof CustomerCard>;
 
 export const Default = (): JSX.Element => (
-  <CustomerCard customer={walt} onClose={() => {}} onCloseAll={() => {}} />
+  <CustomerCard
+    customer={walt}
+    displayName={__testOrganization__}
+    onClose={() => {}}
+    onCloseAll={() => {}}
+  />
 );

@@ -149,6 +149,9 @@ service cloud.firestore {
             checkBookedSlotCategory(slotId)  
           )
         }
+        match /attendedSlots/{slotId} {
+          allow read: if true;
+        }
         match /calendar/{date} {
           // Anybody with secret key should be able to read and write 
           allow read, write: if true;

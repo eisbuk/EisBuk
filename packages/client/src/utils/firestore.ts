@@ -37,6 +37,14 @@ export const getBookedSlotsPath: GetCollectionPath<[string]> = (
     getBookingsDocPath(organization, secretKey),
     BookingSubCollection.BookedSlots,
   ].join("/");
+export const getAttendedSlotsPath: GetCollectionPath<[string]> = (
+  organization,
+  secretKey
+) =>
+  [
+    getBookingsDocPath(organization, secretKey),
+    BookingSubCollection.AttendedSlots,
+  ].join("/");
 
 export const getEmailQueuePath: GetCollectionPath = (organization) =>
   [Collection.DeliveryQueues, organization, DeliveryQueue.EmailQueue].join("/");
@@ -68,6 +76,11 @@ export const getBookedSlotDocPath: GetDocumentPath<[string]> = (
   secretKey,
   slotId
 ) => [getBookedSlotsPath(organization, secretKey), slotId].join("/");
+export const getAttendedSlotDocPath: GetDocumentPath<[string]> = (
+  organization,
+  secretKey,
+  slotId
+) => [getAttendedSlotsPath(organization, secretKey), slotId].join("/");
 
 export const getEmailQueueDocPath: GetDocumentPath = (organization, emailId) =>
   [getEmailQueuePath(organization), emailId].join("/");
