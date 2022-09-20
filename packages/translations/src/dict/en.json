@@ -274,7 +274,8 @@
   },
   "Alerts": {
     "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}",
-    "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}"
+    "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}",
+    "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Start",

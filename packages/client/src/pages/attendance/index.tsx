@@ -70,13 +70,14 @@ const AttendancePage: React.FC = () => {
 
   const calendarNavProps = useDate();
   const calendarJump = view === Views.ByDay ? "day" : "month";
-  const calendarAdditionalContent = (
-    <Link to="/attendance_printable">
-      <Button className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10">
-        <Printer />
-      </Button>
-    </Link>
-  );
+  const calendarAdditionalContent =
+    view === Views.ByDay ? (
+      <Link to="/attendance_printable">
+        <Button className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10">
+          <Printer />
+        </Button>
+      </Link>
+    ) : undefined;
 
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())

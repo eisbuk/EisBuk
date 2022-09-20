@@ -1,45 +1,33 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { AttendanceVarianceTable } from "@eisbuk/ui";
+import { AttendanceVarianceTable, EmptySpace } from "@eisbuk/ui";
+import { useTranslation, Alerts } from "@eisbuk/translations";
 
-import { getSlotsWithAttendance } from "@/store/selectors/attendance";
+import { getMonthAttendanceVariance } from "@/store/selectors/attendance";
+import { getCalendarDay } from "@/store/selectors/app";
 
-const testDates = ["2022-09-01", "2022-09-02", "2022-09-03"];
-
-const testData = [
-  {
-    athlete: "John Longname Doe",
-    hours: {
-      "2022-09-01": [1.5, 0],
-      "2022-09-02": [1.5, 0.5],
-      "2022-09-03": [1.5, 1.5],
-    },
-  },
-  {
-    athlete: "Willy Brandt",
-    hours: {
-      "2022-09-01": [1.5, 1],
-      "2022-09-02": [1.5, 1.5],
-      "2022-09-03": [0, 0],
-    },
-  },
-  {
-    athlete: "Kevin Cosner",
-    hours: {
-      "2022-09-01": [1, 1],
-      "2022-09-02": [1.5, 1.5],
-      "2022-09-03": [0, 0],
-    },
-  },
-];
+import { generateDatesInRange } from "@/utils/date";
 
 const AttendanceByDayView: React.FC = () => {
-  const attendanceCards = useSelector(getSlotsWithAttendance());
+  const { t } = useTranslation();
 
-  console.log(attendanceCards);
+  const calendarDay = useSelector(getCalendarDay);
+  const data = useSelector(getMonthAttendanceVariance);
 
-  return <AttendanceVarianceTable dates={testDates} data={testData} />;
+  const startDate = calendarDay.startOf("month");
+  const endDate = startDate.endOf("month");
+  const dates = Array.from(generateDatesInRange(startDate, endDate));
+
+  return !data.length ? (
+    <EmptySpace>
+      {t(Alerts.NoAttendance, { currentDate: calendarDay })}
+    </EmptySpace>
+  ) : (
+    <div className="overflow-x-auto">
+      <AttendanceVarianceTable dates={dates} data={data} />
+    </div>
+  );
 };
 
 export default AttendanceByDayView;

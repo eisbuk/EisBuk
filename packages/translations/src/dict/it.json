@@ -275,7 +275,8 @@
   },
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
-    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}"
+    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
+    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Inizio",
