@@ -24,9 +24,7 @@ const AttendanceByDayView: React.FC = () => {
       {t(Alerts.NoAttendance, { currentDate: calendarDay })}
     </EmptySpace>
   ) : (
-    <div className="overflow-x-auto">
-      <AttendanceVarianceTable dates={dates} data={data} />
-    </div>
+    <AttendanceVarianceTable dates={dates} data={data} />
   );
 };
 

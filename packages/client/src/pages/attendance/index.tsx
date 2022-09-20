@@ -90,14 +90,14 @@ const AttendancePage: React.FC = () => {
   const additionalButtons = (
     <>
       <TabItem
-        key="book-view-button"
+        key="by-day-view-button"
         Icon={Calendar as any}
         label="By Day"
         onClick={() => setView(Views.ByDay)}
         active={view === Views.ByDay}
       />
       <TabItem
-        key="calendar-view-button"
+        key="by-month-view-button"
         Icon={Calendar as any}
         label="By Month"
         onClick={() => setView(Views.ByMonth)}
@@ -119,7 +119,7 @@ const AttendancePage: React.FC = () => {
         jump={calendarJump}
         additionalContent={calendarAdditionalContent}
       />
-      <div className="content-container">
+      <div className="overflow-x-scroll h-4/5">
         <div className="px-[44px] py-4">
           <AttendanceView />
         </div>
