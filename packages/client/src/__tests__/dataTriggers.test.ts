@@ -502,30 +502,17 @@ describe("Cloud functions -> Data triggers ->", () => {
       });
 
       // set two customers
-      const customerRef = adminDb.doc(
-        getCustomerDocPath(organization, saul.id)
-      );
-      await customerRef.set(saul);
+      const saulrRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+      await saulrRef.set(saul);
 
-      const secondCustomerRef = adminDb.doc(
+      const waltCustomerRef = adminDb.doc(
         getCustomerDocPath(organization, walt.id)
       );
-      await secondCustomerRef.set(walt);
+      await waltCustomerRef.set(walt);
 
-      const attendance = {
-        [saul.id]: {
-          ...attendanceWithTestCustomer.attendances[saul.id],
+      // set nonBooked attendance for saul
 
-          bookedInterval: null,
-        },
-      };
-
-      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-        ...attendanceWithTestCustomer,
-        attendances: { ...attendance },
-      });
-
-      const nonBookedAttendance = {
+      const saulNonBookedAttendance = {
         [saul.id]: {
           bookedInterval: null,
           attendedInterval: intervals[1],
@@ -534,10 +521,17 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
         ...attendanceWithTestCustomer,
-        attendances: { ...nonBookedAttendance },
+        attendances: { ...saulNonBookedAttendance },
       });
 
-      const secondNonBookedAttendance = {
+      await waitForCondition({
+        documentPath: getAttendanceDocPath(organization, slotId),
+        condition: (data) => Boolean(data),
+      });
+
+      // set nonBooked attendance for walt
+
+      const waltNonBookedAttendance = {
         [saul.id]: {
           bookedInterval: null,
           attendedInterval: intervals[1],
@@ -550,12 +544,17 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
         ...attendanceWithTestCustomer,
-        attendances: { ...secondNonBookedAttendance },
+        attendances: { ...waltNonBookedAttendance },
+      });
+
+      await waitForCondition({
+        documentPath: getAttendanceDocPath(organization, slotId),
+        condition: (data) => Boolean(data),
       });
 
       // get documents in attended slots
 
-      const docResUpdated = await waitForCondition({
+      const saulResUpdated = await waitForCondition({
         documentPath: getAttendedSlotDocPath(
           organization,
           saul.secretKey,
@@ -564,11 +563,13 @@ describe("Cloud functions -> Data triggers ->", () => {
         condition: (data) => Boolean(data),
       });
 
-      const updatedAttendedSlot = {
+      // saul's attendedSlot
+      const saulUpdatedAttendedSlot = {
         date: baseSlot.date,
         interval: intervals[1],
       };
-      const secondDocResUpdated = await waitForCondition({
+
+      const waltDocResUpdated = await waitForCondition({
         documentPath: getAttendedSlotDocPath(
           organization,
           walt.secretKey,
@@ -577,16 +578,16 @@ describe("Cloud functions -> Data triggers ->", () => {
         condition: (data) => Boolean(data),
       });
 
-      const secondUpdatedAttendedSlot = {
+      const waltUpdatedAttendedSlot = {
         date: baseSlot.date,
         interval: intervals[1],
       };
 
       // assert they're both there
 
-      expect(docResUpdated).toEqual(updatedAttendedSlot);
+      expect(saulResUpdated).toEqual(saulUpdatedAttendedSlot);
 
-      expect(secondDocResUpdated).toEqual(secondUpdatedAttendedSlot);
+      expect(waltDocResUpdated).toEqual(waltUpdatedAttendedSlot);
     });
     testWithEmulator(
       "should update document in attendedSlots collection if attended interval changes",
@@ -595,7 +596,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         // create customer and slot
 
         await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-        // await slotRef.set(baseSlot);
+
         await waitForCondition({
           documentPath: getAttendanceDocPath(organization, slotId),
           condition: (data) => Boolean(data),
@@ -619,8 +620,17 @@ describe("Cloud functions -> Data triggers ->", () => {
           attendances: { ...attendance },
         });
 
+        await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(data),
+        });
+
         // update interval
-        const nonBookedAttendance = {
+        const updatedAttendance = {
           [saul.id]: {
             bookedInterval: null,
             attendedInterval: intervals[1],
@@ -629,7 +639,7 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
           ...attendanceWithTestCustomer,
-          attendances: { ...nonBookedAttendance },
+          attendances: { ...updatedAttendance },
         });
 
         // get document in attended slots
