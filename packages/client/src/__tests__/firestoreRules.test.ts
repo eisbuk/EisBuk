@@ -519,28 +519,31 @@ describe("Firestore rules", () => {
   });
 
   describe("Customers rules", () => {
-    testWithEmulator("should only allow admin access", async () => {
-      const { db, organization } = await getTestEnv({
-        auth: false,
-        setup: (db, { organization }) =>
-          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
-      });
-      // check read
-      await assertFails(
-        getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
-      );
-      // check write
-      await assertFails(
-        setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
-          ...saul,
-          name: "not-saul",
-        })
-      );
-      // check delete
-      await assertFails(
-        deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
-      );
-    });
+    testWithEmulator(
+      "should only allow admin write access but anyone can read",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          auth: false,
+          setup: (db, { organization }) =>
+            setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
+        });
+        // check read
+        await assertSucceeds(
+          getDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        );
+        // check write
+        await assertFails(
+          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
+            ...saul,
+            name: "not-saul",
+          })
+        );
+        // check delete
+        await assertFails(
+          deleteDoc(doc(db, getCustomerDocPath(organization, saul.id)))
+        );
+      }
+    );
 
     testWithEmulator("should allow read/write to org admin", async () => {
       const { db, organization } = await getTestEnv({

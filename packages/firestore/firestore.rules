@@ -161,6 +161,7 @@ service cloud.firestore {
       match /customers/{customerId} {
         // Only admins can access customer collection
         allow read: if true
+        allow delete: if isAdmin(organization)
         // Check data integrity 
         allow update: if (
           isAdmin(organization) &&
