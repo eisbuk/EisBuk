@@ -1,19 +1,20 @@
 import React, { useState } from "react";
 import { Field, FieldConfig } from "formik";
 
-import { InputProps } from "@mui/material";
+import {
+  HoverText,
+  IconButton,
+  TextInput,
+  TextInputProps,
+  PhoneInput,
+} from "@eisbuk/ui";
+import { Eye, EyeOff } from "@eisbuk/svg";
+import i18n, { Forms } from "@eisbuk/translations";
 
-import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import Visibility from "@mui/icons-material/Visibility";
-
-import { TextField, TextFieldProps } from "formik-mui";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-export type AuthTextFieldProps = FieldConfig<string> & Partial<TextFieldProps>;
+export type AuthTextFieldProps = FieldConfig<string> & Partial<TextInputProps>;
 
 export type AuthTextFieldLookup<I extends string> = Partial<
-  Record<I, Array<AuthTextFieldProps & Record<string, any>>>
+  Record<I, Array<AuthTextFieldProps>>
 >;
 
 const AuthTextField: React.FC<AuthTextFieldProps> = ({
@@ -22,74 +23,47 @@ const AuthTextField: React.FC<AuthTextFieldProps> = ({
   inputMode,
   ...props
 }) => {
-  const classes = useStyles();
-
   const [showText, setShowText] = useState(false);
   const type = showText ? "text" : typeProp || "text";
 
   const togglePasswordVisibility = () => setShowText(!showText);
 
-  const InputProps: InputProps =
-    typeProp === "password"
-      ? // show password visibility button only for password
-        {
-          endAdornment: (
-            <button
-              className={classes.showPasswordButton}
-              onClick={togglePasswordVisibility}
-              type="button"
-            >
-              {showText ? <VisibilityOff /> : <Visibility />}
-            </button>
-          ),
-        }
-      : {};
+  const adornments: Pick<TextInputProps, "StartAdornment" | "EndAdornment"> =
+    {};
+
+  // show password visibility button only for password
+  if (typeProp === "password") {
+    const hoverText = showText
+      ? i18n.t(Forms.HidePassword)
+      : i18n.t(Forms.ShowPassword);
+    const icon = showText ? <EyeOff /> : <Eye />;
+
+    adornments["EndAdornment"] = (
+      <HoverText className="flex items-center justify-center" text={hoverText}>
+        <IconButton
+          type="button"
+          className="pr-3"
+          onClick={togglePasswordVisibility}
+        >
+          {icon}
+        </IconButton>
+      </HoverText>
+    );
+  }
+
+  const component = inputMode === "tel" ? PhoneInput : TextInput;
 
   return (
-    <>
-      <div className={classes.container}>
-        <Field
-          className={classes.textField}
-          inputProps={{ inputMode }}
-          {...{
-            name,
-            ...props,
-            type,
-            InputProps,
-          }}
-          component={TextField}
-          onBlur={() => {}}
-        />
-      </div>
-    </>
+    <Field
+      name={name}
+      label={name}
+      type={type}
+      {...props}
+      component={component}
+      onBlur={() => {}}
+      {...adornments}
+    />
   );
 };
-
-const useStyles = makeStyles(() => ({
-  container: {
-    padding: "4px 0 20px 0",
-    width: "100%",
-  },
-  textField: {
-    width: "100%",
-    position: "relative",
-  },
-  showPasswordButton: {
-    position: "absolute",
-    right: 0,
-    top: "50%",
-    transform: "translate(0, -50%)",
-    background: "none",
-    border: "none",
-    outline: "none",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-  },
-  errorContainer: {
-    width: "100%",
-    height: "1rem",
-  },
-}));
 
 export default AuthTextField;

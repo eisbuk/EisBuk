@@ -10,7 +10,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import Close from "@mui/icons-material/Close";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, OrganizationData } from "@eisbuk/shared";
 import {
   useTranslation,
   CategoryLabel,
@@ -28,6 +28,7 @@ import { capitalizeFirst } from "@/utils/helpers";
 
 interface CustomerCardProps extends BaseModalProps {
   customer: Customer | null;
+  displayName: OrganizationData["displayName"];
 }
 
 /**
@@ -39,6 +40,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
   onClose,
   customer,
   className = "",
+  displayName = "",
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -52,7 +54,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
     const renderOrder: (keyof Customer)[] = [
       "name",
       "surname",
-      "category",
+      "categories",
       "email",
       "phone",
       "birthday",
@@ -69,11 +71,16 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
           const value =
             // if we're rendering category we're applying special formating as
             // translations of multi-word categories are "-" separeted lowercased words
-            property === "category"
-              ? capitalizeFirst(t(CategoryLabel[customer.category])).replace(
-                  /-/g,
-                  " "
-                )
+            property === "categories"
+              ? customer.categories
+                  .map(
+                    (cat) =>
+                      `${capitalizeFirst(t(CategoryLabel[cat])).replace(
+                        /-/g,
+                        " "
+                      )}`
+                  )
+                  .join(", ")
               : customer[property] || "-";
 
           return (
@@ -119,6 +126,7 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
         className={classes.actionButtonsContainer}
         customer={customer!}
         onClose={onClose}
+        displayName={displayName}
       />
       <IconButton onClick={onClose} className={classes.exitButton} size="large">
         <Close />
@@ -187,7 +195,6 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "rgba(0,0,0,0.4)",
   },
   value: {
-    whiteSpace: "nowrap",
     display: "block",
     [theme.breakpoints.up("sm")]: {
       display: "inline",

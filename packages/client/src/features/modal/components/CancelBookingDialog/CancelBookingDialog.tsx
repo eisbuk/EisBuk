@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { SlotInterface, SlotInterval } from "@eisbuk/shared";
 import { ActionDialog, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
-import i18n, { Prompt } from "@eisbuk/translations";
+import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
 import { cancelBooking } from "@/store/actions/bookingOperations";
 
@@ -33,6 +33,8 @@ const CancelBookingDialog: React.FC<CancelBookingContent> = ({
     <ActionDialog
       title={i18n.t(Prompt.CancelBookingTitle)}
       onCancel={onClose}
+      cancelLabel={i18n.t(ActionButton.Cancel)}
+      confirmLabel={i18n.t(ActionButton.Confirm)}
       {...{ onConfirm, className }}
     >
       <IntervalCard

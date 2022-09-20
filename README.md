@@ -202,6 +202,10 @@ The challenge, however, is that currently we don't have type declaration support
 which doesn't cause problems in a way of false positives, but is not completely kosher (we don't like `any` assertions). However, this is a problem for another day.
 Another challenge has to to with tree-shaking, where, however externalized, all SVGs from the `packages/svg` get bundled in the final app.
 
+### @eisbuk/backup-restore
+
+Utilities for dumping and restoring organization data from an Eisbuk firestore instance. [Documentation](./packages/backup-restore/README.md)
+
 #### Using SVGs
 
 In order to use SVGs, you can import svg (as named import from `@eisbuk/svg`). If the SVG doesn't yet exist in the package, please provide a new one and add it as an export in `packages/svg/src/index.ts`, like so:

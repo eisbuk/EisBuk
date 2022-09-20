@@ -1,10 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
+import { v4 as uuid } from "uuid";
 import { FieldProps } from "formik";
 
-// Formik docs say that this is passed, but it isn't
-type Field = Omit<FieldProps, "meta">;
-
-interface CheckboxProps extends Field {
+interface CheckboxProps
+  extends Pick<FieldProps, "field">,
+    React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   helpText?: string;
   disabled?: boolean;
@@ -14,28 +14,52 @@ const Checkbox: React.FC<CheckboxProps> = ({
   label,
   helpText,
   disabled,
+  field,
+  className = "",
+  value,
   ...props
 }) => {
-  const { field } = props;
-  const { name } = field;
+  const { name, value: fieldValue, checked: fieldChecked } = field;
+
+  // We need to generate an id for the label to work
+  const [controlId] = useState(uuid);
+
+  // Check if checkbox is standalone or part of fieldsed.
+  // If part of fieldset, the value will be an array
+  const checked = Array.isArray(fieldValue)
+    ? // If part of fieldset, we check to see if the field is
+      // 'checked' by it being included in array of values
+      fieldValue.includes(value)
+    : // If the checkbox is standalone, checked property will
+      // be correctly passed
+      fieldChecked;
+
+  const labelClasses = [
+    "font-medium",
+    disabled ? "text-gray-400" : "text-gray-700",
+  ];
+  const helpTextColor = disabled ? "text-gray-300" : "text-gray-500";
 
   return (
-    <div className="relative flex items-start">
+    <div className={["relative flex items-start", className].join(" ")}>
       <div className="flex items-center h-5">
         <input
-          id={name}
+          {...field}
+          {...props}
+          id={controlId}
           disabled={disabled}
           aria-describedby="comments-description"
           type="checkbox"
           className="focus:ring-cyan-700 h-4 w-4 text-gray-800 border-gray-300 rounded disabled:text-gray-200"
-          {...field}
+          value={value}
+          checked={checked}
         />
       </div>
       <div className="ml-3 text-sm">
-        <label htmlFor={name} className="font-medium text-gray-700">
+        <label htmlFor={controlId} className={labelClasses.join(" ")}>
           {label}
         </label>
-        <p id="comments-description" className="text-gray-500">
+        <p id={`comments-description-${name}`} className={helpTextColor}>
           {helpText}
         </p>
       </div>

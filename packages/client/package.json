@@ -77,8 +77,11 @@
   "devDependencies": {
     "@babel/core": "7.x",
     "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "~7.19.0",
+    "@babel/preset-react": "~7.18.6",
     "@babel/preset-typescript": "^7.14.5",
     "@cypress/code-coverage": "^3.9.12",
+    "@eisbuk/firestore": "workspace:*",
     "@firebase/rules-unit-testing": "^2.0.1",
     "@google-cloud/firestore": "^4.13.2",
     "@grpc/grpc-js": "^1.6.2",
@@ -108,7 +111,7 @@
     "@types/seedrandom": "^3.0.1",
     "@types/testing-library__jest-dom": "^5.14.3",
     "@types/use-sync-external-store": "^0.0.3",
-    "@types/uuid": "^8.3.1",
+    "@types/uuid": "^8.3.2",
     "@types/yup": "^0.29.13",
     "@typescript-eslint/eslint-plugin": "^5.20.0",
     "@typescript-eslint/parser": "^5.20.0",
@@ -153,6 +156,7 @@
     "vite-plugin-svgr": "~2.1.0",
     "webpack": "^5.72.0",
     "@babel/plugin-proposal-private-methods": "~7.17.12",
-    "postcss-import": "~14.1.0"
+    "postcss-import": "~14.1.0",
+    "@babel/plugin-proposal-class-properties": "~7.18.6"
   }
 }

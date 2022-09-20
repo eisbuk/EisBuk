@@ -13,7 +13,7 @@ import { getCustomersList } from "@/store/selectors/customers";
 const AttendanceByDayView: React.FC = () => {
   const classes = useStyles();
 
-  const attendanceCards = useSelector(getSlotsWithAttendance());
+  const attendanceCards = useSelector(getSlotsWithAttendance);
   const allCustomers = useSelector(getCustomersList(true));
 
   return (

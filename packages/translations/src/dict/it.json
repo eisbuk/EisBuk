@@ -3,13 +3,13 @@
     "Attendance": "Presenze",
     "Athletes": "Atleti",
     "Bookings": "Prenotazioni",
-    "OrganizationSettings": "Settings",
+    "OrganizationSettings": "Impostazioni",
     "Slots": "Slots"
   },
   "CustomerNavigation": {
-    "BookIce": "Prenota Ice",
-    "BookOffIce": "Prenota Off-Ice",
-    "Calendar": "Riepilogo"
+    "Book": "Prenota",
+    "Calendar": "Riepilogo",
+    "Profile": "Profilo"
   },
 
   "Authorization": {
@@ -95,7 +95,7 @@
   "CustomerLabel": {
     "Name": "Nome",
     "Surname": "Cognome",
-    "Category": "Categoria",
+    "Categories": "Categorie",
     "Email": "Email",
     "Phone": "Telefono",
     "DateOfBirth": "Data di nascita",
@@ -103,7 +103,11 @@
     "CardNumber": "Numero Tessera",
     "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
     "CovidCertificateSuspended": "Certificazione verde sospesa",
-    "ExtendedBookingDate": "Estendi scadenza prenotazioni"
+    "ExtendedBookingDate": "Estendi scadenza prenotazioni",
+    "MedicalDetails": "Dettagli Medici",
+    "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",
+    "PersonalDetails": "Dati personali",
+    "ManagePersonalDetails": "Gestisci i tuoi dati personali"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",
@@ -113,6 +117,7 @@
     "SmsTemplate": "Modello Di SMS",
     "DisplayName": "Nome Dell'Organizzazione",
     "Location": "Posizione",
+    "CountryCode": "Country code",
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
     "Email": "Email",
@@ -135,6 +140,8 @@
   "Prompt": {
     "DeleteCustomer": "Sei sicuro di voler rimuovere  {{ name }} {{ surname }}?",
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
+    "DeleteSlotDisabledTitle": "Impossibile rimuovere",
+    "DeleteSlotDisabled": "Impossibile rimuovere lo slot: esistono prenotazioni per questo slot",
 
     "NonReversible": "Questa azione non è reversibile",
 
@@ -179,24 +186,25 @@
     "Save": "Salva",
     "Next": "Seguente",
     "Cancel": "Annulla",
+    "Confirm": "Confermare",
     "ShowAll": "Mostra tutti",
     "Done": "Fatto",
     "Send": "Invia",
     "Resend": "Invia di nuovo",
-    "Dismiss": "Ignora",
+    "Dismiss": "Chiudi",
     "Submit": "Invia",
-    "Verify": "verifica",
+    "Verify": "Verifica",
     "Edit": "Modificare",
-    "Add": "Add",
-    "Delete": "Delete"
+    "Add": "Aggiungi",
+    "Delete": "Elimina"
   },
 
   "Notification": {
     "BookingSuccess": "Prenotazione effettuata",
     "BookingCanceled": "Prenotazione rimossa",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione",
-    "BookingNotesUpdated": "Booking notes updated",
-    "BookingNotesError": "Error updating booking notes",
+    "BookingNotesUpdated": "Nota della prenotazione aggiornata",
+    "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
 
     "SlotAdded": "Slot Aggiunto",
     "SlotUpdated": "Slot Aggiornato",
@@ -290,5 +298,10 @@
   "AttendanceVarianceHeaders": {
     "Athlete": "Atleta",
     "Total": "Totale"
+  },
+
+  "Forms": {
+    "ShowPassword": "show password",
+    "HidePassword": "hide password"
   }
 }

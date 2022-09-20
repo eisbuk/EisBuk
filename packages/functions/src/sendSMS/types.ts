@@ -12,9 +12,9 @@ export interface SMSResponse {
   };
 }
 
-export interface SMSAPIPayloed {
+export interface SMSAPIPayload {
   message: string;
-  smsFrom: string;
+  sender: string;
   recipients: SMSRecipient[];
   /* eslint-disable camelcase */
   callback_url?: string;

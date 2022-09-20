@@ -181,7 +181,7 @@ describe("login", () => {
     });
   });
 
-  describe("Phone login", () => {
+  describe.only("Phone login", () => {
     beforeEach(() => {
       // This test was failing from time to time: Cypress would enter the test
       // with an already logged in user
@@ -195,7 +195,8 @@ describe("login", () => {
       cy.contains(t(AuthTitle.SignInWithPhone));
       // should display data rates warning
       cy.contains(t(AuthMessage.SMSDataRatesMayApply));
-      cy.getAttrWith("id", "phone").type(defaultUser.phone);
+      cy.getAttrWith("id", "dialCode").select("IT (+39)");
+      cy.getAttrWith("id", "phone").type(defaultUser.phone.replace("+39", ""));
       cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(AuthTitle.EnterCode));
       cy.getRecaptchaCode(defaultUser.phone).then((code) => {
@@ -208,7 +209,8 @@ describe("login", () => {
 
     it("shows code sent message (with phone number confirmation) and allows resend ", () => {
       cy.contains(t(AuthTitle.SignInWithPhone));
-      cy.getAttrWith("id", "phone").type(defaultUser.phone);
+      cy.getAttrWith("id", "dialCode").select("IT (+39)");
+      cy.getAttrWith("id", "phone").type(defaultUser.phone.replace("+39", ""));
       cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(AuthTitle.EnterCode));
       // check for phone confirmation message
@@ -237,7 +239,10 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Verify));
       cy.contains(t(ValidationMessage.InvalidPhone));
 
-      cy.getAttrWith("id", "phone").clearAndType(defaultUser.phone);
+      cy.getAttrWith("id", "dialCode").select("IT (+39)");
+      cy.getAttrWith("id", "phone").clearAndType(
+        defaultUser.phone.replace("+39", "")
+      );
       cy.clickButton(t(ActionButton.Verify));
 
       // sms code is required
@@ -247,7 +252,8 @@ describe("login", () => {
     });
 
     it("shows error message on wrong code and resets auth on cancel click", () => {
-      cy.getAttrWith("id", "phone").clearAndType(defaultUser.phone);
+      cy.getAttrWith("id", "dialCode").select("IT (+39)");
+      cy.getAttrWith("id", "phone").type(defaultUser.phone.replace("+39", ""));
       cy.clickButton(t(ActionButton.Verify));
       cy.getAttrWith("id", "code").type("wrong-code");
       cy.clickButton(t(ActionButton.Submit));

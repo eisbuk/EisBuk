@@ -26,6 +26,8 @@ import {
   getCustomersByBirthday,
   getCustomersList,
 } from "@/store/selectors/customers";
+import { getAboutOrganization } from "@/store/selectors/app";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 import useTitle from "@/hooks/useTitle";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -37,11 +39,14 @@ import { getNewSubscriptionNumber } from "./utils";
 
 import { adminLinks } from "@/data/navigation";
 import { DateTime } from "luxon";
+import { __organization__ } from "@/lib/constants";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
   const dispatch = useDispatch();
+
+  const defaultDialCode = useSelector(getDefaultCountryCode);
 
   const customersByBirthday = useSelector(
     getCustomersByBirthday(DateTime.now())
@@ -53,7 +58,8 @@ const CustomersPage: React.FC = () => {
   useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList(true));
-
+  const { displayName = "" } =
+    useSelector(getAboutOrganization)[__organization__] || {};
   useFirestoreSubscribe([OrgSubCollection.Customers]);
 
   const handleAddAthlete = () => {
@@ -64,7 +70,7 @@ const CustomersPage: React.FC = () => {
     dispatch(
       openModal({
         component: "CustomerFormDialog",
-        props: { customer: { subscriptionNumber } },
+        props: { customer: { subscriptionNumber }, defaultDialCode },
       })
     );
   };
@@ -81,7 +87,9 @@ const CustomersPage: React.FC = () => {
       <Grid item xs={12}>
         {
           // (isLoaded(customers) &&
-          !isEmpty(customers) && <CustomerGrid {...{ customers }} />
+          !isEmpty(customers) && (
+            <CustomerGrid {...{ customers, displayName }} />
+          )
           // )
         }
         <Fab

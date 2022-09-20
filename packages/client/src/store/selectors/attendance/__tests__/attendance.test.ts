@@ -13,14 +13,11 @@ import {
   formatToTableData,
 } from "../attendanceVariance";
 
-import { AttendanceSortBy } from "@/enums/other";
-
 import {
   attendance,
   attendanceCustomers,
   attendanceSlotsByDay,
-  expectedStructByName,
-  expectedStructByBookedInterval,
+  expectedStruct,
 } from "../../__testData__/attendance";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { walt, jian, saul } from "@/__testData__/customers";
@@ -39,17 +36,12 @@ describe("Selectors ->", () => {
       updateLocalDocuments(OrgSubCollection.SlotsByDay, attendanceSlotsByDay!)
     );
 
-    test("should get slots for current day (read from store) with customers attendance (sorted by customer name) data for each slot", () => {
-      const res = getSlotsWithAttendance()(testStore.getState());
-      expect(res).toEqual(expectedStructByName);
-    });
     test("should get slots for current day (read from store) with customers attendance (sorted by booked interval) data for each slot", () => {
-      const res = getSlotsWithAttendance(AttendanceSortBy.BookedInterval)(
-        testStore.getState()
-      );
-      expect(res).toEqual(expectedStructByBookedInterval);
+      const res = getSlotsWithAttendance(testStore.getState());
+      expect(res).toEqual(expectedStruct);
     });
   });
+});
 
   describe("Test 'getMonthAttendanceVariance'", () => {
     const attendanceArr = Object.values(attendance!);

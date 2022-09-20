@@ -16,6 +16,7 @@ import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "../utils";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 // #region getDialogPromptSetup
 const testPhone = "12345";
@@ -121,17 +122,18 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
         const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
 
         expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.message.subject).toBeDefined();
+        expect(sentMail.subject).toBeDefined();
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
-        expect(sentMail.message.html.includes(bookingsLink)).toBeTruthy();
-        expect(sentMail.message.html.includes(saul.name)).toBeTruthy();
+        expect(sentMail.html.includes(bookingsLink)).toBeTruthy();
+        expect(sentMail.html.includes(saul.name)).toBeTruthy();
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -150,6 +152,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
@@ -185,6 +188,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName: __testOrganization__,
         })(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

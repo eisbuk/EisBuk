@@ -13,6 +13,7 @@ import {
   SlotsByDay,
   SlotAttendnace,
   OrganizationData,
+  PublicOrganizationData,
 } from "@eisbuk/shared";
 
 import { FirestoreAction } from "./enums";
@@ -49,14 +50,14 @@ export interface FirestoreData {
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;
   };
+  [BookingSubCollection.AttendedSlots]: {
+    [slotId: string]: Omit<CustomerBookingEntry, "bookingNotes">;
+  };
   [BookingSubCollection.Calendar]: CalendarEvents;
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
   [Collection.PublicOrgInfo]: {
-    [organization: string]: Pick<
-      OrganizationData,
-      "displayName" | "location" | "emailFrom"
-    >;
+    [organization: string]: PublicOrganizationData;
   };
 }
 /**
@@ -110,6 +111,7 @@ export type CollectionSubscription =
   | OrgSubCollection.Bookings
   | OrgSubCollection.Attendance
   | BookingSubCollection.BookedSlots
+  | BookingSubCollection.AttendedSlots
   | BookingSubCollection.Calendar;
 
 /**

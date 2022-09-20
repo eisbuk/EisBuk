@@ -43,6 +43,11 @@ export interface OrganizationData {
    */
   smsTemplate?: string;
   /**
+   * A default country code (e.g. "IT") used to get the default dial code prefix
+   * for phone inputs (e.g. "+39")
+   */
+  defaultCountryCode?: string;
+  /**
    * Record of flags inticating that given secrets exists
    * for a given organization
    */
@@ -52,6 +57,12 @@ export interface OrganizationData {
    */
   location?: string;
 }
+
+/** Organization data copied over to a new collection shared publicly */
+export type PublicOrganizationData = Pick<
+  OrganizationData,
+  "displayName" | "location" | "emailFrom" | "defaultCountryCode"
+>;
 
 // #endregion organizations
 
@@ -171,7 +182,9 @@ export interface CustomerBase {
   id: string;
   name: string;
   surname: string;
-  category: Category;
+  categories: Category[];
+  /** @TODO remove when migration to categories is done */
+  category?: Category[];
   photoURL?: string;
   deleted?: boolean;
   extendedDate?: string;
@@ -293,14 +306,7 @@ export interface EmailAttachment {
   filename: string;
   content: string | Buffer;
 }
-/**
- * `message` portion of an email interface
- */
-export interface EmailMessage {
-  subject: string;
-  html: string;
-  attachments?: EmailAttachment[];
-}
+
 /**
  * Interface used as `payload` in email process-delivery.
  * It's basically a full email payload without the `from`
@@ -308,15 +314,19 @@ export interface EmailMessage {
  */
 export interface EmailPayload {
   to: string;
-  message: EmailMessage;
+  subject: string;
+  html: string;
+  attachments?: EmailAttachment[];
 }
+
 /**
  * A full email interface, including:
- * `to`, `from` and `message` (`subject`, `html`, `attachments`).
+ * `to`, `from`, `subject`, `html` and `attachments`.
  */
-export interface Email extends EmailPayload {
+export interface EmailMessage extends EmailPayload {
   from: string;
 }
+
 /**
  * A payload used in `sendEmail` cloud function.
  */
@@ -361,6 +371,9 @@ export interface FirestoreSchema {
         [slotId: string]: SlotAttendnace;
       };
     };
+  };
+  [Collection.PublicOrgInfo]: {
+    [organization: string]: PublicOrganizationData;
   };
   [Collection.DeliveryQueues]: {
     [organization: string]: {

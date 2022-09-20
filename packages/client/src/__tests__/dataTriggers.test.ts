@@ -17,8 +17,10 @@ import { setUpOrganization } from "@/__testSetup__/node";
 
 import {
   getAttendanceDocPath,
+  getAttendedSlotDocPath,
   getBookedSlotDocPath,
   getBookingsDocPath,
+  getCustomerDocPath,
   getSlotDocPath,
   getSlotsByDayDocPath,
 } from "@/utils/firestore";
@@ -32,8 +34,9 @@ import {
   baseAttendance,
   emptyAttendance,
   organization as organizationData,
+  intervals,
 } from "@/__testData__/dataTriggers";
-import { saul } from "@/__testData__/customers";
+import { saul, walt } from "@/__testData__/customers";
 import { baseSlot, createIntervals } from "@/__testData__/slots";
 import { testDate, testDateLuxon } from "@/__testData__/date";
 
@@ -317,6 +320,337 @@ describe("Cloud functions -> Data triggers ->", () => {
           documentPath: publicOrgPath,
           condition: (data) => Boolean(!data),
         });
+      }
+    );
+  });
+  describe("createAttendedSlotsForAttendance", () => {
+    testWithEmulator(
+      "should create document in attendedSlots collection when customer is marked as attended",
+      async () => {
+        const { organization } = await setUpOrganization();
+        // create customer and slot
+
+        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        // await slotRef.set(baseSlot);
+        await waitForCondition({
+          documentPath: getAttendanceDocPath(organization, slotId),
+          condition: (data) => Boolean(data),
+        });
+
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, saul.id)
+        );
+        await customerRef.set(saul);
+
+        const nonBookedattendanceWithTestCustomerAttendances = {
+          [saul.id]: {
+            ...attendanceWithTestCustomer.attendances[saul.id],
+
+            bookedInterval: null,
+          },
+        };
+        // set attendance for customer
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
+        });
+
+        // // get document in attended slots
+        const docRes = await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(data && data.interval),
+        });
+        const attendedSlot = {
+          date: baseSlot.date,
+          interval:
+            attendanceWithTestCustomer.attendances[saul.id].attendedInterval,
+        };
+        // assert it has same date and interval as attended
+        expect(docRes).toEqual(attendedSlot);
+      }
+    );
+    testWithEmulator(
+      "should delete document in attendedSlots collection when customer is marked as absent",
+      async () => {
+        const { organization } = await setUpOrganization();
+        // create customer and slot
+
+        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        // await slotRef.set(baseSlot);
+        await waitForCondition({
+          documentPath: getAttendanceDocPath(organization, slotId),
+          condition: (data) => Boolean(data),
+        });
+
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, saul.id)
+        );
+        await customerRef.set(saul);
+        await waitForCondition({
+          documentPath: getCustomerDocPath(organization, saul.id),
+          condition: (data) => Boolean(data),
+        });
+
+        // set attendance
+        const nonBookedattendanceWithTestCustomerAttendances = {
+          [saul.id]: {
+            ...attendanceWithTestCustomer.attendances[saul.id],
+
+            bookedInterval: null,
+          },
+        };
+        // set attendance for customer
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
+        });
+
+        // // get document in attended slots
+        const docRes = await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(data && data.interval),
+        });
+        const attendedSlot = {
+          date: baseSlot.date,
+          interval:
+            attendanceWithTestCustomer.attendances[saul.id].attendedInterval,
+        };
+        // assert it has same date and interval as attended
+        expect(docRes).toEqual(attendedSlot);
+
+        // set empty attendance for customer
+        await adminDb
+          .doc(getAttendanceDocPath(organization, slotId))
+          .set({ ...attendanceWithTestCustomer, attendances: {} });
+
+        // get document in attended slots
+
+        const docResEmpty = await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(!data),
+        });
+
+        // assert it doesn't exist
+        expect(docResEmpty).toBeUndefined();
+      }
+    );
+    testWithEmulator(
+      "should not create document in attendedSlots collection if customer had booked the slot",
+      async () => {
+        const { organization } = await setUpOrganization();
+        // create customer and slot
+
+        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        // await slotRef.set(baseSlot);
+        await waitForCondition({
+          documentPath: getAttendanceDocPath(organization, slotId),
+          condition: (data) => Boolean(data),
+        });
+
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, saul.id)
+        );
+        await customerRef.set(saul);
+        await waitForCondition({
+          documentPath: getCustomerDocPath(organization, saul.id),
+          condition: (data) => Boolean(data),
+        });
+
+        const bookedAttendanceWithTestCustomerAttendances = {
+          [saul.id]: {
+            ...attendanceWithTestCustomer.attendances[saul.id],
+          },
+        };
+        // set attendance for customer
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...bookedAttendanceWithTestCustomerAttendances },
+        });
+
+        // // get document in attended slots
+        const docRes = await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(!data),
+        });
+
+        expect(docRes).toBeUndefined();
+      }
+    );
+    testWithEmulator("should mark multiple athletes as attended", async () => {
+      const { organization } = await setUpOrganization();
+
+      await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+      await waitForCondition({
+        documentPath: getAttendanceDocPath(organization, slotId),
+        condition: (data) => Boolean(data),
+      });
+
+      // set two customers
+      const customerRef = adminDb.doc(
+        getCustomerDocPath(organization, saul.id)
+      );
+      await customerRef.set(saul);
+
+      const secondCustomerRef = adminDb.doc(
+        getCustomerDocPath(organization, walt.id)
+      );
+      await secondCustomerRef.set(walt);
+
+      const attendance = {
+        [saul.id]: {
+          ...attendanceWithTestCustomer.attendances[saul.id],
+
+          bookedInterval: null,
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...attendance },
+      });
+
+      const nonBookedAttendance = {
+        [saul.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...nonBookedAttendance },
+      });
+
+      const secondNonBookedAttendance = {
+        [saul.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+        [walt.id]: {
+          bookedInterval: null,
+          attendedInterval: intervals[1],
+        },
+      };
+
+      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+        ...attendanceWithTestCustomer,
+        attendances: { ...secondNonBookedAttendance },
+      });
+
+      // get documents in attended slots
+
+      const docResUpdated = await waitForCondition({
+        documentPath: getAttendedSlotDocPath(
+          organization,
+          saul.secretKey,
+          slotId
+        ),
+        condition: (data) => Boolean(data),
+      });
+
+      const updatedAttendedSlot = {
+        date: baseSlot.date,
+        interval: intervals[1],
+      };
+      const secondDocResUpdated = await waitForCondition({
+        documentPath: getAttendedSlotDocPath(
+          organization,
+          walt.secretKey,
+          slotId
+        ),
+        condition: (data) => Boolean(data),
+      });
+
+      const secondUpdatedAttendedSlot = {
+        date: baseSlot.date,
+        interval: intervals[1],
+      };
+
+      // assert they're both there
+
+      expect(docResUpdated).toEqual(updatedAttendedSlot);
+
+      expect(secondDocResUpdated).toEqual(secondUpdatedAttendedSlot);
+    });
+    testWithEmulator(
+      "should update document in attendedSlots collection if attended interval changes",
+      async () => {
+        const { organization } = await setUpOrganization();
+        // create customer and slot
+
+        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        // await slotRef.set(baseSlot);
+        await waitForCondition({
+          documentPath: getAttendanceDocPath(organization, slotId),
+          condition: (data) => Boolean(data),
+        });
+
+        const customerRef = adminDb.doc(
+          getCustomerDocPath(organization, saul.id)
+        );
+        await customerRef.set(saul);
+
+        const attendance = {
+          [saul.id]: {
+            ...attendanceWithTestCustomer.attendances[saul.id],
+
+            bookedInterval: null,
+          },
+        };
+
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...attendance },
+        });
+
+        // update interval
+        const nonBookedAttendance = {
+          [saul.id]: {
+            bookedInterval: null,
+            attendedInterval: intervals[1],
+          },
+        };
+
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...attendanceWithTestCustomer,
+          attendances: { ...nonBookedAttendance },
+        });
+
+        // get document in attended slots
+
+        const docResUpdated = await waitForCondition({
+          documentPath: getAttendedSlotDocPath(
+            organization,
+            saul.secretKey,
+            slotId
+          ),
+          condition: (data) => Boolean(data),
+        });
+
+        const updatedAttendedSlot = {
+          date: baseSlot.date,
+          interval: intervals[1],
+        };
+
+        // assert it equals the updated version
+
+        expect(docResUpdated).toEqual(updatedAttendedSlot);
       }
     );
   });

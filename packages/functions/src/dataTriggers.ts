@@ -332,9 +332,111 @@ export const createPublicOrgInfo = functions
       await publicOrgInfoDocRef.delete();
       return;
     }
-    const updates = ["displayName", "location", "emailFrom"].reduce(
+    const updates = [
+      "displayName",
+      "location",
+      "emailFrom",
+      "defaultCountryCode",
+    ].reduce(
       (acc, curr) => (orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc),
       {}
     );
     await publicOrgInfoDocRef.set(updates, { merge: true });
+  });
+
+export const createAttendedSlotOnAttendance = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, slotId } = context.params as Record<string, string>;
+
+    const db = admin.firestore();
+
+    const currentAttendanceData = change.after.data() as SlotAttendnace;
+    const previousAttendanceData = change.before.data() as SlotAttendnace;
+
+    const hasCurrentAttendances =
+      change.after.exists &&
+      Object.keys(currentAttendanceData.attendances).length;
+    const hasPreviousAttendances =
+      change.before.exists &&
+      Object.keys(previousAttendanceData.attendances).length;
+
+    const currentAttendances = hasCurrentAttendances
+      ? currentAttendanceData.attendances
+      : {};
+    const previousAttendances = hasPreviousAttendances
+      ? previousAttendanceData.attendances
+      : {};
+
+    const ids = [
+      ...new Set([
+        ...Object.keys(currentAttendances),
+        ...Object.keys(previousAttendances),
+      ]),
+    ];
+
+    const idsMap = ids.map((id) => {
+      /** @TODO remove this if firestore rule works */
+      const hasPreviousBooking =
+        previousAttendances[id] && previousAttendances[id].bookedInterval;
+      const isBooking =
+        currentAttendances[id] && currentAttendances[id].bookedInterval;
+
+      if (hasPreviousBooking || isBooking) return { [id]: "noUpdate" };
+
+      return currentAttendanceData.attendances[id]
+        ? previousAttendanceData.attendances[id]
+          ? currentAttendances[id].attendedInterval ===
+            previousAttendances[id].attendedInterval
+            ? { [id]: "noUpdate" }
+            : { [id]: "update" }
+          : { [id]: "update" }
+        : { [id]: "delete" };
+    });
+
+    const updates = idsMap.map(
+      (customer) =>
+        // eslint-disable-next-line no-async-promise-executor, consistent-return
+        new Promise<FirebaseFirestore.WriteResult | void>(async (resolve) => {
+          const customerId = Object.keys(customer)[0];
+          const value = Object.values(customer)[0];
+
+          if (value === "noUpdate") return resolve();
+
+          const { secretKey } = (
+            await db
+              .collection(Collection.Organizations)
+              .doc(organization)
+              .collection(OrgSubCollection.Customers)
+              .doc(customerId)
+              .get()
+          ).data() as Customer;
+
+          const attendedSlotsEntryRef = db
+            .collection(Collection.Organizations)
+            .doc(organization)
+            .collection(OrgSubCollection.Bookings)
+            .doc(secretKey)
+            .collection(BookingSubCollection.AttendedSlots)
+            .doc(slotId);
+
+          value === "update"
+            ? resolve(
+                await attendedSlotsEntryRef.set(
+                  {
+                    date: currentAttendanceData.date,
+                    interval:
+                      currentAttendanceData.attendances[customerId]
+                        .attendedInterval,
+                  },
+                  { merge: true }
+                )
+              )
+            : resolve(await attendedSlotsEntryRef.delete());
+        })
+    );
+    await Promise.all(updates);
   });

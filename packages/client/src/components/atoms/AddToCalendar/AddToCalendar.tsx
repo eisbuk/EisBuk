@@ -5,43 +5,31 @@ import { useParams } from "react-router-dom";
 import { DateTime } from "luxon";
 import { ICalendar } from "datebook";
 
-import makeStyles from "@mui/styles/makeStyles";
+import { CalendarEvents, Customer } from "@eisbuk/shared";
 
-import Button from "@mui/material/Button";
+import InputDialog from "@/components/atoms/InputDialog";
+import {
+  Button,
+  IconButton,
+  IconButtonContentSize,
+  IconButtonShape,
+  IconButtonSize,
+} from "@eisbuk/ui";
+import { Calendar } from "@eisbuk/svg";
 
-import { CalendarEvents, SlotsByDay } from "@eisbuk/shared";
-
-import { LocalStore } from "@/types/store";
-
-import { getAboutOrganization } from "@/store/selectors/app";
+import { getAboutOrganization, getCalendarDay } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
+import { getBookingsForCalendar } from "@/store/selectors/bookings";
 
 import {
   createCalendarEvents,
   sendICSFile,
 } from "@/store/actions/bookingOperations";
 
-import { __addToCalendarButtonId__ } from "@/__testData__/testIds";
-
 import { __organization__ } from "@/lib/constants";
+import { getCustomer } from "@/store/selectors/customers";
 
-import InputDialog from "@/components/atoms/InputDialog";
-
-interface Props {
-  /**
-   * Record of subscribed slots with subscribed slotIds as keys and subscribed duration as value.
-   * Doesn't need to be organized as we're checking for each value by key (no need for ordering and grouping).
-   */
-  bookedSlots: LocalStore["firestore"]["data"]["bookedSlots"];
-  /**
-   * Record of slots grouped by day's ISO date (day),
-   * keyed by slotId within each day.
-   */
-  slots: SlotsByDay;
-}
-
-const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
-  const classes = useStyles();
+const AddToCalendar: React.FC = () => {
   const dispatch = useDispatch();
 
   const { secretKey } = useParams<{ secretKey: string }>();
@@ -50,9 +38,13 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
   const [emailDialog, setEmailDialog] = useState(false);
 
-  const monthStr = (Object.values(bookedSlots!)[0].date || "").substring(0, 7);
+  const bookedSlots = useSelector(getBookingsForCalendar) || {};
+
+  const monthStr = useSelector(getCalendarDay).toISO().substring(0, 7);
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
+
+  const { name } = useSelector(getCustomer(secretKey)) as Customer;
 
   const { displayName = "", location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
@@ -66,23 +58,24 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
     const eventUids: string[] = [];
 
-    Object.entries(bookedSlots).forEach((bookedSlot, i) => {
-      const bookedSlotId = bookedSlot[0];
-      const bookedSlotValue = bookedSlot[1];
-      const slotDate = bookedSlot[1].date;
+    Object.values(bookedSlots).forEach((bookedSlot, i) => {
+      const slotDate = bookedSlot.date;
 
-      const startDate = getStartDate(slotDate, bookedSlotValue.interval);
-      const endDate = getEndDate(slotDate, bookedSlotValue.interval);
-
-      const slotType = slots[slotDate][bookedSlotId].type;
+      const startDate = getDate(slotDate, bookedSlot.interval.startTime);
+      const endDate = getDate(slotDate, bookedSlot.interval.endTime);
 
       const bookedSlotEvent = {
-        title: `Booked ${slotType} Slot at ${displayName}`,
+        title: `Booked ${bookedSlot.type} Slot at ${displayName}`,
         location: location,
         start: startDate,
         end: endDate,
       };
-      const uid = `${bookedSlotValue.interval}${slotDate}`.replace(/[-:]/g, "");
+
+      const uid =
+        `${bookedSlot.interval.startTime}${bookedSlot.interval.endTime}${slotDate}`.replace(
+          /[-:]/g,
+          ""
+        );
       eventUids.push(uid);
       delete previousCalendarUids[uid];
 
@@ -104,21 +97,40 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
     createCancelledEvents(previousCalendarUids, icalendar, displayName);
     dispatch(createCalendarEvents({ monthStr, secretKey, eventUids }));
     const icsFile = icalendar.render();
-    dispatch(sendICSFile({ icsFile: icsFile, email, secretKey }));
+    dispatch(
+      sendICSFile({
+        icsFile: icsFile,
+        email,
+        secretKey,
+        name: name,
+        displayName: displayName,
+      })
+    );
   };
+
+  // Don't render the component if there are no booked slots to save to calendar
+  if (!bookedSlots.length) return null;
 
   return (
     <>
-      <div className={classes.container}>
-        <Button
-          className={classes.buttonPrimary}
-          data-testid={__addToCalendarButtonId__}
-          onClick={() => setEmailDialog(true)}
-          variant="contained"
-        >
-          {t(ActionButton.AddToCalendar)}
-        </Button>
-      </div>
+      <Button
+        className="hidden bg-cyan-700 text-white md:block active:bg-cyan-800"
+        onClick={() => setEmailDialog(true)}
+      >
+        {t(ActionButton.AddToCalendar)}
+      </Button>
+
+      <IconButton
+        aria-label={t(ActionButton.AddToCalendar)}
+        className="fixed right-6 bottom-8 z-40 bg-cyan-700 text-white shadow-xl md:hidden"
+        size={IconButtonSize.XL}
+        contentSize={IconButtonContentSize.Loose}
+        shape={IconButtonShape.Round}
+        onClick={() => setEmailDialog(true)}
+      >
+        <Calendar />
+      </IconButton>
+
       <InputDialog
         title={t(Prompt.EnterEmailTitle)}
         onSubmit={handleClick}
@@ -133,19 +145,11 @@ const AddToCalendar: React.FC<Props> = ({ bookedSlots = {}, slots = {} }) => {
 
 // #region helpers
 
-const getStartDate = (date: string, interval: string) =>
+const getDate = (date: string, interval: string) =>
   DateTime.fromISO(date)
     .set({
       hour: Number(interval.substring(0, 2)),
       minute: Number(interval.substring(3, 5)),
-    })
-    .toJSDate();
-
-const getEndDate = (date: string, interval: string) =>
-  DateTime.fromISO(date)
-    .set({
-      hour: Number(interval.substring(6, 8)),
-      minute: Number(interval.substring(9, 11)),
     })
     .toJSDate();
 
@@ -207,20 +211,5 @@ const getPreviousCalendarUids = (
   }, {});
 
 // #endregion helpers
-
-// #region styles
-const useStyles = makeStyles((theme) => ({
-  container: {
-    padding: "0.5rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-  },
-  buttonPrimary: {
-    backgroundColor: theme.palette.primary.main,
-  },
-}));
-// #endregion styles
 
 export default AddToCalendar;
