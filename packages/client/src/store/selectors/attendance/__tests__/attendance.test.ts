@@ -41,7 +41,6 @@ describe("Selectors ->", () => {
       expect(res).toEqual(expectedStruct);
     });
   });
-});
 
   describe("Test 'getMonthAttendanceVariance'", () => {
     const attendanceArr = Object.values(attendance!);
