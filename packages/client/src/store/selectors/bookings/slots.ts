@@ -256,6 +256,6 @@ export const getBookedAndAttendedSlotsForCalendar = (
     [] as BookedAndAttendedList
   );
   return [...attendedSlotsObj, ...bookedSlotsObj].sort((a, b) =>
-    a > b ? -1 : 1
+    a.date < b.date ? -1 : 1
   );
 };
