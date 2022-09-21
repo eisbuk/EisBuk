@@ -51,13 +51,13 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Create Sentry release
       uses: getsentry/action-release@v1
       if: steps.has_secret.outputs.HAS_SECRETS
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+        SENTRY_ORG: eisbuk
         SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
         SENTRY_URL: ${{ secrets.SENTRY_URL }}
       with:
@@ -116,7 +116,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
@@ -234,7 +234,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -288,7 +288,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Finalize Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -350,7 +350,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Build client storybook
       run: cd packages/client && rushx build-storybook
     - name: Publish storybook
@@ -412,7 +412,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.SENTRY_ORG }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
     - name: Build ui storybook
       run: cd packages/ui && rushx build-storybook
     - name: Publish storybook
