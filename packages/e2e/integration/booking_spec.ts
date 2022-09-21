@@ -9,6 +9,7 @@ import i18n, {
   Prompt,
   createDateTitle,
   BookingAria,
+  CustomerNavigationLabel,
 } from "@eisbuk/translations";
 
 import { Routes } from "../temp";
@@ -166,6 +167,38 @@ describe("Booking flow", () => {
           month: testDateLuxon,
         }) as string
       );
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
+        "have.attr",
+        "disabled"
+      );
+    });
+    it("disables cancelling booked slots that have passed the deadline in calendar view ", () => {
+      const pastTestDate = "2021-12-01";
+      const pastTestDateLuxon = DateTime.fromISO(pastTestDate);
+      const futureTestDate = "2022-02-01";
+      const futureTestDateLuxon = DateTime.fromISO(futureTestDate);
+
+      cy.setClock(pastTestDateLuxon.toMillis());
+      cy.initAdminApp().then((organization) =>
+        cy.updateFirestore(organization, ["customers.json", "slots.json"])
+      );
+
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
+
+      // should be able to book interval
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({
+          force: true,
+        });
+      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+
+      cy.contains(i18n.t(CustomerNavigationLabel.Calendar) as string).click();
+
+      cy.setClock(futureTestDateLuxon.toMillis());
+
+      // cancel button has the same aria-label as book
       cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
         "have.attr",
         "disabled"
