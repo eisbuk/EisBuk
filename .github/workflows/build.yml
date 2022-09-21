@@ -81,30 +81,11 @@ jobs:
         # suitable to be included in the $GITHUB_ENV file
         cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
         # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
-    - name: Find Comment
-      uses: peter-evans/find-comment@v1
-      if: ${{ github.event.pull_request.number }}
-      id: findcomment
-      with:
-        issue-number: ${{ github.event.pull_request.number }}
-        comment-author: github-actions[bot]
-        body-includes: Deployed URLs
-    - name: Add preview channel URL to comment on PR
-      uses: peter-evans/create-or-update-comment@v1
-      if: github.event.pull_request.number && steps.has_secret.outputs.HAS_SECRETS
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        comment-id: ${{ steps.findcomment.outputs.comment-id }}
-        issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          Deployed URLs:
-            * Igorice: ${{ env.igorice }}
-            * Eisbuk: ${{ env.eisbuk }}
-          ```
-          ${{ env.BUILD_STATS }}
-          ```
-        reactions: heart, hooray, laugh, rocket
-        edit-mode: replace
+    - name: Populate job summary with URLs
+      run: |
+        echo Preview channels deployed:
+        echo $igoriceteam >> $GITHUB_STEP_SUMMARY
+        echo $eisbuk >> $GITHUB_STEP_SUMMARY
   test_v16:
     name: Run tests
     runs-on: ubuntu-latest
