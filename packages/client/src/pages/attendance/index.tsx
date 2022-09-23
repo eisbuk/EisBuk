@@ -120,13 +120,25 @@ const AttendancePage: React.FC = () => {
         jump={calendarJump}
         additionalContent={calendarAdditionalContent}
       />
-      <div className="overflow-x-scroll h-4/5">
-        <div className="px-[44px] py-4">
+      {view === Views.ByDay ? (
+        <AttendanceView />
+      ) : (
+        <MonthWrapper>
           <AttendanceView />
-        </div>
-      </div>
+        </MonthWrapper>
+      )}
     </Layout>
   );
 };
 
 export default AttendancePage;
+
+// NOTE: This is a quick fix to allow table header cells to be sticky.
+// Scroll of main content wrapper conflicts with this behaviour.
+// A better fix means an overhaul of parent or table cell css:
+//* overflow does not play well with position:sticky
+const MonthWrapper: React.FC = ({ children }) => (
+  <div className="overflow-x-auto h-4/5 pb-32 scrollbar-hide">
+    <div className="px-[44px] py-4">{children}</div>
+  </div>
+);
