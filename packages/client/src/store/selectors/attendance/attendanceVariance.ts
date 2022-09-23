@@ -1,7 +1,7 @@
 import { SlotAttendnace, Customer } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
-import { getMonthStr, convertIntervalToNum } from "@/utils/helpers";
+import { getMonthStr, calculateIntervalDuration } from "@/utils/helpers";
 import { type DayAttendanceHours } from "@eisbuk/ui";
 
 interface AttendanceRecord extends CustomerAttendanceRecord {
@@ -63,8 +63,8 @@ export const flattenAndConvertAttendanceIntervals = (
     ([customerId, { attendedInterval, bookedInterval }]) => ({
       date,
       customerId,
-      attendedInterval: convertIntervalToNum(attendedInterval),
-      bookedInterval: convertIntervalToNum(bookedInterval),
+      attendedInterval: calculateIntervalDuration(attendedInterval),
+      bookedInterval: calculateIntervalDuration(bookedInterval),
     })
   );
   return [...acc, ...flatAttendanceIntervals];

@@ -10,7 +10,7 @@ import {
   capitalizeFirst,
   getOrgFromLocation,
   isEmpty,
-  convertIntervalToNum,
+  calculateIntervalDuration,
 } from "../helpers";
 import { isISODay, generateDatesInRange } from "../date";
 
@@ -32,29 +32,26 @@ describe("Helpers", () => {
   describe("`convertIntervalToNum` function", () => {
     test("should convert null to 0", () => {
       const interval = null;
-      const result = convertIntervalToNum(interval);
+      const result = calculateIntervalDuration(interval);
       expect(result).toBe(0);
     });
 
     test("should convert string to number", () => {
-      const morningStr = "10:30 - 11:00";
-      const avoStr = "16:00 - 17:00";
-      const nightStr = "22:30 - 24:00";
+      const oneStr = "16:00 - 17:00";
+      const oneHalfStr = "22:00 - 23:30";
+      const twoStr = "22:00 - 24:00";
+      const nonStdStr = "22:20 - 24:00";
 
-      const morningResult = convertIntervalToNum(morningStr);
-      const avoResult = convertIntervalToNum(avoStr);
-      const eveResult = convertIntervalToNum(nightStr);
+      // const morningResult = convertIntervalToNum(morningStr);
+      const oneResult = calculateIntervalDuration(oneStr);
+      const oneHalfResult = calculateIntervalDuration(oneHalfStr);
+      const twoResult = calculateIntervalDuration(twoStr);
+      const nonStdResult = calculateIntervalDuration(nonStdStr);
 
-      expect(morningResult).toBe(0.5);
-      expect(avoResult).toBe(1);
-      expect(eveResult).toBe(1.5);
-    });
-
-    test("should convert 24 rollover `23:30 - 01:00` string", () => {
-      const rolloverStr = "23:30 - 01:00";
-
-      const rolloverResult = convertIntervalToNum(rolloverStr);
-      expect(rolloverResult).toBe(1.5);
+      expect(oneResult).toBe(1);
+      expect(oneHalfResult).toBe(1.5);
+      expect(twoResult).toBe(2);
+      expect(nonStdResult).toBe(2);
     });
   });
 });
