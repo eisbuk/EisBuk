@@ -12,6 +12,11 @@
     "Profile": "Profile"
   },
 
+  "AttendanceNavigation": {
+    "Day": "Daily",
+    "Month": "Monthly"
+  },
+
   "Authorization": {
     "NotAuthorized": "Access not authorized",
     "NotRegistered": "Not registered",

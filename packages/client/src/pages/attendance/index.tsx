@@ -13,6 +13,7 @@ import {
 } from "@eisbuk/ui";
 import { Calendar, Printer } from "@eisbuk/svg";
 import { OrgSubCollection } from "@eisbuk/shared";
+import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import ByDayView from "./views/ByDay";
@@ -92,14 +93,14 @@ const AttendancePage: React.FC = () => {
       <TabItem
         key="by-day-view-button"
         Icon={Calendar as any}
-        label="By Day"
+        label={i18n.t(AttendanceNavigationLabel.Day)}
         onClick={() => setView(Views.ByDay)}
         active={view === Views.ByDay}
       />
       <TabItem
         key="by-month-view-button"
         Icon={Calendar as any}
-        label="By Month"
+        label={i18n.t(AttendanceNavigationLabel.Month)}
         onClick={() => setView(Views.ByMonth)}
         active={view === Views.ByMonth}
       />

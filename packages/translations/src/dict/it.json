@@ -12,6 +12,11 @@
     "Profile": "Profilo"
   },
 
+  "AttendanceNavigation": {
+    "Day": "Giorno",
+    "Month": "Mese"
+  },
+
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "NotRegistered": "You are not registered yet",
