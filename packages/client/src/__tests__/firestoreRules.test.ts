@@ -15,6 +15,7 @@ import {
   Customer,
   getCustomerBase,
   DeprecatedCategory,
+  getCustomer,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -321,23 +322,39 @@ describe("Firestore rules", () => {
     );
 
     testWithEmulator(
-      "should not allow anybody write access to bookings document (as it's handled through cloud functions)",
+      "should not allow anyone to create ta booking doc (as it's handled through cloud functions)",
       async () => {
-        const { db, organization } = await getTestEnv({
-          setup: (db, { organization }) =>
-            setDoc(
-              doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              getCustomerBase(saul)
-            ),
-        });
+        const { db, organization } = await getTestEnv({});
+
         const saulBookingsDoc = doc(
           db,
           getBookingsDocPath(organization, saul.secretKey)
         );
-        // check update
+        // check create
         await assertFails(
           setDoc(saulBookingsDoc, {
-            ...getCustomerBase(saul),
+            ...getCustomer(saul),
+          })
+        );
+      }
+    );
+    testWithEmulator(
+      "should allow update access to non-admins but not delete (as it's handled through cloud functions)",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          setup: async (db, { organization }) =>
+            setDoc(doc(db, getCustomerDocPath(organization, saul.id)), saul),
+        });
+
+        const saulBookingsDoc = doc(
+          db,
+          getBookingsDocPath(organization, saul.secretKey)
+        );
+
+        // check update
+        await assertSucceeds(
+          setDoc(saulBookingsDoc, {
+            ...getCustomer(saul),
             name: "not-saul",
           })
         );

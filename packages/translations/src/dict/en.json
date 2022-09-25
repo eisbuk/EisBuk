@@ -222,7 +222,10 @@
 
     "Error": "Error",
 
-    "SlotsAddedToCalendar": "Slots Added To Calendar"
+    "SlotsAddedToCalendar": "Slots Added To Calendar",
+
+    "CustomerProfileUpdated": "Customer Profile Updated",
+    "CustomerProfileError": "Error updating customer Profile"
   },
 
   "BookingCountdownMessage": {

@@ -6,7 +6,6 @@ import {
   Collection,
   OrgSubCollection,
   BookingSubCollection,
-  CustomerBase,
   Customer,
   CustomerBookingEntry,
   CalendarEvents,
@@ -45,7 +44,7 @@ export interface FirestoreData {
   [OrgSubCollection.Customers]: { [customerId: string]: Customer };
   [OrgSubCollection.Bookings]: {
     /** This is @TEMP make this only one entry (without secretKey) when we add 'transform' functionality to firestore subscribe */
-    [secretKey: string]: CustomerBase;
+    [secretKey: string]: Omit<Customer, "secretKey">;
   };
   [BookingSubCollection.BookedSlots]: {
     [slotId: string]: CustomerBookingEntry;

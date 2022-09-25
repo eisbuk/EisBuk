@@ -14,7 +14,7 @@ import {
   SlotAttendnace,
   SlotInterface,
   SlotInterval,
-  getCustomerBase,
+  getCustomer,
   OrganizationData,
 } from "@eisbuk/shared";
 
@@ -70,7 +70,7 @@ export const addIdAndSecretKey = functions
       );
     }
 
-    const customerBase: CustomerBase = getCustomerBase({
+    const customer: Omit<Customer, "secretKey"> = getCustomer({
       ...customerData,
       id: customerId,
     });
@@ -78,7 +78,7 @@ export const addIdAndSecretKey = functions
     // create/update booking entry
     batch.set(
       orgRef.collection(OrgSubCollection.Bookings).doc(secretKey),
-      customerBase
+      customer
     );
 
     await batch.commit();

@@ -105,7 +105,7 @@ describe("Download ics file to Add To Calendar", () => {
         "saul_with_extended_date.json",
       ])
     );
-    cy.visit([Routes.CustomerArea, saul.secretKey, "book_ice"].join("/"));
+    cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
     cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
       .first()
       .click({ force: true });

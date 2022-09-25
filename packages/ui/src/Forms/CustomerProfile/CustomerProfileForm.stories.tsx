@@ -2,6 +2,7 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
 import CustomerProfileForm from "./CustomerProfileForm";
+import { Category } from "@eisbuk/shared";
 
 export default {
   title: "Forms / Customer Profile Form",
@@ -9,6 +10,8 @@ export default {
 } as ComponentMeta<typeof CustomerProfileForm>;
 
 const customer = {
+  id: "123456",
+  categories: [Category.Competitive],
   name: "Jim",
   surname: "Jarvis",
   email: "JJBean@jarvis.com",

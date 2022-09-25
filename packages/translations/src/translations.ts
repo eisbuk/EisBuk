@@ -243,6 +243,9 @@ export enum NotificationMessage {
 
   Error = "Notification.Error",
   SlotsAddedToCalendar = "Notification.SlotsAddedToCalendar",
+
+  CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
+  CustomerProfileError = "Notification.CustomerProfileError",
 }
 
 export enum BookingCountdownMessage {

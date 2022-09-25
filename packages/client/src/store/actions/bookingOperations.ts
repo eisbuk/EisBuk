@@ -17,7 +17,11 @@ import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
+import {
+  getBookedSlotDocPath,
+  getBookingsDocPath,
+  getBookingsPath,
+} from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<
@@ -125,6 +129,50 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
         enqueueNotification({
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.BookingNotesError),
+        })
+      );
+    }
+  };
+
+/**
+ * Updates customer data in bookings collection
+ * @param payload.secretKey {string} - customer secretKey
+ * @param payload.customer {Customer} - cutomer type
+ * @returns FirestoreThunk
+ */
+export const updateBookingCustomer: {
+  (paylod: {
+    secretKey: Customer["secretKey"];
+    customer: Customer;
+  }): FirestoreThunk;
+} =
+  ({ secretKey, customer }) =>
+  async (dispatch, getState) => {
+    const organization = getOrganization();
+
+    try {
+      const db = getFirestore();
+
+      const booking = getState().firestore.data.bookings![secretKey];
+
+      const bookingDocRef = doc(
+        db,
+        getBookingsDocPath(organization, secretKey)
+      );
+
+      await setDoc(bookingDocRef, { ...booking, ...customer });
+
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Success,
+          message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+        })
+      );
+    } catch (error) {
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Error,
+          message: i18n.t(NotificationMessage.CustomerProfileError),
         })
       );
     }
