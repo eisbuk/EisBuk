@@ -50,10 +50,10 @@ export const getCustomer = ({
   // add extended date only if it exists, rather than saving `extendedDate: undefined`
   ...(extendedDate ? { extendedDate } : {}),
   deleted: Boolean(deleted),
-  birthday,
-  covidCertificateReleaseDate,
-  covidCertificateSuspended,
-  certificateExpiration,
-  email,
+  ...(birthday ? { birthday } : ""),
+  ...(covidCertificateReleaseDate ? { covidCertificateReleaseDate } : ""),
+  ...(covidCertificateSuspended ? { covidCertificateSuspended } : ""),
+  ...(certificateExpiration ? { certificateExpiration } : ""),
+  ...(email ? { email } : ""),
   ...(phone ? { phone } : ""),
 });

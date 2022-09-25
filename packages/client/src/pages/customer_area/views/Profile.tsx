@@ -7,11 +7,11 @@ import { Customer } from "@eisbuk/shared";
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { updateBookingCustomer } from "@/store/actions/bookingOperations";
 
-import { useSecretKey } from "../hooks";
+import { useParams } from "react-router-dom";
 
 const CalendarView: React.FC = () => {
   const dispatch = useDispatch();
-  const secretKey = useSecretKey();
+  const { secretKey } = useParams<{ secretKey: string }>();
 
   const customer =
     useSelector(getBookingsCustomer) || ({} as Omit<Customer, "secretKey">);

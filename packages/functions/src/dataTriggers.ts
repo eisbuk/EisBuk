@@ -440,3 +440,51 @@ export const createAttendedSlotOnAttendance = functions
     );
     await Promise.all(updates);
   });
+
+// on write of bookings coll
+// check if update change.after.exists && contains customer data not booked slots
+// update customer doc in customers collection
+
+/**
+ * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
+ *
+ * - listens to `organizations/{organization}/bookings/{secretKey}/bookedSlots/{slotId}`
+ * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
+ */
+export const updateCustomerWithDataFromBookings = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization } = context.params as Record<string, string>;
+
+    const db = admin.firestore();
+
+    const isUpdate =
+      Boolean(change.after.exists) && Boolean(change.before.exists);
+
+    if (isUpdate) {
+      const afterData = change.after.data() as Customer;
+      // remove id, categories...etc (anything not allowed for customer to update)
+      /** @TODO create new type instead of CustomerBase that includes other fields*/
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {
+        id,
+        categories,
+        deleted,
+        extendedDate,
+        subscriptionNumber,
+        photoURL,
+        ...customer
+      } = getCustomer(afterData);
+
+      const CustomerRef = db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Customers)
+        .doc(id);
+
+      await CustomerRef.set(customer, { merge: true });
+    }
+  });
