@@ -466,9 +466,11 @@ export const updateCustomerWithDataFromBookings = functions
 
     if (isUpdate) {
       const afterData = change.after.data() as Customer;
+
       // remove id, categories...etc (anything not allowed for customer to update)
       /** @TODO create new type instead of CustomerBase that includes other fields*/
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       const {
         id,
         categories,
@@ -478,6 +480,7 @@ export const updateCustomerWithDataFromBookings = functions
         photoURL,
         ...customer
       } = getCustomer(afterData);
+      /* eslint-disable @typescript-eslint/no-unused-vars */
 
       const CustomerRef = db
         .collection(Collection.Organizations)
