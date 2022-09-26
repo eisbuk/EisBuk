@@ -351,10 +351,11 @@ describe("Firestore rules", () => {
           getBookingsDocPath(organization, saul.secretKey)
         );
 
+        const getSaul = getCustomer(saul);
         // check update
         await assertSucceeds(
           setDoc(saulBookingsDoc, {
-            ...getCustomer(saul),
+            ...getSaul,
             name: "not-saul",
           })
         );

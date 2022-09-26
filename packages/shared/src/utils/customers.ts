@@ -42,18 +42,20 @@ export const getCustomer = ({
   certificateExpiration,
   email,
   phone,
-}: Omit<Customer, "secretKey">): Omit<Customer, "secretKey"> => ({
-  id,
-  name,
-  surname,
-  categories,
-  // add extended date only if it exists, rather than saving `extendedDate: undefined`
-  ...(extendedDate ? { extendedDate } : {}),
-  deleted: Boolean(deleted),
-  ...(birthday ? { birthday } : ""),
-  ...(covidCertificateReleaseDate ? { covidCertificateReleaseDate } : ""),
-  ...(covidCertificateSuspended ? { covidCertificateSuspended } : ""),
-  ...(certificateExpiration ? { certificateExpiration } : ""),
-  ...(email ? { email } : ""),
-  ...(phone ? { phone } : ""),
-});
+}: Omit<Customer, "secretKey">): Omit<Customer, "secretKey"> => {
+  return {
+    id,
+    name,
+    surname,
+    categories,
+    // add extended date only if it exists, rather than saving `extendedDate: undefined`
+    ...(extendedDate ? { extendedDate } : {}),
+    deleted: Boolean(deleted),
+    ...(birthday ? { birthday } : {}),
+    ...(covidCertificateReleaseDate ? { covidCertificateReleaseDate } : {}),
+    ...(covidCertificateSuspended ? { covidCertificateSuspended } : {}),
+    ...(certificateExpiration ? { certificateExpiration } : {}),
+    ...(email ? { email } : {}),
+    ...(phone ? { phone } : {}),
+  };
+};
