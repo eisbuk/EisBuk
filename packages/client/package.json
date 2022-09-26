@@ -56,6 +56,8 @@
     "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app BUILD_ENV=production vite",
     "start:staging": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production DEPLOY_STAGE=staging vite",
     "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles src\")'",
+    "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles dataTriggers\")'",
+    "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --watch --runInBand --detectOpenHandles firestoreRules\")'",
     "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" jest --ci --reporters=default --reporters=jest-junit --collect-coverage --forceExit --detectOpenHandles --runInBand\")'",
     "test:quicktest": "echo Running tests with no emulators support && jest --watch src",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators",
