@@ -469,15 +469,7 @@ export const updateCustomerWithDataFromBookings = functions
       // remove id, categories...etc (anything not allowed for customer to update)
       /** @TODO create new type instead of CustomerBase that includes other fields*/
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const {
-        id,
-        categories,
-        deleted,
-        extendedDate,
-        subscriptionNumber,
-        photoURL,
-        ...customer
-      } = getCustomer(afterData);
+      const { id, ...customer } = getCustomer(afterData);
 
       const CustomerRef = db
         .collection(Collection.Organizations)
