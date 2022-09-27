@@ -18,6 +18,12 @@ interface CustomerAttendanceRecord {
   bookedInterval: number;
 }
 
+interface CustomerAttendanceRow {
+  athleteSurname: string;
+  athlete: string;
+  hours: DayAttendanceHours;
+}
+
 export const getMonthAttendanceVariance = (state: LocalStore) => {
   const {
     app: { calendarDay },
@@ -36,8 +42,22 @@ export const getMonthAttendanceVariance = (state: LocalStore) => {
   const attendanceTableData = Object.entries(customerAttendance).map(
     formatToTableData(customers)
   );
+  attendanceTableData.sort(compareTableLines);
 
   return attendanceTableData;
+};
+
+const compareTableLines = (
+  first: CustomerAttendanceRow,
+  second: CustomerAttendanceRow
+) => {
+  if (first.athleteSurname > second.athleteSurname) {
+    return -1;
+  }
+  if (first.athleteSurname < second.athleteSurname) {
+    return 1;
+  }
+  return 0;
 };
 
 /**
@@ -98,11 +118,12 @@ export const formatToTableData =
   ([customerId, customerRecords]: [
     customerId: string,
     customerRecords: CustomerAttendanceRecord[]
-  ]) => {
+  ]): CustomerAttendanceRow => {
     const athlete = `${customers[customerId]?.name} ${customers[customerId]?.surname}`;
     const hours = customerRecords.reduce(collectCustomerDailyAttendance, {});
+    const athleteSurname = customers[customerId]?.surname;
 
-    return { athlete, hours };
+    return { athlete, hours, athleteSurname };
   };
 
 /**
