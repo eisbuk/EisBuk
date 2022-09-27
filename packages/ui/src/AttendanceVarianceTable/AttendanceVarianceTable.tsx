@@ -7,9 +7,10 @@ import {
   AttendanceVarianceHeaders,
 } from "@eisbuk/translations";
 
-import { Table, TableCell, CellType, CellTextAlign } from "../";
+import { Table, TableCell, CellType, CellTextAlign } from "..";
 import VarianceBadge from "./VarianceBadge";
 import {
+  padEmptyDates,
   calculateDeltas,
   calculateTotals,
   collectDatesByHoursType,
@@ -23,11 +24,13 @@ export enum HoursType {
   Delta = "delta",
 }
 
+export interface DayAttendanceHours {
+  [dateStr: string]: HoursTuple;
+}
+
 export interface TableData {
   athlete: string;
-  hours: {
-    [dateStr: string]: HoursTuple;
-  };
+  hours: DayAttendanceHours;
 }
 
 interface TableProps {
@@ -67,28 +70,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     total: t(AttendanceVarianceHeaders.Total),
   };
 
-  const items = data.reduce<RowItem[]>((acc, { athlete, hours }) => {
-    const hoursWithDeltas = calculateDeltas(hours);
-
-    const [totalBooked, , totalDelta] = calculateTotals(hoursWithDeltas);
-    const { booked, delta } = collectDatesByHoursType(hoursWithDeltas);
-
-    const athleteBooked: RowItem = {
-      type: HoursType.Booked,
-      athlete,
-      ...booked,
-      total: totalBooked,
-    };
-    const athleteDelta: RowItem = {
-      type: HoursType.Delta,
-      athlete,
-      ...delta,
-      total: totalDelta,
-    };
-
-    // Note: Returns alternating Booked-Delta rows for each athlete
-    return [athleteBooked, athleteDelta, ...acc];
-  }, []);
+  const items = getTableItems(dates, data);
 
   return (
     <Table
@@ -144,6 +126,32 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 };
 
 export default AttendanceReportTable;
+
+const getTableItems = (dates: string[], data: TableData[]) => {
+  return data.reduce<RowItem[]>((acc, { athlete, hours: _hours }) => {
+    const hours = padEmptyDates(dates, _hours);
+    const hoursWithDeltas = calculateDeltas(hours);
+
+    const [totalBooked, , totalDelta] = calculateTotals(hoursWithDeltas);
+    const { booked, delta } = collectDatesByHoursType(hoursWithDeltas);
+
+    const athleteBooked: RowItem = {
+      type: HoursType.Booked,
+      athlete,
+      ...booked,
+      total: totalBooked,
+    };
+    const athleteDelta: RowItem = {
+      type: HoursType.Delta,
+      athlete,
+      ...delta,
+      total: totalDelta,
+    };
+
+    // Note: Returns alternating Booked-Delta rows for each athlete
+    return [athleteBooked, athleteDelta, ...acc];
+  }, []);
+};
 
 const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
   itemIx === 0 ? (

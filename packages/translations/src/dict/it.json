@@ -12,6 +12,11 @@
     "Profile": "Profilo"
   },
 
+  "AttendanceNavigation": {
+    "Day": "Giorno",
+    "Month": "Mese"
+  },
+
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "NotRegistered": "You are not registered yet",
@@ -286,7 +291,8 @@
   },
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
-    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}"
+    "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
+    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { Interval, DateTime } from "luxon";
 
 /**
  * A helper function checks if passed string is a valid ISO date string
@@ -24,3 +24,19 @@ export const getMonthDiff = (d1: DateTime, d2: DateTime): number => {
 
   return Math.floor(cd1.diff(cd2.startOf("month"), "months").months);
 };
+
+/**
+ * A helper generator that yields all date strings "YYYY-MM-DD" between two `start` & `end` dates
+ * @param {DateTime} start The start date
+ * @param {DateTime} end The end date
+ * @returns Generator which can be used in e.g `Array.from(getDatesInRange(start, end))` to yield an array of date strings
+ */
+export function* generateDatesInRange(start: DateTime, end: DateTime) {
+  const interval = Interval.fromDateTimes(start, end);
+
+  let cursor = interval.start.startOf("day");
+  while (cursor < interval.end) {
+    yield cursor.toISO().substring(0, 10);
+    cursor = cursor.plus({ days: 1 });
+  }
+}
