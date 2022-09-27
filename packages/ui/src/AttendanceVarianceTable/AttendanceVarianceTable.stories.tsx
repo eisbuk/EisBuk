@@ -1,7 +1,7 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import AttendanceVarianceTable, { TableData } from "./Table";
+import AttendanceVarianceTable, { TableData } from "./AttendanceVarianceTable";
 
 export default {
   title: "Attendance Variance Table",

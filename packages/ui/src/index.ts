@@ -23,7 +23,7 @@ import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
 import Table from "./Table";
-import AttendanceReportTable from "./AttendanceReportTable";
+import AttendanceVarianceTable from "./AttendanceVarianceTable";
 import PhoneInput from "./PhoneInput";
 import Dropdown, { DropdownFormik } from "./Dropdown";
 import CountryCodesDropdown, {
@@ -40,6 +40,7 @@ export * from "./TextInput";
 export * from "./Layout";
 export * from "./IconButton";
 export * from "./Table";
+export * from "./AttendanceVarianceTable";
 
 export {
   TestComponent,
@@ -63,7 +64,7 @@ export {
   IconButton,
   TextareaEditable,
   Table,
-  AttendanceReportTable,
+  AttendanceVarianceTable,
   PhoneInput,
   Dropdown,
   DropdownFormik,

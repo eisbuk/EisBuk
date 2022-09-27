@@ -13,6 +13,11 @@ export enum CustomerNavigationLabel {
   Calendar = "CustomerNavigation.Calendar",
   Profile = "CustomerNavigation.Profile",
 }
+
+export enum AttendanceNavigationLabel {
+  Day = "AttendanceNavigation.Day",
+  Month = "AttendanceNavigation.Month",
+}
 // #endregion navigation
 
 // #region auth
@@ -308,6 +313,7 @@ export enum BookingAria {
 export enum Alerts {
   NoSlots = "Alerts.NoSlots",
   NoBookings = "Alerts.NoBookings",
+  NoAttendance = "Alerts.NoAttendance",
 }
 // #endregion alerts
 
