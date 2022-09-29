@@ -117,41 +117,4 @@ describe("Customer triggers", () => {
       });
     }
   );
-
-  testWithEmulator(
-    "should update customer entry with updated data from bookings collection",
-    async () => {
-      // create customer entry
-
-      const { organization } = await setUpOrganization();
-
-      const customersCollRef = collection(db, getCustomersPath(organization));
-      const saulDocRef = doc(customersCollRef, saul.id);
-
-      await setDoc(saulDocRef, saul);
-
-      // check nothing happened (cause create)
-      const nonUpdatedDocRes = await waitForCondition({
-        documentPath: getCustomerDocPath(organization, saul.id),
-        condition: (data) => Boolean(data),
-      });
-      expect(nonUpdatedDocRes).toEqual(saul);
-
-      // update bookings
-      const updatedSaul: Customer = {
-        ...saul,
-        email: "not.saul@gmail.com",
-        name: "not saul",
-        surname: "Notgoodman",
-      };
-      await setDoc(saulDocRef, updatedSaul);
-
-      // check customer entry contains same data
-      const updatedDocRes = await waitForCondition({
-        documentPath: getCustomerDocPath(organization, saul.id),
-        condition: (data) => Boolean(data),
-      });
-      expect(updatedDocRes).toEqual(updatedSaul);
-    }
-  );
 });

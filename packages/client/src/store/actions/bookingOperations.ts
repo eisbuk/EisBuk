@@ -17,11 +17,7 @@ import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import {
-  getBookedSlotDocPath,
-  getBookingsDocPath,
-  getBookingsPath,
-} from "@/utils/firestore";
+import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<
@@ -136,31 +132,24 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
 
 /**
  * Updates customer data in bookings collection
- * @param payload.secretKey {string} - customer secretKey
  * @param payload.customer {Customer} - cutomer type
  * @returns FirestoreThunk
  */
 export const updateBookingCustomer: {
-  (paylod: {
-    secretKey: Customer["secretKey"];
-    customer: Customer;
-  }): FirestoreThunk;
+  (paylod: { customer: Customer }): FirestoreThunk;
 } =
-  ({ secretKey, customer }) =>
-  async (dispatch, getState) => {
-    const organization = getOrganization();
-
+  ({ customer }) =>
+  async (dispatch) => {
     try {
-      const db = getFirestore();
+      const organization = getOrganization();
 
-      const booking = getState().firestore.data.bookings![secretKey];
+      const handler = CloudFunction.UpdateCustomerByCustomer;
+      const payload = {
+        organization,
+        customer,
+      };
 
-      const bookingDocRef = doc(
-        db,
-        getBookingsDocPath(organization, secretKey)
-      );
-
-      await setDoc(bookingDocRef, { ...booking, ...customer });
+      await createCloudFunctionCaller(handler, payload)();
 
       dispatch(
         enqueueNotification({

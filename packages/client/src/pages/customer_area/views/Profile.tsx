@@ -23,7 +23,6 @@ const CalendarView: React.FC = () => {
         onSave={(customer) => {
           return dispatch(
             updateBookingCustomer({
-              secretKey,
               customer: { ...customer, secretKey },
             })
           );

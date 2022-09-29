@@ -4,7 +4,7 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import { HTTPSErrors, BookingsErrors } from "@eisbuk/shared";
+import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
@@ -195,6 +195,123 @@ describe("Cloud functions", () => {
             organization,
             id: saul.id,
             secretKey: saul.secretKey,
+          })
+        ).rejects.toThrow(BookingsErrors.CustomerNotFound);
+      }
+    );
+  });
+  describe("updateCustomerByCustomer", () => {
+    testWithEmulator(
+      "should update customer data in customer collection and then bookings collection by data trigger",
+      async () => {
+        // set up test state
+        const { organization } = await setUpOrganization();
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+
+        // wait for bookings to get created (through data trigger)
+        await waitForCondition({
+          documentPath: getBookingsDocPath(organization, saul.secretKey),
+          condition: (data) => Boolean(data),
+        });
+
+        // run the function to update customer
+        await httpsCallable(
+          functions,
+          CloudFunction.UpdateCustomerByCustomer
+        )({
+          organization,
+          customer: saul,
+        });
+
+        // check that customer has been updated
+        const updatedData = await waitForCondition({
+          documentPath: getBookingsDocPath(organization, saul.secretKey),
+          condition: (data) => Boolean(data),
+        });
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { subscriptionNumber, ...getSaul } = getCustomer(saul);
+        expect(updatedData).toEqual({ ...getSaul, deleted: false });
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no payload provided",
+      async () => {
+        await expect(
+          httpsCallable(functions, CloudFunction.UpdateCustomerByCustomer)()
+        ).rejects.toThrow(HTTPSErrors.NoPayload);
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no organziation, or customer provided",
+      async () => {
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.UpdateCustomerByCustomer
+          )({});
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: organization, customer`
+          );
+        }
+      }
+    );
+    testWithEmulator(
+      "should return an error if id or secretKey are not provided in customer object",
+      async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { id, secretKey, ...saulNoId } = saul;
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.UpdateCustomerByCustomer
+          )({
+            organization: {},
+            customer: saulNoId,
+          });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: id, secretKey`
+          );
+        }
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if customer id and secretKey mismatch",
+      async () => {
+        const { organization } = await setUpOrganization();
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { secretKey, ...saulNoSecretKey } = saul;
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.UpdateCustomerByCustomer
+          )({
+            organization,
+            customer: { ...saulNoSecretKey, secretKey: "wrong-key" },
+          })
+        ).rejects.toThrow(BookingsErrors.SecretKeyMismatch);
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if customer not found",
+      async () => {
+        const { organization } = await setUpOrganization();
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.UpdateCustomerByCustomer
+          )({
+            organization,
+            customer: saul,
           })
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
       }
