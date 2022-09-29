@@ -120,10 +120,9 @@ service cloud.firestore {
 
       // #endregion bookings-checks
       match /bookings/{secretKey} {
-        // Anybody with 'secretKey' can read and update 'bookings'
-        // Everything else is done through cloud functions
+        // Anybody with 'secretKey' can read from 'bookings'
+        // No one should be able to write to bookings document (it's done through cloud functions)
         allow read: if true;
-        allow update: if true;
 
         function checkBookingSlot(slotId, bookingData) {
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));

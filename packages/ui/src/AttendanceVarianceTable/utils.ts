@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { HoursType } from "./Table";
+import { HoursType } from "./AttendanceVarianceTable";
 
 export type HoursTuple = [booked: number, attended: number];
 
@@ -31,6 +31,13 @@ interface HoursByType {
     [dateStr: string]: number | null;
   };
 }
+
+export const padEmptyDates = (dates: string[], athleteHours: Hours) => {
+  return dates.reduce<Hours>((acc, curDate) => {
+    acc[curDate] = athleteHours[curDate] || [0, 0];
+    return acc;
+  }, {});
+};
 
 export const calculateDeltas = (data: Hours) => {
   return Object.entries(data).reduce<AttendanceWithDeltaData>((acc, cur) => {

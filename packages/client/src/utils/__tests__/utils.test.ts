@@ -6,8 +6,13 @@ import { DateTime } from "luxon";
 
 import { luxon2ISODate } from "@eisbuk/shared";
 
-import { capitalizeFirst, getOrgFromLocation, isEmpty } from "../helpers";
-import { isISODay } from "../date";
+import {
+  capitalizeFirst,
+  getOrgFromLocation,
+  isEmpty,
+  calculateIntervalDuration,
+} from "../helpers";
+import { isISODay, generateDatesInRange } from "../date";
 
 describe("Helpers", () => {
   describe("`capitalizeFirst` function", () => {
@@ -21,6 +26,32 @@ describe("Helpers", () => {
       const str = "hello-world";
       const want = "Hello-World";
       expect(capitalizeFirst(str)).toEqual(want);
+    });
+  });
+
+  describe("`convertIntervalToNum` function", () => {
+    test("should convert null to 0", () => {
+      const interval = null;
+      const result = calculateIntervalDuration(interval);
+      expect(result).toBe(0);
+    });
+
+    test("should convert string to number", () => {
+      const oneStr = "16:00 - 17:00";
+      const oneHalfStr = "22:00 - 23:30";
+      const twoStr = "22:00 - 24:00";
+      const nonStdStr = "22:20 - 24:00";
+
+      // const morningResult = convertIntervalToNum(morningStr);
+      const oneResult = calculateIntervalDuration(oneStr);
+      const oneHalfResult = calculateIntervalDuration(oneHalfStr);
+      const twoResult = calculateIntervalDuration(twoStr);
+      const nonStdResult = calculateIntervalDuration(nonStdStr);
+
+      expect(oneResult).toBe(1);
+      expect(oneHalfResult).toBe(1.5);
+      expect(twoResult).toBe(2);
+      expect(nonStdResult).toBe(2);
     });
   });
 });
@@ -81,6 +112,18 @@ describe("Date utils", () => {
 
       expect(isEmpty(["element"])).toEqual(false);
       expect(isEmpty({ foo: "bar" })).toEqual(false);
+    });
+  });
+
+  describe("`generateDatesInRange` function", () => {
+    test("should return a generator that yields all date strings within a range", () => {
+      const start = DateTime.fromISO("2022-09-01");
+      const end = start.plus({ week: 1 });
+
+      const dates = Array.from(generateDatesInRange(start, end));
+
+      expect(dates.length).toBe(7);
+      expect(dates[6]).toBe("2022-09-07");
     });
   });
 });

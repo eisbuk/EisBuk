@@ -338,29 +338,34 @@ describe("Firestore rules", () => {
         );
       }
     );
-    testWithEmulator("should allow update access to non-admins", async () => {
-      const { db, organization } = await getTestEnv({
-        setup: (db, { organization }) =>
-          setDoc(
-            doc(db, getBookingsDocPath(organization, saul.secretKey)),
-            getCustomer(saul)
-          ),
-      });
+    testWithEmulator(
+      "should not allow update access to non-admins",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          setup: async (db, { organization }) =>
+            await assertFails(
+              setDoc(
+                doc(db, getBookingsDocPath(organization, saul.secretKey)),
+                getCustomer(saul)
+              )
+            ),
+        });
 
-      const saulBookingsDoc = doc(
-        db,
-        getBookingsDocPath(organization, saul.secretKey)
-      );
+        const saulBookingsDoc = doc(
+          db,
+          getBookingsDocPath(organization, saul.secretKey)
+        );
 
-      const getSaul = getCustomer(saul);
-      // check update
-      await assertSucceeds(
-        setDoc(saulBookingsDoc, {
-          ...getSaul,
-          name: "not-saul",
-        })
-      );
-    });
+        const getSaul = getCustomer(saul);
+        // check update
+        await assertSucceeds(
+          setDoc(saulBookingsDoc, {
+            ...getSaul,
+            name: "not-saul",
+          })
+        );
+      }
+    );
     testWithEmulator(
       "should not allow delete access to non-admins (as it's handled through cloud functions)",
       async () => {

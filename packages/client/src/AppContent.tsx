@@ -16,7 +16,7 @@ import Unauthorized from "@/components/auth/Unauthorized";
 import NotRegistered from "@/components/auth/NotRegistered";
 import LoginRoute from "@/components/auth/LoginRoute";
 
-import DashboardPage from "@/pages/root";
+import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
@@ -52,7 +52,11 @@ const AppContent: React.FC = () => {
   return (
     <Switch>
       <LoginRoute path={Routes.Login} component={LoginPage} />
-      <PrivateRoute exact path={PrivateRoutes.Root} component={DashboardPage} />
+      <PrivateRoute
+        exact
+        path={PrivateRoutes.Root}
+        component={AttendancePage}
+      />
       <PrivateRoute path={PrivateRoutes.Athletes} component={AthletesPage} />
       <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
       <PrivateRoute
