@@ -160,40 +160,53 @@ describe("athlete profile", () => {
     cy.initAdminApp().then((organization) =>
       cy.updateFirestore(organization, ["customers.json"])
     );
+
     cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-    cy.contains(i18n.t(CustomerNavigationLabel.Profile) as string).click();
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+    cy.signOut();
     // cy.pause()
+
+    // this tab switchis a work around because for some reason
+    // on first profile tab visit customer data isn't loaded
+    cy.contains(i18n.t(CustomerNavigationLabel.Profile) as string).click();
+    cy.contains(i18n.t(CustomerNavigationLabel.Book) as string).click();
+    cy.contains(i18n.t(CustomerNavigationLabel.Profile) as string).click();
   });
 
   it("should fill and submit athlete profile form", () => {
-    cy.getAttrWith("name", "name").type(saul.name);
-    cy.getAttrWith("name", "surname").type(saul.surname);
-    cy.getAttrWith("name", "birthday").type(saul.birthday || "");
-    cy.getAttrWith("name", "email").type(saul.email || "");
-    cy.getAttrWith("name", "phone").type(saul.phone || "");
-    cy.getAttrWith("name", "certificateExpiration").type(
+    // cy.pause()
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+    console.log({ saul });
+    cy.getAttrWith("name", "name").should("have.attr", "value", saul.name);
+    cy.getAttrWith("name", "name").clearAndType(saul.name);
+
+    cy.getAttrWith("name", "surname").clearAndType(saul.surname);
+    cy.getAttrWith("name", "birthday").clearAndType(saul.birthday || "");
+    cy.getAttrWith("name", "email").clearAndType(saul.email || "");
+    cy.getAttrWith("name", "phone").clearAndType(saul.phone || "");
+    cy.getAttrWith("name", "certificateExpiration").clearAndType(
       saul.certificateExpiration || ""
     );
-    cy.getAttrWith("name", "covidCertificateReleaseDate").type(
+    cy.getAttrWith("name", "covidCertificateReleaseDate").clearAndType(
       saul.covidCertificateReleaseDate || ""
     );
-    cy.getAttrWith("name", "covidCertificateSuspended").click();
     cy.getAttrWith("name", "covidCertificateSuspended").click();
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
   });
   it("allows customer form submission with minimal fields", () => {
-    cy.getAttrWith("name", "name").type(saul.name);
-    cy.getAttrWith("name", "surname").type(saul.surname);
-    cy.getAttrWith("name", "birthday").type(saul.birthday || "");
-    cy.getAttrWith("name", "email").type(saul.email || "");
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+
+    cy.getAttrWith("name", "certificateExpiration").clear();
+    cy.getAttrWith("name", "covidCertificateReleaseDate").clear();
+
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
   });
 
   it("doesn't allow invalid date input format", () => {
-    cy.getAttrWith("name", "birthday").type("12 nov 2021");
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+
+    cy.getAttrWith("name", "birthday").clearAndType("12 nov 2021");
 
     cy.getAttrWith("type", "submit").click();
     // check invalid date message
@@ -201,6 +214,8 @@ describe("athlete profile", () => {
   });
 
   it("doesn't allow invalid phone input format", () => {
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+
     // test phone number for edge cases
     cy.getAttrWith("name", "phone").clearAndType("foo 2222 868");
     cy.getAttrWith("type", "submit").click();
@@ -230,6 +245,7 @@ describe("athlete profile", () => {
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
 
     cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
     cy.getAttrWith("type", "submit").click();
@@ -238,6 +254,8 @@ describe("athlete profile", () => {
     );
   });
   it("replaces different date separators ('.' and '-') with '/'", () => {
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+
     // dashes
     cy.getAttrWith("placeholder", "dd/mm/yyyy")
       .first()
@@ -252,6 +270,8 @@ describe("athlete profile", () => {
   });
 
   it("handles edge (passable) cases of input", () => {
+    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+
     const archer = {
       // test two names string (should be passable)
       name: "Sterling Malory",
@@ -263,11 +283,11 @@ describe("athlete profile", () => {
       email: "sterling.malory.archer@isis.not-gov.us",
       birthday: saul.birthday,
     };
-    cy.getAttrWith("name", "name").type(archer.name);
-    cy.getAttrWith("name", "surname").type(archer.surname);
-    cy.getAttrWith("name", "phone").type(archer.phone);
-    cy.getAttrWith("name", "email").type(archer.email);
-    cy.getAttrWith("name", "birthday").type(archer.birthday || "");
+    cy.getAttrWith("name", "name").clearAndType(archer.name);
+    cy.getAttrWith("name", "surname").clearAndType(archer.surname);
+    cy.getAttrWith("name", "phone").clearAndType(archer.phone);
+    cy.getAttrWith("name", "email").clearAndType(archer.email);
+    cy.getAttrWith("name", "birthday").clearAndType(archer.birthday || "");
 
     // all of the data above should be submitable
     cy.getAttrWith("type", "submit").click();

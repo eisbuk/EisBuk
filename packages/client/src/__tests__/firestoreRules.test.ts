@@ -342,12 +342,11 @@ describe("Firestore rules", () => {
       "should not allow update access to non-admins",
       async () => {
         const { db, organization } = await getTestEnv({
+          auth: false,
           setup: async (db, { organization }) =>
-            await assertFails(
-              setDoc(
-                doc(db, getBookingsDocPath(organization, saul.secretKey)),
-                getCustomer(saul)
-              )
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              getCustomer(saul)
             ),
         });
 
@@ -358,7 +357,7 @@ describe("Firestore rules", () => {
 
         const getSaul = getCustomer(saul);
         // check update
-        await assertSucceeds(
+        await assertFails(
           setDoc(saulBookingsDoc, {
             ...getSaul,
             name: "not-saul",
