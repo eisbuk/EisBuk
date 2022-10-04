@@ -1,5 +1,5 @@
 import React, { useState, FocusEvent } from "react";
-import { Formik, Field } from "formik";
+import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 
 import { Customer } from "@eisbuk/shared";
@@ -27,9 +27,9 @@ import { isISODay } from "../../utils/date";
 import { isValidPhoneNumber } from "../../utils/helpers";
 
 interface FormProps {
-  customer: Partial<Customer>;
+  customer: Omit<Customer, "secretKey">;
   onCancel?: () => void;
-  onSave?: (customer: Customer) => void;
+  onSave?: (customer: Omit<Customer, "secretKey">) => void;
 }
 
 const defaultCustomerFormValues = {
@@ -60,16 +60,16 @@ const CustomerProfileForm: React.FC<FormProps> = ({
 
   return (
     <Formik
-      initialValues={initialValues}
       validationSchema={CustomerValidation}
+      initialValues={initialValues}
       onSubmit={(values, { setSubmitting }) => {
-        onSave(values as Customer);
+        onSave(values);
         setSubmitting(false);
         toggleEdit();
       }}
     >
-      {({ resetForm, handleSubmit, isSubmitting, setFieldValue }) => (
-        <form onSubmit={handleSubmit}>
+      {({ resetForm, isSubmitting, setFieldValue }) => (
+        <Form>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
               title={t(CustomerLabel.PersonalDetails)}
@@ -245,7 +245,7 @@ const CustomerProfileForm: React.FC<FormProps> = ({
               </>
             )}
           </div>
-        </form>
+        </Form>
       )}
     </Formik>
   );
@@ -276,7 +276,6 @@ const CustomerValidation = Yup.object().shape({
     message: i18n.t(ValidationMessage.InvalidDate),
   }),
   covidCertificateSuspended: Yup.boolean(),
-  category: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
   subscriptionNumber: Yup.number(),
 });
 

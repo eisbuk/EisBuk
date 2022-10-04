@@ -131,6 +131,43 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
   };
 
 /**
+ * Updates customer data in bookings collection
+ * @param payload.customer {Customer} - cutomer type
+ * @returns FirestoreThunk
+ */
+export const updateBookingCustomer: {
+  (paylod: { customer: Customer }): FirestoreThunk;
+} =
+  ({ customer }) =>
+  async (dispatch) => {
+    try {
+      const organization = getOrganization();
+
+      const handler = CloudFunction.UpdateCustomerByCustomer;
+      const payload = {
+        organization,
+        customer,
+      };
+
+      await createCloudFunctionCaller(handler, payload)();
+
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Success,
+          message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+        })
+      );
+    } catch (error) {
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Error,
+          message: i18n.t(NotificationMessage.CustomerProfileError),
+        })
+      );
+    }
+  };
+
+/**
  * Keeps track of calendar events created by customer
  */
 export const createCalendarEvents =

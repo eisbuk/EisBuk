@@ -1,4 +1,4 @@
-import { CustomerBase } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -9,7 +9,7 @@ import { LocalStore } from "@/types/store";
  */
 export const getBookingsCustomer = (
   state: LocalStore
-): CustomerBase | undefined => {
+): Omit<Customer, "secretKey"> | undefined => {
   // get extended date (if any)
   const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
   if (bookingsInStore.length > 1) {

@@ -15,6 +15,7 @@ import {
   Customer,
   getCustomerBase,
   DeprecatedCategory,
+  getCustomer,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -321,26 +322,65 @@ describe("Firestore rules", () => {
     );
 
     testWithEmulator(
-      "should not allow anybody write access to bookings document (as it's handled through cloud functions)",
+      "should not allow anyone to create ta booking doc (as it's handled through cloud functions)",
+      async () => {
+        const { db, organization } = await getTestEnv({});
+
+        const saulBookingsDoc = doc(
+          db,
+          getBookingsDocPath(organization, saul.secretKey)
+        );
+        // check create
+        await assertFails(
+          setDoc(saulBookingsDoc, {
+            ...getCustomer(saul),
+          })
+        );
+      }
+    );
+    testWithEmulator(
+      "should not allow update access to non-admins",
+      async () => {
+        const { db, organization } = await getTestEnv({
+          auth: false,
+          setup: async (db, { organization }) =>
+            setDoc(
+              doc(db, getBookingsDocPath(organization, saul.secretKey)),
+              getCustomer(saul)
+            ),
+        });
+
+        const saulBookingsDoc = doc(
+          db,
+          getBookingsDocPath(organization, saul.secretKey)
+        );
+
+        const getSaul = getCustomer(saul);
+        // check update
+        await assertFails(
+          setDoc(saulBookingsDoc, {
+            ...getSaul,
+            name: "not-saul",
+          })
+        );
+      }
+    );
+    testWithEmulator(
+      "should not allow delete access to non-admins (as it's handled through cloud functions)",
       async () => {
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              getCustomerBase(saul)
+              getCustomer(saul)
             ),
         });
+
         const saulBookingsDoc = doc(
           db,
           getBookingsDocPath(organization, saul.secretKey)
         );
-        // check update
-        await assertFails(
-          setDoc(saulBookingsDoc, {
-            ...getCustomerBase(saul),
-            name: "not-saul",
-          })
-        );
+
         // check delete
         await assertFails(deleteDoc(saulBookingsDoc));
       }

@@ -597,11 +597,6 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
 
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
-        });
-
         const customerRef = adminDb.doc(
           getCustomerDocPath(organization, saul.id)
         );
@@ -618,15 +613,6 @@ describe("Cloud functions -> Data triggers ->", () => {
         await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
           ...attendanceWithTestCustomer,
           attendances: { ...attendance },
-        });
-
-        await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(data),
         });
 
         // update interval
