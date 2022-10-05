@@ -1,6 +1,7 @@
-import React, { useState, FocusEvent } from "react";
+import React, { useState, FocusEvent, useMemo } from "react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
+import { v4 as uuid } from "uuid";
 
 import { Customer } from "@eisbuk/shared";
 import i18n, {
@@ -58,8 +59,14 @@ const CustomerProfileForm: React.FC<FormProps> = ({
     ...customer,
   };
 
+  // Form key is used to force rerender of the Formik component (update the 'initialValues'):
+  // When the customer values have been updated, a new random string is generated for the key
+  // thus forcing the rerender of the form with the latest values.
+  const formKey = useMemo(() => uuid(), [customer]);
+
   return (
     <Formik
+      key={formKey}
       validationSchema={CustomerValidation}
       initialValues={initialValues}
       onSubmit={(values, { setSubmitting }) => {
