@@ -36,6 +36,7 @@ export type GetComponentProps<C extends WhitelistedComponents> = Omit<
 // #region Redux
 export enum ModalAction {
   Open = "@@MODAL/OPEN",
+  Update = "@@MODAL/UPDATE",
   Close = "@@MODAL/CLOSE",
   Pop = "@@MODAL/POP",
   CloseAll = "@@MODAL/CLOSE_ALL",
@@ -83,5 +84,5 @@ export type ModalReducerAction =
       type: ModalAction.Pop | ModalAction.CloseAll;
     }
   | { type: ModalAction.Close; payload: Pick<ModalPayload, "id"> }
-  | { type: ModalAction.Open; payload: ModalPayload };
+  | { type: ModalAction.Open | ModalAction.Update; payload: ModalPayload };
 // #endregion Redux
