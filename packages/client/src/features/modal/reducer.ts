@@ -12,12 +12,19 @@ const modalReducer: Reducer<ModalState, ModalReducerAction> = (
   action
 ): ModalState => {
   switch (action.type) {
+    // Add a modal to the top of the stack
     case ModalAction.Open:
       return [...state, action.payload];
 
+    // Remove the modal with specified id from the stack
     case ModalAction.Close:
+      return state.filter(({ id }) => id !== action.payload.id);
+
+    // Pop the last modal from the stack
+    case ModalAction.Pop:
       return state.slice(0, -1);
 
+    // Empty the modal stack, effectively closing all of the modals
     case ModalAction.CloseAll:
       return [];
 

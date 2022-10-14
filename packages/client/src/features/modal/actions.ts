@@ -12,11 +12,20 @@ export const openModal = (payload: ModalPayload): ModalReducerAction => ({
 });
 
 /**
+ * Delete a specific modal from the modal stack by specifying the modal's id.
+ * @param {Object} payload
+ * @param {string} payload.id id of the modal to remove from stack
+ */
+export const closeModal = (
+  payload: Pick<ModalPayload, "id">
+): ModalReducerAction => ({ type: ModalAction.Close, payload });
+
+/**
  * This is a pure action object (not a function) dispatched
  * to pop the (top-most) modal from the modal stack
  */
 export const popModal: ModalReducerAction = {
-  type: ModalAction.Close,
+  type: ModalAction.Pop,
 };
 
 /**

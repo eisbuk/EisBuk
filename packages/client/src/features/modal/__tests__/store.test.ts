@@ -5,7 +5,7 @@ import { SlotInterface, SlotType } from "@eisbuk/shared";
 
 import { ModalPayload } from "../types";
 
-import { popModal, openModal, closeAllModals } from "../actions";
+import { popModal, openModal, closeAllModals, closeModal } from "../actions";
 
 import { getModal } from "../selectors";
 
@@ -25,11 +25,13 @@ const dummySlot: SlotInterface = {
 };
 
 const modal1: ModalPayload = {
+  id: "modal1",
   component: "CancelBookingDialog",
   props: { ...dummySlot, interval },
 };
 
 const modal2: ModalPayload = {
+  id: "modal2",
   component: "FinalizeBookingsDialog",
   props: { customerId: "dummy-cusotmer", month: DateTime.now() },
 };
@@ -49,6 +51,19 @@ describe("Modal store tests", () => {
   });
 
   describe("Close modal action", () => {
+    test("should remove the specific modal from store state effectively removing the modal from the screen", () => {
+      // Setup
+      const store = getNewStore();
+      store.dispatch(openModal(modal1));
+      store.dispatch(openModal(modal2));
+      // Close the first modal (by explicitly specifying its id)
+      store.dispatch(closeModal({ id: modal1.id }));
+      const modalContent = getModal(store.getState());
+      expect(modalContent).toEqual([modal2]);
+    });
+  });
+
+  describe("Pop modal action", () => {
     test("should pop the latest modal from store state effectively removing the modal from the screen", () => {
       // Setup
       const store = getNewStore();
