@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
@@ -32,19 +32,17 @@ import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 import useTitle from "@/hooks/useTitle";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-import { openModal } from "@/features/modal/actions";
-
 import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
 
 import { adminLinks } from "@/data/navigation";
 import { DateTime } from "luxon";
 import { __organization__ } from "@/lib/constants";
+import { createModal } from "@/features/modal/useModal";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   const defaultDialCode = useSelector(getDefaultCountryCode);
 
@@ -62,17 +60,17 @@ const CustomersPage: React.FC = () => {
     useSelector(getAboutOrganization)[__organization__] || {};
   useFirestoreSubscribe([OrgSubCollection.Customers]);
 
+  const { openWithProps: openCustomerForm } = useCustomerFormModal();
+
   const handleAddAthlete = () => {
     // Get next subscription number to start the customer form
     // it can still be updated in the form if needed
     const subscriptionNumber = getNewSubscriptionNumber(customers);
 
-    dispatch(
-      openModal({
-        component: "CustomerFormDialog",
-        props: { customer: { subscriptionNumber }, defaultDialCode },
-      })
-    );
+    openCustomerForm({
+      customer: { subscriptionNumber },
+      defaultDialCode,
+    });
   };
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
@@ -105,6 +103,8 @@ const CustomersPage: React.FC = () => {
     </Layout>
   );
 };
+
+const useCustomerFormModal = createModal("CustomerFormDialog");
 
 const useStyles = makeStyles((theme: ETheme) => ({
   headerHero: {

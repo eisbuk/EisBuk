@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { useDispatch } from "react-redux";
 
 import { Pencil } from "@eisbuk/svg";
 
@@ -8,7 +7,8 @@ import { ButtonContextType } from "@/enums/components";
 import SlotOperationButton from "./SlotOperationButton";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
-import { openModal } from "@/features/modal/actions";
+
+import { createModal } from "@/features/modal/useModal";
 
 import {
   __editSlotButtonWrongContextError,
@@ -28,8 +28,9 @@ import { __editSlotButtonId__ } from "@/__testData__/testIds";
  * - no value for `slot` has been provided within the context (as it is needed for full functionality)
  */
 export const EditSlotButton: React.FC = () => {
-  const dispatch = useDispatch();
   const buttonGroupContext = useContext(ButtonGroupContext);
+
+  const { openWithProps: openSlotForm } = useSlotFormModal();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOperationButtons` context
@@ -49,12 +50,10 @@ export const EditSlotButton: React.FC = () => {
 
   const openForm = (e: React.SyntheticEvent) => {
     e.stopPropagation();
-    dispatch(
-      openModal({
-        component: "SlotForm",
-        props: { date: slot.date, slotToEdit: slot },
-      })
-    );
+    openSlotForm({
+      date: slot.date,
+      slotToEdit: slot,
+    });
   };
 
   // prevent component from rendering and log error to console (but don't throw)
@@ -70,5 +69,7 @@ export const EditSlotButton: React.FC = () => {
     </SlotOperationButton>
   );
 };
+
+const useSlotFormModal = createModal("SlotForm");
 
 export default EditSlotButton;

@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
 
 import TextField from "@mui/material/TextField";
 
@@ -9,7 +8,7 @@ import { Customer, OrganizationData } from "@eisbuk/shared";
 
 import CustomerGridItem from "./CustomerGridItem";
 
-import { openModal } from "@/features/modal/actions";
+import { createModal } from "@/features/modal/useModal";
 
 import { __customersGridId__ } from "@/__testData__/testIds";
 
@@ -23,20 +22,15 @@ interface CustomerGridProps {
 const CustomerGrid: React.FC<CustomerGridProps> = ({
   customers,
   className = "",
-  displayName,
+  displayName = "",
 }) => {
   const classes = useStyles();
-  const dispatch = useDispatch();
 
   // search flow
   const [searchString, setSearchString] = useState("");
   const searchRegex = new RegExp(searchString, "i");
 
-  const onCustomerClick = (customer: Customer) => {
-    dispatch(
-      openModal({ component: "CustomerCard", props: { customer, displayName } })
-    );
-  };
+  const { openCustomerCard } = useCustomerCard(customers, displayName);
 
   return (
     <div className={className}>
@@ -50,7 +44,7 @@ const CustomerGrid: React.FC<CustomerGridProps> = ({
             !customer.deleted && (
               <CustomerGridItem
                 key={customer.id || `temp-key-${i}`}
-                onClick={onCustomerClick}
+                onClick={({ id }) => openCustomerCard(id)}
                 {...customer}
               />
             )
@@ -84,6 +78,57 @@ const SearchField: React.FC<{
   );
 };
 // #endregion SearchField
+
+// #region CustomerCard
+const useCustomerModal = createModal("CustomerCard");
+
+/**
+ * A hook used to open CustomerCard modal on customer click. When the 'openCustomerCard'
+ * is fired, the customer is open in modal, and all further updates to the given customer
+ * structure are derived from updated `customers` param (passed to hook initialisation) and propagated
+ * to modal update.
+ * @param customers
+ * @param displayName
+ * @returns
+ */
+const useCustomerCard = (
+  customers: Customer[] | undefined,
+  displayName: string
+) => {
+  const [modalProps, setModalProps] = useState<any>();
+
+  useEffect(() => {
+    if (!modalProps) {
+      return;
+    }
+    const oldCustomer = modalProps.customer;
+    const customer = customers?.find(
+      ({ id }) => oldCustomer && id === oldCustomer.id
+    );
+
+    if (!customer) {
+      setModalProps(undefined);
+      return;
+    }
+
+    setModalProps({ customer, displayName });
+  }, [customers]);
+
+  const { openWithProps } = useCustomerModal(modalProps);
+
+  const openCustomerCard = (customerId: string) => {
+    const customer = customers?.find(({ id }) => id === customerId);
+    if (customer) {
+      openWithProps({ customer, displayName });
+      setModalProps({ customer, displayName });
+    }
+  };
+
+  return {
+    openCustomerCard,
+  };
+};
+// #region CustomerCard
 
 // #region styles
 const useStyles = makeStyles(() => ({

@@ -1,9 +1,5 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { useDispatch } from "react-redux";
 import { DateTime } from "luxon";
-
-import { CustomersByBirthday } from "@eisbuk/shared";
-import { Cake } from "@eisbuk/svg";
 
 import Menu from "@mui/material/Menu";
 import Table from "@mui/material/Table";
@@ -16,12 +12,15 @@ import {
   useTranslation,
   BirthdayMenu as BirthdayEnums,
 } from "@eisbuk/translations";
+import { CustomersByBirthday } from "@eisbuk/shared";
+import { Cake } from "@eisbuk/svg";
+import { Button } from "@eisbuk/ui";
 
 import BirthdayMenuItem from "./BirthdayMenuItem";
 
+import { createModal } from "@/features/modal/useModal";
+
 import { __birthdayMenu__ } from "@/__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
-import { Button } from "@eisbuk/ui";
 
 interface BirthdayMenuProps {
   customers: CustomersByBirthday[];
@@ -30,7 +29,7 @@ interface BirthdayMenuProps {
 const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
   const classes = useStyles();
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const { openWithProps: openBirthdayDialog } = useBirthdayModal();
 
   const [birthdaysAnchorEl, setBirthdaysAnchorEl] =
     useState<HTMLElement | null>(null);
@@ -43,7 +42,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
     // Close the small popup (menu)
     setBirthdaysAnchorEl(null);
     // Open the full birthday - customer list in modal
-    dispatch(openModal({ component: "BirthdayDialog", props: { customers } }));
+    openBirthdayDialog({ customers });
   };
 
   const calculateTimeDiff = (now: DateTime) =>
@@ -118,6 +117,9 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
     </>
   );
 };
+
+const useBirthdayModal = createModal("BirthdayDialog");
+
 const useStyles = makeStyles(() => ({
   birthdayHeader: {
     display: "flex",

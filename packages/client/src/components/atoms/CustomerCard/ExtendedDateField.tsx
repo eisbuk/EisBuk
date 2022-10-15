@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
@@ -13,7 +12,7 @@ import {
   CustomerLabel,
 } from "@eisbuk/translations";
 
-import { openModal } from "@/features/modal/actions";
+import { createModal } from "@/features/modal/useModal";
 
 interface Props {
   customer: Customer;
@@ -21,9 +20,10 @@ interface Props {
 }
 
 const ExtendedDateField: React.FC<Props> = ({ customer }) => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
   const classes = useStyles();
+
+  const { openWithProps: openExtendDateDialog } = useExtendDateModal();
 
   const displayValue = customer.extendedDate || "-";
 
@@ -39,14 +39,7 @@ const ExtendedDateField: React.FC<Props> = ({ customer }) => {
         <Button
           className={classes.buttonPrimary}
           color="primary"
-          onClick={() =>
-            dispatch(
-              openModal({
-                component: "ExtendBookingDateDialog",
-                props: customer,
-              })
-            )
-          }
+          onClick={() => openExtendDateDialog(customer)}
           variant="contained"
         >
           {t(ActionButton.ExtendBookingDate)}
@@ -55,6 +48,8 @@ const ExtendedDateField: React.FC<Props> = ({ customer }) => {
     </>
   );
 };
+
+const useExtendDateModal = createModal("ExtendBookingDateDialog");
 
 const useStyles = makeStyles((theme) => ({
   field: { display: "flex", justifyContent: "space-between", flexWrap: "wrap" },

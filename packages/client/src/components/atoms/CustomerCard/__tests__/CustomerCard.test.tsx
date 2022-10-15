@@ -3,13 +3,14 @@
  */
 
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 import { SendBookingLinkMethod } from "@/enums/other";
 import { Routes } from "@/enums/routes";
@@ -19,8 +20,6 @@ import CustomerCard from "../CustomerCard";
 import * as customerActions from "@/store/actions/customerOperations";
 
 import { saul } from "@/__testData__/customers";
-import { __testOrganization__ } from "@/__testSetup__/envData";
-
 import {
   __customerDeleteId__,
   __customerEditId__,
@@ -28,7 +27,6 @@ import {
   __sendBookingsEmailId__,
   __sendBookingsSMSId__,
 } from "../__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 const mockHistoryPush = jest.fn();
@@ -55,13 +53,13 @@ jest
   .mockImplementation(mockUpdateCustomerImplementation as any);
 
 describe("Customer Card", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    cleanup();
   });
 
   describe("CustomerOperationButtons", () => {
     beforeEach(() => {
+      jest.clearAllMocks();
       render(
         <CustomerCard
           onCloseAll={() => {}}
@@ -72,30 +70,22 @@ describe("Customer Card", () => {
       );
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
-      cleanup();
-    });
-
     test("should open 'DeleteCustomerDialog' modal on delete button click", () => {
       screen.getByTestId(__customerDeleteId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "DeleteCustomerDialog", props: saul })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("DeleteCustomerDialog");
+      expect(dispatchCallPayload.props).toEqual(saul);
     });
 
     test("should open 'CustomerFormDialog' modal on edit click", () => {
       screen.getByTestId(__customerEditId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "CustomerFormDialog",
-          props: { customer: saul },
-        })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("CustomerFormDialog");
+      expect(dispatchCallPayload.props).toEqual({ customer: saul });
     });
   });
 
-  describe("Test email button", () => {
+  describe("test email button", () => {
     test("should open a 'SendBookingsLinkDialog' modal with method = \"email\" on email button click", () => {
       render(
         <CustomerCard
@@ -106,16 +96,13 @@ describe("Customer Card", () => {
         />
       );
       screen.getByTestId(__sendBookingsEmailId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "SendBookingsLinkDialog",
-          props: {
-            ...saul,
-            method: SendBookingLinkMethod.Email,
-            displayName: __testOrganization__,
-          },
-        })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("SendBookingsLinkDialog");
+      expect(dispatchCallPayload.props).toEqual({
+        ...saul,
+        method: SendBookingLinkMethod.Email,
+        displayName: __testOrganization__,
+      });
     });
 
     test("should disable the button if secretKey not defined", () => {
@@ -154,7 +141,7 @@ describe("Customer Card", () => {
     });
   });
 
-  describe("Test SMS button", () => {
+  describe("test SMS button", () => {
     test("should open a 'SendBookingsLinkDialog' modal with method = \"sms\" on sms button click", () => {
       render(
         <CustomerCard
@@ -165,16 +152,13 @@ describe("Customer Card", () => {
         />
       );
       screen.getByTestId(__sendBookingsSMSId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "SendBookingsLinkDialog",
-          props: {
-            ...saul,
-            method: SendBookingLinkMethod.SMS,
-            displayName: __testOrganization__,
-          },
-        })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("SendBookingsLinkDialog");
+      expect(dispatchCallPayload.props).toEqual({
+        ...saul,
+        method: SendBookingLinkMethod.SMS,
+        displayName: __testOrganization__,
+      });
     });
 
     test("should disable the button if secretKey not defined", () => {
@@ -213,7 +197,7 @@ describe("Customer Card", () => {
     });
   });
 
-  describe("Test bookings redirect button", () => {
+  describe("test bookings redirect button", () => {
     test("should redirect to 'bookings' route for a customer on bookings button click", () => {
       const mockOnClose = jest.fn();
       render(
@@ -232,7 +216,7 @@ describe("Customer Card", () => {
     });
   });
 
-  describe("Test booking extension button", () => {
+  describe("test booking extension button", () => {
     test("should open extend booking prompt on click 'extend booking date' button click", () => {
       render(
         <CustomerCard
@@ -245,9 +229,9 @@ describe("Customer Card", () => {
       screen
         .getByText(i18n.t(ActionButton.ExtendBookingDate) as string)
         .click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "ExtendBookingDateDialog", props: saul })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("ExtendBookingDateDialog");
+      expect(dispatchCallPayload.props).toEqual(saul);
     });
   });
 });

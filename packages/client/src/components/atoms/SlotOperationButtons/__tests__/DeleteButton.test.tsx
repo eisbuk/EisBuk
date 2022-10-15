@@ -12,7 +12,6 @@ import SlotOperationButtons from "../SlotOperationButtons";
 import DeleteButton from "../DeleteButton";
 
 import * as slotOperations from "@/store/actions/slotOperations";
-import { openModal } from "@/features/modal/actions";
 
 import {
   __noDateDelete,
@@ -63,7 +62,7 @@ jest
 const testDate = DateTime.fromISO("2021-03-01");
 
 describe("SlotOperationButtons", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
     cleanup();
   });
@@ -80,9 +79,9 @@ describe("SlotOperationButtons", () => {
       );
       // initiate delete
       screen.getByTestId(__deleteButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "DeleteSlotDialog", props: baseSlot })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("DeleteSlotDialog");
+      expect(dispatchCallPayload.props).toEqual(baseSlot);
     });
 
     test("should show 'DeleteSlotDisabledDialog' modal onClick if within \"slot\" context and delete disabled", () => {
@@ -97,9 +96,9 @@ describe("SlotOperationButtons", () => {
       );
       // initiate delete
       screen.getByTestId(__deleteButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "DeleteSlotDisabledDialog", props: baseSlot })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("DeleteSlotDisabledDialog");
+      expect(dispatchCallPayload.props).toEqual(baseSlot);
     });
 
     test("should dispatch 'deleteSlotsDay' onClick if within \"day\" context", () => {

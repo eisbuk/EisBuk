@@ -18,7 +18,6 @@ import {
 
 import { __editSlotButtonId__ } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/slots";
-import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -42,12 +41,12 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       screen.getByTestId(__editSlotButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "SlotForm",
-          props: { date: baseSlot.date, slotToEdit: baseSlot },
-        })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("SlotForm");
+      expect(dispatchCallPayload.props).toEqual({
+        date: baseSlot.date,
+        slotToEdit: baseSlot,
+      });
     });
   });
 

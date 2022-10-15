@@ -1,6 +1,5 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 import Button from "@mui/material/Button";
 
@@ -10,6 +9,7 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import Mail from "@mui/icons-material/Mail";
 import Phone from "@mui/icons-material/Phone";
 
+import { OrganizationData } from "@eisbuk/shared";
 import { useTranslation, ActionButton } from "@eisbuk/translations";
 
 import { Routes } from "@/enums/routes";
@@ -17,13 +17,13 @@ import { SendBookingLinkMethod } from "@/enums/other";
 
 import { ActionButtonProps } from "./types";
 
+import { createModal } from "@/features/modal/useModal";
+
 import {
   __openBookingsId__,
   __sendBookingsEmailId__,
   __sendBookingsSMSId__,
 } from "./__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
-import { OrganizationData } from "@eisbuk/shared";
 
 /**
  * Labeled action buttons to open customer's bookings or send
@@ -34,10 +34,11 @@ const ActionButtons: React.FC<
 > = ({ customer, className, onClose, displayName }) => {
   const { t } = useTranslation();
 
-  const dispatch = useDispatch();
   const history = useHistory();
 
   const classes = useStyles();
+
+  const { openWithProps: openBookingsLinkDialog } = useBookingsLinkModal();
 
   // redirect to customers `bookings` entry flow
   const bookingsRoute = `${Routes.CustomerArea}/${customer?.secretKey}`;
@@ -47,12 +48,11 @@ const ActionButtons: React.FC<
   };
 
   const openBookingsLinkModal = (method: SendBookingLinkMethod) => () => {
-    dispatch(
-      openModal({
-        component: "SendBookingsLinkDialog",
-        props: { ...customer, method, displayName },
-      })
-    );
+    openBookingsLinkDialog({
+      ...customer,
+      method,
+      displayName,
+    });
   };
 
   return (
@@ -94,6 +94,8 @@ const ActionButtons: React.FC<
     </div>
   );
 };
+
+const useBookingsLinkModal = createModal("SendBookingsLinkDialog");
 
 const useStyles = makeStyles((theme) => ({
   actionButton: {

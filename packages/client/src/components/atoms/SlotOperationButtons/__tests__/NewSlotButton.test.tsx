@@ -10,7 +10,6 @@ import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
 import NewSlotButton from "../NewSlotButton";
-import { openModal } from "@/features/modal/actions";
 
 import {
   __newSlotButtonWrongContextError,
@@ -47,12 +46,11 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       screen.getByTestId(__newSlotButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "SlotForm",
-          props: { date: dummyDate.toISODate() },
-        })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("SlotForm");
+      expect(dispatchCallPayload.props).toEqual({
+        date: dummyDate.toISODate(),
+      });
     });
   });
 

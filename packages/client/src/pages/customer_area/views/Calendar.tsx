@@ -13,11 +13,12 @@ import {
   getIsBookingAllowed,
   getBookedAndAttendedSlotsForCalendar,
 } from "@/store/selectors/bookings";
-import { openModal } from "@/features/modal/actions";
 import { getCalendarDay } from "@/store/selectors/app";
 import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
 import { getSecretKey } from "@/utils/localStorage";
+import { createModal } from "@/features/modal/useModal";
+import { ModalPayload } from "@/features/modal/types";
 
 const CalendarView: React.FC = () => {
   const { dispatch, getState } = useStore();
@@ -33,16 +34,12 @@ const CalendarView: React.FC = () => {
     ? IntervalCardState.Disabled
     : IntervalCardState.Default;
 
+  const { openWithProps: openCancelBookingDialog } = useCancelBookingModal();
+
   const handleCancellation = (
-    props: Parameters<typeof openModal>[0]["props"]
-  ) => {
-    dispatch(
-      openModal({
-        component: "CancelBookingDialog",
-        props,
-      })
-    );
-  };
+    props: ModalPayload<"CancelBookingDialog">["props"]
+  ) => openCancelBookingDialog(props);
+
   const handleNotesUpdate = (bookingNotes: string, slotId: string) =>
     // In order to be able to await this update, we're
     // using a bit of a different approach to firing a thunk
@@ -76,5 +73,7 @@ const CalendarView: React.FC = () => {
     <EmptySpace>{i18n.t(Alerts.NoBookings, { currentDate })}</EmptySpace>
   );
 };
+
+const useCancelBookingModal = createModal("CancelBookingDialog");
 
 export default CalendarView;

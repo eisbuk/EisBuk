@@ -15,6 +15,8 @@ import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
 
 import { CustomerWithAttendance } from "@/types/components";
 
+import { ETheme } from "@/themes";
+
 import UserAttendance from "@/components/atoms/AttendanceCard/UserAttendance";
 
 import {
@@ -22,13 +24,12 @@ import {
   markAttendance,
 } from "@/store/actions/attendanceOperations";
 
+import { createModal } from "@/features/modal/useModal";
+
 import { getSlotTimespan } from "@/utils/helpers";
 import { comparePeriods } from "@/utils/sort";
 
-import { ETheme } from "@/themes";
-
 import { __addCustomersButtonId__ } from "./__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
 
 export interface Props extends SlotInterface {
   /**
@@ -113,18 +114,11 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
     [attendedCustomers]
   );
 
-  const openAddCustomers = () => {
-    dispatch(
-      openModal({
-        component: "AddAttendedCustomersDialog",
-        props: {
-          ...slot,
-          customers: filteredCustomers,
-          defaultInterval: orderedIntervals[0],
-        },
-      })
-    );
-  };
+  const { open: openAddCustomers } = useAddCustomersModal({
+    ...slot,
+    customers: filteredCustomers,
+    defaultInterval: orderedIntervals[0],
+  });
 
   const createAttendanceThunk = (payload: {
     customerId: string;
@@ -196,6 +190,8 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
     </div>
   );
 };
+
+const useAddCustomersModal = createModal("AddAttendedCustomersDialog");
 
 // #region Styles
 const useStyles = makeStyles((theme: ETheme) => ({
