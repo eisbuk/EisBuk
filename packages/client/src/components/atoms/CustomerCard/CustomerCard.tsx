@@ -102,7 +102,10 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
   };
 
   return (
-    <Card className={[...containerClasses, className].join(" ")}>
+    <Card
+      aria-label="customer-dialog"
+      className={[...containerClasses, className].join(" ")}
+    >
       <CardContent>
         <Box className={classes.topSection}>
           <EisbukAvatar {...customer!} className={classes.avatar} />
@@ -128,7 +131,12 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
         onClose={onClose}
         displayName={displayName}
       />
-      <IconButton onClick={onClose} className={classes.exitButton} size="large">
+      <IconButton
+        aria-label="close-button"
+        onClick={onClose}
+        className={classes.exitButton}
+        size="large"
+      >
         <Close />
       </IconButton>
     </Card>

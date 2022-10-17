@@ -129,7 +129,7 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
     markAbsence({ slotId, customerId });
 
   return (
-    <div className={classes.container}>
+    <div aria-label="attendance-card" className={classes.container}>
       <ListItem className={classes.listHeader}>
         <ListItemText
           primary={
@@ -180,6 +180,7 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
           )
       )}
       <IconButton
+        aria-label="add-athletes"
         className={classes.addCustomersButton}
         onClick={openAddCustomers}
         data-testid={__addCustomersButtonId__}
