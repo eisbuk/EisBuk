@@ -3,13 +3,13 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+
+import { __testOrganization__ } from "@/__testSetup__/envData";
 
 import CustomerGrid from "../CustomerGrid";
 
 import { saul } from "@/__testData__/customers";
-import { openModal } from "@/features/modal/actions";
-import { __testOrganization__ } from "@/__testSetup__/envData";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -22,16 +22,17 @@ describe("CustomerGrid", () => {
     jest.clearAllMocks();
   });
 
-  test("should open customer in CustomerCard modal on customer click", () => {
+  test("should open customer in CustomerCard modal on customer click", async () => {
     render(
       <CustomerGrid displayName={__testOrganization__} customers={[saul]} />
     );
     screen.getByText(saul.name).click();
-    expect(mockDispatch).toHaveBeenCalledWith(
-      openModal({
-        component: "CustomerCard",
-        props: { customer: saul, displayName: __testOrganization__ },
-      })
-    );
+    await waitFor(() => expect(mockDispatch).toHaveBeenCalled());
+    const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+    expect(dispatchCallPayload.component).toEqual("CustomerCard");
+    expect(dispatchCallPayload.props).toEqual({
+      customer: saul,
+      displayName: __testOrganization__,
+    });
   });
 });

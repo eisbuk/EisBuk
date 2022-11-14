@@ -4,14 +4,13 @@
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
+import { DateTime } from "luxon";
 
 import i18n, { BirthdayMenu as BirthdayMenuLabel } from "@eisbuk/translations";
 
 import BirthdayMenu from "../BirthdayMenu";
 
 import { saul, gus, jane, jian } from "@/__testData__/customers";
-import { DateTime } from "luxon";
-import { openModal } from "@/features/modal/actions";
 
 const customers = [
   {
@@ -41,6 +40,7 @@ describe("BirthdayMenu", () => {
   describe("Smoke test", () => {
     beforeEach(() => {
       render(<BirthdayMenu customers={customers} />);
+      jest.clearAllMocks();
     });
 
     test("should display existing customers in 3 dates only", () => {
@@ -51,9 +51,9 @@ describe("BirthdayMenu", () => {
 
     test("should open a BidthdayDialog modal on 'show all' click", () => {
       screen.getByText(i18n.t(BirthdayMenuLabel.ShowAll) as string).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "BirthdayDialog", props: { customers } })
-      );
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual("BirthdayDialog");
+      expect(dispatchCallPayload.props).toEqual({ customers });
     });
   });
 });

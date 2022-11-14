@@ -42,6 +42,7 @@ describe("Modal", () => {
       // Add first modal
       testStore.dispatch(
         openModal({
+          id: "modal",
           component: "CancelBookingDialog",
           props: intervalCardProps,
         })
@@ -53,6 +54,7 @@ describe("Modal", () => {
       // Add second modal
       testStore.dispatch(
         openModal({
+          id: "another-modal",
           component: "FinalizeBookingsDialog",
           props: { customerId: "test-customer", month: DateTime.now() },
         })
@@ -69,12 +71,14 @@ describe("Modal", () => {
       renderWithRedux(<Modal />, testStore);
       testStore.dispatch(
         openModal({
+          id: "modal",
           component: "CancelBookingDialog",
           props: intervalCardProps,
         })
       );
       testStore.dispatch(
         openModal({
+          id: "another-modal",
           component: "FinalizeBookingsDialog",
           props: finalizeBookingsProps,
         })

@@ -13,7 +13,6 @@ import {
   __editSlotButtonId__,
 } from "@/__testData__/testIds";
 import { baseSlot } from "@/__testData__/slots";
-import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 
@@ -28,9 +27,8 @@ jest.mock("react-router-dom", () => ({
 }));
 
 describe("SlotCard", () => {
-  afterEach(() => {
+  beforeEach(() => {
     jest.clearAllMocks();
-    cleanup();
   });
 
   describe("Smoke test", () => {
@@ -67,32 +65,36 @@ describe("SlotCard", () => {
   describe("SlotOperationButtons functionality", () => {
     beforeEach(() => {
       render(<SlotCard {...baseSlot} enableEdit />);
+      jest.clearAllMocks();
     });
 
     test("should open slot form on edit slot click", () => {
       screen.getByTestId(__editSlotButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "SlotForm",
-          props: { date: baseSlot.date, slotToEdit: baseSlot },
-        })
-      );
+      const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(mockDispatchCallPayload.component).toEqual("SlotForm");
+      expect(mockDispatchCallPayload.props).toEqual({
+        date: baseSlot.date,
+        slotToEdit: baseSlot,
+      });
     });
 
     test("should initiate delete-slot flow on delete button click", () => {
       screen.getByTestId(__deleteButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "DeleteSlotDialog", props: baseSlot })
-      );
+      const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(mockDispatchCallPayload.component).toEqual("DeleteSlotDialog");
+      expect(mockDispatchCallPayload.props).toEqual(baseSlot);
     });
 
     test("should show delete-disabled dialog on delete button click if delete disabled", () => {
       cleanup();
       render(<SlotCard {...baseSlot} enableEdit disableDelete />);
+      jest.clearAllMocks();
       screen.getByTestId(__deleteButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({ component: "DeleteSlotDisabledDialog", props: baseSlot })
+      const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(mockDispatchCallPayload.component).toEqual(
+        "DeleteSlotDisabledDialog"
       );
+      expect(mockDispatchCallPayload.props).toEqual(baseSlot);
     });
   });
 

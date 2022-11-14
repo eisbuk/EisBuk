@@ -1,5 +1,4 @@
 import React, { useContext } from "react";
-import { useDispatch } from "react-redux";
 
 import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
 import { PlusCircle } from "@eisbuk/svg";
@@ -15,7 +14,7 @@ import {
   __newSlotButtonWrongContextError,
 } from "@/lib/errorMessages";
 
-import { openModal } from "@/features/modal/actions";
+import { createModal } from "@/features/modal/useModal";
 
 import { __newSlotButtonId__ } from "@/__testData__/testIds";
 
@@ -31,7 +30,8 @@ export const NewSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
 
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+
+  const { openWithProps: openSlotForm } = useSlotFormModal();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOpeartionButtons` context
@@ -60,12 +60,9 @@ export const NewSlotButton: React.FC = () => {
 
   const openForm = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    dispatch(
-      openModal({
-        component: "SlotForm",
-        props: { date: luxonDate?.toISODate() },
-      })
-    );
+    openSlotForm({
+      date: luxonDate?.toISODate(),
+    });
   };
 
   return (
@@ -81,5 +78,7 @@ export const NewSlotButton: React.FC = () => {
     </SlotOperationButton>
   );
 };
+
+const useSlotFormModal = createModal("SlotForm");
 
 export default NewSlotButton;

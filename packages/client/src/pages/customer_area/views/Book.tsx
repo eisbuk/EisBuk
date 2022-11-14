@@ -14,9 +14,8 @@ import { getCalendarDay } from "@/store/selectors/app";
 
 import { bookInterval } from "@/store/actions/bookingOperations";
 
-import { openModal } from "@/features/modal/actions";
-
 import { getSecretKey } from "@/utils/localStorage";
+import { createModal } from "@/features/modal/useModal";
 
 const BookView: React.FC = () => {
   const daysToRender = useSelector(getSlotsForBooking);
@@ -52,6 +51,8 @@ const BookView: React.FC = () => {
 const useBooking = () => {
   const dispatch = useDispatch();
 
+  const { openWithProps: openCancelBookingDialog } = useCancelBookingModal();
+
   return {
     handleBooking:
       ({ date, id: slotId }: SlotInterface) =>
@@ -65,14 +66,14 @@ const useBooking = () => {
 
       const [startTime, endTime] = interval.split("-");
 
-      dispatch(
-        openModal({
-          component: "CancelBookingDialog",
-          props: { ...slot, interval: { startTime, endTime } },
-        })
-      );
+      openCancelBookingDialog({
+        ...slot,
+        interval: { startTime, endTime },
+      });
     },
   };
 };
+
+const useCancelBookingModal = createModal("CancelBookingDialog");
 
 export default BookView;

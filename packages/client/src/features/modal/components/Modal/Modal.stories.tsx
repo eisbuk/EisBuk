@@ -24,6 +24,7 @@ export const CancelBookingsDialog = (): JSX.Element => (
         onClick={() =>
           store.dispatch(
             openModal({
+              id: "modal",
               component: "CancelBookingDialog",
               props: {
                 id: "slot",

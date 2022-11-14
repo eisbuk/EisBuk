@@ -71,8 +71,6 @@ describe("AddAttendedCustomersDialog", () => {
     );
     // Shouldn't close modal on each customer click
     expect(mockOnClose).not.toHaveBeenCalled();
-    // Should remove customer from the list when marked as attended
-    expect(screen.queryByText(saul.name)).toBeFalsy();
   });
 
   test("should not render 'deleted' customers", () => {
@@ -90,8 +88,8 @@ describe("AddAttendedCustomersDialog", () => {
     screen.getByText(walt.name);
   });
 
-  test("should close the modal when last customer listed marked as attended", async () => {
-    render(
+  test("should close the modal when there are no customers to mark as having attended", async () => {
+    const { rerender } = render(
       <AddAttendedCustomersDialog
         onCloseAll={() => {}}
         customers={[{ ...saul, deleted: true }, walt]}
@@ -99,7 +97,15 @@ describe("AddAttendedCustomersDialog", () => {
         {...{ ...baseSlot, defaultInterval }}
       />
     );
-    screen.getByText(walt.name).click();
+    // Update props from outside to mark there are no more customers to show
+    rerender(
+      <AddAttendedCustomersDialog
+        onCloseAll={() => {}}
+        customers={[]}
+        onClose={mockOnClose}
+        {...{ ...baseSlot, defaultInterval }}
+      />
+    );
     await waitFor(() => {
       expect(mockOnClose).toHaveBeenCalled();
     });

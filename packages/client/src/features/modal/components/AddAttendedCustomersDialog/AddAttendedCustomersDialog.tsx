@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
 
 import Typography from "@mui/material/Typography";
@@ -35,34 +35,22 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
     dispatch(
       markAttendance({ customerId, slotId, attendedInterval: defaultInterval })
     );
-    // Remove customer from list when marked as attended
-    setRemovedFromList((s) => [...s, customerId]);
   };
-
-  // Each customer marked as attended should be marked here
-  // and removed from the list
-  const [removedFromList, setRemovedFromList] = useState<string[]>([]);
-  const filteredCustomers = useMemo(
-    () =>
-      customers.filter(
-        /** @TODO Deleted customers should probably not be retrieved from store */
-        // Filter customers marked as attended as well as customers marked as deleted
-        ({ id, deleted }) => !removedFromList.includes(id) && !deleted
-      ),
-    [removedFromList]
-  );
 
   // Close the modal when there are no more customers to show
   useEffect(() => {
-    if (!filteredCustomers.length) {
+    if (!customers.length) {
       onClose();
     }
-  }, [filteredCustomers]);
+  }, [customers]);
 
   const classes = useStyles();
 
   return (
-    <div className={[className, classes.container].join(" ")}>
+    <div
+      aria-label="add-athletes-dialog"
+      className={[className, classes.container].join(" ")}
+    >
       <Typography variant="h6" component="h2" className={classes.title}>
         {i18n.t(ActionButton.AddCustomers)}
       </Typography>
@@ -77,7 +65,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
       <CustomerList
         className={classes.listContainer}
         tableContainerClassName={classes.tableContainer}
-        customers={filteredCustomers}
+        customers={customers}
         onCustomerClick={handleCustomerClick}
       />
     </div>

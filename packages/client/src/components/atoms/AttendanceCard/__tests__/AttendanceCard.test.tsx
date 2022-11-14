@@ -30,7 +30,6 @@ import {
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
 } from "../__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -295,6 +294,7 @@ describe("AttendanceCard", () => {
           ]}
         />
       );
+      jest.clearAllMocks();
       // we're testing with first interval as initial
       const nextButton = screen.getByTestId(__nextIntervalButtonId__);
       // selectedInterval -> interval[1]
@@ -353,16 +353,15 @@ describe("AttendanceCard", () => {
       render(<AttendanceCard {...attendanceCard} />);
 
       screen.getByTestId(__addCustomersButtonId__).click();
-      expect(mockDispatch).toHaveBeenCalledWith(
-        openModal({
-          component: "AddAttendedCustomersDialog",
-          props: {
-            ...testSlot,
-            customers: [saul, walt],
-            defaultInterval: "10:00-11:00",
-          },
-        })
+      const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
+      expect(dispatchCallPayload.component).toEqual(
+        "AddAttendedCustomersDialog"
       );
+      expect(dispatchCallPayload.props).toEqual({
+        ...testSlot,
+        customers: [saul, walt],
+        defaultInterval: "10:00-11:00",
+      });
     });
   });
 

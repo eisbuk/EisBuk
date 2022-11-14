@@ -1,5 +1,4 @@
 import React from "react";
-import { useDispatch } from "react-redux";
 
 import CardActions from "@mui/material/CardActions";
 import IconButton from "@mui/material/IconButton";
@@ -9,7 +8,7 @@ import EditIcon from "@mui/icons-material/Edit";
 
 import { ActionButtonProps } from "./types";
 
-import { openModal } from "@/features/modal/actions";
+import { createModal } from "@/features/modal/useModal";
 
 import {
   __customerDeleteId__,
@@ -23,16 +22,12 @@ const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
   customer,
   className,
 }) => {
-  const dispatch = useDispatch();
+  const { openWithProps: openCustomerForm } = useCustomerFormModal();
+  const { openWithProps: openDeleteCustomerDialog } = useDeleteCustomerModal();
 
-  const handleDelete = () => {
-    dispatch(openModal({ component: "DeleteCustomerDialog", props: customer }));
-  };
+  const handleDelete = () => openDeleteCustomerDialog(customer);
 
-  const handleEditCustoer = () =>
-    dispatch(
-      openModal({ component: "CustomerFormDialog", props: { customer } })
-    );
+  const handleEditCustoer = () => openCustomerForm({ customer });
 
   return (
     <CardActions {...{ className }}>
@@ -55,5 +50,8 @@ const CustomerOperationButtons: React.FC<ActionButtonProps> = ({
     </CardActions>
   );
 };
+
+const useCustomerFormModal = createModal("CustomerFormDialog");
+const useDeleteCustomerModal = createModal("DeleteCustomerDialog");
 
 export default CustomerOperationButtons;

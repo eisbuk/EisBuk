@@ -13,6 +13,8 @@ import {
   deleteSlotsWeek,
 } from "@/store/actions/slotOperations";
 
+import { createModal } from "@/features/modal/useModal";
+
 import {
   __noDateDelete,
   __noSlotToDelete,
@@ -20,7 +22,6 @@ import {
 } from "@/lib/errorMessages";
 
 import { __deleteButtonId__ } from "@/__testData__/testIds";
-import { openModal } from "@/features/modal/actions";
 
 /**
  * Button in charge of delete functionality.
@@ -37,6 +38,10 @@ export const DeleteButton: React.FC = () => {
   const dispatch = useDispatch();
 
   const buttonGroupContext = useContext(ButtonGroupContext);
+
+  const { openWithProps: openDeleteSlotDialog } = useDeleteSlotModal();
+  const { openWithProps: openDeleteSlotDisabledDialog } =
+    useDeleteSlotDieabledModal();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOperationButtons` context
@@ -71,11 +76,9 @@ export const DeleteButton: React.FC = () => {
     switch (contextType) {
       case ButtonContextType.Slot:
         if (disableDelete) {
-          dispatch(
-            openModal({ component: "DeleteSlotDisabledDialog", props: slot! })
-          );
+          openDeleteSlotDisabledDialog(slot!);
         } else {
-          dispatch(openModal({ component: "DeleteSlotDialog", props: slot! }));
+          openDeleteSlotDialog(slot!);
         }
         break;
 
@@ -99,5 +102,8 @@ export const DeleteButton: React.FC = () => {
     </SlotOperationButton>
   );
 };
+
+const useDeleteSlotModal = createModal("DeleteSlotDialog");
+const useDeleteSlotDieabledModal = createModal("DeleteSlotDisabledDialog");
 
 export default DeleteButton;
