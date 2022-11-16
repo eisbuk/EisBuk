@@ -4,7 +4,6 @@ import nodemailer from "nodemailer";
 
 import {
   Collection,
-  OrganizationData,
   OrganizationSecrets,
   DeliveryQueue,
   EmailPayload,
@@ -110,18 +109,10 @@ export const deliverEmail = functions
         ProcessDocument<EmailPayload>
       >;
 
-      // Get email preferences from organization info (such as 'fromEmail')
-      const db = admin.firestore();
-      const orgSnap = await db
-        .doc(`${Collection.Organizations}/${organization}`)
-        .get();
-      const { emailFrom } = orgSnap.data() as OrganizationData;
-
       // Validate email and throw if not a valid schema
       const [email, emailErrs] = validateJSON(
         EmailMessageSchema,
         {
-          from: emailFrom,
           ...data.payload,
         },
         "Constructing gave following errors (check the email payload and organization preferences):"

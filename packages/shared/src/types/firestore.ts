@@ -25,7 +25,12 @@ export interface OrganizationData {
    * If not provided, will fall back to organization name
    * @TODO this isn't yet functional, apply when making email per organization
    */
-  emailFrom?: string;
+  emailFrom: string;
+  /**
+   * Email to send a copy of sent Email.
+   * If not provided, will fall back to emailFrom
+   */
+  bcc: string;
   /**
    * Name to use when sending emails ( the name part in Name <email@example.com>)
    */
@@ -315,6 +320,7 @@ export interface EmailAttachment {
 export interface EmailPayload {
   to: string;
   subject: string;
+  bcc: string;
   html: string;
   attachments?: EmailAttachment[];
 }

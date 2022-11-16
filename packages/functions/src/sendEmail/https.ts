@@ -1,7 +1,12 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 
-import { SendEmailPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
+import {
+  SendEmailPayload,
+  Collection,
+  DeliveryQueue,
+  OrganizationData,
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
 
@@ -31,6 +36,13 @@ export const sendEmail = functions
 
       checkRequiredFields(email, ["to", "html", "subject"]);
 
+      // Get email preferences from organization info
+      const db = admin.firestore();
+      const orgSnap = await db
+        .doc(`${Collection.Organizations}/${organization}`)
+        .get();
+      const { emailFrom, bcc } = orgSnap.data() as OrganizationData;
+
       // add email to firestore, firing data trigger
       await admin
         .firestore()
@@ -38,7 +50,7 @@ export const sendEmail = functions
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
-        .set({ payload: email });
+        .set({ payload: { ...email, from: emailFrom, bcc } });
 
       return { email, organization, success: true };
     }
