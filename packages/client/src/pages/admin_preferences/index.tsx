@@ -143,6 +143,7 @@ const emptyValues = {
   defaultCountryCode: "",
   smsFrom: "",
   smsTemplate: "",
+  bcc: "",
 };
 
 // #region fieldSetup
@@ -169,6 +170,10 @@ const emailFields: FormSectionFieldProps[] = [
   {
     name: "emailFrom",
     label: i18n.t(OrganizationLabel.EmailFrom),
+  },
+  {
+    name: "bcc",
+    label: i18n.t(OrganizationLabel.BCC),
   },
   {
     name: "emailTemplate",

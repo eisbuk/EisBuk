@@ -127,7 +127,8 @@
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
     "Email": "Email",
     "SMS": "SMS",
-    "General": "Generale"
+    "General": "Generale",
+    "BCC": "BCC"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
