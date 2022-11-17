@@ -3,6 +3,7 @@
  */
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
+import { createJestSMTPServer } from "jest-smtp";
 
 import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
 
@@ -32,6 +33,48 @@ describe("Cloud functions", () => {
     });
   });
 
+  describe("test email sending", () => {
+    // Dummy data for error testing
+    const to = "saul@gmail.com";
+    const subject = "Subject";
+    const html = "html";
+    const smtpServer = createJestSMTPServer({ port: 5000, host: "localhost" });
+
+    afterAll(() => {
+      smtpServer.close();
+    });
+
+    beforeEach(async () => {
+      smtpServer.resetEmails();
+    });
+
+    /** @TODO pass false as dologin when we figure out why secretkey isn't authorized */
+    testWithEmulator(
+      "should check if email was received by server",
+      async () => {
+        const { organization } = await setUpOrganization();
+
+        httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({ organization, to, html, subject })
+          .then((data) =>
+            expect(data)
+              /** @TODO improve this catch */
+              .toEqual({
+                data: {
+                  email: { html, subject, to },
+                  organization,
+                  success: true,
+                },
+              })
+          )
+          .catch((e) => expect(e).toMatch("error"));
+
+        expect(smtpServer).toHaveReceivedEmails(2);
+      }
+    );
+  });
   describe("sendMail", () => {
     // Dummy data for error testing
     const to = "saul@gmail.com";
@@ -50,6 +93,7 @@ describe("Cloud functions", () => {
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
+
     testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {

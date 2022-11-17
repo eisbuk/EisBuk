@@ -320,7 +320,6 @@ export interface EmailAttachment {
 export interface EmailPayload {
   to: string;
   subject: string;
-  bcc: string;
   html: string;
   attachments?: EmailAttachment[];
 }

@@ -50,7 +50,13 @@ export const sendEmail = functions
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
-        .set({ payload: { ...email, from: emailFrom, bcc } });
+        .set({
+          payload: {
+            ...email,
+            from: emailFrom || "from@gmail.com",
+            bcc: bcc || "bcc@gmail.com",
+          },
+        });
 
       return { email, organization, success: true };
     }
