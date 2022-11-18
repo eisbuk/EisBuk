@@ -1,21 +1,26 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
-import { smtpPort } from "./main";
-import { Collection } from "@eisbuk/shared";
+
+import { Collection, OrganizationData } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
 
 interface SetUpOrganization {
-  (doLogin?: boolean): Promise<{
+  (doLogin?: boolean, additionalSetup?: Partial<OrganizationData>): Promise<{
     organization: string;
     email: string;
     pass: string;
   }>;
 }
 
-export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
+const smtpPort = 5000;
+
+export const setUpOrganization: SetUpOrganization = async (
+  doLogin = true,
+  additionalSetup = {}
+) => {
   if (!__withEmulators__) {
     throw new Error(
       "Trying to set up a new organization in an environment without emulator support"
@@ -36,8 +41,7 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     // Set given user as admin in org structure
     orgRef.set({
       admins: [email],
-      fromEmail: "from@gmail.com",
-      bcc: "bcc@gmail.com",
+      ...additionalSetup,
     }),
     secretsRef.set({
       smtpHost,

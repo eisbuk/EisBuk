@@ -4,9 +4,9 @@ import pRetry from "p-retry";
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 
 interface WaitForCondition {
-  (params: {
+  <D extends DocumentData = DocumentData>(params: {
     documentPath: string;
-    condition: (data: DocumentData | undefined) => boolean;
+    condition: (data?: D) => boolean;
     attempts?: number;
     sleep?: number;
     verbose?: boolean;
@@ -24,7 +24,7 @@ interface WaitForCondition {
  * - sleep: pause between attempts
  * @returns
  */
-export const waitForCondition: WaitForCondition = async ({
+export const waitForCondition: WaitForCondition = ({
   documentPath,
   condition,
   attempts = 10,
@@ -35,11 +35,13 @@ export const waitForCondition: WaitForCondition = async ({
 
   const docRef = adminDb.doc(documentPath);
 
-  return await pRetry(
+  return pRetry(
     // Try to fetch the document with provided id in the provided collection
     // until the condition has been met
     async () => {
-      const doc = (await docRef.get()).data();
+      const doc = (await docRef.get()).data() as Parameters<
+        typeof condition
+      >[0];
       // used for debugging
       if (verbose) {
         console.log(doc);

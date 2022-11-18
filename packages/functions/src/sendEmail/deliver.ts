@@ -102,7 +102,11 @@ export const deliverEmail = functions
         return error(configErrs);
       }
       const smtpConfig = processSMTPPreferences(SMTPPreferences);
-      const transport = nodemailer.createTransport(smtpConfig);
+      const transport = nodemailer.createTransport({
+        ...smtpConfig,
+        /** @OTODO check this: this is temporarily set for testing purposes, but we might use it in production?? */
+        tls: { rejectUnauthorized: false },
+      });
 
       // Get current email payload
       const data = change.after.data() as Partial<
