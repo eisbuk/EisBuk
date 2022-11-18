@@ -38,7 +38,14 @@ describe("Cloud functions", () => {
     const to = "saul@gmail.com";
     const subject = "Subject";
     const html = "html";
-    const smtpServer = createJestSMTPServer({ port: 5000, host: "localhost" });
+    let smtpServer: JestSMTPServer;
+    beforeAll(() => {
+      smtpServer = createJestSMTPServer({
+        port: smtpPort,
+        host: "localhost",
+        secure: true,
+      });
+    });
 
     afterAll(() => {
       smtpServer.close();

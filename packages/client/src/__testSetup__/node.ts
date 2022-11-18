@@ -1,5 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
+import { smtpPort } from "./main";
 import { Collection } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
@@ -25,7 +26,6 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
   const email = `${organization}@eisbuk.it`;
   const pass = `password-${organization}`;
   const smtpHost = "localhost";
-  const smtpPort = 5000;
 
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
   const secretsRef = adminDb.doc(`${Collection.Secrets}/${organization}`);
