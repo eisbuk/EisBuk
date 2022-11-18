@@ -44,20 +44,29 @@ export const sendEmail = functions
       const { emailFrom, bcc } = orgSnap.data() as OrganizationData;
 
       // add email to firestore, firing data trigger
-      await admin
+      const doc = admin
         .firestore()
         .collection(
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
-        .doc()
-        .set({
-          payload: {
-            ...email,
-            from: emailFrom || "from@gmail.com",
-            bcc: bcc || "bcc@gmail.com",
-          },
-        });
+        .doc();
 
-      return { email, organization, success: true };
+      await doc.set({
+        payload: {
+          ...email,
+          from: emailFrom || "from@gmail.com",
+          bcc: bcc || "bcc@gmail.com",
+        },
+      });
+
+      // As part of the response we're returning the delivery document path.
+      // This is mostly used for testing as we might want to wait for the delivery to be marked
+      // successful before making further assertions
+      return {
+        deliveryDocumentPath: doc.path,
+        email,
+        organization,
+        success: true,
+      };
     }
   );
