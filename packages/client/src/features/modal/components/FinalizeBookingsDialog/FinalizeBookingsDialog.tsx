@@ -4,7 +4,6 @@ import { DateTime } from "luxon";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
-import { getSecretKey } from "@/utils/localStorage";
 import { finalizeBookings } from "./utils";
 
 interface FinalizeBookingProps {
@@ -12,6 +11,7 @@ interface FinalizeBookingProps {
   month: DateTime;
   onClose: () => void;
   className?: string;
+  secretKey: string;
 }
 
 const FinalizeBookingsDialog: React.FC<FinalizeBookingProps> = ({
@@ -19,9 +19,9 @@ const FinalizeBookingsDialog: React.FC<FinalizeBookingProps> = ({
   month,
   onClose,
   className,
+  secretKey,
 }) => {
   const onConfirm = () => {
-    const secretKey = getSecretKey();
     finalizeBookings(customerId, secretKey);
     onClose();
   };

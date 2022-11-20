@@ -11,17 +11,15 @@ import {
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
-import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import CustomerAreaPage from "../index";
 
 import { getNewStore } from "@/store/createStore";
 
-import { getSecretKey } from "@/utils/localStorage";
-
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
 import { saul } from "@/__testData__/customers";
+import { getSecretKey } from "@/store/selectors/app";
 
 const mockUseParams = jest.fn();
 jest.mock("react-router", () => ({
@@ -49,36 +47,37 @@ jest.mock("@/features/notifications/hooks", () => ({
   }),
 }));
 
-// Set up test store
-const testStore = getNewStore();
-testStore.dispatch(
-  updateLocalDocuments(OrgSubCollection.Bookings, { [saul.secretKey]: saul })
-);
-
 describe("CustomerAreaPage", () => {
   test("should store `secretKey` to `localStorage` on mount and remove on unmount", () => {
     const testKey = "secret-key-123";
     mockUseParams.mockImplementation(() => ({ secretKey: testKey }));
+
+    const store = getNewStore();
+
     const { unmount } = renderWithRedux(
       <BrowserRouter>
         <CustomerAreaPage />
       </BrowserRouter>,
-      testStore
+      store
     );
+
     // Should store secret key on mount
-    () => expect(getSecretKey()).toEqual(testKey);
+    () => expect(getSecretKey(store.getState())).toEqual(testKey);
     // Should remove secret key on unmount
     unmount();
-    expect(getSecretKey()).toEqual("");
+    expect(getSecretKey(store.getState())).toBeFalsy();
   });
 
   test("should subscribe to all necessary firestore entries", () => {
+    const store = getNewStore();
+
     renderWithRedux(
       <BrowserRouter>
         <CustomerAreaPage />
       </BrowserRouter>,
-      testStore
+      store
     );
+
     const [subscriptions] = mockUseFirestoreSubscribe.mock.calls[0];
     const wantSubscriptions = [
       OrgSubCollection.SlotsByDay,
@@ -95,12 +94,24 @@ describe("CustomerAreaPage", () => {
   test("should read customer data from the store and render an avatar", () => {
     const { secretKey } = saul;
     mockUseParams.mockImplementation(() => ({ secretKey }));
+
+    const store = getNewStore({
+      firestore: {
+        data: {
+          bookings: {
+            [secretKey]: saul,
+          },
+        },
+      },
+    });
+
     renderWithRedux(
       <BrowserRouter>
         <CustomerAreaPage />
       </BrowserRouter>,
-      testStore
+      store
     );
+
     const saulRegex = new RegExp(`${saul.name} ${saul.surname}`);
     screen.getByText(saulRegex);
   });

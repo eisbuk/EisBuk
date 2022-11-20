@@ -30,6 +30,7 @@ export const CancelBookingsDialog = (): JSX.Element => (
                 id: "slot",
                 ...testSlot,
                 interval: Object.values(testSlot.intervals)[0],
+                secretKey: "12345",
               },
             })
           )

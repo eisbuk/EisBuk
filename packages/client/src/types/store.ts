@@ -22,28 +22,37 @@ import { CustomerRoute } from "@/enums/routes";
 /**
  * Whitelisted actions for app reducer
  */
-export type AppAction = Action.ChangeDay;
+export type AppAction =
+  | Action.ChangeDay
+  | Action.StoreSecretKey
+  | Action.RemoveSecretKey;
 
 /**
  * Record of payloads for each of the app reducer actions
  */
 interface AppActionPayload {
   [Action.ChangeDay]: DateTime;
+  [Action.StoreSecretKey]: string;
 }
 /**
  * App reducer action generic
  * gets passed one of whitelisted app reducer actions as type parameter
  */
-export interface AppReducerAction<A extends AppAction> {
-  type: A;
-  payload: AppActionPayload[A];
-}
+export type AppReducerAction<A extends AppAction> = A extends
+  | Action.StoreSecretKey
+  | Action.ChangeDay
+  ? {
+      type: A;
+      payload: AppActionPayload[A];
+    }
+  : { type: A };
 /**
  * `app` portion of the local store
  */
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
+  secretKey?: string;
 }
 // #endregion app
 

@@ -35,6 +35,19 @@ export const createAppReducer: ReducerFactory<
   (initialState = {}) =>
   (state = { ...defaultState, ...initialState }, action) => {
     switch (action.type) {
+      case Action.StoreSecretKey:
+        return {
+          ...state,
+          secretKey: (action as AppReducerAction<Action.StoreSecretKey>)
+            .payload,
+        };
+
+      case Action.RemoveSecretKey: {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { secretKey, ...newState } = state;
+        return newState;
+      }
+
       case Action.ChangeDay:
         return {
           ...state,

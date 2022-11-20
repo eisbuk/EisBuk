@@ -33,13 +33,17 @@ const dummySlot: SlotInterface = {
 const modal1: ModalPayload = {
   id: "modal1",
   component: "CancelBookingDialog",
-  props: { ...dummySlot, interval },
+  props: { ...dummySlot, interval, secretKey: "12345" },
 };
 
 const modal2: ModalPayload = {
   id: "modal2",
   component: "FinalizeBookingsDialog",
-  props: { customerId: "dummy-cusotmer", month: DateTime.now() },
+  props: {
+    customerId: "dummy-cusotmer",
+    month: DateTime.now(),
+    secretKey: "12345",
+  },
 };
 
 describe("Modal store tests", () => {
