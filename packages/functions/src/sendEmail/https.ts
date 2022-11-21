@@ -55,7 +55,7 @@ export const sendEmail = functions
         payload: {
           ...email,
           from: emailFrom || "from@gmail.com",
-          emailBcc: emailBcc || "bcc@gmail.com",
+          bcc: emailBcc || "bcc@gmail.com",
         },
       });
 

@@ -320,15 +320,8 @@ export interface EmailPayload {
   subject: string;
   html: string;
   attachments?: EmailAttachment[];
-  emailFrom: OrganizationData['emailFrom']
-}
-
-/**
- * A full email interface, including:
- * `to`, `from`, `subject`, `html` and `attachments`.
- */
-export interface EmailMessage extends EmailPayload {
   from: string;
+  bcc: string;
 }
 
 /**
