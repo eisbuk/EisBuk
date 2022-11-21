@@ -41,7 +41,7 @@ export const sendEmail = functions
       const orgSnap = await db
         .doc(`${Collection.Organizations}/${organization}`)
         .get();
-      const { emailFrom, bcc } = orgSnap.data() as OrganizationData;
+      const { emailFrom, emailBcc } = orgSnap.data() as OrganizationData;
 
       // add email to firestore, firing data trigger
       const doc = admin
@@ -55,7 +55,7 @@ export const sendEmail = functions
         payload: {
           ...email,
           from: emailFrom || "from@gmail.com",
-          bcc: bcc || "bcc@gmail.com",
+          emailBcc: emailBcc || "bcc@gmail.com",
         },
       });
 

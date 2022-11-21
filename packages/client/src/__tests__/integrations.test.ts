@@ -35,7 +35,7 @@ describe("Email sending and delivery", () => {
       /** @TODO pass false as dologin when we figure out why secretkey accepted as authorized access */
       const { organization } = await setUpOrganization(true, {
         emailFrom: "from@gmail.com",
-        bcc: "bcc@gmail.com",
+        emailBcc: "bcc@gmail.com",
       });
 
       const recipients: string[] = [];

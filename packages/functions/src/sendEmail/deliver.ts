@@ -116,9 +116,7 @@ export const deliverEmail = functions
       // Validate email and throw if not a valid schema
       const [email, emailErrs] = validateJSON(
         EmailMessageSchema,
-        {
-          ...data.payload,
-        },
+        data.payload || {},
         "Constructing gave following errors (check the email payload and organization preferences):"
       );
       if (emailErrs) {
