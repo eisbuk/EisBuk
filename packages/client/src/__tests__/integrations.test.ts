@@ -1,7 +1,7 @@
 import { httpsCallable } from "@firebase/functions";
 import { createJestSMTPServer } from "jest-smtp";
 
-import { EmailPayload } from "@eisbuk/shared";
+import { EmailMessage } from "@eisbuk/shared";
 import {
   DeliveryStatus,
   ProcessDocument,
@@ -33,7 +33,7 @@ describe("Email sending and delivery", () => {
     "shold deliver an email with correct message and recipients",
     async () => {
       /** @TODO pass false as dologin when we figure out why secretkey accepted as authorized access */
-      const { organization } = await setUpOrganization(true, {
+      const { organization } = await setUpOrganization(true, true, {
         emailFrom: "from@gmail.com",
         emailBcc: "bcc@gmail.com",
       });
@@ -54,7 +54,7 @@ describe("Email sending and delivery", () => {
       const deliveryDocPath = (res.data as any).deliveryDocumentPath;
 
       // Wait for the process delivery to complete before making further assertions
-      await waitForCondition<ProcessDocument<EmailPayload>>({
+      await waitForCondition<ProcessDocument<EmailMessage>>({
         documentPath: deliveryDocPath,
         condition: (data) => data?.delivery?.status === DeliveryStatus.Success,
       });

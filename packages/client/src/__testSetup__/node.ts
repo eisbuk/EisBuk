@@ -8,7 +8,11 @@ import { adminDb, auth } from "./firestoreSetup";
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
 
 interface SetUpOrganization {
-  (doLogin?: boolean, additionalSetup?: Partial<OrganizationData>): Promise<{
+  (
+    doLogin?: boolean,
+    setSecrets?: boolean,
+    additionalSetup?: Partial<OrganizationData>
+  ): Promise<{
     organization: string;
     email: string;
     pass: string;
@@ -19,6 +23,7 @@ const smtpPort = 5000;
 
 export const setUpOrganization: SetUpOrganization = async (
   doLogin = true,
+  setSecrets = true,
   additionalSetup = {}
 ) => {
   if (!__withEmulators__) {
@@ -43,10 +48,11 @@ export const setUpOrganization: SetUpOrganization = async (
       admins: [email],
       ...additionalSetup,
     }),
-    secretsRef.set({
-      smtpHost,
-      smtpPort,
-    }),
+    setSecrets &&
+      secretsRef.set({
+        smtpHost,
+        smtpPort,
+      }),
   ]);
 
   if (!doLogin) {

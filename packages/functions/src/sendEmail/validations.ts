@@ -1,6 +1,6 @@
 import { JSONSchemaType } from "ajv";
 
-import { EmailAttachment, EmailPayload } from "@eisbuk/shared";
+import { EmailAttachment, EmailMessage } from "@eisbuk/shared";
 
 import { SMTPPreferences } from "./types";
 
@@ -52,7 +52,7 @@ const EmailAttachmentSchema: JSONSchemaType<EmailAttachment> = {
  * Validation schema for a fully constructed email (to be send over SMTP),
  * including `to`, `from` and valid `message`
  */
-export const EmailMessageSchema: JSONSchemaType<EmailPayload> = {
+export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
   type: "object",
   required: ["from", "to", "subject"],
   properties: {
@@ -63,7 +63,8 @@ export const EmailMessageSchema: JSONSchemaType<EmailPayload> = {
     },
     bcc: {
       type: "string",
-      items: emailPattern,
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
     },
     to: {
       type: "string",

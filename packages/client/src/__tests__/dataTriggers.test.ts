@@ -250,7 +250,7 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
-        const { organization } = await setUpOrganization();
+        const { organization } = await setUpOrganization(true, false);
         const organizationPath = `${Collection.Organizations}/${organization}`;
         const secretsPath = `${Collection.Secrets}/${organization}`;
         // add new secret to trigger registering

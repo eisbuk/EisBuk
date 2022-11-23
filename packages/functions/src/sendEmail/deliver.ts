@@ -6,7 +6,7 @@ import {
   Collection,
   OrganizationSecrets,
   DeliveryQueue,
-  EmailPayload,
+  EmailMessage,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
@@ -24,7 +24,7 @@ import { validateJSON } from "../utils";
  * @param organization organization name
  * @returns smtp config options
  */
-const getSMTPPreferences = async (
+export const getSMTPPreferences = async (
   organization: string
 ): Promise<Partial<SMTPPreferences>> => {
   const db = admin.firestore();
@@ -35,7 +35,7 @@ const getSMTPPreferences = async (
 
   const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
   if (!secretsData) {
-    throw new Error(__noSecretsError);
+    throw new functions.https.HttpsError("not-found", __noSecretsError);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -110,7 +110,7 @@ export const deliverEmail = functions
 
       // Get current email payload
       const data = change.after.data() as Partial<
-        ProcessDocument<EmailPayload>
+        ProcessDocument<EmailMessage>
       >;
 
       // Validate email and throw if not a valid schema

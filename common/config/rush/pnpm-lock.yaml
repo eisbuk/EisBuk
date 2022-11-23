@@ -103,7 +103,6 @@ importers:
       '@types/lodash': ^4.14.170
       '@types/luxon': ^2.0.5
       '@types/node': ^16.11.10
-      '@types/nodemailer': ~6.4.6
       '@types/react': ^17.0.13
       '@types/react-dom': ^17.0.8
       '@types/react-redux': ^7.1.24
@@ -147,7 +146,6 @@ importers:
       mocha: ^8.2.1
       mochawesome: ^7.0.1
       moment: ^2.29.2
-      nodemailer: ~6.8.0
       nyc: ^15.1.0
       p-retry: ^4.6.1
       postcss: ~8.4.13
@@ -252,9 +250,7 @@ importers:
       '@types/jest': 27.5.2
       '@types/lodash': 4.14.189
       '@types/luxon': 2.4.0
-      '@types/mailparser': 3.4.0
       '@types/node': 16.18.3
-      '@types/nodemailer': 6.4.6
       '@types/react': 17.0.52
       '@types/react-dom': 17.0.18
       '@types/react-redux': 7.1.24
@@ -288,7 +284,6 @@ importers:
       jest-smtp: 0.0.2_jest@27.5.1
       mocha: 8.4.0
       mochawesome: 7.1.3_mocha@8.4.0
-      nodemailer: 6.8.0
       nyc: 15.1.0
       p-retry: 4.6.2
       postcss: 8.4.19
@@ -7104,13 +7099,6 @@ packages:
     resolution: {integrity: sha512-oCavjEjRXuR6URJEtQm0eBdfsBiEcGBZbq21of8iGkeKxU1+1xgKuFPClaBZl2KB8ZZBSWlgk61tH6Mf+nvZVw==}
     dev: true
 
-  /@types/mailparser/3.4.0:
-    resolution: {integrity: sha512-MotFinA1sT2nPFtQw1WpaF3X6I1OdbEloaixMmk924BOYqwHmlZkoi7XcVUXHI+7i0to8JguHqYj5k/E6c9Chw==}
-    dependencies:
-      '@types/node': 16.18.3
-      iconv-lite: 0.6.3
-    dev: true
-
   /@types/markdown-it/12.2.3:
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
     dependencies:
@@ -7271,13 +7259,6 @@ packages:
 
   /@types/sizzle/2.3.3:
     resolution: {integrity: sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==}
-    dev: true
-
-  /@types/smtp-server/3.5.7:
-    resolution: {integrity: sha512-8HtcCeN1DCu3P3D4unfRlwRT2sM54PQSBnfwCf6HZl4CH234lTvTJxKXvZtcJajg8mCgiSLkJ6rratEhxgvhqQ==}
-    dependencies:
-      '@types/node': 16.18.3
-      '@types/nodemailer': 6.4.6
     dev: true
 
   /@types/source-list-map/0.1.2:
@@ -8770,6 +8751,7 @@ packages:
 
   /bindings/1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
+    requiresBuild: true
     dependencies:
       file-uri-to-path: 1.0.0
     dev: true
@@ -12242,6 +12224,7 @@ packages:
 
   /file-uri-to-path/1.0.0:
     resolution: {integrity: sha512-0Zt+s3L7Vf1biwWZ29aARiVYLx7iMGnEUl9x33fbB/j3jR81u/O2LbqK+Bm1CDSNDKVtJ/YjwY7TUd5SkeLQLw==}
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -17165,11 +17148,6 @@ packages:
     resolution: {integrity: sha512-2zaTFGqZixVmTxpJRCFC+Vk5eGRd/fYtvIR+dl5u9QXLTQWGIf48x/JXvo58g9sa0bU6To04XUv554Paykum3g==}
     engines: {node: '>=6.0.0'}
     dev: false
-
-  /nodemailer/6.8.0:
-    resolution: {integrity: sha512-EjYvSmHzekz6VNkNd12aUqAco+bOkRe3Of5jVhltqKhEsjw/y0PYPJfp83+s9Wzh1dspYAkUW/YNQ350NATbSQ==}
-    engines: {node: '>=6.0.0'}
-    dev: true
 
   /nopt/6.0.0:
     resolution: {integrity: sha512-ZwLpbTgdhuZUnZzjd7nb1ZV+4DoiC6/sfiVKok72ym/4Tlf+DFdlHYmT2JPmcNNWV6Pi3SDf1kT+A4r9RTuT9g==}

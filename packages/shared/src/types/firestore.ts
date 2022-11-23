@@ -314,12 +314,21 @@ export interface EmailAttachment {
 
 /**
  * Interface used as `payload` in email process-delivery.
+ * It's basically a full email payload without the `from` and `bcc`
+ * fields (as they're loaded from organization preferences).
  */
 export interface EmailPayload {
   to: string;
   subject: string;
   html: string;
   attachments?: EmailAttachment[];
+}
+
+/**
+ * A full email interface, including:
+ * `to`, `from`, `subject`, `html` and `attachments`. 'bcc'
+ */
+export interface EmailMessage extends EmailPayload {
   from: string;
   bcc: string;
 }

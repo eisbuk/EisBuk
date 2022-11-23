@@ -9,6 +9,7 @@ import {
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
+import { getSMTPPreferences } from "./deliver";
 
 import {
   checkUser,
@@ -33,6 +34,7 @@ export const sendEmail = functions
       ) {
         throwUnauth();
       }
+      await getSMTPPreferences(organization);
 
       checkRequiredFields(email, ["to", "html", "subject"]);
 
@@ -41,7 +43,7 @@ export const sendEmail = functions
       const orgSnap = await db
         .doc(`${Collection.Organizations}/${organization}`)
         .get();
-      const { emailFrom, emailBcc } = orgSnap.data() as OrganizationData;
+      const orgData = orgSnap.data() as OrganizationData;
 
       // add email to firestore, firing data trigger
       const doc = admin
@@ -51,11 +53,13 @@ export const sendEmail = functions
         )
         .doc();
 
+      checkRequiredFields(orgData, ["emailFrom"]);
+      const { emailFrom, emailBcc } = orgData;
       await doc.set({
         payload: {
           ...email,
-          from: emailFrom || "from@gmail.com",
-          bcc: emailBcc || "bcc@gmail.com",
+          from: emailFrom,
+          bcc: emailBcc || emailFrom,
         },
       });
 
