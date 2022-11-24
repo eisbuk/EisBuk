@@ -308,8 +308,13 @@ export const registerCreatedOrgSecret = functions
     // if deleted (shouldn't happen) the fallback: `Object.keys({})`
     // will be an empty array which is fine
     const updatedSecrets = Object.keys(data!);
+    const smtpConfig = ["smtpHost", "smtpPort", "smtpUser", "smtpPass"];
+
+    const smtpConfigured = smtpConfig.every((element) =>
+      updatedSecrets.includes(element)
+    );
     await organizationRef.set(
-      { existingSecrets: updatedSecrets },
+      { existingSecrets: updatedSecrets, smtpConfigured },
       { merge: true }
     );
   });

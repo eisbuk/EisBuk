@@ -31,7 +31,6 @@ export const setUpOrganization: SetUpOrganization = async (
       "Trying to set up a new organization in an environment without emulator support"
     );
   }
-
   const organization = uuid();
   const email = `${organization}@eisbuk.it`;
   const pass = `password-${organization}`;
@@ -40,7 +39,7 @@ export const setUpOrganization: SetUpOrganization = async (
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
   const secretsRef = adminDb.doc(`${Collection.Secrets}/${organization}`);
 
-  await Promise.all([
+  const promises = [
     // Create a new user in auth
     createUserWithEmailAndPassword(auth, email, pass),
     // Set given user as admin in org structure
@@ -48,12 +47,15 @@ export const setUpOrganization: SetUpOrganization = async (
       admins: [email],
       ...additionalSetup,
     }),
-    setSecrets &&
+  ];
+  setSecrets &&
+    promises.push(
       secretsRef.set({
         smtpHost,
         smtpPort,
-      }),
-  ]);
+      })
+    );
+  await Promise.all(promises);
 
   if (!doLogin) {
     await signOut(auth);

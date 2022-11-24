@@ -58,6 +58,10 @@ export interface OrganizationData {
    */
   existingSecrets?: string[];
   /**
+   * A flag determining whether smtp configuration has been setup in secrets document
+   */
+  smtpConfigured?: boolean;
+  /**
    * Physical address of the gym, ice ring, etc. where the skating lessons are held
    */
   location?: string;
