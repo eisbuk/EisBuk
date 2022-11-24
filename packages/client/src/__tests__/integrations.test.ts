@@ -41,7 +41,11 @@ describe("Email sending and delivery", () => {
       const recipients: string[] = [];
 
       // Override 'onRcptTo' to keep track of recipients for an email
-      smtpServer.server.onRcptTo = (addr, _, done) => {
+      smtpServer.server.onRcptTo = (
+        addr: { address: string },
+        _: any,
+        done: () => void
+      ) => {
         recipients.push(addr.address);
         done();
       };

@@ -41,7 +41,7 @@ const DateSwitcher: React.FC<Props> = ({ currentDate, jump, ...MenuProps }) => {
       <Menu data-testid={__calendarMenuId__} {...MenuProps}>
         <CalendarPicker
           date={currentDate}
-          onChange={(currentDate) => {
+          onChange={(currentDate: DateTime | null) => {
             dispatch(changeCalendarDate(currentDate!));
           }}
           renderDay={renderWeekPickerDay(
