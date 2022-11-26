@@ -18,6 +18,8 @@ import {
   NavigationLabel,
 } from "@eisbuk/translations";
 
+import { getOrganization } from "@/lib/getters";
+
 import CustomerGrid from "@/components/atoms/CustomerGrid";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
@@ -58,7 +60,10 @@ const CustomersPage: React.FC = () => {
   const customers = useSelector(getCustomersList(true));
   const { displayName = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
-  useFirestoreSubscribe([OrgSubCollection.Customers]);
+
+  useFirestoreSubscribe(getOrganization(), [
+    { collection: OrgSubCollection.Customers },
+  ]);
 
   const { openWithProps: openCustomerForm } = useCustomerFormModal();
 

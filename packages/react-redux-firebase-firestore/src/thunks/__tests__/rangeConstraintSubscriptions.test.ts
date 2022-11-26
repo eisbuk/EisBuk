@@ -9,16 +9,16 @@ import { getTestStore } from "../../__testUtils__/store";
 import { updateSubscription } from "../subscribe";
 import { updateFirestoreListener } from "../../actions";
 
+import { organization } from "../../__testSetup__/firestoreSetup";
+
 import { getAuthTestEnv } from "../__testUtils__/utils";
+import { testWithEmulator } from "../../__testUtils__/envUtils";
 
 import {
   createTestSlots,
   testSlots,
   slotsCollPath,
 } from "../__testData__/slots";
-import { getOrganization } from "../../config";
-
-import { testWithEmulator } from "../../__testUtils__/envUtils";
 
 describe("Firestore subscriptions", () => {
   describe("test subscriptions with range constraint", () => {
@@ -82,7 +82,7 @@ describe("Firestore subscriptions", () => {
         const slotRef = doc(
           db as any,
           Collection.Organizations,
-          getOrganization(),
+          organization,
           OrgSubCollection.Slots,
           testSlots[0].id
         );

@@ -1,4 +1,4 @@
-import { CollectionSubscription, FirestoreThunk } from "../types";
+import { FirestoreThunk, SubscriptionWhitelist } from "../types";
 import { FirestoreListenerConstraint } from "./subscribe";
 
 /**
@@ -18,7 +18,7 @@ import { FirestoreListenerConstraint } from "./subscribe";
  */
 export const createGetDocsInStore =
   (
-    collection: CollectionSubscription,
+    collection: SubscriptionWhitelist,
     getState: Parameters<FirestoreThunk>[1],
     constraint: FirestoreListenerConstraint | null,
     rangeInclusivity = [true, true]

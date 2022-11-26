@@ -15,7 +15,7 @@ import {
 /**
  * Secret key logic abstracted away in a hook for easier readability
  */
-export const useSecretKey = () => {
+export const useSecretKey = (): string => {
   // Secret key is provided as a route param to the customer_area page
   const { secretKey } = useParams<{
     secretKey: string;

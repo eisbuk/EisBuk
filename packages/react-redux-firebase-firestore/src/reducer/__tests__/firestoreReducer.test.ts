@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import { OrgSubCollection } from "@eisbuk/shared";
 
 import { FirestoreState } from "../../types";
@@ -23,7 +25,15 @@ const unsubscribe = () => {};
 /**
  * A base listener interface we're using for both observed and unobserved entries
  */
-const baseListener = { unsubscribe, consumers: [consumerId] };
+const baseListener = {
+  unsubscribe,
+  consumers: [consumerId],
+  meta: {
+    organization: "dummy-organization",
+    secretKey: "12345",
+    currentDate: DateTime.now(),
+  },
+};
 
 describe("Firestore reducer", () => {
   describe("Test Action.UpdateFirestoreListener", () => {
@@ -31,7 +41,7 @@ describe("Firestore reducer", () => {
       // set up test state
       const initialState: FirestoreState = {
         data: {},
-        listeners: { [OrgSubCollection.Bookings]: baseListener },
+        listeners: { [OrgSubCollection.Bookings]: { ...baseListener } },
       };
       // add new listener
       const updateAction = updateFirestoreListener(collection, baseListener);

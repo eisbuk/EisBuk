@@ -20,6 +20,7 @@ import { renderWithRedux } from "@/__testUtils__/wrappers";
 
 import { saul } from "@/__testData__/customers";
 import { getSecretKey } from "@/store/selectors/app";
+import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 const mockUseParams = jest.fn();
 jest.mock("react-router", () => ({
@@ -78,7 +79,9 @@ describe("CustomerAreaPage", () => {
       store
     );
 
-    const [subscriptions] = mockUseFirestoreSubscribe.mock.calls[0];
+    const [, subscriptions] = mockUseFirestoreSubscribe.mock
+      .calls[0] as Parameters<typeof useFirestoreSubscribe>;
+
     const wantSubscriptions = [
       OrgSubCollection.SlotsByDay,
       OrgSubCollection.Bookings,
@@ -86,8 +89,11 @@ describe("CustomerAreaPage", () => {
       BookingSubCollection.BookedSlots,
       BookingSubCollection.Calendar,
     ];
+
     wantSubscriptions.forEach((subscription) =>
-      expect(subscriptions.includes(subscription)).toBeTruthy()
+      expect(
+        subscriptions.find(({ collection }) => subscription === collection)
+      ).toBeTruthy()
     );
   });
 
