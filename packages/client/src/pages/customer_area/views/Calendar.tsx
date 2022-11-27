@@ -13,16 +13,16 @@ import {
   getIsBookingAllowed,
   getBookedAndAttendedSlotsForCalendar,
 } from "@/store/selectors/bookings";
-import { getCalendarDay } from "@/store/selectors/app";
+import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
-import { getSecretKey } from "@/utils/localStorage";
 import { createModal } from "@/features/modal/useModal";
 import { ModalPayload } from "@/features/modal/types";
 
 const CalendarView: React.FC = () => {
   const { dispatch, getState } = useStore();
   const currentDate = useSelector(getCalendarDay);
+  const secretKey = useSelector(getSecretKey)!;
 
   const disabled = !useSelector(getIsBookingAllowed(currentDate));
 
@@ -46,14 +46,14 @@ const CalendarView: React.FC = () => {
     // by runing a thunk explicitly and passing redux' dispatch and get state
     updateBookingNotes({
       slotId,
-      secretKey: getSecretKey(),
+      secretKey,
       bookingNotes,
     })(dispatch, getState);
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (
     <IntervalCard
       key={props.id}
-      onCancel={() => handleCancellation(props)}
+      onCancel={() => handleCancellation({ ...props, secretKey })}
       onNotesEditSave={(bookingNotes) =>
         handleNotesUpdate(bookingNotes, props.id)
       }

@@ -2,14 +2,14 @@ import { collection, onSnapshot, setDoc, doc } from "@firebase/firestore";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 
-import { getOrganization } from "../../config";
-
 import { getTestStore } from "../../__testUtils__/store";
 
 import {
   createCollSnapshotHandler,
   createDocSnapshotHandler,
 } from "../subscribe";
+
+import { organization } from "../../__testSetup__/firestoreSetup";
 
 import { getAuthTestEnv } from "../__testUtils__/utils";
 import { testWithEmulator } from "../../__testUtils__/envUtils";
@@ -28,7 +28,7 @@ describe("Firestore subscriptions", () => {
         const customersRef = collection(
           db,
           Collection.Organizations,
-          getOrganization(),
+          organization,
           OrgSubCollection.Customers
         );
         onSnapshot(
@@ -60,7 +60,7 @@ describe("Firestore subscriptions", () => {
         const saulRef = doc(
           db,
           Collection.Organizations,
-          getOrganization(),
+          organization,
           OrgSubCollection.Customers,
           saul.id
         );

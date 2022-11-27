@@ -1,11 +1,12 @@
+import { DocumentData } from "@firebase/firestore";
+
 import { FirestoreAction } from "../enums";
 
 import {
-  CollectionSubscription,
   FirestoreListener,
   FirestoreReducerAction,
+  SubscriptionWhitelist,
 } from "../types";
-import { DocumentData } from "@firebase/firestore";
 
 /**
  * An action creator used to dispatch updates for given collection in local store's `firestore.data`
@@ -45,7 +46,7 @@ export const deleteLocalDocuments = (
  * @returns
  */
 export const updateFirestoreListener = (
-  collection: CollectionSubscription,
+  collection: SubscriptionWhitelist,
   listener: Partial<FirestoreListener>
 ): FirestoreReducerAction<FirestoreAction.UpdateFirestoreListener> => {
   return {
@@ -61,7 +62,7 @@ export const updateFirestoreListener = (
  * @returns
  */
 export const deleteFirestoreListener = (
-  collection: CollectionSubscription
+  collection: SubscriptionWhitelist
 ): FirestoreReducerAction<FirestoreAction.DeleteFirestoreListener> => ({
   type: FirestoreAction.DeleteFirestoreListener,
   payload: collection,

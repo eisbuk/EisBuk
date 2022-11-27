@@ -18,6 +18,8 @@ import { ButtonContextType } from "@/enums/components";
 
 import { LocalStore, SlotsWeek } from "@/types/store";
 
+import { getOrganization } from "@/lib/getters";
+
 import SlotOperationButtons, {
   CopyButton,
   PasteButton,
@@ -52,9 +54,9 @@ const SlotsPage: React.FC = () => {
   const currentDate = useSelector(getCalendarDay);
   const date = currentDate.startOf("week");
 
-  useFirestoreSubscribe([
-    OrgSubCollection.SlotsByDay,
-    OrgSubCollection.Attendance,
+  useFirestoreSubscribe(getOrganization(), [
+    { collection: OrgSubCollection.SlotsByDay },
+    { collection: OrgSubCollection.Attendance },
   ]);
 
   const slotsToShow = useSelector(getAdminSlots);

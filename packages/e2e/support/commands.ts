@@ -174,7 +174,8 @@ export default (): void => {
   Cypress.Commands.add(
     "clearAndType",
     { prevSubject: ["element"] },
-    ($el, input) => cy.wrap($el).clear().type(input).blur()
+    ($el, input) =>
+      cy.wrap($el).should("not.be.disabled").clear().type(input).blur()
   );
 
   Cypress.Commands.add(

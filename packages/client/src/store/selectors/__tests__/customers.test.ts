@@ -1,28 +1,63 @@
-import { OrgSubCollection } from "@eisbuk/shared";
+import { DateTime } from "luxon";
+
+import { LocalStore } from "@/types/store";
 
 import { getNewStore } from "@/store/createStore";
 
-import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
-
 import { getCustomersByBirthday } from "../customers";
 
-import {
-  customers,
-  expectedCustomersBirthdays,
-} from "../__testData__/customers";
-import { jian } from "@/__testData__/customers";
-import { DateTime } from "luxon";
+import { saul, walt, jian, mike, jane } from "@/__testData__/customers";
+
+const customers: LocalStore["firestore"]["data"]["customers"] = {
+  [saul.id]: {
+    ...saul,
+    birthday: "1990-01-22",
+  },
+  [jian.id]: {
+    ...jian,
+    birthday: "1993-01-22",
+  },
+  [walt.id]: {
+    ...walt,
+    birthday: "1995-01-22",
+  },
+  [mike.id]: {
+    ...mike,
+    birthday: "2012-12-25",
+  },
+  [jane.id]: { ...jane, birthday: "2000-12-22" },
+};
+
+const expectedCustomersBirthdays = [
+  {
+    birthday: "12-22",
+    customers: [{ ...jane, birthday: "2000-12-22" }],
+  },
+  {
+    birthday: "12-25",
+    customers: [{ ...mike, birthday: "2012-12-25" }],
+  },
+  {
+    birthday: "01-22",
+    customers: [
+      { ...saul, birthday: "1990-01-22" },
+      { ...jian, birthday: "1993-01-22" },
+      { ...walt, birthday: "1995-01-22" },
+    ],
+  },
+];
 
 describe("Customer Selectors", () => {
   describe("Customers birthdays", () => {
     test("should get customers sorted according to their birthday", () => {
-      const store = getNewStore();
-      store.dispatch(
-        updateLocalDocuments(OrgSubCollection.Customers, customers!)
-      );
-      const selector = getCustomersByBirthday(
-        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
-      );
+      const store = getNewStore({
+        firestore: {
+          data: {
+            customers,
+          },
+        },
+      });
+      const selector = getCustomersByBirthday(DateTime.fromISO("2021-12-22"));
       const res = selector(store.getState());
       expect(res).toEqual(expectedCustomersBirthdays);
     });
@@ -30,13 +65,13 @@ describe("Customer Selectors", () => {
     test("should omit customers with no birthday specified", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { birthday, ...erlich } = jian;
-      const store = getNewStore();
-      store.dispatch(
-        updateLocalDocuments(OrgSubCollection.Customers, {
-          ...customers,
-          erlich,
-        })
-      );
+      const store = getNewStore({
+        firestore: {
+          data: {
+            customers: { ...customers, erlich },
+          },
+        },
+      });
       const selector = getCustomersByBirthday(
         DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
       );

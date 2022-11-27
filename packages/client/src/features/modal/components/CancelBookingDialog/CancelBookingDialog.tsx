@@ -7,24 +7,23 @@ import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
 import { cancelBooking } from "@/store/actions/bookingOperations";
 
-import { getSecretKey } from "@/utils/localStorage";
-
 interface CancelBookingContent extends SlotInterface {
   interval: SlotInterval;
   onClose: () => void;
   className?: string;
+  secretKey: string;
 }
 
 const CancelBookingDialog: React.FC<CancelBookingContent> = ({
   interval,
   onClose,
   className,
+  secretKey,
   ...slotProps
 }) => {
   const dispatch = useDispatch();
 
   const onConfirm = () => {
-    const secretKey = getSecretKey();
     dispatch(cancelBooking({ secretKey, slotId: slotProps.id }));
     onClose();
   };

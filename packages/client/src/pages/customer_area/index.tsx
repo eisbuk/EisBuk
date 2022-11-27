@@ -12,6 +12,8 @@ import {
 } from "@eisbuk/shared";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
+import { getOrganization } from "@/lib/getters";
+
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
@@ -45,7 +47,7 @@ const viewsLookup = {
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  useSecretKey();
+  const secretKey = useSecretKey();
 
   const isAdmin = useSelector(getIsAdmin);
 
@@ -58,13 +60,13 @@ const CustomerArea: React.FC = () => {
   );
 
   // Subscribe to necessary collections
-  useFirestoreSubscribe([
-    OrgSubCollection.SlotsByDay,
-    OrgSubCollection.Bookings,
-    Collection.PublicOrgInfo,
-    BookingSubCollection.BookedSlots,
-    BookingSubCollection.AttendedSlots,
-    BookingSubCollection.Calendar,
+  useFirestoreSubscribe(getOrganization(), [
+    { collection: OrgSubCollection.SlotsByDay },
+    { collection: Collection.PublicOrgInfo },
+    { collection: OrgSubCollection.Bookings, meta: { secretKey } },
+    { collection: BookingSubCollection.BookedSlots, meta: { secretKey } },
+    { collection: BookingSubCollection.AttendedSlots, meta: { secretKey } },
+    { collection: BookingSubCollection.Calendar, meta: { secretKey } },
   ]);
 
   const calendarNavProps = useDate();

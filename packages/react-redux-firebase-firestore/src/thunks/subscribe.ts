@@ -12,9 +12,10 @@ import {
 } from "@firebase/firestore";
 
 import {
-  CollectionSubscription,
   FirestoreListener,
   FirestoreThunk,
+  SubscriptionMeta,
+  SubscriptionWhitelist,
 } from "../types";
 
 import {
@@ -34,6 +35,7 @@ export interface SubscriptionParams {
   collPath: string;
   storeAs?: string;
   constraint: FirestoreListenerConstraint | null;
+  meta?: SubscriptionMeta;
 }
 
 interface SubscribeFunction {
@@ -59,8 +61,8 @@ export const updateSubscription: SubscribeFunction =
   ({ collPath, storeAs, constraint }: SubscriptionParams): FirestoreThunk =>
   async (dispatch, getState) => {
     // a fallback local store entry name in case `storeAs` is not defined
-    const collName: CollectionSubscription = (storeAs ||
-      collPath.split("/").pop()) as CollectionSubscription;
+    const collName: SubscriptionWhitelist = (storeAs ||
+      collPath.split("/").pop()) as SubscriptionWhitelist;
 
     if (!collName) {
       throw new Error("Invalid collection path");
@@ -69,7 +71,7 @@ export const updateSubscription: SubscribeFunction =
     const collRef = collection(getFirestore(), collPath);
 
     const listener =
-      getFirestoreListeners(getState())[collName as CollectionSubscription] ||
+      getFirestoreListeners(getState())[collName as SubscriptionWhitelist] ||
       ({} as FirestoreListener);
 
     // #region nullConstraintSubscription

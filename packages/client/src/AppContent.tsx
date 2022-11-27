@@ -11,6 +11,8 @@ import {
 
 import { Routes, PrivateRoutes } from "@/enums/routes";
 
+import { getOrganization } from "@/lib/getters";
+
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
 import NotRegistered from "@/components/auth/NotRegistered";
@@ -40,13 +42,13 @@ const AppContent: React.FC = () => {
 
   const subscribedCollections: CollectionSubscription[] = isAdmin
     ? [
-        Collection.Organizations,
-        OrgSubCollection.Customers,
-        Collection.PublicOrgInfo,
+        { collection: Collection.Organizations },
+        { collection: OrgSubCollection.Customers },
+        { collection: Collection.PublicOrgInfo },
       ]
-    : [Collection.PublicOrgInfo];
+    : [{ collection: Collection.PublicOrgInfo }];
 
-  useFirestoreSubscribe(subscribedCollections);
+  useFirestoreSubscribe(getOrganization(), subscribedCollections);
   usePaginateFirestore();
 
   return (

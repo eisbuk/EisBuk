@@ -15,3 +15,24 @@ export const changeCalendarDate = (
   type: Action.ChangeDay,
   payload: date,
 });
+
+/**
+ * Creates Redux action for appReducer to store customer's secret key
+ * for easier access.
+ * @param secretKey customer's secret key
+ * @returns Redux action object
+ */
+export const storeSecretKey = (
+  secretKey: string
+): AppReducerAction<Action.StoreSecretKey> => ({
+  type: Action.StoreSecretKey,
+  payload: secretKey,
+});
+
+/**
+ * A plain action object, removes secret key stored
+ * in app section of local store
+ */
+export const removeSecretKey: AppReducerAction<Action.RemoveSecretKey> = {
+  type: Action.RemoveSecretKey,
+};

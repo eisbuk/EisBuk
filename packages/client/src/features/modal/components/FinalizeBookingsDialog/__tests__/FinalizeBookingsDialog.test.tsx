@@ -25,6 +25,7 @@ describe("FinalizeBookingsDialog", () => {
       <FinalizeBookingsDialog
         onClose={mockOnClose}
         customerId={saul.id}
+        secretKey={saul.secretKey}
         {...{ month }}
       />
     );

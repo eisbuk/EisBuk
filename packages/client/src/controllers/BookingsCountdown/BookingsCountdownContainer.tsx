@@ -11,7 +11,7 @@ import {
   getCountdownProps,
   getMonthEmptyForBooking,
 } from "@/store/selectors/bookings";
-import { getCalendarDay } from "@/store/selectors/app";
+import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   as?: keyof JSX.IntrinsicElements;
@@ -27,6 +27,7 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
   const countdownProps = useSelector(getCountdownProps);
   const isMonthEmpty = useSelector(getMonthEmptyForBooking);
   const { id: customerId } = useSelector(getBookingsCustomer) || {};
+  const secretKey = useSelector(getSecretKey)!;
 
   const { openWithProps: openFinalizeBookingsDialog } =
     useFinalizeBooksingsModal();
@@ -49,6 +50,7 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
     openFinalizeBookingsDialog({
       customerId,
       month,
+      secretKey,
     });
   };
 
