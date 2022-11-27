@@ -33,8 +33,8 @@ export const CalendarCardExpandableContainer: React.FC<
   );
 };
 
-const outerClasses = ["w-[280px]", "h-[290px]", "p-[3px]"];
-const innerClasses = ["relative", "w-full", "h-full", "bg-white"];
+const outerClasses = ["w-[280px]", "h-full", "p-[3px]"];
+const innerClasses = ["relative", "w-full", "bg-white"];
 
 const colorClassLookup = {
   [SlotType.Ice]: "bg-cyan-500",

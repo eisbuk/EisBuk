@@ -51,9 +51,7 @@ const CardContent: React.FC<Props> = ({
 
       {variant !== IntervalCardVariant.Simple && notesElement}
 
-      {variant !== IntervalCardVariant.Simple && (
-        <SlotTypeIcon type={type} className="absolute left-0 bottom-0" />
-      )}
+      {variant !== IntervalCardVariant.Simple && <SlotTypeIcon type={type} />}
     </div>
   );
 };

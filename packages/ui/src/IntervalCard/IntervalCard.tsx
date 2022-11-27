@@ -98,7 +98,6 @@ const IntervalCard: React.FC<IntervalCardProps> = ({
               </CalendarCardContainerInner>
 
               <NotesSection
-                className="absolute right-0 bottom-0 left-0"
                 bookingNotes={bookingNotes}
                 isEditing={isEditing}
                 onNotesEditStart={onNotesEditStart}
