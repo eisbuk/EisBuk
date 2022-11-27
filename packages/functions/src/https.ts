@@ -6,9 +6,12 @@ import {
   OrgSubCollection,
   BookingsErrors,
   Customer,
+  HTTPSErrors,
+  OrganizationData,
+  SelfRegCustomer,
 } from "@eisbuk/shared";
 
-import { checkRequiredFields } from "./utils";
+import { checkRequiredFields, EisbukHttpsError } from "./utils";
 
 /**
  * Used by non-admin customers to finalize their own bookings and thus remove
@@ -53,6 +56,7 @@ export const finalizeBookings = functions
     // remove `extendedDate`
     await customerRef.set({ extendedDate: null }, { merge: true });
   });
+
 /**
  * Used by non-admin customers to edit their own details
  * which then triggers that data to be cloned into bookings collection
@@ -60,14 +64,13 @@ export const finalizeBookings = functions
  * @param paylod.organization
  * @param payload.customer
  */
-export const updateCustomerByCustomer = functions
+export const customerSelfUpdate = functions
   .region("europe-west6")
   .https.onCall(
     async (payload: { organization: string; customer: Customer }) => {
       checkRequiredFields(payload, ["organization", "customer"]);
       checkRequiredFields(payload.customer, ["id", "secretKey"]);
 
-      /** @TODO  create util function for validating secretKey */
       const { organization, customer } = payload || {};
 
       // we check "auth" by matching secretKey with customerId
@@ -98,5 +101,61 @@ export const updateCustomerByCustomer = functions
       }
 
       await customerRef.set({ ...customer }, { merge: true });
+    }
+  );
+
+/**
+ * Used by non-admin customers to self register
+ * which then triggers that data to be cloned into bookings collection
+ * non-admin users aren't allowed direct access to `customers` collection.
+ * @param paylod.organization
+ * @param payload.customer
+ * @param payload.registrationCode
+ */
+export const customerSelfRegister = functions
+  .region("europe-west6")
+  .https.onCall(
+    async (payload: {
+      organization: string;
+      registrationCode: string;
+      customer: SelfRegCustomer;
+    }) => {
+      checkRequiredFields(payload, ["organization", "customer"]);
+      checkRequiredFields(payload.customer, [
+        "name",
+        "surname",
+        "certificateExpiration",
+        "covidCertificateReleaseDate",
+        "covidCertificateSuspended",
+      ]);
+
+      // We require at least one of the two to be k
+      if (!payload.customer.email && !payload.customer.phone) {
+        const errorMessage = `${HTTPSErrors.MissingParameter}: No 'email' nor 'phone' provided, at least one is required to register.`;
+        throw new EisbukHttpsError("invalid-argument", errorMessage, {
+          missingFields: ["email", "phone"],
+        });
+      }
+
+      const { organization, customer, registrationCode } = payload;
+
+      const orgRef = admin
+        .firestore()
+        .collection(Collection.Organizations)
+        .doc(organization);
+
+      // Check if the registration code is correct
+      const orgDoc = await orgRef.get();
+      const orgData = orgDoc.data() as OrganizationData;
+      functions.logger.info(JSON.stringify(orgData, null, 2));
+      if (registrationCode !== orgData.registrationCode) {
+        const errorMessage = `${HTTPSErrors.Unauth}: Incorrect value for 'registrationCode'`;
+        throw new EisbukHttpsError("unauthenticated", errorMessage, {
+          registrationCode,
+        });
+      }
+
+      const customerRef = orgRef.collection(OrgSubCollection.Customers).doc();
+      return customerRef.set(customer);
     }
   );

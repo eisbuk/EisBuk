@@ -201,11 +201,23 @@ export interface Customer extends CustomerBase {
   birthday?: string;
   email?: string;
   phone?: string;
-  certificateExpiration?: string;
-  covidCertificateReleaseDate?: string;
-  covidCertificateSuspended?: boolean;
+  certificateExpiration: string;
+  covidCertificateReleaseDate: string;
+  covidCertificateSuspended: boolean;
   subscriptionNumber?: string;
 }
+export type SelfRegCustomer = Pick<
+  Customer,
+  | "name"
+  | "surname"
+  | "phone"
+  | "email"
+  | "photoURL"
+  | "birthday"
+  | "certificateExpiration"
+  | "covidCertificateReleaseDate"
+  | "covidCertificateSuspended"
+>;
 /**
  * Object with birthday prop and customer prop
  */

@@ -47,7 +47,7 @@ export const getCustomer = ({
     id,
     name,
     surname,
-    categories,
+    categories: categories || [],
     // add extended date only if it exists, rather than saving `extendedDate: undefined`
     ...(extendedDate ? { extendedDate } : {}),
     deleted: Boolean(deleted),
