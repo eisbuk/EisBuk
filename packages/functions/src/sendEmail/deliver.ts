@@ -6,7 +6,7 @@ import {
   Collection,
   OrganizationSecrets,
   DeliveryQueue,
-  EmailPayload,
+  EmailMessage,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
@@ -24,7 +24,7 @@ import { validateJSON } from "../utils";
  * @param organization organization name
  * @returns smtp config options
  */
-const getSMTPPreferences = async (
+export const getSMTPPreferences = async (
   organization: string
 ): Promise<Partial<SMTPPreferences>> => {
   const db = admin.firestore();
@@ -35,7 +35,7 @@ const getSMTPPreferences = async (
 
   const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
   if (!secretsData) {
-    throw new Error(__noSecretsError);
+    throw new functions.https.HttpsError("not-found", __noSecretsError);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -102,19 +102,21 @@ export const deliverEmail = functions
         return error(configErrs);
       }
       const smtpConfig = processSMTPPreferences(SMTPPreferences);
-      const transport = nodemailer.createTransport(smtpConfig);
+      const transport = nodemailer.createTransport({
+        ...smtpConfig,
+        /** @OTODO check this: this is temporarily set for testing purposes, but we might use it in production?? */
+        tls: { rejectUnauthorized: false },
+      });
 
       // Get current email payload
       const data = change.after.data() as Partial<
-        ProcessDocument<EmailPayload>
+        ProcessDocument<EmailMessage>
       >;
 
       // Validate email and throw if not a valid schema
       const [email, emailErrs] = validateJSON(
         EmailMessageSchema,
-        {
-          ...data.payload,
-        },
+        data.payload || {},
         "Constructing gave following errors (check the email payload and organization preferences):"
       );
       if (emailErrs) {

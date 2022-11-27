@@ -25,12 +25,12 @@ export interface OrganizationData {
    * If not provided, will fall back to organization name
    * @TODO this isn't yet functional, apply when making email per organization
    */
-  emailFrom: string;
+  emailFrom?: string;
   /**
    * Email to send a copy of sent Email.
    * If not provided, will fall back to emailFrom
    */
-  bcc: string;
+  emailBcc?: string;
   /**
    * Name to use when sending emails ( the name part in Name <email@example.com>)
    */
@@ -57,6 +57,10 @@ export interface OrganizationData {
    * for a given organization
    */
   existingSecrets?: string[];
+  /**
+   * A flag determining whether smtp configuration has been setup in secrets document
+   */
+  smtpConfigured?: boolean;
   /**
    * Physical address of the gym, ice ring, etc. where the skating lessons are held
    */
@@ -314,23 +318,23 @@ export interface EmailAttachment {
 
 /**
  * Interface used as `payload` in email process-delivery.
- * It's basically a full email payload without the `from`
- * field (as it's loaded from organization preferences).
+ * It's basically a full email payload without the `from` and `bcc`
+ * fields (as they're loaded from organization preferences).
  */
 export interface EmailPayload {
   to: string;
   subject: string;
-  bcc: string;
   html: string;
   attachments?: EmailAttachment[];
 }
 
 /**
  * A full email interface, including:
- * `to`, `from`, `subject`, `html` and `attachments`.
+ * `to`, `from`, `subject`, `html` and `attachments`. 'bcc'
  */
 export interface EmailMessage extends EmailPayload {
   from: string;
+  bcc: string;
 }
 
 /**

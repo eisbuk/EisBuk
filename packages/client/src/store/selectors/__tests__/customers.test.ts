@@ -20,9 +20,7 @@ describe("Customer Selectors", () => {
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Customers, customers!)
       );
-      const selector = getCustomersByBirthday(
-        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
-      );
+      const selector = getCustomersByBirthday(DateTime.now());
       const res = selector(store.getState());
       expect(res).toEqual(expectedCustomersBirthdays);
     });
@@ -37,9 +35,7 @@ describe("Customer Selectors", () => {
           erlich,
         })
       );
-      const selector = getCustomersByBirthday(
-        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
-      );
+      const selector = getCustomersByBirthday(DateTime.now());
       const res = selector(store.getState());
       // the result should be the same as erlich doesn't have a birthday provided
       expect(res).toEqual(expectedCustomersBirthdays);

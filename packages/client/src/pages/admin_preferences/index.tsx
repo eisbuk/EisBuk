@@ -143,7 +143,7 @@ const emptyValues = {
   defaultCountryCode: "",
   smsFrom: "",
   smsTemplate: "",
-  bcc: "",
+  emailBcc: "",
 };
 
 // #region fieldSetup

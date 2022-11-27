@@ -1,6 +1,6 @@
-import { Customer, EmailMessage, SMSMessage } from "./firestore";
+import { Customer, EmailPayload, SMSMessage } from "./firestore";
 
-export interface SendMailPayload extends EmailMessage {
+export interface SendMailPayload extends EmailPayload {
   organization: string;
   secretKey?: Customer["secretKey"];
 }

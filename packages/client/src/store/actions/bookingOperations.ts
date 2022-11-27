@@ -232,7 +232,7 @@ export const sendICSFile: sendICSFile =
         <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
 
       const handler = CloudFunction.SendEmail;
-      const payload: Omit<SendEmailPayload, "organization"> = {
+      const payload: Omit<SendEmailPayload, "organization" | "emailFrom"> = {
         to: email,
         html,
         subject,

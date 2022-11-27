@@ -7,10 +7,9 @@ import { httpsCallable, FunctionsError } from "@firebase/functions";
 import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
+import { setUpOrganization } from "@/__testSetup__/node";
 
 import { CloudFunction } from "@/enums/functions";
-
-import { setUpOrganization } from "@/__testSetup__/node";
 
 import { getBookingsDocPath, getCustomerDocPath } from "@/utils/firestore";
 
@@ -50,6 +49,24 @@ describe("Cloud functions", () => {
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
+    testWithEmulator(
+      "should reject to sendEmail if no smtp secrets were set",
+      async () => {
+        const { organization } = await setUpOrganization(true, false, {
+          emailFrom: "from@gmail.com",
+          emailBcc: "bcc@gmail.com",
+        });
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization, to, html, subject })
+        ).rejects.toThrow(
+          "No secrets document found, make sure you create a secrets document for an organziation at: '/secrets/{ organization }'"
+        );
+      }
+    );
+
     testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {

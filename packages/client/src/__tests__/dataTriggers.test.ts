@@ -250,7 +250,7 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
-        const { organization } = await setUpOrganization();
+        const { organization } = await setUpOrganization(true, false);
         const organizationPath = `${Collection.Organizations}/${organization}`;
         const secretsPath = `${Collection.Secrets}/${organization}`;
         // add new secret to trigger registering
@@ -284,6 +284,60 @@ describe("Cloud functions -> Data triggers ->", () => {
           })) as OrganizationData
         ).existingSecrets;
         expect(existingSecrets).toEqual(["anotherSecret"]);
+      }
+    );
+    testWithEmulator(
+      "should update 'smtpConfigured' in organization data document when smtp config is set in secrets document",
+      async () => {
+        const { organization } = await setUpOrganization(true, false);
+        const organizationPath = `${Collection.Organizations}/${organization}`;
+        const secretsPath = `${Collection.Secrets}/${organization}`;
+        // add new secret to trigger registering
+        const orgSecretsRef = adminDb.doc(secretsPath);
+        await orgSecretsRef.set({
+          smtpHost: "localhost",
+          smtpPort: 4000,
+          smtpUser: "user",
+          smtpPass: "password",
+        });
+        // check proper updates triggerd by write to secrets
+        const orgData = (await waitForCondition({
+          documentPath: organizationPath,
+          condition: (data) => Boolean(data?.existingSecrets?.length),
+        })) as OrganizationData;
+        expect(orgData.existingSecrets).toEqual(
+          expect.arrayContaining([
+            "smtpHost",
+            "smtpPort",
+            "smtpUser",
+            "smtpPass",
+          ])
+        );
+        expect(orgData.smtpConfigured).toEqual(true);
+      }
+    );
+    testWithEmulator(
+      "should not update 'smtpConfigured' in organization data document if not all smtp config is set in secrets document",
+      async () => {
+        const { organization } = await setUpOrganization(true, false);
+        const organizationPath = `${Collection.Organizations}/${organization}`;
+        const secretsPath = `${Collection.Secrets}/${organization}`;
+        // add new secret to trigger registering
+        const orgSecretsRef = adminDb.doc(secretsPath);
+        await orgSecretsRef.set({
+          smtpHost: "localhost",
+          smtpUser: "user",
+          smtpPass: "password",
+        });
+        // check proper updates triggerd by write to secrets
+        const orgData = (await waitForCondition({
+          documentPath: organizationPath,
+          condition: (data) => Boolean(data?.existingSecrets?.length),
+        })) as OrganizationData;
+        expect(orgData.existingSecrets).toEqual(
+          expect.arrayContaining(["smtpHost", "smtpUser", "smtpPass"])
+        );
+        expect(orgData.smtpConfigured).toBeFalsy();
       }
     );
   });

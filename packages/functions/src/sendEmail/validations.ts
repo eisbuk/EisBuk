@@ -61,6 +61,11 @@ export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
       pattern: emailPattern,
       errorMessage: __invalidEmailError,
     },
+    bcc: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
     to: {
       type: "string",
       pattern: emailPattern,

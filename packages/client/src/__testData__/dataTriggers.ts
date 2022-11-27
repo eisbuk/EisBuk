@@ -72,5 +72,5 @@ export const organization: OrganizationData = {
   smsFrom: "Gus",
   smsTemplate: "SMS Temp here",
   existingSecrets: ["authToken", "exampleSecret"],
-  bcc: "gus@lospollos.hermanos",
+  emailBcc: "gus@lospollos.hermanos",
 };
