@@ -127,7 +127,8 @@
     "AddNewAdmin": "Add New Admin",
     "Email": "Email",
     "SMS": "SMS",
-    "General": "General"
+    "General": "General",
+    "RegistrationCode": "Registration code"
   },
   "Validations": {
     "Email": "Please insert a valid email",

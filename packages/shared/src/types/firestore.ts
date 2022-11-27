@@ -56,6 +56,10 @@ export interface OrganizationData {
    * Physical address of the gym, ice ring, etc. where the skating lessons are held
    */
   location?: string;
+  /**
+   * A short (and weak) secret used by new athletes for self registration
+   */
+  registrationCode?: string;
 }
 
 /** Organization data copied over to a new collection shared publicly */
