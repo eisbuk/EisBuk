@@ -76,7 +76,7 @@ export const CalendarCardContainerInner: React.FC<
   const className = [
     "relative",
     "w-full",
-    "h-[152px]",
+    "min-h-[152px]",
     "rounded-lg",
     "px-4",
     "py-3",

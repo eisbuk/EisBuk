@@ -44,14 +44,16 @@ const CardContent: React.FC<Props> = ({
   );
 
   return (
-    <div className="relative h-full w-full cursor-default select-none">
+    <div className="relative h-full w-full cursor-default select-none pb-5">
       {variant !== IntervalCardVariant.Booking && dateString}
 
       {timestring}
 
       {variant !== IntervalCardVariant.Simple && notesElement}
 
-      {variant !== IntervalCardVariant.Simple && <SlotTypeIcon type={type} />}
+      {variant !== IntervalCardVariant.Simple && (
+        <SlotTypeIcon type={type} className="absolute left-0 bottom-0" />
+      )}
     </div>
   );
 };
