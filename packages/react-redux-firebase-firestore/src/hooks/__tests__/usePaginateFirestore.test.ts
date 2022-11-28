@@ -36,6 +36,7 @@ export const changeCalendarDate = (date: DateTime) => ({
 const startDate = DateTime.fromISO("2022-01-01");
 const startRange = ["date", "2021-12-01", "2022-02-28"];
 const startDocumentRange = ["2021-12", "2022-01", "2022-02"];
+const organization = "dummy-oragnization";
 
 describe("Firestore subscriptions", () => {
   describe("usePaginateFirestore", () => {
@@ -43,8 +44,8 @@ describe("Firestore subscriptions", () => {
       // set up test state
       const store = getTestStore();
       store.dispatch(changeCalendarDate(startDate));
-      testHookWithRedux(store, useFirestoreSubscribe, [
-        OrgSubCollection.Attendance,
+      testHookWithRedux(store, useFirestoreSubscribe, organization, [
+        { collection: OrgSubCollection.Attendance },
       ]);
       // wait for listeners to update with initial `range`
       await waitFor(() => {
@@ -71,8 +72,8 @@ describe("Firestore subscriptions", () => {
       // set up test state
       const store = getTestStore();
       store.dispatch(changeCalendarDate(startDate));
-      testHookWithRedux(store, useFirestoreSubscribe, [
-        OrgSubCollection.SlotsByDay,
+      testHookWithRedux(store, useFirestoreSubscribe, organization, [
+        { collection: OrgSubCollection.SlotsByDay },
       ]);
       // wait for listeners to update with initial `documents` constraint
       await waitFor(() => {
@@ -101,9 +102,9 @@ describe("Firestore subscriptions", () => {
       store.dispatch(changeCalendarDate(startDate));
       // subscribe to both `range` constrained ("attendance")
       // and `documents` constrained ("slotsByDay") collections
-      testHookWithRedux(store, useFirestoreSubscribe, [
-        OrgSubCollection.Attendance,
-        OrgSubCollection.SlotsByDay,
+      testHookWithRedux(store, useFirestoreSubscribe, organization, [
+        { collection: OrgSubCollection.Attendance },
+        { collection: OrgSubCollection.SlotsByDay },
       ]);
       // wait for listeners to update with initial range
       await waitFor(() => {
@@ -140,8 +141,8 @@ describe("Firestore subscriptions", () => {
       const store = getTestStore();
       store.dispatch(changeCalendarDate(startDate));
       // customers are a 'null' constrained subscription: we're subscribing to all entries
-      testHookWithRedux(store, useFirestoreSubscribe, [
-        OrgSubCollection.Customers,
+      testHookWithRedux(store, useFirestoreSubscribe, organization, [
+        { collection: OrgSubCollection.Customers },
       ]);
       // wait for listeners to update
       await waitFor(() => {

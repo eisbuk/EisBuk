@@ -73,6 +73,12 @@ describe("Cloud functions", () => {
         const { organization } = await setUpOrganization(false);
 
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+        // Wait for the bookings data trigger to run as the secret key check uses bookgins
+        // collection to check for secret key being valid
+        await waitForCondition({
+          documentPath: getBookingsDocPath(organization, saul.secretKey),
+          condition: (data) => Boolean(data),
+        });
 
         await expect(
           httpsCallable(

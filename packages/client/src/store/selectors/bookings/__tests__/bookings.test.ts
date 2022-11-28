@@ -47,18 +47,22 @@ const setupBookingsTest = ({
   date: DateTime;
   slotsByDay: NonNullable<LocalStore["firestore"]["data"]["slotsByDay"]>;
 }): ReturnType<typeof getNewStore> => {
-  const store = getNewStore();
-
-  store.dispatch(changeCalendarDate(date));
-  store.dispatch(
-    updateLocalDocuments(OrgSubCollection.Bookings, {
-      [saul.secretKey]: {
-        ...getCustomerBase(saul),
-        categories: [category],
+  const store = getNewStore({
+    firestore: {
+      data: {
+        bookings: {
+          [saul.secretKey]: {
+            ...getCustomerBase(saul),
+            categories: [category as Category],
+          },
+        },
+        slotsByDay,
       },
-    })
-  );
-  store.dispatch(updateLocalDocuments(OrgSubCollection.SlotsByDay, slotsByDay));
+    },
+    app: {
+      calendarDay: date,
+    },
+  });
 
   return store;
 };

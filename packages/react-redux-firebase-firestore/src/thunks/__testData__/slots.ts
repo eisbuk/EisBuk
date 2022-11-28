@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 
 import { Collection, luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 
-import { getOrganization } from "../../config";
+import { organization } from "../../__testSetup__/firestoreSetup";
 
 import { TestEnvSetup } from "../__testUtils__/utils";
 
@@ -35,7 +35,7 @@ export const createTestSlots: TestEnvSetup = async (db) => {
         doc(
           db,
           Collection.Organizations,
-          getOrganization(),
+          organization,
           OrgSubCollection.Slots,
           slot.id
         ),
@@ -47,6 +47,6 @@ export const createTestSlots: TestEnvSetup = async (db) => {
 
 export const slotsCollPath = [
   Collection.Organizations,
-  getOrganization(),
+  organization,
   OrgSubCollection.Slots,
 ].join("/");

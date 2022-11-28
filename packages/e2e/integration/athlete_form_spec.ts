@@ -139,6 +139,7 @@ describe("add athlete", () => {
     cy.getAttrWith("data-testid", "add-athlete").click();
     cy.getAttrWith("name", "subscriptionNumber").should("have.value", "1");
   });
+
   it("prefills the number field with max + 1", () => {
     cy.initAdminApp().then((organization) =>
       cy.updateFirestore(organization, ["saul_with_extended_date.json"])
@@ -152,6 +153,7 @@ describe("add athlete", () => {
     cy.getAttrWith("name", "subscriptionNumber").should("have.value", "42");
   });
 });
+
 describe("athlete profile", () => {
   beforeEach(() => {
     // Initialize app, create default user,
@@ -160,22 +162,17 @@ describe("athlete profile", () => {
     cy.initAdminApp().then((organization) =>
       cy.updateFirestore(organization, ["customers.json"])
     );
+    cy.signOut();
 
     cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-    cy.signOut();
-    // cy.pause()
-
-    // this tab switchis a work around because for some reason
-    // on first profile tab visit customer data isn't loaded
-    cy.contains(i18n.t(CustomerNavigationLabel.Profile) as string).click();
-    cy.contains(i18n.t(CustomerNavigationLabel.Book) as string).click();
-    cy.contains(i18n.t(CustomerNavigationLabel.Profile) as string).click();
+    cy.clickButton(i18n.t(CustomerNavigationLabel.Profile) as string);
+    // Toggle edit mode
+    cy.clickButton(i18n.t(ActionButton.Edit) as string);
+    // Wait for edit mode to be enabled before making furter assertions
+    cy.get("input").first().should("be.enabled");
   });
 
-  it("should fill and submit athlete profile form", () => {
-    // cy.pause()
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
-    console.log({ saul });
+  it("fills and submits athlete profile form", () => {
     cy.getAttrWith("name", "name").should("have.attr", "value", saul.name);
     cy.getAttrWith("name", "name").clearAndType(saul.name);
 
@@ -193,9 +190,8 @@ describe("athlete profile", () => {
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
   });
-  it("allows customer form submission with minimal fields", () => {
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
 
+  it("allows customer form submission with minimal fields", () => {
     cy.getAttrWith("name", "certificateExpiration").clear();
     cy.getAttrWith("name", "covidCertificateReleaseDate").clear();
 
@@ -204,8 +200,6 @@ describe("athlete profile", () => {
   });
 
   it("doesn't allow invalid date input format", () => {
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
-
     cy.getAttrWith("name", "birthday").clearAndType("12 nov 2021");
 
     cy.getAttrWith("type", "submit").click();
@@ -214,8 +208,6 @@ describe("athlete profile", () => {
   });
 
   it("doesn't allow invalid phone input format", () => {
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
-
     // test phone number for edge cases
     cy.getAttrWith("name", "phone").clearAndType("foo 2222 868");
     cy.getAttrWith("type", "submit").click();
@@ -242,10 +234,11 @@ describe("athlete profile", () => {
     // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
     cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
     cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
+    cy.clickButton(i18n.t(ActionButton.Edit) as string);
 
     cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
     cy.getAttrWith("type", "submit").click();
@@ -253,16 +246,15 @@ describe("athlete profile", () => {
       "not.exist"
     );
   });
-  it("replaces different date separators ('.' and '-') with '/'", () => {
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
 
+  it("replaces different date separators ('.' and '-') with '/'", () => {
     // dashes
     cy.getAttrWith("placeholder", "dd/mm/yyyy")
       .first()
       .clearAndType("12-12-1990");
+    cy.getAttrWith("value", "12/12/1990");
 
     // dots
-    cy.getAttrWith("value", "12/12/1990");
     cy.getAttrWith("placeholder", "dd/mm/yyyy")
       .first()
       .clearAndType("12.12.1990");
@@ -270,8 +262,6 @@ describe("athlete profile", () => {
   });
 
   it("handles edge (passable) cases of input", () => {
-    cy.contains(i18n.t(ActionButton.Edit) as string).click();
-
     const archer = {
       // test two names string (should be passable)
       name: "Sterling Malory",

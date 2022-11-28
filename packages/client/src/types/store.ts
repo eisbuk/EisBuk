@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
-import { Dispatch } from "redux";
+import { Dispatch, Reducer, Action as ReducerAction } from "redux";
 
 import { User } from "@firebase/auth";
 
@@ -22,28 +22,37 @@ import { CustomerRoute } from "@/enums/routes";
 /**
  * Whitelisted actions for app reducer
  */
-export type AppAction = Action.ChangeDay;
+export type AppAction =
+  | Action.ChangeDay
+  | Action.StoreSecretKey
+  | Action.RemoveSecretKey;
 
 /**
  * Record of payloads for each of the app reducer actions
  */
 interface AppActionPayload {
   [Action.ChangeDay]: DateTime;
+  [Action.StoreSecretKey]: string;
 }
 /**
  * App reducer action generic
  * gets passed one of whitelisted app reducer actions as type parameter
  */
-export interface AppReducerAction<A extends AppAction> {
-  type: A;
-  payload: AppActionPayload[A];
-}
+export type AppReducerAction<A extends AppAction> = A extends
+  | Action.StoreSecretKey
+  | Action.ChangeDay
+  ? {
+      type: A;
+      payload: AppActionPayload[A];
+    }
+  : { type: A };
 /**
  * `app` portion of the local store
  */
 export interface AppState {
   notifications: Notification[];
   calendarDay: DateTime;
+  secretKey?: string;
 }
 // #endregion app
 
@@ -121,18 +130,6 @@ export interface CopyPasteState {
 }
 // #endregion copyPaste
 
-// #region thunks
-type GetState = () => LocalStore;
-/**
- * Async Thunk in charge of updating the firestore and dispatching action
- * to local store with respect to firestore update outcome
- */
-export interface FirestoreThunk {
-  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
-}
-
-// #endregion thunks
-
 // #region FullStore
 export interface LocalStore {
   firestore: FirestoreState;
@@ -151,3 +148,22 @@ export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {
   [CustomerRoute.Calendar]: S extends SlotsById ? undefined : SlotsById;
 }
 // #endregion mappedValues
+
+// #region misc
+type GetState = () => LocalStore;
+/**
+ * Async Thunk in charge of updating the firestore and dispatching action
+ * to local store with respect to firestore update outcome
+ */
+export interface FirestoreThunk {
+  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
+}
+
+/** Interface used for factory functions returning reducer for a slice of the store */
+export interface ReducerFactory<
+  S extends Record<string, any>,
+  A extends ReducerAction<any>
+> {
+  (initialState?: S extends any[] ? S : Partial<S>): Reducer<S, A>;
+}
+// #endregion misc

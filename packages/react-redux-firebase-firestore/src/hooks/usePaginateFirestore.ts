@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CollectionSubscription } from "../types";
+import { SubscriptionWhitelist } from "../types";
 
 import { updateSubscription } from "../thunks/subscribe";
 
@@ -20,18 +20,22 @@ const usePaginateFirestore = (): void => {
 
   useEffect(() => {
     Object.keys(listeners).forEach((collection) => {
-      const listener = listeners[collection as CollectionSubscription];
+      const listener = listeners[collection as SubscriptionWhitelist];
       if (listener?.documents || listener?.range) {
         // if constraint is set, extend constraint and update unsubscribe function
         // if no constraint is set, we're already subscribed to all collection entries
         dispatch(
           updateSubscription({
             storeAs: collection,
-            collPath: getCollectionPath(collection as CollectionSubscription),
-            constraint: getConstraintForColl(
-              collection as CollectionSubscription,
-              calendarDay
+            collPath: getCollectionPath(
+              collection as SubscriptionWhitelist,
+              listener.meta
             ),
+            constraint: getConstraintForColl(
+              collection as SubscriptionWhitelist,
+              { ...listener.meta, currentDate: calendarDay }
+            ),
+            meta: listener.meta,
           })
         );
       }

@@ -7,6 +7,8 @@ export enum Action {
   CloseSnackbar = "@@Eisbuk/CLOSE_SNACKBAR",
 
   ChangeDay = "@@Eisbuk/CHANGE_DAY",
+  StoreSecretKey = "@@Eisbuk/STORE_SECRET_KEY",
+  RemoveSecretKey = "@@Eisbuk/REMOVE_SECRET_KEY",
 
   SetSlotTime = "@@Eisbuk/SET_SLOT_TIME",
 

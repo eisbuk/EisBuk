@@ -1,23 +1,19 @@
-import { DateTime } from "luxon";
-
 import {
   Collection,
   OrgSubCollection,
   BookingSubCollection,
 } from "@eisbuk/shared";
 
-import { CollectionSubscription } from "../types";
+import { SubscriptionMeta, SubscriptionWhitelist } from "../types";
 
 import { FirestoreListenerConstraint } from "../thunks/subscribe";
 
-import { getOrganization } from "../config";
-
-const getSecretKey = () => localStorage.getItem("secretKey") || "";
-
 export const getConstraintForColl = (
-  collection: CollectionSubscription,
-  currentDate: DateTime
+  collection: SubscriptionWhitelist,
+  meta: SubscriptionMeta
 ): FirestoreListenerConstraint | null => {
+  const { organization, secretKey = "", currentDate } = meta;
+
   // create date range constraint
   const startDateISO = currentDate
     .minus({ months: 1 })
@@ -36,13 +32,13 @@ export const getConstraintForColl = (
   );
 
   const collectionConstraintLookup: Record<
-    CollectionSubscription,
+    SubscriptionWhitelist,
     FirestoreListenerConstraint | null
   > = {
-    [Collection.Organizations]: { documents: [getOrganization()] },
-    [Collection.PublicOrgInfo]: { documents: [getOrganization()] },
+    [Collection.Organizations]: { documents: [organization] },
+    [Collection.PublicOrgInfo]: { documents: [organization] },
     [OrgSubCollection.Attendance]: { range },
-    [OrgSubCollection.Bookings]: { documents: [getSecretKey()] },
+    [OrgSubCollection.Bookings]: { documents: [secretKey] },
     [OrgSubCollection.SlotsByDay]: { documents },
     [OrgSubCollection.Customers]: null,
     [BookingSubCollection.BookedSlots]: { range },
@@ -54,11 +50,12 @@ export const getConstraintForColl = (
 };
 
 export const getCollectionPath = (
-  collection: CollectionSubscription
+  collection: SubscriptionWhitelist,
+  meta: Omit<SubscriptionMeta, "currentDate">
 ): string => {
-  const organizationPath = [Collection.Organizations, getOrganization()].join(
-    "/"
-  );
+  const { organization, secretKey = "" } = meta;
+
+  const organizationPath = [Collection.Organizations, organization].join("/");
 
   const collectionPathLookup = {
     [Collection.Organizations]: Collection.Organizations,
@@ -87,19 +84,19 @@ export const getCollectionPath = (
     [BookingSubCollection.BookedSlots]: [
       organizationPath,
       OrgSubCollection.Bookings,
-      getSecretKey(),
+      secretKey,
       BookingSubCollection.BookedSlots,
     ].join("/"),
     [BookingSubCollection.AttendedSlots]: [
       organizationPath,
       OrgSubCollection.Bookings,
-      getSecretKey(),
+      secretKey,
       BookingSubCollection.AttendedSlots,
     ].join("/"),
     [BookingSubCollection.Calendar]: [
       organizationPath,
       OrgSubCollection.Bookings,
-      getSecretKey(),
+      secretKey,
       BookingSubCollection.Calendar,
     ].join("/"),
   };

@@ -7,6 +7,8 @@ import { Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 import { Printer } from "@eisbuk/svg";
 
+import { getOrganization } from "@/lib/getters";
+
 import AttendanceSheet, {
   AttendanceSheetSlot,
 } from "@/components/atoms/AttendanceSheet";
@@ -28,10 +30,10 @@ const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
 
-  useFirestoreSubscribe([
-    OrgSubCollection.Attendance,
-    OrgSubCollection.Customers,
-    OrgSubCollection.SlotsByDay,
+  useFirestoreSubscribe(getOrganization(), [
+    { collection: OrgSubCollection.Attendance },
+    { collection: OrgSubCollection.Customers },
+    { collection: OrgSubCollection.SlotsByDay },
   ]);
 
   const attendanceSlots = useSelector(getSlotsWithAttendance);

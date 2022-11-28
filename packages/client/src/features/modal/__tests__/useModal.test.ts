@@ -31,7 +31,7 @@ const dummySlot: SlotInterface = {
 
 const modal1: Omit<ModalPayload<"CancelBookingDialog">, "id"> = {
   component: "CancelBookingDialog",
-  props: { ...dummySlot, interval },
+  props: { ...dummySlot, secretKey: "12345", interval },
 };
 
 describe("useModal hook", () => {

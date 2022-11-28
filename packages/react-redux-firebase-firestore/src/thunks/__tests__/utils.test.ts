@@ -1,11 +1,11 @@
-import { CollectionSubscription } from "../../types";
+import { SubscriptionWhitelist } from "../../types";
 
 import { createGetDocsInStore } from "../utils";
 
 describe("Firestore subscriptions", () => {
   describe("createGetDocsInStore util", () => {
     test("should return docs with belonging to appropriate range with appropriate inclusivity", () => {
-      const collection = "test-collection" as CollectionSubscription;
+      const collection = "test-collection" as SubscriptionWhitelist;
       const range = ["date", "2022-01-02", "2022-01-04"] as [
         string,
         string,
