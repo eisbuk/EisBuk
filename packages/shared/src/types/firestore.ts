@@ -180,57 +180,51 @@ export interface SlotsByDay {
 // #region customers
 
 /**
- * Basic customer data used in multiple places (such as bookings customer document)
+ * A base for customer entry: used to self register a customer, as well as the data a customer can later
+ * update themselves.
  */
 export interface CustomerBase {
-  id: string;
   name: string;
   surname: string;
-  categories: Category[];
-  /** @TODO remove when migration to categories is done */
-  category?: Category[];
-  photoURL?: string;
-  deleted?: boolean;
-  extendedDate?: string;
-}
-/**
- * Customer entry in the Firestore DB
- */
-export interface Customer extends CustomerBase {
-  secretKey: string;
-  birthday?: string;
   email?: string;
   phone?: string;
+  birthday?: string;
   certificateExpiration: string;
   covidCertificateReleaseDate: string;
   covidCertificateSuspended: boolean;
-  subscriptionNumber?: string;
+  photoURL?: string;
 }
-export type SelfRegCustomer = Pick<
-  Customer,
-  | "name"
-  | "surname"
-  | "phone"
-  | "email"
-  | "photoURL"
-  | "birthday"
-  | "certificateExpiration"
-  | "covidCertificateReleaseDate"
-  | "covidCertificateSuspended"
->;
+/**
+ * A standard customer entry available to both the customer themself as well as to the admin's full profile view
+ */
+export interface Customer extends CustomerBase {
+  id: string;
+  secretKey: string;
+  categories: Category[];
+  extendedDate?: string;
+}
+/**
+ * A full customer structure, including all of the regular properties, plus some administration data available only
+ * to admins
+ */
+export interface CustomerFull extends Customer {
+  subscriptionNumber: string;
+  deleted?: boolean;
+}
+
 /**
  * Object with birthday prop and customer prop
  */
 export interface CustomersByBirthday {
   birthday: string;
-  customers: Customer[];
+  customers: CustomerFull[];
 }
 /**
  * Customer with loose data. The server generated ids (`id`, `secretKey`)
  * are optional
  */
-export type CustomerLoose = Omit<Omit<Customer, "id">, "secretKey"> &
-  Partial<Pick<Customer, "id"> & Pick<Customer, "secretKey">>;
+export type CustomerLoose = Omit<Customer, "id" | "secretKey"> &
+  Partial<Pick<Customer, "id" | "secretKey">>;
 
 // #endregion customers
 
@@ -256,7 +250,7 @@ export interface CustomerBookingEntry {
 /**
  * Bookings document for customer
  */
-export interface CustomerBookings extends CustomerBase {
+export interface CustomerBookings extends Customer {
   /**
    * Slots the customer has booked, keyed by slot id and containing `date` and `bookedInterval`
    */
@@ -378,7 +372,7 @@ export interface FirestoreSchema {
         [monthStr: string]: SlotsByDay;
       };
       [OrgSubCollection.Customers]: {
-        [customerId: string]: Customer;
+        [customerId: string]: CustomerFull;
       };
       [OrgSubCollection.Bookings]: {
         [secretKey: string]: CustomerBookings;

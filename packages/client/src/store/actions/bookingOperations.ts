@@ -143,7 +143,7 @@ export const updateBookingCustomer: {
     try {
       const organization = getOrganization();
 
-      const handler = CloudFunction.UpdateCustomerByCustomer;
+      const handler = CloudFunction.CustomerSelfUpdate;
       const payload = {
         organization,
         customer,

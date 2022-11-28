@@ -9,14 +9,14 @@ import i18n, {
   AuthErrorMessage,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { Customer } from "@eisbuk/shared";
+import { CustomerFull } from "@eisbuk/shared";
 
 import { PrivateRoutes, defaultUser } from "../temp";
 
 import testCustomers from "../__testData__/customers.json";
 
 // extract saul from test data .json
-const saul = testCustomers.customers.saul as Required<Customer>;
+const saul = testCustomers.customers.saul as Required<CustomerFull>;
 
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>

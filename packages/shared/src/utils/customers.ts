@@ -1,61 +1,30 @@
-import { Customer, CustomerBase } from "../types/firestore";
+import { Customer } from "../types/firestore";
 
 /**
- * A helper function used to strip excess customer data
- * and create customer base data (used as `bookings` data for customer)
- * @param customer customer entry (without `secretKey` for convenient testing)
- * @returns customer base structure
+ * A helper function used to strip admin-only customer data as well as
+ * to remove all of the undefined fields (or provide fallback)
+ * This is used to create a bookings entry for customer.
+ * @param customer
+ * @returns
  */
-export const getCustomerBase = ({
-  id,
-  name,
-  surname,
+export const sanitizeCustomer = ({
   categories,
-  extendedDate,
-  deleted,
-}: Omit<Customer, "secretKey">): CustomerBase => ({
-  id,
-  name,
-  surname,
-  categories,
-  // add extended date only if it exists, rather than saving `extendedDate: undefined`
-  ...(extendedDate ? { extendedDate } : {}),
-  deleted: Boolean(deleted),
-});
-
-/**
- * A helper function used to strip excess customer data
- * and create customer data (used as `bookings` data for customer)
- * @param customer customer entry (without `secretKey` for convenient testing)
- * @returns customer in bookings structure
- */
-export const getCustomer = ({
-  id,
-  name,
-  surname,
-  categories,
-  extendedDate,
-  deleted,
-  birthday,
-  covidCertificateReleaseDate,
-  covidCertificateSuspended,
-  certificateExpiration,
   email,
   phone,
-}: Omit<Customer, "secretKey">): Omit<Customer, "secretKey"> => {
-  return {
-    id,
-    name,
-    surname,
-    categories: categories || [],
-    // add extended date only if it exists, rather than saving `extendedDate: undefined`
-    ...(extendedDate ? { extendedDate } : {}),
-    deleted: Boolean(deleted),
-    ...(birthday ? { birthday } : {}),
-    ...(covidCertificateReleaseDate ? { covidCertificateReleaseDate } : {}),
-    ...(covidCertificateSuspended ? { covidCertificateSuspended } : {}),
-    ...(certificateExpiration ? { certificateExpiration } : {}),
-    ...(email ? { email } : {}),
-    ...(phone ? { phone } : {}),
-  };
+  extendedDate,
+  birthday,
+  photoURL,
+  ...restCustomer
+}: Customer): Customer => {
+  const customer: Customer = { ...restCustomer, categories: [] };
+
+  // Add optional values only if defined
+  if (categories) customer.categories = categories;
+  if (email) customer.email = email;
+  if (phone) customer.phone = phone;
+  if (birthday) customer.birthday = birthday;
+  if (extendedDate) customer.extendedDate = extendedDate;
+  if (photoURL) customer.photoURL = photoURL;
+
+  return customer;
 };

@@ -7,8 +7,8 @@ import { httpsCallable, FunctionsError } from "@firebase/functions";
 import {
   HTTPSErrors,
   BookingsErrors,
-  getCustomer,
-  SelfRegCustomer,
+  sanitizeCustomer,
+  CustomerBase,
   Collection,
   Customer,
 } from "@eisbuk/shared";
@@ -249,8 +249,7 @@ describe("Cloud functions", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { subscriptionNumber, ...getSaul } = getCustomer(saul);
-        expect(updatedData).toEqual({ ...getSaul, deleted: false });
+        expect(updatedData).toEqual(sanitizeCustomer(saul));
       }
     );
 
@@ -335,7 +334,7 @@ describe("Cloud functions", () => {
   });
 
   describe("customerSelfRegister", () => {
-    const minimalSaul: SelfRegCustomer = {
+    const minimalSaul: CustomerBase = {
       name: saul.name,
       surname: saul.surname,
       email: saul.email,
@@ -390,7 +389,7 @@ describe("Cloud functions", () => {
         });
 
         expect(bookingsCustomer).toEqual(
-          getCustomer({
+          sanitizeCustomer({
             ...minimalSaul,
             secretKey,
             id,

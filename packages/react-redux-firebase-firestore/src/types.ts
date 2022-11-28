@@ -7,6 +7,7 @@ import {
   OrgSubCollection,
   BookingSubCollection,
   Customer,
+  CustomerFull,
   CustomerBookingEntry,
   CalendarEvents,
   SlotsByDay,
@@ -49,7 +50,7 @@ export interface FirestoreThunk {
  */
 export interface FirestoreData {
   [Collection.Organizations]: { [organization: string]: OrganizationData };
-  [OrgSubCollection.Customers]: { [customerId: string]: Customer };
+  [OrgSubCollection.Customers]: { [customerId: string]: CustomerFull };
   [OrgSubCollection.Bookings]: {
     /** This is @TEMP make this only one entry (without secretKey) when we add 'transform' functionality to firestore subscribe */
     [secretKey: string]: Omit<Customer, "secretKey">;

@@ -7,7 +7,7 @@ import {
   setDoc,
 } from "@firebase/firestore";
 
-import { CustomerLoose, CustomerBase } from "@eisbuk/shared";
+import { CustomerLoose, Customer } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
@@ -72,7 +72,7 @@ export const updateCustomer =
  * @returns async thunk
  */
 export const deleteCustomer =
-  (customer: CustomerBase): FirestoreThunk =>
+  (customer: Customer): FirestoreThunk =>
   async (dispatch) => {
     try {
       const db = getFirestore();

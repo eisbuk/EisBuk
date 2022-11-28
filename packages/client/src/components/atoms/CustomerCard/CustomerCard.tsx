@@ -10,7 +10,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import Close from "@mui/icons-material/Close";
 
-import { Customer, OrganizationData } from "@eisbuk/shared";
+import { CustomerFull, OrganizationData } from "@eisbuk/shared";
 import {
   useTranslation,
   CategoryLabel,
@@ -27,7 +27,7 @@ import ExtendedDateField from "./ExtendedDateField";
 import { capitalizeFirst } from "@/utils/helpers";
 
 interface CustomerCardProps extends BaseModalProps {
-  customer: Customer | null;
+  customer: CustomerFull | null;
   displayName: OrganizationData["displayName"];
 }
 
@@ -50,8 +50,8 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
    * customer's record values
    * @param customer
    */
-  const renderCustomerData = (customer: Customer): JSX.Element => {
-    const renderOrder: (keyof Customer)[] = [
+  const renderCustomerData = (customer: CustomerFull): JSX.Element => {
+    const renderOrder: (keyof CustomerFull)[] = [
       "name",
       "surname",
       "categories",

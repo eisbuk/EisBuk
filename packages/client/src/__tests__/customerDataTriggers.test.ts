@@ -4,7 +4,7 @@
 
 import { collection, doc, setDoc, getDocs } from "@firebase/firestore";
 
-import { Category, Customer, getCustomer } from "@eisbuk/shared";
+import { Category, Customer, sanitizeCustomer } from "@eisbuk/shared";
 
 import { db } from "@/__testSetup__/firestoreSetup";
 import { setUpOrganization } from "@/__testSetup__/node";
@@ -75,7 +75,7 @@ describe("Customer triggers", () => {
         condition: (data) => Boolean(data),
       });
       // customer base structure of saul's data (for comparison)
-      const saulBase = getCustomer({ ...newSaul, id: saulId });
+      const saulBase = sanitizeCustomer({ ...newSaul, id: saulId, secretKey });
       expect(bookingsEntry).toEqual(saulBase);
     }
   );

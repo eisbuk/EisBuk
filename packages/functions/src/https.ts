@@ -5,10 +5,11 @@ import {
   Collection,
   OrgSubCollection,
   BookingsErrors,
-  Customer,
   HTTPSErrors,
   OrganizationData,
-  SelfRegCustomer,
+  CustomerBase,
+  Customer,
+  CustomerFull,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -44,7 +45,8 @@ export const finalizeBookings = functions
       );
     }
 
-    const { secretKey: existingSecretKey } = customerInStore.data() as Customer;
+    const { secretKey: existingSecretKey } =
+      customerInStore.data() as CustomerFull;
 
     if (secretKey !== existingSecretKey) {
       throw new functions.https.HttpsError(
@@ -91,7 +93,7 @@ export const customerSelfUpdate = functions
       }
 
       const { secretKey: existingSecretKey } =
-        customerInStore.data() as Customer;
+        customerInStore.data() as CustomerFull;
 
       if (customer.secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
@@ -118,7 +120,7 @@ export const customerSelfRegister = functions
     async (payload: {
       organization: string;
       registrationCode: string;
-      customer: SelfRegCustomer;
+      customer: CustomerBase;
     }) => {
       checkRequiredFields(payload, ["organization", "customer"]);
       checkRequiredFields(payload.customer, [
