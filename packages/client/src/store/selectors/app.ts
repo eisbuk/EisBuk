@@ -25,3 +25,5 @@ export const getAboutOrganization = (
   state: LocalStore
 ): Pick<OrganizationData, "displayName" | "location" | "emailFrom"> =>
   state.firestore.data.publicOrgInfo || {};
+
+export const getSecretKey = (state: LocalStore) => state.app.secretKey;

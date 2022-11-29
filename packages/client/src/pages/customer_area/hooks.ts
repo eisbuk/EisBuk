@@ -6,31 +6,30 @@ import { useDispatch, useSelector } from "react-redux";
 import { CalendarNavProps } from "@eisbuk/ui";
 
 import { getCalendarDay } from "@/store/selectors/app";
-import { changeCalendarDate } from "@/store/actions/appActions";
-import { setSecretKey, unsetSecretKey } from "@/utils/localStorage";
+import {
+  changeCalendarDate,
+  removeSecretKey,
+  storeSecretKey,
+} from "@/store/actions/appActions";
+
 /**
  * Secret key logic abstracted away in a hook for easier readability
  */
-export const useSecretKey = () => {
+export const useSecretKey = (): string => {
   // Secret key is provided as a route param to the customer_area page
   const { secretKey } = useParams<{
     secretKey: string;
   }>();
+  const dispatch = useDispatch();
 
-  /**
-   * @TODO this disables the user (admin)
-   * from looking at bookings for multiple
-   * customers in different tabs and we should find
-   * a way around it (probably store the key in store)
-   */
-  // Store secretKey to localStorage
+  // Store secretKey to redux store
   // for easier access
   useEffect(() => {
-    setSecretKey(secretKey);
+    dispatch(storeSecretKey(secretKey));
 
     return () => {
       // remove secretKey from local storage on unmount
-      unsetSecretKey();
+      dispatch(removeSecretKey);
     };
   }, [secretKey]);
 

@@ -5,11 +5,11 @@ import {
   applyMiddleware,
 } from "redux";
 import thunk from "redux-thunk";
+import { DateTime } from "luxon";
 
 import { GlobalStateFragment } from "../types";
 
-import firestore from "../reducer";
-import { DateTime } from "luxon";
+import { createFirestoreReducer } from "../reducer";
 
 /**
  * Creates a test store resembling one used in production. It features a store chunk
@@ -18,7 +18,7 @@ import { DateTime } from "luxon";
 export const getTestStore = (): Store<GlobalStateFragment> =>
   createStore(
     combineReducers({
-      firestore,
+      firestore: createFirestoreReducer(),
       /** This is extremely @TEMP and should not matter when we make this more generic use case */
       app: (state = { calendarDay: DateTime.now() }, action) => {
         if (action.type === "@@Eisbuk/CHANGE_DAY") {

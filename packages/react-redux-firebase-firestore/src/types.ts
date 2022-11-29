@@ -16,6 +16,7 @@ import {
 } from "@eisbuk/shared";
 
 import { FirestoreAction } from "./enums";
+import { DateTime } from "luxon";
 
 /**
  * Global state can be arbitrary, but it should contain
@@ -26,6 +27,13 @@ export interface GlobalStateFragment {
 }
 
 type GetState = () => GlobalStateFragment;
+
+/** Metadata for subscriptions (this is stored in listener state and used by different utils to get colleciton path, constaint, etc.) */
+export interface SubscriptionMeta {
+  organization: string;
+  secretKey?: string;
+  currentDate: DateTime;
+}
 
 /**
  * Async Thunk in charge of updating the firestore and dispatching action
@@ -88,6 +96,10 @@ export interface FirestoreListener {
    */
   range?: [string, string, string];
   /**
+   * Metadata of the subscription, such as 'orgnaization' name, 'secretKey', date, etc.
+   */
+  meta: SubscriptionMeta;
+  /**
    * Document id's we're subscribing to (i.e. `slostByDay` month entries)
    * @example
    * ```
@@ -102,7 +114,7 @@ export interface FirestoreListener {
  * A whitelist of collections we can add a firebase subscrption for
  * @TEMP this should just be strings to make the package more generic
  */
-export type CollectionSubscription =
+export type SubscriptionWhitelist =
   | Collection.Organizations
   | Collection.PublicOrgInfo
   | OrgSubCollection.SlotsByDay
@@ -112,6 +124,19 @@ export type CollectionSubscription =
   | BookingSubCollection.BookedSlots
   | BookingSubCollection.AttendedSlots
   | BookingSubCollection.Calendar;
+
+export type CollectionSubscription =
+  | {
+      collection: Exclude<
+        SubscriptionWhitelist,
+        OrgSubCollection.Bookings | BookingSubCollection
+      >;
+      meta?: Record<string, any>;
+    }
+  | {
+      collection: OrgSubCollection.Bookings | BookingSubCollection;
+      meta: { secretKey: string };
+    };
 
 /**
  * Record of payloads for each of the firestore reducer actions
@@ -126,10 +151,10 @@ interface FirestorReducerPayload {
     ids: string[];
   };
   [FirestoreAction.UpdateFirestoreListener]: {
-    collection: CollectionSubscription;
+    collection: SubscriptionWhitelist;
     listener: Partial<FirestoreListener>;
   };
-  [FirestoreAction.DeleteFirestoreListener]: CollectionSubscription;
+  [FirestoreAction.DeleteFirestoreListener]: SubscriptionWhitelist;
 }
 /**
  * Copy Paste reducer action generic
@@ -144,5 +169,5 @@ export interface FirestoreReducerAction<A extends FirestoreAction> {
  */
 export type FirestoreState = {
   data: Partial<FirestoreData>;
-  listeners: { [index in CollectionSubscription]?: FirestoreListener };
+  listeners: { [index in SubscriptionWhitelist]?: FirestoreListener };
 };

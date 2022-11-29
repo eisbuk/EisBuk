@@ -49,6 +49,7 @@ describe("Firestore subscriptions", () => {
           storeAs: OrgSubCollection.Customers,
           collPath: "",
           constraint: null,
+          meta: {} as any,
         },
         consumerId
       )(dispatch, getState);
@@ -73,6 +74,7 @@ describe("Firestore subscriptions", () => {
           storeAs: OrgSubCollection.Customers,
           collPath: "",
           constraint: null,
+          meta: {} as any,
         },
         consumerId
       )(dispatch, getState);

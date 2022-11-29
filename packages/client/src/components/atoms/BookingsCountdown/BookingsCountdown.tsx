@@ -23,9 +23,9 @@ import ConfirmDialog from "@/components/global/ConfirmDialog";
 import useCountdown from "@/hooks/useCountdown";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
+import { getSecretKey } from "@/store/selectors/app";
 
 import { getOrganization } from "@/lib/getters";
-import { getSecretKey } from "@/utils/localStorage";
 
 export interface BookingsCountdownProps {
   message: BookingCountdownMessage;
@@ -48,7 +48,7 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   const classes = useStyles();
 
   const { id } = useSelector(getBookingsCustomer) || {};
-  const secretKey = getSecretKey();
+  const secretKey = useSelector(getSecretKey);
 
   // countdown flow
   const countdown = useCountdown(deadline, "hour");

@@ -16,6 +16,8 @@ import { OrgSubCollection } from "@eisbuk/shared";
 import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
+import { getOrganization } from "@/lib/getters";
+
 import ByDayView from "./views/ByDay";
 import ByMonthView from "./views/ByMonth";
 
@@ -60,10 +62,10 @@ const useDate = (): Pick<CalendarNavProps, "date" | "onChange"> => {
  */
 const AttendancePage: React.FC = () => {
   // Subscribe to necessary collections
-  useFirestoreSubscribe([
-    OrgSubCollection.Attendance,
-    OrgSubCollection.Customers,
-    OrgSubCollection.SlotsByDay,
+  useFirestoreSubscribe(getOrganization(), [
+    { collection: OrgSubCollection.Attendance },
+    { collection: OrgSubCollection.Customers },
+    { collection: OrgSubCollection.SlotsByDay },
   ]);
 
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.ByDay);

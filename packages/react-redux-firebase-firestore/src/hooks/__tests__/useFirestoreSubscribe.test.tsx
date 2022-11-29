@@ -6,16 +6,17 @@ import { OrgSubCollection } from "@eisbuk/shared";
 
 import { CollectionSubscription } from "../../types";
 
-import { getTestStore } from "../../__testUtils__/store";
-
 import useFirestoreSubscribe from "../useFirestoreSubscribe";
 
 import * as listenerThunks from "../../thunks";
 
 import { getFirestoreListeners } from "../../selectors";
 
+import { organization } from "../../__testSetup__/firestoreSetup";
+
 import { isEmpty } from "../../utils/helpers";
 
+import { getTestStore } from "../../__testUtils__/store";
 import { testHookWithRedux } from "../../__testUtils__/testHooksWithRedux";
 
 // We're mocking a thunk calling out to firestore
@@ -34,22 +35,27 @@ describe("Firestore subscriptions", () => {
       let listeners = getFirestoreListeners(store.getState());
       // check that no listeners exist to begin with
       expect(isEmpty(listeners)).toBe(true);
-      const collections: CollectionSubscription[] = [
-        OrgSubCollection.Attendance,
-        OrgSubCollection.Customers,
+      const subscriptions: CollectionSubscription[] = [
+        { collection: OrgSubCollection.Attendance },
+        { collection: OrgSubCollection.Customers },
       ];
-      testHookWithRedux(store, useFirestoreSubscribe, collections);
+      testHookWithRedux(
+        store,
+        useFirestoreSubscribe,
+        organization,
+        subscriptions
+      );
       listeners = getFirestoreListeners(store.getState());
-      collections.forEach((coll) => {
-        expect(listeners[coll]).toBeTruthy();
+      subscriptions.forEach((subscription) => {
+        expect(listeners[subscription.collection]).toBeTruthy();
       });
     });
 
     test("should unubscribe from subscribed collection if said collection is not included in updated collection on props update", () => {
       const store = getTestStore();
       const initialCollections: CollectionSubscription[] = [
-        OrgSubCollection.Attendance,
-        OrgSubCollection.Customers,
+        { collection: OrgSubCollection.Attendance },
+        { collection: OrgSubCollection.Customers },
       ];
       // subscribe to both of the `initialCollections`
       // we don't need to assert that listeners for both collections exist
@@ -57,10 +63,13 @@ describe("Firestore subscriptions", () => {
       const updateHookProps = testHookWithRedux(
         store,
         useFirestoreSubscribe,
+        organization,
         initialCollections
       );
       // updating props without "attendnace" should remove a listener for said collection
-      updateHookProps([OrgSubCollection.Customers]);
+      updateHookProps(organization, [
+        { collection: OrgSubCollection.Customers },
+      ]);
       const listeners = getFirestoreListeners(store.getState());
       expect(listeners[OrgSubCollection.Attendance]).toBeFalsy();
       // a listener for "customers" collection should be left untouched
@@ -72,17 +81,20 @@ describe("Firestore subscriptions", () => {
       // subscribe to "customers" as subscribed collection
       // and check subscription
       const addListenerSpy = jest.spyOn(listenerThunks, "addFirestoreListener");
-      const updateHookProps = testHookWithRedux(store, useFirestoreSubscribe, [
-        OrgSubCollection.Customers,
-      ]);
+      const updateHookProps = testHookWithRedux(
+        store,
+        useFirestoreSubscribe,
+        organization,
+        [{ collection: OrgSubCollection.Customers }]
+      );
       // `addFirestoreListener` should only have been called once: for 'customers'
       expect(addListenerSpy).toHaveBeenCalledTimes(1);
       const firstCall = addListenerSpy.mock.calls[0];
       expect(firstCall[0].storeAs).toEqual(OrgSubCollection.Customers);
       // add different collection
-      updateHookProps([
-        OrgSubCollection.Attendance,
-        OrgSubCollection.Customers,
+      updateHookProps(organization, [
+        { collection: OrgSubCollection.Attendance },
+        { collection: OrgSubCollection.Customers },
       ]);
       // `addFirestoreListener` should have been called once for each subscribed collection: 'customers', 'attendance'
       expect(addListenerSpy).toHaveBeenCalledTimes(2);

@@ -19,6 +19,8 @@ const app = initializeApp({
   apiKey: "aaa",
 });
 
+export const organization = "test-organization";
+
 export const auth = getAuth(app);
 connectAuthEmulator(auth, "http://localhost:9098");
 

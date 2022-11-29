@@ -1,9 +1,4 @@
-import { OrgSubCollection } from "@eisbuk/shared";
-
 import { getNewStore } from "@/store/createStore";
-
-import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
-import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { getSlotsWithAttendance } from "../slotAttendance";
 import {
@@ -24,17 +19,18 @@ import { walt, jian, saul } from "@/__testData__/customers";
 
 describe("Selectors ->", () => {
   describe("Test 'getSlotsWithAttendance'", () => {
-    const testStore = getNewStore();
-    testStore.dispatch(changeCalendarDate(testDateLuxon));
-    testStore.dispatch(
-      updateLocalDocuments(OrgSubCollection.Attendance, attendance!)
-    );
-    testStore.dispatch(
-      updateLocalDocuments(OrgSubCollection.Customers, attendanceCustomers)
-    );
-    testStore.dispatch(
-      updateLocalDocuments(OrgSubCollection.SlotsByDay, attendanceSlotsByDay!)
-    );
+    const testStore = getNewStore({
+      firestore: {
+        data: {
+          attendance,
+          customers: attendanceCustomers,
+          slotsByDay: attendanceSlotsByDay,
+        },
+      },
+      app: {
+        calendarDay: testDateLuxon,
+      },
+    });
 
     test("should get slots for current day (read from store) with customers attendance (sorted by booked interval) data for each slot", () => {
       const res = getSlotsWithAttendance(testStore.getState());

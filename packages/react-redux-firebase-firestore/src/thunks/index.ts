@@ -1,4 +1,4 @@
-import { CollectionSubscription, FirestoreThunk } from "../types";
+import { FirestoreThunk, SubscriptionWhitelist } from "../types";
 
 import { updateSubscription, SubscriptionParams } from "./subscribe";
 import { updateFirestoreListener, deleteFirestoreListener } from "../actions";
@@ -16,13 +16,13 @@ import { getFirestoreListeners } from "../selectors";
  */
 export const addFirestoreListener =
   (
-    { storeAs, ...subscriptionParams }: Required<SubscriptionParams>,
+    { storeAs, meta, ...subscriptionParams }: Required<SubscriptionParams>,
     consumerId: string
   ): FirestoreThunk =>
   async (dispatch, getState) => {
     const listeners = getFirestoreListeners(getState());
     // check if listener for provided collection exists
-    let listener = listeners[storeAs as CollectionSubscription];
+    let listener = listeners[storeAs as SubscriptionWhitelist];
     if (listener) {
       // check if current consumer already registered with the listener
       const consumer = listener.consumers.find(
@@ -35,16 +35,17 @@ export const addFirestoreListener =
       // if a listener for a collection doesn't exist create a new firestore subscription
       listener = {
         consumers: [consumerId],
+        meta,
         // add an empty `unsubscribe` function
         // to prevent possible crashing if called before the
         // actual `unsubscribe` function is updated from the `updateSubscription` thunk
         unsubscribe: () => {},
       };
-      dispatch(updateSubscription({ storeAs, ...subscriptionParams }));
+      dispatch(updateSubscription({ storeAs, meta, ...subscriptionParams }));
     }
     // save updated listener to Redux store
     dispatch(
-      updateFirestoreListener(storeAs as CollectionSubscription, listener)
+      updateFirestoreListener(storeAs as SubscriptionWhitelist, listener)
     );
   };
 
@@ -56,7 +57,7 @@ export const addFirestoreListener =
  * used to avoid unsubscribing a listener used by consumer other than the one provided.
  */
 export const removeFirestoreListener =
-  (collection: CollectionSubscription, consumerId: string): FirestoreThunk =>
+  (collection: SubscriptionWhitelist, consumerId: string): FirestoreThunk =>
   async (dispatch, getState) => {
     const {
       firestore: { listeners },

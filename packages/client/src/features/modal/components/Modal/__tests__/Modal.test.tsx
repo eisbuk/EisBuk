@@ -44,7 +44,10 @@ describe("Modal", () => {
         openModal({
           id: "modal",
           component: "CancelBookingDialog",
-          props: intervalCardProps,
+          props: {
+            ...intervalCardProps,
+            secretKey: "12345",
+          },
         })
       );
 
@@ -56,7 +59,11 @@ describe("Modal", () => {
         openModal({
           id: "another-modal",
           component: "FinalizeBookingsDialog",
-          props: { customerId: "test-customer", month: DateTime.now() },
+          props: {
+            secretKey: "12345",
+            customerId: "test-customer",
+            month: DateTime.now(),
+          },
         })
       );
 
@@ -73,14 +80,14 @@ describe("Modal", () => {
         openModal({
           id: "modal",
           component: "CancelBookingDialog",
-          props: intervalCardProps,
+          props: { ...intervalCardProps, secretKey: "12345" },
         })
       );
       testStore.dispatch(
         openModal({
           id: "another-modal",
           component: "FinalizeBookingsDialog",
-          props: finalizeBookingsProps,
+          props: { ...finalizeBookingsProps, secretKey: "12345" },
         })
       );
 
