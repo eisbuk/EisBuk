@@ -44,7 +44,7 @@ const CardContent: React.FC<Props> = ({
   );
 
   return (
-    <div className="relative h-full w-full cursor-default select-none pb-5">
+    <div className="relative h-full w-full cursor-default select-none pb-14">
       {variant !== IntervalCardVariant.Booking && dateString}
 
       {timestring}
