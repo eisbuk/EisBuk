@@ -1,4 +1,4 @@
-import React, { useState, FocusEvent } from "react";
+import React, { useState, FocusEvent, useMemo } from "react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 
@@ -26,8 +26,14 @@ import Checkbox from "../../Checkbox";
 import { isISODay } from "../../utils/date";
 import { isValidPhoneNumber } from "../../utils/helpers";
 
+export enum CustomerFormVariant {
+  Default = "default",
+  SelfRegistration = "self-registration",
+}
+
 interface FormProps {
   customer: Omit<Customer, "secretKey">;
+  variant?: CustomerFormVariant;
   onCancel?: () => void;
   onSave?: (customer: Omit<Customer, "secretKey">) => void;
 }
@@ -45,31 +51,46 @@ const defaultCustomerFormValues = {
 
 const CustomerProfileForm: React.FC<FormProps> = ({
   customer,
+  variant = CustomerFormVariant.Default,
   onCancel = () => {},
   onSave = () => {},
 }) => {
   const { t } = useTranslation();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(
+    variant === CustomerFormVariant.SelfRegistration
+  );
 
-  const toggleEdit = () => setIsEditing(!isEditing);
+  const toggleEdit = () => {
+    setIsEditing((isEditing) => !isEditing);
+  };
+
+  console.log("Is editing", isEditing);
 
   const initialValues = {
     ...defaultCustomerFormValues,
     ...customer,
   };
 
+  const validationSchema = useMemo(
+    () => getValidationSchema(variant),
+    [variant]
+  );
+
   return (
     <Formik
       enableReinitialize
-      validationSchema={CustomerValidation}
+      validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={(values, { setSubmitting }) => {
         onSave(values);
         setSubmitting(false);
-        toggleEdit();
+
+        if (variant === CustomerFormVariant.Default) {
+          toggleEdit();
+        }
       }}
     >
-      {({ resetForm, isSubmitting, setFieldValue }) => (
+      {({ isSubmitting, setFieldValue, resetForm }) => (
         <Form>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
@@ -206,14 +227,31 @@ const CustomerProfileForm: React.FC<FormProps> = ({
               </div>
             </Section>
 
+            {variant === CustomerFormVariant.SelfRegistration && (
+              <Section
+                title={t(CustomerLabel.RegistrationCode)}
+                subtitle={t(CustomerLabel.InputRegistrationCode)}
+              >
+                <div className="grid sm:grid-cols-6 gap-y-2">
+                  <div className="col-span-4">
+                    <Field
+                      component={TextInput}
+                      name="registrationCode"
+                      label={t(CustomerLabel.RegistrationCode)}
+                    />
+                  </div>
+                </div>
+              </Section>
+            )}
+
             {isEditing ? (
               <>
                 <div className="flex justify-self-end gap-x-2 mt-5">
                   <Button
                     type="reset"
                     onClick={() => {
-                      onCancel();
                       resetForm();
+                      onCancel();
                       toggleEdit();
                     }}
                     className="w-24 !text-gray-700 font-medium bg-gray-100 hover:bg-gray-50"
@@ -252,33 +290,41 @@ const CustomerProfileForm: React.FC<FormProps> = ({
   );
 };
 
-const CustomerValidation = Yup.object().shape({
-  name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-  email: Yup.string()
-    .required(i18n.t(ValidationMessage.RequiredField))
-    .email(i18n.t(ValidationMessage.Email)),
-  phone: Yup.string().test({
-    test: (input) => !input || isValidPhoneNumber(input),
-    message: i18n.t(ValidationMessage.InvalidPhone),
-  }),
-  birthday: Yup.string()
-    .required(i18n.t(ValidationMessage.RequiredField))
-    .test({
+const getValidationSchema = (variant: CustomerFormVariant) =>
+  Yup.object().shape({
+    name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+    surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
+    email: Yup.string()
+      .required(i18n.t(ValidationMessage.RequiredField))
+      .email(i18n.t(ValidationMessage.Email)),
+    phone: Yup.string().test({
+      test: (input) => !input || isValidPhoneNumber(input),
+      message: i18n.t(ValidationMessage.InvalidPhone),
+    }),
+    birthday: Yup.string()
+      .required(i18n.t(ValidationMessage.RequiredField))
+      .test({
+        test: (input) => !input || isISODay(input),
+        message: i18n.t(ValidationMessage.InvalidDate),
+      }),
+    certificateExpiration: Yup.string().test({
       test: (input) => !input || isISODay(input),
       message: i18n.t(ValidationMessage.InvalidDate),
     }),
-  certificateExpiration: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: i18n.t(ValidationMessage.InvalidDate),
-  }),
-  covidCertificateReleaseDate: Yup.string().test({
-    test: (input) => !input || isISODay(input),
-    message: i18n.t(ValidationMessage.InvalidDate),
-  }),
-  covidCertificateSuspended: Yup.boolean(),
-  subscriptionNumber: Yup.number(),
-});
+    covidCertificateReleaseDate: Yup.string().test({
+      test: (input) => !input || isISODay(input),
+      message: i18n.t(ValidationMessage.InvalidDate),
+    }),
+    covidCertificateSuspended: Yup.boolean(),
+    subscriptionNumber: Yup.number(),
+    ...(variant === CustomerFormVariant.SelfRegistration
+      ? {
+          registrationCode: Yup.string().required(
+            i18n.t(ValidationMessage.RequiredField)
+          ),
+        }
+      : {}),
+  });
 
 const Section: React.FC<{ title: string; subtitle: string }> = ({
   title,

@@ -112,7 +112,9 @@
     "MedicalDetails": "Medical Details",
     "ManageMedicalDetails": "Manage your medical details",
     "PersonalDetails": "Personal Details",
-    "ManagePersonalDetails": "Manage your personal details"
+    "ManagePersonalDetails": "Manage your personal details",
+    "RegistrationCode": "Registration code",
+    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Email Name From",

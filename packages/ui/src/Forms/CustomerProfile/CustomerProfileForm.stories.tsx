@@ -1,7 +1,9 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import CustomerProfileForm from "./CustomerProfileForm";
+import CustomerProfileForm, {
+  CustomerFormVariant,
+} from "./CustomerProfileForm";
 import { Category } from "@eisbuk/shared";
 
 export default {
@@ -24,4 +26,11 @@ const customer = {
 
 export const Default = (): JSX.Element => (
   <CustomerProfileForm customer={customer} />
+);
+
+export const SelfRegistration = (): JSX.Element => (
+  <CustomerProfileForm
+    customer={customer}
+    variant={CustomerFormVariant.SelfRegistration}
+  />
 );

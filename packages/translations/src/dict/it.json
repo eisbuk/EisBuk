@@ -112,7 +112,9 @@
     "MedicalDetails": "Dettagli Medici",
     "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",
     "PersonalDetails": "Dati personali",
-    "ManagePersonalDetails": "Gestisci i tuoi dati personali"
+    "ManagePersonalDetails": "Gestisci i tuoi dati personali",
+    "RegistrationCode": "Registration code",
+    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",

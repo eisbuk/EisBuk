@@ -118,6 +118,8 @@ export enum CustomerLabel {
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
+  RegistrationCode = "CustomerLabel.RegistrationCode",
+  InputRegistrationCode = "CustomerLabel.InputRegistrationCode",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
