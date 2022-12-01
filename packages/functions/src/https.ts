@@ -10,6 +10,7 @@ import {
   CustomerBase,
   Customer,
   CustomerFull,
+  sanitizeCustomer,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -128,7 +129,6 @@ export const customerSelfRegister = functions
         "surname",
         "certificateExpiration",
         "covidCertificateReleaseDate",
-        "covidCertificateSuspended",
       ]);
 
       // We require at least one of the two to be k
@@ -158,6 +158,6 @@ export const customerSelfRegister = functions
       }
 
       const customerRef = orgRef.collection(OrgSubCollection.Customers).doc();
-      return customerRef.set(customer);
+      return customerRef.set(sanitizeCustomer(customer));
     }
   );

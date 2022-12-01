@@ -380,7 +380,13 @@ describe("Cloud functions", () => {
         // Check that the customer has been properly updated
         expect(secretKey).toBeTruthy();
         expect(id).toBeTruthy();
-        expect(customerDoc.data()).toEqual({ ...minimalSaul, secretKey, id });
+        expect(customerDoc.data()).toEqual({
+          ...minimalSaul,
+          secretKey,
+          id,
+          // Should set up empty categories
+          categories: [],
+        });
 
         // Check that bookings doc has been created
         const bookingsCustomer = await waitForCondition({
@@ -454,7 +460,7 @@ describe("Cloud functions", () => {
         .set({ registrationCode: "registration-code" }, { merge: true });
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { email, ...saulNoEmail } = minimalSaul;
+      const { email } = minimalSaul;
 
       try {
         await httpsCallable(
