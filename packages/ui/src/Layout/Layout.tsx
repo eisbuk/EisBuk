@@ -46,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({
 
           <div className={getHeaderRowClasses("top")}>
             <div className="h-5 w-[86px] text-white">{<Logo />}</div>
-            {user && <UserAvatar {...user} />}
+            {user.displayName || (user.photoURL && <UserAvatar {...user} />)}
           </div>
 
           <div className="w-full h-[2px] bg-gray-700" />

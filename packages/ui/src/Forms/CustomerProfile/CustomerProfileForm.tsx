@@ -2,7 +2,7 @@ import React, { useState, FocusEvent, useMemo } from "react";
 import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
 
-import { Customer } from "@eisbuk/shared";
+import { CustomerBase } from "@eisbuk/shared";
 import i18n, {
   useTranslation,
   ValidationMessage,
@@ -31,14 +31,20 @@ export enum CustomerFormVariant {
   SelfRegistration = "self-registration",
 }
 
-interface FormProps {
-  customer: Omit<Customer, "secretKey">;
-  variant?: CustomerFormVariant;
+type DefaultFormProps = {
+  customer: CustomerBase;
   onCancel?: () => void;
-  onSave?: (customer: Omit<Customer, "secretKey">) => void;
-}
+  variant?: CustomerFormVariant.Default;
+  onSave?: (customer: CustomerBase) => void;
+};
+type SelfRegFormProps = {
+  customer: Pick<CustomerBase, "email">;
+  onCancel?: () => void;
+  variant: CustomerFormVariant.SelfRegistration;
+  onSave?: (values: CustomerBase & { registrationCode: string }) => void;
+};
 
-const defaultCustomerFormValues = {
+const defaultCustomerFormValues: CustomerBase = {
   name: "",
   surname: "",
   email: "",
@@ -49,12 +55,12 @@ const defaultCustomerFormValues = {
   covidCertificateSuspended: false,
 };
 
-const CustomerProfileForm: React.FC<FormProps> = ({
-  customer,
+const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
+  customer = {},
   variant = CustomerFormVariant.Default,
   onCancel = () => {},
   onSave = () => {},
-}) => {
+}: P): JSX.Element => {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(
     variant === CustomerFormVariant.SelfRegistration
@@ -69,6 +75,8 @@ const CustomerProfileForm: React.FC<FormProps> = ({
   const initialValues = {
     ...defaultCustomerFormValues,
     ...customer,
+    // In case of variant === "default" this is a no-op
+    registrationCode: "",
   };
 
   const validationSchema = useMemo(
@@ -155,7 +163,11 @@ const CustomerProfileForm: React.FC<FormProps> = ({
                         disabled={!isEditing}
                       />
                     }
-                    disabled={!isEditing}
+                    disabled={
+                      !isEditing ||
+                      // When self registrating, email should be pre-filled and not changed
+                      variant === CustomerFormVariant.SelfRegistration
+                    }
                   />
                 </div>
                 <div className="col-span-3">

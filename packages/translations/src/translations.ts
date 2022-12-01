@@ -103,6 +103,9 @@ export enum SlotFormLabel {
   EndTime = "SlotForm.EndTime",
 }
 export enum CustomerLabel {
+  Welcome = "CustomerLabel.Welcome",
+  FillTheForm = "CustomerLabel.FillTheForm",
+
   Name = "CustomerLabel.Name",
   Surname = "CustomerLabel.Surname",
   Categories = "CustomerLabel.Categories",

@@ -40,6 +40,7 @@ export * from "./Layout";
 export * from "./IconButton";
 export * from "./Table";
 export * from "./AttendanceVarianceTable";
+export * from "./Forms/CustomerProfile";
 
 export {
   NotificationToast,

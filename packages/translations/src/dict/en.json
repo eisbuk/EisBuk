@@ -98,6 +98,8 @@
   },
 
   "CustomerLabel": {
+    "Welcome": "Welcome to {{ displayName }}",
+    "FillTheForm": "Please fill out some details before we continue",
     "Name": "Name",
     "Surname": "Surname",
     "Categories": "Categories",
