@@ -70,8 +70,6 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
     setIsEditing((isEditing) => !isEditing);
   };
 
-  console.log("Is editing", isEditing);
-
   const initialValues = {
     ...defaultCustomerFormValues,
     ...customer,

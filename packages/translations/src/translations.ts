@@ -255,6 +255,7 @@ export enum NotificationMessage {
   Error = "Notification.Error",
   SlotsAddedToCalendar = "Notification.SlotsAddedToCalendar",
 
+  CustomerProfileRegistered = "Notification.CustomerProfileRegistered",
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileError",
 }
@@ -323,10 +324,12 @@ export enum Alerts {
   NoSlots = "Alerts.NoSlots",
   NoBookings = "Alerts.NoBookings",
   NoAttendance = "Alerts.NoAttendance",
+  NoCategories = "Alerts.NoCategories",
+  ContactEmail = "Alerts.ContactEmail",
 }
 // #endregion alerts
 
-// #region alerts
+// #region printable_attendance
 export enum PrintableAttendance {
   Start = "PrintableAttendance.Start",
   End = "PrintableAttendance.End",
@@ -336,7 +339,7 @@ export enum PrintableAttendance {
   Signature = "PrintableAttendance.Signature",
   Note = "PrintableAttendance.Note",
 }
-// #endregion alerts
+// #endregion printable_attendance
 
 // #region tables
 export enum AttendanceVarianceHeaders {

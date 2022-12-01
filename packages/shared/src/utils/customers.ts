@@ -15,7 +15,8 @@ export const sanitizeCustomer = ({
   birthday,
   photoURL,
   ...restCustomer
-}: Customer): Customer => {
+}: Omit<Customer, "categories"> &
+  Pick<Partial<Customer>, "categories">): Customer => {
   const customer: Customer = { ...restCustomer, categories: [] };
 
   // Add optional values only if defined

@@ -234,6 +234,7 @@
 
     "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario",
 
+    "CustomerProfileRegistered": "Registration successful",
     "CustomerProfileUpdated": "Profilo cliente aggiornato",
     "CustomerProfileError": "Errore durante l'aggiornamento del profilo cliente"
   },
@@ -297,7 +298,9 @@
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
     "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
-    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}"
+    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}",
+    "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
+    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Inizio",
