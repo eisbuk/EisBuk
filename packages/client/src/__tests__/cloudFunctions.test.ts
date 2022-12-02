@@ -4,7 +4,13 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
+import {
+  HTTPSErrors,
+  BookingsErrors,
+  getCustomer,
+  EmailTemplates,
+  SendEmailPayload,
+} from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
@@ -63,23 +69,29 @@ describe("Cloud functions", () => {
           condition: (data) => Boolean(data),
         });
 
+        const payload: SendEmailPayload = {
+          organization,
+          secretKey: saul.secretKey,
+          to,
+          emailTemplateName: EmailTemplates.BookingLink,
+          subjectRequiredFields: { displayName: "Los Pollos Hermanos" },
+          htmlRequiredFields: {
+            name: "Saul",
+            displayName: "Los Pollos Hermanos",
+            icsFile: "icsFile.ics",
+            bookingsLink: "www.bookingsLink.com",
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            secretKey: saul.secretKey,
-            to,
-            html,
-            subject,
-          })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).resolves.toEqual({
           data: {
             email: {
               to,
-              html,
-              subject,
+              html: `<p>Ciao Saul,</p>
+          <p>Ti inviamo un link per prenotare le tue prossime lezioni con Los Pollos Hermanos:</p>
+          <a href="www.bookingsLink.com">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+              subject: "prenotazioni lezioni di Los Pollos Hermanos",
             },
             organization,
             success: true,
@@ -100,18 +112,83 @@ describe("Cloud functions", () => {
       }
     );
 
+    testWithEmulator("should reject if no recipient provided", async () => {
+      const { organization } = await setUpOrganization();
+      try {
+        await httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({
+          organization,
+          htmlRequiredFields: [],
+          subjectRequiredFields: [],
+          emailTemplateName: EmailTemplates.BookingLink,
+        });
+      } catch (error) {
+        expect((error as FunctionsError).message).toEqual(
+          `${HTTPSErrors.MissingParameter}: to`
+        );
+      }
+    });
     testWithEmulator(
-      "should reject if no recipient or message content provided",
+      "should reject if no htmlRequiredFields or subjectRequiredFields provided",
       async () => {
         const { organization } = await setUpOrganization();
         try {
           await httpsCallable(
             functions,
             CloudFunction.SendEmail
-          )({ organization });
+          )({
+            organization,
+            to,
+            emailTemplateName: EmailTemplates.BookingLink,
+          });
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: to, html, subject`
+            `${HTTPSErrors.MissingParameter}: htmlRequiredFields, subjectRequiredFields`
+          );
+        }
+      }
+    );
+    testWithEmulator(
+      "should reject if no emailTemplateName provided",
+      async () => {
+        const { organization } = await setUpOrganization();
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({
+            organization,
+            to,
+            htmlRequiredFields: [],
+            subjectRequiredFields: [],
+          });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: emailTemplateName`
+          );
+        }
+      }
+    );
+    testWithEmulator(
+      "should reject if not all requiredFields for a emailTemplateName were provided",
+      async () => {
+        const { organization } = await setUpOrganization();
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({
+            organization,
+            to,
+            emailTemplateName: EmailTemplates.BookingLink,
+            htmlRequiredFields: [],
+            subjectRequiredFields: [],
+          });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: name, displayName, bookingsLink`
           );
         }
       }

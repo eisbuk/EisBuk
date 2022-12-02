@@ -129,11 +129,13 @@ describe("Send bookings link dialog utils", () => {
         const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
 
         expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.subject).toBeDefined();
+        expect(sentMail.subjectRequiredFields).toBeDefined();
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
-        expect(sentMail.html.includes(bookingsLink)).toBeTruthy();
-        expect(sentMail.html.includes(saul.name)).toBeTruthy();
+        expect(sentMail.htmlRequiredFields["bookingsLink"]).toEqual(
+          bookingsLink
+        );
+        expect(sentMail.htmlRequiredFields["name"]).toEqual(saul.name);
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

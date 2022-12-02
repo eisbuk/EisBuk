@@ -1,6 +1,7 @@
 import {
   CustomerAttendance,
   CustomerBookingEntry,
+  EmailTemplates,
   OrganizationData,
   SlotAttendnace,
 } from "@eisbuk/shared";
@@ -67,7 +68,14 @@ export const organization: OrganizationData = {
   location: "Albuquerque",
   admins: ["Gus Fring"],
   emailFrom: "gus@lospollos.hermanos",
-  emailTemplate: "Email Temp here",
+  emailTemplates: {
+    [EmailTemplates.BookingLink]: {
+      subject: "Gus's Bookings Link",
+      html: "This is an html containing the bookings link",
+      subjectRequiredFields: ["name"],
+      htmlRequiredFields: ["name", "bookingsLink"],
+    },
+  },
   emailNameFrom: "Gus",
   smsFrom: "Gus",
   smsTemplate: "SMS Temp here",

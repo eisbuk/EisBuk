@@ -1,8 +1,14 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 
-import { SendEmailPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
+import {
+  SendEmailPayload,
+  Collection,
+  DeliveryQueue,
+  interpolateEmailTemplate,
+} from "@eisbuk/shared";
 
+import { fetchOrganizationEmailTemplate } from "./utils";
 import { __functionsZone__ } from "../constants";
 
 import {
@@ -29,7 +35,36 @@ export const sendEmail = functions
         throwUnauth();
       }
 
-      checkRequiredFields(email, ["to", "html", "subject"]);
+      checkRequiredFields(email, [
+        "to",
+        "htmlRequiredFields",
+        "subjectRequiredFields",
+        "emailTemplateName",
+      ]);
+
+      // get email temp from org doc
+      const emailTemplate = await fetchOrganizationEmailTemplate(
+        organization,
+        email.emailTemplateName
+      );
+
+      checkRequiredFields(
+        email.htmlRequiredFields,
+        emailTemplate.htmlRequiredFields
+      );
+      checkRequiredFields(
+        email.subjectRequiredFields,
+        emailTemplate.subjectRequiredFields
+      );
+
+      const interpolatedSubject = interpolateEmailTemplate(
+        emailTemplate.subject,
+        email.subjectRequiredFields
+      );
+      const interpolatedHtml = interpolateEmailTemplate(
+        emailTemplate.html,
+        email.htmlRequiredFields
+      );
 
       // add email to firestore, firing data trigger
       await admin
@@ -38,8 +73,29 @@ export const sendEmail = functions
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
-        .set({ payload: email });
+        .set({
+          payload: {
+            ...email,
+            html: interpolatedHtml,
+            subject: interpolatedSubject,
+          },
+        });
 
-      return { email, organization, success: true };
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {
+        htmlRequiredFields,
+        subjectRequiredFields,
+        emailTemplateName,
+        ...newEmail
+      } = email;
+      return {
+        email: {
+          ...newEmail,
+          html: interpolatedHtml,
+          subject: interpolatedSubject,
+        },
+        organization,
+        success: true,
+      };
     }
   );

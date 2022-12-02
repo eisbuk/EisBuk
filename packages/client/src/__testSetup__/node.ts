@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
-import { Collection } from "@eisbuk/shared";
+import { Collection, EmailTemplates } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
 
@@ -32,7 +32,19 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     // Create a new user in auth
     createUserWithEmailAndPassword(auth, email, pass),
     // Set given user as admin in org structure
-    orgRef.set({ admins: [email] }),
+    orgRef.set({
+      admins: [email],
+      emailTemplates: {
+        [EmailTemplates.BookingLink]: {
+          subject: "prenotazioni lezioni di {{ displayName }}",
+          html: `<p>Ciao {{ name }},</p>
+          <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+          <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+          subjectRequiredFields: ["displayName"],
+          htmlRequiredFields: ["name", "displayName", "bookingsLink"],
+        },
+      },
+    }),
   ]);
 
   if (!doLogin) {

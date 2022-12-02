@@ -1,6 +1,7 @@
 import {
   Customer,
   EmailPayload,
+  EmailTemplates,
   PublicOrganizationData,
   SMSMessage,
 } from "@eisbuk/shared";
@@ -81,17 +82,11 @@ export const sendBookingsLink: SendBookingsLink =
   ({ name, method, email, phone, secretKey, bookingsLink, displayName }) =>
   async (dispatch) => {
     try {
-      const subject = `prenotazioni lezioni di ${displayName} Team`;
-
       if (!secretKey) {
         // this should be unreachable
         // (email button should be disabled in case secret key or email are not provided)
         throw new Error();
       }
-
-      const html = `<p>Ciao ${name},</p>
-      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:</p>
-      <a href="${bookingsLink}">Clicca qui per prenotare e gestire le tue lezioni</a>`;
 
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
@@ -102,8 +97,14 @@ export const sendBookingsLink: SendBookingsLink =
           handler: CloudFunction.SendEmail,
           payload: {
             to: email,
-            html,
-            subject,
+            subjectRequiredFields: { displayName: displayName },
+            htmlRequiredFields: {
+              name: name,
+              displayName: displayName,
+              bookingsLinks: bookingsLink,
+            },
+
+            emailTemplateName: EmailTemplates.BookingLink,
           } as EmailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },

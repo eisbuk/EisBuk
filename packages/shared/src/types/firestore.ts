@@ -31,9 +31,16 @@ export interface OrganizationData {
    */
   emailNameFrom?: string;
   /**
-   * Template for reminder emails
+   * Templates for reminder emails
    */
-  emailTemplate?: string;
+  emailTemplates?: {
+    [name: string]: {
+      subject: string;
+      html: string;
+      subjectRequiredFields: string[];
+      htmlRequiredFields: string[];
+    };
+  };
   /**
    * Caller ID to use when sending out SMSs
    */
@@ -58,6 +65,12 @@ export interface OrganizationData {
   location?: string;
 }
 
+export type EmailTemplate = {
+  subject: string;
+  html: string;
+  subjectRequiredFields: string[];
+  htmlRequiredFields: string[];
+};
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,
@@ -307,6 +320,8 @@ export interface EmailAttachment {
   content: string | Buffer;
 }
 
+type EmailTemplateName = keyof typeof EmailTemplates;
+
 /**
  * Interface used as `payload` in email process-delivery.
  * It's basically a full email payload without the `from`
@@ -314,17 +329,30 @@ export interface EmailAttachment {
  */
 export interface EmailPayload {
   to: string;
-  subject: string;
-  html: string;
+  emailTemplateName: typeof EmailTemplates[EmailTemplateName];
+  htmlRequiredFields: Record<string, string>;
+  subjectRequiredFields: Record<string, string>;
   attachments?: EmailAttachment[];
+}
+
+export enum EmailTemplates {
+  IcsFile = "icsFile",
+  ExtendedDate = "extendedDate",
+  BookingLink = "bookingLink",
 }
 
 /**
  * A full email interface, including:
  * `to`, `from`, `subject`, `html` and `attachments`.
  */
-export interface EmailMessage extends EmailPayload {
+export interface EmailMessage
+  extends Omit<
+    EmailPayload,
+    "htmlRequiredFields" | "subjectRequiredFields" | "emailTemplateName"
+  > {
   from: string;
+  html: string;
+  subject: string;
 }
 
 /**

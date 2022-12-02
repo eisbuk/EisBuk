@@ -6,6 +6,7 @@ import {
   SlotInterface,
   SendEmailPayload,
   OrganizationData,
+  EmailTemplates,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { NotifVariant } from "@/enums/store";
@@ -222,20 +223,19 @@ interface sendICSFile {
 }
 
 export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey, displayName, name }) =>
+  ({ icsFile, email, secretKey, displayName = "", name }) =>
   async (dispatch) => {
     try {
-      const subject = `Calendario prenotazioni ${displayName}`;
-
-      const html = `<p>Ciao ${name},</p>
-        <p>Ti inviamo un file per aggiungere le tue prossime lezioni con ${displayName} al tuo calendario:</p>
-        <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
-
       const handler = CloudFunction.SendEmail;
       const payload: Omit<SendEmailPayload, "organization"> = {
         to: email,
-        html,
-        subject,
+        emailTemplateName: EmailTemplates.IcsFile,
+        subjectRequiredFields: { displayName: displayName },
+        htmlRequiredFields: {
+          name: name,
+          displayName: displayName,
+          icsFile: icsFile,
+        },
         attachments: [
           {
             filename: "bookedSlots.ics",
