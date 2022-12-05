@@ -12,6 +12,7 @@ import {
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
+  EmailTemplates,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -104,7 +105,21 @@ const createUserInAuth = async ({
     await firestore
       .collection(Collection.Organizations)
       .doc(organization)
-      .set({ admins: adminsEntry }, { merge: true });
+      .set(
+        {
+          admins: adminsEntry,
+          displayName: organization,
+          emailTemplates: {
+            [EmailTemplates.IcsFile]: {
+              subject: "{{ displayName }}'s calendar events",
+              html: "This is an html for {{ name }}, from {{ displayName }} containing the {{ icsFile }}",
+              subjectRequiredFields: ["displayName"],
+              htmlRequiredFields: ["displayName", "name", "icsFile"],
+            },
+          },
+        },
+        { merge: true }
+      );
   }
 };
 

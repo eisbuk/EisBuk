@@ -6,6 +6,7 @@ import {
   EmailTemplates,
   HTTPSErrors,
 } from "@eisbuk/shared";
+
 import { EisbukHttpsError } from "../utils";
 
 export const fetchOrganizationEmailTemplate: (
@@ -19,9 +20,11 @@ export const fetchOrganizationEmailTemplate: (
       .get()
   ).data() as OrganizationData;
 
-  if (!emailTemplates)
+  if (!emailTemplates) {
     throw new EisbukHttpsError("unavailable", HTTPSErrors.NoConfiguration);
+  }
 
   const emailTemplate = emailTemplates[emailTemplateName];
+
   return emailTemplate;
 };

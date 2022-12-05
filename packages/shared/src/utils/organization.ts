@@ -10,14 +10,14 @@ export const interpolateEmailTemplate = (
     const placeholderValue =
       fieldValues[placeholder.substring(3, placeholder.length - 3)];
 
-    if (placeholderValue === undefined)
+    if (placeholderValue === undefined) {
       throw new Error(
         `${HTTPSErrors.MissingParameter}: ${placeholder.substring(
           3,
           placeholder.length - 3
         )}`
       );
-
+    }
     template = template.replace(placeholder, placeholderValue);
   });
   return template;

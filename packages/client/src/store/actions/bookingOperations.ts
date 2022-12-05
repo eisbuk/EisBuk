@@ -223,18 +223,18 @@ interface sendICSFile {
 }
 
 export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey, displayName = "", name }) =>
+  ({ icsFile, email, secretKey, displayName = "displayName", name = "name" }) =>
   async (dispatch) => {
     try {
       const handler = CloudFunction.SendEmail;
       const payload: Omit<SendEmailPayload, "organization"> = {
         to: email,
         emailTemplateName: EmailTemplates.IcsFile,
-        subjectRequiredFields: { displayName: displayName },
+        subjectRequiredFields: { displayName },
         htmlRequiredFields: {
-          name: name,
-          displayName: displayName,
-          icsFile: icsFile,
+          name,
+          displayName,
+          icsFile,
         },
         attachments: [
           {
