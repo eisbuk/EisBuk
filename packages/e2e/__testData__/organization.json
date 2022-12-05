@@ -1,0 +1,7 @@
+{
+  "organization": {
+    "emailFrom": "test@organization.com",
+    "displayName": "Test organization",
+    "registrationCode": "test-registration-code"
+  }
+}

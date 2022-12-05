@@ -6,6 +6,9 @@ const getPublicOrgInfo = (state: LocalStore) =>
     ? state.firestore.data.publicOrgInfo[getOrganization()]
     : undefined;
 
+export const getOrgDisplayName = (state: LocalStore) =>
+  getPublicOrgInfo(state)?.displayName;
+
 export const getOrgEmail = (state: LocalStore) =>
   getPublicOrgInfo(state)?.emailFrom;
 

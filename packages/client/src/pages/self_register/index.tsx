@@ -17,6 +17,7 @@ import { getAuthEmail, getIsAuthLoaded } from "@/store/selectors/auth";
 
 import { signOut } from "@/store/actions/authOperations";
 import { customerSelfRegister } from "@/store/actions/bookingOperations";
+import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
 const SelfRegisterPage: React.FC = () => {
   const history = useHistory();
@@ -26,6 +27,7 @@ const SelfRegisterPage: React.FC = () => {
   const { t } = useTranslation();
 
   const organization = getOrganization();
+  const orgDisplayName = useSelector(getOrgDisplayName);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
   const email = useSelector(getAuthEmail);
 
@@ -63,9 +65,7 @@ const SelfRegisterPage: React.FC = () => {
           <div className="mb-28">
             <h1 className="text-3xl text-gray-700 mb-2.5">
               {t(CustomerLabel.Welcome, {
-                displayName:
-                  /** @TODO organization display name here probably */
-                  organization,
+                displayName: orgDisplayName || organization,
               })}
             </h1>
             <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>

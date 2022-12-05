@@ -8,6 +8,7 @@ import i18n, {
   AuthTitle,
   AuthErrorMessage,
   ValidationMessage,
+  CustomerLabel,
 } from "@eisbuk/translations";
 import { CustomerFull } from "@eisbuk/shared";
 
@@ -73,7 +74,11 @@ describe("login", () => {
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
       // user is registered, but not added as an admin yet - should redirect to not-registered page
-      cy.contains(t(AuthMessage.NotRegistered));
+      cy.contains(
+        t(CustomerLabel.Welcome, {
+          displayName: localStorage.getItem("organization"),
+        })
+      );
     });
 
     it("sends a password reset email on demand", () => {
@@ -181,7 +186,7 @@ describe("login", () => {
     });
   });
 
-  describe.only("Phone login", () => {
+  describe("Phone login", () => {
     beforeEach(() => {
       // This test was failing from time to time: Cypress would enter the test
       // with an already logged in user
@@ -304,8 +309,12 @@ describe("login", () => {
       cy.getAttrWith("type", "email").type(newEmail);
       cy.clickButton(t(ActionButton.Send));
       cy.getSigninLink(newEmail).then((link) => cy.visit(link));
-      // user is registered, but not added as an admin yet - should redirect to not-registered page
-      cy.contains(t(AuthMessage.NotRegistered));
+      // user is displayName, but not added as an admin yet - should redirect to not-registered page
+      cy.contains(
+        t(CustomerLabel.Welcome, {
+          displayName: localStorage.getItem("orgnization"),
+        })
+      );
     });
 
     it("prompts user for email (on auth flow completion) if no 'emailForSignIn' in local storage", () => {
@@ -423,7 +432,7 @@ describe("login", () => {
       cy.contains(`${saul.name} ${saul.surname}`);
     });
 
-    it("redirects to non-registered page if user not admin, nor a registered customer", () => {
+    it("redirects to self registration page if user not admin, nor a registered customer", () => {
       const email = "new-user@gmail.com";
       const password = "password";
       cy.addAuthUser({ email, password });
@@ -436,12 +445,9 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.SignIn));
       // on successful login, should redirect to not-registered page
       // the user is not admin and doesn't exist in customers collection
-      cy.contains(t(AuthMessage.NotRegistered));
       cy.contains(
-        t(AuthMessage.ContactAdminsForRegistration, {
-          authString: email,
-          authMethod: "email",
-          organizationEmail: "test@email.com",
+        t(CustomerLabel.Welcome, {
+          displayName: localStorage.getItem("organization"),
         })
       );
     });
