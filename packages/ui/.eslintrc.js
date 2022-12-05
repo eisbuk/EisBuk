@@ -14,6 +14,7 @@ module.exports = useTSConfig(
       "jest.config.js",
       "postcss.config.js",
       "tailwind.config.js",
+      "storybook-static",
     ],
   },
   [path.join(__dirname, "tsconfig.json")]
