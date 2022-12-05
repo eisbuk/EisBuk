@@ -258,30 +258,30 @@ describe("Cloud functions -> Data triggers ->", () => {
         await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
         let existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
             condition: (data) => Boolean(data?.existingSecrets?.length),
-          })) as OrganizationData
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret"]);
 
         // add another secret
         await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
         existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets.length === 2,
-          })) as OrganizationData
+            condition: (data) => data?.existingSecrets?.length === 2,
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
 
         // removing one secret should remove it from array (without removing other secrets)
         await orgSecretsRef.set({ anotherSecret: "abc234" });
         existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets.length === 1,
-          })) as OrganizationData
+            condition: (data) => data?.existingSecrets?.length === 1,
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["anotherSecret"]);
       }
@@ -301,10 +301,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           smtpPass: "password",
         });
         // check proper updates triggerd by write to secrets
-        const orgData = (await waitForCondition({
+        const orgData = await waitForCondition<OrganizationData>({
           documentPath: organizationPath,
           condition: (data) => Boolean(data?.existingSecrets?.length),
-        })) as OrganizationData;
+        });
         expect(orgData.existingSecrets).toEqual(
           expect.arrayContaining([
             "smtpHost",
@@ -330,10 +330,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           smtpPass: "password",
         });
         // check proper updates triggerd by write to secrets
-        const orgData = (await waitForCondition({
+        const orgData = await waitForCondition<OrganizationData>({
           documentPath: organizationPath,
           condition: (data) => Boolean(data?.existingSecrets?.length),
-        })) as OrganizationData;
+        });
         expect(orgData.existingSecrets).toEqual(
           expect.arrayContaining(["smtpHost", "smtpUser", "smtpPass"])
         );
