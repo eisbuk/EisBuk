@@ -81,13 +81,14 @@ export const sendEmail = functions
           },
         });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       const {
         htmlRequiredFields,
         subjectRequiredFields,
         emailTemplateName,
         ...newEmail
       } = email;
+      /* eslint-disable @typescript-eslint/no-unused-vars */
       return {
         email: {
           ...newEmail,
