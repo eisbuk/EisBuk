@@ -643,6 +643,7 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       expect(waltDocResUpdated).toEqual(waltUpdatedAttendedSlot);
     });
+
     testWithEmulator(
       "should update document in attendedSlots collection if attended interval changes",
       async () => {
@@ -659,7 +660,6 @@ describe("Cloud functions -> Data triggers ->", () => {
         const attendance = {
           [saul.id]: {
             ...attendanceWithTestCustomer.attendances[saul.id],
-
             bookedInterval: null,
           },
         };
@@ -683,14 +683,13 @@ describe("Cloud functions -> Data triggers ->", () => {
         });
 
         // get document in attended slots
-
         const docResUpdated = await waitForCondition({
           documentPath: getAttendedSlotDocPath(
             organization,
             saul.secretKey,
             slotId
           ),
-          condition: (data) => Boolean(data),
+          condition: (data) => Boolean(data && data.interval === intervals[1]),
         });
 
         const updatedAttendedSlot = {
@@ -699,7 +698,6 @@ describe("Cloud functions -> Data triggers ->", () => {
         };
 
         // assert it equals the updated version
-
         expect(docResUpdated).toEqual(updatedAttendedSlot);
       }
     );
