@@ -7,8 +7,6 @@ import { getNewStore } from "@/store/createStore";
 import { getCustomersByBirthday } from "../customers";
 
 import { saul, walt, jian, mike, jane } from "@/__testData__/customers";
-import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
-import { OrgSubCollection } from "@eisbuk/shared";
 
 const customers: LocalStore["firestore"]["data"]["customers"] = {
   [saul.id]: {
@@ -59,10 +57,7 @@ describe("Customer Selectors", () => {
           },
         },
       });
-      store.dispatch(
-        updateLocalDocuments(OrgSubCollection.Customers, customers!)
-      );
-      const selector = getCustomersByBirthday(DateTime.now());
+      const selector = getCustomersByBirthday(DateTime.fromISO("2021-12-22"));
       const res = selector(store.getState());
       expect(res).toEqual(expectedCustomersBirthdays);
     });
@@ -70,7 +65,7 @@ describe("Customer Selectors", () => {
     test("should omit customers with no birthday specified", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { birthday, ...erlich } = jian;
-      const selector = getCustomersByBirthday(DateTime.now());
+      const selector = getCustomersByBirthday(DateTime.fromISO("2021-12-22"));
       const store = getNewStore({
         firestore: {
           data: {
@@ -78,12 +73,6 @@ describe("Customer Selectors", () => {
           },
         },
       });
-      store.dispatch(
-        updateLocalDocuments(OrgSubCollection.Customers, {
-          ...customers,
-          erlich,
-        })
-      );
 
       const res = selector(store.getState());
       // the result should be the same as erlich doesn't have a birthday provided
