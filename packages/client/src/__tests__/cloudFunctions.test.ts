@@ -4,7 +4,12 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
+import {
+  HTTPSErrors,
+  BookingsErrors,
+  getCustomer,
+  Collection,
+} from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 import { setUpOrganization } from "@/__testSetup__/node";
@@ -72,6 +77,9 @@ describe("Cloud functions", () => {
       async () => {
         const { organization } = await setUpOrganization(false);
 
+        await adminDb
+          .doc([Collection.Organizations, organization].join("/"))
+          .set({ emailFrom: "eisbuk@test-email.com" });
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
@@ -80,27 +88,32 @@ describe("Cloud functions", () => {
           condition: (data) => Boolean(data),
         });
 
-        await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            secretKey: saul.secretKey,
+        const {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          data: { deliveryDocumentPath, ...res },
+        } = await httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({
+          organization,
+          secretKey: saul.secretKey,
+          to,
+          html,
+          subject,
+        });
+
+        // We're including 'deliveryDocumentPath' to both structures
+        // as there's no way to stub/test this as it's a random value
+        expect({ ...res, deliveryDocumentPath }).toEqual({
+          deliveryDocumentPath,
+          email: {
             to,
             html,
             subject,
-          })
-        ).resolves.toEqual({
-          data: {
-            email: {
-              to,
-              html,
-              subject,
-            },
-            organization,
-            success: true,
           },
+          organization,
+          success: true,
         });
       }
     );
