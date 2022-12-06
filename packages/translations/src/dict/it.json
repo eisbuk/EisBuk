@@ -19,7 +19,6 @@
 
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
-    "NotRegistered": "You are not registered yet",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
     "ContactAdminsForRegistration": "The {{ authMethod }} {{ authString }} was not found in our registry. Please try a different authentication method or get in touch at {{ organizationEmail }}",
     "LoggedInWith": "Hai effettuato l'accesso con:",
