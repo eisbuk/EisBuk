@@ -8,4 +8,6 @@ export default {
   component: CountryCodesDropdown,
 } as ComponentMeta<typeof CountryCodesDropdown>;
 
-export const Default = (): JSX.Element => <CountryCodesDropdown />;
+export const Default = (): JSX.Element => (
+  <CountryCodesDropdown onChange={() => {}} />
+);
