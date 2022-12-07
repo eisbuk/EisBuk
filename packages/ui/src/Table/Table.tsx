@@ -59,9 +59,11 @@ const defaultRenderRow: RenderRow = (item, rowIx, itemArr) => {
     <tr key={rowIx} className={rowClasses}>
       {Object.values(item).map((itemValue, itemIx) =>
         itemIx === 0 ? (
-          <TableCell type={CellType.Title}>{itemValue}</TableCell>
+          <TableCell key={`${itemValue}-${itemIx}`} type={CellType.Title}>
+            {itemValue}
+          </TableCell>
         ) : (
-          <TableCell>{itemValue}</TableCell>
+          <TableCell key={`${itemValue}-${itemIx}`}>{itemValue}</TableCell>
         )
       )}
     </tr>
@@ -71,8 +73,10 @@ const defaultRenderRow: RenderRow = (item, rowIx, itemArr) => {
 const defaultRenderHeaders: RenderHeaders = (headers) => {
   return (
     <tr>
-      {Object.values(headers).map((headerValue) => (
-        <TableCell type={CellType.Header}>{headerValue}</TableCell>
+      {Object.values(headers).map((headerValue, i) => (
+        <TableCell key={`${headerValue}-${i}`} type={CellType.Header}>
+          {headerValue}
+        </TableCell>
       ))}
     </tr>
   );

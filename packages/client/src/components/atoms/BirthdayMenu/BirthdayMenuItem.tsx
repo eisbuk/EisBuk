@@ -1,11 +1,6 @@
 import React from "react";
 import { DateTime } from "luxon";
 
-import TableRow from "@mui/material/TableRow";
-import TableCell from "@mui/material/TableCell";
-import Box from "@mui/material/Box";
-import makeStyles from "@mui/styles/makeStyles";
-
 import { Customer } from "@eisbuk/shared";
 import { DateFormat, useTranslation } from "@eisbuk/translations";
 
@@ -17,7 +12,6 @@ interface Props {
 }
 
 const BirthdayMenuItem: React.FC<Props> = ({ customer, showAll = false }) => {
-  const classes = useStyles();
   const { t } = useTranslation();
 
   const customerBirthday =
@@ -27,32 +21,12 @@ const BirthdayMenuItem: React.FC<Props> = ({ customer, showAll = false }) => {
           date: DateTime.fromISO(customer.birthday || ""),
         });
   return (
-    <TableRow>
-      <TableCell>
-        <Box display="flex" flexDirection="row">
-          <EisbukAvatar {...customer} wrap={false} />
-        </Box>
-      </TableCell>
-      <TableCell className={classes.fullWidthCell}>
-        {customer.name} {customer.surname}
-        {!showAll && <div className={classes.birthday}>{customerBirthday}</div>}
-      </TableCell>
-    </TableRow>
+    <li className="p-4 flex gap-8 items-center">
+      <EisbukAvatar {...customer} wrap={false} />
+      {customer.name} {customer.surname}
+      {!showAll && <span className="block ml-auto">{customerBirthday}</span>}
+    </li>
   );
 };
 
 export default BirthdayMenuItem;
-
-// #region styles
-const useStyles = makeStyles(() => ({
-  birthday: {
-    position: "absolute",
-    transform: "translateY(-100%)",
-    right: "1rem",
-    fontWeight: "bold",
-  },
-  fullWidthCell: {
-    width: "100%",
-  },
-}));
-// #endregion styles
