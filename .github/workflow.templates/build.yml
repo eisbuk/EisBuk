@@ -165,6 +165,8 @@ jobs:
         with:
           start: emulators-start
 
+          browser: chrome
+
           #! For some reason, this action can also install everything, which doesn't work well with pnpm
           #! Anyway we're using our own instalation as it is, so just skipping this part
           install: false
