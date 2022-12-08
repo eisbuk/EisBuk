@@ -2,20 +2,22 @@ import functions from "firebase-functions";
 import admin from "firebase-admin";
 
 import {
-  SendEmailPayload,
   Collection,
   DeliveryQueue,
   OrganizationData,
+  HTTPSErrors,
+  EmailPayload,
+  ClientSendEmailPayload,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
-import { getSMTPPreferences } from "./deliver";
 
 import {
   checkUser,
   checkRequiredFields,
   checkSecretKey,
   throwUnauth,
+  EisbukHttpsError,
 } from "../utils";
 
 /**
@@ -25,7 +27,7 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      { organization, secretKey = "", ...email }: SendEmailPayload,
+      { organization, secretKey = "", ...email }: ClientSendEmailPayload,
       { auth }
     ) => {
       if (
@@ -34,7 +36,6 @@ export const sendEmail = functions
       ) {
         throwUnauth();
       }
-      await getSMTPPreferences(organization);
 
       checkRequiredFields(email, ["to", "html", "subject"]);
 
@@ -43,7 +44,8 @@ export const sendEmail = functions
       const orgSnap = await db
         .doc(`${Collection.Organizations}/${organization}`)
         .get();
-      const orgData = orgSnap.data() as OrganizationData;
+      const { emailFrom, emailBcc, smtpConfigured } =
+        orgSnap.data() as OrganizationData;
 
       // add email to firestore, firing data trigger
       const doc = admin
@@ -53,14 +55,18 @@ export const sendEmail = functions
         )
         .doc();
 
-      checkRequiredFields(orgData, ["emailFrom"]);
-      const { emailFrom, emailBcc } = orgData;
+      if (!smtpConfigured)
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoSMTPConfigured);
+      if (!emailFrom)
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoEmailConfigured);
+
+      const payload: EmailPayload = {
+        ...email,
+        from: emailFrom,
+        bcc: emailBcc || emailFrom,
+      };
       await doc.set({
-        payload: {
-          ...email,
-          from: emailFrom,
-          bcc: emailBcc || emailFrom,
-        },
+        payload,
       });
 
       // As part of the response we're returning the delivery document path.

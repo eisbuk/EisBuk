@@ -40,7 +40,7 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if user not authenticated (and not an admin)",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
         await expect(
           httpsCallable(
             functions,
@@ -52,25 +52,27 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject to sendEmail if no smtp secrets were set",
       async () => {
-        const { organization } = await setUpOrganization(true, false, {
-          emailFrom: "from@gmail.com",
-          emailBcc: "bcc@gmail.com",
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+          additionalSetup: {
+            emailFrom: "from@gmail.com",
+            emailBcc: "bcc@gmail.com",
+          },
         });
         await expect(
           httpsCallable(
             functions,
             CloudFunction.SendEmail
           )({ organization, to, html, subject })
-        ).rejects.toThrow(
-          "No secrets document found, make sure you create a secrets document for an organziation at: '/secrets/{ organization }'"
-        );
+        ).rejects.toThrow(HTTPSErrors.NoSMTPConfigured);
       }
     );
 
     testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
 
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
@@ -91,17 +93,19 @@ describe("Cloud functions", () => {
             html,
             subject,
           })
-        ).resolves.toEqual({
-          data: {
-            email: {
-              to,
-              html,
-              subject,
-            },
-            organization,
-            success: true,
-          },
-        });
+        ).resolves.toEqual(
+          expect.objectContaining({
+            data: expect.objectContaining({
+              email: {
+                to,
+                html,
+                subject,
+              },
+              organization,
+              success: true,
+            }),
+          })
+        );
       }
     );
 

@@ -1,47 +1,17 @@
 import functions from "firebase-functions";
-import admin from "firebase-admin";
 import nodemailer from "nodemailer";
 
-import {
-  Collection,
-  OrganizationSecrets,
-  DeliveryQueue,
-  EmailMessage,
-} from "@eisbuk/shared";
+import { Collection, DeliveryQueue, EmailPayload } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
 import { SMTPPreferences, TransportConfig } from "./types";
 
-import { __functionsZone__, __noSecretsError } from "../constants";
+import { __functionsZone__ } from "../constants";
 
 import { EmailMessageSchema, SMTPPreferencesSchema } from "./validations";
-import { validateJSON } from "../utils";
-
-/**
- * Reads smtp config from `organization` config as well as `secrets` and validates the fields.
- * @param organization organization name
- * @returns smtp config options
- */
-export const getSMTPPreferences = async (
-  organization: string
-): Promise<Partial<SMTPPreferences>> => {
-  const db = admin.firestore();
-
-  const secretsSnap = await db
-    .doc(`${Collection.Secrets}/${organization}`)
-    .get();
-
-  const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
-  if (!secretsData) {
-    throw new functions.https.HttpsError("not-found", __noSecretsError);
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { smsAuthToken, ...smtpPreferences } = secretsData;
-  return smtpPreferences;
-};
+import { getSMTPPreferences, validateJSON } from "../utils";
 
 /**
  * Process SMTP preferences (read from organization secrets) into
@@ -110,7 +80,7 @@ export const deliverEmail = functions
 
       // Get current email payload
       const data = change.after.data() as Partial<
-        ProcessDocument<EmailMessage>
+        ProcessDocument<EmailPayload>
       >;
 
       // Validate email and throw if not a valid schema

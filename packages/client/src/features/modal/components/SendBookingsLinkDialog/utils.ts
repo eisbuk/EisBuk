@@ -1,6 +1,6 @@
 import {
   Customer,
-  EmailPayload,
+  ClientEmailPayload,
   PublicOrganizationData,
   SMSMessage,
 } from "@eisbuk/shared";
@@ -104,7 +104,7 @@ export const sendBookingsLink: SendBookingsLink =
             to: email,
             html,
             subject,
-          } as EmailPayload,
+          } as ClientEmailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },
         [SendBookingLinkMethod.SMS]: {

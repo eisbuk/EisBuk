@@ -70,7 +70,7 @@ describe("Migrations", () => {
     );
 
     testWithEmulator("should not allow access to unauth users", async () => {
-      const { organization } = await setUpOrganization(false);
+      const { organization } = await setUpOrganization({ doLogin: false });
       try {
         await invokeFunction(CloudFunction.PruneSlotsByDay)({ organization });
       } catch (err) {
@@ -119,7 +119,7 @@ describe("Migrations", () => {
     );
 
     testWithEmulator("should not allow calls to non-admin", async () => {
-      const { organization } = await setUpOrganization(false);
+      const { organization } = await setUpOrganization({ doLogin: false });
       await expect(
         invokeFunction(CloudFunction.DeleteOrphanedBookings)({ organization })
       ).rejects.toThrow(HTTPSErrors.Unauth);
@@ -237,7 +237,7 @@ describe("Migrations", () => {
     );
 
     testWithEmulator("should not allow calls to non-admins", async () => {
-      const { organization } = await setUpOrganization(false);
+      const { organization } = await setUpOrganization({ doLogin: false });
       await expect(
         invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)({
           organization,
@@ -297,7 +297,7 @@ describe("Migrations", () => {
       }
     );
     testWithEmulator("should not allow calls to non-admins", async () => {
-      const { organization } = await setUpOrganization(false);
+      const { organization } = await setUpOrganization({ doLogin: false });
       await expect(
         invokeFunction(CloudFunction.CustomersToPluralCategories)({
           organization,

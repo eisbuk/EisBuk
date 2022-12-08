@@ -250,7 +250,10 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
-        const { organization } = await setUpOrganization(true, false);
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+        });
         const organizationPath = `${Collection.Organizations}/${organization}`;
         const secretsPath = `${Collection.Secrets}/${organization}`;
         // add new secret to trigger registering
@@ -287,25 +290,45 @@ describe("Cloud functions -> Data triggers ->", () => {
       }
     );
     testWithEmulator(
-      "should update 'smtpConfigured' in organization data document when smtp config is set in secrets document",
+      "updates 'smtpConfigured' with respect to smtp config being present in organization data",
       async () => {
-        const { organization } = await setUpOrganization(true, false);
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+        });
         const organizationPath = `${Collection.Organizations}/${organization}`;
         const secretsPath = `${Collection.Secrets}/${organization}`;
         // add new secret to trigger registering
         const orgSecretsRef = adminDb.doc(secretsPath);
+
+        await orgSecretsRef.set({
+          smtpHost: "localhost",
+        });
+
+        // check proper updates triggerd by write to secrets
+        const orgData = (await waitForCondition({
+          documentPath: organizationPath,
+          condition: (data) => Boolean(data?.existingSecrets?.length),
+        })) as OrganizationData;
+
+        expect(orgData.existingSecrets).toEqual(
+          expect.arrayContaining(["smtpHost"])
+        );
+        expect(orgData.smtpConfigured).toBeFalsy();
+
         await orgSecretsRef.set({
           smtpHost: "localhost",
           smtpPort: 4000,
           smtpUser: "user",
           smtpPass: "password",
         });
-        // check proper updates triggerd by write to secrets
-        const orgData = (await waitForCondition({
+
+        const orgDataPostUpdate = (await waitForCondition({
           documentPath: organizationPath,
           condition: (data) => Boolean(data?.existingSecrets?.length),
         })) as OrganizationData;
-        expect(orgData.existingSecrets).toEqual(
+
+        expect(orgDataPostUpdate.existingSecrets).toEqual(
           expect.arrayContaining([
             "smtpHost",
             "smtpPort",
@@ -313,31 +336,23 @@ describe("Cloud functions -> Data triggers ->", () => {
             "smtpPass",
           ])
         );
-        expect(orgData.smtpConfigured).toEqual(true);
-      }
-    );
-    testWithEmulator(
-      "should not update 'smtpConfigured' in organization data document if not all smtp config is set in secrets document",
-      async () => {
-        const { organization } = await setUpOrganization(true, false);
-        const organizationPath = `${Collection.Organizations}/${organization}`;
-        const secretsPath = `${Collection.Secrets}/${organization}`;
-        // add new secret to trigger registering
-        const orgSecretsRef = adminDb.doc(secretsPath);
+        expect(orgDataPostUpdate.smtpConfigured).toEqual(true);
+
         await orgSecretsRef.set({
           smtpHost: "localhost",
+          smtpPort: 4000,
           smtpUser: "user",
-          smtpPass: "password",
         });
-        // check proper updates triggerd by write to secrets
-        const orgData = (await waitForCondition({
+
+        const orgDataPostDelete = (await waitForCondition({
           documentPath: organizationPath,
           condition: (data) => Boolean(data?.existingSecrets?.length),
         })) as OrganizationData;
-        expect(orgData.existingSecrets).toEqual(
-          expect.arrayContaining(["smtpHost", "smtpUser", "smtpPass"])
+
+        expect(orgDataPostDelete.existingSecrets).toEqual(
+          expect.arrayContaining(["smtpHost"])
         );
-        expect(orgData.smtpConfigured).toBeFalsy();
+        expect(orgDataPostDelete.smtpConfigured).toEqual(false);
       }
     );
   });

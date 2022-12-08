@@ -13,8 +13,11 @@ import {
   Collection,
   Customer,
   HTTPSErrors,
+  OrganizationSecrets,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { SMTPPreferences } from "./sendEmail/types";
+import { __noSecretsError } from "./constants";
 
 type Auth = CallableContext["auth"];
 
@@ -337,3 +340,27 @@ export const validateJSON = <T extends Record<string, any>>(
   return [null, constructValidationErrors(validate.errors || [], prefix), {}];
 };
 // #endregion JSONValidation
+
+/**
+ * Reads smtp config from `organization` config as well as `secrets` and validates the fields.
+ * @param organization organization name
+ * @returns smtp config options
+ */
+export const getSMTPPreferences = async (
+  organization: string
+): Promise<Partial<SMTPPreferences>> => {
+  const db = admin.firestore();
+
+  const secretsSnap = await db
+    .doc(`${Collection.Secrets}/${organization}`)
+    .get();
+
+  const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
+  if (!secretsData) {
+    throw new Error(__noSecretsError);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { smsAuthToken, ...smtpPreferences } = secretsData;
+  return smtpPreferences;
+};

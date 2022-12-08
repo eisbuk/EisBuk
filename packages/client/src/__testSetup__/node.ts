@@ -8,11 +8,11 @@ import { adminDb, auth } from "./firestoreSetup";
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
 
 interface SetUpOrganization {
-  (
-    doLogin?: boolean,
-    setSecrets?: boolean,
-    additionalSetup?: Partial<OrganizationData>
-  ): Promise<{
+  (options?: {
+    doLogin?: boolean;
+    setSecrets?: boolean;
+    additionalSetup?: Partial<OrganizationData>;
+  }): Promise<{
     organization: string;
     email: string;
     pass: string;
@@ -21,11 +21,11 @@ interface SetUpOrganization {
 
 const smtpPort = 5000;
 
-export const setUpOrganization: SetUpOrganization = async (
+export const setUpOrganization: SetUpOrganization = async ({
   doLogin = true,
   setSecrets = true,
-  additionalSetup = {}
-) => {
+  additionalSetup = {},
+} = {}) => {
   if (!__withEmulators__) {
     throw new Error(
       "Trying to set up a new organization in an environment without emulator support"
@@ -45,6 +45,7 @@ export const setUpOrganization: SetUpOrganization = async (
     // Set given user as admin in org structure
     orgRef.set({
       admins: [email],
+      emailFrom: "emailFrom@gmail.com",
       ...additionalSetup,
     }),
   ];
@@ -53,6 +54,8 @@ export const setUpOrganization: SetUpOrganization = async (
       secretsRef.set({
         smtpHost,
         smtpPort,
+        smtpUser: email,
+        smtpPass: pass,
       })
     );
   await Promise.all(promises);

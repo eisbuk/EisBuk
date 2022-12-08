@@ -321,7 +321,7 @@ export interface EmailAttachment {
  * It's basically a full email payload without the `from` and `bcc`
  * fields (as they're loaded from organization preferences).
  */
-export interface EmailPayload {
+export interface ClientEmailPayload {
   to: string;
   subject: string;
   html: string;
@@ -330,9 +330,9 @@ export interface EmailPayload {
 
 /**
  * A full email interface, including:
- * `to`, `from`, `subject`, `html` and `attachments`. 'bcc'
+ * `to`, `from`, `subject`, `html`, `attachments` and `bcc`
  */
-export interface EmailMessage extends EmailPayload {
+export interface EmailPayload extends ClientEmailPayload {
   from: string;
   bcc: string;
 }
@@ -340,7 +340,7 @@ export interface EmailMessage extends EmailPayload {
 /**
  * A payload used in `sendEmail` cloud function.
  */
-export interface SendEmailPayload extends EmailPayload {
+export interface ClientSendEmailPayload extends ClientEmailPayload {
   /**
    * Used to identify an organization where the email is sent from,
    * as well as which organization to authenticate against.

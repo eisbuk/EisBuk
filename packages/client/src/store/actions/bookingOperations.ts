@@ -4,8 +4,8 @@ import {
   BookingSubCollection,
   Customer,
   SlotInterface,
-  SendEmailPayload,
   OrganizationData,
+  ClientSendEmailPayload,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { NotifVariant } from "@/enums/store";
@@ -232,7 +232,7 @@ export const sendICSFile: sendICSFile =
         <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
 
       const handler = CloudFunction.SendEmail;
-      const payload: Omit<SendEmailPayload, "organization" | "emailFrom"> = {
+      const payload: Omit<ClientSendEmailPayload, "organization"> = {
         to: email,
         html,
         subject,
