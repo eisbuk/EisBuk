@@ -55,10 +55,12 @@ export const sendEmail = functions
         )
         .doc();
 
-      if (!smtpConfigured)
+      if (!smtpConfigured) {
         throw new EisbukHttpsError("not-found", HTTPSErrors.NoSMTPConfigured);
-      if (!emailFrom)
+      }
+      if (!emailFrom) {
         throw new EisbukHttpsError("not-found", HTTPSErrors.NoEmailConfigured);
+      }
 
       const payload: EmailPayload = {
         ...email,
