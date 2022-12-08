@@ -3,14 +3,12 @@ import pRetry from "p-retry";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 
-interface WaitForCondition {
-  <D extends DocumentData = DocumentData>(params: {
-    documentPath: string;
-    condition: (data?: D) => boolean;
-    attempts?: number;
-    sleep?: number;
-    verbose?: boolean;
-  }): Promise<DocumentData | undefined>;
+interface WaitForConditionParams<D extends DocumentData = DocumentData> {
+  documentPath: string;
+  condition: (data?: D) => boolean;
+  attempts?: number;
+  sleep?: number;
+  verbose?: boolean;
 }
 
 /**
@@ -24,13 +22,13 @@ interface WaitForCondition {
  * - sleep: pause between attempts
  * @returns
  */
-export const waitForCondition: WaitForCondition = ({
+export const waitForCondition = <D extends DocumentData = DocumentData>({
   documentPath,
   condition,
   attempts = 10,
   sleep = 400,
   verbose = false,
-}) => {
+}: WaitForConditionParams<D>): Promise<D> => {
   const docId = documentPath.split("/").slice(-1);
 
   const docRef = adminDb.doc(documentPath);
@@ -39,15 +37,13 @@ export const waitForCondition: WaitForCondition = ({
     // Try to fetch the document with provided id in the provided collection
     // until the condition has been met
     async () => {
-      const doc = (await docRef.get()).data() as Parameters<
-        typeof condition
-      >[0];
+      const doc = (await docRef.get()).data() as D | undefined;
       // used for debugging
       if (verbose) {
         console.log(doc);
       }
       if (condition(doc)) {
-        return Promise.resolve(doc);
+        return Promise.resolve(doc as D);
       }
       return Promise.reject(new Error(`${docId} was not updated successfully`));
     },

@@ -90,7 +90,8 @@
     "vite": "^2.9.9",
     "storybook-addon-pseudo-states": "~1.9.0",
     "uuid": "^8.3.2",
-    "@types/uuid": "^8.3.2"
+    "@types/uuid": "^8.3.2",
+    "@babel/plugin-proposal-private-property-in-object": "~7.20.5"
   },
   "dependencies": {
     "@eisbuk/shared": "workspace:*",

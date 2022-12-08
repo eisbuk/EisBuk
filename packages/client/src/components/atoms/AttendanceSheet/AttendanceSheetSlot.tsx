@@ -1,5 +1,6 @@
 import React from "react";
 
+import { Divider } from "@mui/material";
 import TableBody from "@mui/material/TableBody";
 import TableRow from "@mui/material/TableRow";
 import TableCell from "@mui/material/TableCell";
@@ -12,8 +13,7 @@ import { SlotInterface, SlotType } from "@eisbuk/shared";
 import { CustomerWithAttendance } from "@/types/components";
 
 import { getColorForSlotType } from "@/utils/theme";
-import { calculateIntervalDuration } from "../BookingCard/Duration";
-import { Divider } from "@mui/material";
+import { calculateIntervalDuration } from "@/utils/helpers";
 
 interface Props extends SlotInterface {
   customers: CustomerWithAttendance[];
@@ -30,13 +30,10 @@ const AttendanceSheetSlot: React.FC<Props> = ({ customers, type, notes }) => {
           return null;
         }
 
-        const bookedStartTime = customer.bookedInterval.substring(0, 5);
-        const bookedEndTime = customer.bookedInterval.substring(6, 11);
+        const { bookedInterval } = customer;
+        const [bookedStartTime, bookedEndTime] = bookedInterval.split("-");
 
-        const bookedTotalHours = calculateIntervalDuration(
-          bookedStartTime,
-          bookedEndTime
-        );
+        const bookedTotalHours = calculateIntervalDuration(bookedInterval);
 
         return (
           <TableRow
