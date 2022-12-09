@@ -27,6 +27,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
   if (cancelLabel) {
     buttonsToRender.push(
       <Button
+        key="cancel-button"
         className="w-full !text-gray-700 font-medium bg-gray-100 hover:bg-opacity-0 md:w-auto"
         size={ButtonSize.LG}
         onClick={onCancel}
@@ -39,6 +40,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
   if (confirmLabel) {
     buttonsToRender.push(
       <Button
+        key="confirm-button"
         className="w-full !text-red-700 bg-red-200 hover:bg-red-100 md:w-auto"
         size={ButtonSize.LG}
         onClick={onConfirm}
