@@ -2,21 +2,23 @@ import functions from "firebase-functions";
 import admin from "firebase-admin";
 
 import {
-  SendEmailPayload,
   Collection,
   DeliveryQueue,
-  interpolateEmailTemplate,
+  ClientEmailPayload,
+  EmailType,
+  EmailTemplate,
 } from "@eisbuk/shared";
 
-import { fetchOrganizationEmailTemplate } from "./utils";
+import {
+  createBookingsEmailPayload,
+  fetchOrganizationEmailTemplate,
+  createExtendDateEmailPayload,
+  createICSFileEmailPayload,
+} from "./utils";
 import { __functionsZone__ } from "../constants";
 
-import {
-  checkUser,
-  checkRequiredFields,
-  checkSecretKey,
-  throwUnauth,
-} from "../utils";
+import { checkUser, checkSecretKey, throwUnauth } from "../utils";
+import { AuthData } from "firebase-functions/lib/common/providers/https";
 
 /**
  * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
@@ -24,78 +26,61 @@ import {
 export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
-    async (
-      { organization, secretKey = "", ...email }: SendEmailPayload,
-      { auth }
+    async <T extends EmailType>(
+      emailPayload: ClientEmailPayload[T],
+      auth: AuthData
     ) => {
+      // const { emailPayload, auth } = payload
+
       if (
-        !(await checkUser(organization, auth)) &&
-        !(await checkSecretKey({ organization, secretKey }))
+        !(await checkUser(emailPayload.organization, auth)) &&
+        emailPayload.type === EmailType.SendCalendarFile &&
+        !(await checkSecretKey({
+          organization: emailPayload.organization,
+          secretKey: emailPayload.customer.secretKey,
+        }))
       ) {
         throwUnauth();
       }
 
-      checkRequiredFields(email, [
-        "to",
-        "htmlRequiredFields",
-        "subjectRequiredFields",
-        "emailTemplateName",
-      ]);
-
       // get email temp from org doc
       const emailTemplate = await fetchOrganizationEmailTemplate(
-        organization,
-        email.emailTemplateName
+        emailPayload.organization,
+        emailPayload.type
       );
+      const interpolateEmail = <T extends EmailType>(
+        emailPayload: ClientEmailPayload[T],
+        emailTemplate: EmailTemplate
+      ) => {
+        switch (emailPayload.type) {
+          case EmailType.SendCalendarFile:
+            return createICSFileEmailPayload(emailPayload, emailTemplate);
+          case EmailType.SendExtendedBookingLink:
+            return createExtendDateEmailPayload(emailPayload, emailTemplate);
+          default:
+            return createBookingsEmailPayload(emailPayload, emailTemplate);
+        }
+      };
 
-      checkRequiredFields(
-        email.htmlRequiredFields,
-        emailTemplate.htmlRequiredFields
-      );
-      checkRequiredFields(
-        email.subjectRequiredFields,
-        emailTemplate.subjectRequiredFields
-      );
-
-      const interpolatedSubject = interpolateEmailTemplate(
-        emailTemplate.subject,
-        email.subjectRequiredFields
-      );
-      const interpolatedHtml = interpolateEmailTemplate(
-        emailTemplate.html,
-        email.htmlRequiredFields
-      );
+      const email = interpolateEmail(emailPayload, emailTemplate);
 
       // add email to firestore, firing data trigger
       await admin
         .firestore()
         .collection(
-          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
+          `${Collection.DeliveryQueues}/${emailPayload.organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
         .set({
           payload: {
             ...email,
-            html: interpolatedHtml,
-            subject: interpolatedSubject,
+            to: emailPayload.customer.email,
           },
         });
 
-      /* eslint-disable @typescript-eslint/no-unused-vars */
-      const {
-        htmlRequiredFields,
-        subjectRequiredFields,
-        emailTemplateName,
-        ...newEmail
-      } = email;
-      /* eslint-disable @typescript-eslint/no-unused-vars */
       return {
-        email: {
-          ...newEmail,
-          html: interpolatedHtml,
-          subject: interpolatedSubject,
-        },
-        organization,
+        email,
+        organization: emailPayload.organization,
         success: true,
       };
     }

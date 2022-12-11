@@ -75,4 +75,91 @@ export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
     },
   },
 };
+
+/**
+ * Validation schema for a sendICS email payload,
+ * including
+ */
+export const SendICSEmailSchema: JSONSchemaType<EmailMessage> = {
+  type: "object",
+  required: ["from", "to", "subject"],
+  properties: {
+    from: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    to: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    subject: { type: "string" },
+    html: { type: "string" },
+    attachments: {
+      type: "array",
+      items: EmailAttachmentSchema,
+      nullable: true,
+    },
+  },
+};
+
+/**
+ * Validation schema for a sendICS email payload,
+ * including
+ */
+
+/** @TODO fix schemas */
+export const SendExtendDateEmailSchema: JSONSchemaType<EmailMessage> = {
+  type: "object",
+  required: ["from", "to", "subject"],
+  properties: {
+    from: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    to: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    subject: { type: "string" },
+    html: { type: "string" },
+    attachments: {
+      type: "array",
+      items: EmailAttachmentSchema,
+      nullable: true,
+    },
+  },
+};
+
+/**
+ * Validation schema for a sendICS email payload,
+ * including
+ */
+export const SendBookingsLinkEmailSchema: JSONSchemaType<EmailMessage> = {
+  type: "object",
+  required: ["from", "to", "subject"],
+  properties: {
+    from: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    to: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    subject: { type: "string" },
+    html: { type: "string" },
+    attachments: {
+      type: "array",
+      items: EmailAttachmentSchema,
+      nullable: true,
+    },
+  },
+};
+
 // #region validations

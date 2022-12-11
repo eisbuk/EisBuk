@@ -4,9 +4,9 @@ import {
   BookingSubCollection,
   Customer,
   SlotInterface,
-  SendEmailPayload,
   OrganizationData,
-  EmailTemplates,
+  ClientEmailPayload,
+  EmailType,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { NotifVariant } from "@/enums/store";
@@ -227,22 +227,24 @@ export const sendICSFile: sendICSFile =
   async (dispatch) => {
     try {
       const handler = CloudFunction.SendEmail;
-      const payload: Omit<SendEmailPayload, "organization"> = {
-        to: email,
-        emailTemplateName: EmailTemplates.IcsFile,
-        subjectRequiredFields: { displayName },
-        htmlRequiredFields: {
+      const payload: Omit<
+        ClientEmailPayload[EmailType.SendCalendarFile],
+        "organization"
+      > = {
+        // to: email,
+        type: EmailType.SendCalendarFile,
+        customer: {
           name,
-          displayName,
-          icsFile,
+          /** @TODO surname */
+          surname: "",
+          secretKey,
+          email,
         },
-        attachments: [
-          {
-            filename: "bookedSlots.ics",
-            content: icsFile,
-          },
-        ],
-        secretKey: secretKey,
+        displayName,
+        attachments: {
+          filename: "bookedSlots.ics",
+          content: icsFile,
+        },
       };
 
       await createCloudFunctionCaller(handler, payload)();

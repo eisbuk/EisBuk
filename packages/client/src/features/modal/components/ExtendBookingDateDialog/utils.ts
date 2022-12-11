@@ -1,7 +1,7 @@
 import {
+  ClientEmailPayload,
   Customer,
-  EmailPayload,
-  EmailTemplates,
+  EmailType,
   PublicOrganizationData,
   SMSMessage,
 } from "@eisbuk/shared";
@@ -79,7 +79,16 @@ interface SendBookingsLink {
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ name, method, email, phone, secretKey, bookingsLink, displayName }) =>
+  ({
+    name,
+    method,
+    email,
+    surname,
+    phone,
+    secretKey,
+    bookingsLink,
+    displayName,
+  }) =>
   async (dispatch) => {
     try {
       if (!secretKey) {
@@ -92,20 +101,26 @@ export const sendBookingsLink: SendBookingsLink =
       Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
       ${bookingsLink}`;
 
+      /** @TODO add bookingsMonth and extendedBookimgsDate to payload */
+      const emailPayload: Omit<
+        ClientEmailPayload[EmailType.SendExtendedBookingLink],
+        "organization"
+      > = {
+        customer: {
+          name,
+          surname,
+          email: email || "",
+        },
+        displayName: displayName || "",
+        type: EmailType.SendExtendedBookingLink,
+        bookingsMonth: "",
+        extendedBookingsDate: "",
+      };
+
       const config = {
         [SendBookingLinkMethod.Email]: {
           handler: CloudFunction.SendEmail,
-          payload: {
-            to: email,
-            subjectRequiredFields: { displayName: displayName },
-            htmlRequiredFields: {
-              name: name,
-              displayName: displayName,
-              bookingsLinks: bookingsLink,
-            },
-
-            emailTemplateName: EmailTemplates.BookingLink,
-          } as EmailPayload,
+          payload: emailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },
         [SendBookingLinkMethod.SMS]: {

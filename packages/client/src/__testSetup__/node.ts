@@ -1,7 +1,7 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
-import { Collection, EmailTemplates } from "@eisbuk/shared";
+import { Collection, EmailType } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
 
@@ -24,6 +24,7 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
 
   const organization = uuid();
   const email = `${organization}@eisbuk.it`;
+
   const pass = `password-${organization}`;
 
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
@@ -35,7 +36,7 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     orgRef.set({
       admins: [email],
       emailTemplates: {
-        [EmailTemplates.BookingLink]: {
+        [EmailType.SendBookingsLink]: {
           subject: "prenotazioni lezioni di {{ displayName }}",
           html: `<p>Ciao {{ name }},</p>
           <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
