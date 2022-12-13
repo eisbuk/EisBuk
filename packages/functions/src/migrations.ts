@@ -10,6 +10,9 @@ import {
   SlotInterface,
   CategoryUnion,
   Customer,
+  SendBookingsLinkTemplate,
+  SendExtendedDateTemplate,
+  SendCalendarFileTemplate,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -223,6 +226,42 @@ export const customersToPluralCategories = functions
       } else {
         batch.set(customer.ref, { ...noCategoryData, categories: category });
       }
+    });
+
+    await batch.commit();
+
+    return { success: true };
+  });
+
+export const populateDefaultEmailTemplates = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    if (!(await checkUser(organization, auth))) throwUnauth();
+
+    const batch = admin.firestore().batch();
+
+    const allOrgs = await admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .get();
+
+    allOrgs.forEach((organization) => {
+      const data = organization.data();
+
+      // templates already exist => return
+      // some do and some dont??
+      if (data.templates && data.templates.length) return;
+
+      functions.logger.info(`Populated organization: ${data.id}`);
+
+      batch.set(organization.ref, {
+        ...data,
+        templates: [
+          SendBookingsLinkTemplate,
+          SendExtendedDateTemplate,
+          SendCalendarFileTemplate,
+        ],
+      });
     });
 
     await batch.commit();

@@ -18,4 +18,5 @@ export enum CloudFunction {
   DeleteOrphanedBookings = "deleteOrphanedBookings",
   MigrateCategoriesToExplicitMinors = "migrateCategoriesToExplicitMinors",
   CustomersToPluralCategories = "customersToPluralCategories",
+  PopulateDefaultEmailTemplates = "populateDefaultEmailTemplates",
 }

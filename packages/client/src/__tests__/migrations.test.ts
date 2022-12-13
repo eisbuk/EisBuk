@@ -9,6 +9,7 @@ import {
   getCustomerBase,
   Category,
   DeprecatedCategory,
+  Collection,
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
@@ -304,5 +305,42 @@ describe("Migrations", () => {
         })
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
+  });
+  describe("default email templates population", () => {
+    testWithEmulator(
+      "should populate default templates in existing organizations",
+      async () => {
+        const { organization } = await setUpOrganization();
+
+        const orgRef = adminDb.doc(`${Collection.Organizations}/org1`);
+
+        await orgRef.set({}),
+          await invokeFunction(CloudFunction.PopulateDefaultEmailTemplates)({
+            organization,
+          });
+
+        expect((await orgRef.get()).data()).toEqual({
+          templates: [
+            {
+              html: `<p>Ciao {{ name }},</p>
+    <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+    <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+              subject: `prenotazioni lezioni di {{ displayName }}`,
+            },
+            {
+              html: `<p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+    <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+              subject: `<p>Ciao {{ name }},</p>`,
+            },
+            {
+              html: `<p>Ciao {{ name }},</p>
+    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ displayName }} al tuo calendario:</p>
+    <a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
+              subject: `Calendario prenotazioni {{ displayName }}`,
+            },
+          ],
+        });
+      }
+    );
   });
 });
