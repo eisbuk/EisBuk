@@ -20,19 +20,19 @@ import {
 export const fetchOrganizationEmailTemplate: (
   organization: string,
   emailType: EmailType
-) => Promise<EmailTemplate> = async (organization, emailTemplateName) => {
-  const { emailTemplates } = (
-    await admin
-      .firestore()
-      .doc(`${Collection.Organizations}/${organization}`)
-      .get()
-  ).data() as OrganizationData;
+) => Promise<EmailTemplate> = async (organization, emailType) => {
+  const orgData = await admin
+    .firestore()
+    .doc(`${Collection.Organizations}/${organization}`)
+    .get();
+
+  const { emailTemplates } = orgData.data() as OrganizationData;
 
   if (!emailTemplates) {
     throw new EisbukHttpsError("unavailable", HTTPSErrors.NoConfiguration);
   }
 
-  const emailTemplate = emailTemplates[emailTemplateName];
+  const emailTemplate = emailTemplates[emailType];
 
   return emailTemplate;
 };
@@ -81,7 +81,7 @@ export const createICSFileEmailPayload = (
   const htmlFieldValues = {
     displayName: emailPayload.displayName,
     name: `${name} ${surname}`,
-    ICSFile: emailPayload.attachments.filename,
+    icsFile: emailPayload.attachments.filename,
   };
   const interpolatedHtml = interpolateEmailTemplate(
     template.html,

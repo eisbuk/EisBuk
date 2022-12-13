@@ -8,8 +8,8 @@ import {
   HTTPSErrors,
   BookingsErrors,
   getCustomer,
-  EmailTemplates,
-  SendEmailPayload,
+  ClientEmailPayload,
+  EmailType,
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
@@ -40,19 +40,24 @@ describe("Cloud functions", () => {
 
   describe("sendMail", () => {
     // Dummy data for error testing
-    const to = "saul@gmail.com";
-    const subject = "Subject";
-    const html = "html";
 
     testWithEmulator(
       "should reject if user not authenticated (and not an admin)",
       async () => {
         const { organization } = await setUpOrganization(false);
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          organization,
+          displayName: "displayName",
+          bookingsLink: "bookingsLink",
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ organization, message: { html, subject } })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
@@ -69,17 +74,16 @@ describe("Cloud functions", () => {
           condition: (data) => Boolean(data),
         });
 
-        const payload: SendEmailPayload = {
+        const payload: ClientEmailPayload[EmailType.SendCalendarFile] = {
+          type: EmailType.SendCalendarFile,
           organization,
-          secretKey: saul.secretKey,
-          to,
-          emailTemplateName: EmailTemplates.BookingLink,
-          subjectRequiredFields: { displayName: "Los Pollos Hermanos" },
-          htmlRequiredFields: {
-            name: "Saul",
-            displayName: "Los Pollos Hermanos",
-            icsFile: "icsFile.ics",
-            bookingsLink: "www.bookingsLink.com",
+          displayName: "displayName",
+          attachments: { filename: "icsFile.ics", content: "content" },
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email || "",
+            secretKey: saul.secretKey,
           },
         };
         await expect(
@@ -87,11 +91,14 @@ describe("Cloud functions", () => {
         ).resolves.toEqual({
           data: {
             email: {
-              to,
-              html: `<p>Ciao Saul,</p>
-          <p>Ti inviamo un link per prenotare le tue prossime lezioni con Los Pollos Hermanos:</p>
-          <a href="www.bookingsLink.com">Clicca qui per prenotare e gestire le tue lezioni</a>`,
-              subject: "prenotazioni lezioni di Los Pollos Hermanos",
+              attachments: [
+                {
+                  content: "content",
+                  filename: "icsFile.ics",
+                },
+              ],
+              subject: "displayName's calendar events",
+              html: "This is an html for Saul Goodman, from displayName containing the icsFile.ics",
             },
             organization,
             success: true,
@@ -103,96 +110,43 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if no value for organziation provided",
       async () => {
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          displayName: "displayName",
+          bookingsLink: "string",
+          customer: {
+            name: "name",
+            surname: "surname",
+            email: "email",
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ to, html, subject })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
 
     testWithEmulator("should reject if no recipient provided", async () => {
       const { organization } = await setUpOrganization();
+      const payload = {
+        type: EmailType.SendBookingsLink,
+        organization,
+        displayName: " string",
+        bookingsLink: "string",
+        customer: {
+          name: "string",
+          surname: "string",
+          email: "string",
+        },
+      };
       try {
-        await httpsCallable(
-          functions,
-          CloudFunction.SendEmail
-        )({
-          organization,
-          htmlRequiredFields: [],
-          subjectRequiredFields: [],
-          emailTemplateName: EmailTemplates.BookingLink,
-        });
+        await httpsCallable(functions, CloudFunction.SendEmail)(payload);
       } catch (error) {
         expect((error as FunctionsError).message).toEqual(
           `${HTTPSErrors.MissingParameter}: to`
         );
       }
     });
-    testWithEmulator(
-      "should reject if no htmlRequiredFields or subjectRequiredFields provided",
-      async () => {
-        const { organization } = await setUpOrganization();
-        try {
-          await httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            to,
-            emailTemplateName: EmailTemplates.BookingLink,
-          });
-        } catch (error) {
-          expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: htmlRequiredFields, subjectRequiredFields`
-          );
-        }
-      }
-    );
-    testWithEmulator(
-      "should reject if no emailTemplateName provided",
-      async () => {
-        const { organization } = await setUpOrganization();
-        try {
-          await httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            to,
-            htmlRequiredFields: [],
-            subjectRequiredFields: [],
-          });
-        } catch (error) {
-          expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: emailTemplateName`
-          );
-        }
-      }
-    );
-    testWithEmulator(
-      "should reject if not all requiredFields for a emailTemplateName were provided",
-      async () => {
-        const { organization } = await setUpOrganization();
-        try {
-          await httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            to,
-            emailTemplateName: EmailTemplates.BookingLink,
-            htmlRequiredFields: [],
-            subjectRequiredFields: [],
-          });
-        } catch (error) {
-          expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: name, displayName, bookingsLink`
-          );
-        }
-      }
-    );
   });
 
   describe("finalizeBookings", () => {

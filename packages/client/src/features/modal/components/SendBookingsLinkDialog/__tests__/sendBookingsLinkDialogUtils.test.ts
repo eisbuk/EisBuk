@@ -1,4 +1,9 @@
-import { OrgSubCollection, SMSMessage, EmailPayload } from "@eisbuk/shared";
+import {
+  OrgSubCollection,
+  SMSMessage,
+  EmailType,
+  ClientEmailPayload,
+} from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -126,16 +131,14 @@ describe("Send bookings link dialog utils", () => {
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
-        const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
+        const sentMail = mockSendMail.mock
+          .calls[0][0] as ClientEmailPayload[EmailType.SendBookingsLink];
 
-        expect(sentMail.to).toEqual(saul.email);
-        expect(sentMail.subjectRequiredFields).toBeDefined();
+        expect(sentMail.customer.email).toEqual(saul.email);
         // we're not matching the complete html of message
         // but are asserting that it contains important parts
-        expect(sentMail.htmlRequiredFields["bookingsLink"]).toEqual(
-          bookingsLink
-        );
-        expect(sentMail.htmlRequiredFields["name"]).toEqual(saul.name);
+        expect(sentMail.bookingsLink).toEqual(bookingsLink);
+        expect(sentMail.customer.name).toEqual(saul.name);
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

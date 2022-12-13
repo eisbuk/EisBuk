@@ -41,8 +41,10 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
           html: `<p>Ciao {{ name }},</p>
           <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
           <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
-          subjectRequiredFields: ["displayName"],
-          htmlRequiredFields: ["name", "displayName", "bookingsLink"],
+        },
+        [EmailType.SendCalendarFile]: {
+          subject: "{{ displayName }}'s calendar events",
+          html: "This is an html for {{ name }}, from {{ displayName }} containing the {{ icsFile }}",
         },
       },
     }),

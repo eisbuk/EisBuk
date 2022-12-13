@@ -18,7 +18,6 @@ import {
 import { __functionsZone__ } from "../constants";
 
 import { checkUser, checkSecretKey, throwUnauth } from "../utils";
-import { AuthData } from "firebase-functions/lib/common/providers/https";
 
 /**
  * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
@@ -26,19 +25,19 @@ import { AuthData } from "firebase-functions/lib/common/providers/https";
 export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
-    async <T extends EmailType>(
-      emailPayload: ClientEmailPayload[T],
-      auth: AuthData
+    async (
+      emailPayload: ClientEmailPayload[EmailType],
+      { auth }: functions.https.CallableContext
     ) => {
-      // const { emailPayload, auth } = payload
-
       if (
         !(await checkUser(emailPayload.organization, auth)) &&
-        emailPayload.type === EmailType.SendCalendarFile &&
-        !(await checkSecretKey({
-          organization: emailPayload.organization,
-          secretKey: emailPayload.customer.secretKey,
-        }))
+        !(
+          emailPayload.type === EmailType.SendCalendarFile &&
+          (await checkSecretKey({
+            organization: emailPayload.organization,
+            secretKey: emailPayload.customer.secretKey,
+          }))
+        )
       ) {
         throwUnauth();
       }
