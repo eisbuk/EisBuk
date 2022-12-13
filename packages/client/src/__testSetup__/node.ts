@@ -1,7 +1,12 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
-import { Collection, EmailType } from "@eisbuk/shared";
+import {
+  Collection,
+  EmailType,
+  SendBookingsLinkTemplate,
+  SendCalendarFileTemplate,
+} from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
 
@@ -37,14 +42,12 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
       admins: [email],
       emailTemplates: {
         [EmailType.SendBookingsLink]: {
-          subject: "prenotazioni lezioni di {{ displayName }}",
-          html: `<p>Ciao {{ name }},</p>
-          <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
-          <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+          subject: SendBookingsLinkTemplate.subject,
+          html: SendBookingsLinkTemplate.html,
         },
         [EmailType.SendCalendarFile]: {
-          subject: "{{ displayName }}'s calendar events",
-          html: "This is an html for {{ name }}, from {{ displayName }} containing the {{ icsFile }}",
+          subject: SendCalendarFileTemplate.subject,
+          html: SendCalendarFileTemplate.html,
         },
       },
     }),

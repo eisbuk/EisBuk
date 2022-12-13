@@ -6,6 +6,7 @@ export * from "./types/cloudFunctions";
 export * from "./types/misc";
 export * from "./types/email";
 export * from "./utils";
+export * from "./data/templates";
 
 export * from "./deprecated";
 

@@ -66,6 +66,7 @@ describe("Cloud functions", () => {
       async () => {
         const { organization } = await setUpOrganization(false);
 
+        const displayName = "displayName";
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
@@ -77,7 +78,7 @@ describe("Cloud functions", () => {
         const payload: ClientEmailPayload[EmailType.SendCalendarFile] = {
           type: EmailType.SendCalendarFile,
           organization,
-          displayName: "displayName",
+          displayName,
           attachments: { filename: "icsFile.ics", content: "content" },
           customer: {
             name: saul.name,
@@ -97,8 +98,11 @@ describe("Cloud functions", () => {
                   filename: "icsFile.ics",
                 },
               ],
-              subject: "displayName's calendar events",
-              html: "This is an html for Saul Goodman, from displayName containing the icsFile.ics",
+
+              subject: "Calendario prenotazioni displayName",
+              html: `<p>Ciao Saul Goodman,</p>
+    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con displayName al tuo calendario:</p>
+    <a href="icsFile.ics">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
             },
             organization,
             success: true,
