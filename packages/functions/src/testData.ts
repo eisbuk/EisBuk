@@ -12,7 +12,7 @@ import {
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
-  EmailTemplates,
+  EmailType,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -110,11 +110,11 @@ const createUserInAuth = async ({
           admins: adminsEntry,
           displayName: organization,
           emailTemplates: {
-            [EmailTemplates.IcsFile]: {
-              subject: "{{ displayName }}'s calendar events",
-              html: "This is an html for {{ name }}, from {{ displayName }} containing the {{ icsFile }}",
-              subjectRequiredFields: ["displayName"],
-              htmlRequiredFields: ["displayName", "name", "icsFile"],
+            [EmailType.SendCalendarFile]: {
+              subject: "Calendario prenotazioni {{ displayName }}",
+              html: `<p>Ciao {{ name }},</p>
+    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ displayName }} al tuo calendario:</p>
+    <a href="{{ icsFile.ics }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
             },
           },
         },

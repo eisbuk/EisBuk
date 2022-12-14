@@ -3,14 +3,13 @@ import {
   Collection,
   OrganizationData,
   EmailTemplate,
-  HTTPSErrors,
   EmailType,
   ClientEmailPayload,
   interpolateEmailTemplate,
   EmailAttachment,
 } from "@eisbuk/shared";
 
-import { EisbukHttpsError, validateJSON } from "../utils";
+import { validateJSON } from "../utils";
 import {
   SendBookingsLinkEmailSchema,
   SendExtendDateEmailSchema,
@@ -28,11 +27,7 @@ export const fetchOrganizationEmailTemplate: (
 
   const { emailTemplates } = orgData.data() as OrganizationData;
 
-  if (!emailTemplates) {
-    throw new EisbukHttpsError("unavailable", HTTPSErrors.NoConfiguration);
-  }
-
-  const emailTemplate = emailTemplates[emailType];
+  const emailTemplate = emailTemplates![emailType];
 
   return emailTemplate;
 };

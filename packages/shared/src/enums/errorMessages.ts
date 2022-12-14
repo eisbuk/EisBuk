@@ -5,7 +5,7 @@ export enum HTTPSErrors {
   TimedOut = "Function timed out",
   MissingParameter = "One or more required parameters are missing from the payload",
   NoOrganziation = "No argument for organization provided",
-  NoConfiguration = "A required configuration has not been provided for this organization",
+  NoConfiguration = "The required configuration has not been provided for this organization",
 }
 
 export enum SendSMSErrors {

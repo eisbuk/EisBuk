@@ -2,7 +2,6 @@
 /coverage
 /.nyc_output
 /instrumented
-**/storybook-static
 
 # Test result files
 junit.xml
