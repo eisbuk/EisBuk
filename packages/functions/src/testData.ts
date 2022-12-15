@@ -13,6 +13,9 @@ import {
   OrgSubCollection,
   CreateAuthUserPayload,
   EmailType,
+  SendCalendarFileTemplate,
+  SendExtendedDateTemplate,
+  SendBookingsLinkTemplate,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -63,6 +66,11 @@ export const createOrganization = functions
       .doc(organization)
       .set({
         admins: ["test@eisbuk.it", "+3912345678"],
+        emailTemplates: {
+          SendBookingsLinkTemplate,
+          SendCalendarFileTemplate,
+          SendExtendedDateTemplate,
+        },
       });
   });
 

@@ -3,7 +3,6 @@ import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
 import {
   Collection,
-  EmailType,
   SendBookingsLinkTemplate,
   SendCalendarFileTemplate,
 } from "@eisbuk/shared";
@@ -41,14 +40,8 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     orgRef.set({
       admins: [email],
       emailTemplates: {
-        [EmailType.SendBookingsLink]: {
-          subject: SendBookingsLinkTemplate.subject,
-          html: SendBookingsLinkTemplate.html,
-        },
-        [EmailType.SendCalendarFile]: {
-          subject: SendCalendarFileTemplate.subject,
-          html: SendCalendarFileTemplate.html,
-        },
+        SendBookingsLinkTemplate,
+        SendCalendarFileTemplate,
       },
     }),
   ]);

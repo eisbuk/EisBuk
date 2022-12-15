@@ -13,6 +13,7 @@ import {
   SendBookingsLinkTemplate,
   SendExtendedDateTemplate,
   SendCalendarFileTemplate,
+  OrganizationData,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -246,17 +247,16 @@ export const populateDefaultEmailTemplates = functions
       .get();
 
     allOrgs.forEach((organization) => {
-      const data = organization.data();
+      const data = organization.data() as OrganizationData;
 
       // templates already exist => return
-      // some do and some dont??
-      if (data.templates && data.templates.length) return;
+      if (data.emailTemplates && data.emailTemplates.length) return;
 
-      functions.logger.info(`Populated organization: ${data.id}`);
+      functions.logger.info(`Populated organization: ${data.displayName}`);
 
       batch.set(organization.ref, {
         ...data,
-        templates: [
+        emailTemplates: [
           SendBookingsLinkTemplate,
           SendExtendedDateTemplate,
           SendCalendarFileTemplate,
