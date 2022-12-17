@@ -9,7 +9,7 @@ import {
 
 import { CloudFunction } from "@/enums/functions";
 
-import { setUpOrganization } from "@/__testSetup__/node";
+import { setUpOrganization, smtpHost, smtpPort } from "@/__testSetup__/node";
 import { functions } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -21,8 +21,8 @@ describe("Email sending and delivery", () => {
   const subject = "Subject";
   const html = "html";
   const smtpServer = createJestSMTPServer({
-    port: 5000,
-    host: "localhost",
+    port: smtpPort,
+    host: smtpHost,
   });
 
   afterAll(smtpServer.close);
@@ -32,7 +32,6 @@ describe("Email sending and delivery", () => {
   testWithEmulator(
     "shold deliver an email with correct message and recipients",
     async () => {
-      /** @TODO pass false as dologin when we figure out why secretkey accepted as authorized access */
       const { organization } = await setUpOrganization({
         doLogin: true,
         setSecrets: true,
@@ -65,6 +64,7 @@ describe("Email sending and delivery", () => {
       await waitForCondition<ProcessDocument<EmailPayload>>({
         documentPath: deliveryDocPath,
         condition: (data) => data?.delivery?.status === DeliveryStatus.Success,
+        verbose: true,
       });
 
       // There should be a single email payload, but with multiple recipients ('to' and 'bcc')

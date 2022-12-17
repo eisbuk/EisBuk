@@ -6,8 +6,8 @@ export enum HTTPSErrors {
   MissingParameter = "One or more required parameters are missing from the payload",
   NoOrganziation = "No argument for organization provided",
   NoSecrets = "No secrets document found, make sure you create a secrets document for an organziation at: '/secrets/{ organization }'",
-  NoSMTPConfigured = "No smtp configuration found, make sure you create a secrets document for an organziation at: '/secrets/{ organization }' with your smtp configuration",
-  NoEmailConfigured = "No emailFrom found, make sure you add an emailFrom to the organziation document at: '/secrets/{ organization }'",
+  NoSMTPConfigured = "No smtp configuration found, make sure to create a secrets document for an organziation at: '/secrets/{ organization }' with your smtp configuration",
+  NoEmailConfigured = "No emailFrom found, make sure to add an emailFrom to your organziation settings",
 }
 
 export enum SendSMSErrors {

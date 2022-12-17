@@ -316,18 +316,23 @@ describe("Cloud functions -> Data triggers ->", () => {
         );
         expect(orgData.smtpConfigured).toBeFalsy();
 
-        await orgSecretsRef.set({
+        const secrets = {
           smtpHost: "localhost",
           smtpPort: 4000,
           smtpUser: "user",
           smtpPass: "password",
-        });
+        };
+
+        await orgSecretsRef.set(secrets, { merge: true });
         // check proper updates triggerd by write to secrets
         const orgDataPostUpdate = await waitForCondition<OrganizationData>({
           documentPath: organizationPath,
-          condition: (data) => Boolean(data?.existingSecrets?.length),
+          condition: (data) =>
+            Object.keys(secrets).every((key) =>
+              data?.existingSecrets?.includes(key)
+            ),
         });
-        expect(orgData.existingSecrets).toEqual(
+        expect(orgDataPostUpdate.existingSecrets).toEqual(
           expect.arrayContaining([
             "smtpHost",
             "smtpPort",
@@ -337,18 +342,22 @@ describe("Cloud functions -> Data triggers ->", () => {
         );
         expect(orgDataPostUpdate.smtpConfigured).toEqual(true);
 
-        await orgSecretsRef.set({
+        const notAllSecrets = {
           smtpHost: "localhost",
           smtpPort: 4000,
           smtpUser: "user",
-        });
+        };
+        await orgSecretsRef.set(notAllSecrets);
         // check proper updates triggerd by write to secrets
         const orgDataPostDelete = await waitForCondition<OrganizationData>({
           documentPath: organizationPath,
-          condition: (data) => Boolean(data?.existingSecrets?.length),
+          condition: (data) =>
+            Object.keys(notAllSecrets).every((key) =>
+              data?.existingSecrets?.includes(key)
+            ),
         });
-        expect(orgData.existingSecrets).toEqual(
-          expect.arrayContaining(["smtpHost", "smtpUser", "smtpPass"])
+        expect(orgDataPostDelete.existingSecrets).toEqual(
+          expect.arrayContaining(["smtpHost", "smtpUser", "smtpPort"])
         );
         expect(orgDataPostDelete.smtpConfigured).toEqual(false);
       }

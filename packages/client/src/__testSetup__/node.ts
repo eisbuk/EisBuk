@@ -19,7 +19,8 @@ interface SetUpOrganization {
   }>;
 }
 
-const smtpPort = 5000;
+export const smtpPort = 5000;
+export const smtpHost = "localhost";
 
 export const setUpOrganization: SetUpOrganization = async ({
   doLogin = true,
@@ -34,7 +35,6 @@ export const setUpOrganization: SetUpOrganization = async ({
   const organization = uuid();
   const email = `${organization}@eisbuk.it`;
   const pass = `password-${organization}`;
-  const smtpHost = "localhost";
 
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
   const secretsRef = adminDb.doc(`${Collection.Secrets}/${organization}`);
