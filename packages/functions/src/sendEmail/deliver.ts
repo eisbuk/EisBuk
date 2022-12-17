@@ -59,7 +59,8 @@ const processSMTPPreferences = ({
   secure: smtpPort === 465,
 
   // Add `auth` field only if auth data provided
-  ...(smtpUser || smtpPass
+
+  ...(smtpPort === 465
     ? {
         auth: {
           user: smtpUser,
