@@ -77,7 +77,10 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {
-        const { organization } = await setUpOrganization({ doLogin: false });
+        const { organization } = await setUpOrganization({
+          doLogin: false,
+          setSecrets: true,
+        });
 
         await adminDb
           .doc([Collection.Organizations, organization].join("/"))
