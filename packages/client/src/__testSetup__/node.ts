@@ -40,8 +40,8 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     orgRef.set({
       admins: [email],
       emailTemplates: {
-        SendBookingsLinkTemplate,
-        SendCalendarFileTemplate,
+        ...SendBookingsLinkTemplate,
+        ...SendCalendarFileTemplate,
       },
     }),
   ]);

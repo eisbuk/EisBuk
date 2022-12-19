@@ -20,6 +20,7 @@ import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
 
 interface UpdateBooking<
   P extends Record<string, any> = Record<string, unknown>
@@ -223,7 +224,7 @@ interface sendICSFile {
 }
 
 export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey, displayName = "displayName", name = "name" }) =>
+  ({ icsFile, email, secretKey, displayName = __organization__, name = "" }) =>
   async (dispatch) => {
     try {
       const handler = CloudFunction.SendEmail;

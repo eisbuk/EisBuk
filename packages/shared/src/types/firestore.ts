@@ -31,7 +31,7 @@ export interface OrganizationData {
    */
   emailNameFrom?: string;
   /**
-   * Templates for reminder emails
+   * Templates for emails (bookings link, extending date and calendar files)
    */
   emailTemplates?: {
     [name: string]: {

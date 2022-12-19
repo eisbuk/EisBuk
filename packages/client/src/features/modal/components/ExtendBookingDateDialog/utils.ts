@@ -1,11 +1,15 @@
+import { useSelector } from "react-redux";
 import {
   ClientEmailPayload,
   Customer,
   EmailType,
-  PublicOrganizationData,
   SMSMessage,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
+
+import { getAboutOrganization } from "@/store/selectors/app";
+
+import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -14,9 +18,9 @@ import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 
-import { enqueueNotification } from "@/features/notifications/actions";
+import { __organization__ } from "@/lib/constants";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 interface GetDialogPrompt {
   (
@@ -74,7 +78,7 @@ interface SendBookingsLink {
     payload: {
       method: SendBookingLinkMethod;
       bookingsLink: string;
-    } & Customer & { displayName: PublicOrganizationData["displayName"] }
+    } & Customer
   ): FirestoreThunk;
 }
 
@@ -87,7 +91,7 @@ export const sendBookingsLink: SendBookingsLink =
     phone,
     secretKey,
     bookingsLink,
-    displayName,
+    extendedDate,
   }) =>
   async (dispatch) => {
     try {
@@ -97,11 +101,13 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
+      const { displayName = "" } =
+        useSelector(getAboutOrganization)[__organization__] || {};
+
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
       ${bookingsLink}`;
 
-      /** @TODO add bookingsMonth and extendedBookimgsDate to payload */
       const emailPayload: Omit<
         ClientEmailPayload[EmailType.SendExtendedBookingLink],
         "organization"
@@ -109,12 +115,12 @@ export const sendBookingsLink: SendBookingsLink =
         customer: {
           name,
           surname,
-          email: email || "",
+          email: email!,
         },
         displayName: displayName || "",
         type: EmailType.SendExtendedBookingLink,
         bookingsMonth: "",
-        extendedBookingsDate: "",
+        extendedBookingsDate: extendedDate || "",
       };
 
       const config = {

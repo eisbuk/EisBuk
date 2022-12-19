@@ -1,6 +1,14 @@
 import { JSONSchemaType } from "ajv";
 
-import { EmailAttachment, EmailMessage } from "@eisbuk/shared";
+import {
+  EmailAttachment,
+  EmailMessage,
+  ClientEmailPayload,
+  EmailType,
+  SendCalendarFileCustomer,
+  SendBookingsLinkCustomer,
+  SendExtendedBookingLinkCustomer,
+} from "@eisbuk/shared";
 
 import { SMTPPreferences } from "./types";
 
@@ -49,6 +57,82 @@ const EmailAttachmentSchema: JSONSchemaType<EmailAttachment> = {
 };
 
 /**
+ * A validation schema for customer field in bookingsLink email payload
+ */
+const SendBookingsLinkCustomerSchema: JSONSchemaType<SendBookingsLinkCustomer> =
+  {
+    type: "object",
+    required: ["name", "surname", "email"],
+    properties: {
+      name: {
+        type: "string",
+        errorMessage: "Missing name in customer",
+      },
+      surname: {
+        type: "string",
+        errorMessage: "Missing surname in customer",
+      },
+      email: {
+        type: "string",
+        pattern: emailPattern,
+        errorMessage: __invalidEmailError,
+      },
+    },
+  };
+
+/**
+ * A validation schema for customer field in bookingsLink email payload
+ */
+const SendExtendedBookingLinkCustomerSchema: JSONSchemaType<SendExtendedBookingLinkCustomer> =
+  {
+    type: "object",
+    required: ["name", "surname", "email"],
+    properties: {
+      name: {
+        type: "string",
+        errorMessage: "Missing name in customer",
+      },
+      surname: {
+        type: "string",
+        errorMessage: "Missing surname in customer",
+      },
+      email: {
+        type: "string",
+        pattern: emailPattern,
+        errorMessage: __invalidEmailError,
+      },
+    },
+  };
+
+/**
+ * A validation schema for customer field in bookingsLink email payload
+ */
+const SendCalendarFileCustomerSchema: JSONSchemaType<SendCalendarFileCustomer> =
+  {
+    type: "object",
+    required: ["name", "surname", "secretKey", "email"],
+    properties: {
+      name: {
+        type: "string",
+        errorMessage: "Missing name in customer",
+      },
+      surname: {
+        type: "string",
+        errorMessage: "Missing surname in customer",
+      },
+      email: {
+        type: "string",
+        pattern: emailPattern,
+        errorMessage: __invalidEmailError,
+      },
+      secretKey: {
+        type: "string",
+        errorMessage: "Missing secretKey in customer",
+      },
+    },
+  };
+
+/**
  * Validation schema for a fully constructed email (to be send over SMTP),
  * including `to`, `from` and valid `message`
  */
@@ -77,88 +161,100 @@ export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
 };
 
 /**
- * Validation schema for a sendICS email payload,
- * including
+ * Validation schema for a ics email payload
  */
-export const SendICSEmailSchema: JSONSchemaType<EmailMessage> = {
+export const SendICSEmailSchema: JSONSchemaType<
+  ClientEmailPayload[EmailType.SendCalendarFile]
+> = {
   type: "object",
-  required: ["from", "to", "subject"],
+  required: ["type", "organization", "displayName", "customer", "attachments"],
   properties: {
-    from: {
+    type: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Email type missing",
     },
-    to: {
+    organization: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Missing organization",
     },
-    subject: { type: "string" },
-    html: { type: "string" },
-    attachments: {
-      type: "array",
-      items: EmailAttachmentSchema,
-      nullable: true,
+    displayName: {
+      type: "string",
+      errorMessage: "Missing displayName",
     },
+    customer: SendCalendarFileCustomerSchema,
+
+    attachments: EmailAttachmentSchema,
   },
 };
 
 /**
- * Validation schema for a sendICS email payload,
- * including
+ * Validation schema for an ExtendDate email payload
  */
 
-/** @TODO fix schemas */
-export const SendExtendDateEmailSchema: JSONSchemaType<EmailMessage> = {
+export const SendExtendDateEmailSchema: JSONSchemaType<
+  ClientEmailPayload[EmailType.SendExtendedBookingLink]
+> = {
   type: "object",
-  required: ["from", "to", "subject"],
+  required: [
+    "type",
+    "organization",
+    "displayName",
+    "customer",
+    "bookingsMonth",
+    "extendedBookingsDate",
+  ],
   properties: {
-    from: {
+    type: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Email type missing",
     },
-    to: {
+    organization: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Missing organization",
     },
-    subject: { type: "string" },
-    html: { type: "string" },
-    attachments: {
-      type: "array",
-      items: EmailAttachmentSchema,
-      nullable: true,
+    displayName: {
+      type: "string",
+      errorMessage: "Missing displayName",
     },
+    bookingsMonth: {
+      type: "string",
+      errorMessage: "Missing bookingsMonth",
+    },
+    extendedBookingsDate: {
+      type: "string",
+      errorMessage: "Missing extendedBookingsDate",
+    },
+    customer: SendExtendedBookingLinkCustomerSchema,
   },
 };
 
 /**
- * Validation schema for a sendICS email payload,
- * including
+ * Validation schema for a bookingsLink email payload
  */
-export const SendBookingsLinkEmailSchema: JSONSchemaType<EmailMessage> = {
+export const SendBookingsLinkEmailSchema: JSONSchemaType<
+  ClientEmailPayload[EmailType.SendBookingsLink]
+> = {
   type: "object",
-  required: ["from", "to", "subject"],
+  required: ["type", "organization", "displayName", "customer", "bookingsLink"],
   properties: {
-    from: {
+    type: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Email type missing",
     },
-    to: {
+    organization: {
       type: "string",
-      pattern: emailPattern,
-      errorMessage: __invalidEmailError,
+      errorMessage: "Missing organization",
     },
-    subject: { type: "string" },
-    html: { type: "string" },
-    attachments: {
-      type: "array",
-      items: EmailAttachmentSchema,
-      nullable: true,
+    displayName: {
+      type: "string",
+      errorMessage: "Missing displayName",
     },
+    bookingsLink: {
+      type: "string",
+      errorMessage: "Missing bookingsLink",
+    },
+
+    customer: SendBookingsLinkCustomerSchema,
   },
 };
 

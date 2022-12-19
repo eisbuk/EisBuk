@@ -10,7 +10,6 @@ import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
-import { __testOrganization__ } from "@/__testSetup__/envData";
 
 import { SendBookingLinkMethod } from "@/enums/other";
 import { Routes } from "@/enums/routes";
@@ -65,7 +64,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
-          displayName={__testOrganization__}
         />
       );
     });
@@ -92,7 +90,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
-          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__sendBookingsEmailId__).click();
@@ -101,7 +98,6 @@ describe("Customer Card", () => {
       expect(dispatchCallPayload.props).toEqual({
         ...saul,
         method: SendBookingLinkMethod.Email,
-        displayName: __testOrganization__,
       });
     });
 
@@ -113,7 +109,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
-          displayName={__testOrganization__}
         />
       );
 
@@ -131,7 +126,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noEmailSaul}
-          displayName={__testOrganization__}
         />
       );
       expect(screen.getByTestId(__sendBookingsEmailId__)).toHaveProperty(
@@ -148,7 +142,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
-          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__sendBookingsSMSId__).click();
@@ -157,7 +150,6 @@ describe("Customer Card", () => {
       expect(dispatchCallPayload.props).toEqual({
         ...saul,
         method: SendBookingLinkMethod.SMS,
-        displayName: __testOrganization__,
       });
     });
 
@@ -169,7 +161,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noSecretKeySaul as Customer}
-          displayName={__testOrganization__}
         />
       );
 
@@ -187,7 +178,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={noPhoneSaul as Customer}
-          displayName={__testOrganization__}
         />
       );
       expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(
@@ -205,7 +195,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={mockOnClose}
           customer={saul}
-          displayName={__testOrganization__}
         />
       );
       screen.getByTestId(__openBookingsId__).click();
@@ -223,7 +212,6 @@ describe("Customer Card", () => {
           onCloseAll={() => {}}
           onClose={() => {}}
           customer={saul}
-          displayName={__testOrganization__}
         />
       );
       screen

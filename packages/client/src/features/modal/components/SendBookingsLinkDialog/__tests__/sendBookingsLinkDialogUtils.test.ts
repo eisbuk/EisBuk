@@ -1,9 +1,6 @@
-import {
-  OrgSubCollection,
-  SMSMessage,
-  EmailType,
-  ClientEmailPayload,
-} from "@eisbuk/shared";
+import { OrgSubCollection, SMSMessage } from "@eisbuk/shared";
+import * as reactRedux from "react-redux";
+
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -21,7 +18,6 @@ import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "../utils";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
-import { __testOrganization__ } from "@/__testSetup__/envData";
 
 // #region getDialogPromptSetup
 const testPhone = "12345";
@@ -109,6 +105,9 @@ describe("Send bookings link dialog utils", () => {
 
   describe("sendBookingsLink", () => {
     const mockDispatch = jest.fn();
+    jest
+      .spyOn(reactRedux, "useSelector")
+      .mockImplementation(() => mockDispatch);
 
     // bookings link we're using throughout
     const bookingsLink = `https://test-hostname.com${Routes.CustomerArea}/${saul.secretKey}`;
@@ -127,19 +126,21 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
-        const sentMail = mockSendMail.mock
-          .calls[0][0] as ClientEmailPayload[EmailType.SendBookingsLink];
 
-        expect(sentMail.customer.email).toEqual(saul.email);
-        // we're not matching the complete html of message
-        // but are asserting that it contains important parts
-        expect(sentMail.bookingsLink).toEqual(bookingsLink);
-        expect(sentMail.customer.name).toEqual(saul.name);
-
+        expect(mockSendMail).toHaveBeenCalledWith({
+          bookingsLink,
+          customer: {
+            email: saul.email,
+            name: saul.name,
+            secretKey: saul.secretKey,
+            surname: saul.surname,
+          },
+          displayName: "",
+          type: "send-bookings-link",
+        });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -157,7 +158,6 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
-          displayName: __testOrganization__,
         })(mockDispatch, getState);
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
@@ -193,7 +193,6 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-          displayName: __testOrganization__,
         })(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

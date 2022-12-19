@@ -46,7 +46,7 @@ const AddToCalendar: React.FC = () => {
 
   const { name } = useSelector(getCustomer(secretKey)) as Customer;
 
-  const { displayName = "displayName", location = "" } =
+  const { displayName = __organization__, location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
 
   const handleClick = (email: string) => {

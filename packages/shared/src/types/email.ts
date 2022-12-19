@@ -1,6 +1,6 @@
 import { EmailType } from "../enums/email";
 
-interface EmailTypePayload {
+export interface EmailTypePayload {
   [EmailType.SendBookingsLink]: {
     type: EmailType.SendBookingsLink;
     organization: string;
@@ -9,7 +9,6 @@ interface EmailTypePayload {
     customer: {
       name: string;
       surname: string;
-      secretKey: string;
       email: string;
     };
   };
@@ -25,7 +24,7 @@ interface EmailTypePayload {
     };
     attachments: {
       filename: string;
-      content: string;
+      content: string | Buffer;
     };
   };
   [EmailType.SendExtendedBookingLink]: {
@@ -40,6 +39,23 @@ interface EmailTypePayload {
       email: string;
     };
   };
+}
+
+export interface SendExtendedBookingLinkCustomer {
+  name: string;
+  surname: string;
+  email: string;
+}
+export interface SendBookingsLinkCustomer {
+  name: string;
+  surname: string;
+  email: string;
+}
+export interface SendCalendarFileCustomer {
+  name: string;
+  surname: string;
+  email: string;
+  secretKey: string;
 }
 
 export type ClientEmailPayload = {

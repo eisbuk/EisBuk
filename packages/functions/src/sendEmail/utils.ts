@@ -9,7 +9,7 @@ import {
   EmailAttachment,
 } from "@eisbuk/shared";
 
-import { validateJSON } from "../utils";
+import { EisbukHttpsError, validateJSON } from "../utils";
 import {
   SendBookingsLinkEmailSchema,
   SendExtendDateEmailSchema,
@@ -36,17 +36,30 @@ export const createBookingsEmailPayload = (
   emailPayload: ClientEmailPayload[EmailType.SendBookingsLink],
   template: EmailTemplate
 ): { html: string; subject: string } => {
-  validateJSON(SendBookingsLinkEmailSchema, emailPayload);
+  // Validate payload and throw if not a valid schema
+  const [sendBookingsLinkEmail, sendBookingsLinkEmailErrors] = validateJSON(
+    SendBookingsLinkEmailSchema,
+    {
+      ...emailPayload,
+    },
+    "Constructing gave following errors (check the email payload and organization preferences):"
+  );
+  if (sendBookingsLinkEmailErrors) {
+    throw new EisbukHttpsError(
+      "invalid-argument",
+      sendBookingsLinkEmailErrors.join(" ")
+    );
+  }
 
-  const { name, surname } = emailPayload.customer;
+  const { name, surname } = sendBookingsLinkEmail.customer;
 
   const subjectFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendBookingsLinkEmail.displayName,
   };
   const htmlFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendBookingsLinkEmail.displayName,
     name: `${name} ${surname}`,
-    bookingsLink: emailPayload.bookingsLink,
+    bookingsLink: sendBookingsLinkEmail.bookingsLink,
   };
   const interpolatedHtml = interpolateEmailTemplate(
     template.html,
@@ -66,17 +79,30 @@ export const createICSFileEmailPayload = (
   emailPayload: ClientEmailPayload[EmailType.SendCalendarFile],
   template: EmailTemplate
 ): { html: string; subject: string; attachments: EmailAttachment[] } => {
-  validateJSON(SendICSEmailSchema, emailPayload);
+  // Validate payload and throw if not a valid schema
+  const [sendICSFileEmail, sendICSFileEmailErrors] = validateJSON(
+    SendICSEmailSchema,
+    {
+      ...emailPayload,
+    },
+    "Constructing gave following errors (check the email payload and organization preferences):"
+  );
+  if (sendICSFileEmailErrors) {
+    throw new EisbukHttpsError(
+      "invalid-argument",
+      sendICSFileEmailErrors.join(" ")
+    );
+  }
 
-  const { name, surname } = emailPayload.customer;
+  const { name, surname } = sendICSFileEmail.customer;
 
   const subjectFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendICSFileEmail.displayName,
   };
   const htmlFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendICSFileEmail.displayName,
     name: `${name} ${surname}`,
-    icsFile: emailPayload.attachments.filename,
+    icsFile: sendICSFileEmail.attachments.filename,
   };
   const interpolatedHtml = interpolateEmailTemplate(
     template.html,
@@ -92,8 +118,8 @@ export const createICSFileEmailPayload = (
     html: interpolatedHtml,
     attachments: [
       {
-        filename: emailPayload.attachments.filename,
-        content: emailPayload.attachments.content,
+        filename: sendICSFileEmail.attachments.filename,
+        content: sendICSFileEmail.attachments.content,
       },
     ],
   };
@@ -102,18 +128,31 @@ export const createExtendDateEmailPayload = (
   emailPayload: ClientEmailPayload[EmailType.SendExtendedBookingLink],
   template: EmailTemplate
 ): { html: string; subject: string } => {
-  validateJSON(SendExtendDateEmailSchema, emailPayload);
+  // Validate payload and throw if not a valid schema
+  const [sendExtendDateEmail, sendExtendDateEmailErrors] = validateJSON(
+    SendExtendDateEmailSchema,
+    {
+      ...emailPayload,
+    },
+    "Constructing gave following errors (check the email payload and organization preferences):"
+  );
+  if (sendExtendDateEmailErrors) {
+    throw new EisbukHttpsError(
+      "invalid-argument",
+      sendExtendDateEmailErrors.join(" ")
+    );
+  }
 
-  const { name, surname } = emailPayload.customer;
+  const { name, surname } = sendExtendDateEmail.customer;
 
   const subjectFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendExtendDateEmail.displayName,
   };
   const htmlFieldValues = {
-    displayName: emailPayload.displayName,
+    displayName: sendExtendDateEmail.displayName,
     name: `${name} ${surname}`,
-    bookingsMonth: emailPayload.bookingsMonth,
-    extendedBookingsDate: emailPayload.extendedBookingsDate,
+    bookingsMonth: sendExtendDateEmail.bookingsMonth,
+    extendedBookingsDate: sendExtendDateEmail.extendedBookingsDate,
   };
   const interpolatedHtml = interpolateEmailTemplate(
     template.html,

@@ -10,7 +10,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import Close from "@mui/icons-material/Close";
 
-import { Customer, OrganizationData } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import {
   useTranslation,
   CategoryLabel,
@@ -28,7 +28,6 @@ import { capitalizeFirst } from "@/utils/helpers";
 
 interface CustomerCardProps extends BaseModalProps {
   customer: Customer | null;
-  displayName: OrganizationData["displayName"];
 }
 
 /**
@@ -40,7 +39,6 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
   onClose,
   customer,
   className = "",
-  displayName = "",
 }) => {
   const { t } = useTranslation();
   const classes = useStyles();
@@ -129,7 +127,6 @@ const CustomerCard: React.FC<CustomerCardProps> = ({
         className={classes.actionButtonsContainer}
         customer={customer!}
         onClose={onClose}
-        displayName={displayName}
       />
       <IconButton
         aria-label="close-button"

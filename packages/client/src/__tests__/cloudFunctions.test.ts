@@ -79,11 +79,14 @@ describe("Cloud functions", () => {
           type: EmailType.SendCalendarFile,
           organization,
           displayName,
-          attachments: { filename: "icsFile.ics", content: "content" },
+          attachments: {
+            filename: "icsFile.ics",
+            content: "content",
+          },
           customer: {
             name: saul.name,
             surname: saul.surname,
-            email: saul.email || "",
+            email: saul.email || "email@gmail.com",
             secretKey: saul.secretKey,
           },
         };
@@ -98,7 +101,6 @@ describe("Cloud functions", () => {
                   filename: "icsFile.ics",
                 },
               ],
-
               subject: "Calendario prenotazioni displayName",
               html: `<p>Ciao Saul Goodman,</p>
     <p>Ti inviamo un file per aggiungere le tue prossime lezioni con displayName al tuo calendario:</p>
@@ -119,9 +121,9 @@ describe("Cloud functions", () => {
           displayName: "displayName",
           bookingsLink: "string",
           customer: {
-            name: "name",
-            surname: "surname",
-            email: "email",
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
           },
         };
         await expect(
@@ -138,9 +140,10 @@ describe("Cloud functions", () => {
         displayName: " string",
         bookingsLink: "string",
         customer: {
-          name: "string",
-          surname: "string",
-          email: "string",
+          name: saul.name,
+          surname: saul.surname,
+          email: saul.email,
+          secretKey: saul.secretKey,
         },
       };
       try {
