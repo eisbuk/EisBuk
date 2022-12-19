@@ -135,7 +135,6 @@ describe("Send bookings link dialog utils", () => {
           customer: {
             email: saul.email,
             name: saul.name,
-            secretKey: saul.secretKey,
             surname: saul.surname,
           },
           displayName: "",
