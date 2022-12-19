@@ -122,7 +122,7 @@ const createUserInAuth = async ({
               subject: "Calendario prenotazioni {{ displayName }}",
               html: `<p>Ciao {{ name }},</p>
     <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ displayName }} al tuo calendario:</p>
-    <a href="{{ icsFile.ics }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
+    <a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
             },
           },
         },
