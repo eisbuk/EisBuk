@@ -256,11 +256,11 @@ export const populateDefaultEmailTemplates = functions
 
       batch.set(organization.ref, {
         ...data,
-        emailTemplates: [
-          SendBookingsLinkTemplate,
-          SendExtendedDateTemplate,
-          SendCalendarFileTemplate,
-        ],
+        emailTemplates: {
+          ...SendBookingsLinkTemplate,
+          ...SendExtendedDateTemplate,
+          ...SendCalendarFileTemplate,
+        },
       });
     });
 
