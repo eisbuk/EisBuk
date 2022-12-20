@@ -13,9 +13,8 @@ import {
   SlotAttendnace,
   SlotType,
   Customer,
-  getCustomerBase,
+  sanitizeCustomer,
   DeprecatedCategory,
-  getCustomer,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -312,7 +311,7 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              getCustomerBase(saul)
+              sanitizeCustomer(saul)
             ),
         });
         await assertSucceeds(
@@ -333,7 +332,7 @@ describe("Firestore rules", () => {
         // check create
         await assertFails(
           setDoc(saulBookingsDoc, {
-            ...getCustomer(saul),
+            ...sanitizeCustomer(saul),
           })
         );
       }
@@ -346,7 +345,7 @@ describe("Firestore rules", () => {
           setup: async (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              getCustomer(saul)
+              sanitizeCustomer(saul)
             ),
         });
 
@@ -355,11 +354,10 @@ describe("Firestore rules", () => {
           getBookingsDocPath(organization, saul.secretKey)
         );
 
-        const getSaul = getCustomer(saul);
         // check update
         await assertFails(
           setDoc(saulBookingsDoc, {
-            ...getSaul,
+            ...sanitizeCustomer(saul),
             name: "not-saul",
           })
         );
@@ -372,7 +370,7 @@ describe("Firestore rules", () => {
           setup: (db, { organization }) =>
             setDoc(
               doc(db, getBookingsDocPath(organization, saul.secretKey)),
-              getCustomer(saul)
+              sanitizeCustomer(saul)
             ),
         });
 
@@ -419,7 +417,7 @@ describe("Firestore rules", () => {
               // create saul's bookings entry (CustomerBase) as it's used to check category
               setDoc(
                 doc(db, getBookingsDocPath(organization, saul.secretKey)),
-                getCustomerBase(saul)
+                sanitizeCustomer(saul)
               ),
             ]),
         });

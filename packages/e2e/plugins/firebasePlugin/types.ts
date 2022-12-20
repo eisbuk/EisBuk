@@ -1,4 +1,4 @@
-import { FirestoreSchema } from "@eisbuk/shared";
+import { FirestoreSchema, OrganizationData } from "@eisbuk/shared";
 
 /**
  * A Node environment side handler for tasks dispatched by cypress commands
@@ -15,5 +15,5 @@ type FirestoreCollections = Omit<
   "admins"
 >;
 export type FirestoreDataUpdate = Partial<
-  Omit<FirestoreCollections, "slotsByDay">
+  Omit<FirestoreCollections, "slotsByDay"> & { organization: OrganizationData }
 >;

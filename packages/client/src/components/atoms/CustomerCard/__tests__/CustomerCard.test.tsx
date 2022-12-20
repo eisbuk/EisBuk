@@ -6,7 +6,7 @@ import React from "react";
 import { render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, CustomerFull } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
@@ -108,7 +108,7 @@ describe("Customer Card", () => {
         <CustomerCard
           onCloseAll={() => {}}
           onClose={() => {}}
-          customer={noSecretKeySaul as Customer}
+          customer={noSecretKeySaul as CustomerFull}
         />
       );
 
@@ -160,7 +160,7 @@ describe("Customer Card", () => {
         <CustomerCard
           onCloseAll={() => {}}
           onClose={() => {}}
-          customer={noSecretKeySaul as Customer}
+          customer={noSecretKeySaul as CustomerFull}
         />
       );
 
@@ -177,7 +177,7 @@ describe("Customer Card", () => {
         <CustomerCard
           onCloseAll={() => {}}
           onClose={() => {}}
-          customer={noPhoneSaul as Customer}
+          customer={noPhoneSaul as CustomerFull}
         />
       );
       expect(screen.getByTestId(__sendBookingsSMSId__)).toHaveProperty(

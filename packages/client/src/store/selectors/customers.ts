@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Customer, CustomersByBirthday } from "@eisbuk/shared";
+import { CustomerFull, CustomersByBirthday } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -14,7 +14,7 @@ import { compareCustomerNames } from "@/utils/sort";
  */
 export const getCustomersRecord = (
   state: LocalStore
-): Record<string, Customer> => state.firestore.data?.customers || {};
+): Record<string, CustomerFull> => state.firestore.data?.customers || {};
 
 /**
  * Get a list of all the customers for current organization from firebase store
@@ -24,7 +24,7 @@ export const getCustomersRecord = (
  */
 export const getCustomersList =
   (sort?: boolean) =>
-  (state: LocalStore): Customer[] => {
+  (state: LocalStore): CustomerFull[] => {
     const customerList = Object.values(getCustomersRecord(state) || {});
     return sort ? customerList.sort(compareCustomerNames) : customerList;
   };

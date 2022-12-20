@@ -10,7 +10,7 @@ import AddNew from "@mui/icons-material/AddCircle";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { Customer, SlotInterface } from "@eisbuk/shared";
+import { CustomerFull, SlotInterface } from "@eisbuk/shared";
 import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
 
 import { CustomerWithAttendance } from "@/types/components";
@@ -42,7 +42,7 @@ export interface Props extends SlotInterface {
    * List of all of the customers from the store. We're using this to filter
    * the list and display on add customers list
    */
-  allCustomers: Customer[];
+  allCustomers: CustomerFull[];
 }
 
 /**

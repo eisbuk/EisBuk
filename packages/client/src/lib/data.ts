@@ -2,7 +2,7 @@ import {
   SlotType,
   SlotInterface,
   SlotInterval,
-  Customer,
+  CustomerFull,
 } from "@eisbuk/shared";
 
 // #region SlotForm
@@ -27,17 +27,18 @@ export const defaultSlotFormValues: SlotFormValues = {
 // #endregion SlotForm
 
 // #region CustomerForm
-export const defaultCustomerFormValues: Omit<Customer, "secretKey" | "id"> = {
-  name: "",
-  surname: "",
-  email: "",
-  phone: "",
-  birthday: "",
-  categories: [],
-  certificateExpiration: "",
-  covidCertificateReleaseDate: "",
-  covidCertificateSuspended: false,
-  subscriptionNumber: "",
-};
+export const defaultCustomerFormValues: Omit<CustomerFull, "secretKey" | "id"> =
+  {
+    name: "",
+    surname: "",
+    email: "",
+    phone: "",
+    birthday: "",
+    categories: [],
+    certificateExpiration: "",
+    covidCertificateReleaseDate: "",
+    covidCertificateSuspended: false,
+    subscriptionNumber: "",
+  };
 
 // #endregion CustomerForm

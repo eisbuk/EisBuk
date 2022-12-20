@@ -11,6 +11,11 @@ export const getLocalAuth = (state: LocalStore): User | null =>
   state.auth.userData;
 
 /**
+ * Get email from local store auth: this can be used to prefill email in self register form
+ */
+export const getAuthEmail = (state: LocalStore) => state.auth.userData?.email;
+
+/**
  * Get boolean representing if a curren user is an authenticated
  * with our firebase auth record
  *

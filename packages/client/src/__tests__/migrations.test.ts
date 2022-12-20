@@ -6,7 +6,7 @@ import { httpsCallable, FunctionsError } from "@firebase/functions";
 
 import {
   HTTPSErrors,
-  getCustomerBase,
+  sanitizeCustomer,
   Category,
   DeprecatedCategory,
   Collection,
@@ -106,7 +106,7 @@ describe("Migrations", () => {
         // add additional bookings (without customer)
         await adminDb
           .doc(getBookingsDocPath(organization, jian.secretKey))
-          .set(getCustomerBase(jian));
+          .set(sanitizeCustomer(jian));
         // run migration
         await invokeFunction(CloudFunction.DeleteOrphanedBookings)({
           organization,
@@ -118,7 +118,7 @@ describe("Migrations", () => {
         const bookingsDocs = bookingsColl.docs;
         // only saul's bookings should remain
         expect(bookingsDocs.length).toEqual(1);
-        expect(bookingsDocs[0].data()).toEqual(getCustomerBase(saul));
+        expect(bookingsDocs[0].data()).toEqual(sanitizeCustomer(saul));
       }
     );
 
