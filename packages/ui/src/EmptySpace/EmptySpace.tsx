@@ -4,7 +4,6 @@ import { ExclamationCircle } from "@eisbuk/svg";
 
 interface EmptySpaceProps
   extends Omit<React.HTMLAttributes<HTMLElement>, "children"> {
-  children: string;
   as?: keyof JSX.IntrinsicElements;
 }
 
@@ -13,8 +12,19 @@ const EmptySpace: React.FC<EmptySpaceProps> = ({
   className,
   as = "div",
   ...props
-}) =>
-  React.createElement(
+}) => {
+  const innerContent =
+    typeof children === "string" ? (
+      <span
+        key="content"
+        className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
+        dangerouslySetInnerHTML={{ __html: children }}
+      />
+    ) : (
+      children
+    );
+
+  return React.createElement(
     as,
     {
       ...props,
@@ -24,13 +34,10 @@ const EmptySpace: React.FC<EmptySpaceProps> = ({
       <span key="exclamation-circle" className="w-6 h-6 mb-2 md:mb-0 md:mr-2">
         <ExclamationCircle />
       </span>,
-      <span
-        key="content"
-        className="max-w-[187px] text-center md:max-w-none md:whitespace-nowrap"
-        dangerouslySetInnerHTML={{ __html: children }}
-      />,
+      innerContent,
     ]
   );
+};
 
 const baseClasses = [
   "py-8",

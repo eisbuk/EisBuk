@@ -5,7 +5,7 @@ import { CustomerProfileForm } from "@eisbuk/ui";
 import { Customer } from "@eisbuk/shared";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
-import { updateBookingCustomer } from "@/store/actions/bookingOperations";
+import { customerSelfUpdate } from "@/store/actions/bookingOperations";
 
 import { getSecretKey } from "@/store/selectors/app";
 
@@ -20,8 +20,9 @@ const CalendarView: React.FC = () => {
       customer={customer}
       onSave={(customer) =>
         dispatch(
-          updateBookingCustomer({
-            customer: { ...customer, secretKey },
+          customerSelfUpdate({
+            ...customer,
+            secretKey,
           })
         )
       }

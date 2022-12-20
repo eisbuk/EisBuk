@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { Customer, SlotInterface } from "@eisbuk/shared";
+import { CustomerFull, SlotInterface } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 import { BaseModalProps } from "../../types";
@@ -18,7 +18,7 @@ import { markAttendance } from "@/store/actions/attendanceOperations";
 type AddAttendedCustomersProps = BaseModalProps &
   SlotInterface & {
     defaultInterval: string;
-    customers: Customer[];
+    customers: CustomerFull[];
   };
 
 const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
@@ -31,7 +31,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
   const dispatch = useDispatch();
 
   const { id: slotId } = slot;
-  const handleCustomerClick = ({ id: customerId }: Customer) => {
+  const handleCustomerClick = ({ id: customerId }: CustomerFull) => {
     dispatch(
       markAttendance({ customerId, slotId, attendedInterval: defaultInterval })
     );

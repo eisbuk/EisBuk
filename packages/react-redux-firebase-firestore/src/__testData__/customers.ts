@@ -1,8 +1,8 @@
 import { DateTime } from "luxon";
 
-import { Category, Customer, luxon2ISODate } from "@eisbuk/shared";
+import { Category, CustomerFull, luxon2ISODate } from "@eisbuk/shared";
 
-export const saul: Customer = {
+export const saul: CustomerFull = {
   name: "Saul",
   surname: "Goodman",
   certificateExpiration: "2001-01-01",
@@ -17,7 +17,7 @@ export const saul: Customer = {
   subscriptionNumber: "",
 };
 
-export const walt: Customer = {
+export const walt: CustomerFull = {
   id: "walt",
   name: "Walter",
   surname: "White",
@@ -32,7 +32,7 @@ export const walt: Customer = {
   subscriptionNumber: "",
 };
 
-export const gus: Customer = {
+export const gus: CustomerFull = {
   id: "gus",
   name: "Gustavo",
   surname: "Fring",
@@ -47,7 +47,7 @@ export const gus: Customer = {
   subscriptionNumber: "",
 };
 
-export const jian: Customer = {
+export const jian: CustomerFull = {
   id: "jian",
   name: "Jian",
   surname: "Yang",
@@ -62,7 +62,7 @@ export const jian: Customer = {
   subscriptionNumber: "",
 };
 
-export const mike: Customer = {
+export const mike: CustomerFull = {
   id: "mike",
   name: "Mike",
   surname: "Ehrmantraut",
@@ -77,7 +77,7 @@ export const mike: Customer = {
   subscriptionNumber: "",
 };
 
-export const jane: Customer = {
+export const jane: CustomerFull = {
   id: "jane",
   name: "Jane",
   surname: "Margolis",

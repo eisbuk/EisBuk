@@ -19,7 +19,6 @@
 
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
-    "NotRegistered": "You are not registered yet",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
     "ContactAdminsForRegistration": "The {{ authMethod }} {{ authString }} was not found in our registry. Please try a different authentication method or get in touch at {{ organizationEmail }}",
     "LoggedInWith": "Hai effettuato l'accesso con:",
@@ -98,6 +97,8 @@
   },
 
   "CustomerLabel": {
+    "Welcome": "Benvenuti a {{ displayName }}",
+    "FillTheForm": "Please fill out some details before we continue",
     "Name": "Nome",
     "Surname": "Cognome",
     "Categories": "Categorie",
@@ -112,7 +113,9 @@
     "MedicalDetails": "Dettagli Medici",
     "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",
     "PersonalDetails": "Dati personali",
-    "ManagePersonalDetails": "Gestisci i tuoi dati personali"
+    "ManagePersonalDetails": "Gestisci i tuoi dati personali",
+    "RegistrationCode": "Registration code",
+    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",
@@ -127,7 +130,8 @@
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
     "Email": "Email",
     "SMS": "SMS",
-    "General": "Generale"
+    "General": "Generale",
+    "RegistrationCode": "Registration code"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -229,6 +233,7 @@
 
     "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario",
 
+    "CustomerProfileRegistered": "Registration successful",
     "CustomerProfileUpdated": "Profilo cliente aggiornato",
     "CustomerProfileError": "Errore durante l'aggiornamento del profilo cliente"
   },
@@ -292,7 +297,9 @@
   "Alerts": {
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
     "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
-    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}"
+    "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}",
+    "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
+    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

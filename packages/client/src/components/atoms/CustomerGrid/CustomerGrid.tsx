@@ -4,7 +4,7 @@ import TextField from "@mui/material/TextField";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { Customer, OrganizationData } from "@eisbuk/shared";
+import { CustomerFull, OrganizationData } from "@eisbuk/shared";
 
 import CustomerGridItem from "./CustomerGridItem";
 
@@ -13,7 +13,7 @@ import { createModal } from "@/features/modal/useModal";
 import { __customersGridId__ } from "@/__testData__/testIds";
 
 interface CustomerGridProps {
-  customers?: Customer[];
+  customers?: CustomerFull[];
   className?: string;
   displayName: OrganizationData["displayName"];
   tableContainerClassName?: string;
@@ -92,7 +92,7 @@ const useCustomerModal = createModal("CustomerCard");
  * @returns
  */
 const useCustomerCard = (
-  customers: Customer[] | undefined,
+  customers: CustomerFull[] | undefined,
   displayName: string
 ) => {
   const [modalProps, setModalProps] = useState<any>();

@@ -23,7 +23,6 @@ export enum AttendanceNavigationLabel {
 // #region auth
 export enum AuthMessage {
   NotAuthorized = "Authorization.NotAuthorized",
-  NotRegistered = "Authorization.NotRegistered",
   AdminsOnly = "Authorization.AdminsOnly",
   ContactAdminsForRegistration = "Authorization.ContactAdminsForRegistration",
   LoggedInWith = "Authorization.LoggedInWith",
@@ -103,6 +102,9 @@ export enum SlotFormLabel {
   EndTime = "SlotForm.EndTime",
 }
 export enum CustomerLabel {
+  Welcome = "CustomerLabel.Welcome",
+  FillTheForm = "CustomerLabel.FillTheForm",
+
   Name = "CustomerLabel.Name",
   Surname = "CustomerLabel.Surname",
   Categories = "CustomerLabel.Categories",
@@ -118,6 +120,8 @@ export enum CustomerLabel {
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
+  RegistrationCode = "CustomerLabel.RegistrationCode",
+  InputRegistrationCode = "CustomerLabel.InputRegistrationCode",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -145,6 +149,7 @@ export enum OrganizationLabel {
   Email = "OrganizationLabel.Email",
   SMS = "OrganizationLabel.SMS",
   General = "OrganizationLabel.General",
+  RegistrationCode = "OrganizationLabel.RegistrationCode",
 }
 export enum BookingNotesForm {
   Placeholder = "BookingNotesForm.Placeholder",
@@ -249,6 +254,7 @@ export enum NotificationMessage {
   Error = "Notification.Error",
   SlotsAddedToCalendar = "Notification.SlotsAddedToCalendar",
 
+  CustomerProfileRegistered = "Notification.CustomerProfileRegistered",
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileError",
 }
@@ -317,10 +323,12 @@ export enum Alerts {
   NoSlots = "Alerts.NoSlots",
   NoBookings = "Alerts.NoBookings",
   NoAttendance = "Alerts.NoAttendance",
+  NoCategories = "Alerts.NoCategories",
+  ContactEmail = "Alerts.ContactEmail",
 }
 // #endregion alerts
 
-// #region alerts
+// #region printable_attendance
 export enum PrintableAttendance {
   Start = "PrintableAttendance.Start",
   End = "PrintableAttendance.End",
@@ -330,7 +338,7 @@ export enum PrintableAttendance {
   Signature = "PrintableAttendance.Signature",
   Note = "PrintableAttendance.Note",
 }
-// #endregion alerts
+// #endregion printable_attendance
 
 // #region tables
 export enum AttendanceVarianceHeaders {

@@ -152,8 +152,12 @@ const generalFields: FormSectionFieldProps[] = [
     label: i18n.t(OrganizationLabel.DisplayName),
   },
   {
-    name: "loaction",
+    name: "location",
     label: i18n.t(OrganizationLabel.Location),
+  },
+  {
+    name: "registrationCode",
+    label: i18n.t(OrganizationLabel.RegistrationCode),
   },
   {
     name: "defaultCountryCode",

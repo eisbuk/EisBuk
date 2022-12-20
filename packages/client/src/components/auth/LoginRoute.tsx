@@ -25,16 +25,22 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
   const secretKey = useSelector(getBookingsSecretKey);
 
   switch (true) {
+    // Loading screen
     case !isAuthLoaded:
       return <Loading />;
+    // If auth empty, show login/register screen
     case isAuthEmpty:
       return <Route {...props} />;
+    // If admin, retirect to root page (attendance view)
     case isAdmin:
       return <Redirect to={PrivateRoutes.Root} />;
+    // If not admin, but has 'secretKey' redirect to customer area
     case Boolean(secretKey):
       return <Redirect to={`${Routes.CustomerArea}/${secretKey}`} />;
+    // Default: auth user exists, but is not admin nor is registered (doesn't have a 'secretKey'):
+    // Redirect to self registration form
     default:
-      return <Redirect to={Routes.NotRegistered} />;
+      return <Redirect to={Routes.SelfRegister} />;
   }
 };
 

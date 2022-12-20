@@ -19,7 +19,6 @@
 
   "Authorization": {
     "NotAuthorized": "Access not authorized",
-    "NotRegistered": "Not registered",
     "AdminsOnly": "This space is reserved for administrators",
     "ContactAdminsForRegistration": "The {{ authMethod }} {{ authString }} was not found in our registry. Please try a different authentication method or get in touch at {{ organizationEmail }}",
     "LoggedInWith": "You are logged in with:",
@@ -98,6 +97,8 @@
   },
 
   "CustomerLabel": {
+    "Welcome": "Welcome to {{ displayName }}",
+    "FillTheForm": "Please fill out some details before we continue",
     "Name": "Name",
     "Surname": "Surname",
     "Categories": "Categories",
@@ -112,7 +113,9 @@
     "MedicalDetails": "Medical Details",
     "ManageMedicalDetails": "Manage your medical details",
     "PersonalDetails": "Personal Details",
-    "ManagePersonalDetails": "Manage your personal details"
+    "ManagePersonalDetails": "Manage your personal details",
+    "RegistrationCode": "Registration code",
+    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Email Name From",
@@ -127,7 +130,8 @@
     "AddNewAdmin": "Add New Admin",
     "Email": "Email",
     "SMS": "SMS",
-    "General": "General"
+    "General": "General",
+    "RegistrationCode": "Registration code"
   },
   "Validations": {
     "Email": "Please insert a valid email",
@@ -229,6 +233,7 @@
 
     "SlotsAddedToCalendar": "Slots Added To Calendar",
 
+    "CustomerProfileRegistered": "Registration successful",
     "CustomerProfileUpdated": "Customer Profile Updated",
     "CustomerProfileError": "Error updating customer Profile"
   },
@@ -291,7 +296,9 @@
   "Alerts": {
     "NoSlots": "No slots are currently available for the month of {{ currentDate, MMMM }}",
     "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}",
-    "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}"
+    "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}",
+    "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
+    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Start",

@@ -4,7 +4,7 @@ import { Formik, Form, FastField } from "formik";
 
 import {
   Category,
-  Customer,
+  CustomerFull,
   CustomerLoose,
   DeprecatedCategory,
 } from "@eisbuk/shared";
@@ -72,7 +72,7 @@ const CustomerValidation = Yup.object().shape({
 // #region mainComponent
 export interface CustomerFormProps {
   className?: string;
-  customer?: Partial<Customer>;
+  customer?: Partial<CustomerFull>;
   defaultDialCode?: string;
   onCancel?: () => void;
   onUpdateCustomer?: (customer: CustomerLoose) => void;
@@ -196,7 +196,7 @@ const CustomerForm: React.FC<CustomerFormProps> = ({
         validateOnChange={false}
         initialValues={{
           ...defaultCustomerFormValues,
-          ...(customer || ({} as Customer)),
+          ...(customer || ({} as CustomerFull)),
         }}
         validationSchema={CustomerValidation}
         onSubmit={onUpdateCustomer}

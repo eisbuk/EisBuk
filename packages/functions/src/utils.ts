@@ -9,12 +9,7 @@ import Ajv, { ErrorObject, JSONSchemaType } from "ajv";
 import customizeErrors from "ajv-errors";
 
 import { DeliverResultTuple } from "@eisbuk/firestore-process-delivery";
-import {
-  Collection,
-  Customer,
-  HTTPSErrors,
-  OrgSubCollection,
-} from "@eisbuk/shared";
+import { Collection, HTTPSErrors, OrgSubCollection } from "@eisbuk/shared";
 
 type Auth = CallableContext["auth"];
 
@@ -109,7 +104,7 @@ export const checkSecretKey = async ({
   secretKey,
   organization,
 }: {
-  secretKey: Customer["secretKey"];
+  secretKey: string;
   organization: string;
 }): Promise<boolean> => {
   if (!secretKey) return false;

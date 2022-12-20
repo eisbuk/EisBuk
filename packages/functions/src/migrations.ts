@@ -9,7 +9,7 @@ import {
   OrgSubCollection,
   SlotInterface,
   CategoryUnion,
-  Customer,
+  CustomerFull,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -171,7 +171,7 @@ export const migrateCategoriesToExplicitMinors = functions
 
     // Enqueue customer updates
     allCustomers.forEach((customer) => {
-      const data = customer.data() as Customer;
+      const data = customer.data() as CustomerFull;
       const categories = data.categories as CategoryUnion[];
 
       categories.forEach((category, i) => {
