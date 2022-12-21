@@ -9,10 +9,6 @@ import {
   sanitizeCustomer,
   Category,
   DeprecatedCategory,
-  Collection,
-  SendBookingsLinkTemplate,
-  SendExtendedDateTemplate,
-  SendCalendarFileTemplate,
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
@@ -308,28 +304,5 @@ describe("Migrations", () => {
         })
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
-  });
-  describe("default email templates population", () => {
-    testWithEmulator(
-      "should populate default templates in existing organizations",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const orgRef = adminDb.doc(`${Collection.Organizations}/org1`);
-
-        await orgRef.set({}),
-          await invokeFunction(CloudFunction.PopulateDefaultEmailTemplates)({
-            organization,
-          });
-
-        expect((await orgRef.get()).data()).toEqual({
-          emailTemplates: [
-            { ...SendBookingsLinkTemplate },
-            { ...SendExtendedDateTemplate },
-            { ...SendCalendarFileTemplate },
-          ],
-        });
-      }
-    );
   });
 });
