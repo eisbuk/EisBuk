@@ -53,22 +53,24 @@ const processSMTPPreferences = ({
   smtpPass,
   smtpPort,
   smtpUser,
-}: SMTPPreferences): TransportConfig => ({
-  host: smtpHost,
-  port: smtpPort,
-  secure: smtpPort === 465,
+}: SMTPPreferences): TransportConfig => {
+  const secure = smtpPort === 465;
+  return {
+    host: smtpHost,
+    port: smtpPort,
+    secure,
 
-  // Add `auth` field only if auth data provided
-
-  ...(smtpPort === 465
-    ? {
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-      }
-    : {}),
-});
+    // Add `auth` field only for tls connections
+    ...(secure
+      ? {
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+        }
+      : {}),
+  };
+};
 // #region SMTPPreferences
 
 /**

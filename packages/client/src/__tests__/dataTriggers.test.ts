@@ -289,6 +289,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(existingSecrets).toEqual(["anotherSecret"]);
       }
     );
+
     testWithEmulator(
       "updates 'smtpConfigured' with respect to smtp config being present in organization data",
       async () => {
@@ -332,14 +333,6 @@ describe("Cloud functions -> Data triggers ->", () => {
               data?.existingSecrets?.includes(key)
             ),
         });
-        expect(orgDataPostUpdate.existingSecrets).toEqual(
-          expect.arrayContaining([
-            "smtpHost",
-            "smtpPort",
-            "smtpUser",
-            "smtpPass",
-          ])
-        );
         expect(orgDataPostUpdate.smtpConfigured).toEqual(true);
 
         const notAllSecrets = {
@@ -352,17 +345,15 @@ describe("Cloud functions -> Data triggers ->", () => {
         const orgDataPostDelete = await waitForCondition<OrganizationData>({
           documentPath: organizationPath,
           condition: (data) =>
-            Object.keys(notAllSecrets).every((key) =>
-              data?.existingSecrets?.includes(key)
+            data!.existingSecrets!.every((key) =>
+              Object.keys(notAllSecrets).includes(key)
             ),
         });
-        expect(orgDataPostDelete.existingSecrets).toEqual(
-          expect.arrayContaining(["smtpHost", "smtpUser", "smtpPort"])
-        );
         expect(orgDataPostDelete.smtpConfigured).toEqual(false);
       }
     );
   });
+
   describe("createPublicOrgInfo", () => {
     testWithEmulator(
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
@@ -399,6 +390,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       }
     );
   });
+
   describe("createAttendedSlotsForAttendance", () => {
     testWithEmulator(
       "should create document in attendedSlots collection when customer is marked as attended",
@@ -449,6 +441,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docRes).toEqual(attendedSlot);
       }
     );
+
     testWithEmulator(
       "should delete document in attendedSlots collection when customer is marked as absent",
       async () => {
@@ -522,6 +515,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docResEmpty).toBeUndefined();
       }
     );
+
     testWithEmulator(
       "should not create document in attendedSlots collection if customer had booked the slot",
       async () => {
@@ -568,6 +562,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docRes).toBeUndefined();
       }
     );
+
     testWithEmulator("should mark multiple athletes as attended", async () => {
       const { organization } = await setUpOrganization();
 

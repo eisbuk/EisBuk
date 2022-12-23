@@ -4,12 +4,7 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import {
-  HTTPSErrors,
-  BookingsErrors,
-  getCustomer,
-  Collection,
-} from "@eisbuk/shared";
+import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 import { setUpOrganization } from "@/__testSetup__/node";
@@ -79,20 +74,14 @@ describe("Cloud functions", () => {
       async () => {
         const { organization } = await setUpOrganization({
           doLogin: false,
-          setSecrets: false,
+          setSecrets: true,
+          additionalSetup: {
+            emailFrom: "eisbuk@test-email.com",
+          },
         });
 
-        await adminDb
-          .doc([Collection.Organizations, organization].join("/"))
-          .set({ emailFrom: "eisbuk@test-email.com" });
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
-        /** a less than ideal workaround */
-        await adminDb.doc([Collection.Secrets, organization].join("/")).set({
-          smtpPort: 5000,
-          smtpUser: "user",
-          smtpHost: "localhost",
-          smtpPass: "password",
-        });
+
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
         await waitForCondition({

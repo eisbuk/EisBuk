@@ -6,6 +6,7 @@ import { Collection, OrganizationData } from "@eisbuk/shared";
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
+import { waitForCondition } from "@/__testUtils__/helpers";
 
 interface SetUpOrganization {
   (options?: {
@@ -49,7 +50,9 @@ export const setUpOrganization: SetUpOrganization = async ({
       ...additionalSetup,
     }),
   ];
-  setSecrets &&
+
+  // Add secrets if so specified
+  if (setSecrets) {
     promises.push(
       secretsRef.set({
         smtpHost,
@@ -58,7 +61,17 @@ export const setUpOrganization: SetUpOrganization = async ({
         smtpPass: pass,
       })
     );
+  }
+
   await Promise.all(promises);
+
+  // If secrets should be set, wait for the data trigger to update the smtpConfigured flag.
+  if (setSecrets) {
+    await waitForCondition<OrganizationData>({
+      documentPath: orgRef.path,
+      condition: (data) => Boolean(data?.smtpConfigured),
+    });
+  }
 
   if (!doLogin) {
     await signOut(auth);
