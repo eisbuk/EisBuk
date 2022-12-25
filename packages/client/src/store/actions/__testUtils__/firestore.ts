@@ -10,7 +10,7 @@ import {
   Customer,
   BookingSubCollection,
   CustomerLoose,
-  getCustomerBase,
+  sanitizeCustomer,
   SlotAttendnace,
 } from "@eisbuk/shared";
 
@@ -140,7 +140,7 @@ export const setupTestBookings: AdminSetupFunction<{
       [
         setDoc(
           doc(db, getBookingsDocPath(organization, secretKey)),
-          getCustomerBase(customer)
+          sanitizeCustomer(customer)
         ),
       ] as Promise<any>[]
     )

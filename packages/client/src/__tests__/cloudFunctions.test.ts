@@ -4,14 +4,25 @@
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import { HTTPSErrors, BookingsErrors, getCustomer } from "@eisbuk/shared";
+import {
+  HTTPSErrors,
+  BookingsErrors,
+  sanitizeCustomer,
+  CustomerBase,
+  Collection,
+  Customer,
+} from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 import { setUpOrganization } from "@/__testSetup__/node";
 
 import { CloudFunction } from "@/enums/functions";
 
-import { getBookingsDocPath, getCustomerDocPath } from "@/utils/firestore";
+import {
+  getBookingsDocPath,
+  getCustomerDocPath,
+  getCustomersPath,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
@@ -237,7 +248,8 @@ describe("Cloud functions", () => {
       }
     );
   });
-  describe("updateCustomerByCustomer", () => {
+
+  describe("customerSelfUpdate", () => {
     testWithEmulator(
       "should update customer data in customer collection and then bookings collection by data trigger",
       async () => {
@@ -255,7 +267,7 @@ describe("Cloud functions", () => {
         // run the function to update customer
         await httpsCallable(
           functions,
-          CloudFunction.UpdateCustomerByCustomer
+          CloudFunction.CustomerSelfUpdate
         )({
           organization,
           customer: saul,
@@ -268,8 +280,7 @@ describe("Cloud functions", () => {
         });
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { subscriptionNumber, ...getSaul } = getCustomer(saul);
-        expect(updatedData).toEqual({ ...getSaul, deleted: false });
+        expect(updatedData).toEqual(sanitizeCustomer(saul));
       }
     );
 
@@ -277,7 +288,7 @@ describe("Cloud functions", () => {
       "should return an error if no payload provided",
       async () => {
         await expect(
-          httpsCallable(functions, CloudFunction.UpdateCustomerByCustomer)()
+          httpsCallable(functions, CloudFunction.CustomerSelfUpdate)()
         ).rejects.toThrow(HTTPSErrors.NoPayload);
       }
     );
@@ -286,10 +297,7 @@ describe("Cloud functions", () => {
       "should return an error if no organziation, or customer provided",
       async () => {
         try {
-          await httpsCallable(
-            functions,
-            CloudFunction.UpdateCustomerByCustomer
-          )({});
+          await httpsCallable(functions, CloudFunction.CustomerSelfUpdate)({});
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
             `${HTTPSErrors.MissingParameter}: organization, customer`
@@ -297,6 +305,7 @@ describe("Cloud functions", () => {
         }
       }
     );
+
     testWithEmulator(
       "should return an error if id or secretKey are not provided in customer object",
       async () => {
@@ -305,7 +314,7 @@ describe("Cloud functions", () => {
         try {
           await httpsCallable(
             functions,
-            CloudFunction.UpdateCustomerByCustomer
+            CloudFunction.CustomerSelfUpdate
           )({
             organization: {},
             customer: saulNoId,
@@ -329,7 +338,7 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.UpdateCustomerByCustomer
+            CloudFunction.CustomerSelfUpdate
           )({
             organization,
             customer: { ...saulNoSecretKey, secretKey: "wrong-key" },
@@ -345,7 +354,7 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.UpdateCustomerByCustomer
+            CloudFunction.CustomerSelfUpdate
           )({
             organization,
             customer: saul,
@@ -353,5 +362,151 @@ describe("Cloud functions", () => {
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
       }
     );
+  });
+
+  describe("customerSelfRegister", () => {
+    const minimalSaul: CustomerBase = {
+      name: saul.name,
+      surname: saul.surname,
+      email: saul.email,
+      certificateExpiration: saul.certificateExpiration,
+      covidCertificateReleaseDate: saul.covidCertificateReleaseDate,
+      covidCertificateSuspended: saul.covidCertificateSuspended,
+    };
+    testWithEmulator(
+      "should create a new customer with data passed in as well as bookings entry",
+      async () => {
+        const registrationCode = "CODE111";
+
+        // set up test state
+        const { organization } = await setUpOrganization({ doLogin: false });
+        await adminDb
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .set({ registrationCode }, { merge: true });
+
+        // run the function to update customer
+        await httpsCallable(
+          functions,
+          CloudFunction.CustomerSelfRegister
+        )({
+          organization,
+          registrationCode,
+          customer: minimalSaul,
+        });
+
+        const customersColl = await adminDb
+          .collection(getCustomersPath(organization))
+          .get();
+        const customerDoc = customersColl.docs[0];
+
+        // Get newly created customer's 'secretKey'
+        const customerInDb = (await waitForCondition({
+          documentPath: customerDoc.ref.path,
+          condition: (data) => Boolean(data?.secretKey && data?.id),
+        })) as Customer;
+
+        const { secretKey, id } = customerInDb;
+
+        // Check that the customer has been properly updated
+        expect(secretKey).toBeTruthy();
+        expect(id).toBeTruthy();
+        expect(customerDoc.data()).toEqual({
+          ...minimalSaul,
+          secretKey,
+          id,
+          // Should set up empty categories
+          categories: [],
+        });
+
+        // Check that bookings doc has been created
+        const bookingsCustomer = await waitForCondition({
+          documentPath: getBookingsDocPath(organization, secretKey),
+          condition: (data) => Boolean(data),
+        });
+
+        expect(bookingsCustomer).toEqual(
+          sanitizeCustomer({
+            ...minimalSaul,
+            secretKey,
+            id,
+          } as Customer)
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no payload provided",
+      async () => {
+        await expect(
+          httpsCallable(functions, CloudFunction.CustomerSelfRegister)()
+        ).rejects.toThrow(HTTPSErrors.NoPayload);
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no organization, or customer provided",
+      async () => {
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfRegister
+          )({});
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: organization, customer`
+          );
+        }
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if 'email' nor 'phone' are not provided in customer object",
+      async () => {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { email, ...saulNoEmail } = minimalSaul;
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfRegister
+          )({
+            organization: "dummy-organization",
+            registrationCode: "not-real-code",
+            customer: saulNoEmail,
+          });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: No 'email' nor 'phone' provided, at least one is required to register.`
+          );
+        }
+      }
+    );
+
+    testWithEmulator("should validate registration code", async () => {
+      // Test setup
+      const { organization } = await setUpOrganization();
+      await adminDb
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .set({ registrationCode: "registration-code" }, { merge: true });
+
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { email } = minimalSaul;
+
+      try {
+        await httpsCallable(
+          functions,
+          CloudFunction.CustomerSelfRegister
+        )({
+          organization,
+          registrationCode: "not-real-code",
+          customer: minimalSaul,
+        });
+      } catch (error) {
+        expect((error as FunctionsError).message).toEqual(
+          `${HTTPSErrors.Unauth}: Incorrect value for 'registrationCode'`
+        );
+      }
+    });
   });
 });

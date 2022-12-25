@@ -1,4 +1,4 @@
-import { Customer, CustomerBase } from "@eisbuk/shared";
+import { sanitizeCustomer } from "@eisbuk/shared";
 import { DeprecatedDuration } from "@eisbuk/shared/dist/deprecated";
 
 import { baseSlot } from "./slots";
@@ -42,18 +42,8 @@ export const mixedSlots = {
 // #endregion slotMigrations
 
 // #region bookingsMigrations
-/**
- * A helper function we're using to extract only the `CustomerBase` data from customer (for customers booking data)
- */
-const extractCustomerBase = ({
-  categories,
-  id,
-  name,
-  surname,
-}: Customer): CustomerBase => ({ categories, id, name, surname });
-
-const { id: gusId, ...gusBase } = extractCustomerBase(gus);
-const { id: waltId, ...waltBase } = extractCustomerBase(walt);
+const { id: gusId, ...gusBase } = sanitizeCustomer(gus);
+const { id: waltId, ...waltBase } = sanitizeCustomer(walt);
 /**
  * Test customers in "old" `BookingsMeta` structure
  */

@@ -81,6 +81,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
           {Object.keys(headers).map((key) => (
             <TableCell
               type={CellType.Header}
+              key={key}
               textAlign={
                 headers[key] !== t(AttendanceVarianceHeaders.Athlete)
                   ? CellTextAlign.Center
@@ -105,12 +106,14 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
             {Object.entries(data).map(([date, cellItem], itemIx) =>
               rowType === HoursType.Booked ? (
                 <BookedRowCells
+                  key={`${date}-${cellItem}`}
                   cellItem={cellItem}
                   itemIx={itemIx}
                   date={date}
                 />
               ) : (
                 <DeltaRowCells
+                  key={`${date}-${cellItem}`}
                   cellItem={cellItem}
                   itemIx={itemIx}
                   date={date}

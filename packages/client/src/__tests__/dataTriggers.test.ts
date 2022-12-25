@@ -9,7 +9,7 @@ import {
   luxon2ISODate,
   SlotType,
   OrganizationData,
-  getCustomerBase,
+  sanitizeCustomer,
 } from "@eisbuk/shared";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
@@ -43,7 +43,7 @@ import { testDate, testDateLuxon } from "@/__testData__/date";
 const slotId = baseSlot.id;
 const customerId = saul.id;
 const secretKey = saul.secretKey;
-const customerBooking = getCustomerBase(saul);
+const customerBooking = sanitizeCustomer(saul);
 const testMonth = testDate.substring(0, 7);
 
 describe("Cloud functions -> Data triggers ->", () => {

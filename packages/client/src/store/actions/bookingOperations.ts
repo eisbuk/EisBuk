@@ -6,6 +6,7 @@ import {
   SlotInterface,
   OrganizationData,
   ClientSendEmailPayload,
+  CustomerBase,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { NotifVariant } from "@/enums/store";
@@ -97,6 +98,7 @@ export const cancelBooking: UpdateBooking =
       );
     }
   };
+
 export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
   ({ secretKey, slotId, bookingNotes }) =>
   async (dispatch, getState) => {
@@ -135,35 +137,74 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
  * @param payload.customer {Customer} - cutomer type
  * @returns FirestoreThunk
  */
-export const updateBookingCustomer: {
-  (paylod: { customer: Customer }): FirestoreThunk;
+export const customerSelfUpdate: {
+  (paylod: CustomerBase & { secretKey: string }): FirestoreThunk;
+} = (customer) => async (dispatch) => {
+  try {
+    const organization = getOrganization();
+
+    const handler = CloudFunction.CustomerSelfUpdate;
+    const payload = {
+      organization,
+      customer,
+    };
+
+    await createCloudFunctionCaller(handler, payload)();
+
+    dispatch(
+      enqueueNotification({
+        variant: NotifVariant.Success,
+        message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+      })
+    );
+  } catch (error) {
+    dispatch(
+      enqueueNotification({
+        variant: NotifVariant.Error,
+        message: i18n.t(NotificationMessage.CustomerProfileError),
+      })
+    );
+  }
+};
+
+export const customerSelfRegister: {
+  (paylod: CustomerBase & { registrationCode: string }): (
+    ...params: Parameters<FirestoreThunk>
+  ) => Promise<{ id: string; secretKey: string }>;
 } =
-  ({ customer }) =>
+  ({ registrationCode, ...customer }) =>
   async (dispatch) => {
     try {
       const organization = getOrganization();
 
-      const handler = CloudFunction.UpdateCustomerByCustomer;
+      const handler = CloudFunction.CustomerSelfRegister;
       const payload = {
         organization,
         customer,
+        registrationCode,
       };
 
-      await createCloudFunctionCaller(handler, payload)();
+      const res = await createCloudFunctionCaller(handler, payload)();
+      const { id, secretKey } = res.data;
 
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Success,
-          message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+          message: i18n.t(NotificationMessage.CustomerProfileRegistered),
         })
       );
+      return {
+        id,
+        secretKey,
+      };
     } catch (error) {
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Error,
-          message: i18n.t(NotificationMessage.CustomerProfileError),
+          message: i18n.t(NotificationMessage.Error),
         })
       );
+      return { id: "", secretKey: "" };
     }
   };
 

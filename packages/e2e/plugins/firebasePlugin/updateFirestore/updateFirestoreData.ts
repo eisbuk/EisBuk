@@ -26,6 +26,15 @@ const updateFirestoreData = async (
   data: FirestoreDataUpdate
 ): Promise<void> => {
   const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
+
+  // Update the organization data (if exists) before updating the sub collections
+  const orgData = data.organization;
+  if (orgData) {
+    await orgRef.set(orgData, { merge: true });
+    // Remove organization entry in test data (as it's just been used to update the store and is no longer needed)
+    delete data.organization;
+  }
+
   const collectionsToUpdate = Object.keys(data);
 
   await Promise.all(

@@ -6,12 +6,12 @@ import Box from "@mui/material/Box";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { Customer } from "@eisbuk/shared";
+import { CustomerFull } from "@eisbuk/shared";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 
-interface Props extends Customer {
-  onClick?: (customer: Customer) => void;
+interface Props extends CustomerFull {
+  onClick?: (customer: CustomerFull) => void;
 }
 
 const CustomerListItem: React.FC<Props> = ({

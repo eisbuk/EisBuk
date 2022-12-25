@@ -7,11 +7,11 @@ import { v4 } from "uuid";
 import {
   Category,
   Collection,
-  Customer,
   FIRST_NAMES,
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
+  CustomerFull,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -147,7 +147,7 @@ const createUsers = async (
   _.range(numUsers).map(async () => {
     const name = _.sample(FIRST_NAMES)!;
     const surname = _.sample(LAST_NAMES)!;
-    const customer: Omit<Customer, "secretKey"> = {
+    const customer: Omit<CustomerFull, "secretKey" | "subscriptionNumber"> = {
       id: uuidv4(),
       birthday: "2000-01-01",
       name,

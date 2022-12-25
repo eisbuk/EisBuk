@@ -10,7 +10,7 @@ import TextField from "@mui/material/TextField";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { Customer } from "@eisbuk/shared";
+import { CustomerFull } from "@eisbuk/shared";
 import { useTranslation, CustomerLabel } from "@eisbuk/translations";
 
 import CustomerListItem from "./CustomerListItem";
@@ -18,8 +18,8 @@ import CustomerListItem from "./CustomerListItem";
 import { __customersListId__ } from "@/__testData__/testIds";
 
 interface Props {
-  customers?: Customer[];
-  onCustomerClick?: (customer: Customer) => void;
+  customers?: CustomerFull[];
+  onCustomerClick?: (customer: CustomerFull) => void;
   className?: string;
   tableContainerClassName?: string;
 }

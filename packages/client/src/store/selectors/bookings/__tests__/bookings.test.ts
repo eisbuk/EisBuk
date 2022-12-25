@@ -4,7 +4,7 @@ import {
   BookingSubCollection,
   Category,
   DeprecatedCategory,
-  getCustomerBase,
+  sanitizeCustomer,
   OrgSubCollection,
   SlotsByDay,
 } from "@eisbuk/shared";
@@ -52,7 +52,7 @@ const setupBookingsTest = ({
       data: {
         bookings: {
           [saul.secretKey]: {
-            ...getCustomerBase(saul),
+            ...sanitizeCustomer(saul),
             categories: [category as Category],
           },
         },
@@ -205,7 +205,7 @@ describe("Selectors ->", () => {
       const extendedDate = extendedDateLuxon.toISODate();
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Bookings, {
-          [saul.secretKey]: getCustomerBase({ ...saul, extendedDate }),
+          [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
       expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(true);
@@ -220,7 +220,7 @@ describe("Selectors ->", () => {
       const extendedDate = extendedDateLuxon.toISODate();
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Bookings, {
-          [saul.secretKey]: getCustomerBase({ ...saul, extendedDate }),
+          [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
       expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(false);
@@ -235,7 +235,7 @@ describe("Selectors ->", () => {
       const extendedDate = extendedDateLuxon.toISODate();
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Bookings, {
-          [saul.secretKey]: getCustomerBase({ ...saul, extendedDate }),
+          [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
       expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(false);
@@ -276,7 +276,7 @@ describe("Selectors ->", () => {
       // grant (saul) our test customer an extended date for february ("2022-02-07")
       store.dispatch(
         updateLocalDocuments(OrgSubCollection.Bookings, {
-          [saul.secretKey]: getCustomerBase({ ...saul, extendedDate }),
+          [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
       const expectedRes = {

@@ -3,9 +3,15 @@
  */
 
 import * as firestore from "@firebase/firestore";
+import * as functions from "@firebase/functions";
 import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+import {
+  Collection,
+  CustomerBookingEntry,
+  sanitizeCustomer,
+} from "@eisbuk/shared";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -19,17 +25,28 @@ import {
   bookInterval,
   cancelBooking,
   updateBookingNotes,
+  customerSelfUpdate,
+  customerSelfRegister,
 } from "../bookingOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getBookedSlotDocPath, getBookedSlotsPath } from "@/utils/firestore";
+import {
+  getBookedSlotDocPath,
+  getBookedSlotsPath,
+  getBookingsDocPath,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { setupTestBookings, setupTestSlots } from "../__testUtils__/firestore";
+import {
+  setupTestBookings,
+  setupTestCustomer,
+  setupTestSlots,
+} from "../__testUtils__/firestore";
+
+import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
-import { CustomerBookingEntry } from "@eisbuk/shared";
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
@@ -71,7 +88,7 @@ const testSlot = {
 
 // #endregion testData
 
-describe("Booking Notifications", () => {
+describe("Booking operations", () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -326,6 +343,129 @@ describe("Booking Notifications", () => {
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesError),
+            variant: NotifVariant.Error,
+          })
+        );
+      }
+    );
+  });
+
+  describe("'customerSelfUpdate'", () => {
+    testWithEmulator("should update the customer in firestore", async () => {
+      // set up initial state
+      const store = getNewStore();
+      const { organization } = await getTestEnv({
+        auth: false,
+        setup: (db, { organization }) =>
+          Promise.all([
+            setupTestCustomer({
+              db,
+              customer: saul,
+              organization,
+              store,
+            }),
+          ]),
+      });
+      const mockDispatch = jest.fn();
+      // make sure tested thunk uses test generated organization
+      getOrganizationSpy.mockReturnValue(organization);
+      // create a thunk curried with test input values
+      const testThunk = customerSelfUpdate({ ...saul, name: "Jimmy" });
+      // test updating of the db using created thunk and middleware args from stores' setup
+      await testThunk(mockDispatch, store.getState);
+      // Check updates
+      const updatedSaul = await waitForCondition({
+        documentPath: getBookingsDocPath(organization, saul.secretKey),
+        condition: (data) => data?.name === "Jimmy",
+      });
+      expect(updatedSaul).toEqual(sanitizeCustomer({ ...saul, name: "Jimmy" }));
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+          variant: NotifVariant.Success,
+        })
+      );
+    });
+
+    testWithEmulator(
+      "should enqueue error notification if operation failed",
+      async () => {
+        // intentionally cause an error
+        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        // run the thunk
+        const testThunk = customerSelfUpdate(saul);
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, () => ({} as any));
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.CustomerProfileError),
+            variant: NotifVariant.Error,
+          })
+        );
+      }
+    );
+  });
+
+  describe("'customerSelfRegister'", () => {
+    testWithEmulator("should update the customer in firestore", async () => {
+      const registrationCode = "TEST_REG_CODE";
+      // set up initial state
+      const store = getNewStore();
+      const { organization } = await getTestEnv({
+        auth: false,
+        setup: async (db, { organization }) => {
+          // Set up organization 'registrationCode'
+          db.doc([Collection.Organizations, organization].join("/")).set(
+            { registrationCode },
+            { merge: true }
+          );
+        },
+      });
+      const mockDispatch = jest.fn();
+      // make sure tested thunk uses test generated organization
+      getOrganizationSpy.mockReturnValue(organization);
+      // create a thunk curried with test input values
+      const testThunk = customerSelfRegister({
+        ...sanitizeCustomer(saul),
+        registrationCode,
+      });
+      // test updating of the db using created thunk and middleware args from stores' setup
+      const { id, secretKey } = await testThunk(mockDispatch, store.getState);
+      expect(id).toBeTruthy();
+      expect(secretKey).toBeTruthy();
+      // Check updates
+      const updatedSaul = await waitForCondition({
+        documentPath: getBookingsDocPath(organization, secretKey),
+        condition: (data) => Boolean(data),
+      });
+      expect(updatedSaul).toEqual({ ...saul, id, secretKey });
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.CustomerProfileRegistered),
+          variant: NotifVariant.Success,
+        })
+      );
+    });
+
+    testWithEmulator(
+      "should enqueue error notification if operation failed",
+      async () => {
+        // intentionally cause an error
+        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+          throw new Error();
+        });
+        // run the thunk
+        const testThunk = customerSelfRegister({
+          ...saul,
+          registrationCode: "",
+        });
+        const mockDispatch = jest.fn();
+        await testThunk(mockDispatch, () => ({} as any));
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
             variant: NotifVariant.Error,
           })
         );

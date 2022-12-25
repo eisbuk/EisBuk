@@ -15,13 +15,15 @@ export const Default = (): JSX.Element => (
   <>
     <h1 className="text-lg font-bold mb-4">Default</h1>
     <table className="">
-      <tr>
-        {variance.map((v) => (
-          <TableCell>
-            <VarianceBadge delta={v} />
-          </TableCell>
-        ))}
-      </tr>
+      <tbody>
+        <tr>
+          {variance.map((v) => (
+            <TableCell key={v}>
+              <VarianceBadge delta={v} />
+            </TableCell>
+          ))}
+        </tr>
+      </tbody>
     </table>
   </>
 );

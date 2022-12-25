@@ -6,16 +6,15 @@ import { v4 as uuid } from "uuid";
 import {
   BookingSubCollection,
   Collection,
-  Customer,
   CustomerAttendance,
-  CustomerBase,
   CustomerBookingEntry,
   OrgSubCollection,
   SlotAttendnace,
   SlotInterface,
   SlotInterval,
-  getCustomer,
+  sanitizeCustomer,
   OrganizationData,
+  Customer,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -23,7 +22,7 @@ import { __functionsZone__ } from "./constants";
 /**
  * A type alias for Customer with `secretKey` and `id` optional
  */
-type CustomerWithOptionalIDs = Omit<Omit<Customer, "id">, "secretKey"> &
+type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
   Partial<{ secretKey: string; id: string }>;
 
 /**
@@ -65,16 +64,16 @@ export const addIdAndSecretKey = functions
         {
           id: customerId,
           secretKey,
-        } as Pick<Customer, "id"> & Pick<Customer, "secretKey">,
+        } as Pick<Customer, "id" | "secretKey">,
         { merge: true }
       );
     }
 
-    // when customer is updated through updateCustomerByCustomer cloud fn
-    const customer: Omit<Customer, "secretKey"> = getCustomer({
+    // when customer is updated through customerSelfUpdate cloud fn
+    const customer = sanitizeCustomer({
       ...customerData,
       id: customerId,
-    });
+    } as Customer);
 
     // create/update booking entry
     batch.set(
@@ -239,7 +238,6 @@ export const createAttendanceForBooking = functions
 
     const isUpdate = Boolean(change.after.exists);
 
-    /** @TODO might be good idea to add transaction here */
     const { id: customerId } = (
       await db
         .collection(Collection.Organizations)
@@ -247,7 +245,7 @@ export const createAttendanceForBooking = functions
         .collection(OrgSubCollection.Bookings)
         .doc(secretKey)
         .get()
-    ).data() as CustomerBase;
+    ).data() as Customer;
 
     const afterData = change.after.data() as CustomerBookingEntry | undefined;
 

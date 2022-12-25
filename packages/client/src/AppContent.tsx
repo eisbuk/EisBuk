@@ -15,7 +15,6 @@ import { getOrganization } from "@/lib/getters";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Unauthorized from "@/components/auth/Unauthorized";
-import NotRegistered from "@/components/auth/NotRegistered";
 import LoginRoute from "@/components/auth/LoginRoute";
 
 import AttendancePage from "@/pages/attendance";
@@ -26,6 +25,7 @@ import CustomerAreaPage from "@/pages/customer_area";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
+import SelfRegister from "@/pages/self_register";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 
@@ -75,7 +75,7 @@ const AppContent: React.FC = () => {
         component={CustomerAreaPage}
       />
       <Route path={Routes.Unauthorized} component={Unauthorized} exact />
-      <Route path={Routes.NotRegistered} component={NotRegistered} exact />
+      <Route path={Routes.SelfRegister} component={SelfRegister} exact />
       <Route path={Routes.Debug} component={DebugPage} />
     </Switch>
   );

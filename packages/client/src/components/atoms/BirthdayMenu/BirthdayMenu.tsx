@@ -2,8 +2,6 @@ import React, { useState, useMemo, useEffect } from "react";
 import { DateTime } from "luxon";
 
 import Menu from "@mui/material/Menu";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
 import Badge from "@mui/material/Badge";
 
 import makeStyles from "@mui/styles/makeStyles";
@@ -74,7 +72,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
       >
         <Button
           onClick={handleBirthdaysClick}
-          className="h-11 w-11 !p-2 ml-2  hover:bg-white/10"
+          className="h-11 w-11 !p-2 hover:bg-white/10"
         >
           <Cake />
         </Button>
@@ -91,22 +89,19 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
           },
         }}
       >
-        {customers.slice(0, 3).map((customer) => {
-          return (
-            <Table key={customer.birthday}>
-              <TableBody>
-                {customer.customers.slice(0, 2).map((cus) => {
-                  return (
-                    !cus.deleted &&
-                    cus.birthday && (
-                      <BirthdayMenuItem key={cus.id} customer={cus} />
-                    )
-                  );
-                })}
-              </TableBody>
-            </Table>
-          );
-        })}
+        {customers.slice(0, 3).map(({ birthday, customers }) => (
+          <ul key={birthday}>
+            {customers
+              .slice(0, 2)
+              .map(
+                (customer) =>
+                  !customer.deleted &&
+                  customer.birthday && (
+                    <BirthdayMenuItem key={customer.id} customer={customer} />
+                  )
+              )}
+          </ul>
+        ))}
         <div
           onClick={handleShowAll}
           className={[classes.birthdayHeader, "cursor-pointer"].join(" ")}

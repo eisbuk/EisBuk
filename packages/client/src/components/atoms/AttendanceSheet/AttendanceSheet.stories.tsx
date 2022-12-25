@@ -53,8 +53,8 @@ const date = fromISO(baseAttendanceCard.date);
 
 export const Default = (): JSX.Element => (
   <AttendanceSheet date={date}>
-    {slots.map((slot) => (
-      <AttendanceSheetSlot {...slot} />
+    {slots.map((slot, i) => (
+      <AttendanceSheetSlot key={`${slot.id}-${i}`} {...slot} />
     ))}
   </AttendanceSheet>
 );
