@@ -1,13 +1,14 @@
-import admin from "firebase-admin";
+import { JSONSchemaType } from "ajv";
+
 import {
-  Collection,
-  OrganizationData,
   EmailTemplate,
   EmailType,
   ClientEmailPayload,
-  interpolateEmailTemplate,
-  EmailAttachment,
+  interpolateText,
+  MergeUnion,
 } from "@eisbuk/shared";
+
+import { EmailInterpolationValues } from "./types";
 
 import { EisbukHttpsError, validateJSON } from "../utils";
 import {
@@ -16,155 +17,44 @@ import {
   SendICSEmailSchema,
 } from "./validations";
 
-export const fetchOrganizationEmailTemplate: (
-  organization: string,
-  emailType: EmailType
-) => Promise<EmailTemplate> = async (organization, emailType) => {
-  const orgData = await admin
-    .firestore()
-    .doc(`${Collection.Organizations}/${organization}`)
-    .get();
+/**
+ * Validate client email payload accepts an email payload and applies the correct validation for an email type.
+ */
+export const validateClientEmailPayload = <T extends EmailType>(
+  payload: ClientEmailPayload[T]
+) => {
+  type ValidationSchemaLookup = {
+    [key in EmailType]: JSONSchemaType<ClientEmailPayload[key]>;
+  };
+  const validationSchemaLookup: ValidationSchemaLookup = {
+    [EmailType.SendBookingsLink]: SendBookingsLinkEmailSchema,
+    [EmailType.SendCalendarFile]: SendICSEmailSchema,
+    [EmailType.SendExtendedBookingsDate]: SendExtendDateEmailSchema,
+  };
 
-  const { emailTemplates } = orgData.data() as OrganizationData;
-
-  const emailTemplate = emailTemplates![emailType];
-
-  return emailTemplate;
-};
-
-export const createBookingsEmailPayload = (
-  emailPayload: ClientEmailPayload[EmailType.SendBookingsLink],
-  template: EmailTemplate
-): { html: string; subject: string } => {
-  // Validate payload and throw if not a valid schema
-  const [sendBookingsLinkEmail, sendBookingsLinkEmailErrors] = validateJSON(
-    SendBookingsLinkEmailSchema,
-    {
-      ...emailPayload,
-    },
-    "Constructing gave following errors (check the email payload and organization preferences):"
+  const [res, errors] = validateJSON(
+    validationSchemaLookup[payload.type] as ValidationSchemaLookup[T],
+    payload,
+    "Constructing the email gave following errors (check the email payload and organization preferences):"
   );
-  if (sendBookingsLinkEmailErrors) {
-    throw new EisbukHttpsError(
-      "invalid-argument",
-      sendBookingsLinkEmailErrors.join(" ")
-    );
+
+  if (errors !== null) {
+    throw new EisbukHttpsError("invalid-argument", errors.join(" "));
   }
 
-  const { name, surname } = sendBookingsLinkEmail.customer;
-
-  const subjectFieldValues = {
-    displayName: sendBookingsLinkEmail.displayName,
-  };
-  const htmlFieldValues = {
-    displayName: sendBookingsLinkEmail.displayName,
-    name: `${name} ${surname}`,
-    bookingsLink: sendBookingsLinkEmail.bookingsLink,
-  };
-  const interpolatedHtml = interpolateEmailTemplate(
-    template.html,
-    htmlFieldValues
-  );
-  const interpolatedSubject = interpolateEmailTemplate(
-    template.subject,
-    subjectFieldValues
-  );
-
-  return {
-    subject: interpolatedSubject,
-    html: interpolatedHtml,
-  };
+  return res as MergeUnion<ClientEmailPayload[T]>;
 };
-export const createICSFileEmailPayload = (
-  emailPayload: ClientEmailPayload[EmailType.SendCalendarFile],
-  template: EmailTemplate
-): { html: string; subject: string; attachments: EmailAttachment[] } => {
-  // Validate payload and throw if not a valid schema
-  const [sendICSFileEmail, sendICSFileEmailErrors] = validateJSON(
-    SendICSEmailSchema,
-    {
-      ...emailPayload,
-    },
-    "Constructing gave following errors (check the email payload and organization preferences):"
-  );
-  if (sendICSFileEmailErrors) {
-    throw new EisbukHttpsError(
-      "invalid-argument",
-      sendICSFileEmailErrors.join(" ")
-    );
-  }
 
-  const { name, surname } = sendICSFileEmail.customer;
-
-  const subjectFieldValues = {
-    displayName: sendICSFileEmail.displayName,
-  };
-  const htmlFieldValues = {
-    displayName: sendICSFileEmail.displayName,
-    name: `${name} ${surname}`,
-    icsFile: sendICSFileEmail.attachments.filename,
-  };
-  const interpolatedHtml = interpolateEmailTemplate(
-    template.html,
-    htmlFieldValues
-  );
-  const interpolatedSubject = interpolateEmailTemplate(
-    template.subject,
-    subjectFieldValues
-  );
-
-  return {
-    subject: interpolatedSubject,
-    html: interpolatedHtml,
-    attachments: [
-      {
-        filename: sendICSFileEmail.attachments.filename,
-        content: sendICSFileEmail.attachments.content,
-      },
-    ],
-  };
-};
-export const createExtendDateEmailPayload = (
-  emailPayload: ClientEmailPayload[EmailType.SendExtendedBookingLink],
-  template: EmailTemplate
-): { html: string; subject: string } => {
-  // Validate payload and throw if not a valid schema
-  const [sendExtendDateEmail, sendExtendDateEmailErrors] = validateJSON(
-    SendExtendDateEmailSchema,
-    {
-      ...emailPayload,
-    },
-    "Constructing gave following errors (check the email payload and organization preferences):"
-  );
-  if (sendExtendDateEmailErrors) {
-    throw new EisbukHttpsError(
-      "invalid-argument",
-      sendExtendDateEmailErrors.join(" ")
-    );
-  }
-
-  const { name, surname } = sendExtendDateEmail.customer;
-
-  const subjectFieldValues = {
-    displayName: sendExtendDateEmail.displayName,
-  };
-  const htmlFieldValues = {
-    displayName: sendExtendDateEmail.displayName,
-    name: `${name} ${surname}`,
-    bookingsMonth: sendExtendDateEmail.bookingsMonth,
-    extendedBookingsDate: sendExtendDateEmail.extendedBookingsDate,
-  };
-  const interpolatedHtml = interpolateEmailTemplate(
-    template.html,
-    htmlFieldValues
-  );
-  const interpolatedSubject = interpolateEmailTemplate(
-    template.subject,
-    subjectFieldValues
-  );
-
-  return {
-    subject: interpolatedSubject,
-    html: interpolatedHtml,
-  };
-};
+/**
+ * Takes in an email template ({ subject, html }) and interpolates both with values.
+ * @param template
+ * @param values
+ * @returns the same structure as email template, only with values interpolated.
+ */
+export const interpolateEmail = (
+  template: EmailTemplate,
+  values: EmailInterpolationValues
+) => ({
+  subject: interpolateText(template.subject, values as Record<string, any>),
+  html: interpolateText(template.html, values as Record<string, any>),
+});

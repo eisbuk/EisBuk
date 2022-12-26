@@ -3,8 +3,7 @@ import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
 import {
   Collection,
-  SendBookingsLinkTemplate,
-  SendCalendarFileTemplate,
+  defaultEmailTemplates as emailTemplates,
 } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
@@ -28,7 +27,6 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
 
   const organization = uuid();
   const email = `${organization}@eisbuk.it`;
-
   const pass = `password-${organization}`;
 
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
@@ -39,10 +37,8 @@ export const setUpOrganization: SetUpOrganization = async (doLogin = true) => {
     // Set given user as admin in org structure
     orgRef.set({
       admins: [email],
-      emailTemplates: {
-        ...SendBookingsLinkTemplate,
-        ...SendCalendarFileTemplate,
-      },
+      emailFrom: "dummy@email.com",
+      emailTemplates,
     }),
   ]);
 

@@ -44,7 +44,7 @@ const AddToCalendar: React.FC = () => {
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
-  const { name } = useSelector(getCustomer(secretKey)) as Customer;
+  const { name, surname } = useSelector(getCustomer(secretKey)) as Customer;
 
   const { displayName = __organization__, location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
@@ -99,11 +99,11 @@ const AddToCalendar: React.FC = () => {
     const icsFile = icalendar.render();
     dispatch(
       sendICSFile({
-        icsFile: icsFile,
+        name,
+        surname,
         email,
         secretKey,
-        name: name,
-        displayName: displayName,
+        icsFile: icsFile,
       })
     );
   };

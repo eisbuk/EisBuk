@@ -9,9 +9,7 @@ import {
   OrgSubCollection,
   SlotInterface,
   CategoryUnion,
-  SendBookingsLinkTemplate,
-  SendExtendedDateTemplate,
-  SendCalendarFileTemplate,
+  defaultEmailTemplates,
   OrganizationData,
   CustomerFull,
 } from "@eisbuk/shared";
@@ -256,11 +254,7 @@ export const populateDefaultEmailTemplates = functions
 
       batch.set(organization.ref, {
         ...data,
-        emailTemplates: {
-          ...SendBookingsLinkTemplate,
-          ...SendExtendedDateTemplate,
-          ...SendCalendarFileTemplate,
-        },
+        emailTemplates: defaultEmailTemplates,
       });
     });
 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
 import { DateTime } from "luxon";
 
-import { OrganizationData } from "@eisbuk/shared";
+import { defaultEmailTemplates, OrganizationData } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   ValidationMessage,
@@ -72,7 +72,7 @@ const OrganizationSettings: React.FC = () => {
 
   const initialValues: OrganizationData = {
     ...emptyValues,
-    ...organization,
+    ...(organization as OrganizationData),
   };
 
   const title = `${organization?.displayName || "Organization"}  Settings`;
@@ -137,7 +137,7 @@ const emptyValues = {
   displayName: "",
   emailFrom: "",
   emailNameFrom: "",
-  emailTemplate: "",
+  emailTemplate: defaultEmailTemplates,
   existingSecrets: [],
   location: "",
   defaultCountryCode: "",

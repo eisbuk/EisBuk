@@ -4,12 +4,12 @@ import {
   BookingSubCollection,
   Customer,
   SlotInterface,
-  OrganizationData,
   ClientEmailPayload,
   EmailType,
   CustomerBase,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+
 import { NotifVariant } from "@/enums/store";
 import { CloudFunction } from "@/enums/functions";
 
@@ -21,7 +21,6 @@ import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
-import { __organization__ } from "@/lib/constants";
 
 interface UpdateBooking<
   P extends Record<string, any> = Record<string, unknown>
@@ -254,18 +253,18 @@ export const createCalendarEvents =
 /**
  * Send email of ics file
  */
-interface sendICSFile {
+interface SendICSFile {
   (payload: {
-    icsFile: string;
-    email: string;
-    secretKey: Customer["secretKey"];
     name: Customer["name"];
-    displayName: OrganizationData["displayName"];
+    surname: Customer["surname"];
+    email: string;
+    icsFile: string;
+    secretKey: Customer["secretKey"];
   }): FirestoreThunk;
 }
 
-export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey, displayName = __organization__, name = "" }) =>
+export const sendICSFile: SendICSFile =
+  ({ icsFile, email, secretKey, name, surname }) =>
   async (dispatch) => {
     try {
       const handler = CloudFunction.SendEmail;
@@ -273,16 +272,13 @@ export const sendICSFile: sendICSFile =
         ClientEmailPayload[EmailType.SendCalendarFile],
         "organization"
       > = {
-        // to: email,
         type: EmailType.SendCalendarFile,
         customer: {
           name,
-          /** @TODO surname */
-          surname: "",
+          surname,
           secretKey,
           email,
         },
-        displayName,
         attachments: {
           filename: "bookedSlots.ics",
           content: icsFile,

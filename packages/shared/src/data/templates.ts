@@ -1,23 +1,21 @@
-export const SendBookingsLinkTemplate = {
-  "send-bookings-link": {
-    subject: "prenotazioni lezioni di {{ displayName }}",
+import { EmailType } from "../enums/email";
+
+export const defaultEmailTemplates = {
+  [EmailType.SendBookingsLink]: {
+    subject: "prenotazioni lezioni di {{ organizationName }}",
     html: `<p>Ciao {{ name }},</p>
-    <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+    <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:</p>
     <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
   },
-};
-export const SendCalendarFileTemplate = {
-  "send-calendar-file": {
-    subject: `Calendario prenotazioni {{ displayName }}`,
+  [EmailType.SendCalendarFile]: {
+    subject: `Calendario prenotazioni {{ organizationName }}`,
     html: `<p>Ciao {{ name }},</p>
-    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ displayName }} al tuo calendario:</p>
-    <a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
+    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ organizationName }} al tuo calendario:</p>
+    <a href="{{ calendarFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
   },
-};
-export const SendExtendedDateTemplate = {
-  "send-extended-booking-link": {
+  [EmailType.SendExtendedBookingsDate]: {
     subject: `<p>Ciao {{ name }},</p>`,
-    html: `<p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+    html: `<p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:</p>
     <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
   },
 };

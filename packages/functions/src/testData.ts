@@ -11,10 +11,7 @@ import {
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
-  EmailType,
-  SendCalendarFileTemplate,
-  SendExtendedDateTemplate,
-  SendBookingsLinkTemplate,
+  defaultEmailTemplates as emailTemplates,
   CustomerFull,
 } from "@eisbuk/shared";
 
@@ -66,11 +63,7 @@ export const createOrganization = functions
       .doc(organization)
       .set({
         admins: ["test@eisbuk.it", "+3912345678"],
-        emailTemplates: {
-          SendBookingsLinkTemplate,
-          SendCalendarFileTemplate,
-          SendExtendedDateTemplate,
-        },
+        emailTemplates,
       });
   });
 
@@ -110,24 +103,14 @@ const createUserInAuth = async ({
     if (email) adminsEntry.push(email);
     if (phoneNumber) adminsEntry.push(phoneNumber);
 
-    await firestore
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .set(
-        {
-          admins: adminsEntry,
-          displayName: organization,
-          emailTemplates: {
-            [EmailType.SendCalendarFile]: {
-              subject: "Calendario prenotazioni {{ displayName }}",
-              html: `<p>Ciao {{ name }},</p>
-    <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ displayName }} al tuo calendario:</p>
-    <a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
-            },
-          },
-        },
-        { merge: true }
-      );
+    await firestore.collection(Collection.Organizations).doc(organization).set(
+      {
+        admins: adminsEntry,
+        displayName: organization,
+        emailTemplates,
+      },
+      { merge: true }
+    );
   }
 };
 

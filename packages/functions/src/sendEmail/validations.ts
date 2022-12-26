@@ -66,11 +66,9 @@ const SendBookingsLinkCustomerSchema: JSONSchemaType<SendBookingsLinkCustomer> =
     properties: {
       name: {
         type: "string",
-        errorMessage: "Missing name in customer",
       },
       surname: {
         type: "string",
-        errorMessage: "Missing surname in customer",
       },
       email: {
         type: "string",
@@ -90,11 +88,9 @@ const SendExtendedBookingLinkCustomerSchema: JSONSchemaType<SendExtendedBookingL
     properties: {
       name: {
         type: "string",
-        errorMessage: "Missing name in customer",
       },
       surname: {
         type: "string",
-        errorMessage: "Missing surname in customer",
       },
       email: {
         type: "string",
@@ -114,11 +110,9 @@ const SendCalendarFileCustomerSchema: JSONSchemaType<SendCalendarFileCustomer> =
     properties: {
       name: {
         type: "string",
-        errorMessage: "Missing name in customer",
       },
       surname: {
         type: "string",
-        errorMessage: "Missing surname in customer",
       },
       email: {
         type: "string",
@@ -127,14 +121,13 @@ const SendCalendarFileCustomerSchema: JSONSchemaType<SendCalendarFileCustomer> =
       },
       secretKey: {
         type: "string",
-        errorMessage: "Missing secretKey in customer",
       },
     },
   };
 
 /**
  * Validation schema for a fully constructed email (to be send over SMTP),
- * including `to`, `from` and valid `message`
+ * including `to`, `from`, `bcc` and `html`
  */
 export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
   type: "object",
@@ -167,7 +160,7 @@ export const SendICSEmailSchema: JSONSchemaType<
   ClientEmailPayload[EmailType.SendCalendarFile]
 > = {
   type: "object",
-  required: ["type", "organization", "displayName", "customer", "attachments"],
+  required: ["type", "organization", "customer", "attachments"],
   properties: {
     type: {
       type: "string",
@@ -177,12 +170,7 @@ export const SendICSEmailSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing organization",
     },
-    displayName: {
-      type: "string",
-      errorMessage: "Missing displayName",
-    },
     customer: SendCalendarFileCustomerSchema,
-
     attachments: EmailAttachmentSchema,
   },
 };
@@ -192,13 +180,12 @@ export const SendICSEmailSchema: JSONSchemaType<
  */
 
 export const SendExtendDateEmailSchema: JSONSchemaType<
-  ClientEmailPayload[EmailType.SendExtendedBookingLink]
+  ClientEmailPayload[EmailType.SendExtendedBookingsDate]
 > = {
   type: "object",
   required: [
     "type",
     "organization",
-    "displayName",
     "customer",
     "bookingsMonth",
     "extendedBookingsDate",
@@ -211,10 +198,6 @@ export const SendExtendDateEmailSchema: JSONSchemaType<
     organization: {
       type: "string",
       errorMessage: "Missing organization",
-    },
-    displayName: {
-      type: "string",
-      errorMessage: "Missing displayName",
     },
     bookingsMonth: {
       type: "string",
@@ -235,7 +218,7 @@ export const SendBookingsLinkEmailSchema: JSONSchemaType<
   ClientEmailPayload[EmailType.SendBookingsLink]
 > = {
   type: "object",
-  required: ["type", "organization", "displayName", "customer", "bookingsLink"],
+  required: ["type", "organization", "customer", "bookingsLink"],
   properties: {
     type: {
       type: "string",
@@ -244,10 +227,6 @@ export const SendBookingsLinkEmailSchema: JSONSchemaType<
     organization: {
       type: "string",
       errorMessage: "Missing organization",
-    },
-    displayName: {
-      type: "string",
-      errorMessage: "Missing displayName",
     },
     bookingsLink: {
       type: "string",

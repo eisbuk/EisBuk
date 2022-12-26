@@ -1,4 +1,4 @@
-import { OrgSubCollection, SMSMessage } from "@eisbuk/shared";
+import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import * as reactRedux from "react-redux";
 
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -137,8 +137,7 @@ describe("Send bookings link dialog utils", () => {
             name: saul.name,
             surname: saul.surname,
           },
-          displayName: "",
-          type: "send-bookings-link",
+          type: EmailType.SendBookingsLink,
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

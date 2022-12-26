@@ -92,7 +92,7 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
-      const { displayName = "" } =
+      const { displayName = __organization__ } =
         useSelector(getAboutOrganization)[__organization__] || {};
 
       const sms = `Ciao ${name},
@@ -106,9 +106,8 @@ export const sendBookingsLink: SendBookingsLink =
         customer: {
           name,
           surname,
-          email: email || "",
+          email: email!,
         },
-        displayName: displayName || "",
         type: EmailType.SendBookingsLink,
         bookingsLink,
       };

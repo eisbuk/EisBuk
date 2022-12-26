@@ -6,15 +6,10 @@ import {
   DeliveryQueue,
   ClientEmailPayload,
   EmailType,
-  EmailTemplate,
+  OrganizationData,
 } from "@eisbuk/shared";
 
-import {
-  createBookingsEmailPayload,
-  fetchOrganizationEmailTemplate,
-  createExtendDateEmailPayload,
-  createICSFileEmailPayload,
-} from "./utils";
+import { interpolateEmail, validateClientEmailPayload } from "./utils";
 import { __functionsZone__ } from "../constants";
 
 import { checkUser, checkSecretKey, throwUnauth } from "../utils";
@@ -26,60 +21,77 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      emailPayload: ClientEmailPayload[EmailType],
+      payload: ClientEmailPayload[EmailType],
       { auth }: functions.https.CallableContext
     ) => {
+      const { organization } = payload;
+
       if (
-        !(await checkUser(emailPayload.organization, auth)) &&
+        !(await checkUser(organization, auth)) &&
         !(
-          emailPayload.type === EmailType.SendCalendarFile &&
+          payload.type === EmailType.SendCalendarFile &&
           (await checkSecretKey({
-            organization: emailPayload.organization,
-            secretKey: emailPayload.customer.secretKey,
+            organization: organization,
+            secretKey: payload.customer.secretKey,
           }))
         )
       ) {
         throwUnauth();
       }
 
-      // get email temp from org doc
-      const emailTemplate = await fetchOrganizationEmailTemplate(
-        emailPayload.organization,
-        emailPayload.type
-      );
-      const interpolateEmail = <T extends EmailType>(
-        emailPayload: ClientEmailPayload[T],
-        emailTemplate: EmailTemplate
-      ) => {
-        switch (emailPayload.type) {
-          case EmailType.SendCalendarFile:
-            return createICSFileEmailPayload(emailPayload, emailTemplate);
-          case EmailType.SendExtendedBookingLink:
-            return createExtendDateEmailPayload(emailPayload, emailTemplate);
-          default:
-            return createBookingsEmailPayload(emailPayload, emailTemplate);
-        }
-      };
+      // Validate the payload
+      const validatedPayload = validateClientEmailPayload(payload);
 
-      const email = interpolateEmail(emailPayload, emailTemplate);
+      // Get the template and the organization name from organizaion preferences
+      const orgDoc = await admin
+        .firestore()
+        .collection("organizations")
+        .doc(payload.organization)
+        .get();
+      const {
+        emailTemplates,
+        displayName = organization,
+        emailFrom,
+      } = orgDoc.data() as OrganizationData;
+
+      const emailTemplate = emailTemplates[payload.type];
+
+      // Interpolate the email with the payload and the organization name
+      const { subject, html } = interpolateEmail(emailTemplate, {
+        organizationName: displayName,
+        name: validatedPayload.customer.name,
+        surname: validatedPayload.customer.surname,
+        bookingsLink: validatedPayload.bookingsLink,
+        bookingsMonth: validatedPayload.bookingsMonth,
+        extendedBookingsDate: validatedPayload.extendedBookingsDate,
+        calendarFile: validatedPayload.attachments?.filename,
+      });
+
+      // Construct an email for process delivery
+      const email = {
+        from: emailFrom,
+        to: validatedPayload.customer.email,
+        subject,
+        html,
+        attachments: validatedPayload.attachments
+          ? [validatedPayload.attachments]
+          : [],
+      };
 
       // add email to firestore, firing data trigger
       await admin
         .firestore()
         .collection(
-          `${Collection.DeliveryQueues}/${emailPayload.organization}/${DeliveryQueue.EmailQueue}`
+          `${Collection.DeliveryQueues}/${payload.organization}/${DeliveryQueue.EmailQueue}`
         )
         .doc()
         .set({
-          payload: {
-            ...email,
-            to: emailPayload.customer.email,
-          },
+          payload: email,
         });
 
       return {
         email,
-        organization: emailPayload.organization,
+        organization: payload.organization,
         success: true,
       };
     }

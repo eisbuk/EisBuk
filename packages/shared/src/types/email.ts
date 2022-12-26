@@ -4,40 +4,24 @@ export interface EmailTypePayload {
   [EmailType.SendBookingsLink]: {
     type: EmailType.SendBookingsLink;
     organization: string;
-    displayName: string;
     bookingsLink: string;
-    customer: {
-      name: string;
-      surname: string;
-      email: string;
-    };
+    customer: SendBookingsLinkCustomer;
   };
   [EmailType.SendCalendarFile]: {
     type: EmailType.SendCalendarFile;
     organization: string;
-    displayName: string;
-    customer: {
-      name: string;
-      surname: string;
-      secretKey: string;
-      email: string;
-    };
+    customer: SendCalendarFileCustomer;
     attachments: {
       filename: string;
       content: string | Buffer;
     };
   };
-  [EmailType.SendExtendedBookingLink]: {
-    type: EmailType.SendExtendedBookingLink;
+  [EmailType.SendExtendedBookingsDate]: {
+    type: EmailType.SendExtendedBookingsDate;
     organization: string;
-    displayName: string;
     bookingsMonth: string;
     extendedBookingsDate: string;
-    customer: {
-      name: string;
-      surname: string;
-      email: string;
-    };
+    customer: SendExtendedBookingLinkCustomer;
   };
 }
 
