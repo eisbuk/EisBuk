@@ -6,7 +6,7 @@ import Badge from "@mui/material/Badge";
 
 import { Copy } from "@eisbuk/svg";
 
-import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+import { useTranslation, AdminAria } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -14,7 +14,10 @@ import { ButtonGroupContext } from "./SlotOperationButtons";
 import SlotOperationButton from "./SlotOperationButton";
 
 import { copySlotsDay, copySlotsWeek } from "@/store/actions/copyPaste";
-import { getDayFromClipboard } from "@/store/selectors/copyPaste";
+import {
+  getDayFromClipboard,
+  getWeekFromClipboard,
+} from "@/store/selectors/copyPaste";
 
 import {
   __slotButtonNoContextError,
@@ -39,6 +42,7 @@ import { __copyButtonId__ } from "@/__testData__/testIds";
 export const CopyButton: React.FC = () => {
   const dispatch = useDispatch();
   const dayInClipboard = useSelector(getDayFromClipboard) || {};
+  const weekInClipboard = useSelector(getWeekFromClipboard);
 
   const { t } = useTranslation();
 
@@ -51,11 +55,11 @@ export const CopyButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType, slotsToCopy } = buttonGroupContext;
+  const { date, contextType } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
-  if (contextType === ButtonContextType.Slot) {
+  if (contextType === ButtonContextType.Slot || !contextType) {
     console.error(__copyButtonWrongContextError);
     return null;
   }
@@ -75,32 +79,66 @@ export const CopyButton: React.FC = () => {
     dispatch(copyActionCreator(date));
   };
 
-  // get date from a slot in the clipboard and show badge only for that date's copy button
-  const dateOfDayInClipboard = Object.values(dayInClipboard).pop()?.date;
+  // Check if there are slots in clipboard for given `contextType` and give date
+  const displayBadgeLookup = {
+    [ButtonContextType.Day]:
+      Object.values(dayInClipboard)[0]?.date === date.toISODate(),
+    [ButtonContextType.Week]:
+      weekInClipboard?.weekStart &&
+      date.startOf("week").equals(weekInClipboard.weekStart),
+  };
+  const displayBadge = displayBadgeLookup[contextType];
 
-  const isCopiedDay = slotsToCopy?.day
-    ? DateTime.fromISO(dateOfDayInClipboard || "").equals(date)
-    : true;
-  // check if there are slots in clipboard for given `contextType`
-  const displayBadge = slotsToCopy && slotsToCopy[contextType!] && isCopiedDay;
+  // Get the right aria label for the button
+  const ariaLabelLookup = {
+    [ButtonContextType.Day]: t(AdminAria.CopySlotsDay, { date }),
+    [ButtonContextType.Week]: t(AdminAria.CopySlotsWeek, {
+      weekStart: date.startOf("week"),
+      weekEnd: date.endOf("week"),
+    }),
+  };
 
   return (
-    <Badge
-      aria-label={`${t(AdminAria.CopiedSlotsBadge)} ${t(DateFormat.Full, {
-        date,
-      })}`}
-      color="secondary"
-      variant="dot"
-      invisible={!displayBadge}
+    <CopiedSlotsBadge
+      displayBadge={Boolean(displayBadge)}
+      contextType={contextType}
+      date={date}
     >
       <SlotOperationButton
         onClick={onCopy}
         data-testid={__copyButtonId__}
-        aria-label={`${t(AdminAria.CopySlots)} ${t(DateFormat.Full, { date })}`}
-        // aria-label={`Copy slots from ${date.toFormat("DDDD")}`}
+        aria-label={ariaLabelLookup[contextType]}
       >
         <Copy />
       </SlotOperationButton>
+    </CopiedSlotsBadge>
+  );
+};
+
+const CopiedSlotsBadge: React.FC<{
+  displayBadge: boolean;
+  contextType: ButtonContextType.Day | ButtonContextType.Week;
+  date: DateTime;
+}> = ({ displayBadge, children, contextType, date }) => {
+  const { t } = useTranslation();
+
+  const ariaLabelLookup = {
+    [ButtonContextType.Day]: t(AdminAria.CopiedSlotsDayBadge, { date }),
+    [ButtonContextType.Week]: t(AdminAria.CopiedSlotsWeekBadge, {
+      weekStart: date.startOf("week"),
+      weekEnd: date.endOf("week"),
+    }),
+  };
+
+  return (
+    <Badge
+      aria-label={ariaLabelLookup[contextType]}
+      aria-hidden={!displayBadge}
+      color="secondary"
+      variant="dot"
+      invisible={!displayBadge}
+    >
+      {children}
     </Badge>
   );
 };
