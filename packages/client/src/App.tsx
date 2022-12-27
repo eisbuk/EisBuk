@@ -4,8 +4,6 @@ import { BrowserRouter } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
 
 import CssBaseline from "@mui/material/CssBaseline";
-import LocalizationProvider from "@mui/lab/LocalizationProvider";
-import DateAdapter from "@mui/lab/AdapterLuxon";
 import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
 
 import { store } from "@/store";
@@ -29,15 +27,13 @@ const App: React.FC = () => {
       <ReduxProvider store={store}>
         <StyledEngineProvider injectFirst>
           <ThemeProvider theme={currentTheme}>
-            <LocalizationProvider dateAdapter={DateAdapter}>
-              <NotificationsProvider
-                timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
-              >
-                <CssBaseline />
-                <AppContent />
-                <Modal />
-              </NotificationsProvider>
-            </LocalizationProvider>
+            <NotificationsProvider
+              timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
+            >
+              <CssBaseline />
+              <AppContent />
+              <Modal />
+            </NotificationsProvider>
           </ThemeProvider>
         </StyledEngineProvider>
       </ReduxProvider>

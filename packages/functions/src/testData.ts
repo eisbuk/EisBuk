@@ -57,12 +57,13 @@ export const createOrganization = functions
   .https.onCall(({ organization }: Pick<Payload, "organization">) => {
     const db = admin.firestore();
 
-    return db
-      .collection("organizations")
-      .doc(organization)
-      .set({
+    const orgRef = db.collection(Collection.Organizations).doc(organization);
+
+    return Promise.all([
+      orgRef.set({
         admins: ["test@eisbuk.it", "+3912345678"],
-      });
+      }),
+    ]);
   });
 
 // #region createAuthUser
@@ -130,6 +131,45 @@ export const createDefaultUser = functions
 
     return { organization };
   });
+
+/**
+ * Quick setup of smtp config for testing purposes.
+ */
+export const setupEmailForTesting = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async (
+      { organization, smtpHost = "localhost", smtpPort = 5000 },
+      context
+    ) => {
+      await checkUser(organization, context.auth);
+
+      const smtpConfig = {
+        smtpUser: "Foo",
+        smtpPass: "Bar",
+        smtpHost,
+        smtpPort,
+      };
+
+      const emailFrom = "dummy@email.com";
+
+      const orgRef = admin
+        .firestore()
+        .collection(Collection.Organizations)
+        .doc(organization);
+      const secretsRef = admin
+        .firestore()
+        .collection(Collection.Secrets)
+        .doc(organization);
+
+      await Promise.all([
+        orgRef.set({ emailFrom }, { merge: true }),
+        secretsRef.set(smtpConfig, { merge: true }),
+      ]);
+
+      return { success: true, smtpConfig, emailFrom };
+    }
+  );
 // #region createAuthUser
 
 /**
