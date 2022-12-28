@@ -74,20 +74,15 @@ describe("add athlete", () => {
     cy.getAttrWith("name", "phone").clearAndType("2222 86877777777777");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222");
+    cy.getAttrWith("name", "phone").clearAndType("2222");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // make sure phone number length can't be "cheated" with too much whitespace
-    cy.getAttrWith("name", "phone").clearAndType("+385 099   11");
+    cy.getAttrWith("name", "phone").clearAndType("099   11");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
-    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
-    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
-      "not.exist"
-    );
-
-    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
+    // Test the valid number will pass
+    cy.getAttrWith("name", "phone").clearAndType("99 2222 868");
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
       "not.exist"
     );
@@ -157,8 +152,6 @@ describe("add athlete", () => {
 describe("athlete profile", () => {
   beforeEach(() => {
     // Initialize app, create default user,
-    // create default organization, sign in as admin
-    cy.signIn();
     cy.initAdminApp().then((organization) =>
       cy.updateFirestore(organization, ["customers.json"])
     );

@@ -87,6 +87,7 @@ importers:
       '@sentry/tracing': ^6.16.1
       '@storybook/addon-a11y': ^6.3.9
       '@storybook/addon-actions': ^6.4.22
+      '@storybook/addon-docs': ~6.5.15
       '@storybook/addon-essentials': ^6.4.22
       '@storybook/addon-links': ^6.4.22
       '@storybook/addon-postcss': ~2.0.0
@@ -234,6 +235,7 @@ importers:
       '@istanbuljs/nyc-config-typescript': 1.0.2_nyc@15.1.0
       '@storybook/addon-a11y': 6.5.15_react-dom@16.14.0+react@16.14.0
       '@storybook/addon-actions': 6.5.15_react-dom@16.14.0+react@16.14.0
+      '@storybook/addon-docs': 6.5.15_90b042e72d7c48afc4df7dc8aaa6d352
       '@storybook/addon-essentials': 6.5.15_90b042e72d7c48afc4df7dc8aaa6d352
       '@storybook/addon-links': 6.5.15_react-dom@16.14.0+react@16.14.0
       '@storybook/addon-postcss': 2.0.0_webpack@5.75.0
@@ -2615,15 +2617,15 @@ packages:
       react-merge-refs: 1.1.0
     dev: true
 
-  /@devtools-ds/object-inspector/1.2.0_fb3f86c922f2e9045631eeded683cdcf:
-    resolution: {integrity: sha512-VztcwqVwScSvYdvJVZBJYsVO/2Pew3JPpFV3T9fuCHQLlHcLYOV3aU/kBS2ScuE2O1JN0ZbobLqFLa3vQF54Fw==}
+  /@devtools-ds/object-inspector/1.2.1_fb3f86c922f2e9045631eeded683cdcf:
+    resolution: {integrity: sha512-nrAVVj4c4Iv9958oE4HA7Mk6T+4Mn/4xBRlFDeX4Ps6SMzsqO8bKhw/y6+bOfNyb/TYHmC0/pnPS68GDVZcg5Q==}
     peerDependencies:
       react: '>= 16.8.6'
     dependencies:
       '@babel/runtime': 7.7.2
-      '@devtools-ds/object-parser': 1.2.0
-      '@devtools-ds/themes': 1.2.0_fb3f86c922f2e9045631eeded683cdcf
-      '@devtools-ds/tree': 1.2.0_fb3f86c922f2e9045631eeded683cdcf
+      '@devtools-ds/object-parser': 1.2.1
+      '@devtools-ds/themes': 1.2.1_fb3f86c922f2e9045631eeded683cdcf
+      '@devtools-ds/tree': 1.2.1_fb3f86c922f2e9045631eeded683cdcf
       clsx: 1.1.0
       react: 16.14.0
     transitivePeerDependencies:
@@ -2631,14 +2633,14 @@ packages:
       - react-dom
     dev: true
 
-  /@devtools-ds/object-parser/1.2.0:
-    resolution: {integrity: sha512-SjGGyiFFY8dtUpiWXAvRSzRT+hE11EAAysrq2PsC/GVLf2ZLyT2nHlQO5kDStywyTz+fjw7S7pyDRj1HG9YTTA==}
+  /@devtools-ds/object-parser/1.2.1:
+    resolution: {integrity: sha512-6qB+THhQfJqXyHn8wpJ1KFxXcbpLTlRyCVmkelhr0c1+MPLZcC+0XJxpVZ1AOEXPa6CWVZThBYSCvnYQEvfCqw==}
     dependencies:
       '@babel/runtime': 7.5.5
     dev: true
 
-  /@devtools-ds/themes/1.2.0_fb3f86c922f2e9045631eeded683cdcf:
-    resolution: {integrity: sha512-LimEITorE6yWZWWuMc6OiBfLQgPrQqWbyMEmfRUDPa3PHXoAY4SpDxczfg31fgyRDUNWnZhjaJH5bBbu8VEbIw==}
+  /@devtools-ds/themes/1.2.1_fb3f86c922f2e9045631eeded683cdcf:
+    resolution: {integrity: sha512-4/KFsHnokGxUq8CSCchINcVBb6fQ74HtEfNtMuitGtGg3VCRV0kaVSOsz6wzShzhLEaVLd5coSRQKaZj7yx72w==}
     peerDependencies:
       react: '>= 16.8.6'
     dependencies:
@@ -2651,13 +2653,13 @@ packages:
       - react-dom
     dev: true
 
-  /@devtools-ds/tree/1.2.0_fb3f86c922f2e9045631eeded683cdcf:
-    resolution: {integrity: sha512-hC4g4ocuo2eg7jsnzKdauxH0sDQiPW3KSM2+uK3kRgcmr9PzpBD5Kob+Y/WFSVKswFleftOGKL4BQLuRv0sPxA==}
+  /@devtools-ds/tree/1.2.1_fb3f86c922f2e9045631eeded683cdcf:
+    resolution: {integrity: sha512-2ZHG28oWJno0gD+20EoSJO0yffm6JS5r7YzYhGMkrnLGvcCRZuwXSxMmIshSPLIR0cjidiAfGCqsrigHIR4ZQA==}
     peerDependencies:
       react: '>= 16.8.6'
     dependencies:
       '@babel/runtime': 7.7.2
-      '@devtools-ds/themes': 1.2.0_fb3f86c922f2e9045631eeded683cdcf
+      '@devtools-ds/themes': 1.2.1_fb3f86c922f2e9045631eeded683cdcf
       clsx: 1.1.0
       react: 16.14.0
     transitivePeerDependencies:
@@ -5505,7 +5507,7 @@ packages:
       react-dom:
         optional: true
     dependencies:
-      '@devtools-ds/object-inspector': 1.2.0_fb3f86c922f2e9045631eeded683cdcf
+      '@devtools-ds/object-inspector': 1.2.1_fb3f86c922f2e9045631eeded683cdcf
       '@storybook/addons': 6.5.15_react-dom@16.14.0+react@16.14.0
       '@storybook/api': 6.5.15_react-dom@16.14.0+react@16.14.0
       '@storybook/client-logger': 6.5.15
