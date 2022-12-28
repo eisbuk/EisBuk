@@ -14,10 +14,9 @@ import {
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
+import { setUpOrganization } from "@/__testSetup__/node";
 
 import { CloudFunction } from "@/enums/functions";
-
-import { setUpOrganization } from "@/__testSetup__/node";
 
 import {
   getBookingsDocPath,
@@ -52,7 +51,7 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if user not authenticated (and not an admin)",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
         await expect(
           httpsCallable(
             functions,
@@ -62,11 +61,38 @@ describe("Cloud functions", () => {
       }
     );
     testWithEmulator(
+      "should reject to sendEmail if no smtp secrets were set",
+      async () => {
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+          additionalSetup: {
+            emailFrom: "from@gmail.com",
+            emailBcc: "bcc@gmail.com",
+          },
+        });
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.SendEmail
+          )({ organization, to, html, subject })
+        ).rejects.toThrow(HTTPSErrors.NoSMTPConfigured);
+      }
+    );
+
+    testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({
+          doLogin: false,
+          setSecrets: true,
+          additionalSetup: {
+            emailFrom: "eisbuk@test-email.com",
+          },
+        });
 
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
         await waitForCondition({
@@ -74,27 +100,32 @@ describe("Cloud functions", () => {
           condition: (data) => Boolean(data),
         });
 
-        await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({
-            organization,
-            secretKey: saul.secretKey,
+        const {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          data: { deliveryDocumentPath, ...res },
+        } = await httpsCallable(
+          functions,
+          CloudFunction.SendEmail
+        )({
+          organization,
+          secretKey: saul.secretKey,
+          to,
+          html,
+          subject,
+        });
+
+        // We're including 'deliveryDocumentPath' to both structures
+        // as there's no way to stub/test this as it's a random value
+        expect({ ...res, deliveryDocumentPath }).toEqual({
+          deliveryDocumentPath,
+          email: {
             to,
             html,
             subject,
-          })
-        ).resolves.toEqual({
-          data: {
-            email: {
-              to,
-              html,
-              subject,
-            },
-            organization,
-            success: true,
           },
+          organization,
+          success: true,
         });
       }
     );
@@ -348,7 +379,7 @@ describe("Cloud functions", () => {
         const registrationCode = "CODE111";
 
         // set up test state
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
         await adminDb
           .collection(Collection.Organizations)
           .doc(organization)

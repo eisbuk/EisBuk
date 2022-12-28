@@ -1,7 +1,14 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 
-import { SendEmailPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
+import {
+  Collection,
+  DeliveryQueue,
+  OrganizationData,
+  HTTPSErrors,
+  EmailPayload,
+  ClientSendEmailPayload,
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
 
@@ -10,6 +17,7 @@ import {
   checkRequiredFields,
   checkSecretKey,
   throwUnauth,
+  EisbukHttpsError,
 } from "../utils";
 
 /**
@@ -19,7 +27,7 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      { organization, secretKey = "", ...email }: SendEmailPayload,
+      { organization, secretKey = "", ...email }: ClientSendEmailPayload,
       { auth }
     ) => {
       if (
@@ -31,15 +39,46 @@ export const sendEmail = functions
 
       checkRequiredFields(email, ["to", "html", "subject"]);
 
+      // Get email preferences from organization info
+      const db = admin.firestore();
+      const orgSnap = await db
+        .doc(`${Collection.Organizations}/${organization}`)
+        .get();
+      const { emailFrom, emailBcc, smtpConfigured } =
+        orgSnap.data() as OrganizationData;
+
       // add email to firestore, firing data trigger
-      await admin
+      const doc = admin
         .firestore()
         .collection(
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
         )
-        .doc()
-        .set({ payload: email });
+        .doc();
 
-      return { email, organization, success: true };
+      if (!smtpConfigured) {
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoSMTPConfigured);
+      }
+      if (!emailFrom) {
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoEmailConfigured);
+      }
+
+      const payload: EmailPayload = {
+        ...email,
+        from: emailFrom,
+        bcc: emailBcc || emailFrom,
+      };
+      await doc.set({
+        payload,
+      });
+
+      // As part of the response we're returning the delivery document path.
+      // This is mostly used for testing as we might want to wait for the delivery to be marked
+      // successful before making further assertions
+      return {
+        deliveryDocumentPath: doc.path,
+        email,
+        organization,
+        success: true,
+      };
     }
   );

@@ -161,9 +161,10 @@ jobs:
       - name: Build app
         run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
       - name: Cypress run
-        uses: cypress-io/github-action@v4
+        uses: cypress-io/github-action@v5
         with:
           start: emulators-start
+          browser: chrome
 
           #! For some reason, this action can also install everything, which doesn't work well with pnpm
           #! Anyway we're using our own instalation as it is, so just skipping this part

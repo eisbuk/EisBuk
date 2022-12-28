@@ -1,4 +1,8 @@
-import { OrgSubCollection, SMSMessage, EmailPayload } from "@eisbuk/shared";
+import {
+  OrgSubCollection,
+  SMSMessage,
+  ClientEmailPayload,
+} from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -126,7 +130,7 @@ describe("Send bookings link dialog utils", () => {
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
-        const sentMail = mockSendMail.mock.calls[0][0] as EmailPayload;
+        const sentMail = mockSendMail.mock.calls[0][0] as ClientEmailPayload;
 
         expect(sentMail.to).toEqual(saul.email);
         expect(sentMail.subject).toBeDefined();

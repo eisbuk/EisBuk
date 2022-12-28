@@ -27,6 +27,11 @@ export interface OrganizationData {
    */
   emailFrom?: string;
   /**
+   * Email to send a copy of sent Email.
+   * If not provided, will fall back to emailFrom
+   */
+  emailBcc?: string;
+  /**
    * Name to use when sending emails ( the name part in Name <email@example.com>)
    */
   emailNameFrom?: string;
@@ -52,6 +57,10 @@ export interface OrganizationData {
    * for a given organization
    */
   existingSecrets?: string[];
+  /**
+   * A flag determining whether smtp configuration has been setup in secrets document
+   */
+  smtpConfigured?: boolean;
   /**
    * Physical address of the gym, ice ring, etc. where the skating lessons are held
    */
@@ -319,10 +328,10 @@ export interface EmailAttachment {
 
 /**
  * Interface used as `payload` in email process-delivery.
- * It's basically a full email payload without the `from`
- * field (as it's loaded from organization preferences).
+ * It's basically a full email payload without the `from` and `bcc`
+ * fields (as they're loaded from organization preferences).
  */
-export interface EmailPayload {
+export interface ClientEmailPayload {
   to: string;
   subject: string;
   html: string;
@@ -331,16 +340,17 @@ export interface EmailPayload {
 
 /**
  * A full email interface, including:
- * `to`, `from`, `subject`, `html` and `attachments`.
+ * `to`, `from`, `subject`, `html`, `attachments` and `bcc`
  */
-export interface EmailMessage extends EmailPayload {
+export interface EmailPayload extends ClientEmailPayload {
   from: string;
+  bcc: string;
 }
 
 /**
  * A payload used in `sendEmail` cloud function.
  */
-export interface SendEmailPayload extends EmailPayload {
+export interface ClientSendEmailPayload extends ClientEmailPayload {
   /**
    * Used to identify an organization where the email is sent from,
    * as well as which organization to authenticate against.
