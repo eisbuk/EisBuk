@@ -125,12 +125,7 @@ export const customerSelfRegister = functions
       customer: CustomerBase;
     }) => {
       checkRequiredFields(payload, ["organization", "customer"]);
-      checkRequiredFields(payload.customer, [
-        "name",
-        "surname",
-        "certificateExpiration",
-        "covidCertificateReleaseDate",
-      ]);
+      checkRequiredFields(payload.customer, ["name", "surname"]);
 
       // We require at least one of the two to be k
       if (!payload.customer.email && !payload.customer.phone) {

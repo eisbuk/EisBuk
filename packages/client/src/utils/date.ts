@@ -10,7 +10,12 @@ import { Interval, DateTime } from "luxon";
  * @returns boolean
  */
 export const isISODay = (string?: string): boolean =>
-  string ? string.length === 10 && DateTime.fromISO(string).isValid : false;
+  string
+    ? string.length === 10 &&
+      // We're not allowing the date to be in the year 3000 nor earlier than 1000 (which is reasonable)
+      /^[12].*/.test(string) &&
+      DateTime.fromISO(string).isValid
+    : false;
 
 /**
  * @param d1

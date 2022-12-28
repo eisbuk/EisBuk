@@ -304,9 +304,7 @@ const getValidationSchema = (variant: CustomerFormVariant) =>
   Yup.object().shape({
     name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
     surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-    email: Yup.string()
-      .required(i18n.t(ValidationMessage.RequiredField))
-      .email(i18n.t(ValidationMessage.Email)),
+    email: Yup.string().email(i18n.t(ValidationMessage.Email)),
     phone: Yup.string().test({
       test: (input) => !input || isValidPhoneNumber(input),
       message: i18n.t(ValidationMessage.InvalidPhone),
@@ -327,6 +325,8 @@ const getValidationSchema = (variant: CustomerFormVariant) =>
     }),
     covidCertificateSuspended: Yup.boolean(),
     subscriptionNumber: Yup.number(),
+
+    // Add validations for additional fields for self registration variant
     ...(variant === CustomerFormVariant.SelfRegistration
       ? {
           registrationCode: Yup.string().required(

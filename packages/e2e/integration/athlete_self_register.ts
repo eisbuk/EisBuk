@@ -67,12 +67,9 @@ describe("Athlete self registration", () => {
     cy.getAttrWith("name", "email")
       .should("have.value", newEmail)
       .should("be.disabled");
-    cy.getAttrWith("name", "certificateExpiration").type(
-      saul.certificateExpiration
-    );
-    cy.getAttrWith("name", "covidCertificateReleaseDate").type(
-      saul.covidCertificateReleaseDate
-    );
+
+    // We're not filling in the 'certificateExpiration' not 'covidCertificateReleaseDate' as those fields
+    // should be optional
 
     // Fill in the registration code previously set in organization settings
     cy.getAttrWith("name", "registrationCode").type(__registrationCode__);
