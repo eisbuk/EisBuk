@@ -1,6 +1,6 @@
-import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import * as reactRedux from "react-redux";
 
+import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -129,7 +129,6 @@ describe("Send bookings link dialog utils", () => {
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
-
         expect(mockSendMail).toHaveBeenCalledWith({
           bookingsLink,
           customer: {

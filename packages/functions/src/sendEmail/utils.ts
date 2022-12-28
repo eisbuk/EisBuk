@@ -6,6 +6,7 @@ import {
   ClientEmailPayload,
   interpolateText,
   MergeUnion,
+  HTTPSErrors,
 } from "@eisbuk/shared";
 
 import { EmailInterpolationValues } from "./types";
@@ -23,6 +24,14 @@ import {
 export const validateClientEmailPayload = <T extends EmailType>(
   payload: ClientEmailPayload[T]
 ) => {
+  // Check that the type has been provided and is a supported email type
+  if (!payload.type || !Object.values(EmailType).includes(payload.type)) {
+    throw new EisbukHttpsError(
+      "invalid-argument",
+      HTTPSErrors.EmailInvalidType
+    );
+  }
+
   type ValidationSchemaLookup = {
     [key in EmailType]: JSONSchemaType<ClientEmailPayload[key]>;
   };

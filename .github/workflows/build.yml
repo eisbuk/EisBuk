@@ -83,7 +83,7 @@ jobs:
         # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
     - name: Populate job summary with URLs
       run: |
-        echo Preview channels deployed:
+        echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
         echo $igoriceteam >> $GITHUB_STEP_SUMMARY
         echo $eisbuk >> $GITHUB_STEP_SUMMARY
   test_v16:
@@ -220,9 +220,10 @@ jobs:
     - name: Build app
       run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
     - name: Cypress run
-      uses: cypress-io/github-action@v4
+      uses: cypress-io/github-action@v5
       with:
         start: emulators-start
+        browser: chrome
         install: false
         working-directory: packages/e2e
         wait-on: http://localhost:8080, http://localhost:5000

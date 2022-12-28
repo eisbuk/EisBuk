@@ -131,6 +131,7 @@
     "Email": "Email",
     "SMS": "SMS",
     "General": "Generale",
+    "BCC": "BCC",
     "RegistrationCode": "Registration code"
   },
   "Validations": {

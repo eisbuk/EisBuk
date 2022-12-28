@@ -16,10 +16,9 @@ import {
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
+import { setUpOrganization } from "@/__testSetup__/node";
 
 import { CloudFunction } from "@/enums/functions";
-
-import { setUpOrganization } from "@/__testSetup__/node";
 
 import {
   getBookingsDocPath,
@@ -51,7 +50,7 @@ describe("Cloud functions", () => {
     testWithEmulator(
       "should reject if user not authenticated (and not an admin)",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
         const payload = {
           type: EmailType.SendBookingsLink,
           organization,
@@ -70,11 +69,62 @@ describe("Cloud functions", () => {
     );
 
     testWithEmulator(
+      "should reject to sendEmail if no smtp secrets were set",
+      async () => {
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+          additionalSetup: {
+            emailFrom: "from@gmail.com",
+            emailBcc: "bcc@gmail.com",
+          },
+        });
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          organization,
+          bookingsLink: "bookingsLink",
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
+          },
+        };
+        await expect(
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+        ).rejects.toThrow(HTTPSErrors.NoSMTPConfigured);
+      }
+    );
+
+    testWithEmulator(
+      "should reject if email type not provided or not of supported email type",
+      async () => {
+        const { organization } = await setUpOrganization({ doLogin: true });
+        const payload = {
+          type: "invalid-email-type",
+          organization,
+          displayName: "displayName",
+          bookingsLink: "bookingsLink",
+          customer: saul,
+        };
+        await expect(
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+        ).rejects.toThrow(HTTPSErrors.EmailInvalidType);
+      }
+    );
+
+    testWithEmulator(
       "should not reject if user not admin but has secretKey",
       async () => {
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({
+          doLogin: false,
+          setSecrets: true,
+          additionalSetup: {
+            emailFrom: "eisbuk@test-email.com",
+          },
+        });
 
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
         await waitForCondition({
@@ -366,7 +416,7 @@ describe("Cloud functions", () => {
         const registrationCode = "CODE111";
 
         // set up test state
-        const { organization } = await setUpOrganization(false);
+        const { organization } = await setUpOrganization({ doLogin: false });
         await adminDb
           .collection(Collection.Organizations)
           .doc(organization)

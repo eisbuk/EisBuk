@@ -149,6 +149,7 @@ export enum OrganizationLabel {
   Email = "OrganizationLabel.Email",
   SMS = "OrganizationLabel.SMS",
   General = "OrganizationLabel.General",
+  BCC = "OrganizationLabel.BCC",
   RegistrationCode = "OrganizationLabel.RegistrationCode",
 }
 export enum BookingNotesForm {

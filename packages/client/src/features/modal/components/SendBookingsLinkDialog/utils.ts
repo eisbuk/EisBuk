@@ -111,6 +111,7 @@ export const sendBookingsLink: SendBookingsLink =
         type: EmailType.SendBookingsLink,
         bookingsLink,
       };
+
       const config = {
         [SendBookingLinkMethod.Email]: {
           handler: CloudFunction.SendEmail,

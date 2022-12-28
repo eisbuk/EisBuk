@@ -65,6 +65,7 @@ describe("Customer Selectors", () => {
     test("should omit customers with no birthday specified", () => {
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { birthday, ...erlich } = jian;
+      const selector = getCustomersByBirthday(DateTime.fromISO("2021-12-22"));
       const store = getNewStore({
         firestore: {
           data: {
@@ -72,9 +73,7 @@ describe("Customer Selectors", () => {
           },
         },
       });
-      const selector = getCustomersByBirthday(
-        DateTime.fromFormat("2021-12-22", "yyyy-MM-dd")
-      );
+
       const res = selector(store.getState());
       // the result should be the same as erlich doesn't have a birthday provided
       expect(res).toEqual(expectedCustomersBirthdays);

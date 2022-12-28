@@ -250,7 +250,10 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update 'existingSecrets' in organization data document when secrets get added or removed",
       async () => {
-        const { organization } = await setUpOrganization();
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+        });
         const organizationPath = `${Collection.Organizations}/${organization}`;
         const secretsPath = `${Collection.Secrets}/${organization}`;
         // add new secret to trigger registering
@@ -258,35 +261,99 @@ describe("Cloud functions -> Data triggers ->", () => {
         await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
         let existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
             condition: (data) => Boolean(data?.existingSecrets?.length),
-          })) as OrganizationData
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret"]);
 
         // add another secret
         await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
         existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets.length === 2,
-          })) as OrganizationData
+            condition: (data) => data?.existingSecrets?.length === 2,
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
 
         // removing one secret should remove it from array (without removing other secrets)
         await orgSecretsRef.set({ anotherSecret: "abc234" });
         existingSecrets = (
-          (await waitForCondition({
+          await waitForCondition<OrganizationData>({
             documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets.length === 1,
-          })) as OrganizationData
+            condition: (data) => data?.existingSecrets?.length === 1,
+          })
         ).existingSecrets;
         expect(existingSecrets).toEqual(["anotherSecret"]);
       }
     );
+
+    testWithEmulator(
+      "updates 'smtpConfigured' with respect to smtp config being present in organization data",
+      async () => {
+        const { organization } = await setUpOrganization({
+          doLogin: true,
+          setSecrets: false,
+        });
+        const organizationPath = `${Collection.Organizations}/${organization}`;
+        const secretsPath = `${Collection.Secrets}/${organization}`;
+        // add new secret to trigger registering
+        const orgSecretsRef = adminDb.doc(secretsPath);
+
+        await orgSecretsRef.set({
+          smtpHost: "localhost",
+        });
+
+        // check proper updates triggerd by write to secrets
+        const orgData = (await waitForCondition({
+          documentPath: organizationPath,
+          condition: (data) => Boolean(data?.existingSecrets?.length),
+        })) as OrganizationData;
+
+        expect(orgData.existingSecrets).toEqual(
+          expect.arrayContaining(["smtpHost"])
+        );
+        expect(orgData.smtpConfigured).toBeFalsy();
+
+        const secrets = {
+          smtpHost: "localhost",
+          smtpPort: 4000,
+          smtpUser: "user",
+          smtpPass: "password",
+        };
+
+        await orgSecretsRef.set(secrets, { merge: true });
+        // check proper updates triggerd by write to secrets
+        const orgDataPostUpdate = await waitForCondition<OrganizationData>({
+          documentPath: organizationPath,
+          condition: (data) =>
+            Object.keys(secrets).every((key) =>
+              data?.existingSecrets?.includes(key)
+            ),
+        });
+        expect(orgDataPostUpdate.smtpConfigured).toEqual(true);
+
+        const notAllSecrets = {
+          smtpHost: "localhost",
+          smtpPort: 4000,
+          smtpUser: "user",
+        };
+        await orgSecretsRef.set(notAllSecrets);
+        // check proper updates triggerd by write to secrets
+        const orgDataPostDelete = await waitForCondition<OrganizationData>({
+          documentPath: organizationPath,
+          condition: (data) =>
+            data!.existingSecrets!.every((key) =>
+              Object.keys(notAllSecrets).includes(key)
+            ),
+        });
+        expect(orgDataPostDelete.smtpConfigured).toEqual(false);
+      }
+    );
   });
+
   describe("createPublicOrgInfo", () => {
     testWithEmulator(
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
@@ -323,6 +390,7 @@ describe("Cloud functions -> Data triggers ->", () => {
       }
     );
   });
+
   describe("createAttendedSlotsForAttendance", () => {
     testWithEmulator(
       "should create document in attendedSlots collection when customer is marked as attended",
@@ -373,6 +441,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docRes).toEqual(attendedSlot);
       }
     );
+
     testWithEmulator(
       "should delete document in attendedSlots collection when customer is marked as absent",
       async () => {
@@ -446,6 +515,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docResEmpty).toBeUndefined();
       }
     );
+
     testWithEmulator(
       "should not create document in attendedSlots collection if customer had booked the slot",
       async () => {
@@ -492,6 +562,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         expect(docRes).toBeUndefined();
       }
     );
+
     testWithEmulator("should mark multiple athletes as attended", async () => {
       const { organization } = await setUpOrganization();
 

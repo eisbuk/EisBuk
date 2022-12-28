@@ -4,10 +4,10 @@ import nodemailer from "nodemailer";
 
 import {
   Collection,
-  OrganizationData,
-  OrganizationSecrets,
   DeliveryQueue,
   EmailPayload,
+  OrganizationSecrets,
+  HTTPSErrors,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
@@ -15,9 +15,9 @@ import processDelivery, {
 
 import { SMTPPreferences, TransportConfig } from "./types";
 
-import { __functionsZone__, __noSecretsError } from "../constants";
+import { __functionsZone__ } from "../constants";
 
-import { EmailMessageSchema, SMTPPreferencesSchema } from "./validations";
+import { EmailPayloadSchema, SMTPPreferencesSchema } from "./validations";
 import { validateJSON } from "../utils";
 
 /**
@@ -25,7 +25,7 @@ import { validateJSON } from "../utils";
  * @param organization organization name
  * @returns smtp config options
  */
-const getSMTPPreferences = async (
+export const getSMTPPreferences = async (
   organization: string
 ): Promise<Partial<SMTPPreferences>> => {
   const db = admin.firestore();
@@ -36,7 +36,7 @@ const getSMTPPreferences = async (
 
   const secretsData = secretsSnap.data() as OrganizationSecrets | undefined;
   if (!secretsData) {
-    throw new Error(__noSecretsError);
+    throw new Error(HTTPSErrors.NoSecrets);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -53,21 +53,24 @@ const processSMTPPreferences = ({
   smtpPass,
   smtpPort,
   smtpUser,
-}: SMTPPreferences): TransportConfig => ({
-  host: smtpHost,
-  port: smtpPort,
-  secure: smtpPort === 465,
+}: SMTPPreferences): TransportConfig => {
+  const secure = smtpPort === 465;
+  return {
+    host: smtpHost,
+    port: smtpPort,
+    secure,
 
-  // Add `auth` field only if auth data provided
-  ...(smtpUser || smtpPass
-    ? {
-        auth: {
-          user: smtpUser,
-          pass: smtpPass,
-        },
-      }
-    : {}),
-});
+    // Add `auth` field only for tls connections
+    ...(secure
+      ? {
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+        }
+      : {}),
+  };
+};
 // #region SMTPPreferences
 
 /**
@@ -103,27 +106,21 @@ export const deliverEmail = functions
         return error(configErrs);
       }
       const smtpConfig = processSMTPPreferences(SMTPPreferences);
-      const transport = nodemailer.createTransport(smtpConfig);
+      const transport = nodemailer.createTransport({
+        ...smtpConfig,
+        /** @OTODO check this: this is temporarily set for testing purposes, but we might use it in production?? */
+        tls: { rejectUnauthorized: false },
+      });
 
       // Get current email payload
       const data = change.after.data() as Partial<
         ProcessDocument<EmailPayload>
       >;
 
-      // Get email preferences from organization info (such as 'fromEmail')
-      const db = admin.firestore();
-      const orgSnap = await db
-        .doc(`${Collection.Organizations}/${organization}`)
-        .get();
-      const { emailFrom } = orgSnap.data() as OrganizationData;
-
       // Validate email and throw if not a valid schema
       const [email, emailErrs] = validateJSON(
-        EmailMessageSchema,
-        {
-          from: emailFrom,
-          ...data.payload,
-        },
+        EmailPayloadSchema,
+        data.payload || {},
         "Constructing gave following errors (check the email payload and organization preferences):"
       );
       if (emailErrs) {

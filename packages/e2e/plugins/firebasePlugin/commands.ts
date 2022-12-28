@@ -125,6 +125,13 @@ const addFirebaseCommands = (): void => {
         CloudFunction.CreateDefaultUser
       )({ organization })
     );
+    // set up dummy smtp config in org secrets to allow for email sending (at least client side)
+    cy.wrap(
+      httpsCallable(
+        functions,
+        CloudFunction.SetupEmailForTesting
+      )({ organization })
+    );
 
     return cy.wrap(organization);
   });

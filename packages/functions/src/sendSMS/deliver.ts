@@ -7,12 +7,13 @@ import {
   Collection,
   DeliveryQueue,
   SMSMessage,
+  HTTPSErrors,
 } from "@eisbuk/shared";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
 
-import { __smsUrl__, __functionsZone__, __noSecretsError } from "../constants";
+import { __smsUrl__, __functionsZone__ } from "../constants";
 
 import { SMSResponse } from "./types";
 
@@ -60,7 +61,7 @@ export const deliverSMS = functions
 
       const secretsData = secretsSnap.data() as OrganizationSecrets;
       if (!secretsData) {
-        throw new Error(__noSecretsError);
+        throw new Error(HTTPSErrors.NoSecrets);
       }
       const authToken = secretsData.smsAuthToken || "";
 

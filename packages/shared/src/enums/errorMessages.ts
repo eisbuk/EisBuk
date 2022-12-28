@@ -4,8 +4,11 @@ export enum HTTPSErrors {
   Unauth = "Unathorized",
   TimedOut = "Function timed out",
   MissingParameter = "One or more required parameters are missing from the payload",
+  EmailInvalidType = "Email type missing or invalid",
   NoOrganziation = "No argument for organization provided",
-  NoConfiguration = "The required configuration has not been provided for this organization",
+  NoSecrets = "No secrets document found, make sure to create a secrets document for an organziation at: '/secrets/{ organization }'",
+  NoSMTPConfigured = "No smtp configuration found, make sure to create a secrets document for an organziation at: '/secrets/{ organization }' with your smtp configuration",
+  NoEmailConfigured = "No emailFrom found, make sure to add an emailFrom to your organziation settings",
 }
 
 export enum SendSMSErrors {

@@ -7,12 +7,18 @@ import {
   ClientEmailPayload,
   EmailType,
   OrganizationData,
+  HTTPSErrors,
 } from "@eisbuk/shared";
 
 import { interpolateEmail, validateClientEmailPayload } from "./utils";
 import { __functionsZone__ } from "../constants";
 
-import { checkUser, checkSecretKey, throwUnauth } from "../utils";
+import {
+  checkUser,
+  checkSecretKey,
+  throwUnauth,
+  EisbukHttpsError,
+} from "../utils";
 
 /**
  * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
@@ -51,12 +57,21 @@ export const sendEmail = functions
       const {
         emailTemplates,
         displayName = organization,
+        smtpConfigured,
         emailFrom,
+        emailBcc,
       } = orgDoc.data() as OrganizationData;
 
-      const emailTemplate = emailTemplates[payload.type];
+      // Check the required configuration for email sending is there
+      if (!smtpConfigured) {
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoSMTPConfigured);
+      }
+      if (!emailFrom) {
+        throw new EisbukHttpsError("not-found", HTTPSErrors.NoEmailConfigured);
+      }
 
       // Interpolate the email with the payload and the organization name
+      const emailTemplate = emailTemplates[payload.type];
       const { subject, html } = interpolateEmail(emailTemplate, {
         organizationName: displayName,
         name: validatedPayload.customer.name,
@@ -71,6 +86,7 @@ export const sendEmail = functions
       const email = {
         from: emailFrom,
         to: validatedPayload.customer.email,
+        bcc: emailBcc || emailFrom,
         subject,
         html,
         attachments: validatedPayload.attachments
@@ -79,19 +95,24 @@ export const sendEmail = functions
       };
 
       // add email to firestore, firing data trigger
-      await admin
+      const deliveryDoc = admin
         .firestore()
         .collection(
           `${Collection.DeliveryQueues}/${payload.organization}/${DeliveryQueue.EmailQueue}`
         )
-        .doc()
-        .set({
-          payload: email,
-        });
+        .doc();
 
+      await deliveryDoc.set({
+        payload: email,
+      });
+
+      // As part of the response we're returning the delivery document path.
+      // This is mostly used for testing as we might want to wait for the delivery to be marked
+      // successful before making further assertions
       return {
+        deliveryDocumentPath: deliveryDoc.path,
         email,
-        organization: payload.organization,
+        organization,
         success: true,
       };
     }

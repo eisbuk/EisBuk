@@ -2,7 +2,7 @@ import { JSONSchemaType } from "ajv";
 
 import {
   EmailAttachment,
-  EmailMessage,
+  EmailPayload,
   ClientEmailPayload,
   EmailType,
   SendCalendarFileCustomer,
@@ -129,11 +129,16 @@ const SendCalendarFileCustomerSchema: JSONSchemaType<SendCalendarFileCustomer> =
  * Validation schema for a fully constructed email (to be send over SMTP),
  * including `to`, `from`, `bcc` and `html`
  */
-export const EmailMessageSchema: JSONSchemaType<EmailMessage> = {
+export const EmailPayloadSchema: JSONSchemaType<EmailPayload> = {
   type: "object",
   required: ["from", "to", "subject"],
   properties: {
     from: {
+      type: "string",
+      pattern: emailPattern,
+      errorMessage: __invalidEmailError,
+    },
+    bcc: {
       type: "string",
       pattern: emailPattern,
       errorMessage: __invalidEmailError,

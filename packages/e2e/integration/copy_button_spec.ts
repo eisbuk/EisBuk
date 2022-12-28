@@ -12,14 +12,16 @@ describe("Slots copy button - copied slots badge", () => {
     cy.setClock(testDateLuxon.toMillis());
     cy.initAdminApp()
       .then((organization) => cy.updateFirestore(organization, ["slots.json"]))
-      .then(() => cy.signIn());
+      .then(() => cy.signIn())
+      // Load the view before making any assertions
+      .then(() => cy.visit(PrivateRoutes.Slots))
+      // Make sure to wait enough time for the slots to be fetched:
+      // The word "competitive" will appear only when slots are displayed.
+      // For some reason the wait time in the CI is significantly longer then locally
+      // @TODO check if this is still necessary after we make the e2e tests a bit leaner
+      .then(() => cy.contains("competitive", { timeout: 20000 }));
 
-    // Load the view before making any assertions
-    cy.visit(PrivateRoutes.Slots);
     cy.getAttrWith("aria-label", i18n.t(AdminAria.EnableEdit)).click();
-    // Make sure to wait enough time for the slots to be fetched:
-    // The word "competitive" will appear only when slots are displayed.
-    cy.contains("competitive");
   });
 
   it("shows the week copied badge only if in 'week' context and the week in clipboard is the currently observed week", () => {
@@ -36,7 +38,7 @@ describe("Slots copy button - copied slots badge", () => {
     cy.getAttrWith(
       "aria-label",
       i18n.t(AdminAria.CopySlotsWeek, { weekStart, weekEnd })
-    ).click();
+    ).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current week.
     cy.getAttrWith(
@@ -73,7 +75,7 @@ describe("Slots copy button - copied slots badge", () => {
     cy.getAttrWith(
       "aria-label",
       i18n.t(AdminAria.CopySlotsDay, { date })
-    ).click();
+    ).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current day.
     cy.getAttrWith(
