@@ -171,7 +171,7 @@ export const customerSelfUpdate: {
 export const customerSelfRegister: {
   (paylod: CustomerBase & { registrationCode: string }): (
     ...params: Parameters<FirestoreThunk>
-  ) => Promise<{ id: string; secretKey: string }>;
+  ) => Promise<{ id: string; secretKey: string; codeOk: boolean }>;
 } =
   ({ registrationCode, ...customer }) =>
   async (dispatch) => {
@@ -197,6 +197,7 @@ export const customerSelfRegister: {
       return {
         id,
         secretKey,
+        codeOk: true,
       };
     } catch (error) {
       dispatch(
@@ -205,7 +206,8 @@ export const customerSelfRegister: {
           message: i18n.t(NotificationMessage.Error),
         })
       );
-      return { id: "", secretKey: "" };
+      console.log(error);
+      return { id: "", secretKey: "", codeOk: false };
     }
   };
 

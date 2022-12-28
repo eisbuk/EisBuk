@@ -5,6 +5,7 @@ import i18n, {
   AuthTitle,
   CustomerLabel,
   Alerts,
+  ValidationMessage,
 } from "@eisbuk/translations";
 import { CustomerFull } from "@eisbuk/shared";
 
@@ -71,9 +72,16 @@ describe("Athlete self registration", () => {
     // We're not filling in the 'certificateExpiration' not 'covidCertificateReleaseDate' as those fields
     // should be optional
 
-    // Fill in the registration code previously set in organization settings
-    cy.getAttrWith("name", "registrationCode").type(__registrationCode__);
+    // The wrong registration code should show as validation error
+    cy.getAttrWith("name", "registrationCode").type("wrong-code");
+    cy.clickButton(t(ActionButton.Save));
 
+    cy.contains(t(ValidationMessage.InvalidRegistrationCode));
+
+    // Fill in the (correct) registration code previously set in organization settings
+    cy.getAttrWith("name", "registrationCode").clearAndType(
+      __registrationCode__
+    );
     cy.clickButton(t(ActionButton.Save));
 
     // Upon successful registration, the athlete should be stored in 'customers' collection

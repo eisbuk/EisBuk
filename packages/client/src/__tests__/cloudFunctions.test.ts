@@ -527,9 +527,6 @@ describe("Cloud functions", () => {
         .doc(organization)
         .set({ registrationCode: "registration-code" }, { merge: true });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { email } = minimalSaul;
-
       try {
         await httpsCallable(
           functions,
@@ -541,7 +538,7 @@ describe("Cloud functions", () => {
         });
       } catch (error) {
         expect((error as FunctionsError).message).toEqual(
-          `${HTTPSErrors.Unauth}: Incorrect value for 'registrationCode'`
+          HTTPSErrors.SelfRegInvalidCode
         );
       }
     });

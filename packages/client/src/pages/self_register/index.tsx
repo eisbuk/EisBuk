@@ -3,8 +3,11 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { Redirect, useHistory } from "react-router-dom";
 
 import { CustomerProfileForm, CustomerFormVariant, Layout } from "@eisbuk/ui";
-import { CustomerLabel, useTranslation } from "@eisbuk/translations";
-import { CustomerBase } from "@eisbuk/shared";
+import {
+  CustomerLabel,
+  useTranslation,
+  ValidationMessage,
+} from "@eisbuk/translations";
 
 import { Routes } from "@/enums/routes";
 
@@ -34,13 +37,19 @@ const SelfRegisterPage: React.FC = () => {
   // The think is called explicitly (without dispatch) as we want to leverage the async behavioud
   // of the thunk and return a promise which then gets awaited by 'CustomerForm's internal 'Formik'
   // to more correctly control the 'isSubmitting' state
-  const submitForm = async (
-    values: CustomerBase & { registrationCode: string }
-  ) => {
-    const { secretKey } = await customerSelfRegister(values)(
+  const submitForm: Parameters<
+    typeof CustomerProfileForm
+  >[0]["onSave"] = async (values, { setErrors }) => {
+    const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
       getState
     );
+    if (!codeOk) {
+      setErrors({
+        registrationCode: t(ValidationMessage.InvalidRegistrationCode),
+      });
+    }
+
     if (secretKey) {
       history.push([Routes.CustomerArea, secretKey].join("/"));
     }

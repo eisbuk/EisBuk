@@ -1,5 +1,5 @@
 import React, { useState, FocusEvent, useMemo } from "react";
-import { Formik, Field, Form } from "formik";
+import { Formik, Field, Form, FormikConfig } from "formik";
 import * as Yup from "yup";
 
 import { CustomerBase } from "@eisbuk/shared";
@@ -41,7 +41,9 @@ type SelfRegFormProps = {
   customer: Pick<CustomerBase, "email">;
   onCancel?: () => void;
   variant: CustomerFormVariant.SelfRegistration;
-  onSave?: (values: CustomerBase & { registrationCode: string }) => void;
+  onSave?: FormikConfig<
+    CustomerBase & { registrationCode: string }
+  >["onSubmit"];
 };
 
 const defaultCustomerFormValues: CustomerBase = {
@@ -87,9 +89,9 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
       enableReinitialize
       validationSchema={validationSchema}
       initialValues={initialValues}
-      onSubmit={(values, { setSubmitting }) => {
-        onSave(values);
-        setSubmitting(false);
+      onSubmit={async (values, helpers) => {
+        await onSave(values, helpers);
+        helpers.setSubmitting(false);
 
         if (variant === CustomerFormVariant.Default) {
           toggleEdit();

@@ -144,7 +144,8 @@
     "TimeMismatch": "Start time is greater than end time",
     "WeakPassword": "Password should contain at least {{ min }} characters",
     "InvalidSmsFrom": "Invalid format: Only letters are allowed",
-    "InvalidSmsFromLength": "Invalid format: Maximum 11 characters"
+    "InvalidSmsFromLength": "Invalid format: Maximum 11 characters",
+    "InvalidRegistrationCode": "The registration code is invalid"
   },
 
   "Prompt": {
