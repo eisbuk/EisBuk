@@ -1,9 +1,13 @@
 export * from "./enums/firestore";
 export * from "./enums/errorMessages";
+export * from "./enums/email";
 export * from "./types/firestore";
 export * from "./types/cloudFunctions";
 export * from "./types/misc";
+export * from "./types/email";
+export * from "./types/utils";
 export * from "./utils";
+export * from "./data/templates";
 
 export * from "./deprecated";
 

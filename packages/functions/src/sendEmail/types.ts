@@ -14,3 +14,13 @@ export interface SMTPPreferences {
   smtpUser: string;
   smtpPass: string;
 }
+
+export interface EmailInterpolationValues {
+  organizationName: string;
+  name: string;
+  surname: string;
+  bookingsLink?: string;
+  calendarFile?: string;
+  bookingsMonth?: string;
+  extendedBookingsDate?: string;
+}

@@ -1,6 +1,7 @@
 import {
   CustomerAttendance,
   CustomerBookingEntry,
+  EmailType,
   OrganizationData,
   SlotAttendnace,
 } from "@eisbuk/shared";
@@ -67,7 +68,14 @@ export const organization: OrganizationData = {
   location: "Albuquerque",
   admins: ["Gus Fring"],
   emailFrom: "gus@lospollos.hermanos",
-  emailTemplate: "Email Temp here",
+  emailTemplates: {
+    [EmailType.SendBookingsLink]: {
+      subject: "prenotazioni lezioni di {{ displayName }}",
+      html: `<p>Ciao {{ name }},</p>
+          <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
+          <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
+    },
+  },
   emailNameFrom: "Gus",
   smsFrom: "Gus",
   smsTemplate: "SMS Temp here",

@@ -32,7 +32,6 @@ describe("CustomerGrid", () => {
     expect(dispatchCallPayload.component).toEqual("CustomerCard");
     expect(dispatchCallPayload.props).toEqual({
       customer: saul,
-      displayName: __testOrganization__,
     });
   });
 });

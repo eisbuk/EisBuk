@@ -146,6 +146,16 @@ const DebugPage: React.FC = () => {
             Migrate categories to array
           </DebugPageButton>
         </div>
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(
+              CloudFunction.PopulateDefaultEmailTemplates
+            )}
+            color={ButtonColor.Primary}
+          >
+            Populate Default Email Templates
+          </DebugPageButton>
+        </div>
       </div>
     </Layout>
   );

@@ -36,9 +36,14 @@ export interface OrganizationData {
    */
   emailNameFrom?: string;
   /**
-   * Template for reminder emails
+   * Templates for emails (bookings link, extending date, etc.)
    */
-  emailTemplate?: string;
+  emailTemplates: {
+    [name: string]: {
+      subject: string;
+      html: string;
+    };
+  };
   /**
    * Caller ID to use when sending out SMSs
    */
@@ -71,6 +76,10 @@ export interface OrganizationData {
   registrationCode?: string;
 }
 
+export type EmailTemplate = {
+  subject: string;
+  html: string;
+};
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,
@@ -327,40 +336,16 @@ export interface EmailAttachment {
 }
 
 /**
- * Interface used as `payload` in email process-delivery.
- * It's basically a full email payload without the `from` and `bcc`
- * fields (as they're loaded from organization preferences).
- */
-export interface ClientEmailPayload {
-  to: string;
-  subject: string;
-  html: string;
-  attachments?: EmailAttachment[];
-}
-
-/**
  * A full email interface, including:
  * `to`, `from`, `subject`, `html`, `attachments` and `bcc`
  */
-export interface EmailPayload extends ClientEmailPayload {
+export interface EmailPayload {
+  to: string;
   from: string;
   bcc: string;
-}
-
-/**
- * A payload used in `sendEmail` cloud function.
- */
-export interface ClientSendEmailPayload extends ClientEmailPayload {
-  /**
-   * Used to identify an organization where the email is sent from,
-   * as well as which organization to authenticate against.
-   */
-  organization: string;
-  /**
-   * Alternative authentication to enable customers (unauthenticated, but in possession of `secretKey`)
-   * send emails as well. (recovery emails, etc.)
-   */
-  secretKey?: string;
+  subject: string;
+  html: string;
+  attachments?: EmailAttachment[];
 }
 
 export interface SMSMessage {

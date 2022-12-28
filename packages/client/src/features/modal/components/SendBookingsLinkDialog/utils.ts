@@ -1,10 +1,15 @@
+import { useSelector } from "react-redux";
 import {
-  Customer,
   ClientEmailPayload,
-  PublicOrganizationData,
+  Customer,
+  EmailType,
   SMSMessage,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
+
+import { getAboutOrganization } from "@/store/selectors/app";
+
+import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -13,9 +18,9 @@ import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 
-import { enqueueNotification } from "@/features/notifications/actions";
+import { __organization__ } from "@/lib/constants";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { enqueueNotification } from "@/features/notifications/actions";
 
 interface GetDialogPrompt {
   (
@@ -73,38 +78,44 @@ interface SendBookingsLink {
     payload: {
       method: SendBookingLinkMethod;
       bookingsLink: string;
-    } & Customer & { displayName: PublicOrganizationData["displayName"] }
+    } & Customer
   ): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ name, method, email, phone, secretKey, bookingsLink, displayName }) =>
+  ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
   async (dispatch) => {
     try {
-      const subject = "prenotazioni lezioni di Igor Ice Team";
-
-      if (!secretKey) {
+      if (!secretKey || !email) {
         // this should be unreachable
         // (email button should be disabled in case secret key or email are not provided)
         throw new Error();
       }
 
-      const html = `<p>Ciao ${name},</p>
-      <p>Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:</p>
-      <a href="${bookingsLink}">Clicca qui per prenotare e gestire le tue lezioni</a>`;
+      const { displayName = __organization__ } =
+        useSelector(getAboutOrganization)[__organization__] || {};
 
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
       ${bookingsLink}`;
 
+      const emailPayload: Omit<
+        ClientEmailPayload[EmailType.SendBookingsLink],
+        "organization"
+      > = {
+        customer: {
+          name,
+          surname,
+          email: email!,
+        },
+        type: EmailType.SendBookingsLink,
+        bookingsLink,
+      };
+
       const config = {
         [SendBookingLinkMethod.Email]: {
           handler: CloudFunction.SendEmail,
-          payload: {
-            to: email,
-            html,
-            subject,
-          } as ClientEmailPayload,
+          payload: emailPayload,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },
         [SendBookingLinkMethod.SMS]: {

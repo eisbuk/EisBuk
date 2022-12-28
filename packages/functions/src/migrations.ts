@@ -9,6 +9,8 @@ import {
   OrgSubCollection,
   SlotInterface,
   CategoryUnion,
+  defaultEmailTemplates,
+  OrganizationData,
   CustomerFull,
 } from "@eisbuk/shared";
 
@@ -223,6 +225,37 @@ export const customersToPluralCategories = functions
       } else {
         batch.set(customer.ref, { ...noCategoryData, categories: category });
       }
+    });
+
+    await batch.commit();
+
+    return { success: true };
+  });
+
+export const populateDefaultEmailTemplates = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    if (!(await checkUser(organization, auth))) throwUnauth();
+
+    const batch = admin.firestore().batch();
+
+    const allOrgs = await admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .get();
+
+    allOrgs.forEach((organization) => {
+      const data = organization.data() as OrganizationData;
+
+      // templates already exist => return
+      if (data.emailTemplates && data.emailTemplates.length) return;
+
+      functions.logger.info(`Populated organization: ${data.displayName}`);
+
+      batch.set(organization.ref, {
+        ...data,
+        emailTemplates: defaultEmailTemplates,
+      });
     });
 
     await batch.commit();

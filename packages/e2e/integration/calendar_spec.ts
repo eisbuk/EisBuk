@@ -95,6 +95,7 @@ xdescribe("Date Switcher", () => {
     });
   });
 });
+
 describe("Download ics file to Add To Calendar", () => {
   it("checks email was sent and calendar collection was updated successfully", () => {
     cy.setClock(testDateLuxon.toMillis());

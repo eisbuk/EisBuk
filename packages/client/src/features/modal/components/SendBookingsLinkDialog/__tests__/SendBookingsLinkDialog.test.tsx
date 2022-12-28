@@ -13,9 +13,7 @@ import SendBookingsLinkDialog from "../SendBookingsLinkDialog";
 import * as utils from "../utils";
 
 import { saul } from "@/__testData__/customers";
-import { __testOrganization__ } from "@/__testSetup__/envData";
 
-const displayName = __testOrganization__;
 const mockOnClose = jest.fn();
 // Mock sendBookingsLink to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
@@ -50,7 +48,6 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
-        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
@@ -64,7 +61,6 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
-        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
@@ -78,7 +74,6 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.Email}
         onClose={mockOnClose}
-        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();
@@ -88,7 +83,6 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.Email,
         bookingsLink: testBookingsLink,
-        displayName,
       })
     );
   });
@@ -100,7 +94,6 @@ describe("SendBookingsLinkDialog", () => {
         {...saul}
         method={SendBookingLinkMethod.SMS}
         onClose={mockOnClose}
-        displayName={displayName}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();
@@ -110,7 +103,6 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.SMS,
         bookingsLink: testBookingsLink,
-        displayName,
       })
     );
   });

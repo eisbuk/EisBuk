@@ -4,11 +4,12 @@ import {
   BookingSubCollection,
   Customer,
   SlotInterface,
-  OrganizationData,
-  ClientSendEmailPayload,
+  ClientEmailPayload,
+  EmailType,
   CustomerBase,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+
 import { NotifVariant } from "@/enums/store";
 import { CloudFunction } from "@/enums/functions";
 
@@ -252,38 +253,36 @@ export const createCalendarEvents =
 /**
  * Send email of ics file
  */
-interface sendICSFile {
+interface SendICSFile {
   (payload: {
-    icsFile: string;
-    email: string;
-    secretKey: Customer["secretKey"];
     name: Customer["name"];
-    displayName: OrganizationData["displayName"];
+    surname: Customer["surname"];
+    email: string;
+    icsFile: string;
+    secretKey: Customer["secretKey"];
   }): FirestoreThunk;
 }
 
-export const sendICSFile: sendICSFile =
-  ({ icsFile, email, secretKey, displayName, name }) =>
+export const sendICSFile: SendICSFile =
+  ({ icsFile, email, secretKey, name, surname }) =>
   async (dispatch) => {
     try {
-      const subject = `Calendario prenotazioni ${displayName}`;
-
-      const html = `<p>Ciao ${name},</p>
-        <p>Ti inviamo un file per aggiungere le tue prossime lezioni con ${displayName} al tuo calendario:</p>
-        <a href="${icsFile}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`;
-
       const handler = CloudFunction.SendEmail;
-      const payload: Omit<ClientSendEmailPayload, "organization"> = {
-        to: email,
-        html,
-        subject,
-        attachments: [
-          {
-            filename: "bookedSlots.ics",
-            content: icsFile,
-          },
-        ],
-        secretKey: secretKey,
+      const payload: Omit<
+        ClientEmailPayload[EmailType.SendCalendarFile],
+        "organization"
+      > = {
+        type: EmailType.SendCalendarFile,
+        customer: {
+          name,
+          surname,
+          secretKey,
+          email,
+        },
+        attachments: {
+          filename: "bookedSlots.ics",
+          content: icsFile,
+        },
       };
 
       await createCloudFunctionCaller(handler, payload)();

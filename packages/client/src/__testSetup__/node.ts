@@ -1,7 +1,11 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
 
-import { Collection, OrganizationData } from "@eisbuk/shared";
+import {
+  Collection,
+  OrganizationData,
+  defaultEmailTemplates as emailTemplates,
+} from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
 
@@ -46,7 +50,8 @@ export const setUpOrganization: SetUpOrganization = async ({
     // Set given user as admin in org structure
     orgRef.set({
       admins: [email],
-      emailFrom: "emailFrom@gmail.com",
+      emailFrom: "dummy@email.com",
+      emailTemplates,
       ...additionalSetup,
     }),
   ];

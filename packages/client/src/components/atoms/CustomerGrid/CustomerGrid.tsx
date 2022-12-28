@@ -119,7 +119,7 @@ const useCustomerCard = (
   const openCustomerCard = (customerId: string) => {
     const customer = customers?.find(({ id }) => id === customerId);
     if (customer) {
-      openWithProps({ customer, displayName });
+      openWithProps({ customer });
       setModalProps({ customer, displayName });
     }
   };

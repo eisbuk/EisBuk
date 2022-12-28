@@ -11,6 +11,7 @@ import {
   LAST_NAMES,
   OrgSubCollection,
   CreateAuthUserPayload,
+  defaultEmailTemplates as emailTemplates,
   CustomerFull,
 } from "@eisbuk/shared";
 
@@ -59,11 +60,10 @@ export const createOrganization = functions
 
     const orgRef = db.collection(Collection.Organizations).doc(organization);
 
-    return Promise.all([
-      orgRef.set({
-        admins: ["test@eisbuk.it", "+3912345678"],
-      }),
-    ]);
+    return orgRef.set({
+      admins: ["test@eisbuk.it", "+3912345678"],
+      emailTemplates,
+    });
   });
 
 // #region createAuthUser
@@ -102,10 +102,14 @@ const createUserInAuth = async ({
     if (email) adminsEntry.push(email);
     if (phoneNumber) adminsEntry.push(phoneNumber);
 
-    await firestore
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .set({ admins: adminsEntry }, { merge: true });
+    await firestore.collection(Collection.Organizations).doc(organization).set(
+      {
+        admins: adminsEntry,
+        displayName: organization,
+        emailTemplates,
+      },
+      { merge: true }
+    );
   }
 };
 

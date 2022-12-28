@@ -7,6 +7,8 @@ import { httpsCallable, FunctionsError } from "@firebase/functions";
 import {
   HTTPSErrors,
   BookingsErrors,
+  ClientEmailPayload,
+  EmailType,
   sanitizeCustomer,
   CustomerBase,
   Collection,
@@ -44,22 +46,28 @@ describe("Cloud functions", () => {
 
   describe("sendMail", () => {
     // Dummy data for error testing
-    const to = "saul@gmail.com";
-    const subject = "Subject";
-    const html = "html";
 
     testWithEmulator(
       "should reject if user not authenticated (and not an admin)",
       async () => {
         const { organization } = await setUpOrganization({ doLogin: false });
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          organization,
+          displayName: "displayName",
+          bookingsLink: "bookingsLink",
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ organization, message: { html, subject } })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
+
     testWithEmulator(
       "should reject to sendEmail if no smtp secrets were set",
       async () => {
@@ -71,12 +79,36 @@ describe("Cloud functions", () => {
             emailBcc: "bcc@gmail.com",
           },
         });
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          organization,
+          bookingsLink: "bookingsLink",
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ organization, to, html, subject })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).rejects.toThrow(HTTPSErrors.NoSMTPConfigured);
+      }
+    );
+
+    testWithEmulator(
+      "should reject if email type not provided or not of supported email type",
+      async () => {
+        const { organization } = await setUpOrganization({ doLogin: true });
+        const payload = {
+          type: "invalid-email-type",
+          organization,
+          displayName: "displayName",
+          bookingsLink: "bookingsLink",
+          customer: saul,
+        };
+        await expect(
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+        ).rejects.toThrow(HTTPSErrors.EmailInvalidType);
       }
     );
 
@@ -100,64 +132,69 @@ describe("Cloud functions", () => {
           condition: (data) => Boolean(data),
         });
 
-        const {
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          data: { deliveryDocumentPath, ...res },
-        } = await httpsCallable(
-          functions,
-          CloudFunction.SendEmail
-        )({
+        const payload: ClientEmailPayload[EmailType.SendCalendarFile] = {
+          type: EmailType.SendCalendarFile,
           organization,
-          secretKey: saul.secretKey,
-          to,
-          html,
-          subject,
-        });
-
-        // We're including 'deliveryDocumentPath' to both structures
-        // as there's no way to stub/test this as it's a random value
-        expect({ ...res, deliveryDocumentPath }).toEqual({
-          deliveryDocumentPath,
-          email: {
-            to,
-            html,
-            subject,
+          attachments: {
+            filename: "icsFile.ics",
+            content: "content",
           },
-          organization,
-          success: true,
-        });
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email || "email@gmail.com",
+            secretKey: saul.secretKey,
+          },
+        };
+        await expect(
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+        ).resolves.toEqual(
+          expect.objectContaining({
+            data: expect.objectContaining({ success: true }),
+          })
+        );
       }
     );
 
     testWithEmulator(
       "should reject if no value for organziation provided",
       async () => {
+        const payload = {
+          type: EmailType.SendBookingsLink,
+          displayName: "displayName",
+          bookingsLink: "string",
+          customer: {
+            name: saul.name,
+            surname: saul.surname,
+            email: saul.email,
+          },
+        };
         await expect(
-          httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ to, html, subject })
+          httpsCallable(functions, CloudFunction.SendEmail)(payload)
         ).rejects.toThrow(HTTPSErrors.Unauth);
       }
     );
 
-    testWithEmulator(
-      "should reject if no recipient or message content provided",
-      async () => {
-        const { organization } = await setUpOrganization();
-        try {
-          await httpsCallable(
-            functions,
-            CloudFunction.SendEmail
-          )({ organization });
-        } catch (error) {
-          expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: to, html, subject`
-          );
-        }
+    test("should reject if no recipient provided", async () => {
+      const { organization } = await setUpOrganization();
+      const payload = {
+        type: EmailType.SendBookingsLink,
+        organization,
+        bookingsLink: "string",
+        customer: {
+          name: saul.name,
+          surname: saul.surname,
+          secretKey: saul.secretKey,
+        },
+      };
+      try {
+        await httpsCallable(functions, CloudFunction.SendEmail)(payload);
+      } catch (error) {
+        expect((error as FunctionsError).message).toEqual(
+          expect.stringContaining("must have required property 'email'")
+        );
       }
-    );
+    });
   });
 
   describe("finalizeBookings", () => {

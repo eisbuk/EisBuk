@@ -9,7 +9,6 @@ import DateRangeIcon from "@mui/icons-material/DateRange";
 import Mail from "@mui/icons-material/Mail";
 import Phone from "@mui/icons-material/Phone";
 
-import { OrganizationData } from "@eisbuk/shared";
 import { useTranslation, ActionButton } from "@eisbuk/translations";
 
 import { Routes } from "@/enums/routes";
@@ -29,9 +28,11 @@ import {
  * Labeled action buttons to open customer's bookings or send
  * booking link via sms/email, rendered as icon + text
  */
-const ActionButtons: React.FC<
-  ActionButtonProps & { displayName: OrganizationData["displayName"] }
-> = ({ customer, className, onClose, displayName }) => {
+const ActionButtons: React.FC<ActionButtonProps> = ({
+  customer,
+  className,
+  onClose,
+}) => {
   const { t } = useTranslation();
 
   const history = useHistory();
@@ -51,7 +52,6 @@ const ActionButtons: React.FC<
     openBookingsLinkDialog({
       ...customer,
       method,
-      displayName,
     });
   };
 

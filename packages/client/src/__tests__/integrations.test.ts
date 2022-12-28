@@ -1,7 +1,12 @@
 import { httpsCallable } from "@firebase/functions";
 import { createJestSMTPServer } from "jest-smtp";
 
-import { EmailPayload } from "@eisbuk/shared";
+import {
+  ClientEmailPayload,
+  CustomerFull,
+  EmailPayload,
+  EmailType,
+} from "@eisbuk/shared";
 import {
   DeliveryStatus,
   ProcessDocument,
@@ -14,12 +19,10 @@ import { functions } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
+import { saul } from "@/__testData__/customers";
 
 describe("Email sending and delivery", () => {
   // Dummy data for error testing
-  const to = "saul@gmail.com";
-  const subject = "Subject";
-  const html = "html";
   const smtpServer = createJestSMTPServer({
     port: smtpPort,
     host: smtpHost,
@@ -53,10 +56,17 @@ describe("Email sending and delivery", () => {
         done();
       };
 
+      const payload: ClientEmailPayload[EmailType.SendBookingsLink] = {
+        type: EmailType.SendBookingsLink,
+        organization,
+        customer: saul as Required<CustomerFull>,
+        bookingsLink: "https://eisbuk.it/saul",
+      };
+
       const res = await httpsCallable(
         functions,
         CloudFunction.SendEmail
-      )({ organization, to, html, subject });
+      )(payload);
 
       const deliveryDocPath = (res.data as any).deliveryDocumentPath;
 

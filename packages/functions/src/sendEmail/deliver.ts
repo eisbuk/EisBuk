@@ -17,7 +17,7 @@ import { SMTPPreferences, TransportConfig } from "./types";
 
 import { __functionsZone__ } from "../constants";
 
-import { EmailMessageSchema, SMTPPreferencesSchema } from "./validations";
+import { EmailPayloadSchema, SMTPPreferencesSchema } from "./validations";
 import { validateJSON } from "../utils";
 
 /**
@@ -119,7 +119,7 @@ export const deliverEmail = functions
 
       // Validate email and throw if not a valid schema
       const [email, emailErrs] = validateJSON(
-        EmailMessageSchema,
+        EmailPayloadSchema,
         data.payload || {},
         "Constructing gave following errors (check the email payload and organization preferences):"
       );
