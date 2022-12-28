@@ -19,7 +19,10 @@ import { Calendar } from "@eisbuk/svg";
 
 import { getAboutOrganization, getCalendarDay } from "@/store/selectors/app";
 import { getCalendarEventsByMonth } from "@/store/selectors/calendar";
-import { getBookingsForCalendar } from "@/store/selectors/bookings";
+import {
+  getBookingsCustomer,
+  getBookingsForCalendar,
+} from "@/store/selectors/bookings";
 
 import {
   createCalendarEvents,
@@ -27,7 +30,6 @@ import {
 } from "@/store/actions/bookingOperations";
 
 import { __organization__ } from "@/lib/constants";
-import { getCustomer } from "@/store/selectors/customers";
 
 const AddToCalendar: React.FC = () => {
   const dispatch = useDispatch();
@@ -44,7 +46,8 @@ const AddToCalendar: React.FC = () => {
 
   const previousCalendar = useSelector(getCalendarEventsByMonth(monthStr));
 
-  const { name, surname } = useSelector(getCustomer(secretKey)) as Customer;
+  const { name, surname } =
+    useSelector(getBookingsCustomer) || ({} as Customer);
 
   const { displayName = __organization__, location = "" } =
     useSelector(getAboutOrganization)[__organization__] || {};
