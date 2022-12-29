@@ -33,7 +33,7 @@ type DefaultFormProps = {
   defaultCountryCode?: string;
 };
 type SelfRegFormProps = {
-  customer: Pick<CustomerBase, "email">;
+  customer: Pick<CustomerBase, "email" | "phone">;
   onCancel?: () => void;
   variant: CustomerFormVariant.SelfRegistration;
   onSave?: FormikConfig<
@@ -68,6 +68,12 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
   const toggleEdit = () => {
     setIsEditing((isEditing) => !isEditing);
   };
+
+  // Disable email/phone if values already provided as first step of self-registration
+  const emailDisabled =
+    variant === CustomerFormVariant.SelfRegistration && customer.email;
+  const phoneDisabled =
+    variant === CustomerFormVariant.SelfRegistration && customer.phone;
 
   const initialValues = {
     ...defaultCustomerFormValues,
@@ -160,11 +166,7 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
                         disabled={!isEditing}
                       />
                     }
-                    disabled={
-                      !isEditing ||
-                      // When self registrating, email should be pre-filled and not changed
-                      variant === CustomerFormVariant.SelfRegistration
-                    }
+                    disabled={!isEditing || emailDisabled}
                   />
                 </div>
                 <div className="col-span-3">
@@ -172,7 +174,7 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
                     component={PhoneInput}
                     name="phone"
                     label={t(CustomerLabel.Phone)}
-                    disabled={!isEditing}
+                    disabled={!isEditing || phoneDisabled}
                     defaultDialCode={defaultCountryCode}
                   />
                 </div>

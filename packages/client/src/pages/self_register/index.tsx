@@ -18,6 +18,7 @@ import { NotificationsContainer } from "@/features/notifications/components";
 
 import {
   getAuthEmail,
+  getAuthPhoneNumber,
   getIsAuthEmpty,
   getIsAuthLoaded,
 } from "@/store/selectors/auth";
@@ -41,6 +42,7 @@ const SelfRegisterPage: React.FC = () => {
   const isAuthLoaded = useSelector(getIsAuthLoaded);
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const email = useSelector(getAuthEmail);
+  const phone = useSelector(getAuthPhoneNumber);
   const defaultCountryCode = useSelector(getDefaultCountryCode);
 
   // The thunk is called explicitly (without dispatch) as we want to leverage the async behaviour
@@ -78,7 +80,7 @@ const SelfRegisterPage: React.FC = () => {
 
   // This should virtually never happen, but if it does, something went wrong
   // Show unauth page
-  if (!email) {
+  if (!email && !phone) {
     return <Redirect to={Routes.Unauthorized} />;
   }
 
@@ -97,7 +99,7 @@ const SelfRegisterPage: React.FC = () => {
           <CustomerProfileForm
             onCancel={logOut}
             onSave={submitForm}
-            customer={{ email }}
+            customer={{ email, phone }}
             variant={CustomerFormVariant.SelfRegistration}
             defaultCountryCode={defaultCountryCode}
           />
