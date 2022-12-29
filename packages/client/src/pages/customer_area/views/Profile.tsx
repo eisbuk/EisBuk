@@ -8,10 +8,13 @@ import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { customerSelfUpdate } from "@/store/actions/bookingOperations";
 
 import { getSecretKey } from "@/store/selectors/app";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 const CalendarView: React.FC = () => {
   const dispatch = useDispatch();
+
   const secretKey = useSelector(getSecretKey)!;
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
 
   const customer = useSelector(getBookingsCustomer) || ({} as Customer);
 
@@ -26,6 +29,7 @@ const CalendarView: React.FC = () => {
           })
         )
       }
+      defaultCountryCode={defaultCountryCode}
     />
   );
 };

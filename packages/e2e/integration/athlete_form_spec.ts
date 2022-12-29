@@ -12,6 +12,9 @@ import testCustomers from "../__testData__/customers.json";
 
 // extract saul from test data .json
 const saul = testCustomers.customers.saul as Customer;
+// Remove the "dial code" from saul's phone
+const saulsDialCode = "IT (+39)";
+const saulsPhone = saul.phone!.substring(3);
 
 describe("add athlete", () => {
   beforeEach(() => {
@@ -172,7 +175,8 @@ describe("athlete profile", () => {
     cy.getAttrWith("name", "surname").clearAndType(saul.surname);
     cy.getAttrWith("name", "birthday").clearAndType(saul.birthday || "");
     cy.getAttrWith("name", "email").clearAndType(saul.email || "");
-    cy.getAttrWith("name", "phone").clearAndType(saul.phone || "");
+    cy.getAttrWith("id", "dialCode").select(saulsDialCode);
+    cy.getAttrWith("name", "phone").clearAndType(saulsPhone);
     cy.getAttrWith("name", "certificateExpiration").clearAndType(
       saul.certificateExpiration || ""
     );
@@ -215,29 +219,14 @@ describe("athlete profile", () => {
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
-    cy.getAttrWith("name", "phone").clearAndType("+099 2222");
+    cy.getAttrWith("name", "phone").clearAndType("2222");
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
 
     // make sure phone number length can't be "cheated" with too much whitespace
-    cy.getAttrWith("name", "phone").clearAndType("+385 099   11");
+    cy.getAttrWith("name", "phone").clearAndType("099   11");
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string);
-
-    // test passable phone numbers "00" or "+" prefix and at most 16 characters of length
-    cy.getAttrWith("name", "phone").clearAndType("00385 99 2222 868");
-    cy.getAttrWith("type", "submit").click();
-    cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
-    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
-      "not.exist"
-    );
-    cy.clickButton(i18n.t(ActionButton.Edit) as string);
-
-    cy.getAttrWith("name", "phone").clearAndType("+385 99 2222 868");
-    cy.getAttrWith("type", "submit").click();
-    cy.contains(i18n.t(ValidationMessage.InvalidPhone) as string).should(
-      "not.exist"
-    );
   });
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
@@ -261,7 +250,7 @@ describe("athlete profile", () => {
       surname: "Archer",
       // test whitespaces in the phone number
       // (should be removed in submitting function passable)
-      phone: "+999 6622 545",
+      phone: "99 6622 545",
       // check insanely long, but passable email
       email: "sterling.malory.archer@isis.not-gov.us",
       birthday: saul.birthday,

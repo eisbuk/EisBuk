@@ -1,4 +1,4 @@
-import React, { useState, FocusEvent, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Formik, Field, Form, FormikConfig } from "formik";
 import * as Yup from "yup";
 
@@ -9,19 +9,13 @@ import i18n, {
   CustomerLabel,
   ActionButton,
 } from "@eisbuk/translations";
-import {
-  User,
-  Cake,
-  Mail,
-  Phone,
-  ClipboardList,
-  ShieldCheck,
-} from "@eisbuk/svg";
+import { User, Cake, Mail, ClipboardList, ShieldCheck } from "@eisbuk/svg";
 
 import Button, { ButtonSize } from "../../Button";
 import TextInput, { IconAdornment } from "../../TextInput";
 import DateInput from "../../DateInput";
 import Checkbox from "../../Checkbox";
+import PhoneInput from "../../PhoneInput";
 
 import { isISODay } from "../../utils/date";
 import { isValidPhoneNumber } from "../../utils/helpers";
@@ -36,6 +30,7 @@ type DefaultFormProps = {
   onCancel?: () => void;
   variant?: CustomerFormVariant.Default;
   onSave?: (customer: CustomerBase) => void;
+  defaultCountryCode?: string;
 };
 type SelfRegFormProps = {
   customer: Pick<CustomerBase, "email">;
@@ -44,6 +39,7 @@ type SelfRegFormProps = {
   onSave?: FormikConfig<
     CustomerBase & { registrationCode: string }
   >["onSubmit"];
+  defaultCountryCode?: string;
 };
 
 const defaultCustomerFormValues: CustomerBase = {
@@ -62,6 +58,7 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
   variant = CustomerFormVariant.Default,
   onCancel = () => {},
   onSave = () => {},
+  defaultCountryCode,
 }: P): JSX.Element => {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(
@@ -98,7 +95,7 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
         }
       }}
     >
-      {({ isSubmitting, setFieldValue, resetForm }) => (
+      {({ isSubmitting, resetForm }) => (
         <Form>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
@@ -172,20 +169,11 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
                 </div>
                 <div className="col-span-3">
                   <Field
-                    component={TextInput}
+                    component={PhoneInput}
                     name="phone"
                     label={t(CustomerLabel.Phone)}
-                    StartAdornment={
-                      <IconAdornment
-                        Icon={<Phone />}
-                        position="start"
-                        disabled={!isEditing}
-                      />
-                    }
-                    onBlur={(e: FocusEvent<HTMLInputElement>) =>
-                      setFieldValue("phone", e.target.value.replace(/\s/g, ""))
-                    }
                     disabled={!isEditing}
+                    defaultDialCode={defaultCountryCode}
                   />
                 </div>
               </div>

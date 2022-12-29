@@ -24,7 +24,10 @@ import {
 
 import { signOut } from "@/store/actions/authOperations";
 import { customerSelfRegister } from "@/store/actions/bookingOperations";
-import { getOrgDisplayName } from "@/store/selectors/orgInfo";
+import {
+  getDefaultCountryCode,
+  getOrgDisplayName,
+} from "@/store/selectors/orgInfo";
 
 const SelfRegisterPage: React.FC = () => {
   const history = useHistory();
@@ -38,6 +41,7 @@ const SelfRegisterPage: React.FC = () => {
   const isAuthLoaded = useSelector(getIsAuthLoaded);
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const email = useSelector(getAuthEmail);
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
 
   // The thunk is called explicitly (without dispatch) as we want to leverage the async behaviour
   // of the thunk and return a promise which then gets awaited by 'CustomerForm's internal 'Formik'
@@ -95,6 +99,7 @@ const SelfRegisterPage: React.FC = () => {
             onSave={submitForm}
             customer={{ email }}
             variant={CustomerFormVariant.SelfRegistration}
+            defaultCountryCode={defaultCountryCode}
           />
         </div>
       </div>
