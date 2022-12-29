@@ -16,7 +16,11 @@ import { getOrganization } from "@/lib/getters";
 import Loading from "@/components/auth/Loading";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import { getAuthEmail, getIsAuthLoaded } from "@/store/selectors/auth";
+import {
+  getAuthEmail,
+  getIsAuthEmpty,
+  getIsAuthLoaded,
+} from "@/store/selectors/auth";
 
 import { signOut } from "@/store/actions/authOperations";
 import { customerSelfRegister } from "@/store/actions/bookingOperations";
@@ -32,9 +36,10 @@ const SelfRegisterPage: React.FC = () => {
   const organization = getOrganization();
   const orgDisplayName = useSelector(getOrgDisplayName);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
+  const isAuthEmpty = useSelector(getIsAuthEmpty);
   const email = useSelector(getAuthEmail);
 
-  // The think is called explicitly (without dispatch) as we want to leverage the async behavioud
+  // The thunk is called explicitly (without dispatch) as we want to leverage the async behaviour
   // of the thunk and return a promise which then gets awaited by 'CustomerForm's internal 'Formik'
   // to more correctly control the 'isSubmitting' state
   const submitForm: Parameters<
@@ -59,6 +64,12 @@ const SelfRegisterPage: React.FC = () => {
 
   if (!isAuthLoaded) {
     return <Loading />;
+  }
+
+  // If auth is empty, this is either a mistake, or the user is trying to access the page directly.
+  // In either case, redirect to login (and register) page.
+  if (isAuthEmpty) {
+    return <Redirect to={Routes.Login} />;
   }
 
   // This should virtually never happen, but if it does, something went wrong
