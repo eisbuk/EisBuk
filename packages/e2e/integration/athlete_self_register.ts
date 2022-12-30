@@ -52,10 +52,7 @@ describe("Athlete self registration", () => {
     cy.getAttrWith("type", "email").type(newEmail);
     cy.clickButton(t(ActionButton.Next));
     cy.contains(t(AuthTitle.CreateAccount));
-    cy.getAttrWith("id", "name").type(
-      "Name is currently irrelevant, but required here..."
-    );
-    // Name should be required
+
     cy.getAttrWith("type", "password").type("non-relevant-password");
     cy.clickButton(t(ActionButton.Save));
     // Auth user is created, but not registered in 'customers' sub collection.

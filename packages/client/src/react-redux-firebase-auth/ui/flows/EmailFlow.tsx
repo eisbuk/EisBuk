@@ -33,7 +33,6 @@ import useAuthFlow from "../../hooks/useAuthFlow";
 interface CompleteFormValues {
   email: string;
   password: string;
-  name: string;
 }
 
 type SubmitHandler = FormikConfig<CompleteFormValues>["onSubmit"];
@@ -58,7 +57,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     useAuthFlow<CompleteFormValues>(errorFieldMap);
 
   // #region form
-  const initialValues = { email: "", password: "", name: "" };
+  const initialValues = { email: "", password: "" };
 
   const validationSchema = yup.object().shape({
     email: yup
@@ -67,7 +66,6 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
       .email(t(ValidationMessage.Email)),
     ...(authStep === EmailAuthStep.CreateAccountEmailPassword
       ? {
-          name: yup.string().required(t(ValidationMessage.RequiredField)),
           password: yup
             .string()
             .required(t(ValidationMessage.RequiredField))
@@ -213,7 +211,6 @@ const fieldsLookup: AuthTextFieldLookup<EmailAuthStep> = {
   ],
   [EmailAuthStep.CreateAccountEmailPassword]: [
     { name: "email", label: "Email", type: "email" },
-    { name: "name", label: "First & last name", type: "text" },
     { name: "password", label: "Password", type: "password" },
   ],
   [EmailAuthStep.RecoverEmailPassword]: [
