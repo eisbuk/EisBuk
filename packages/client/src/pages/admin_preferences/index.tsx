@@ -137,7 +137,7 @@ const emptyValues = {
   displayName: "",
   emailFrom: "",
   emailNameFrom: "",
-  emailTemplate: defaultEmailTemplates,
+  emailTemplates: defaultEmailTemplates,
   existingSecrets: [],
   location: "",
   defaultCountryCode: "",
@@ -180,7 +180,7 @@ const emailFields: FormSectionFieldProps[] = [
     label: i18n.t(OrganizationLabel.BCC),
   },
   {
-    name: "emailTemplate",
+    name: "emailTemplates",
     label: i18n.t(OrganizationLabel.EmailTemplate),
     multiline: true,
     rows: 6,
