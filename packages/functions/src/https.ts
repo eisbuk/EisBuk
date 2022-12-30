@@ -12,6 +12,7 @@ import {
   Customer,
   CustomerFull,
   sanitizeCustomer,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -166,6 +167,33 @@ export const customerSelfRegister = functions
       const fullCustomer = { ...customer, id, secretKey };
 
       await customerRef.set(sanitizeCustomer(fullCustomer));
+
+      // If email sending available, send an email to the admin, notifiying them of the new customer.
+      const { emailFrom, smtpConfigured } = orgData;
+      if (smtpConfigured && emailFrom) {
+        const mailOptions = {
+          from: emailFrom,
+          to: emailFrom,
+          subject: `New user ${fullCustomer.name} ${fullCustomer.surname}`,
+          html: `New athlete has registered and is awaiting approval:
+name: ${fullCustomer.name}
+surname: ${fullCustomer.surname}
+email: ${fullCustomer.email || "N/A"}
+phone: ${fullCustomer.phone || "N/A"}
+
+To verify the athlete, add them to a category/categories on their respective profile in '/customers' view of the admin panel.
+`,
+        };
+
+        // Write the mail to the email queue for delivery
+        await admin
+          .firestore()
+          .collection(Collection.DeliveryQueues)
+          .doc(organization)
+          .collection(DeliveryQueue.EmailQueue)
+          .doc()
+          .set(mailOptions);
+      }
 
       return fullCustomer;
     }
