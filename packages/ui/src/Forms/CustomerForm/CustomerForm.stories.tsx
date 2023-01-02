@@ -1,15 +1,14 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
 
-import CustomerProfileForm, {
-  CustomerFormVariant,
-} from "./CustomerProfileForm";
+import { CustomerForm } from "./index";
+
 import { Category } from "@eisbuk/shared";
 
 export default {
   title: "Forms / Customer Profile Form",
-  component: CustomerProfileForm,
-} as ComponentMeta<typeof CustomerProfileForm>;
+  component: CustomerForm.Profile,
+} as ComponentMeta<typeof CustomerForm.Profile>;
 
 const customer = {
   id: "123456",
@@ -25,12 +24,9 @@ const customer = {
 };
 
 export const Default = (): JSX.Element => (
-  <CustomerProfileForm customer={customer} />
+  <CustomerForm.Profile customer={customer} />
 );
 
 export const SelfRegistration = (): JSX.Element => (
-  <CustomerProfileForm
-    customer={customer}
-    variant={CustomerFormVariant.SelfRegistration}
-  />
+  <CustomerForm.SelfReg customer={customer} />
 );

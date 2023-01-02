@@ -2,15 +2,15 @@ import React, { useState } from "react";
 import { v4 as uuid } from "uuid";
 import { FieldProps } from "formik";
 
-interface CheckboxProps
-  extends Pick<FieldProps, "field">,
-    React.InputHTMLAttributes<HTMLInputElement> {
+export interface CheckboxProps
+  extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
   helpText?: string;
   disabled?: boolean;
 }
+type CheckboxFieldProps = CheckboxProps & Pick<FieldProps, "field">;
 
-const Checkbox: React.FC<CheckboxProps> = ({
+const Checkbox: React.FC<CheckboxFieldProps> = ({
   label,
   helpText,
   disabled,

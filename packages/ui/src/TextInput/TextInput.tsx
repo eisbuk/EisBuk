@@ -1,16 +1,13 @@
 import React from "react";
 import { FieldProps } from "formik";
 
-// Formik docs say that this is passed, but it isn't
-type Field = Omit<FieldProps, "meta">;
-
 // Without this, TS will complain that "form" on FieldProps & React.InputHTMLAttributes are not the same
 type InputHTMLAttributes = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   "form"
 >;
 
-export interface TextInputProps extends Field, InputHTMLAttributes {
+export interface TextInputProps extends InputHTMLAttributes {
   label: string;
   placeholder?: string;
   helpText?: string;
@@ -20,8 +17,9 @@ export interface TextInputProps extends Field, InputHTMLAttributes {
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;
 }
+export type TextInputFieldProps = Omit<FieldProps, "meta"> & TextInputProps;
 
-const TextInput: React.FC<TextInputProps> = ({
+const TextInput: React.FC<TextInputFieldProps> = ({
   label,
   placeholder,
   helpText,

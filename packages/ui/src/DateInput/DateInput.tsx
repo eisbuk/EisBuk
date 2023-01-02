@@ -3,9 +3,9 @@ import React, { useState, useEffect } from "react";
 import { useTranslation, DateFormat } from "@eisbuk/translations";
 
 import { dateToISO, isoToDate } from "../utils/date";
-import TextInput, { TextInputProps } from "../TextInput";
+import TextInput, { TextInputFieldProps } from "../TextInput";
 
-const DateInput: React.FC<TextInputProps> = ({ ...props }) => {
+const DateInput: React.FC<TextInputFieldProps> = ({ ...props }) => {
   const { field, form } = props;
 
   const { value: inputValue } = field;

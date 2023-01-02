@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CustomerProfileForm } from "@eisbuk/ui";
+import { CustomerForm } from "@eisbuk/ui";
 import { Customer } from "@eisbuk/shared";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
@@ -19,17 +19,17 @@ const CalendarView: React.FC = () => {
   const customer = useSelector(getBookingsCustomer) || ({} as Customer);
 
   return (
-    <CustomerProfileForm
+    <CustomerForm.Profile
       customer={customer}
-      onSave={(customer) =>
+      onSave={(customer) => {
         dispatch(
           customerSelfUpdate({
             ...customer,
             secretKey,
           })
-        )
-      }
-      defaultCountryCode={defaultCountryCode}
+        );
+      }}
+      defaultDialCode={defaultCountryCode}
     />
   );
 };
