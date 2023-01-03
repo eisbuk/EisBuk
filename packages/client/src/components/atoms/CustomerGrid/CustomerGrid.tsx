@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import TextField from "@mui/material/TextField";
 
@@ -6,9 +7,9 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { CustomerFull, OrganizationData } from "@eisbuk/shared";
 
-import CustomerGridItem from "./CustomerGridItem";
+import { PrivateRoutes } from "@/enums/routes";
 
-import { createModal } from "@/features/modal/useModal";
+import CustomerGridItem from "./CustomerGridItem";
 
 import { __customersGridId__ } from "@/__testData__/testIds";
 
@@ -22,15 +23,17 @@ interface CustomerGridProps {
 const CustomerGrid: React.FC<CustomerGridProps> = ({
   customers,
   className = "",
-  displayName = "",
 }) => {
   const classes = useStyles();
+
+  const history = useHistory();
 
   // search flow
   const [searchString, setSearchString] = useState("");
   const searchRegex = new RegExp(searchString, "i");
 
-  const { openCustomerCard } = useCustomerCard(customers, displayName);
+  const openCustomerCard = (id: string) =>
+    history.push(`${PrivateRoutes.Athletes}/${id}`);
 
   return (
     <div className={className}>
@@ -78,57 +81,6 @@ const SearchField: React.FC<{
   );
 };
 // #endregion SearchField
-
-// #region CustomerCard
-const useCustomerModal = createModal("CustomerCard");
-
-/**
- * A hook used to open CustomerCard modal on customer click. When the 'openCustomerCard'
- * is fired, the customer is open in modal, and all further updates to the given customer
- * structure are derived from updated `customers` param (passed to hook initialisation) and propagated
- * to modal update.
- * @param customers
- * @param displayName
- * @returns
- */
-const useCustomerCard = (
-  customers: CustomerFull[] | undefined,
-  displayName: string
-) => {
-  const [modalProps, setModalProps] = useState<any>();
-
-  useEffect(() => {
-    if (!modalProps) {
-      return;
-    }
-    const oldCustomer = modalProps.customer;
-    const customer = customers?.find(
-      ({ id }) => oldCustomer && id === oldCustomer.id
-    );
-
-    if (!customer) {
-      setModalProps(undefined);
-      return;
-    }
-
-    setModalProps({ customer, displayName });
-  }, [customers]);
-
-  const { openWithProps } = useCustomerModal(modalProps);
-
-  const openCustomerCard = (customerId: string) => {
-    const customer = customers?.find(({ id }) => id === customerId);
-    if (customer) {
-      openWithProps({ customer });
-      setModalProps({ customer, displayName });
-    }
-  };
-
-  return {
-    openCustomerCard,
-  };
-};
-// #region CustomerCard
 
 // #region styles
 const useStyles = makeStyles(() => ({

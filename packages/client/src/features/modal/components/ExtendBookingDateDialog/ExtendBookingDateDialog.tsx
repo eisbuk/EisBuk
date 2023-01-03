@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useDispatch } from "react-redux";
 
 import { Customer } from "@eisbuk/shared";
@@ -7,46 +7,29 @@ import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
 import { BaseModalProps } from "../../types";
 
-import { DateInput } from "@/components/atoms/DateInput";
-
 import { extendBookingDate } from "@/store/actions/customerOperations";
+import { DateTime } from "luxon";
 
 type ExtendBookingDateProps = BaseModalProps & Customer;
 
 const ExtendBookingDateDialog: React.FC<ExtendBookingDateProps> = ({
   onClose,
   className,
+  extendedDate,
   ...customer
 }) => {
   const dispatch = useDispatch();
 
   const onConfirm = () => {
-    dispatch(extendBookingDate(customer.id, extendedDateInput));
+    dispatch(extendBookingDate(customer.id, extendedDate!));
     onClose();
   };
-
-  const [extendedDateInput, setExtendedDateInput] = useState("");
 
   const { name, surname } = customer;
   const title = i18n.t(Prompt.ExtendBookingDateTitle, {
     name,
     surname,
   });
-
-  const body = (
-    <>
-      <p className="mb-4">
-        {i18n.t(Prompt.ExtendBookingDateBody, {
-          name,
-          surname,
-        })}
-      </p>
-      <DateInput
-        value={extendedDateInput}
-        onChange={(value) => setExtendedDateInput(value)}
-      />
-    </>
-  );
 
   return (
     <ActionDialog
@@ -55,7 +38,13 @@ const ExtendBookingDateDialog: React.FC<ExtendBookingDateProps> = ({
       cancelLabel={i18n.t(ActionButton.Cancel)}
       confirmLabel={i18n.t(ActionButton.ExtendBookingDate)}
     >
-      {body}
+      <p className="mb-4 whitespace-wrap">
+        {i18n.t(Prompt.ExtendBookingDateBody, {
+          name,
+          surname,
+          extendedDate: DateTime.fromISO(extendedDate!),
+        })}
+      </p>
     </ActionDialog>
   );
 };

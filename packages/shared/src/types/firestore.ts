@@ -7,6 +7,7 @@ import {
   Collection,
   DeliveryQueue,
 } from "../enums/firestore";
+import { DeprecatedCategory } from "../deprecated";
 
 /**
  * Organization data record included in each organization (other than nested collections)
@@ -218,7 +219,7 @@ export interface CustomerBase {
 export interface Customer extends CustomerBase {
   id: string;
   secretKey: string;
-  categories: Category[];
+  categories: (Category | DeprecatedCategory)[];
   extendedDate?: string;
 }
 /**
