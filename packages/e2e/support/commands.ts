@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
-import { Category, Customer } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
@@ -141,9 +141,7 @@ export default (): void => {
       cy.getAttrWith("placeholder", "dd/mm/yyyy").first().type(birthday);
     }
     if (categories) {
-      categories.forEach((cat: Category) =>
-        cy.getAttrWith("value", cat).check()
-      );
+      categories.forEach((cat) => cy.getAttrWith("value", cat).check());
     }
     if (certificateExpiration) {
       cy.getAttrWith("placeholder", "dd/mm/yyyy")
