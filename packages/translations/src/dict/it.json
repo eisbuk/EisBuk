@@ -169,7 +169,7 @@
     "NoPhoneMessage": "Non è presente un numero di telefono per questo atleta; aggiungi un numero e riprova.",
 
     "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
-    "ExtendBookingDateBody": "Fino a quando lasciare che {{ name }} {{ surname }} possa prenotare?",
+    "ExtendBookingDateBody": "Please confirm you wish to extended the date for {{ name }} {{ surname }}'s bookings until {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",

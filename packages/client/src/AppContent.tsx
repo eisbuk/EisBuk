@@ -19,6 +19,7 @@ import LoginRoute from "@/components/auth/LoginRoute";
 
 import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
+import AthleteProfilePage from "@/pages/athlete_profile";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
@@ -59,7 +60,20 @@ const AppContent: React.FC = () => {
         path={PrivateRoutes.Root}
         component={AttendancePage}
       />
-      <PrivateRoute path={PrivateRoutes.Athletes} component={AthletesPage} />
+      <PrivateRoute
+        exact
+        path={PrivateRoutes.Athletes}
+        component={AthletesPage}
+      />
+      <PrivateRoute
+        exact
+        path={PrivateRoutes.NewAthlete}
+        component={AthleteProfilePage}
+      />
+      <PrivateRoute
+        path={`${PrivateRoutes.Athletes}/:athlete`}
+        component={AthleteProfilePage}
+      />
       <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
       <PrivateRoute
         path={Routes.AttendancePrintable}
