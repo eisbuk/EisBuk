@@ -13,10 +13,11 @@ import {
   CustomerBase,
   Collection,
   Customer,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
-import { setUpOrganization } from "@/__testSetup__/node";
+import { emailFrom, setUpOrganization } from "@/__testSetup__/node";
 
 import { CloudFunction } from "@/enums/functions";
 
@@ -469,6 +470,22 @@ describe("Cloud functions", () => {
             id,
           } as Customer)
         );
+
+        // As smtp is configured, check that an email has been sent to the admin
+        const emailQueue = await adminDb
+          .collection(Collection.DeliveryQueues)
+          .doc(organization)
+          .collection(DeliveryQueue.EmailQueue)
+          .get();
+
+        expect(emailQueue.docs[0].data()).toEqual(
+          expect.objectContaining({
+            subject: expect.stringContaining(saul.name),
+            html: expect.stringContaining(saul.email!),
+            to: emailFrom,
+            from: emailFrom,
+          })
+        );
       }
     );
 
@@ -527,9 +544,6 @@ describe("Cloud functions", () => {
         .doc(organization)
         .set({ registrationCode: "registration-code" }, { merge: true });
 
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { email } = minimalSaul;
-
       try {
         await httpsCallable(
           functions,
@@ -541,7 +555,7 @@ describe("Cloud functions", () => {
         });
       } catch (error) {
         expect((error as FunctionsError).message).toEqual(
-          `${HTTPSErrors.Unauth}: Incorrect value for 'registrationCode'`
+          HTTPSErrors.SelfRegInvalidCode
         );
       }
     });

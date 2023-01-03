@@ -28,6 +28,7 @@ jest
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => undefined,
 }));
 
 describe("CustomerFormDialog", () => {

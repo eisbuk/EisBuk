@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { CustomerLoose } from "@eisbuk/shared";
 
@@ -10,6 +10,7 @@ import CustomerForm, {
 } from "@/components/customers/CustomerForm";
 
 import { updateCustomer } from "@/store/actions/customerOperations";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 type CustomerFormDialogProps = BaseModalProps &
   Pick<CustomerFormProps, "customer" | "defaultDialCode">;
@@ -19,6 +20,9 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
   ...customerFormProps
 }) => {
   const dispatch = useDispatch();
+
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
+
   const handleUpdateCustomer = (customer: CustomerLoose) => {
     dispatch(updateCustomer(customer));
     onClose();
@@ -29,6 +33,7 @@ const CustomerFormDialog: React.FC<CustomerFormDialogProps> = ({
       onCancel={onClose}
       onUpdateCustomer={handleUpdateCustomer}
       {...customerFormProps}
+      defaultDialCode={defaultCountryCode}
     />
   );
 };

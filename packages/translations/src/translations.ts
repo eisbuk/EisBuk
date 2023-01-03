@@ -134,6 +134,7 @@ export enum ValidationMessage {
   WeakPassword = "Validations.WeakPassword",
   InvalidSmsFrom = "Validations.InvalidSmsFrom",
   InvalidSmsFromLength = "Validations.InvalidSmsFromLength",
+  InvalidRegistrationCode = "Validations.InvalidRegistrationCode",
 }
 export enum OrganizationLabel {
   EmailNameFrom = "OrganizationLabel.EmailNameFrom",

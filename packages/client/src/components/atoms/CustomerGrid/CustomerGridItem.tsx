@@ -18,8 +18,16 @@ const CustomerGridItem: React.FC<Props> = ({
 }) => {
   const classes = useStyles();
 
+  const customerValidated = customer.categories.length > 0;
+
   return (
-    <div onClick={() => onClick(customer)} className={classes.container}>
+    <div
+      style={
+        customerValidated ? {} : { opacity: 0.5, filter: "grayscale(90%)" }
+      }
+      onClick={() => onClick(customer)}
+      className={classes.container}
+    >
       <EisbukAvatar className={classes.avatar} {...customer} />
       <Typography variant="body2">{customer.name}</Typography>
       <Typography variant="body2">{customer.surname}</Typography>

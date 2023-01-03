@@ -8,6 +8,7 @@ import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";
 
 import {
+  getBookingsSecretKey,
   getIsAdmin,
   getIsAuthEmpty,
   getIsAuthLoaded,
@@ -22,23 +23,29 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const isAdmin = useSelector(getIsAdmin);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
+  const secretKey = useSelector(getBookingsSecretKey);
 
   switch (true) {
-    // display loading state until initial auth is loaded
+    // Display loading state until initial auth is loaded
     case !isAuthLoaded:
       return <Loading />;
 
-    // render admin route
+    // Render admin route
     case isAdmin:
       return <Route {...props} />;
 
-    // render "unauthorized"
-    case !isAdmin && !isAuthEmpty:
-      return <Unauthorized />;
-
-    default:
-      // if all else fails, redirect to `/login`
+    // Render login route if no auth loaded
+    case isAuthEmpty:
       return <Redirect to={Routes.Login} />;
+
+    // If auth not empty (auth user exists), and there's no secret key (registration is not completed -> customer is not created in firestore)
+    // redirect to self registration form
+    case !isAuthEmpty && !secretKey:
+      return <Redirect to={Routes.SelfRegister} />;
+
+    // Render "unauthorized"
+    default:
+      return <Unauthorized />;
   }
 };
 

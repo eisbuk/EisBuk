@@ -69,8 +69,7 @@ describe("login", () => {
       cy.getAttrWith("type", "email").type(newEmail);
       cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.CreateAccount));
-      cy.getAttrWith("id", "name").type("Slim Shady");
-      // Name should be required
+
       cy.getAttrWith("type", "password").type("non-relevant-password");
       cy.clickButton(t(ActionButton.Save));
       // user is registered, but not added as an admin yet - should redirect to not-registered page
@@ -150,19 +149,14 @@ describe("login", () => {
       cy.contains(t(ValidationMessage.Email));
 
       // move to create user flow
-      cy.getAttrWith("type", "email").clearAndType("valid-email@gmail.com");
+      const validEmail = uuid().slice(0, 10) + "@gmail.com";
+      cy.getAttrWith("type", "email").clearAndType(validEmail);
       cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.CreateAccount)).click();
 
-      // name is a required field
-      cy.getAttrWith("type", "password").type("any-password");
-      cy.clickButton(t(ActionButton.Save));
-      // the following error is displayed for "name" field
-      cy.contains(t(ValidationMessage.RequiredField));
-      cy.getAttrWith("id", "name").type("Slim Shady");
-
       // password is required
       cy.getAttrWith("type", "password").clear();
+      cy.clickButton(t(ActionButton.Save));
       cy.contains(t(ValidationMessage.RequiredField));
       // password should be at least 6 characters
       cy.getAttrWith("type", "password").type(t("weak"));

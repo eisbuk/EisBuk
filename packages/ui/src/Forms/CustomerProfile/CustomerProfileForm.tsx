@@ -1,5 +1,5 @@
-import React, { useState, FocusEvent, useMemo } from "react";
-import { Formik, Field, Form } from "formik";
+import React, { useState, useMemo } from "react";
+import { Formik, Field, Form, FormikConfig } from "formik";
 import * as Yup from "yup";
 
 import { CustomerBase } from "@eisbuk/shared";
@@ -9,19 +9,13 @@ import i18n, {
   CustomerLabel,
   ActionButton,
 } from "@eisbuk/translations";
-import {
-  User,
-  Cake,
-  Mail,
-  Phone,
-  ClipboardList,
-  ShieldCheck,
-} from "@eisbuk/svg";
+import { User, Cake, Mail, ClipboardList, ShieldCheck } from "@eisbuk/svg";
 
 import Button, { ButtonSize } from "../../Button";
 import TextInput, { IconAdornment } from "../../TextInput";
 import DateInput from "../../DateInput";
 import Checkbox from "../../Checkbox";
+import PhoneInput from "../../PhoneInput";
 
 import { isISODay } from "../../utils/date";
 import { isValidPhoneNumber } from "../../utils/helpers";
@@ -36,12 +30,16 @@ type DefaultFormProps = {
   onCancel?: () => void;
   variant?: CustomerFormVariant.Default;
   onSave?: (customer: CustomerBase) => void;
+  defaultCountryCode?: string;
 };
 type SelfRegFormProps = {
-  customer: Pick<CustomerBase, "email">;
+  customer: Pick<CustomerBase, "email" | "phone">;
   onCancel?: () => void;
   variant: CustomerFormVariant.SelfRegistration;
-  onSave?: (values: CustomerBase & { registrationCode: string }) => void;
+  onSave?: FormikConfig<
+    CustomerBase & { registrationCode: string }
+  >["onSubmit"];
+  defaultCountryCode?: string;
 };
 
 const defaultCustomerFormValues: CustomerBase = {
@@ -60,6 +58,7 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
   variant = CustomerFormVariant.Default,
   onCancel = () => {},
   onSave = () => {},
+  defaultCountryCode,
 }: P): JSX.Element => {
   const { t } = useTranslation();
   const [isEditing, setIsEditing] = useState(
@@ -69,6 +68,12 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
   const toggleEdit = () => {
     setIsEditing((isEditing) => !isEditing);
   };
+
+  // Disable email/phone if values already provided as first step of self-registration
+  const emailDisabled =
+    variant === CustomerFormVariant.SelfRegistration && customer.email;
+  const phoneDisabled =
+    variant === CustomerFormVariant.SelfRegistration && customer.phone;
 
   const initialValues = {
     ...defaultCustomerFormValues,
@@ -87,16 +92,16 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
       enableReinitialize
       validationSchema={validationSchema}
       initialValues={initialValues}
-      onSubmit={(values, { setSubmitting }) => {
-        onSave(values);
-        setSubmitting(false);
+      onSubmit={async (values, helpers) => {
+        await onSave(values, helpers);
+        helpers.setSubmitting(false);
 
         if (variant === CustomerFormVariant.Default) {
           toggleEdit();
         }
       }}
     >
-      {({ isSubmitting, setFieldValue, resetForm }) => (
+      {({ isSubmitting, resetForm }) => (
         <Form>
           <div className="flex flex-col gap-y-10 justify-between">
             <Section
@@ -161,29 +166,16 @@ const CustomerProfileForm = <P extends DefaultFormProps | SelfRegFormProps>({
                         disabled={!isEditing}
                       />
                     }
-                    disabled={
-                      !isEditing ||
-                      // When self registrating, email should be pre-filled and not changed
-                      variant === CustomerFormVariant.SelfRegistration
-                    }
+                    disabled={!isEditing || emailDisabled}
                   />
                 </div>
                 <div className="col-span-3">
                   <Field
-                    component={TextInput}
+                    component={PhoneInput}
                     name="phone"
                     label={t(CustomerLabel.Phone)}
-                    StartAdornment={
-                      <IconAdornment
-                        Icon={<Phone />}
-                        position="start"
-                        disabled={!isEditing}
-                      />
-                    }
-                    onBlur={(e: FocusEvent<HTMLInputElement>) =>
-                      setFieldValue("phone", e.target.value.replace(/\s/g, ""))
-                    }
-                    disabled={!isEditing}
+                    disabled={!isEditing || phoneDisabled}
+                    defaultDialCode={defaultCountryCode}
                   />
                 </div>
               </div>
@@ -304,9 +296,7 @@ const getValidationSchema = (variant: CustomerFormVariant) =>
   Yup.object().shape({
     name: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
     surname: Yup.string().required(i18n.t(ValidationMessage.RequiredField)),
-    email: Yup.string()
-      .required(i18n.t(ValidationMessage.RequiredField))
-      .email(i18n.t(ValidationMessage.Email)),
+    email: Yup.string().email(i18n.t(ValidationMessage.Email)),
     phone: Yup.string().test({
       test: (input) => !input || isValidPhoneNumber(input),
       message: i18n.t(ValidationMessage.InvalidPhone),
@@ -327,6 +317,8 @@ const getValidationSchema = (variant: CustomerFormVariant) =>
     }),
     covidCertificateSuspended: Yup.boolean(),
     subscriptionNumber: Yup.number(),
+
+    // Add validations for additional fields for self registration variant
     ...(variant === CustomerFormVariant.SelfRegistration
       ? {
           registrationCode: Yup.string().required(

@@ -3,8 +3,11 @@ import { useDispatch, useSelector, useStore } from "react-redux";
 import { Redirect, useHistory } from "react-router-dom";
 
 import { CustomerProfileForm, CustomerFormVariant, Layout } from "@eisbuk/ui";
-import { CustomerLabel, useTranslation } from "@eisbuk/translations";
-import { CustomerBase } from "@eisbuk/shared";
+import {
+  CustomerLabel,
+  useTranslation,
+  ValidationMessage,
+} from "@eisbuk/translations";
 
 import { Routes } from "@/enums/routes";
 
@@ -13,11 +16,19 @@ import { getOrganization } from "@/lib/getters";
 import Loading from "@/components/auth/Loading";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import { getAuthEmail, getIsAuthLoaded } from "@/store/selectors/auth";
+import {
+  getAuthEmail,
+  getAuthPhoneNumber,
+  getIsAuthEmpty,
+  getIsAuthLoaded,
+} from "@/store/selectors/auth";
 
 import { signOut } from "@/store/actions/authOperations";
 import { customerSelfRegister } from "@/store/actions/bookingOperations";
-import { getOrgDisplayName } from "@/store/selectors/orgInfo";
+import {
+  getDefaultCountryCode,
+  getOrgDisplayName,
+} from "@/store/selectors/orgInfo";
 
 const SelfRegisterPage: React.FC = () => {
   const history = useHistory();
@@ -29,18 +40,27 @@ const SelfRegisterPage: React.FC = () => {
   const organization = getOrganization();
   const orgDisplayName = useSelector(getOrgDisplayName);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
+  const isAuthEmpty = useSelector(getIsAuthEmpty);
   const email = useSelector(getAuthEmail);
+  const phone = useSelector(getAuthPhoneNumber);
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
 
-  // The think is called explicitly (without dispatch) as we want to leverage the async behavioud
+  // The thunk is called explicitly (without dispatch) as we want to leverage the async behaviour
   // of the thunk and return a promise which then gets awaited by 'CustomerForm's internal 'Formik'
   // to more correctly control the 'isSubmitting' state
-  const submitForm = async (
-    values: CustomerBase & { registrationCode: string }
-  ) => {
-    const { secretKey } = await customerSelfRegister(values)(
+  const submitForm: Parameters<
+    typeof CustomerProfileForm
+  >[0]["onSave"] = async (values, { setErrors }) => {
+    const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
       getState
     );
+    if (!codeOk) {
+      setErrors({
+        registrationCode: t(ValidationMessage.InvalidRegistrationCode),
+      });
+    }
+
     if (secretKey) {
       history.push([Routes.CustomerArea, secretKey].join("/"));
     }
@@ -52,9 +72,15 @@ const SelfRegisterPage: React.FC = () => {
     return <Loading />;
   }
 
+  // If auth is empty, this is either a mistake, or the user is trying to access the page directly.
+  // In either case, redirect to login (and register) page.
+  if (isAuthEmpty) {
+    return <Redirect to={Routes.Login} />;
+  }
+
   // This should virtually never happen, but if it does, something went wrong
   // Show unauth page
-  if (!email) {
+  if (!email && !phone) {
     return <Redirect to={Routes.Unauthorized} />;
   }
 
@@ -73,8 +99,9 @@ const SelfRegisterPage: React.FC = () => {
           <CustomerProfileForm
             onCancel={logOut}
             onSave={submitForm}
-            customer={{ email }}
+            customer={{ email, phone }}
             variant={CustomerFormVariant.SelfRegistration}
+            defaultCountryCode={defaultCountryCode}
           />
         </div>
       </div>

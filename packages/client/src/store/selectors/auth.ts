@@ -13,7 +13,13 @@ export const getLocalAuth = (state: LocalStore): User | null =>
 /**
  * Get email from local store auth: this can be used to prefill email in self register form
  */
-export const getAuthEmail = (state: LocalStore) => state.auth.userData?.email;
+export const getAuthEmail = (state: LocalStore) =>
+  state.auth.userData?.email || undefined;
+/**
+ * Get phone number from local store auth: this can be used to prefill phone number in self register form
+ */
+export const getAuthPhoneNumber = (state: LocalStore) =>
+  state.auth.userData?.phoneNumber || undefined;
 
 /**
  * Get boolean representing if a curren user is an authenticated

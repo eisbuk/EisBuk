@@ -26,6 +26,7 @@ interface SetUpOrganization {
 
 export const smtpPort = 5000;
 export const smtpHost = "localhost";
+export const emailFrom = "dummy@email.com";
 
 export const setUpOrganization: SetUpOrganization = async ({
   doLogin = true,
@@ -50,7 +51,7 @@ export const setUpOrganization: SetUpOrganization = async ({
     // Set given user as admin in org structure
     orgRef.set({
       admins: [email],
-      emailFrom: "dummy@email.com",
+      emailFrom,
       emailTemplates,
       ...additionalSetup,
     }),

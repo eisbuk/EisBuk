@@ -31,7 +31,7 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
     // If auth empty, show login/register screen
     case isAuthEmpty:
       return <Route {...props} />;
-    // If admin, retirect to root page (attendance view)
+    // If admin, redirect to root page (attendance view)
     case isAdmin:
       return <Redirect to={PrivateRoutes.Root} />;
     // If not admin, but has 'secretKey' redirect to customer area
