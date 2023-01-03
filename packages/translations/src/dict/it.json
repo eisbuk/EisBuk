@@ -56,7 +56,7 @@
     "SendSignInLink": "Send sign in link",
     "ConfirmEmail": "Conferma la email",
     "ResendEmail": "Invia di nuovo la email",
-    "ResendSMS": "Resend Code",
+    "ResendSMS": "Invia di nuovo il codice",
     "EnterCode": "Inserisci il codice"
   },
 
@@ -93,12 +93,12 @@
   },
   "BookingNotesForm": {
     "Placeholder": "Personal notes...",
-    "HelpText": "Make some personal notes..."
+    "HelpText": "Annotazioni personali..."
   },
 
   "CustomerLabel": {
     "Welcome": "Benvenuti a {{ displayName }}",
-    "FillTheForm": "Please fill out some details before we continue",
+    "FillTheForm": "Inserisci i tuoi dati per continuare",
     "Name": "Nome",
     "Surname": "Cognome",
     "Categories": "Categorie",
@@ -114,8 +114,8 @@
     "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",
     "PersonalDetails": "Dati personali",
     "ManagePersonalDetails": "Gestisci i tuoi dati personali",
-    "RegistrationCode": "Registration code",
-    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
+    "RegistrationCode": "Codice di regitrazione",
+    "InputRegistrationCode": "Inserisci qui il codice di registrazione. Se non hai un codice di registrazione contatta un amministratore"
   },
   "OrganizationLabel": {
     "EmailNameFrom": "Nome Email Da",
@@ -132,7 +132,7 @@
     "SMS": "SMS",
     "General": "Generale",
     "BCC": "BCC",
-    "RegistrationCode": "Registration code"
+    "RegistrationCode": "Codice di registrazione"
   },
   "Validations": {
     "Email": "Inserisci una email valida",
@@ -145,7 +145,7 @@
     "WeakPassword": "La password deve contenere almeno {{ min }} caratteri",
     "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
     "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri",
-    "InvalidRegistrationCode": "The registration code is invalid"
+    "InvalidRegistrationCode": "Il codice di registrazione non è valido. Controlla anche le maiuscole/minuscole"
   },
 
   "Prompt": {
@@ -235,7 +235,7 @@
 
     "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario",
 
-    "CustomerProfileRegistered": "Registration successful",
+    "CustomerProfileRegistered": "Registrazione completata",
     "CustomerProfileUpdated": "Profilo cliente aggiornato",
     "CustomerProfileError": "Errore durante l'aggiornamento del profilo cliente"
   },
@@ -269,8 +269,8 @@
     "SeePastDates": "Indietro",
     "SeeFutureDates": "Avanti",
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
-    "CopySlotsWeek": "Copy slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
-    "CopySlotsDay": "Copy slots from {{ date, EEEE d MMMM }}",
+    "CopySlotsWeek": "Copia slot dalla settimana {{ weekStart, EEEE d MMMM }} a {{ weekEnd, EEEE d MMMM }}",
+    "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
     "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}}} - {{ weekEnd, EEEE d MMMM }}}}",
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
     "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
@@ -302,8 +302,8 @@
     "NoSlots": "Al momento non sono disponibili slot per il mese di {{ currentDate, MMMM }}",
     "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
     "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}",
-    "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
-    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "NoCategories": "Il tuo account deve ancora essere approvato. Contatta un amministratore se pensi che dovrebbe già esserlo.",
+    "ContactEmail": "Per maggiori informazioni, contattaci: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Inizio",
@@ -320,7 +320,7 @@
   },
 
   "Forms": {
-    "ShowPassword": "show password",
-    "HidePassword": "hide password"
+    "ShowPassword": "Mostra password",
+    "HidePassword": "Nascondi password"
   }
 }
