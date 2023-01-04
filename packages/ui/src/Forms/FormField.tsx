@@ -51,7 +51,6 @@ const FormField: React.FC<FormFieldProps> = ({
   name = "",
   label,
   variant,
-  helpText,
   Icon,
   width = FormFieldWitdh.SM,
   disabled: propsDisabled,
@@ -66,25 +65,26 @@ const FormField: React.FC<FormFieldProps> = ({
   const disabled =
     propsDisabled || sectionDisabled || disabledFields.includes(name);
 
+  // We're optionally adding these props (if they're defined) as we
+  // don't want to get: "React doesn't recognize the following props on a DOM element" error
+  const additionalProps = {
+    ...(Icon && {
+      StartAdornment: (
+        <IconAdornment Icon={<Icon />} position="start" disabled={disabled} />
+      ),
+    }),
+  };
+
   return (
     <div className={width}>
       <Field
+        {...props}
+        {...additionalProps}
         name={name}
         label={label}
         component={componentLookup[variant]}
         type={typeLookup[variant]}
-        StartAdornment={
-          Icon && (
-            <IconAdornment
-              Icon={<Icon />}
-              position="start"
-              disabled={disabled}
-            />
-          )
-        }
         disabled={disabled}
-        helpText={helpText}
-        defauldDialCode={(props as PhoneInputProps).defaultDialCode}
       />
     </div>
   );

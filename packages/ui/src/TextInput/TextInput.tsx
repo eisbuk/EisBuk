@@ -54,6 +54,10 @@ const TextInput: React.FC<TextInputFieldProps> = ({
 
   const inputElement = multiline ? "textarea" : "input";
 
+  const adornmentClasses = `flex mr-1 ${
+    multiline ? "items-start my-3" : "items-center"
+  }`;
+
   return (
     <div className={["space-y-1", className].join(" ")}>
       <label htmlFor={name} className={labelClasses}>
@@ -61,7 +65,7 @@ const TextInput: React.FC<TextInputFieldProps> = ({
       </label>
       <div className={containerClasses}>
         {StartAdornment && (
-          <div className="flex items-center mr-1">{StartAdornment}</div>
+          <div className={adornmentClasses}>{StartAdornment}</div>
         )}
 
         {React.createElement(inputElement, {
@@ -75,9 +79,7 @@ const TextInput: React.FC<TextInputFieldProps> = ({
           ...rest,
         })}
 
-        {EndAdornment && (
-          <div className="flex items-center ml-1">{EndAdornment}</div>
-        )}
+        {EndAdornment && <div className={adornmentClasses}>{EndAdornment}</div>}
       </div>
       <p className={helpTextClasses}>{!disabled && supportContent}</p>
     </div>
