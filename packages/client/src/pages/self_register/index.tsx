@@ -2,12 +2,12 @@ import React from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { Redirect, useHistory } from "react-router-dom";
 
-import { CustomerProfileForm, CustomerFormVariant, Layout } from "@eisbuk/ui";
 import {
   CustomerLabel,
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
+import { CustomerForm, Layout } from "@eisbuk/ui";
 
 import { Routes } from "@/enums/routes";
 
@@ -49,7 +49,7 @@ const SelfRegisterPage: React.FC = () => {
   // of the thunk and return a promise which then gets awaited by 'CustomerForm's internal 'Formik'
   // to more correctly control the 'isSubmitting' state
   const submitForm: Parameters<
-    typeof CustomerProfileForm
+    typeof CustomerForm.SelfReg
   >[0]["onSave"] = async (values, { setErrors }) => {
     const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
@@ -96,12 +96,11 @@ const SelfRegisterPage: React.FC = () => {
             </h1>
             <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>
           </div>
-          <CustomerProfileForm
+          <CustomerForm.SelfReg
             onCancel={logOut}
             onSave={submitForm}
             customer={{ email, phone }}
-            variant={CustomerFormVariant.SelfRegistration}
-            defaultCountryCode={defaultCountryCode}
+            defaultDialCode={defaultCountryCode}
           />
         </div>
       </div>

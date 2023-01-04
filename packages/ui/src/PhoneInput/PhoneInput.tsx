@@ -1,4 +1,4 @@
-import { FieldInputProps } from "formik";
+import { FieldInputProps, FieldProps } from "formik";
 import React, { useState } from "react";
 
 import TextInput, { TextInputProps } from "../TextInput";
@@ -8,12 +8,14 @@ import CountryCodesDropdown, {
   getDefaultCountryDialCode,
 } from "../CountryCodesDropdown";
 
-interface Props extends Omit<TextInputProps, "type" | "inputMode"> {
+export interface PhoneInputProps
+  extends Omit<TextInputProps, "type" | "inputMode"> {
   /**
    * Default country dial code (e.g. "+39" for Italy)
    */
   defaultDialCode?: string;
 }
+type PhoneInputFieldProps = PhoneInputProps & Omit<FieldProps, "meta">;
 
 /**
  * A function to initialise country dropdown. Tries to infer the
@@ -38,7 +40,7 @@ const initCountryDropdown =
     return prefix;
   };
 
-const PhoneInput: React.FC<Props> = ({
+const PhoneInput: React.FC<PhoneInputFieldProps> = ({
   field: f,
   defaultDialCode,
   ...props

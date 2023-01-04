@@ -1,8 +1,8 @@
-import TextInput, { TextInputProps } from "./TextInput";
+import TextInput from "./TextInput";
 
 export default TextInput;
 
-export type { TextInputProps };
+export type { TextInputProps, TextInputFieldProps } from "./TextInput";
 
 export {
   IconAdornment,

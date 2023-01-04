@@ -17,7 +17,6 @@ import BookingsCountdown from "./BookingsCountdown";
 import TextInput from "./TextInput";
 import DateInput from "./DateInput";
 import Checkbox from "./Checkbox";
-import CustomerProfileForm from "./Forms/CustomerProfile";
 import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
@@ -40,7 +39,7 @@ export * from "./Layout";
 export * from "./IconButton";
 export * from "./Table";
 export * from "./AttendanceVarianceTable";
-export * from "./Forms/CustomerProfile";
+export * from "./Forms/CustomerForm";
 
 export {
   NotificationToast,
@@ -58,7 +57,6 @@ export {
   TextInput,
   DateInput,
   Checkbox,
-  CustomerProfileForm,
   HoverText,
   IconButton,
   TextareaEditable,
