@@ -32,3 +32,9 @@ export const Default = (): JSX.Element => (
 export const SelfRegistration = (): JSX.Element => (
   <CustomerForm.SelfReg customer={customer} />
 );
+
+export const AdminEdit = (): JSX.Element => (
+  <CustomerForm.Admin customer={customer} />
+);
+
+export const AdminCreate = (): JSX.Element => <CustomerForm.Admin />;

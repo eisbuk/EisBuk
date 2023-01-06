@@ -87,7 +87,7 @@ export const CategoryLabel = {
 // #region forms
 export enum CustomerFormTitle {
   NewCustomer = "FormTitle.NewCustomer",
-  EditCustomer = "FormTitle.EditCustomer",
+  AthleteProfile = "FormTitle.AthleteProfile",
 }
 export enum SlotFormTitle {
   NewSlot = "FormTitle.NewSlot",
@@ -120,8 +120,12 @@ export enum CustomerLabel {
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
+
   RegistrationCode = "CustomerLabel.RegistrationCode",
   InputRegistrationCode = "CustomerLabel.InputRegistrationCode",
+
+  AdminValues = "CustomerLabel.AdminValues",
+  AdminValuesDescription = "CustomerLabel.AdminValuesDescription",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -197,6 +201,7 @@ export enum ActionButton {
 
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",
+  DeleteCustomer = "ActionButton.DeleteCustomer",
 
   BookInterval = "ActionButton.BookInterval",
   FinalizeBookings = "ActionButton.FinalizeBookings",
@@ -208,6 +213,7 @@ export enum ActionButton {
   ExtendBookingDate = "ActionButton.ExtendBookingDate",
 
   Save = "ActionButton.Save",
+  Back = "ActionButton.Back",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
   Confirm = "ActionButton.Confirm",
