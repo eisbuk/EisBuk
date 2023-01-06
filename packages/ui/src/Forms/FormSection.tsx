@@ -19,7 +19,7 @@ const FormSection: React.FC<FormSectionProps> = ({
   ...formSectionContext
 }) => (
   <FormSectionContext.Provider value={formSectionContext}>
-    <div className="md:grid md:grid-cols-3 md:gap-6">
+    <div className="py-3 md:grid md:grid-cols-3 md:gap-6">
       <div className="md:col-span-1">
         <h2 className="text-lg text-cyan-700 font-medium">{title}</h2>
 
