@@ -4,7 +4,6 @@
 
 import React from "react";
 import { screen, render, cleanup, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -35,6 +34,7 @@ describe("ExtendBookingDateDialog", () => {
     render(
       <ExtendBookingDateDialog
         {...saul}
+        extendedDate="2022-03-03"
         onClose={mockOnClose}
         onCloseAll={() => {}}
       />
@@ -51,12 +51,11 @@ describe("ExtendBookingDateDialog", () => {
     expect(mockOnClose).toHaveBeenCalled();
   });
 
-  test("should call delete customer with customer data and close the modal on confirm", async () => {
-    userEvent.type(screen.getByRole("textbox"), "2022-01-01");
+  test("should dispatch 'extendBookingDate' with the customer id and the extended date provided", async () => {
     screen.getByText(i18n.t(ActionButton.ExtendBookingDate) as string).click();
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockExtendBookingDate(saul.id, "2022-01-01")
+        mockExtendBookingDate(saul.id, "2022-03-03")
       );
     });
     expect(mockOnClose).toHaveBeenCalled();
