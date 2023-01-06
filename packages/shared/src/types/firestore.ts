@@ -158,7 +158,7 @@ export interface SlotInterface {
   /**
    * Athlete categories this slot is suitable for.
    */
-  categories: Category[];
+  categories: (Category | DeprecatedCategory)[];
   /**
    * Intervals available for booking. Keyed by start-end time.
    *
