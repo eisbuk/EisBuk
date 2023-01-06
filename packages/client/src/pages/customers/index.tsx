@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
+import { DateTime } from "luxon";
 
 import Fab from "@mui/material/Fab";
 import Grid from "@mui/material/Grid";
@@ -14,11 +15,12 @@ import { OrgSubCollection } from "@eisbuk/shared";
 import { Layout } from "@eisbuk/ui";
 import {
   useTranslation,
-  ActionButton,
   NavigationLabel,
+  AdminAria,
 } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
+import { __organization__ } from "@/lib/constants";
 
 import CustomerGrid from "@/components/atoms/CustomerGrid";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
@@ -33,14 +35,12 @@ import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
 
 import useTitle from "@/hooks/useTitle";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
+import { createModal } from "@/features/modal/useModal";
 
 import { isEmpty } from "@/utils/helpers";
 import { getNewSubscriptionNumber } from "./utils";
 
 import { adminLinks } from "@/data/navigation";
-import { DateTime } from "luxon";
-import { __organization__ } from "@/lib/constants";
-import { createModal } from "@/features/modal/useModal";
 
 const CustomersPage: React.FC = () => {
   const { t } = useTranslation();
@@ -98,7 +98,7 @@ const CustomersPage: React.FC = () => {
         <Fab
           data-testid="add-athlete"
           color="primary"
-          aria-label={t(ActionButton.AddAthlete)}
+          aria-label={t(AdminAria.NewCustomer)}
           className={[classes.fab, classes.buttonPrimary].join(" ")}
           onClick={handleAddAthlete}
         >

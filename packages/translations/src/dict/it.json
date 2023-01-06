@@ -268,6 +268,7 @@
     "PageNav": "Navigazione",
     "SeePastDates": "Indietro",
     "SeeFutureDates": "Avanti",
+
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlotsWeek": "Copia slot dalla settimana {{ weekStart, EEEE d MMMM }} a {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
@@ -275,7 +276,9 @@
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
     "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
     "CreateSlots": "Crea nuovo slot",
-    "EnableEdit": "Abilita la modifica"
+    "EnableEdit": "Abilita la modifica",
+
+    "New Customer": "Nuovo cliente"
   },
 
   "SlotFormAria": {
