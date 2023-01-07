@@ -6,7 +6,6 @@ import React from "react";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import { Customer, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   AdminAria,
   CategoryLabel,
@@ -48,11 +47,9 @@ jest.mock("react-redux", () => ({
  * @param payload
  * @returns
  */
-const mockMarkAttImplementation = (payload: {
-  slotId: SlotInterface["id"];
-  customerId: Customer["id"];
-  attendedInterval: string;
-}) => ({
+const mockMarkAttImplementation = (
+  payload: Parameters<typeof attendanceOperations.markAttendance>[0]
+) => ({
   payload,
 });
 /**
@@ -63,10 +60,9 @@ const mockMarkAttImplementation = (payload: {
  * @param payload
  * @returns payload
  */
-const mockMarkAbsImplementation = (payload: {
-  slotId: SlotInterface["id"];
-  customerId: Customer["id"];
-}) => ({
+const mockMarkAbsImplementation = (
+  payload: Parameters<typeof attendanceOperations.markAbsence>[0]
+) => ({
   payload,
 });
 
@@ -84,8 +80,13 @@ const thumbsUp = "👍";
 const thumbsDown = "👎";
 // const trashCan = "🗑️";
 
-const customerId = saul.id;
 const slotId = baseAttendanceCard.id;
+
+const shortSaul = {
+  customerId: saul.id,
+  name: saul.name,
+  surname: saul.surname,
+};
 
 // interval values we're using across tests
 const intervalKeys = Object.keys(intervals).sort(comparePeriods);
@@ -159,7 +160,7 @@ describe("AttendanceCard", () => {
       expect(mockDispatch).toHaveBeenCalledWith(
         mockMarkAttImplementation({
           slotId,
-          customerId,
+          ...shortSaul,
           attendedInterval: bookedInterval,
         })
       );
@@ -175,8 +176,8 @@ describe("AttendanceCard", () => {
       screen.getByText(thumbsUp).click();
       expect(mockDispatch).toHaveBeenCalledWith(
         mockMarkAbsImplementation({
+          ...shortSaul,
           slotId,
-          customerId,
         })
       );
     });
@@ -268,8 +269,8 @@ describe("AttendanceCard", () => {
     test("should dispatch 'markAttendance' on change of interval", async () => {
       screen.getByTestId(__nextIntervalButtonId__).click();
       const mockDispatchAction = mockMarkAttImplementation({
+        ...shortSaul,
         slotId,
-        customerId,
         attendedInterval: intervalKeys[2],
       });
       await waitFor(() =>
@@ -312,8 +313,8 @@ describe("AttendanceCard", () => {
       expect(mockDispatch).toHaveBeenCalledTimes(1);
       // final interval = interval[2]
       const mockDispatchAction = mockMarkAttImplementation({
+        ...shortSaul,
         slotId,
-        customerId,
         attendedInterval: intervalKeys[2],
       });
       expect(mockDispatch).toHaveBeenCalledWith(mockDispatchAction);

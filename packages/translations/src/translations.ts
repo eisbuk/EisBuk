@@ -264,14 +264,21 @@ export enum BirthdayMenu {
 // #region notifications
 export enum NotificationMessage {
   BookingSuccess = "Notification.BookingSuccess",
+  BookingError = "Notification.BookingError",
   BookingCanceled = "Notification.BookingCanceled",
   BookingCanceledError = "Notification.BookingCanceledError",
   BookingNotesUpdated = "Notification.BookingNotesUpdated",
   BookingNotesError = "Notification.BookingNotesError",
 
   SlotAdded = "Notification.SlotAdded",
+  SlotAddError = "Notification.SlotAddError",
   SlotUpdated = "Notification.SlotUpdated",
+  SlotUpdateError = "Notification.SlotUpdateError",
   SlotDeleted = "Notification.SlotRemoved",
+  SlotDeleteError = "Notification.SlotRemoveError",
+
+  CopyPasteErrorDay = "Notification.CopyPasteErrorDay",
+  CopyPasteErrorWeek = "Notification.CopyPasteErrorWeek",
 
   LogoutSuccess = "Notification.LogoutSuccess",
   LogoutError = "Notification.LogoutError",
@@ -281,14 +288,24 @@ export enum NotificationMessage {
 
   EmailSent = "Notification.EmailSent",
   SMSSent = "Notification.SMSSent",
+
   BookingDateExtended = "Notification.BookingDateExtended",
+  BookingDateExtendedError = "Notification.BookingDateExtendedError",
 
   Error = "Notification.Error",
   SlotsAddedToCalendar = "Notification.SlotsAddedToCalendar",
 
-  CustomerProfileRegistered = "Notification.CustomerProfileRegistered",
+  MarkAbsenceError = "Notification.MarkAbsenceError",
+  MarkAttendanceError = "Notification.MarkAttendanceError",
+
+  SelfRegSuccess = "Notification.SelfRegSuccess",
+  SelfRegError = "Notification.SelfRegError",
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
-  CustomerProfileError = "Notification.CustomerProfileError",
+  CustomerProfileError = "Notification.CustomerProfileUpdated",
+  CustomerUpdated = "Notification.CustomerUpdated",
+  CustomerUpdateError = "Notification.CustomerUpdateError",
+  CustomerDeleted = "Notification.CustomerDeleted",
+  CustomerDeleteError = "Notification.CustomerDeleteError",
 }
 
 export enum BookingCountdownMessage {

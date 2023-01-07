@@ -174,11 +174,12 @@ export const pasteSlotsDay =
       });
 
       await batch.commit();
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CopyPasteErrorDay),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -221,11 +222,12 @@ export const pasteSlotsWeek =
       });
 
       await batch.commit();
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CopyPasteErrorWeek),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }

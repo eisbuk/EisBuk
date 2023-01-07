@@ -48,17 +48,22 @@ export const updateCustomer =
       await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
-          message: `${customer.name} ${customer.surname} ${i18n.t(
-            NotificationMessage.Updated
-          )}`,
+          message: i18n.t(NotificationMessage.CustomerUpdated, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CustomerUpdateError, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -82,44 +87,56 @@ export const deleteCustomer =
 
       dispatch(
         enqueueNotification({
-          message: `${customer.name} ${customer.surname} ${i18n.t(
-            NotificationMessage.Removed
-          )}`,
+          message: i18n.t(NotificationMessage.CustomerDeleted, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CustomerDeleteError, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
   };
 
 export const extendBookingDate =
-  (customerId: string, extendedDate: string): FirestoreThunk =>
+  (customer: Customer, extendedDate: string): FirestoreThunk =>
   async (dispatch) => {
     try {
       const db = getFirestore();
       await setDoc(
-        doc(db, getCustomersPath(getOrganization()), customerId),
+        doc(db, getCustomersPath(getOrganization()), customer.id),
         { extendedDate },
         { merge: true }
       );
 
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.BookingDateExtended),
+          message: i18n.t(NotificationMessage.BookingDateExtended, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Success,
         })
       );
-    } catch (error) {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.BookingDateExtendedError, {
+            name: customer.name,
+            surname: customer.surname,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }

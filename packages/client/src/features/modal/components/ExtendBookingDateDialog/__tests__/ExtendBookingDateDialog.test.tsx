@@ -55,7 +55,7 @@ describe("ExtendBookingDateDialog", () => {
     screen.getByText(i18n.t(ActionButton.ExtendBookingDate) as string).click();
     await waitFor(() => {
       expect(mockDispatch).toHaveBeenCalledWith(
-        mockExtendBookingDate(saul.id, "2022-03-03")
+        mockExtendBookingDate(saul, "2022-03-03")
       );
     });
     expect(mockOnClose).toHaveBeenCalled();

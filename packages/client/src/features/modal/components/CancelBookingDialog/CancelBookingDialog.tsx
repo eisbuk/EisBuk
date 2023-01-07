@@ -23,8 +23,18 @@ const CancelBookingDialog: React.FC<CancelBookingContent> = ({
 }) => {
   const dispatch = useDispatch();
 
+  // Convert interval to string for notification purposes
+  const intervalString = `${interval.startTime}-${interval.endTime}`;
+
   const onConfirm = () => {
-    dispatch(cancelBooking({ secretKey, slotId: slotProps.id }));
+    dispatch(
+      cancelBooking({
+        secretKey,
+        slotId: slotProps.id,
+        date: slotProps.date,
+        interval: intervalString,
+      })
+    );
     onClose();
   };
 

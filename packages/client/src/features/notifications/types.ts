@@ -16,6 +16,8 @@ export interface NotificationInterface {
   message: string;
   /** "success" / "error" */
   variant: NotifVariant;
+  /** (Optional) error to be logged to the console */
+  error?: Error;
 }
 
 /**
@@ -41,6 +43,6 @@ export type NotificationReducerAction<A extends NotificationAction> =
   A extends NotificationAction.Enqueue
     ? {
         type: NotificationAction.Enqueue;
-        payload: Omit<NotificationInterface, "key">;
+        payload: Omit<NotificationInterface, "key"> & { error?: Error };
       }
     : { type: A };

@@ -1,4 +1,5 @@
 import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
+import { DateTime } from "luxon";
 
 import {
   BookingSubCollection,
@@ -29,6 +30,8 @@ interface UpdateBooking<
     payload: {
       slotId: SlotInterface["id"];
       secretKey: Customer["secretKey"];
+      date: string;
+      interval: string;
     } & P
   ): FirestoreThunk;
 }
@@ -37,11 +40,8 @@ interface UpdateBooking<
  * Dispatches booked interval to firestore.
  * Additionally, it cancels booked interval for the same slot if one is already booked.
  */
-export const bookInterval: UpdateBooking<{
-  bookedInterval: string;
-  date: SlotInterface["date"];
-}> =
-  ({ slotId, secretKey, bookedInterval, date }): FirestoreThunk =>
+export const bookInterval: UpdateBooking =
+  ({ slotId, secretKey, interval, date }): FirestoreThunk =>
   async (dispatch) => {
     try {
       const db = getFirestore();
@@ -49,21 +49,28 @@ export const bookInterval: UpdateBooking<{
       // update booked interval to firestore
       await setDoc(
         doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
-        { interval: bookedInterval, date }
+        { interval, date }
       );
 
       // show success message
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.BookingSuccess),
+          message: i18n.t(NotificationMessage.BookingSuccess, {
+            date: DateTime.fromISO(date),
+            interval,
+          }),
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.BookingError, {
+            date: DateTime.fromISO(date),
+            interval,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -73,7 +80,7 @@ export const bookInterval: UpdateBooking<{
  * Cancels booked inteval of the provided slot for provided customer.
  */
 export const cancelBooking: UpdateBooking =
-  ({ slotId, secretKey }) =>
+  ({ slotId, secretKey, date, interval }) =>
   async (dispatch) => {
     try {
       const db = getFirestore();
@@ -86,15 +93,22 @@ export const cancelBooking: UpdateBooking =
       // show success message
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.BookingCanceled),
+          message: i18n.t(NotificationMessage.BookingCanceled, {
+            date: DateTime.fromISO(date),
+            interval,
+          }),
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.BookingCanceledError, {
+            date: DateTime.fromISO(date),
+            interval,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -123,11 +137,12 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
           message: i18n.t(NotificationMessage.BookingNotesUpdated),
         })
       );
-    } catch (error) {
+    } catch (err) {
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.BookingNotesError),
+          error: err as Error,
         })
       );
     }
@@ -158,11 +173,12 @@ export const customerSelfUpdate: {
         message: i18n.t(NotificationMessage.CustomerProfileUpdated),
       })
     );
-  } catch (error) {
+  } catch (err) {
     dispatch(
       enqueueNotification({
         variant: NotifVariant.Error,
         message: i18n.t(NotificationMessage.CustomerProfileError),
+        error: err as Error,
       })
     );
   }
@@ -191,7 +207,7 @@ export const customerSelfRegister: {
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Success,
-          message: i18n.t(NotificationMessage.CustomerProfileRegistered),
+          message: i18n.t(NotificationMessage.SelfRegSuccess),
         })
       );
       return {
@@ -199,14 +215,14 @@ export const customerSelfRegister: {
         secretKey,
         codeOk: true,
       };
-    } catch (error) {
+    } catch (err) {
       dispatch(
         enqueueNotification({
           variant: NotifVariant.Error,
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.SelfRegError),
+          error: err as Error,
         })
       );
-      console.log(error);
       return { id: "", secretKey: "", codeOk: false };
     }
   };
@@ -242,11 +258,12 @@ export const createCalendarEvents =
           variant: NotifVariant.Success,
         })
       );
-    } catch (error) {
+    } catch (err) {
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.Error),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -295,11 +312,12 @@ export const sendICSFile: SendICSFile =
           variant: NotifVariant.Success,
         })
       );
-    } catch (error) {
+    } catch (err) {
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.Error),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }

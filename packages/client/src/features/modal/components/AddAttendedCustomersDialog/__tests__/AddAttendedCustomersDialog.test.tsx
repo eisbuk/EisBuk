@@ -66,6 +66,8 @@ describe("AddAttendedCustomersDialog", () => {
     expect(mockDispatch).toHaveBeenCalledWith(
       mockMarkAttendance({
         customerId: saul.id,
+        name: saul.name,
+        surname: saul.surname,
         slotId: baseSlot.id,
         attendedInterval: defaultInterval,
       })
