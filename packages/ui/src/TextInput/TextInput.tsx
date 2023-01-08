@@ -14,6 +14,8 @@ export interface TextInputProps extends InputHTMLAttributes {
   disabled?: boolean;
   multiline?: boolean;
   rows?: number;
+  containerClassName?: string;
+  inputClassName?: string;
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;
 }
@@ -29,6 +31,8 @@ const TextInput: React.FC<TextInputFieldProps> = ({
   multiline,
   rows = 2,
   className = "",
+  containerClassName = "",
+  inputClassName = "",
   ...props
 }) => {
   const { field, form, ...rest } = props;
@@ -44,10 +48,10 @@ const TextInput: React.FC<TextInputFieldProps> = ({
     : "outline-gray-300";
 
   const labelClasses = labelBaseClasses.join(" ");
-  const inputClasses = inputBaseClasses.join(" ");
+  const inputClasses = inputBaseClasses.concat(inputClassName).join(" ");
   const helpTextClasses = helpTextBaseClasses.concat(helpTextColour).join(" ");
   const containerClasses = containerBaseClasses
-    .concat(containerBorderColour, containerBorderWidth)
+    .concat(containerBorderColour, containerBorderWidth, containerClassName)
     .join(" ");
 
   const supportContent = hasValidationError ? errors[name] : helpText;

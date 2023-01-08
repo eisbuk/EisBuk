@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
@@ -9,20 +9,11 @@ import i18n, {
   ActionButton,
   ValidationMessage,
   useTranslation,
-  OrganizationLabel,
 } from "@eisbuk/translations";
-import {
-  Layout,
-  CountryCodesDropdownFormik,
-  Button,
-  ButtonColor,
-  ButtonSize,
-} from "@eisbuk/ui";
+import { Layout, Button, ButtonColor, ButtonSize, TabItem } from "@eisbuk/ui";
+import { Cog, Mail } from "@eisbuk/svg";
 
 import AdminsField from "./AdminsField";
-import FormSection, {
-  FormSectionFieldProps,
-} from "@/components/atoms/FormSection";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
@@ -35,6 +26,9 @@ import { isEmpty } from "@/utils/helpers";
 
 import { adminLinks } from "@/data/navigation";
 
+import EmailTemplateSettings from "./views/EmailTemplateSettings";
+import GeneralSettings from "./views/GeneralSettings";
+
 // #region validations
 const OrganizationValidation = Yup.object().shape({
   smsFrom: Yup.string()
@@ -45,6 +39,20 @@ const OrganizationValidation = Yup.object().shape({
 // #endregion validations
 
 const OrganizationSettings: React.FC = () => {
+  enum Views {
+    EmailTemplates = "EmailTemplatesSection",
+    GeneralSettings = "GeneralSettings",
+  }
+
+  // Get appropriate view to render
+  const viewsLookup = {
+    [Views.EmailTemplates]: EmailTemplateSettings,
+    [Views.GeneralSettings]: GeneralSettings,
+  };
+  const [view, setView] = useState<keyof typeof viewsLookup>(
+    Views.GeneralSettings
+  );
+
   const dispatch = useDispatch();
 
   const organization = useSelector(getOrganizationSettings);
@@ -62,6 +70,9 @@ const OrganizationSettings: React.FC = () => {
     orgData: OrganizationData,
     actions: FormikHelpers<OrganizationData>
   ) => {
+    Object.keys(orgData).forEach((item) => {
+      if (item.match("preview")) delete orgData[item];
+    });
     dispatch(updateOrganization(orgData, actions.setSubmitting));
   };
 
@@ -75,7 +86,24 @@ const OrganizationSettings: React.FC = () => {
     ...(organization as OrganizationData),
   };
 
-  const title = `${organization?.displayName || "Organization"}  Settings`;
+  const additionalButtons = (
+    <>
+      <TabItem
+        key="general-settings-view-button"
+        Icon={Cog as any}
+        label={i18n.t("SettingsNavigationLabel.GeneralSettings")}
+        onClick={() => setView(Views.GeneralSettings)}
+        active={view === Views.GeneralSettings}
+      />
+      <TabItem
+        key="email-templates-view-button"
+        Icon={Mail as any}
+        label={i18n.t("SettingsNavigationLabel.EmailTemplates")}
+        onClick={() => setView(Views.EmailTemplates)}
+        active={view === Views.EmailTemplates}
+      />
+    </>
+  );
 
   return (
     <Layout
@@ -83,13 +111,9 @@ const OrganizationSettings: React.FC = () => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalAdminContent={additionalAdminContent}
+      additionalButtons={additionalButtons}
     >
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-        <div className="pt-6 pb-8">
-          <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
-            {title}
-          </h1>
-        </div>
         <Formik
           {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}
@@ -97,12 +121,16 @@ const OrganizationSettings: React.FC = () => {
         >
           {({ isSubmitting, isValidating, handleReset }) => (
             <div className="md:px-11">
-              <AdminsField currentUser={currentUser} />
+              {view === Views.GeneralSettings && (
+                <AdminsField currentUser={currentUser} />
+              )}
 
               <Form>
-                <FormSection content={generalFields} title="General" />
-                <FormSection content={emailFields} title="Email" />
-                <FormSection content={smsFields} title="SMS" />
+                {view === Views.EmailTemplates ? (
+                  <EmailTemplateSettings />
+                ) : (
+                  <GeneralSettings />
+                )}
 
                 <div className="py-4 flex justify-end items-center gap-2">
                   <Button
@@ -145,59 +173,5 @@ const emptyValues = {
   smsTemplate: "",
   emailBcc: "",
 };
-
-// #region fieldSetup
-const generalFields: FormSectionFieldProps[] = [
-  {
-    name: "displayName",
-    label: i18n.t(OrganizationLabel.DisplayName),
-  },
-  {
-    name: "location",
-    label: i18n.t(OrganizationLabel.Location),
-  },
-  {
-    name: "registrationCode",
-    label: i18n.t(OrganizationLabel.RegistrationCode),
-  },
-  {
-    name: "defaultCountryCode",
-    label: i18n.t(OrganizationLabel.CountryCode),
-    component: CountryCodesDropdownFormik,
-  },
-];
-const emailFields: FormSectionFieldProps[] = [
-  {
-    name: "emailNameFrom",
-    label: i18n.t(OrganizationLabel.EmailNameFrom),
-  },
-  {
-    name: "emailFrom",
-    label: i18n.t(OrganizationLabel.EmailFrom),
-  },
-  {
-    name: "bcc",
-    label: i18n.t(OrganizationLabel.BCC),
-  },
-  {
-    name: "emailTemplates",
-    label: i18n.t(OrganizationLabel.EmailTemplate),
-    multiline: true,
-    rows: 6,
-  },
-];
-const smsFields: FormSectionFieldProps[] = [
-  {
-    name: "smsFrom",
-    label: i18n.t(OrganizationLabel.SmsFrom),
-  },
-  {
-    name: "smsTemplate",
-    label: i18n.t(OrganizationLabel.SmsTemplate),
-    multiline: true,
-    rows: 6,
-  },
-];
-// #endregion fieldSetup
 
 export default OrganizationSettings;

@@ -27,6 +27,7 @@ interface BaseProps {
   Icon?: React.FC;
   width?: FormFieldWitdh;
   disabled?: boolean;
+  innerRef?: React.RefObject<HTMLInputElement>;
 }
 
 interface TextInputProps extends BaseProps, Omit<TIP, "width"> {
@@ -54,6 +55,7 @@ const FormField: React.FC<FormFieldProps> = ({
   Icon,
   width = FormFieldWitdh.SM,
   disabled: propsDisabled,
+  innerRef,
   ...props
 }) => {
   // Load form section context
@@ -85,6 +87,7 @@ const FormField: React.FC<FormFieldProps> = ({
         component={componentLookup[variant]}
         type={typeLookup[variant]}
         disabled={disabled}
+        innerRef={innerRef}
       />
     </div>
   );

@@ -39,10 +39,7 @@ export interface OrganizationData {
    * Templates for emails (bookings link, extending date, etc.)
    */
   emailTemplates: {
-    [name: string]: {
-      subject: string;
-      html: string;
-    };
+    [name: string]: EmailTemplate;
   };
   /**
    * Caller ID to use when sending out SMSs

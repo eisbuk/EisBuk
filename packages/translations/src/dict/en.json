@@ -17,6 +17,11 @@
     "Month": "Monthly"
   },
 
+  "SettingsNavigationLabel": {
+    "EmailTemplates": "Email Templates",
+    "GeneralSettings": "General Settings"
+  },
+
   "Authorization": {
     "NotAuthorized": "Access not authorized",
     "AdminsOnly": "This space is reserved for administrators",
@@ -120,7 +125,7 @@
   "OrganizationLabel": {
     "EmailNameFrom": "Email Name From",
     "EmailFrom": "Email From",
-    "EmailTemplate": "Email Template",
+    "EmailTemplates": "Email Templates",
     "SmsFrom": "SMS From",
     "SmsTemplate": "SMS Template",
     "DisplayName": "Organization Name",
@@ -134,6 +139,23 @@
     "BCC": "BCC",
     "RegistrationCode": "Registration code"
   },
+  "EmailTemplateLabel": {
+    "SubjectPreview": "Subject Preview",
+    "HTMLPreview": "Body Preview",
+    "SendBookingsLink": "Send Bookings Link",
+    "SendCalendarFile": "Send Calendar File",
+    "SendExtendedBookingsDate": "Send Extended Bookings Date",
+    "OrganizationName": "Organization Name",
+    "Bookingslink": "Bookings Link",
+    "Name": "Name",
+    "Surname": "Surname",
+    "IcsFile": "Calendar File Link",
+    "BookingsMonth": "Bookings Month",
+    "ExtendedBookingsDate": "Extended Bookings Date",
+    "Subject": "Subject",
+    "HTML": "Body"
+  },
+
   "Validations": {
     "Email": "Please insert a valid email",
     "RequiredEntry": "At least one value is required",

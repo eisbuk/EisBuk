@@ -46,7 +46,7 @@ const AdminsField: React.FC<{
 
   return (
     <Form onSubmit={(e) => addAdmin(e)}>
-      <div className="pt-16 pb-8 border-t border-gray-300">
+      <div className="pb-8">
         <h2 className="text-xl text-gray-700 font-medium tracking-wide">
           {t(OrganizationLabel.Admins)}
         </h2>

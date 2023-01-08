@@ -24,6 +24,27 @@ export interface EmailTypePayload {
     customer: SendExtendedBookingLinkCustomer;
   };
 }
+export interface EmailTypeButtons {
+  [EmailType.SendBookingsLink]: {
+    organizationName: string;
+    bookingsLink: string;
+    name: string;
+    surname: string;
+  };
+  [EmailType.SendCalendarFile]: {
+    organizationName: string;
+    name: string;
+    surname: string;
+    icsFile: string;
+  };
+  [EmailType.SendExtendedBookingsDate]: {
+    organizationName: string;
+    bookingsMonth: string;
+    extendedBookingsDate: string;
+    name: string;
+    surname: string;
+  };
+}
 
 export interface SendExtendedBookingLinkCustomer {
   name: string;
