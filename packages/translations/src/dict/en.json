@@ -121,6 +121,7 @@
   },
 
   "OrganizationLabel": {
+    "SettingsTitle": "{{ organization }} Settings",
     "EmailNameFrom": "Email Name From",
     "EmailFrom": "Email From",
     "EmailTemplate": "Email Template",
@@ -280,7 +281,10 @@
     "CopiedSlotsDayBadge": "Copied slots on {{ date, EEEE d MMMM }}",
     "PasteSlots": "Paste copied slots on {{ date, EEEE d MMMM }}",
     "CreateSlots": "Create new slots on",
-    "EnableEdit": "Enable Edit"
+    "EnableEdit": "Enable Edit",
+    "AddAttendedCustomers": "Add attended customers",
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
   },
 
   "SlotFormAria": {

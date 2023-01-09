@@ -3,11 +3,15 @@
  */
 
 import React from "react";
-import { cleanup, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
-import i18n, { CategoryLabel, SlotTypeLabel } from "@eisbuk/translations";
+import i18n, {
+  AdminAria,
+  CategoryLabel,
+  SlotTypeLabel,
+} from "@eisbuk/translations";
 
 import "@/__testSetup__/firestoreSetup";
 
@@ -20,12 +24,12 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 import { comparePeriods } from "@/utils/sort";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
+import { renderWithRouter } from "@/__testUtils__/wrappers";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { gus, saul, walt } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 import {
-  __addCustomersButtonId__,
   __attendanceButton__,
   __nextIntervalButtonId__,
   __prevIntervalButtonId__,
@@ -104,7 +108,7 @@ describe("AttendanceCard", () => {
 
   describe("Smoke test", () => {
     test("should render proper values passed from props", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[saul as CustomerWithAttendance]}
@@ -129,7 +133,7 @@ describe("AttendanceCard", () => {
 
   describe("Test marking attendance functionality", () => {
     test("should update local state immediately on button click", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
@@ -145,7 +149,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval: null }]}
@@ -162,7 +166,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should dispatch 'markAbsence' on attendance button click if `attended != null`", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
@@ -178,7 +182,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should disable attendance button while there's a discrepency between local attended and attended from firestore (boolean)", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
@@ -193,7 +197,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should disable attendance button while picking new interval - 'attendedInterval != selectedInterval' (this doesn't apply when 'attendedInterval = null'", () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
@@ -210,7 +214,7 @@ describe("AttendanceCard", () => {
 
   describe("Test interval picker ->", () => {
     beforeEach(() => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
@@ -220,7 +224,7 @@ describe("AttendanceCard", () => {
 
     test("should show booked interval (if any) when the attended and booked interval are different", () => {
       cleanup();
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[
@@ -286,7 +290,7 @@ describe("AttendanceCard", () => {
 
   describe("Test debounce", () => {
     test("should only dispatch interval update once if changes are to close to each other", async () => {
-      render(
+      renderWithRouter(
         <AttendanceCard
           {...baseAttendanceCard}
           customers={[
@@ -350,9 +354,11 @@ describe("AttendanceCard", () => {
         ],
       };
 
-      render(<AttendanceCard {...attendanceCard} />);
+      renderWithRouter(<AttendanceCard {...attendanceCard} />);
 
-      screen.getByTestId(__addCustomersButtonId__).click();
+      screen
+        .getByLabelText(i18n.t(AdminAria.AddAttendedCustomers) as string)
+        .click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual(
         "AddAttendedCustomersDialog"
@@ -397,9 +403,9 @@ describe("AttendanceCard", () => {
           customers: [saulWithAttendandce],
           allCustomers: [],
         };
-        // we're rendering two views one to interact with one
+        // we're renderWithRoutering two views one to interact with one
         // for opservation of the updates
-        render(
+        renderWithRouter(
           <>
             <AttendanceCard {...testProps} />
             <AttendanceCard {...testProps} />

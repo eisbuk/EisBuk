@@ -3,12 +3,14 @@
  */
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
 import i18n, { BirthdayMenu as BirthdayMenuLabel } from "@eisbuk/translations";
 
 import BirthdayMenu from "../BirthdayMenu";
+
+import { renderWithRouter } from "@/__testUtils__/wrappers";
 
 import { saul, gus, jane, jian } from "@/__testData__/customers";
 
@@ -39,7 +41,7 @@ jest.mock("react-redux", () => ({
 describe("BirthdayMenu", () => {
   describe("Smoke test", () => {
     beforeEach(() => {
-      render(<BirthdayMenu customers={customers} />);
+      renderWithRouter(<BirthdayMenu customers={customers} />);
       jest.clearAllMocks();
     });
 

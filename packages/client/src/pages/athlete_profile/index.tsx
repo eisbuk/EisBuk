@@ -79,7 +79,7 @@ const AthleteProfilePage: React.FC = () => {
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
         <CustomerForm.Admin
           onSave={handleSave}
-          onClose={() => history.push(PrivateRoutes.Athletes)}
+          onClose={() => history.goBack()}
           onDelete={() => {
             if (customer) {
               openDeleteCustomerDialog(customer);

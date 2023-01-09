@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "@eisbuk/translations";
+import { Link } from "react-router-dom";
 
 import ListItem from "@mui/material/ListItem";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 
 import makeStyles from "@mui/styles/makeStyles";
+
+import { PrivateRoutes } from "@/enums/routes";
 
 import { CustomerWithAttendance } from "@/types/components";
 
@@ -165,37 +168,39 @@ const UserAttendance: React.FC<Props> = ({
   ].join(" ");
 
   return (
-    <ListItem style={{}} className={listItemClass}>
-      <div className={classes.avatarContainer}>
-        <EisbukAvatar {...customer} />
-        <Typography style={{ margin: "0 0.75rem" }}>
-          {customerString}
-        </Typography>
-      </div>
-      <div className={buttonContainerClasses}>
-        <Button
-          className={buttonClasses}
-          data-testid={__attendanceButton__}
-          variant="contained"
-          size="small"
-          onClick={handleClick}
-          disabled={disableButton}
-          style={{ justifySelf: "end" }}
-        >
-          {localAttended ? attendanceButton : absenceButton}
-        </Button>
-      </div>
-      <div className={intervalContainerClasses}>
-        <IntervalPicker
-          disabled={!localAttended}
-          intervals={intervals}
-          attendedInterval={selectedInterval}
-          bookedInterval={bookedInterval}
-          onChange={handleIntervalChange}
-          style={{ justifySelf: "center" }}
-        />
-      </div>
-    </ListItem>
+    <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
+      <ListItem style={{}} className={listItemClass}>
+        <div className={classes.avatarContainer}>
+          <EisbukAvatar {...customer} />
+          <Typography style={{ margin: "0 0.75rem" }}>
+            {customerString}
+          </Typography>
+        </div>
+        <div className={buttonContainerClasses}>
+          <Button
+            className={buttonClasses}
+            data-testid={__attendanceButton__}
+            variant="contained"
+            size="small"
+            onClick={handleClick}
+            disabled={disableButton}
+            style={{ justifySelf: "end" }}
+          >
+            {localAttended ? attendanceButton : absenceButton}
+          </Button>
+        </div>
+        <div className={intervalContainerClasses}>
+          <IntervalPicker
+            disabled={!localAttended}
+            intervals={intervals}
+            attendedInterval={selectedInterval}
+            bookedInterval={bookedInterval}
+            onChange={handleIntervalChange}
+            style={{ justifySelf: "center" }}
+          />
+        </div>
+      </ListItem>
+    </Link>
   );
 };
 
