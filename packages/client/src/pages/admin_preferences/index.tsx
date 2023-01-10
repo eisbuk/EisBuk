@@ -19,6 +19,8 @@ import {
   ButtonSize,
 } from "@eisbuk/ui";
 
+import { getOrganization } from "@/lib/getters";
+
 import AdminsField from "./AdminsField";
 import FormSection, {
   FormSectionFieldProps,
@@ -75,8 +77,6 @@ const OrganizationSettings: React.FC = () => {
     ...(organization as OrganizationData),
   };
 
-  const title = `${organization?.displayName || "Organization"}  Settings`;
-
   return (
     <Layout
       isAdmin
@@ -87,7 +87,9 @@ const OrganizationSettings: React.FC = () => {
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
         <div className="pt-6 pb-8">
           <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
-            {title}
+            {t(OrganizationLabel.SettingsTitle, {
+              organization: getOrganization(),
+            })}
           </h1>
         </div>
         <Formik

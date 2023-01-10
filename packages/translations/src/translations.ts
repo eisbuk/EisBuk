@@ -141,6 +141,7 @@ export enum ValidationMessage {
   InvalidRegistrationCode = "Validations.InvalidRegistrationCode",
 }
 export enum OrganizationLabel {
+  SettingsTitle = "OrganizationLabel.SettingsTitle",
   EmailNameFrom = "OrganizationLabel.EmailNameFrom",
   EmailFrom = "OrganizationLabel.EmailFrom",
   EmailTemplate = "OrganizationLabel.EmailTemplate",
@@ -309,6 +310,9 @@ export enum AdminAria {
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
   EnableEdit = "AdminAria.EnableEdit",
+  AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
+  CloseModal = "AdminAria.CloseModal",
+  BirthdayMenu = "AdminAria.BirthdayMenu",
 }
 
 export enum SlotFormAria {

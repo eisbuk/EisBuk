@@ -176,7 +176,7 @@ describe("Cloud functions", () => {
       }
     );
 
-    test("should reject if no recipient provided", async () => {
+    testWithEmulator("should reject if no recipient provided", async () => {
       const { organization } = await setUpOrganization();
       const payload = {
         type: EmailType.SendBookingsLink,

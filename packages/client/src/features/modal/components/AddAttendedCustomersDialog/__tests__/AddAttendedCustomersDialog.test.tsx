@@ -5,12 +5,13 @@
 import React from "react";
 import { screen, render, cleanup, waitFor } from "@testing-library/react";
 
+import i18n, { AdminAria } from "@eisbuk/translations";
+
 import AddAttendedCustomersDialog from "../AddAttendedCustomersDialog";
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
 import { saul, walt } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
-import { __closeCustomersListId__ } from "@/components/atoms/AttendanceCard/__testData__/testIds";
 
 const mockOnClose = jest.fn();
 // Mock markAttendance to a, sort of, identity function
@@ -48,7 +49,7 @@ describe("AddAttendedCustomersDialog", () => {
         {...{ ...baseSlot, defaultInterval }}
       />
     );
-    screen.getByTestId(__closeCustomersListId__).click();
+    screen.getByLabelText(i18n.t(AdminAria.CloseModal) as string).click();
     expect(mockOnClose).toHaveBeenCalled();
   });
 

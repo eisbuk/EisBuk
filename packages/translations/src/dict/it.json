@@ -121,6 +121,7 @@
   },
 
   "OrganizationLabel": {
+    "SettingsTitle": "{{ organization }} Impostazioni",
     "EmailNameFrom": "Nome Email Da",
     "EmailFrom": "Email Da",
     "EmailTemplate": "Modello Di Email",
@@ -276,11 +277,14 @@
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlotsWeek": "Copia slot dalla settimana {{ weekStart, EEEE d MMMM }} a {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
-    "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}}} - {{ weekEnd, EEEE d MMMM }}}}",
+    "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}} - {{ weekEnd, EEEE d MMMM }}}}",
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
     "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
     "CreateSlots": "Crea nuovo slot",
-    "EnableEdit": "Abilita la modifica"
+    "EnableEdit": "Abilita la modifica",
+    "AddAttendedCustomers": "Aggiungi clienti presenti",
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
   },
 
   "SlotFormAria": {
