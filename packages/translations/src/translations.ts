@@ -295,6 +295,7 @@ export enum AdminAria {
   PageNav = "AdminAria.PageNav",
   SeePastDates = "AdminAria.SeePastDates",
   SeeFutureDates = "AdminAria.SeeFutureDates",
+
   ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
   CopySlotsWeek = "AdminAria.CopySlotsWeek",
   CopySlotsDay = "AdminAria.CopySlotsDay",
@@ -303,6 +304,8 @@ export enum AdminAria {
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
   EnableEdit = "AdminAria.EnableEdit",
+
+  NewCustomer = "AdminAria.NewCustomer",
 }
 
 export enum SlotFormAria {
