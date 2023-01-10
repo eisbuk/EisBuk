@@ -17,21 +17,22 @@ const PreviewField: React.FC<PreviewFieldProps> = ({ name, ...props }) => {
 
   const { t } = useTranslation();
 
+  const preveiwDefaults = {
+    organizationName: "Organization Name",
+    name: "Saul",
+    surname: "Goodman",
+    bookingsLink: "someLink",
+    bookingsMonth: "April",
+    extendedBookingsDate: "02/01",
+    icsFile: "icsFile.ics",
+  };
   const subject = replaceHTMLTags(emailTemplates[name].subject);
   const html = replaceHTMLTags(emailTemplates[name].html);
   React.useEffect(() => {
     if (emailTemplates[name].subject.trim() !== "") {
       setFieldValue(
         `${name}-subject-preview`,
-        `${interpolateText(subject, {
-          organizationName: "Display Name",
-          name: "Saul",
-          surname: "Goodman",
-          bookingsLink: "saulGoodman.com",
-          bookingsMonth: "april",
-          extendedBookingsDate: "02/01",
-          icsFile: "icsFile.ics",
-        })}`
+        `${interpolateText(subject, preveiwDefaults)}`
       );
     }
   }, [emailTemplates[name].subject, setFieldValue, name]);
@@ -41,12 +42,12 @@ const PreviewField: React.FC<PreviewFieldProps> = ({ name, ...props }) => {
       setFieldValue(
         `${name}-html-preview`,
         `${interpolateText(html, {
-          organizationName: "Display Name",
+          organizationName: "Organization Name",
           name: "Saul",
           surname: "Goodman",
-          bookingsLink: "saulGoodman.com",
-          bookingsMonth: "april",
-          extendedBookingsDate: "02/01",
+          bookingsLink: "https://eisbuk.it/saul",
+          bookingsMonth: "April",
+          extendedBookingsDate: "06/04",
           icsFile: "icsFile.ics",
         })}`
       );
