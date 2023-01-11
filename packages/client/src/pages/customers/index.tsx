@@ -16,8 +16,8 @@ import { OrgSubCollection } from "@eisbuk/shared";
 import { Layout } from "@eisbuk/ui";
 import {
   useTranslation,
-  ActionButton,
   NavigationLabel,
+  ActionButton,
 } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 

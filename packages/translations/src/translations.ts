@@ -302,6 +302,7 @@ export enum AdminAria {
   PageNav = "AdminAria.PageNav",
   SeePastDates = "AdminAria.SeePastDates",
   SeeFutureDates = "AdminAria.SeeFutureDates",
+
   ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
   CopySlotsWeek = "AdminAria.CopySlotsWeek",
   CopySlotsDay = "AdminAria.CopySlotsDay",
@@ -313,6 +314,7 @@ export enum AdminAria {
   AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
   CloseModal = "AdminAria.CloseModal",
   BirthdayMenu = "AdminAria.BirthdayMenu",
+  NewCustomer = "AdminAria.NewCustomer",
 }
 
 export enum SlotFormAria {

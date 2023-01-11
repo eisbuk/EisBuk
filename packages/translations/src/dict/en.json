@@ -274,6 +274,7 @@
     "PageNav": "Page navigation",
     "SeePastDates": "See past dates",
     "SeeFutureDates": "See future dates",
+
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlotsWeek": "Copy slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copy slots from {{ date, EEEE d MMMM }}",
@@ -284,7 +285,8 @@
     "EnableEdit": "Enable Edit",
     "AddAttendedCustomers": "Add attended customers",
     "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "BirthdayMenu": "See upcomming birthdays",
+    "NewCustomer": "New Customer"
   },
 
   "SlotFormAria": {
