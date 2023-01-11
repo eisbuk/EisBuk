@@ -314,7 +314,6 @@ export enum AdminAria {
   AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
   CloseModal = "AdminAria.CloseModal",
   BirthdayMenu = "AdminAria.BirthdayMenu",
-  NewCustomer = "AdminAria.NewCustomer",
 }
 
 export enum SlotFormAria {
