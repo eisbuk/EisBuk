@@ -3,15 +3,17 @@
   "compilerOptions": {
     "rootDir": "src",
     "baseUrl": ".",
-
+    "paths": {
+      "@/*": ["src/*"]
+    },
     "lib": ["ESNext"],
 
     "outDir": "dist",
     "sourceMap": true,
     "declaration": true,
     "declarationDir": "dist",
-    "types": ["node"]
+    "types": ["node", "jest"]
   },
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", ".eslintrc.js"],
   "include": ["./src/**/*.ts"]
 }

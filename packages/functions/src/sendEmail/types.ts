@@ -20,7 +20,7 @@ export interface EmailInterpolationValues {
   name: string;
   surname: string;
   bookingsLink?: string;
-  calendarFile?: string;
+  icsFile?: string;
   bookingsMonth?: string;
   extendedBookingsDate?: string;
 }
