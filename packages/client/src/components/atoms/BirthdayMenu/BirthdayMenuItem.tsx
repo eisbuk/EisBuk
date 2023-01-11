@@ -1,8 +1,11 @@
 import React from "react";
 import { DateTime } from "luxon";
+import { Link } from "react-router-dom";
 
 import { Customer } from "@eisbuk/shared";
 import { DateFormat, useTranslation } from "@eisbuk/translations";
+
+import { PrivateRoutes } from "@/enums/routes";
 
 import EisbukAvatar from "@/components/users/EisbukAvatar";
 
@@ -21,11 +24,13 @@ const BirthdayMenuItem: React.FC<Props> = ({ customer, showAll = false }) => {
           date: DateTime.fromISO(customer.birthday || ""),
         });
   return (
-    <li className="p-4 flex gap-8 items-center">
-      <EisbukAvatar {...customer} wrap={false} />
-      {customer.name} {customer.surname}
-      {!showAll && <span className="block ml-auto">{customerBirthday}</span>}
-    </li>
+    <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
+      <li className="p-4 flex gap-8 items-center">
+        <EisbukAvatar {...customer} wrap={false} />
+        {customer.name} {customer.surname}
+        {!showAll && <span className="block ml-auto">{customerBirthday}</span>}
+      </li>
+    </Link>
   );
 };
 

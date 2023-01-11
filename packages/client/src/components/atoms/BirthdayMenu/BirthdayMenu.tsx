@@ -9,6 +9,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import {
   useTranslation,
   BirthdayMenu as BirthdayEnums,
+  AdminAria,
 } from "@eisbuk/translations";
 import { CustomersByBirthday } from "@eisbuk/shared";
 import { Cake } from "@eisbuk/svg";
@@ -17,8 +18,6 @@ import { Button } from "@eisbuk/ui";
 import BirthdayMenuItem from "./BirthdayMenuItem";
 
 import { createModal } from "@/features/modal/useModal";
-
-import { __birthdayMenu__ } from "@/__testData__/testIds";
 
 interface BirthdayMenuProps {
   customers: CustomersByBirthday[];
@@ -68,7 +67,7 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
         className={[classes.badge, "cursor-normal", "select-none"].join(" ")}
         color="error"
         badgeContent={getTodaysBirthdays}
-        data-testid={__birthdayMenu__}
+        aria-label={t(AdminAria.BirthdayMenu)}
       >
         <Button
           onClick={handleBirthdaysClick}

@@ -1,5 +1,5 @@
 import i18n, {
-  AdminAria,
+  ActionButton,
   CustomerFormTitle,
   NavigationLabel,
 } from "@eisbuk/translations";
@@ -20,7 +20,7 @@ describe("Test subscription between browser history (location) and the modal", (
     cy.clickButton(i18n.t(NavigationLabel.Athletes) as string);
 
     // Open modal
-    cy.getAttrWith("aria-label", i18n.t(AdminAria.NewCustomer)).click();
+    cy.getAttrWith("aria-label", i18n.t(ActionButton.AddAthlete)).click();
     cy.contains(i18n.t(CustomerFormTitle.NewCustomer) as string);
 
     // Go back in browser history

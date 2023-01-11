@@ -34,13 +34,26 @@ export const getCustomersList =
  * @param secretKey a customers secret string
  * @returns a customer
  */
-export const getCustomer = (secretKey: string) => (state: LocalStore) => {
-  const customers = getCustomersList()(state);
-  const customer = customers.find(
-    (customer) => customer.secretKey === secretKey
-  );
-  return customer || {};
-};
+export const getCustomerBySecretKey =
+  (secretKey: string) => (state: LocalStore) => {
+    const customers = getCustomersList()(state);
+    const customer = customers.find(
+      (customer) => customer.secretKey === secretKey
+    );
+    return customer || {};
+  };
+
+/**
+ * Gets a customer from a list of customers by 'secretKey'
+ * @param id a customers secret string
+ * @returns a customer
+ */
+export const getCustomerById =
+  (id: string) =>
+  (state: LocalStore): CustomerFull | undefined => {
+    const customers = getCustomersRecord(state);
+    return customers[id];
+  };
 
 /**
  * Creates a selector that gets a list of all the customers whose birthdays are today
