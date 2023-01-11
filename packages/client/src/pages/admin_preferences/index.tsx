@@ -139,7 +139,7 @@ const OrganizationSettings: React.FC = () => {
                     className="!text-cyan-500"
                     size={ButtonSize.MD}
                   >
-                    {t(ActionButton.Cancel)}
+                    {t(ActionButton.Reset)}
                   </Button>
                   <Button
                     disabled={isSubmitting || isValidating}

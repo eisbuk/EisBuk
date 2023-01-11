@@ -21,9 +21,9 @@ const PreviewField: React.FC<PreviewFieldProps> = ({ name, ...props }) => {
     organizationName: "Organization Name",
     name: "Saul",
     surname: "Goodman",
-    bookingsLink: "someLink",
+    bookingsLink: "https://eisbuk.it/saul",
     bookingsMonth: "April",
-    extendedBookingsDate: "02/01",
+    extendedBookingsDate: "06/04",
     icsFile: "icsFile.ics",
   };
   const subject = replaceHTMLTags(emailTemplates[name].subject);
@@ -41,15 +41,7 @@ const PreviewField: React.FC<PreviewFieldProps> = ({ name, ...props }) => {
     if (emailTemplates[name].html.trim() !== "") {
       setFieldValue(
         `${name}-html-preview`,
-        `${interpolateText(html, {
-          organizationName: "Organization Name",
-          name: "Saul",
-          surname: "Goodman",
-          bookingsLink: "https://eisbuk.it/saul",
-          bookingsMonth: "April",
-          extendedBookingsDate: "06/04",
-          icsFile: "icsFile.ics",
-        })}`
+        `${interpolateText(html, preveiwDefaults)}`
       );
     }
   }, [emailTemplates[name].html, setFieldValue, name]);

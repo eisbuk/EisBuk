@@ -232,6 +232,7 @@ export enum ActionButton {
   Save = "ActionButton.Save",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
+  Reset = "ActionButton.Reset",
   Confirm = "ActionButton.Confirm",
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
