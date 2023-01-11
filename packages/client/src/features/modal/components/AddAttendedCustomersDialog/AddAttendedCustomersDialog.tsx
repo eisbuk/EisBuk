@@ -6,11 +6,14 @@ import Typography from "@mui/material/Typography";
 import makeStyles from "@mui/styles/makeStyles";
 
 import { CustomerFull, SlotInterface } from "@eisbuk/shared";
-import i18n, { ActionButton } from "@eisbuk/translations";
+import i18n, {
+  ActionButton,
+  AdminAria,
+  useTranslation,
+} from "@eisbuk/translations";
 
 import { BaseModalProps } from "../../types";
 import IconButton from "@mui/material/IconButton";
-import { __closeCustomersListId__ } from "@/components/atoms/AttendanceCard/__testData__/testIds";
 import Close from "@mui/icons-material/Close";
 import CustomerList from "@/components/atoms/CustomerList";
 import { markAttendance } from "@/store/actions/attendanceOperations";
@@ -29,6 +32,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
   ...slot
 }) => {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
 
   const { id: slotId } = slot;
   const handleCustomerClick = ({ id: customerId }: CustomerFull) => {
@@ -56,8 +60,8 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
       </Typography>
       <IconButton
         className={classes.closeButton}
+        aria-label={t(AdminAria.CloseModal)}
         onClick={() => onClose()}
-        data-testid={__closeCustomersListId__}
         size="large"
       >
         <Close />

@@ -84,7 +84,7 @@
 
   "FormTitle": {
     "NewCustomer": "Nuovo Atleta",
-    "EditCustomer": "Modifica Atleta",
+    "AthleteProfile": "Athlete Profile: {{ name }} {{ surname }}",
     "NewSlot": "Crea Slot",
     "EditSlot": "Modifica Slot"
   },
@@ -120,9 +120,13 @@
     "PersonalDetails": "Dati personali",
     "ManagePersonalDetails": "Gestisci i tuoi dati personali",
     "RegistrationCode": "Codice di regitrazione",
-    "InputRegistrationCode": "Inserisci qui il codice di registrazione. Se non hai un codice di registrazione contatta un amministratore"
+    "InputRegistrationCode": "Inserisci qui il codice di registrazione. Se non hai un codice di registrazione contatta un amministratore",
+    "AdminValues": "Administrative values",
+    "AdminValuesDescription": "These are administrative values for a customer. They are not visible to the customer"
   },
+
   "OrganizationLabel": {
+    "SettingsTitle": "{{ organization }} Impostazioni",
     "EmailNameFrom": "Nome Email Da",
     "EmailFrom": "Email Da",
     "EmailTemplate": "Modello Di Emails",
@@ -189,7 +193,7 @@
     "NoPhoneMessage": "Non è presente un numero di telefono per questo atleta; aggiungi un numero e riprova.",
 
     "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
-    "ExtendBookingDateBody": "Fino a quando lasciare che {{ name }} {{ surname }} possa prenotare?",
+    "ExtendBookingDateBody": "Please confirm you wish to extended the date for {{ name }} {{ surname }}'s bookings until {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
@@ -207,6 +211,7 @@
 
     "AddAthlete": "Aggiungi atleta",
     "AddCustomers": "Aggiungi clienti",
+    "DeleteCustomer": "Rimuovi atleta",
 
     "BookInterval": "Prenota",
     "FinalizeBookings": "Finito",
@@ -218,6 +223,7 @@
     "ExtendBookingDate": "Estendi data di prenotazione",
 
     "Save": "Salva",
+    "Back": "Indietro",
     "Next": "Seguente",
     "Cancel": "Annulla",
     "Reset": "Ripristina",
@@ -292,14 +298,18 @@
     "PageNav": "Navigazione",
     "SeePastDates": "Indietro",
     "SeeFutureDates": "Avanti",
+
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlotsWeek": "Copia slot dalla settimana {{ weekStart, EEEE d MMMM }} a {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
-    "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}}} - {{ weekEnd, EEEE d MMMM }}}}",
+    "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}} - {{ weekEnd, EEEE d MMMM }}}}",
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
     "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
     "CreateSlots": "Crea nuovo slot",
-    "EnableEdit": "Abilita la modifica"
+    "EnableEdit": "Abilita la modifica",
+    "AddAttendedCustomers": "Aggiungi clienti presenti",
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
   },
 
   "SlotFormAria": {

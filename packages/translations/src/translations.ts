@@ -92,7 +92,7 @@ export const CategoryLabel = {
 // #region forms
 export enum CustomerFormTitle {
   NewCustomer = "FormTitle.NewCustomer",
-  EditCustomer = "FormTitle.EditCustomer",
+  AthleteProfile = "FormTitle.AthleteProfile",
 }
 export enum SlotFormTitle {
   NewSlot = "FormTitle.NewSlot",
@@ -125,8 +125,12 @@ export enum CustomerLabel {
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",
   PersonalDetails = "CustomerLabel.PersonalDetails",
   ManagePersonalDetails = "CustomerLabel.ManagePersonalDetails",
+
   RegistrationCode = "CustomerLabel.RegistrationCode",
   InputRegistrationCode = "CustomerLabel.InputRegistrationCode",
+
+  AdminValues = "CustomerLabel.AdminValues",
+  AdminValuesDescription = "CustomerLabel.AdminValuesDescription",
 }
 export enum ValidationMessage {
   Email = "Validations.Email",
@@ -142,6 +146,7 @@ export enum ValidationMessage {
   InvalidRegistrationCode = "Validations.InvalidRegistrationCode",
 }
 export enum OrganizationLabel {
+  SettingsTitle = "OrganizationLabel.SettingsTitle",
   EmailNameFrom = "OrganizationLabel.EmailNameFrom",
   EmailFrom = "OrganizationLabel.EmailFrom",
   EmailTemplate = "OrganizationLabel.EmailTemplate",
@@ -219,6 +224,7 @@ export enum ActionButton {
 
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",
+  DeleteCustomer = "ActionButton.DeleteCustomer",
 
   BookInterval = "ActionButton.BookInterval",
   FinalizeBookings = "ActionButton.FinalizeBookings",
@@ -230,6 +236,7 @@ export enum ActionButton {
   ExtendBookingDate = "ActionButton.ExtendBookingDate",
 
   Save = "ActionButton.Save",
+  Back = "ActionButton.Back",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
   Reset = "ActionButton.Reset",
@@ -318,6 +325,7 @@ export enum AdminAria {
   PageNav = "AdminAria.PageNav",
   SeePastDates = "AdminAria.SeePastDates",
   SeeFutureDates = "AdminAria.SeeFutureDates",
+
   ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
   CopySlotsWeek = "AdminAria.CopySlotsWeek",
   CopySlotsDay = "AdminAria.CopySlotsDay",
@@ -326,6 +334,9 @@ export enum AdminAria {
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
   EnableEdit = "AdminAria.EnableEdit",
+  AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
+  CloseModal = "AdminAria.CloseModal",
+  BirthdayMenu = "AdminAria.BirthdayMenu",
 }
 
 export enum SlotFormAria {

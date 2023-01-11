@@ -84,7 +84,7 @@
 
   "FormTitle": {
     "NewCustomer": "New Athlete",
-    "EditCustomer": "Edit Athlete",
+    "AthleteProfile": "Athlete Profile: {{ name }} {{ surname }}",
     "NewSlot": "New Slot",
     "EditSlot": "Edit Slot"
   },
@@ -113,16 +113,20 @@
     "MedicalCertificate": "Medical Certificate Expiration",
     "CardNumber": "Card Number",
     "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
-    "CovidCertificateSuspended": "COVID-19 Certificate supsended",
+    "CovidCertificateSuspended": "COVID-19 Certificate suspended",
     "ExtendedBookingDate": "Extended booking date",
     "MedicalDetails": "Medical Details",
     "ManageMedicalDetails": "Manage your medical details",
     "PersonalDetails": "Personal Details",
     "ManagePersonalDetails": "Manage your personal details",
     "RegistrationCode": "Registration code",
-    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin"
+    "InputRegistrationCode": "Input your registration code here. If you don't have the registration code, contact your organization admin",
+    "AdminValues": "Administrative values",
+    "AdminValuesDescription": "These are administrative values for a customer. They are not visible to the customer"
   },
+
   "OrganizationLabel": {
+    "SettingsTitle": "{{ organization }} Settings",
     "EmailNameFrom": "Email Name From",
     "EmailFrom": "Email From",
     "EmailTemplates": "Email Templates",
@@ -188,7 +192,7 @@
     "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
 
     "ExtendBookingDateTitle": "Extend booking date for {{ name }} {{ surname }}:",
-    "ExtendBookingDateBody": "Please enter an extended date for {{ name }} {{ surname }}'s bookings",
+    "ExtendBookingDateBody": "Please confirm you wish to extended the date for {{ name }} {{ surname }}'s bookings until {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancel booking for",
     "FinalizeBookingsTitle": "Finalize Bookings",
@@ -206,6 +210,7 @@
 
     "AddAthlete": "Add Athlete",
     "AddCustomers": "Add Customers",
+    "DeleteCustomer": "Delete Customer",
 
     "BookInterval": "Book",
     "FinalizeBookings": "Finalize",
@@ -217,6 +222,7 @@
     "ExtendBookingDate": "Extend booking date",
 
     "Save": "Save",
+    "Back": "Back",
     "Next": "Next",
     "Cancel": "Cancel",
     "Reset": "Reset",
@@ -291,6 +297,7 @@
     "PageNav": "Page navigation",
     "SeePastDates": "See past dates",
     "SeeFutureDates": "See future dates",
+
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlotsWeek": "Copy slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copy slots from {{ date, EEEE d MMMM }}",
@@ -298,7 +305,10 @@
     "CopiedSlotsDayBadge": "Copied slots on {{ date, EEEE d MMMM }}",
     "PasteSlots": "Paste copied slots on {{ date, EEEE d MMMM }}",
     "CreateSlots": "Create new slots on",
-    "EnableEdit": "Enable Edit"
+    "EnableEdit": "Enable Edit",
+    "AddAttendedCustomers": "Add attended customers",
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
   },
 
   "SlotFormAria": {

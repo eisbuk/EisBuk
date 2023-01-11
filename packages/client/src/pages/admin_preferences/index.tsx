@@ -9,9 +9,12 @@ import i18n, {
   ActionButton,
   ValidationMessage,
   useTranslation,
+  OrganizationLabel,
 } from "@eisbuk/translations";
 import { Layout, Button, ButtonColor, ButtonSize, TabItem } from "@eisbuk/ui";
 import { Cog, Mail } from "@eisbuk/svg";
+
+import { getOrganization } from "@/lib/getters";
 
 import AdminsField from "./AdminsField";
 import BirthdayMenu from "@/components/atoms/BirthdayMenu";
@@ -114,6 +117,13 @@ const OrganizationSettings: React.FC = () => {
       additionalButtons={additionalButtons}
     >
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+        <div className="pt-6 pb-8">
+          <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
+            {t(OrganizationLabel.SettingsTitle, {
+              organization: getOrganization(),
+            })}
+          </h1>
+        </div>
         <Formik
           {...{ initialValues }}
           onSubmit={(values, actions) => handleSubmit(values, actions)}

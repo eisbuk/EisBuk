@@ -42,6 +42,7 @@ export * from "./IconButton";
 export * from "./Table";
 export * from "./AttendanceVarianceTable";
 export * from "./Forms/CustomerForm";
+export * from "./Forms";
 
 export {
   NotificationToast,

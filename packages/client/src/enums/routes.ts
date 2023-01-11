@@ -16,6 +16,7 @@ export enum CustomerRoute {
 export enum PrivateRoutes {
   Root = "/",
   Athletes = "/athletes",
+  NewAthlete = "/athletes/new",
   Slots = "/slots",
   AdminPreferences = "/admin_preferences",
 }
