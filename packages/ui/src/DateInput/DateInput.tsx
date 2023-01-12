@@ -48,7 +48,7 @@ const DateInput: React.FC<TextInputFieldProps> = ({ ...props }) => {
     // Leave a warning, letting us know if this handler is blocking a different key
     // for easier debugging
     console.warn(
-      "The DateInout componen is handling onKeyDown for 'Enter' key (submit) purposes. If you're trying to use a different keydown event, it's probably being blocked in ui/src/DateInput component."
+      "The DateInput component is handling onKeyDown for 'Enter' key (submit) purposes. If you're trying to use a different keydown event, it's probably being blocked in ui/src/DateInput component."
     );
   };
 
