@@ -27,8 +27,6 @@ import Dropdown, { DropdownFormik } from "./Dropdown";
 import CountryCodesDropdown, {
   CountryCodesDropdownFormik,
 } from "./CountryCodesDropdown";
-import FormField, { FormFieldVariant, FormFieldWitdh } from "./Forms/FormField";
-import FormSection, { FormSectionContext } from "./Forms/FormSection";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -70,9 +68,4 @@ export {
   DropdownFormik,
   CountryCodesDropdown,
   CountryCodesDropdownFormik,
-  FormField,
-  FormFieldVariant,
-  FormFieldWitdh,
-  FormSection,
-  FormSectionContext,
 };
