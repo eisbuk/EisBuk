@@ -3,115 +3,106 @@
  */
 
 import React from "react";
-import { screen, fireEvent, render } from "@testing-library/react";
-import { Formik, Field, FieldProps, FormikValues } from "formik";
+import { screen, render, waitFor, cleanup } from "@testing-library/react";
+import { Formik, Field, FormikValues, Form } from "formik";
+import userEvent from "@testing-library/user-event";
 
 import DateInput from "../DateInput";
 
-const setFieldSpy = jest.fn();
+const mockSubmit = jest.fn();
 
 const testFieldName = "test";
 
-const Form = ({ initialValues }: FormikValues) => (
-  <Formik initialValues={initialValues} onSubmit={() => {}}>
-    <Field name={testFieldName}>
-      {({ field, form }: FieldProps) => (
-        <DateInput
-          field={field}
-          form={{
-            ...form,
-            setFieldValue: setFieldSpy,
-          }}
-          label="Test Field"
-        />
-      )}
-    </Field>
+const TestForm = ({ initialValues }: FormikValues) => (
+  <Formik initialValues={initialValues} onSubmit={mockSubmit}>
+    <Form>
+      <Field component={DateInput} name={testFieldName} label="Test Field" />
+      <button type="submit">Submit</button>
+    </Form>
   </Formik>
 );
 
 describe("Date Input", () => {
   afterEach(() => {
     jest.clearAllMocks();
+    cleanup();
   });
 
-  describe("smoke test", () => {
-    test("should render date input", () => {
-      render(<Form initialValues={{ test: "" }} />);
-      screen.getByRole("textbox");
+  beforeEach(() => {
+    render(<TestForm initialValues={{ test: "" }} />);
+  });
+
+  test("should parse european date into ISOString", async () => {
+    // Type in the european date
+    userEvent.type(screen.getByRole("textbox"), "1/12/2021");
+
+    // Submitting the form by clicking the button should submit it with the value
+    // for "test" field having been transformed to a valid ISO date string
+    userEvent.click(screen.getByRole("button"));
+
+    await waitFor(() => {
+      expect(mockSubmit).toHaveBeenCalledWith(
+        { test: "2021-12-01" },
+        expect.objectContaining({})
+      );
     });
   });
 
-  describe("Test updating of the string", () => {
-    beforeEach(() => {
-      render(<Form initialValues={{ test: "" }} />);
+  test("should parse european date (with . or - ) into ISO string", async () => {
+    const input = screen.getByRole("textbox");
+
+    // Check for dash separated input
+    userEvent.type(input, "1-12-2021");
+    userEvent.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(mockSubmit).toHaveBeenCalledWith(
+        { test: "2021-12-01" },
+        expect.objectContaining({})
+      );
     });
 
-    test("should call 'setFieldValue' on user input", () => {
-      const testInput = "test";
-
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: testInput },
-      });
-
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, testInput, true);
+    // Check for dot separated input
+    userEvent.clear(input);
+    userEvent.type(input, "1.12.2021");
+    userEvent.click(screen.getByRole("button"));
+    await waitFor(() => {
+      expect(screen.getByRole("textbox")).toHaveProperty("value", "01/12/2021");
+      expect(mockSubmit).toHaveBeenCalledWith(
+        { test: "2021-12-01" },
+        expect.objectContaining({})
+      );
     });
+  });
 
-    test("should parse european date into ISOString", () => {
-      const testInput = "01/12/2021";
-      const isoDate = "2021-12-01";
+  test("should parse ISOString 'value' into slash separated european date", async () => {
+    // Remove the form rendered in 'beforeEach'
+    cleanup();
+    render(<TestForm initialValues={{ test: "2021-12-01" }} />);
 
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: testInput },
-      });
-
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
+    await waitFor(() => {
+      expect(screen.getByRole("textbox")).toHaveProperty("value", "01/12/2021");
     });
+  });
 
-    test("should parse european date into ISOString with . or -", () => {
-      const dashInput = "01-12-2021";
-      const dotInput = "01.12.2021";
-      const isoDate = "2021-12-01";
+  // This is a weird edge case and didn't work out of the box:
+  // When a user clicks a "submit" button, the latest form element is blurred
+  // (and in this case the date parsed into a valid ISO string). on button press, however,
+  // if an instance of DateInput was focused, and a form submitted using "Enter" button press,
+  // the element wouldn't be blurred and the form would get submitted with stale/unparsed value.
+  // Here we're testing a fix of this bug.
+  test('should blur + submit on "Enter" button press', async () => {
+    // Type in the european date
+    userEvent.type(screen.getByRole("textbox"), "1/12/2021");
 
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: dashInput },
-      });
+    // Submitting the form by clicking the button should submit it with the value
+    // for "test" field having been transformed to a valid ISO date string
+    userEvent.keyboard("{Enter}");
 
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
-
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: dotInput },
-      });
-
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
-    });
-
-    test("should parse european date with single digits into ISOString with . or -", () => {
-      const dashInput = "1-12-2021";
-      const dotInput = "1.12.2021";
-      const isoDate = "2021-12-01";
-
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: dashInput },
-      });
-
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
-
-      fireEvent.blur(screen.getByRole("textbox"), {
-        target: { value: dotInput },
-      });
-
-      expect(setFieldSpy).toHaveBeenCalledWith(testFieldName, isoDate, true);
-    });
-
-    describe("Test processing of received value", () => {
-      test("should parse ISOString 'value' into slash separated european date", () => {
-        const testInput = "2021-12-01";
-        const slashSeparated = "01/12/2021";
-
-        render(<Form initialValues={{ test: testInput }} />);
-
-        screen.getByDisplayValue(slashSeparated);
-      });
+    await waitFor(() => {
+      expect(mockSubmit).toHaveBeenCalledWith(
+        { test: "2021-12-01" },
+        expect.objectContaining({})
+      );
     });
   });
 });
