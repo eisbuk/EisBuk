@@ -17,6 +17,11 @@
     "Month": "Mese"
   },
 
+  "SettingsNavigationLabel": {
+    "EmailTemplates": "Modelli di Emails",
+    "GeneralSettings": "Impostazioni Generali"
+  },
+
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
@@ -124,7 +129,7 @@
     "SettingsTitle": "{{ organization }} Impostazioni",
     "EmailNameFrom": "Nome Email Da",
     "EmailFrom": "Email Da",
-    "EmailTemplate": "Modello Di Email",
+    "EmailTemplate": "Modello Di Emails",
     "SmsFrom": "SMS Da",
     "SmsTemplate": "Modello Di SMS",
     "DisplayName": "Nome Dell'Organizzazione",
@@ -138,6 +143,24 @@
     "BCC": "BCC",
     "RegistrationCode": "Codice di registrazione"
   },
+
+  "EmailTemplateLabel": {
+    "SubjectPreview": "Anteprima Del Soggetto",
+    "HTMLPreview": "Anteprima Del Corpo",
+    "SendBookingsLink": "Invia Collegamento Per Le Prenotazioni",
+    "SendCalendarFile": "Invia File Calendario",
+    "SendExtendedBookingsDate": "Invia Data Di Prenotazione Estesa",
+    "OrganizationName": "Nome Dell'Organizzazione",
+    "BookingsLink": "Link prenotazioni",
+    "Name": "Nome",
+    "Surname": "Cognome",
+    "IcsFile": "Collegamento Al File Del Calendario",
+    "BookingsMonth": "Mese Delle Prenotazioni",
+    "ExtendedBookingsDate": "Data Di Prenotazione Estesa",
+    "Subject": "Argomento",
+    "HTML": "Corpo"
+  },
+
   "Validations": {
     "Email": "Inserisci una email valida",
     "RequiredEntry": "È richiesto almeno un valore",
@@ -203,6 +226,7 @@
     "Back": "Indietro",
     "Next": "Seguente",
     "Cancel": "Annulla",
+    "Reset": "Ripristina",
     "Confirm": "Confermare",
     "ShowAll": "Mostra tutti",
     "Done": "Fatto",

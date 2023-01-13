@@ -18,6 +18,11 @@ export enum AttendanceNavigationLabel {
   Day = "AttendanceNavigation.Day",
   Month = "AttendanceNavigation.Month",
 }
+
+export enum SettingsNavigationLabel {
+  EmailTemplates = "SettingsNavigationLabel.EmailTemplates",
+  GeneralSettings = "SettingsNavigationLabel.GeneralSettings",
+}
 // #endregion navigation
 
 // #region auth
@@ -158,6 +163,23 @@ export enum OrganizationLabel {
   BCC = "OrganizationLabel.BCC",
   RegistrationCode = "OrganizationLabel.RegistrationCode",
 }
+export enum EmailTemplateLabel {
+  SubjectPreview = "EmailTemplateLabel.SubjectPreview",
+  HTMLPreview = "EmailTemplateLabel.HTMLPreview",
+  "send-bookings-link" = "EmailTemplateLabel.SendBookingsLink",
+  "send-calendar-file" = "EmailTemplateLabel.SendCalendarFile",
+  "send-extended-bookings-date" = "EmailTemplateLabel.SendExtendedBookingsDate",
+  OrganizationName = "EmailTemplateLabel.OrganizationName",
+  BookingsLink = "EmailTemplateLabel.BookingsLink",
+  Name = "EmailTemplateLabel.Name",
+  Surname = "EmailTemplateLabel.Surname",
+  IcsFile = "EmailTemplateLabel.IcsFile",
+  BookingsMonth = "EmailTemplateLabel.BookingsMonth",
+  ExtendedBookingsDate = "EmailTemplateLabel.ExtendedBookingsDate",
+  Subject = "EmailTemplateLabel.Subject",
+  HTML = "EmailTemplateLabel.HTML",
+}
+
 export enum BookingNotesForm {
   Placeholder = "BookingNotesForm.Placeholder",
   HelpText = "BookingNotesForm.HelpText",
@@ -217,6 +239,7 @@ export enum ActionButton {
   Back = "ActionButton.Back",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
+  Reset = "ActionButton.Reset",
   Confirm = "ActionButton.Confirm",
   ShowAll = "ActionButton.ShowAll",
   Done = "ActionButton.Done",
