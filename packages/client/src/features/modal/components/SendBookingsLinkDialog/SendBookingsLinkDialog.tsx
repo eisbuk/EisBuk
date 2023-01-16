@@ -1,5 +1,5 @@
 import React from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
@@ -8,6 +8,8 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import { BaseModalProps } from "../../types";
 
 import { SendBookingLinkMethod } from "@/enums/other";
+import { __organization__ } from "@/lib/constants";
+import { getAboutOrganization } from "@/store/selectors/app";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
 
@@ -24,11 +26,14 @@ const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   ...customer
 }) => {
   const dispatch = useDispatch();
-
+  const { displayName = __organization__ } =
+    useSelector(getAboutOrganization)[__organization__] || {};
   const bookingsLink = getBookingsLink(customer.secretKey);
 
   const onConfirm = () => {
-    dispatch(sendBookingsLink({ ...customer, method, bookingsLink }));
+    dispatch(
+      sendBookingsLink({ ...customer, method, bookingsLink, displayName })
+    );
     onClose();
   };
 

@@ -14,6 +14,8 @@ import * as utils from "../utils";
 
 import { saul } from "@/__testData__/customers";
 
+const displayName = "test-organization";
+
 const mockOnClose = jest.fn();
 // Mock sendBookingsLink to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
@@ -27,8 +29,10 @@ jest
   .mockImplementation(mockSendBookingsLink as any);
 
 const mockDispatch = jest.fn();
+const mockSelector = jest.fn();
 jest.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
 }));
 
 // Bookings link we'll receive from 'getBookingsLink()' inside the component
@@ -83,6 +87,7 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.Email,
         bookingsLink: testBookingsLink,
+        displayName,
       })
     );
   });
@@ -103,6 +108,7 @@ describe("SendBookingsLinkDialog", () => {
         ...saul,
         method: SendBookingLinkMethod.SMS,
         bookingsLink: testBookingsLink,
+        displayName,
       })
     );
   });

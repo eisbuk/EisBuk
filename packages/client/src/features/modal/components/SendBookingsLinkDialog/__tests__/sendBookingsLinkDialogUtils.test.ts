@@ -22,6 +22,7 @@ import { saul } from "@/__testData__/customers";
 // #region getDialogPromptSetup
 const testPhone = "12345";
 const testEmail = "testio@test.com";
+const displayName = "test-organization";
 
 type TestParams = Parameters<typeof getDialogPrompt>[0] & {
   name: string;
@@ -126,6 +127,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName,
         })(mockDispatch, getState);
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
@@ -155,6 +157,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
+          displayName,
         })(mockDispatch, getState);
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
@@ -190,6 +193,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
+          displayName: "test-organization",
         })(mockDispatch, getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

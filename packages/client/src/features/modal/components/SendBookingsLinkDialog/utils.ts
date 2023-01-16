@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import {
   ClientEmailPayload,
   Customer,
@@ -6,8 +5,6 @@ import {
   SMSMessage,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
-
-import { getAboutOrganization } from "@/store/selectors/app";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
@@ -17,8 +14,6 @@ import { SendBookingLinkMethod } from "@/enums/other";
 import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
-
-import { __organization__ } from "@/lib/constants";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -78,12 +73,22 @@ interface SendBookingsLink {
     payload: {
       method: SendBookingLinkMethod;
       bookingsLink: string;
+      displayName: string;
     } & Customer
   ): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
+  ({
+    name,
+    method,
+    email,
+    surname,
+    phone,
+    secretKey,
+    bookingsLink,
+    displayName,
+  }) =>
   async (dispatch) => {
     try {
       if (!secretKey || !email) {
@@ -91,9 +96,6 @@ export const sendBookingsLink: SendBookingsLink =
         // (email button should be disabled in case secret key or email are not provided)
         throw new Error();
       }
-
-      const { displayName = __organization__ } =
-        useSelector(getAboutOrganization)[__organization__] || {};
 
       const sms = `Ciao ${name},
       Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
