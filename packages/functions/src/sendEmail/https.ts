@@ -79,7 +79,7 @@ export const sendEmail = functions
         bookingsLink: validatedPayload.bookingsLink,
         bookingsMonth: validatedPayload.bookingsMonth,
         extendedBookingsDate: validatedPayload.extendedBookingsDate,
-        icsFile: validatedPayload.attachments?.filename,
+        calendarFile: validatedPayload.attachments?.filename,
       });
 
       // Construct an email for process delivery

@@ -11,7 +11,7 @@ export const defaultEmailTemplates = {
     subject: `Calendario prenotazioni {{ organizationName }}`,
     html: `<p>Ciao {{ name }},</p>
     <p>Ti inviamo un file per aggiungere le tue prossime lezioni con {{ organizationName }} al tuo calendario:</p>
-    <a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
+    <a href="{{ calendarFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>`,
   },
   [EmailType.SendExtendedBookingsDate]: {
     subject: `<p>Ciao {{ name }},</p>`,

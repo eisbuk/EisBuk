@@ -24,6 +24,7 @@ export interface EmailTypePayload {
     customer: SendExtendedBookingLinkCustomer;
   };
 }
+
 export interface EmailTypeButtons {
   [EmailType.SendBookingsLink]: {
     organizationName: string;
@@ -35,7 +36,7 @@ export interface EmailTypeButtons {
     organizationName: string;
     name: string;
     surname: string;
-    icsFile: string;
+    calendarFile: string;
   };
   [EmailType.SendExtendedBookingsDate]: {
     organizationName: string;
@@ -62,7 +63,3 @@ export interface SendCalendarFileCustomer {
   email: string;
   secretKey: string;
 }
-
-export type ClientEmailPayload = {
-  [T in EmailType]: EmailTypePayload[T];
-};
