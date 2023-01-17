@@ -34,7 +34,7 @@
     "@types/jest": "^27.4.1"
   },
   "scripts": {
-    "build": "vite build && tsc",
+    "build": "vite build && tsc --project tsconfig.build.json",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",

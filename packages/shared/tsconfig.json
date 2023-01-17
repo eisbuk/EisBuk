@@ -8,12 +8,8 @@
     },
     "lib": ["ESNext"],
 
-    "outDir": "dist",
-    "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist",
     "types": ["node", "jest"]
   },
-  "exclude": ["node_modules", ".eslintrc.js"],
+  "exclude": ["node_modules", ".eslintrc.js", "vite.config.ts", "dist"],
   "include": ["./src/**/*.ts"]
 }
