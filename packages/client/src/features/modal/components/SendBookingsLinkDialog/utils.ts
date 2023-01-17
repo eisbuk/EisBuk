@@ -16,6 +16,7 @@ import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 
 import { enqueueNotification } from "@/features/notifications/actions";
+import { getOrganization } from "@/lib/getters";
 
 interface GetDialogPrompt {
   (
@@ -73,22 +74,12 @@ interface SendBookingsLink {
     payload: {
       method: SendBookingLinkMethod;
       bookingsLink: string;
-      displayName: string;
     } & Customer
   ): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({
-    name,
-    method,
-    email,
-    surname,
-    phone,
-    secretKey,
-    bookingsLink,
-    displayName,
-  }) =>
+  ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
   async (dispatch) => {
     try {
       if (!secretKey || !email) {
@@ -98,7 +89,7 @@ export const sendBookingsLink: SendBookingsLink =
       }
 
       const sms = `Ciao ${name},
-      Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
+      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
       ${bookingsLink}`;
 
       const emailPayload: Omit<
