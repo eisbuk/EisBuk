@@ -24,17 +24,9 @@ export interface EmailTypePayload {
     customer: SendExtendedBookingLinkCustomer;
   };
 }
-
-export interface EmailInterpolationValues {
-  [key: string]: string | undefined;
-  organizationName: string;
-  name: string;
-  surname: string;
-  bookingsLink?: string;
-  calendarFile?: string;
-  bookingsMonth?: string;
-  extendedBookingsDate?: string;
-}
+export type ClientEmailPayload = {
+  [T in EmailType]: EmailTypePayload[T];
+};
 
 export interface EmailTypeButtons {
   [EmailType.SendBookingsLink]: {
@@ -73,4 +65,15 @@ export interface SendCalendarFileCustomer {
   surname: string;
   email: string;
   secretKey: string;
+}
+
+export interface EmailInterpolationValues {
+  [key: string]: string | undefined;
+  organizationName: string;
+  name: string;
+  surname: string;
+  bookingsLink?: string;
+  calendarFile?: string;
+  bookingsMonth?: string;
+  extendedBookingsDate?: string;
 }

@@ -7,9 +7,8 @@ import {
   interpolateText,
   MergeUnion,
   HTTPSErrors,
+  EmailInterpolationValues,
 } from "@eisbuk/shared";
-
-import { EmailInterpolationValues } from "./types";
 
 import { EisbukHttpsError, validateJSON } from "../utils";
 import {
