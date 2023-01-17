@@ -7,7 +7,7 @@ import {
   Collection,
   DeliveryQueue,
 } from "../enums/firestore";
-import { DeprecatedCategory } from "../deprecated";
+import { DeprecatedCategory } from "../enums/deprecated";
 
 /**
  * Organization data record included in each organization (other than nested collections)

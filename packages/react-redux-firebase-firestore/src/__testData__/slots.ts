@@ -1,13 +1,8 @@
 import { DateTime } from "luxon";
 
-import {
-  SlotType,
-  Category,
-  SlotInterface,
-  luxon2ISODate,
-} from "@eisbuk/shared";
+import { SlotType, Category, SlotInterface } from "@eisbuk/shared";
 
-import { testDate, testDateLuxon } from "./date";
+import { testDate } from "./date";
 
 /**
  * A helper function used to create a slotInterval.
@@ -62,69 +57,3 @@ export const baseSlot: SlotInterface = {
   intervals,
   notes: "",
 };
-
-export const collectionOfSlots = Array(4)
-  .fill(null)
-  .map((_, i) => ({
-    ...baseSlot,
-    id: `slot-${i}`,
-    intervals: createIntervals(9 + i * 2),
-  }));
-
-/**
- * Dummy month of slots (resembling a structure we should receive from store).
- * Used for `CustomerRoute="book_ice"`
- */
-export const slotsMonth = Array(8)
-  .fill(testDateLuxon)
-  // create dates
-  .map((baseDate, i) => {
-    // we're putting two slots in each week
-    const weekJump = Math.floor(i / 2);
-    // one monday and one wednesday
-    const dayJump = (i % 2) * 2;
-
-    const resultDate = baseDate.plus({ weeks: weekJump, days: dayJump });
-    return luxon2ISODate(resultDate);
-  })
-  // create a record keyed by iso dates (from last step)
-  .reduce((acc, date, i) => {
-    // create a simple slot id from current index of the array
-    const slotId = `slot-${i}`;
-
-    return {
-      ...acc,
-      [date]: {
-        [slotId]: {
-          ...baseSlot,
-          id: slotId,
-          date,
-        },
-      },
-    };
-  }, {} as Record<string, Record<string, SlotInterface>>) as Record<
-  string,
-  Record<string, SlotInterface>
->;
-
-/**
- * Dummy week of slots (resembling a structure we should receive from store).
- * Used for `CustomerRoute="book_off_ice"`
- */
-export const slotsWeek = Array(7)
-  .fill(testDateLuxon)
-  // create dates
-  .map((baseDate, i) => baseDate.plus({ days: i }))
-  // create a record keyed by iso dates (from last step)
-  .reduce((acc, luxonDate, i) => {
-    // create iso date for keys
-    const date = luxon2ISODate(luxonDate);
-    // create a simple slot id from current index of the array
-    const slotId = `slot-${i}`;
-    return {
-      ...acc,
-      [date]: {
-        [slotId]: { ...baseSlot, id: slotId, date },
-      },
-    };
-  }, {} as Record<string, Record<string, SlotInterface>>);
