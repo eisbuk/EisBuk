@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import {
   ClientEmailPayload,
   Customer,
@@ -6,8 +5,6 @@ import {
   SMSMessage,
 } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
-
-import { getAboutOrganization } from "@/store/selectors/app";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
 
@@ -18,9 +15,8 @@ import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 import { Routes } from "@/enums/routes";
 
-import { __organization__ } from "@/lib/constants";
-
 import { enqueueNotification } from "@/features/notifications/actions";
+import { getOrganization } from "@/lib/getters";
 
 interface GetDialogPrompt {
   (
@@ -92,11 +88,8 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
-      const { displayName = __organization__ } =
-        useSelector(getAboutOrganization)[__organization__] || {};
-
       const sms = `Ciao ${name},
-      Ti inviamo un link per prenotare le tue prossime lezioni con ${displayName}:
+      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
       ${bookingsLink}`;
 
       const emailPayload: Omit<
