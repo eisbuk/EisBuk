@@ -20,7 +20,7 @@ const interpolateForPlaceholder = (
  */
 export const interpolateText = (
   template: string,
-  values: Record<string, string>
+  values: Partial<Record<string, string>>
 ): string => {
   const matches = matchPlaceholders(template);
   const placeholders = matches.map((match) =>

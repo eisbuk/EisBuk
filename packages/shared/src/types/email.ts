@@ -25,6 +25,17 @@ export interface EmailTypePayload {
   };
 }
 
+export interface EmailInterpolationValues {
+  [key: string]: string | undefined;
+  organizationName: string;
+  name: string;
+  surname: string;
+  bookingsLink?: string;
+  calendarFile?: string;
+  bookingsMonth?: string;
+  extendedBookingsDate?: string;
+}
+
 export interface EmailTypeButtons {
   [EmailType.SendBookingsLink]: {
     organizationName: string;
