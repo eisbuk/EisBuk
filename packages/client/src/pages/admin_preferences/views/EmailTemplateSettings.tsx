@@ -30,7 +30,7 @@ const EmailTemplateSettings: React.FC = () => {
       organizationName: "organizationName",
       name: "name",
       surname: "surname",
-      icsFile: "icsFile",
+      calendarFile: "calendarFile",
     },
     [EmailType.SendExtendedBookingsDate]: {
       organizationName: "organizationName",

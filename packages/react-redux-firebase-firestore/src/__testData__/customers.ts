@@ -17,21 +17,6 @@ export const saul: CustomerFull = {
   subscriptionNumber: "",
 };
 
-export const walt: CustomerFull = {
-  id: "walt",
-  name: "Walter",
-  surname: "White",
-  certificateExpiration: "2001-01-01",
-  categories: [Category.Competitive],
-  email: "walt@im_the_one_who.knocks",
-  phone: "+123456777",
-  birthday: "2002-01-01",
-  covidCertificateReleaseDate: "2021-01-01",
-  covidCertificateSuspended: false,
-  secretKey: "000001",
-  subscriptionNumber: "",
-};
-
 export const gus: CustomerFull = {
   id: "gus",
   name: "Gustavo",
@@ -59,35 +44,5 @@ export const jian: CustomerFull = {
   covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
   covidCertificateSuspended: false,
   secretKey: "000002",
-  subscriptionNumber: "",
-};
-
-export const mike: CustomerFull = {
-  id: "mike",
-  name: "Mike",
-  surname: "Ehrmantraut",
-  certificateExpiration: "2022-12-27",
-  categories: [Category.PreCompetitiveMinors],
-  email: "mike@ehrmantraut",
-  phone: "+123456777",
-  birthday: "2022-12-27",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
-  secretKey: "000022",
-  subscriptionNumber: "",
-};
-
-export const jane: CustomerFull = {
-  id: "jane",
-  name: "Jane",
-  surname: "Margolis",
-  certificateExpiration: "2023-03-27",
-  categories: [Category.PreCompetitiveAdults],
-  email: "jane@margolis",
-  phone: "+123456777",
-  birthday: "2009-12-23",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
-  secretKey: "000222",
   subscriptionNumber: "",
 };

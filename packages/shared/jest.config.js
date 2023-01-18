@@ -1,8 +1,7 @@
+const baseConfig = require("../scaffold/jest.config.js");
+
 module.exports = {
-  moduleNameMapper: {
-    "@/(.*)": "<rootDir>/src/$1",
-  },
+  ...baseConfig,
   preset: "ts-jest",
   testEnvironment: "node",
-  testTimeout: 10000,
 };

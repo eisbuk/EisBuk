@@ -8,11 +8,7 @@ const tsPaths = [path.join(__dirname, "./tsconfig.json")];
 module.exports = useTSConfig(
   {
     ...scaffold,
-    ignorePatterns: [
-      ...scaffold.ignorePatterns,
-      "build_scripts",
-      "jest.config.js",
-    ],
+    ignorePatterns: [...scaffold.ignorePatterns, "jest.config.js"],
   },
   tsPaths
 );
