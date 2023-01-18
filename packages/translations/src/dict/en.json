@@ -240,15 +240,22 @@
   },
 
   "Notification": {
-    "BookingSuccess": "Successfully booked",
-    "BookingCanceled": "Booking canceled",
-    "BookingCanceledError": "Error cancelling booking",
+    "BookingSuccess": "Successfully booked interval: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingError": "Error booking interval: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingCanceled": "Booking canceled: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingCanceledError": "Error cancelling booking: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Booking notes updated",
     "BookingNotesError": "Error updating booking notes",
 
+    "CopyPasteErrorWeek": "Error copying slots week",
+    "CopyPasteErrorDay": "Error copying slots day",
+
     "SlotAdded": "Slot Added",
+    "SlotAddError": "Error adding slot",
     "SlotUpdated": "Slot Updated",
+    "SlotUpdateError": "Error saving slot",
     "SlotRemoved": "Slot Removed",
+    "SlotRemoveError": "Error deleting slot",
 
     "LogoutSuccess": "Logout Successful",
     "LogoutError": "An error occurred",
@@ -258,15 +265,25 @@
 
     "EmailSent": "Email successfully sent",
     "SMSSent": "SMS successfully sent",
-    "BookingDateExtended": "Booking date extended",
+
+    "BookingDateExtended": "Booking date for {{ name }} {{ surname }} extended",
+    "BookingDateExtendedError": "Error extending booking date for {{ name }} {{ surname }}",
 
     "Error": "Error",
 
     "SlotsAddedToCalendar": "Slots Added To Calendar",
 
-    "CustomerProfileRegistered": "Registration successful",
-    "CustomerProfileUpdated": "Customer Profile Updated",
-    "CustomerProfileError": "Error updating customer Profile"
+    "MarkAbsenceError": "Error marking {{ name }} {{ surname }}'s absence",
+    "MarkAttendanceError": "Error marking {{ name }} {{ surname }}'s attendance",
+
+    "SelfRegSuccess": "Registration successful",
+    "SelfRegError": "Error registering",
+    "CustomerProfileUpdated": "Profile Updated",
+    "CustomerProfileError": "Error updating profile",
+    "CustomerUpdated": "Customer Profile Updated: {{ name }} {{ surname }}",
+    "CustomerUpdateError": "Error updating customer: {{ name }} {{ surname }}",
+    "CustomerDeleted": "{{ name }} {{ surname }} deleted",
+    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}"
   },
 
   "BookingCountdownMessage": {

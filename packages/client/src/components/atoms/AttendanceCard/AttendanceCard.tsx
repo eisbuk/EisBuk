@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
@@ -10,13 +11,13 @@ import AddNew from "@mui/icons-material/AddCircle";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { CustomerFull, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   AdminAria,
   CategoryLabel,
   SlotTypeLabel,
   useTranslation,
 } from "@eisbuk/translations";
+import { CustomerFull, SlotInterface } from "@eisbuk/shared";
 
 import { CustomerWithAttendance } from "@/types/components";
 
@@ -33,7 +34,6 @@ import { createModal } from "@/features/modal/useModal";
 
 import { getSlotTimespan } from "@/utils/helpers";
 import { comparePeriods } from "@/utils/sort";
-import { Link } from "react-router-dom";
 import { PrivateRoutes } from "@/enums/routes";
 
 export interface Props extends SlotInterface {
@@ -126,13 +126,16 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
     defaultInterval: orderedIntervals[0],
   });
 
-  const createAttendanceThunk = (payload: {
-    customerId: string;
-    attendedInterval: string;
-  }) => markAttendance({ slotId, ...payload });
+  const createAttendanceThunk = (
+    params: Omit<Parameters<typeof markAttendance>[0], "slotId">
+  ) => markAttendance({ slotId, ...params });
 
-  const createAbsenceThunk = (customerId: string) =>
-    markAbsence({ slotId, customerId });
+  const createAbsenceThunk = (
+    params: Omit<
+      Parameters<typeof markAttendance>[0],
+      "slotId" | "attendedInterval"
+    >
+  ) => markAbsence({ ...params, slotId });
 
   return (
     <div aria-label="attendance-card" className={classes.container}>
@@ -157,12 +160,22 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
                 markAttendance={({ attendedInterval }) =>
                   dispatch(
                     createAttendanceThunk({
-                      attendedInterval,
                       customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                      attendedInterval,
                     })
                   )
                 }
-                markAbsence={() => dispatch(createAbsenceThunk(customer.id))}
+                markAbsence={() =>
+                  dispatch(
+                    createAbsenceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                    })
+                  )
+                }
               />
             </Link>
           )
@@ -178,12 +191,22 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
               markAttendance={({ attendedInterval }) =>
                 dispatch(
                   createAttendanceThunk({
-                    attendedInterval,
                     customerId: customer.id,
+                    name: customer.name,
+                    surname: customer.surname,
+                    attendedInterval,
                   })
                 )
               }
-              markAbsence={() => dispatch(createAbsenceThunk(customer.id))}
+              markAbsence={() =>
+                dispatch(
+                  createAbsenceThunk({
+                    customerId: customer.id,
+                    name: customer.name,
+                    surname: customer.surname,
+                  })
+                )
+              }
             />
           )
       )}

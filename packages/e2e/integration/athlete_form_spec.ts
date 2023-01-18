@@ -33,7 +33,12 @@ describe("add athlete", () => {
     cy.getAttrWith("name", "phone").clear();
     cy.getAttrWith("name", "phone").type("11111111111");
     cy.getAttrWith("type", "submit").click();
-    cy.contains(`${saul.name} ${saul.surname} update`);
+    cy.contains(
+      i18n.t(NotificationMessage.CustomerUpdated, {
+        name: saul.name,
+        surname: saul.surname,
+      }) as string
+    );
   });
 
   it("allows customer form submission with minimal fields", () => {
@@ -44,7 +49,12 @@ describe("add athlete", () => {
     cy.getAttrWith("name", "surname").type(saul.surname);
     cy.getAttrWith("value", saul.categories[0]).click();
     cy.getAttrWith("type", "submit").click();
-    cy.contains(`${saul.name} ${saul.surname} update`);
+    cy.contains(
+      i18n.t(NotificationMessage.CustomerUpdated, {
+        name: saul.name,
+        surname: saul.surname,
+      }) as string
+    );
   });
 
   it("doesn't allow invalid date input format", () => {
@@ -129,7 +139,12 @@ describe("add athlete", () => {
 
     // all of the data above should be submitable
     cy.getAttrWith("type", "submit").click();
-    cy.contains(`${archer.name} ${archer.surname} update`);
+    cy.contains(
+      i18n.t(NotificationMessage.CustomerUpdated, {
+        name: archer.name,
+        surname: archer.surname,
+      }) as string
+    );
   });
 
   it("prefills the number field of the first athlete", () => {

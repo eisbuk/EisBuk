@@ -71,9 +71,10 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: `${saul.name} ${saul.surname} ${i18n.t(
-              NotificationMessage.Updated
-            )}`,
+            message: i18n.t(NotificationMessage.CustomerUpdated, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Success,
           })
         );
@@ -115,8 +116,9 @@ describe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
+      const testError = new Error("test");
       getFirestoreSpy.mockImplementation(() => {
-        throw new Error();
+        throw testError;
       });
       // run thunk
       const testThunk = updateCustomer(saul);
@@ -124,8 +126,12 @@ describe("customerOperations", () => {
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CustomerUpdateError, {
+            name: saul.name,
+            surname: saul.surname,
+          }),
           variant: NotifVariant.Error,
+          error: testError,
         })
       );
     });
@@ -161,9 +167,10 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: `${saul.name} ${saul.surname} ${i18n.t(
-              NotificationMessage.Removed
-            )}`,
+            message: i18n.t(NotificationMessage.CustomerDeleted, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Success,
           })
         );
@@ -172,16 +179,21 @@ describe("customerOperations", () => {
 
     testWithEmulator("error", async () => {
       // intentionally cause error
+      const testError = new Error("test");
       getFirestoreSpy.mockImplementation(() => {
-        throw new Error();
+        throw testError;
       });
       // run thunk
       await deleteCustomer(saul)(mockDispatch, getState);
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CustomerDeleteError, {
+            name: saul.name,
+            surname: saul.surname,
+          }),
           variant: NotifVariant.Error,
+          error: testError,
         })
       );
     });
@@ -206,7 +218,7 @@ describe("customerOperations", () => {
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
         getFirestoreSpy.mockReturnValueOnce(db as any);
-        await extendBookingDate(saul.id, extendedDate)(
+        await extendBookingDate(saul, extendedDate)(
           mockDispatch,
           () => ({} as any)
         );
@@ -219,7 +231,10 @@ describe("customerOperations", () => {
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.BookingDateExtended),
+            message: i18n.t(NotificationMessage.BookingDateExtended, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Success,
           })
         );
@@ -230,17 +245,22 @@ describe("customerOperations", () => {
       "should show error notification if function call unsuccessful",
       async () => {
         // intentionally cause error to test error handling
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementation = () => {
           throw new Error();
         };
-        await extendBookingDate(saul.id, "2022-01-01")(
+        await extendBookingDate(saul, "2022-01-01")(
           mockDispatch,
           () => ({} as any)
         );
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.BookingDateExtendedError, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }

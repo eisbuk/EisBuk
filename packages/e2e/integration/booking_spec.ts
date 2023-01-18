@@ -98,7 +98,12 @@ describe("Booking flow", () => {
           // force true to avoid detatched error (happening because the button gets rerendered)
           force: true,
         });
-      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+      cy.contains(
+        i18n.t(NotificationMessage.BookingSuccess, {
+          date: testDateLuxon,
+          interval: "09:00-11:00",
+        }) as string
+      );
       // should change "book" button into "cancel" button
       cy.contains(i18n.t(ActionButton.Cancel) as string);
     });
@@ -143,7 +148,12 @@ describe("Booking flow", () => {
         .click({
           force: true,
         });
-      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+      cy.contains(
+        i18n.t(NotificationMessage.BookingSuccess, {
+          date: testDateLuxon,
+          interval: "09:00-11:00",
+        }) as string
+      );
 
       // should display confirmation dialog finalizing of the bookings
       cy.get("button")
@@ -172,6 +182,7 @@ describe("Booking flow", () => {
         "disabled"
       );
     });
+
     it("disables cancelling booked slots that have passed the deadline in calendar view ", () => {
       const pastTestDate = "2021-12-01";
       const pastTestDateLuxon = DateTime.fromISO(pastTestDate);
@@ -192,7 +203,12 @@ describe("Booking flow", () => {
         .click({
           force: true,
         });
-      cy.contains(i18n.t(NotificationMessage.BookingSuccess) as string);
+      cy.contains(
+        i18n.t(NotificationMessage.BookingSuccess, {
+          date: DateTime.fromISO("2022-01-01"),
+          interval: "09:00-11:00",
+        }) as string
+      );
 
       cy.contains(i18n.t(CustomerNavigationLabel.Calendar) as string).click();
 

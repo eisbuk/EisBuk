@@ -16,12 +16,14 @@ const ExtendBookingDateDialog: React.FC<ExtendBookingDateProps> = ({
   onClose,
   className,
   extendedDate,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  onCloseAll,
   ...customer
 }) => {
   const dispatch = useDispatch();
 
   const onConfirm = () => {
-    dispatch(extendBookingDate(customer.id, extendedDate!));
+    dispatch(extendBookingDate(customer, extendedDate!));
     onClose();
   };
 

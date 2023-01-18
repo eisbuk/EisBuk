@@ -40,7 +40,12 @@ const CalendarView: React.FC = () => {
     props: ModalPayload<"CancelBookingDialog">["props"]
   ) => openCancelBookingDialog(props);
 
-  const handleNotesUpdate = (bookingNotes: string, slotId: string) =>
+  const handleNotesUpdate = (
+    bookingNotes: string,
+    slotId: string,
+    date: string,
+    interval: string
+  ) =>
     // In order to be able to await this update, we're
     // using a bit of a different approach to firing a thunk
     // by runing a thunk explicitly and passing redux' dispatch and get state
@@ -48,6 +53,8 @@ const CalendarView: React.FC = () => {
       slotId,
       secretKey,
       bookingNotes,
+      date,
+      interval,
     })(dispatch, getState);
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (
@@ -55,7 +62,12 @@ const CalendarView: React.FC = () => {
       key={props.id}
       onCancel={() => handleCancellation({ ...props, secretKey })}
       onNotesEditSave={(bookingNotes) =>
-        handleNotesUpdate(bookingNotes, props.id)
+        handleNotesUpdate(
+          bookingNotes,
+          props.id,
+          props.date,
+          `${props.interval.startTime} - ${props.interval.endTime}`
+        )
       }
       state={state}
       variant={

@@ -35,9 +35,19 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
   const { t } = useTranslation();
 
   const { id: slotId } = slot;
-  const handleCustomerClick = ({ id: customerId }: CustomerFull) => {
+  const handleCustomerClick = ({
+    id: customerId,
+    name,
+    surname,
+  }: CustomerFull) => {
     dispatch(
-      markAttendance({ customerId, slotId, attendedInterval: defaultInterval })
+      markAttendance({
+        customerId,
+        name,
+        surname,
+        slotId,
+        attendedInterval: defaultInterval,
+      })
     );
   };
 

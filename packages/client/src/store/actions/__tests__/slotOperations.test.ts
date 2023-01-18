@@ -89,16 +89,18 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         await createNewSlot(testFormValues)(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.SlotAddError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -167,8 +169,9 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the failing thunk
         await updateSlot({
@@ -178,8 +181,9 @@ describe("Slot operations ->", () => {
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.SlotUpdateError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -226,16 +230,18 @@ describe("Slot operations ->", () => {
       "should show error notification if operation is failed",
       async () => {
         // intentionally cause error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the failing thunk
         await deleteSlot("id")(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.SlotDeleteError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }

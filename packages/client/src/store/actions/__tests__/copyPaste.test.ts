@@ -153,16 +153,18 @@ describe("Copy Paste actions", () => {
 
     testWithEmulator("should display error message on fail", async () => {
       // intentionally cause error
+      const testError = new Error("test");
       getFirestoreSpy.mockImplementationOnce(() => {
-        throw new Error();
+        throw testError;
       });
       // run the faulty thunk
       await pasteSlotsDay(testDateLuxon)(mockDispatch, () => ({} as any));
       // check the error message being enqueued
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.CopyPasteErrorDay),
           variant: NotifVariant.Error,
+          error: testError,
         })
       );
     });
@@ -217,16 +219,18 @@ describe("Copy Paste actions", () => {
       "should show error message on unsuccessful update operation",
       async () => {
         // intentionally cause error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the failing thunk
         await pasteSlotsWeek(testDateLuxon)(mockDispatch, () => ({} as any));
         // check the error message being enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.CopyPasteErrorWeek),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }

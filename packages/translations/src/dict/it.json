@@ -241,15 +241,22 @@
   },
 
   "Notification": {
-    "BookingSuccess": "Prenotazione effettuata",
-    "BookingCanceled": "Prenotazione rimossa",
-    "BookingCanceledError": "Errore nel rimuovere la prenotazione",
+    "BookingSuccess": "Prenotazione effettuata: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingError": "Error booking interval: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingCanceled": "Prenotazione rimossa: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingCanceledError": "Errore nel rimuovere la prenotazione: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Nota della prenotazione aggiornata",
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
 
+    "CopyPasteErrorWeek": "Error copying slots week",
+    "CopyPasteErrorDay": "Error copying slots day",
+
     "SlotAdded": "Slot Aggiunto",
+    "SlotAddError": "Errore nell'aggiunta dello slot",
     "SlotUpdated": "Slot Aggiornato",
+    "SlotUpdateError": "Errore nell'aggiornamento dello slot",
     "SlotRemoved": "Slot Eliminato",
+    "SlotRemoveError": "Errore nell'eliminazione dello slot",
 
     "LogoutSuccess": "Hai effettuato il logout",
     "LogoutError": "Si è verificato un errore",
@@ -259,15 +266,25 @@
 
     "EmailSent": "Email inviata con successo",
     "SMSSent": "SMS inviato con successo",
-    "BookingDateExtended": "Termine per le prenotazioni esteso",
+
+    "BookingDateExtended": "Termine per le prenotazioni esteso per {{ name }} {{ surname }}",
+    "BookingDateExtendedError": "Errore nell'estendere il termine per le prenotazioni per {{ name }} {{ surname }}",
 
     "Error": "Errore",
 
     "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario",
 
-    "CustomerProfileRegistered": "Registrazione completata",
-    "CustomerProfileUpdated": "Profilo cliente aggiornato",
-    "CustomerProfileError": "Errore durante l'aggiornamento del profilo cliente"
+    "MarkAbsenceError": "Error marking {{ name }} {{ surname }}'s absence",
+    "MarkAttendanceError": "Error marking {{ name }} {{ surname }}'s attendance",
+
+    "SelfRegSuccess": "Registrazione completata",
+    "SelfRegError": "Errore durante la registrazione",
+    "CustomerProfileUpdated": "Profilo aggiornato",
+    "CustomerProfileError": "Errore durante l'aggiornamento del profilo",
+    "CustomerUpdated": "Profilo cliente aggiornato: {{ name }} {{ surname }}",
+    "CustomerUpdateError": "Errore durante l'aggiornamento del profilo cliente: {{ name }} {{ surname }}",
+    "CustomerDeleted": "{{ name }} {{ surname }} deleted",
+    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}"
   },
 
   "BookingCountdownMessage": {

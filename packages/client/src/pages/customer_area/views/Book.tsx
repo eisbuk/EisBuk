@@ -84,8 +84,8 @@ const useBooking = () => {
   return {
     handleBooking:
       ({ date, id: slotId }: SlotInterface) =>
-      (bookedInterval: string) => {
-        dispatch(bookInterval({ slotId, bookedInterval, date, secretKey }));
+      (interval: string) => {
+        dispatch(bookInterval({ slotId, interval, date, secretKey }));
       },
 
     handleCancellation: (slot: SlotInterface, interval?: string) => () => {

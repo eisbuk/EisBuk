@@ -1,7 +1,6 @@
 import { getFirestore, doc, setDoc } from "@firebase/firestore";
 
 import {
-  Customer,
   CustomerAttendance,
   SlotAttendnace,
   SlotInterface,
@@ -24,7 +23,9 @@ interface UpdateAttendance<
   (
     payload: {
       slotId: SlotInterface["id"];
-      customerId: Customer["id"];
+      customerId: string;
+      name: string;
+      surname: string;
     } & P
   ): FirestoreThunk;
 }
@@ -42,7 +43,7 @@ interface UpdateAttendance<
  * and dispatching updates to firestore (which then update local store through web sockets, beyond functionality of this Thunk)
  */
 export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
-  ({ attendedInterval, slotId, customerId }) =>
+  ({ attendedInterval, slotId, customerId, name, surname }) =>
   async (dispatch, getState) => {
     try {
       const localState = getState();
@@ -70,11 +71,15 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
         { attendances: { [customerId]: updatedCustomerAttendance } },
         { merge: true }
       );
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.MarkAttendanceError, {
+            name,
+            surname,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -92,7 +97,7 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
  * and dispatching updates to `firestore` (which then update local store through web sockets, beyond functionality of this Thunk)
  */
 export const markAbsence: UpdateAttendance =
-  ({ slotId, customerId }) =>
+  ({ slotId, customerId, name, surname }) =>
   async (dispatch, getState) => {
     try {
       const localState = getState();
@@ -134,11 +139,15 @@ export const markAbsence: UpdateAttendance =
 
       // update month document with new values
       await setDoc(slotToUpdate, attendanceEntry);
-    } catch {
+    } catch (err) {
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.MarkAbsenceError, {
+            name,
+            surname,
+          }),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }

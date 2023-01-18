@@ -34,7 +34,13 @@ export const createNotificationsReducer: ReducerFactory<
       //
       // _Note that `canEvict` can be true only if the queue is empty or houses only one notification._
       case NotificationAction.Enqueue:
-        const newNotification = { ...action.payload, key: uuid() };
+        const { error, ...payload } = action.payload;
+        // Log error (if any) for debugging/reporting purposes
+        if (error) {
+          console.error(error);
+        }
+        // Enqueue new notification with generated key
+        const newNotification = { ...payload, key: uuid() };
         return {
           ...state,
           queue: state.canEvict

@@ -81,12 +81,13 @@ export const createNewSlot =
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       // show error notification if operation failed
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.SlotAddError),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -134,12 +135,13 @@ export const updateSlot =
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       // show error notification if operation failed
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.SlotUpdateError),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }
@@ -166,12 +168,13 @@ export const deleteSlot =
           variant: NotifVariant.Success,
         })
       );
-    } catch {
+    } catch (err) {
       // show error notification if operation failed
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
+          message: i18n.t(NotificationMessage.SlotDeleteError),
           variant: NotifVariant.Error,
+          error: err as Error,
         })
       );
     }

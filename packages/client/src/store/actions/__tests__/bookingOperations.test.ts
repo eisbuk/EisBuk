@@ -5,6 +5,7 @@
 import * as firestore from "@firebase/firestore";
 import * as functions from "@firebase/functions";
 import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import {
@@ -127,7 +128,7 @@ describe("Booking operations", () => {
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: intervals[0],
+          interval: intervals[0],
           date: baseSlot.date,
         });
         const mockDispatch = jest.fn();
@@ -152,7 +153,10 @@ describe("Booking operations", () => {
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.BookingSuccess),
+            message: i18n.t(NotificationMessage.BookingSuccess, {
+              date: DateTime.fromISO(baseSlot.date),
+              interval: intervals[0],
+            }),
             variant: NotifVariant.Success,
           })
         );
@@ -164,22 +168,27 @@ describe("Booking operations", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause error in the execution
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         const testThunk = bookInterval({
           secretKey,
           slotId: bookingId,
-          bookedInterval: intervals[0],
+          interval: intervals[0],
           date: baseSlot.date,
         });
         const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.BookingError, {
+              date: DateTime.fromISO(baseSlot.date),
+              interval: intervals[0],
+            }),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -217,6 +226,8 @@ describe("Booking operations", () => {
           secretKey,
           slotId: bookingId,
           organization,
+          interval: intervals[0],
+          date: baseSlot.date,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
         await testThunk(mockDispatch, store.getState);
@@ -229,7 +240,10 @@ describe("Booking operations", () => {
         // check that the success notification has been enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.BookingCanceled),
+            message: i18n.t(NotificationMessage.BookingCanceled, {
+              date: DateTime.fromISO(baseSlot.date),
+              interval: intervals[0],
+            }),
             variant: NotifVariant.Success,
           })
         );
@@ -240,20 +254,27 @@ describe("Booking operations", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause an error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         const testThunk = cancelBooking({
           secretKey,
           slotId: bookingId,
+          interval: intervals[0],
+          date: baseSlot.date,
         });
         const mockDispatch = jest.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.BookingCanceledError, {
+              date: DateTime.fromISO(baseSlot.date),
+              interval: intervals[0],
+            }),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -299,6 +320,8 @@ describe("Booking operations", () => {
         const testThunk = updateBookingNotes({
           secretKey,
           slotId: testSlot.id,
+          interval: dummyBooking.interval,
+          date: dummyBooking.date,
           bookingNotes,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
@@ -329,13 +352,16 @@ describe("Booking operations", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause an error
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         const testThunk = updateBookingNotes({
           secretKey,
           slotId: bookingId,
+          interval: intervals[0],
+          date: baseSlot.date,
           bookingNotes: "",
         });
         const mockDispatch = jest.fn();
@@ -344,6 +370,7 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -391,8 +418,9 @@ describe("Booking operations", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause an error
+        const testError = new Error("test");
         jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
@@ -402,6 +430,7 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.CustomerProfileError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -443,7 +472,7 @@ describe("Booking operations", () => {
       expect(updatedSaul).toEqual({ ...saul, id, secretKey });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.CustomerProfileRegistered),
+          message: i18n.t(NotificationMessage.SelfRegSuccess),
           variant: NotifVariant.Success,
         })
       );
@@ -453,8 +482,9 @@ describe("Booking operations", () => {
       "should enqueue error notification if operation failed",
       async () => {
         // intentionally cause an error
+        const testError = new Error("test");
         jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         // run the thunk
         const testThunk = customerSelfRegister({
@@ -465,8 +495,9 @@ describe("Booking operations", () => {
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.SelfRegError),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }

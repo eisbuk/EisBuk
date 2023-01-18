@@ -26,15 +26,21 @@ import {
   createDocumentWithObservedAttendance,
   observedSlotId,
 } from "../__testData__/attendanceOperations";
+import { saul } from "@/__testData__/customers";
 
 // test data
-const customerId = "customer-0";
 const slotId = observedSlotId;
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
 const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+
+const shortSaul = {
+  customerId: saul.id,
+  name: saul.name,
+  surname: saul.surname,
+};
 
 describe("Attendance operations ->", () => {
   afterEach(() => {
@@ -48,7 +54,7 @@ describe("Attendance operations ->", () => {
         // set up test state
         const store = getNewStore();
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attendedInterval: null, bookedInterval },
+          [saul.id]: { attendedInterval: null, bookedInterval },
         });
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
@@ -65,13 +71,13 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with test input values
         await markAttendance({
-          customerId,
+          ...shortSaul,
           slotId,
           attendedInterval,
         })(store.dispatch, store.getState);
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attendedInterval, bookedInterval },
+          [saul.id]: { attendedInterval, bookedInterval },
         });
         const docRef = firestore.doc(
           db,
@@ -103,14 +109,14 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with test input values
         await markAttendance({
-          customerId,
+          ...shortSaul,
           slotId,
           attendedInterval,
         })(store.dispatch, store.getState);
         // check updated db
         // booked should be null (since customer didn't book beforehand, but did attend)
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { bookedInterval: null, attendedInterval },
+          [saul.id]: { bookedInterval: null, attendedInterval },
         });
         const docRef = firestore.doc(
           db,
@@ -137,19 +143,24 @@ describe("Attendance operations ->", () => {
             }),
         });
         // cause synthetic error in execution
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         const mockDispatch = jest.fn();
         await markAttendance({
-          customerId,
+          ...shortSaul,
           slotId,
           attendedInterval,
         })(mockDispatch, store.getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.MarkAttendanceError, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
@@ -163,7 +174,7 @@ describe("Attendance operations ->", () => {
         // set up test state
         const store = getNewStore();
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attendedInterval, bookedInterval },
+          [saul.id]: { attendedInterval, bookedInterval },
         });
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
@@ -180,12 +191,12 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with test input values
         await markAbsence({
-          customerId,
+          ...shortSaul,
           slotId,
         })(store.dispatch, store.getState);
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attendedInterval: null, bookedInterval },
+          [saul.id]: { attendedInterval: null, bookedInterval },
         });
         const docRef = firestore.doc(
           db,
@@ -202,7 +213,7 @@ describe("Attendance operations ->", () => {
         // set up test state
         const store = getNewStore();
         const initialDoc = createDocumentWithObservedAttendance({
-          [customerId]: { attendedInterval, bookedInterval: null },
+          [saul.id]: { attendedInterval, bookedInterval: null },
         });
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
@@ -219,7 +230,7 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockReturnValueOnce(db as any);
         // run the thunk with test input values
         await markAbsence({
-          customerId,
+          ...shortSaul,
           slotId,
         })(store.dispatch, store.getState);
         // check updated db
@@ -250,18 +261,23 @@ describe("Attendance operations ->", () => {
             }),
         });
         // cause synthetic error in execution
+        const testError = new Error("test");
         getFirestoreSpy.mockImplementationOnce(() => {
-          throw new Error();
+          throw testError;
         });
         const mockDispatch = jest.fn();
         await markAbsence({
-          customerId,
+          ...shortSaul,
           slotId,
         })(mockDispatch, store.getState);
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.Error),
+            message: i18n.t(NotificationMessage.MarkAbsenceError, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
             variant: NotifVariant.Error,
+            error: testError,
           })
         );
       }
