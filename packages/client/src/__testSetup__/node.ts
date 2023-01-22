@@ -10,7 +10,6 @@ import {
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
-import { waitForCondition } from "@/__testUtils__/helpers";
 
 interface SetUpOrganization {
   (options?: {
@@ -45,16 +44,21 @@ export const setUpOrganization: SetUpOrganization = async ({
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
   const secretsRef = adminDb.doc(`${Collection.Secrets}/${organization}`);
 
+  const orgData = {
+    admins: [email],
+    emailFrom,
+    emailTemplates,
+    ...additionalSetup,
+  };
+
+  const SmtpOrgData = setSecrets
+    ? Object.assign(orgData, { smtpConfigured: true })
+    : orgData;
   const promises = [
     // Create a new user in auth
     createUserWithEmailAndPassword(auth, email, pass),
     // Set given user as admin in org structure
-    orgRef.set({
-      admins: [email],
-      emailFrom,
-      emailTemplates,
-      ...additionalSetup,
-    }),
+    orgRef.set(SmtpOrgData),
   ];
 
   // Add secrets if so specified
@@ -70,14 +74,6 @@ export const setUpOrganization: SetUpOrganization = async ({
   }
 
   await Promise.all(promises);
-
-  // If secrets should be set, wait for the data trigger to update the smtpConfigured flag.
-  if (setSecrets) {
-    await waitForCondition<OrganizationData>({
-      documentPath: orgRef.path,
-      condition: (data) => Boolean(data?.smtpConfigured),
-    });
-  }
 
   if (!doLogin) {
     await signOut(auth);
