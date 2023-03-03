@@ -66,8 +66,8 @@
   },
 
   "SlotType": {
-    "Ice": "ice",
-    "OffIce": "off-ice"
+    "Ice": "Ghiaccio",
+    "OffIce": "Secco"
   },
   "Category": {
     "PreCompetitiveAdults": "pre-agonismo-adulti",
@@ -121,8 +121,8 @@
     "ManagePersonalDetails": "Gestisci i tuoi dati personali",
     "RegistrationCode": "Codice di regitrazione",
     "InputRegistrationCode": "Inserisci qui il codice di registrazione. Se non hai un codice di registrazione contatta un amministratore",
-    "AdminValues": "Administrative values",
-    "AdminValuesDescription": "These are administrative values for a customer. They are not visible to the customer"
+    "AdminValues": "Dati per gli amministratori",
+    "AdminValuesDescription": "Questi dati non sono visibili agli atleti."
   },
 
   "OrganizationLabel": {
@@ -235,7 +235,7 @@
     "Dismiss": "Chiudi",
     "Submit": "Invia",
     "Verify": "Verifica",
-    "Edit": "Modificare",
+    "Edit": "Modifica",
     "Add": "Aggiungi",
     "Delete": "Elimina"
   },
