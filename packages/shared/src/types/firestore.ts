@@ -217,7 +217,7 @@ export interface Customer extends CustomerBase {
   id: string;
   secretKey: string;
   categories: (Category | DeprecatedCategory)[];
-  extendedDate?: string;
+  extendedDate?: string | null;
 }
 /**
  * A full customer structure, including all of the regular properties, plus some administration data available only
