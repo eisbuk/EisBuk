@@ -1,4 +1,4 @@
-import i18n, { AdminAria } from "@eisbuk/translations";
+import i18n, { AttendanceAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
 import { PrivateRoutes } from "../temp";
 
@@ -24,7 +24,7 @@ describe("AddAttendedCustomersDialog", () => {
   it("Adds attended athletes from eligible (by slot category) althetes from the list", () => {
     cy.getAttrWith(
       "aria-label",
-      i18n.t(AdminAria.AddAttendedCustomers) as string
+      i18n.t(AttendanceAria.AddAttendedCustomers) as string
     ).click();
     cy.getAttrWith("aria-label", "add-athletes-dialog");
 
@@ -42,7 +42,7 @@ describe("AddAttendedCustomersDialog", () => {
   it("closes the add-athletes-dialog when there are no more customers to show", () => {
     cy.getAttrWith(
       "aria-label",
-      i18n.t(AdminAria.AddAttendedCustomers) as string
+      i18n.t(AttendanceAria.AddAttendedCustomers) as string
     ).click();
     cy.getAttrWith("aria-label", "add-athletes-dialog");
 

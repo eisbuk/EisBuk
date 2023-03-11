@@ -351,9 +351,16 @@ export enum AdminAria {
   PasteSlots = "AdminAria.PasteSlots",
   CreateSlots = "AdminAria.CreateSlots",
   EnableEdit = "AdminAria.EnableEdit",
-  AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
   CloseModal = "AdminAria.CloseModal",
   BirthdayMenu = "AdminAria.BirthdayMenu",
+}
+
+export enum AttendanceAria {
+  AddAttendedCustomers = "AttendanceAria.AddAttendedCustomers",
+  PreviousInterval = "AttendanceAria.PreviousInterval",
+  NextInterval = "AttendanceAria.NextInterval",
+  MarkPresent = "AttendanceAria.MarkPresent",
+  MarkAbsent = "AttendanceAria.MarkAbsent",
 }
 
 export enum SlotFormAria {

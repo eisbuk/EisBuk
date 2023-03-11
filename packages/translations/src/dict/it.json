@@ -324,9 +324,16 @@
     "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
     "CreateSlots": "Crea nuovo slot",
     "EnableEdit": "Abilita la modifica",
-    "AddAttendedCustomers": "Aggiungi clienti presenti",
     "CloseModal": "Close the modal",
     "BirthdayMenu": "See upcomming birthdays"
+  },
+
+  "AttendanceAria": {
+    "AddAttendedCustomers": "Aggiungi clienti presenti",
+    "PreviousInterval": "Intervallo precedente",
+    "NextInterval": "Intervallo successivo",
+    "MarkPresent": "Segna come presente",
+    "MarkAbsent": "Segna come assente"
   },
 
   "SlotFormAria": {
