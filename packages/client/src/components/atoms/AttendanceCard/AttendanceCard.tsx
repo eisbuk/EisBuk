@@ -12,7 +12,7 @@ import AddNew from "@mui/icons-material/AddCircle";
 import makeStyles from "@mui/styles/makeStyles";
 
 import i18n, {
-  AdminAria,
+  AttendanceAria,
   CategoryLabel,
   SlotTypeLabel,
   useTranslation,
@@ -211,7 +211,7 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
           )
       )}
       <IconButton
-        aria-label={t(AdminAria.AddAttendedCustomers)}
+        aria-label={t(AttendanceAria.AddAttendedCustomers)}
         className={classes.addCustomersButton}
         onClick={openAddCustomers}
         size="large"

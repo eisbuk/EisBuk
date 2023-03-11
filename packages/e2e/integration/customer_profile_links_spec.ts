@@ -1,6 +1,7 @@
 import i18n, {
   ActionButton,
   AdminAria,
+  AttendanceAria,
   BirthdayMenu,
   CustomerFormTitle,
   OrganizationLabel,
@@ -58,7 +59,7 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     // Add saul as having attended the slot
     cy.getAttrWith(
       "aria-label",
-      i18n.t(AdminAria.AddAttendedCustomers) as string
+      i18n.t(AttendanceAria.AddAttendedCustomers) as string
     ).click();
     cy.contains(saul.name).click();
 

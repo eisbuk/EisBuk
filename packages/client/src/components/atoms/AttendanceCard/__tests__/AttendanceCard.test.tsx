@@ -7,7 +7,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
 import i18n, {
-  AdminAria,
+  AttendanceAria,
   CategoryLabel,
   SlotTypeLabel,
 } from "@eisbuk/translations";
@@ -22,17 +22,11 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
 import { comparePeriods } from "@/utils/sort";
 
-import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { renderWithRouter } from "@/__testUtils__/wrappers";
 
 import { baseAttendanceCard, intervals } from "@/__testData__/attendance";
 import { gus, saul, walt } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
-import {
-  __attendanceButton__,
-  __nextIntervalButtonId__,
-  __prevIntervalButtonId__,
-} from "../__testData__/testIds";
 
 const mockDispatch = jest.fn();
 jest.mock("react-redux", () => ({
@@ -144,10 +138,6 @@ describe("AttendanceCard", () => {
       expect(screen.queryByText(thumbsDown)).toBeNull();
       screen.getByText(thumbsUp);
     });
-    /** @TODO revisit this when migration from CRA is done */
-    xtest("should display a trash can icon when marking a non-booked athlete as absent", () => {
-      // test implementation here
-    });
 
     test("should dispatch 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
       renderWithRouter(
@@ -191,10 +181,7 @@ describe("AttendanceCard", () => {
       );
       screen.getByText(thumbsUp).click();
       // we've created a discrepency by updating local state, while attendance from props stayed the same
-      expect(screen.getByTestId(__attendanceButton__)).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(screen.getByText(thumbsDown)).toHaveProperty("disabled", true);
     });
 
     test("should disable attendance button while picking new interval - 'attendedInterval != selectedInterval' (this doesn't apply when 'attendedInterval = null'", () => {
@@ -204,12 +191,11 @@ describe("AttendanceCard", () => {
           customers={[{ ...saul, bookedInterval, attendedInterval }]}
         />
       );
-      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen
+        .getByRole("button", { name: i18n.t(AttendanceAria.NextInterval) })
+        .click();
       // we've created a discrepency by updating local state, while attendedInterval from props stayed the same
-      expect(screen.getByTestId(__attendanceButton__)).toHaveProperty(
-        "disabled",
-        true
-      );
+      expect(screen.getByText(thumbsUp)).toHaveProperty("disabled", true);
     });
   });
 
@@ -236,14 +222,20 @@ describe("AttendanceCard", () => {
       // only one interval should be shown in case both booked and attended are the same
       const displayedIntervals = screen.queryAllByText(bookedInterval);
       expect(displayedIntervals).toHaveLength(1);
-      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen
+        .getByRole("button", { name: i18n.t(AttendanceAria.NextInterval) })
+        .click();
       screen.getByText(attendedInterval);
       screen.getByText(bookedInterval);
     });
 
     test("should disable prev button if first interval selected and next if last selected", () => {
-      const prevButton = screen.getByTestId(__prevIntervalButtonId__);
-      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      const prevButton = screen.getByRole("button", {
+        name: i18n.t(AttendanceAria.PreviousInterval),
+      });
+      const nextButton = screen.getByRole("button", {
+        name: i18n.t(AttendanceAria.NextInterval),
+      });
       // buttons shouldn't be disabled as we're starting with middle interval
       expect(prevButton).not.toHaveProperty("disabled", true);
       // switch to first interval
@@ -260,14 +252,20 @@ describe("AttendanceCard", () => {
     test("should disable the interval picker if 'localAttended = false'", () => {
       // set local attendance to false
       screen.getByText(thumbsUp).click();
-      const prevButton = screen.getByTestId(__prevIntervalButtonId__);
-      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      const prevButton = screen.getByRole("button", {
+        name: "Previous interval",
+      });
+      const nextButton = screen.getByRole("button", {
+        name: i18n.t(AttendanceAria.NextInterval),
+      });
       expect(prevButton).toHaveProperty("disabled", true);
       expect(nextButton).toHaveProperty("disabled", true);
     });
 
     test("should dispatch 'markAttendance' on change of interval", async () => {
-      screen.getByTestId(__nextIntervalButtonId__).click();
+      screen
+        .getByRole("button", { name: i18n.t(AttendanceAria.NextInterval) })
+        .click();
       const mockDispatchAction = mockMarkAttImplementation({
         ...shortSaul,
         slotId,
@@ -301,7 +299,9 @@ describe("AttendanceCard", () => {
       );
       jest.clearAllMocks();
       // we're testing with first interval as initial
-      const nextButton = screen.getByTestId(__nextIntervalButtonId__);
+      const nextButton = screen.getByRole("button", {
+        name: i18n.t(AttendanceAria.NextInterval),
+      });
       // selectedInterval -> interval[1]
       nextButton.click();
       expect(mockDispatch).toHaveBeenCalledTimes(0);
@@ -358,7 +358,9 @@ describe("AttendanceCard", () => {
       renderWithRouter(<AttendanceCard {...attendanceCard} />);
 
       screen
-        .getByLabelText(i18n.t(AdminAria.AddAttendedCustomers) as string)
+        .getByRole("button", {
+          name: i18n.t(AttendanceAria.AddAttendedCustomers) as string,
+        })
         .click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual(
@@ -370,61 +372,6 @@ describe("AttendanceCard", () => {
         defaultInterval: "10:00-11:00",
       });
     });
-  });
-
-  // we're testing for an edge case when two users have the app open in their browsers
-  // and both apps should work the same, avoiding dispcrpencies, such as disabling the attendance
-  // button on one if the other has updated attendance
-  /**
-   * This is temporarily skipped as it requires both MutationObserver and firestore emulators
-   * @TODO udpate this when such operations are possible
-   */
-  xdescribe("Test syncronization on multiple views", () => {
-    testWithEmulator(
-      "should update attendance on both views, without disabling any",
-      async () => {
-        const intervals = {
-          ["09:00-10:00"]: {
-            startTime: "09:00",
-            endTime: "10:00",
-          },
-          ["09:00-10:30"]: {
-            startTime: "09:00",
-            endTime: "10:30",
-          },
-        };
-        const saulWithAttendandce: CustomerWithAttendance = {
-          ...saul,
-          attendedInterval: "09:00-10:00",
-          bookedInterval: "09:00-10:00",
-        };
-        const testProps = {
-          ...baseSlot,
-          intervals,
-          customers: [saulWithAttendandce],
-          allCustomers: [],
-        };
-        // we're renderWithRoutering two views one to interact with one
-        // for opservation of the updates
-        renderWithRouter(
-          <>
-            <AttendanceCard {...testProps} />
-            <AttendanceCard {...testProps} />
-          </>
-        );
-        const [controlledButton, testButton] =
-          screen.getAllByTestId(__attendanceButton__);
-        // check that both buttons are the same to begin with
-        expect(controlledButton).toHaveTextContent(thumbsUp);
-        expect(testButton).toHaveTextContent(thumbsUp);
-        // update one attendance (boolean) state and expect the other to get updated
-        controlledButton.click();
-        expect(controlledButton).toHaveTextContent(thumbsDown);
-        await waitFor(() => {
-          expect(testButton).toHaveTextContent(thumbsDown);
-        });
-      }
-    );
   });
 });
 
