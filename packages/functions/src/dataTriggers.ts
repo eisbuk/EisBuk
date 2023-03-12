@@ -109,7 +109,12 @@ export const triggerAttendanceEntryForSlot = functions
 
     switch (true) {
       case isCreate:
-        // add empay entry for slot's attendance
+        // check if attendance entry already exists (in case we're dumping/restoring the data)
+        const { exists } = await attendanceEntryRef.get();
+        if (exists) {
+          return;
+        }
+        // add empty entry for slot's attendance
         await attendanceEntryRef.set({
           date: change.after.data()!.date,
           attendances: {},
