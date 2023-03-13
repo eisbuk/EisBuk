@@ -23,10 +23,13 @@ import {
   copySlotsWeek,
   pasteSlotsDay,
   pasteSlotsWeek,
-  setSlotDayToClipboard,
-  setSlotWeekToClipboard,
 } from "../copyPaste";
 import { enqueueNotification } from "@/features/notifications/actions";
+
+import {
+  getDayFromClipboard,
+  getWeekFromClipboard,
+} from "@/store/selectors/copyPaste";
 
 import { getSlotsPath } from "@/utils/firestore";
 
@@ -35,6 +38,7 @@ import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
 
 import { testDateLuxon } from "@/__testData__/date";
 import {
+  expectedDay,
   expectedWeek,
   testDay,
   testSlots,
@@ -53,36 +57,43 @@ describe("Copy Paste actions", () => {
 
   describe("copySlotsDay", () => {
     testWithEmulator(
-      "should dispatch 'setSlotDayToClipboard' with appropriate slots",
+      "should store the slots for the day in the clipboard and remove any week slots in the clipboard (if such exist)",
       async () => {
         // set up test state
         const store = getNewStore();
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
-            setupTestSlots({
-              slots: testSlots,
-              db,
-              store,
-              organization,
-            }),
+            Promise.all([
+              setupTestSlots({
+                slots: testSlots,
+                db,
+                store,
+                organization,
+              }),
+              setupCopyPaste({
+                db,
+                store,
+                week: expectedWeek,
+              }),
+            ]),
         });
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
         getFirestoreSpy.mockReturnValue(db as any);
         // run the thunk against a store
-        await copySlotsDay(testDateLuxon)(mockDispatch, store.getState);
+        await copySlotsDay(testDateLuxon)(store.dispatch, store.getState);
         // test that slots have been added to clipboard
-        expect(mockDispatch).toHaveBeenCalledWith(
-          setSlotDayToClipboard(testDay)
-        );
+        expect(getDayFromClipboard(store.getState())).toEqual(testDay);
+        // check that week slots have been removed from the clipboard
+        expect(getWeekFromClipboard(store.getState())).toEqual(null);
       }
     );
   });
 
   describe("copySlotsWeek", () => {
     testWithEmulator(
-      "should dispatch 'setSlotDayToClipboard' with appropriate slots",
+      "should store the slots for the week in the clipboard and remove any day slots in the clipboard (if such exist)",
       async () => {
         // set up test state
         const store = getNewStore({
@@ -92,23 +103,30 @@ describe("Copy Paste actions", () => {
         });
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
-            setupTestSlots({
-              slots: testSlots,
-              db,
-              store,
-              organization,
-            }),
+            Promise.all([
+              setupTestSlots({
+                slots: testSlots,
+                db,
+                store,
+                organization,
+              }),
+              setupCopyPaste({
+                db,
+                store,
+                day: expectedDay,
+              }),
+            ]),
         });
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
         getFirestoreSpy.mockReturnValue(db as any);
         // run the thunk against a store
-        await copySlotsWeek()(mockDispatch, store.getState);
+        await copySlotsWeek()(store.dispatch, store.getState);
         // test that slots have been added to clipboard
-        expect(mockDispatch).toHaveBeenCalledWith(
-          setSlotWeekToClipboard(expectedWeek)
-        );
+        expect(getWeekFromClipboard(store.getState())).toEqual(expectedWeek);
+        // check that day slots have been removed from the clipboard
+        expect(getDayFromClipboard(store.getState())).toEqual(null);
       }
     );
   });
