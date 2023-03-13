@@ -6,7 +6,7 @@ import Badge from "@mui/material/Badge";
 
 import { Copy } from "@eisbuk/svg";
 
-import { useTranslation, AdminAria } from "@eisbuk/translations";
+import { useTranslation, SlotsAria } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -91,8 +91,8 @@ export const CopyButton: React.FC = () => {
 
   // Get the right aria label for the button
   const ariaLabelLookup = {
-    [ButtonContextType.Day]: t(AdminAria.CopySlotsDay, { date }),
-    [ButtonContextType.Week]: t(AdminAria.CopySlotsWeek, {
+    [ButtonContextType.Day]: t(SlotsAria.CopySlotsDay, { date }),
+    [ButtonContextType.Week]: t(SlotsAria.CopySlotsWeek, {
       weekStart: date.startOf("week"),
       weekEnd: date.endOf("week"),
     }),
@@ -123,8 +123,8 @@ const CopiedSlotsBadge: React.FC<{
   const { t } = useTranslation();
 
   const ariaLabelLookup = {
-    [ButtonContextType.Day]: t(AdminAria.CopiedSlotsDayBadge, { date }),
-    [ButtonContextType.Week]: t(AdminAria.CopiedSlotsWeekBadge, {
+    [ButtonContextType.Day]: t(SlotsAria.CopiedSlotsDayBadge, { date }),
+    [ButtonContextType.Week]: t(SlotsAria.CopiedSlotsWeekBadge, {
       weekStart: date.startOf("week"),
       weekEnd: date.endOf("week"),
     }),

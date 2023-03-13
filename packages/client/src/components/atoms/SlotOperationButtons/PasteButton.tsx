@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { useDispatch } from "react-redux";
 
 import { ClipboardList } from "@eisbuk/svg";
-import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+import { useTranslation, SlotsAria } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -26,7 +26,7 @@ import { __pasteButtonId__ } from "@/__testData__/testIds";
  *
  * **Important:** Will not render if:
  * - not within `SlotOperationButtons` context
- * - trying to render within `contextType = "slot"` as it makes no sence to paste into the existing slot
+ * - trying to render within `contextType = "slot"` as it makes no sense to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
 export const PasteButton: React.FC = () => {
@@ -47,7 +47,7 @@ export const PasteButton: React.FC = () => {
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
-  if (contextType === ButtonContextType.Slot) {
+  if (!contextType || contextType === ButtonContextType.Slot) {
     console.error(__pasteButtonWrongContextError);
     return null;
   }
@@ -60,22 +60,34 @@ export const PasteButton: React.FC = () => {
   }
 
   // pick the right action creator with respect to `contextType`
-  const pasteActionCreator =
-    contextType === ButtonContextType.Day ? pasteSlotsDay : pasteSlotsWeek;
-  const handlePaste = () => dispatch(pasteActionCreator(date));
+  const pasteActionLookup = {
+    [ButtonContextType.Day]: pasteSlotsDay,
+    [ButtonContextType.Week]: pasteSlotsWeek,
+  };
+  const handlePaste = () => dispatch(pasteActionLookup[contextType](date));
 
   // check if there are slots in clipboard for given `contextType`
-  const disableButton = !(slotsToCopy && slotsToCopy[contextType!]);
+  const disableButton = !(slotsToCopy && slotsToCopy[contextType]);
+
+  const ariaLabelLookup = {
+    [ButtonContextType.Day]: t(SlotsAria.PasteSlotsDay, {
+      date,
+    }),
+    [ButtonContextType.Week]: t(SlotsAria.PasteSlotsWeek, {
+      weekStart: date.startOf("week"),
+      weekEnd: date.endOf("week"),
+    }),
+  };
+  const ariaLabel = disableButton
+    ? t(SlotsAria.PasteButtonDisabled)
+    : ariaLabelLookup[contextType];
 
   return (
     <SlotOperationButton
       onClick={handlePaste}
       disabled={disableButton}
       data-testid={__pasteButtonId__}
-      aria-label={`${t(AdminAria.PasteSlots)} ${t(DateFormat.Full, {
-        date,
-      })}`}
-      // aria-label={`Paste copied slots slots on ${date.toFormat("DDDD")}`}
+      aria-label={ariaLabel}
     >
       <ClipboardList />
     </SlotOperationButton>
