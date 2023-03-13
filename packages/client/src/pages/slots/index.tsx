@@ -11,7 +11,7 @@ import {
   SlotsDayContainer,
 } from "@eisbuk/ui";
 
-import { AdminAria, useTranslation } from "@eisbuk/translations";
+import { SlotsAria, useTranslation } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ButtonContextType } from "@/enums/components";
@@ -86,9 +86,9 @@ const SlotsPage: React.FC = () => {
       className={
         !canEdit ? "!text-black outline outline-gray-300 border-box" : ""
       }
-      aria-label={t(AdminAria.EnableEdit)}
+      aria-label={t(SlotsAria.EnableEdit)}
     >
-      {t(AdminAria.EnableEdit)}
+      {t(SlotsAria.EnableEdit)}
     </Button>
   );
 

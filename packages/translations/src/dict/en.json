@@ -316,16 +316,20 @@
     "SeePastDates": "See past dates",
     "SeeFutureDates": "See future dates",
 
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
+  },
+
+  "SlotsAria": {
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlotsWeek": "Copy slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copy slots from {{ date, EEEE d MMMM }}",
     "CopiedSlotsWeekBadge": "Copied slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopiedSlotsDayBadge": "Copied slots on {{ date, EEEE d MMMM }}",
-    "PasteSlots": "Paste copied slots on {{ date, EEEE d MMMM }}",
-    "CreateSlots": "Create new slots on",
-    "EnableEdit": "Enable Edit",
-    "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "PasteSlotsDay": "Paste copied slots into {{ date, EEEE d MMMM }}",
+    "PasteSlotsWeek": "Paste copied slots into week {{ weekStart, d MMMM }} - {{ weekEnd, d MMMM }}",
+    "CreateSlot": "Create new slot on {{ date, EEEE d MMMM }}",
+    "EnableEdit": "Enable Edit"
   },
 
   "AttendanceAria": {
