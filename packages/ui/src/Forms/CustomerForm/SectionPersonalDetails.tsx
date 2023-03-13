@@ -8,12 +8,12 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 import { User, Cake, Mail, Phone } from "@eisbuk/svg";
+import { isValidPhoneNumber } from "@eisbuk/shared";
 
 import FormSection from "../FormSection";
 import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";
 
 import { isISODay } from "../../utils/date";
-import { isValidPhoneNumber } from "../../utils/helpers";
 
 export interface PersonalDetailsFields {
   name: string;
