@@ -10,14 +10,14 @@ import i18n, {
   ValidationMessage,
   CustomerLabel,
 } from "@eisbuk/translations";
-import { CustomerFull } from "@eisbuk/shared";
+import { Customer, CustomerFull } from "@eisbuk/shared";
 
 import { PrivateRoutes, defaultUser } from "../temp";
 
-import testCustomers from "../__testData__/customers.json";
+import { customers } from "../__testData__/customers.json";
 
 // extract saul from test data .json
-const saul = testCustomers.customers.saul as Required<CustomerFull>;
+const saul = customers.saul as Required<CustomerFull>;
 
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>
@@ -29,7 +29,7 @@ describe("login", () => {
     // create default organization but don't sign in
     cy.initAdminApp()
       .then((organization) =>
-        cy.updateFirestore(organization, ["customers.json"])
+        cy.updateCustomers(organization, customers as Record<string, Customer>)
       )
       .then(() => cy.visit(PrivateRoutes.Root));
   });

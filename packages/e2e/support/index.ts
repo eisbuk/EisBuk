@@ -31,6 +31,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  // Navigate away from the app to avoid annoying "unauth" errors, on firestore listeners, when unsubscribing
+  cy.window().then((win) => win.location.assign("about:blank"));
   // auth from previous tests shouldn't affect the following tests
   cy.signOut();
 });

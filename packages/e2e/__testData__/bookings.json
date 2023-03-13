@@ -4,6 +4,8 @@
       "id": "gus",
       "name": "Gustavo",
       "surname": "Fring",
+      "secretKey": "000002",
+      "categories": ["course"],
       "bookedSlots": {
         "slot-1": {
           "date": "2022-01-01",

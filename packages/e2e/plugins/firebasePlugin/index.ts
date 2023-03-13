@@ -1,6 +1,12 @@
 import { TaskHandler } from "./types";
 
-import handleFirestoreUpdate from "./updateFirestore";
+import {
+  handleUpdateSlots,
+  handleUpdateCustomers,
+  handleUpdateBookings,
+  handleUpdateAttendance,
+  handleUpdateOrganization,
+} from "./updateFirestore";
 import handleGetRecaptchaCode from "./getRecaptchaCode";
 import handleGetSigninLink from "./getSigninLink";
 
@@ -10,7 +16,12 @@ interface TaskHandlers {
 
 const initializeFirebasePlugin = (on: Cypress.PluginEvents): void => {
   on("task", {
-    updateFirestore: handleFirestoreUpdate,
+    updateOrganization: handleUpdateOrganization,
+    updateSlots: handleUpdateSlots,
+    updateCustomers: handleUpdateCustomers,
+    updateBookings: handleUpdateBookings,
+    updateAttendance: handleUpdateAttendance,
+
     getRecaptchaCode: handleGetRecaptchaCode,
     getSigninLink: handleGetSigninLink,
   } as TaskHandlers);

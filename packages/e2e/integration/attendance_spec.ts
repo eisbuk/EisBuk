@@ -1,18 +1,29 @@
 import i18n, { AttendanceAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
+
+import { Customer, SlotInterface } from "@eisbuk/shared";
+
 import { PrivateRoutes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
+import { slots } from "../__testData__/slots.json";
 
 describe("AddAttendedCustomersDialog", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization, sign in as admin
     cy.initAdminApp()
+      // Save organziation to cypress context (making it available to the test functions)
+      .then((organization) => cy.wrap(organization).as("organization"))
+
+      // Load test data into firestore
       .then((organization) =>
-        // Load test data into firestore
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
+        cy.updateCustomers(organization, customers as Record<string, Customer>)
       )
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      )
+
       .then(() => cy.signIn())
       .then(() =>
         // Our test slot's date is "2022-01-01" so we want to set the clock to that date to open it immediately
