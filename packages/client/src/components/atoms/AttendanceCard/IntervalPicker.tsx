@@ -48,7 +48,11 @@ const IntervalPicker: React.FC<Props> = ({
    * Navigates left/right through interval selection
    * @param increment `-1` for previous, `1` for next
    */
-  const handleClick = (increment: -1 | 1) => () => {
+  const handleClick = (increment: -1 | 1) => (e: React.SyntheticEvent) => {
+    // As component is part of a larger, user attendance row component, which is itself clickable
+    // we're preventing the bubbling of the click event.
+    e.preventDefault();
+
     const newIndex = intervalIndex + increment;
     onChange(intervals[newIndex]);
   };
