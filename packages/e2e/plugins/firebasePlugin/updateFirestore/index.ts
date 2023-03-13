@@ -1,26 +1,37 @@
-import * as path from "path";
+import { DocumentData } from "@google-cloud/firestore";
 
 import { TaskHandler } from "../types";
+import { adminDb } from "./adminDb";
 
-import readTestData from "./readTestData";
-import updateFirestoreData from "./updateFirestoreData";
+import {
+  updateSlots,
+  updateCustomers,
+  updateBookings,
+  updateAttendance,
+  updateOrganization,
+} from "./updateFirestoreData";
 
-interface UpdateFirestorePayload {
-  organization: string;
-  files: string[];
-}
+// Create task handler serves as a wrapper around the update functions
+// transforming them into a task handlers for cypress task commands.
+const createTaskHandler =
+  <D extends Record<string, any>>(
+    updateHandler: (
+      orgRef: FirebaseFirestore.DocumentReference<DocumentData>,
+      documents: D
+    ) => Promise<any>
+  ): TaskHandler<{ organization: string; documents: D }, null> =>
+  async ({ organization, documents }) => {
+    const orgRef = adminDb.collection("organizations").doc(organization);
+    await updateHandler(orgRef, documents);
+    return null;
+  };
 
-const handleFirestoreUpdate: TaskHandler<UpdateFirestorePayload> = async ({
-  organization,
-  files,
-}) => {
-  const testFilesDir = path.join(__dirname, "..", "..", "..", "__testData__");
+export const handleUpdateOrganization = createTaskHandler(updateOrganization);
 
-  const docsToUpdate = await readTestData(testFilesDir, files);
+export const handleUpdateSlots = createTaskHandler(updateSlots);
 
-  await updateFirestoreData(organization, docsToUpdate);
+export const handleUpdateCustomers = createTaskHandler(updateCustomers);
 
-  return null;
-};
+export const handleUpdateBookings = createTaskHandler(updateBookings);
 
-export default handleFirestoreUpdate;
+export const handleUpdateAttendance = createTaskHandler(updateAttendance);

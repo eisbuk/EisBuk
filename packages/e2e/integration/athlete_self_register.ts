@@ -7,7 +7,7 @@ import i18n, {
   Alerts,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { CustomerFull } from "@eisbuk/shared";
+import { CustomerFull, OrganizationData } from "@eisbuk/shared";
 
 import { PrivateRoutes } from "../temp";
 
@@ -17,6 +17,8 @@ import {
   __displayName__,
   __emailFrom__,
 } from "../constants";
+
+import { organization as organizationData } from "../__testData__/organization.json";
 
 // extract saul from test data .json
 const saul = testCustomers.customers.saul as Required<CustomerFull>;
@@ -30,7 +32,10 @@ describe("Athlete self registration", () => {
     // Initialize app, set up organization (registration code)
     cy.initAdminApp()
       .then((organization) =>
-        cy.updateFirestore(organization, ["organization.json"])
+        cy.updateOrganization(
+          organization,
+          organizationData as OrganizationData
+        )
       )
       .then(() => cy.signOut())
       .then(() => cy.clearCookies())

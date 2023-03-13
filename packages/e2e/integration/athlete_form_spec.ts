@@ -8,10 +8,11 @@ import i18n, {
 
 import { PrivateRoutes, Routes } from "../temp";
 
-import testCustomers from "../__testData__/customers.json";
+import { customers } from "../__testData__/customers.json";
+import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
 
 // extract saul from test data .json
-const saul = testCustomers.customers.saul as Customer;
+const saul = customers.saul as Customer;
 // Remove the "dial code" from saul's phone
 const saulsDialCode = "IT (+39)";
 const saulsPhone = saul.phone!.substring(3);
@@ -155,7 +156,10 @@ describe("add athlete", () => {
 
   it("prefills the number field with max + 1", () => {
     cy.initAdminApp().then((organization) =>
-      cy.updateFirestore(organization, ["saul_with_extended_date.json"])
+      cy.updateCustomers(
+        organization,
+        saulWithExtendedDate as Record<string, Customer>
+      )
     );
     cy.visit(PrivateRoutes.Athletes);
     // We need to wait for athletes to be loaded: if we click the "Add athlete"
@@ -171,7 +175,7 @@ describe("athlete profile", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     cy.initAdminApp().then((organization) =>
-      cy.updateFirestore(organization, ["customers.json"])
+      cy.updateCustomers(organization, customers as Record<string, Customer>)
     );
     cy.signOut();
 

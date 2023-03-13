@@ -1,6 +1,6 @@
 import { DateTime, DateTimeUnit } from "luxon";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, CustomerBookings, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   BookingAria,
@@ -15,13 +15,16 @@ import {
   __dayWithSlots__,
 } from "../temp";
 
+import { slots } from "../__testData__/slots.json";
 import { customers } from "../__testData__/customers.json";
-import { customers as customersWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
+import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
+import { bookings } from "../__testData__/bookings.json";
+import { attendance } from "../__testData__/attendance.json";
 
 // extract gus from test data .json
 const gus = customers.gus as Customer;
 
-const saul = customersWithExtendedDate.saul as Customer;
+const saul = saulWithExtendedDate.saul as Customer;
 
 const testDateLuxon = DateTime.fromISO("2022-01-04");
 
@@ -38,7 +41,19 @@ xdescribe("Date Switcher", () => {
       cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp()
         .then((organization) =>
-          cy.updateFirestore(organization, ["slots.json", "bookings.json"])
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        )
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateBookings(
+            organization,
+            bookings as Record<string, CustomerBookings>
+          )
         )
         .then(() => cy.signIn());
     });
@@ -71,8 +86,9 @@ xdescribe("Date Switcher", () => {
       cy.setClock(testDateLuxon.toMillis());
       cy.initAdminApp()
         .then((organization) =>
-          cy.updateFirestore(organization, ["attendance.json"])
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
         )
+        .then((organization) => cy.updateAttendance(organization, attendance))
         .then(() => cy.signIn());
     });
 
@@ -100,12 +116,16 @@ describe("Download ics file to Add To Calendar", () => {
   it("checks email was sent and calendar collection was updated successfully", () => {
     cy.setClock(testDateLuxon.toMillis());
 
-    cy.initAdminApp().then((organization) =>
-      cy.updateFirestore(organization, [
-        "slots.json",
-        "saul_with_extended_date.json",
-      ])
-    );
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      )
+      .then((organization) =>
+        cy.updateCustomers(
+          organization,
+          saulWithExtendedDate as Record<string, Customer>
+        )
+      );
     cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
     cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton))
       .first()

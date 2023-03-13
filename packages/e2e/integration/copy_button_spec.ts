@@ -1,8 +1,11 @@
 import { DateTime } from "luxon";
 
+import { SlotInterface } from "@eisbuk/shared";
 import i18n, { AdminAria } from "@eisbuk/translations";
 
 import { PrivateRoutes } from "../temp";
+
+import { slots } from "../__testData__/slots.json";
 
 const testDateLuxon = DateTime.fromISO("2022-01-01");
 
@@ -11,7 +14,9 @@ describe("Slots copy button - copied slots badge", () => {
     // App setup
     cy.setClock(testDateLuxon.toMillis());
     cy.initAdminApp()
-      .then((organization) => cy.updateFirestore(organization, ["slots.json"]))
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      )
       .then(() => cy.signIn())
       // Load the view before making any assertions
       .then(() => cy.visit(PrivateRoutes.Slots))

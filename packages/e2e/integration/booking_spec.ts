@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
@@ -14,10 +14,12 @@ import i18n, {
 
 import { Routes } from "../temp";
 
-import testCustomers from "../__testData__/customers.json";
+import { customers } from "../__testData__/customers.json";
+import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
+import { slots } from "../__testData__/slots.json";
 
 // extract saul from test data .json
-const saul = testCustomers.customers.saul as Customer;
+const saul = customers.saul as Customer;
 
 describe("Booking flow", () => {
   describe("Test for not-an-admin", () => {
@@ -31,9 +33,16 @@ describe("Booking flow", () => {
       });
       // set current time just after the deadline has passed
       cy.setClock(afterDueDate.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organziation) =>
+          cy.updateSlots(organziation, slots as Record<string, SlotInterface>)
+        );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
@@ -64,9 +73,16 @@ describe("Booking flow", () => {
         days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
@@ -116,12 +132,16 @@ describe("Booking flow", () => {
       // our test customer (saul) loaded from `saul_with_extended_date.json`
       // has an extended date (second deadline) until "2022-01-05"
       cy.setClock(testDateLuxon.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, [
-          "saul_with_extended_date.json",
-          "slots.json",
-        ])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            saulWithExtendedDate as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
@@ -190,9 +210,16 @@ describe("Booking flow", () => {
       const futureTestDateLuxon = DateTime.fromISO(futureTestDate);
 
       cy.setClock(pastTestDateLuxon.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
@@ -233,9 +260,16 @@ describe("Booking flow", () => {
       });
       // set current time just after the deadline has passed
       cy.setClock(afterDueDate.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        );
       cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
@@ -267,9 +301,16 @@ describe("Booking flow", () => {
         days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp().then((organization) =>
-        cy.updateFirestore(organization, ["customers.json", "slots.json"])
-      );
+      cy.initAdminApp()
+        .then((organization) =>
+          cy.updateCustomers(
+            organization,
+            customers as Record<string, Customer>
+          )
+        )
+        .then((organization) =>
+          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+        );
       cy.signIn();
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));

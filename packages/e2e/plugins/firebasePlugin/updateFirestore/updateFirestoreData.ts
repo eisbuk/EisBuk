@@ -1,99 +1,139 @@
-import { adminDb } from "./adminDb";
-import {
-  DocumentReference,
-  DocumentData,
-  WriteResult,
-} from "@google-cloud/firestore";
+import { DocumentReference, DocumentData } from "@google-cloud/firestore";
 
 import {
   BookingSubCollection,
-  Collection,
+  Customer,
+  CustomerBookings,
+  OrganizationData,
   OrgSubCollection,
+  SlotAttendnace,
+  SlotInterface,
 } from "@eisbuk/shared";
 
-import { FirestoreDataUpdate } from "../types";
+export const updateOrganization = async (
+  orgRef: DocumentReference<DocumentData>,
+  data: OrganizationData
+) => orgRef.set(data, { merge: true });
 
-/**
- * A handler for firestore data updates. Accepts the entire update data
- * structure and handles distributing and awaiting updates for each collection
- * and it's subcollections, if such exist
- * @param organization name of current test organziation
- * @param data entire firestore updates structure:
- * including (optional) updates to "attendance", "bookings", "customers", "slots"
- */
-const updateFirestoreData = async (
-  organization: string,
-  data: FirestoreDataUpdate
-): Promise<void> => {
-  const orgRef = adminDb.collection(Collection.Organizations).doc(organization);
-
-  // Update the organization data (if exists) before updating the sub collections
-  const orgData = data.organization;
-  if (orgData) {
-    await orgRef.set(orgData, { merge: true });
-    // Remove organization entry in test data (as it's just been used to update the store and is no longer needed)
-    delete data.organization;
-  }
-
-  const collectionsToUpdate = Object.keys(data);
-
-  await Promise.all(
-    collectionsToUpdate.reduce(
-      (acc, collName) => [
-        ...acc,
-        ...queueCollectionUpdates(orgRef, collName, data[collName]),
-      ],
-      [] as Promise<WriteResult>[]
+export const updateCustomers = async (
+  orgRef: DocumentReference<DocumentData>,
+  documents: Record<string, Customer>
+) =>
+  Promise.all(
+    Object.entries(documents).map(([docId, docData]) =>
+      orgRef
+        .collection(OrgSubCollection.Customers)
+        .doc(docId)
+        .set(docData, { merge: true })
     )
   );
-};
 
-export default updateFirestoreData;
+export const updateSlots = async (
+  orgRef: DocumentReference<DocumentData>,
+  documents: Record<string, SlotInterface>
+) =>
+  Promise.all(
+    Object.entries(documents).map(([docId, docData]) =>
+      orgRef
+        .collection(OrgSubCollection.Slots)
+        .doc(docId)
+        .set(docData, { merge: true })
+    )
+  );
+
+export const updateBookings = async (
+  orgRef: DocumentReference<DocumentData>,
+  documents: Record<string, CustomerBookings>
+) =>
+  Promise.all(
+    Object.entries(documents).map(
+      async ([secretKey, { bookedSlots, ...bookingsDoc }]) => {
+        const bookingRef = orgRef
+          .collection(OrgSubCollection.Bookings)
+          .doc(secretKey);
+
+        // We're running 'update' instead of 'set' as that gives us the assurence that the bookings doc
+        // has been created (by customer creation data trigger), before update, and, in effect, it gives us the assurence
+        // that the customer exists.
+        await waitFor(() => {
+          bookingRef.update(bookingsDoc);
+        });
+
+        // Save booked slots
+        if (bookedSlots) {
+          await Promise.all(
+            Object.entries(bookedSlots).map(async ([slotId, bookedSlot]) => {
+              // Wait for the slot to be created before creating booked slot
+              await waitFor(async () => {
+                const { exists } = await orgRef
+                  .collection(OrgSubCollection.Slots)
+                  .doc(slotId)
+                  .get();
+                if (!exists) {
+                  throw new Error(
+                    `update booksings: slot '${slotId}' not found`
+                  );
+                }
+              });
+              return bookingRef
+                .collection(BookingSubCollection.BookedSlots)
+                .doc(slotId)
+                .set(bookedSlot, { merge: true });
+            })
+          );
+        }
+      }
+    )
+  );
+
+export const updateAttendance = async (
+  orgRef: DocumentReference<DocumentData>,
+  documents: Record<string, SlotAttendnace>
+) =>
+  Promise.all(
+    Object.entries(documents).map(async ([slotId, attendance]) =>
+      // We're running waitFor here because we want to make sure that the attendance entry exists (created by slot creation data trigger)
+      // before updating it (hence the 'update', not 'set') and 'waitFor' allows us to rerun the operation until succesful (or timeout)
+      waitFor(() =>
+        orgRef
+          .collection(OrgSubCollection.Attendance)
+          .doc(slotId)
+          .update(attendance)
+      )
+    )
+  );
 
 /**
- * A helper function used to buffer all document updates for a provided collection
- * and it's subcollections (if any). The returned array (of update promises) can then be
- * awaited using Promise.all
- * @param startingPoint at top level this is a reference to an organization document, but
- * can be invoked (recursively) with some other document during function execution, when updating subcollections
- * @param collName name of collection to update (used to create a reference by chaining on `startingPoint`)
- * @param documents `{[docId: string]: DocumentData}` object of documents to update
- * @returns array of promises used to await updates
+ * Runs the callback with 50 ms interval until the assertion is fulfilled or it times out.
+ * If it times out, it rejects with the latest error.
+ * @param {Function} cb The callback to run (this would normally hold assertions)
+ * @param {number} [timeout] The timeout in ms
  */
-const queueCollectionUpdates = (
-  startingPoint: DocumentReference<DocumentData>,
-  collName: string,
-  documents: Record<string, DocumentData>
-): Promise<WriteResult>[] => {
-  const collRef = startingPoint.collection(collName);
+export const waitFor = (cb: () => any | Promise<any>, timeout = 2000) => {
+  return new Promise<void>((resolve, reject) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let error: any = null;
 
-  const docIds = Object.keys(documents || {});
+    // Retry the assertion every 50ms
+    const interval = setInterval(() => {
+      // Run callback as a promise (this way we're able to .then/.catch regardless of the 'cb' being sync or async)
+      (async () => cb())()
+        .then(() => {
+          if (interval) {
+            clearInterval(interval);
+          }
+          return resolve();
+        })
+        .catch((err) => {
+          // Store the error to reject with later (if timed out)
+          error = err;
+        });
+    }, 50);
 
-  return docIds.reduce((acc, docId) => {
-    const docRef = collRef.doc(docId);
-    // in case of collection being `bookings` we might expect `bookedSlots` subcollection
-    //
-    // if exists, we want to remove it from document updates and update subsquently as it's own collection
-    // on current document
-    //
-    // if it doesn't exist, it will simply be undefined
-    const { bookedSlots, ...docData } = documents[docId];
-
-    const docUpdate = docRef.set(docData);
-
-    // return an array composed of all `docUpdate` promises accumulated so far (and the current `docUpdate`)
-    return [
-      ...acc,
-      docUpdate,
-      // if collection `bookings` and `bookedSlots` data exists
-      // enqueue `bookedSlots` updates to the returned updates array
-      ...(collName === OrgSubCollection.Bookings && Boolean(bookedSlots)
-        ? queueCollectionUpdates(
-            docRef,
-            BookingSubCollection.BookedSlots,
-            bookedSlots
-          )
-        : []),
-    ];
-  }, [] as Promise<WriteResult>[]);
+    // When timed out, reject with the latest error
+    setTimeout(() => {
+      clearInterval(interval);
+      reject(error);
+    }, timeout);
+  });
 };

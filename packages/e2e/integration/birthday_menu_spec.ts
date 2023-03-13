@@ -1,15 +1,19 @@
-import i18n, { AdminAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
+
+import { Customer } from "@eisbuk/shared";
+import i18n, { AdminAria } from "@eisbuk/translations";
 
 import { __testDate__ } from "../constants";
 
 import { PrivateRoutes } from "../temp";
 
+import { customers } from "../__testData__/customers.json";
+
 describe("birthday badge", () => {
   beforeEach(() => {
-    cy.initAdminApp().then((organization) => {
-      return cy.updateFirestore(organization, ["customers.json"]);
-    });
+    cy.initAdminApp().then((organization) =>
+      cy.updateCustomers(organization, customers as Record<string, Customer>)
+    );
     cy.signIn();
   });
 
