@@ -12,6 +12,7 @@ import {
   defaultEmailTemplates,
   OrganizationData,
   CustomerFull,
+  isValidPhoneNumber,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -262,3 +263,40 @@ export const populateDefaultEmailTemplates = functions
 
     return { success: true };
   });
+
+export const removeInvalidCustomerPhones = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+
+      const batch = db.batch();
+
+      const custoemrs = await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Customers)
+        .get();
+
+      custoemrs.forEach((customer) => {
+        const data = customer.data() as CustomerFull;
+        if (!data.phone) return;
+
+        const { phone } = data;
+
+        if (!isValidPhoneNumber(phone)) {
+          batch.set(
+            customer.ref,
+            { phone: admin.firestore.FieldValue.delete() },
+            { merge: true }
+          );
+        }
+      });
+
+      await batch.commit();
+
+      return { success: true };
+    }
+  );

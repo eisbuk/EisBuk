@@ -156,6 +156,16 @@ const DebugPage: React.FC = () => {
             Populate Default Email Templates
           </DebugPageButton>
         </div>
+        <div className="p-2">
+          <DebugPageButton
+            onClick={createCloudFunctionCaller(
+              CloudFunction.RemoveInvalidCustomerPhones
+            )}
+            color={ButtonColor.Primary}
+          >
+            Remove Invalid Customer Phones
+          </DebugPageButton>
+        </div>
       </div>
     </Layout>
   );

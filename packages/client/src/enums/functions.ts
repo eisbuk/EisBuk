@@ -20,4 +20,5 @@ export enum CloudFunction {
   MigrateCategoriesToExplicitMinors = "migrateCategoriesToExplicitMinors",
   CustomersToPluralCategories = "customersToPluralCategories",
   PopulateDefaultEmailTemplates = "populateDefaultEmailTemplates",
+  RemoveInvalidCustomerPhones = "removeInvalidCustomerPhones",
 }
