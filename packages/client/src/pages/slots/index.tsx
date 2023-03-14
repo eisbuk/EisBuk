@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
@@ -77,6 +77,16 @@ const SlotsPage: React.FC = () => {
   );
 
   const { t } = useTranslation();
+
+  // We're using this to disable the slot buttons when we're pasting a week
+  // to signal to the user that the operation is in progress.
+  //
+  // Each time slots to display change (by the paste being aggregated in the db or switching view), we enable the buttons again.
+  const [slotButtonsDisabled, setSlotButtonsDisabled] = useState(false);
+  useEffect(() => {
+    setSlotButtonsDisabled(false);
+  }, [slotsToShow]);
+
   const [canEdit, setCanEdit] = useState(false);
   const toggleEdit = () => setCanEdit((a) => !a);
   const toggleEditButton = (
@@ -99,11 +109,11 @@ const SlotsPage: React.FC = () => {
           className="mr-4"
           slotsToCopy={{ week: Boolean(weekToPaste) }}
           contextType={ButtonContextType.Week}
+          disabled={slotButtonsDisabled}
           {...{ date }}
         >
-          {/* <DeleteButton /> */}
           <CopyButton />
-          <PasteButton />
+          <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
         </SlotOperationButtons>
       )}
       {toggleEditButton}
@@ -145,11 +155,12 @@ const SlotsPage: React.FC = () => {
               slotsToCopy={{
                 day: Boolean(dayToPaste),
               }}
+              disabled={slotButtonsDisabled}
               {...{ date }}
             >
               <NewSlotButton />
               <CopyButton />
-              <PasteButton />
+              <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
             </SlotOperationButtons>
           );
 

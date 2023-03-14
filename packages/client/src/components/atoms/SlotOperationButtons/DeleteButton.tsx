@@ -50,7 +50,13 @@ export const DeleteButton: React.FC = () => {
     return null;
   }
 
-  const { contextType, date, slot, disableDelete } = buttonGroupContext;
+  const {
+    contextType,
+    date,
+    slot,
+    disableDelete,
+    disabled: buttonsDisabled,
+  } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if rendered within `contextType === "slot"` but no value was provided for `slot` within the context
@@ -97,6 +103,7 @@ export const DeleteButton: React.FC = () => {
       onClick={handleDelete}
       data-testid={__deleteButtonId__}
       className={disableDelete ? "!text-gray-400" : ""}
+      disabled={buttonsDisabled}
     >
       <Trash />
     </SlotOperationButton>

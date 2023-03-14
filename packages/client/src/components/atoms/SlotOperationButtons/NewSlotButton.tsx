@@ -40,7 +40,7 @@ export const NewSlotButton: React.FC = () => {
     return null;
   }
 
-  const { contextType, date } = buttonGroupContext;
+  const { contextType, date, disabled } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
@@ -70,6 +70,7 @@ export const NewSlotButton: React.FC = () => {
       onClick={openForm}
       data-testid={__newSlotButtonId__}
       aria-label={t(SlotsAria.CreateSlot, { date })}
+      disabled={disabled}
     >
       <PlusCircle />
     </SlotOperationButton>

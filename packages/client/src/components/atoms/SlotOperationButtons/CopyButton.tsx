@@ -55,7 +55,7 @@ export const CopyButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType } = buttonGroupContext;
+  const { date, contextType, disabled } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -108,6 +108,7 @@ export const CopyButton: React.FC = () => {
         onClick={onCopy}
         data-testid={__copyButtonId__}
         aria-label={ariaLabelLookup[contextType]}
+        disabled={disabled}
       >
         <Copy />
       </SlotOperationButton>

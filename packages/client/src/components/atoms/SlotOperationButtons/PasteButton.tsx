@@ -19,6 +19,10 @@ import { pasteSlotsDay, pasteSlotsWeek } from "@/store/actions/copyPaste";
 
 import { __pasteButtonId__ } from "@/__testData__/testIds";
 
+interface Props {
+  onPaste?: () => void;
+}
+
 /**
  * Button to handle pasting of slots form clipboard to current `day`/`week`,
  * Uses `contextType` param to determine the right action to dispatch to the store
@@ -29,7 +33,7 @@ import { __pasteButtonId__ } from "@/__testData__/testIds";
  * - trying to render within `contextType = "slot"` as it makes no sense to paste into the existing slot
  * - no value for `date` has been provided within the context (as it is needed for full functionality)
  */
-export const PasteButton: React.FC = () => {
+export const PasteButton: React.FC<Props> = ({ onPaste }) => {
   const dispatch = useDispatch();
 
   const { t } = useTranslation();
@@ -43,7 +47,12 @@ export const PasteButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType, slotsToCopy } = buttonGroupContext;
+  const {
+    date,
+    contextType,
+    slotsToCopy,
+    disabled: buttonsDisabled,
+  } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -64,10 +73,17 @@ export const PasteButton: React.FC = () => {
     [ButtonContextType.Day]: pasteSlotsDay,
     [ButtonContextType.Week]: pasteSlotsWeek,
   };
-  const handlePaste = () => dispatch(pasteActionLookup[contextType](date));
+  const handlePaste = () => {
+    dispatch(pasteActionLookup[contextType](date));
+    // Optionally call 'onPaste' callback (if provided)
+    if (onPaste) {
+      onPaste();
+    }
+  };
 
   // check if there are slots in clipboard for given `contextType`
-  const disableButton = !(slotsToCopy && slotsToCopy[contextType]);
+  const disableButton =
+    !(slotsToCopy && slotsToCopy[contextType]) || buttonsDisabled;
 
   const ariaLabelLookup = {
     [ButtonContextType.Day]: t(SlotsAria.PasteSlotsDay, {
@@ -78,9 +94,7 @@ export const PasteButton: React.FC = () => {
       weekEnd: date.endOf("week"),
     }),
   };
-  const ariaLabel = disableButton
-    ? t(SlotsAria.PasteButtonDisabled)
-    : ariaLabelLookup[contextType];
+  const ariaLabel = ariaLabelLookup[contextType];
 
   return (
     <SlotOperationButton
