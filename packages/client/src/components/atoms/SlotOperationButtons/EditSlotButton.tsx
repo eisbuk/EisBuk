@@ -39,7 +39,7 @@ export const EditSlotButton: React.FC = () => {
     return null;
   }
 
-  const { slot, contextType } = buttonGroupContext;
+  const { slot, contextType, disabled } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if no `slot` param provided within the context
@@ -64,7 +64,11 @@ export const EditSlotButton: React.FC = () => {
   }
 
   return (
-    <SlotOperationButton onClick={openForm} data-testid={__editSlotButtonId__}>
+    <SlotOperationButton
+      onClick={openForm}
+      data-testid={__editSlotButtonId__}
+      disabled={disabled}
+    >
       <Pencil />
     </SlotOperationButton>
   );
