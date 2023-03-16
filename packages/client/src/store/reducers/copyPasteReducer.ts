@@ -33,7 +33,7 @@ export const createCopyPasteReducer: ReducerFactory<
           .payload;
 
         return {
-          ...state,
+          week: null,
           day: dayToAdd,
         };
 
@@ -44,7 +44,7 @@ export const createCopyPasteReducer: ReducerFactory<
         ).payload;
 
         return {
-          ...state,
+          day: null,
           week: weekToAdd,
         };
 

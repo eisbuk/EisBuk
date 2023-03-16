@@ -1,7 +1,7 @@
 import React from "react";
 import { DateTime } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams, Link, useHistory } from "react-router-dom";
+import { useParams, Link, useHistory, Redirect } from "react-router-dom";
 
 import { CustomerForm, Layout, FormButton, FormButtonColor } from "@eisbuk/ui";
 import { Customer, CustomerLoose, OrgSubCollection } from "@eisbuk/shared";
@@ -57,7 +57,7 @@ const AthleteProfilePage: React.FC = () => {
 
   // If customer is deleted, redirect back to customers page
   if (customer && customer.deleted) {
-    history.push(PrivateRoutes.Athletes);
+    return <Redirect to={PrivateRoutes.Athletes} />;
   }
 
   // We need a next available (as default) subscription number for customer create mode

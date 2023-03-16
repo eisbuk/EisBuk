@@ -39,6 +39,7 @@ type ContextParams = Partial<{
    * rather than deleting on delete button click
    */
   disableDelete?: boolean;
+  disabled?: boolean;
 }>;
 
 export const ButtonGroupContext = createContext<ContextParams | undefined>(

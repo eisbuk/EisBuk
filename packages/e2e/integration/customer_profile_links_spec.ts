@@ -1,6 +1,8 @@
+import { Customer, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
+  AttendanceAria,
   BirthdayMenu,
   CustomerFormTitle,
   OrganizationLabel,
@@ -15,10 +17,13 @@ const { saul } = customers;
 
 describe("Test customer avatars linking to the respective customer profiles", () => {
   it("links to the customer profile when clicking on a customer in /athletes page (and redirects back on 'back' click)", () => {
-    cy.initAdminApp().then((organization) => {
-      // We'll be needing the customer data for each test
-      return cy.updateFirestore(organization, ["customers.json", "slots.json"]);
-    });
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateCustomers(organization, customers as Record<string, Customer>)
+      )
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      );
     cy.signIn();
 
     // Click on saul's avatar in the athletes page
@@ -44,10 +49,13 @@ describe("Test customer avatars linking to the respective customer profiles", ()
   });
 
   it("links to the customer profile when clicking on a customer in attendance (\"/\") page (and redirects back on 'back' click)", () => {
-    cy.initAdminApp().then((organization) => {
-      // We'll be needing the customer data for each test
-      return cy.updateFirestore(organization, ["customers.json", "slots.json"]);
-    });
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateCustomers(organization, customers as Record<string, Customer>)
+      )
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      );
 
     cy.signIn();
     // Set clock to "2022-01-01" as there is a test slot on that date
@@ -58,7 +66,7 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     // Add saul as having attended the slot
     cy.getAttrWith(
       "aria-label",
-      i18n.t(AdminAria.AddAttendedCustomers) as string
+      i18n.t(AttendanceAria.AddAttendedCustomers) as string
     ).click();
     cy.contains(saul.name).click();
 
@@ -82,13 +90,15 @@ describe("Test customer avatars linking to the respective customer profiles", ()
   });
 
   it("links to the customer profile when clicking on a customer on birthday menu (and redirects back to the given page on 'back' click)", () => {
-    let organization = "";
-    cy.initAdminApp().then((org) => {
-      // Update `organization` variable so we can use it in the test
-      organization = org;
-      // We'll be needing the customer data for each test
-      return cy.updateFirestore(org, ["customers.json", "slots.json"]);
-    });
+    cy.initAdminApp()
+      .then((organization) => cy.wrap(organization).as("organization"))
+      .then((org) =>
+        cy.updateCustomers(org, customers as Record<string, Customer>)
+      )
+      .then((organization) =>
+        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
+      );
+
     cy.signIn();
 
     // We wish to see saul in the birthday menu
@@ -116,8 +126,10 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     cy.clickButton(i18n.t(ActionButton.Back));
 
     // Check that we're back on the attendance page (by querying for slot interval, displayed on attendance card)
-    cy.contains(
-      i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
+    cy.get<string>("@organization").then((organization) =>
+      cy.contains(
+        i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
+      )
     );
 
     // Check again for saul in the birthday menu dialog
@@ -140,8 +152,10 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     cy.clickButton(i18n.t(ActionButton.Back));
 
     // Check that we're back on the attendance page (by querying for slot interval, displayed on attendance card)
-    cy.contains(
-      i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
+    cy.get<string>("@organization").then((organization) =>
+      cy.contains(
+        i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
+      )
     );
   });
 });

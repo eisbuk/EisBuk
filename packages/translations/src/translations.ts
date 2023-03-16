@@ -343,17 +343,28 @@ export enum AdminAria {
   SeePastDates = "AdminAria.SeePastDates",
   SeeFutureDates = "AdminAria.SeeFutureDates",
 
-  ToggleSlotOperations = "AdminAria.ToggleSlotOperations",
-  CopySlotsWeek = "AdminAria.CopySlotsWeek",
-  CopySlotsDay = "AdminAria.CopySlotsDay",
-  CopiedSlotsWeekBadge = "AdminAria.CopiedSlotsWeekBadge",
-  CopiedSlotsDayBadge = "AdminAria.CopiedSlotsDayBadge",
-  PasteSlots = "AdminAria.PasteSlots",
-  CreateSlots = "AdminAria.CreateSlots",
-  EnableEdit = "AdminAria.EnableEdit",
-  AddAttendedCustomers = "AdminAria.AddAttendedCustomers",
   CloseModal = "AdminAria.CloseModal",
   BirthdayMenu = "AdminAria.BirthdayMenu",
+}
+
+export enum SlotsAria {
+  ToggleSlotOperations = "SlotsAria.ToggleSlotOperations",
+  CopySlotsWeek = "SlotsAria.CopySlotsWeek",
+  CopySlotsDay = "SlotsAria.CopySlotsDay",
+  CopiedSlotsWeekBadge = "SlotsAria.CopiedSlotsWeekBadge",
+  CopiedSlotsDayBadge = "SlotsAria.CopiedSlotsDayBadge",
+  PasteSlotsDay = "SlotsAria.PasteSlotsDay",
+  PasteSlotsWeek = "SlotsAria.PasteSlotsWeek",
+  CreateSlot = "SlotsAria.CreateSlot",
+  EnableEdit = "SlotsAria.EnableEdit",
+}
+
+export enum AttendanceAria {
+  AddAttendedCustomers = "AttendanceAria.AddAttendedCustomers",
+  PreviousInterval = "AttendanceAria.PreviousInterval",
+  NextInterval = "AttendanceAria.NextInterval",
+  MarkPresent = "AttendanceAria.MarkPresent",
+  MarkAbsent = "AttendanceAria.MarkAbsent",
 }
 
 export enum SlotFormAria {

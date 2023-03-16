@@ -8,14 +8,11 @@ import Right from "@mui/icons-material/ChevronRight";
 
 import makeStyles from "@mui/styles/makeStyles";
 
+import { AttendanceAria, useTranslation } from "@eisbuk/translations";
+
 import { ETheme } from "@/themes";
 
 import IntervalUI from "./IntervalUI";
-
-import {
-  __nextIntervalButtonId__,
-  __prevIntervalButtonId__,
-} from "./__testData__/testIds";
 
 interface Props
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "color"> {
@@ -35,6 +32,8 @@ const IntervalPicker: React.FC<Props> = ({
   className,
   ...props
 }) => {
+  const { t } = useTranslation();
+
   const classes = useStyles();
 
   // get place of current interval in intervals array
@@ -49,7 +48,11 @@ const IntervalPicker: React.FC<Props> = ({
    * Navigates left/right through interval selection
    * @param increment `-1` for previous, `1` for next
    */
-  const handleClick = (increment: -1 | 1) => () => {
+  const handleClick = (increment: -1 | 1) => (e: React.SyntheticEvent) => {
+    // As component is part of a larger, user attendance row component, which is itself clickable
+    // we're preventing the bubbling of the click event.
+    e.preventDefault();
+
     const newIndex = intervalIndex + increment;
     onChange(intervals[newIndex]);
   };
@@ -63,7 +66,7 @@ const IntervalPicker: React.FC<Props> = ({
       <IconButton
         onClick={handleClick(-1)}
         disabled={disabled || intervalIndex === 0}
-        data-testid={__prevIntervalButtonId__}
+        aria-label={t(AttendanceAria.PreviousInterval)}
         size="large"
       >
         <Left />
@@ -72,7 +75,7 @@ const IntervalPicker: React.FC<Props> = ({
       <IconButton
         onClick={handleClick(1)}
         disabled={disabled || intervalIndex === numIntervals - 1}
-        data-testid={__nextIntervalButtonId__}
+        aria-label={t(AttendanceAria.NextInterval)}
         size="large"
       >
         <Right />

@@ -6,7 +6,7 @@ import Badge from "@mui/material/Badge";
 
 import { Copy } from "@eisbuk/svg";
 
-import { useTranslation, AdminAria } from "@eisbuk/translations";
+import { useTranslation, SlotsAria } from "@eisbuk/translations";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -55,7 +55,7 @@ export const CopyButton: React.FC = () => {
     return null;
   }
 
-  const { date, contextType } = buttonGroupContext;
+  const { date, contextType, disabled } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render within `contextType = "slot"`
@@ -91,8 +91,8 @@ export const CopyButton: React.FC = () => {
 
   // Get the right aria label for the button
   const ariaLabelLookup = {
-    [ButtonContextType.Day]: t(AdminAria.CopySlotsDay, { date }),
-    [ButtonContextType.Week]: t(AdminAria.CopySlotsWeek, {
+    [ButtonContextType.Day]: t(SlotsAria.CopySlotsDay, { date }),
+    [ButtonContextType.Week]: t(SlotsAria.CopySlotsWeek, {
       weekStart: date.startOf("week"),
       weekEnd: date.endOf("week"),
     }),
@@ -108,6 +108,7 @@ export const CopyButton: React.FC = () => {
         onClick={onCopy}
         data-testid={__copyButtonId__}
         aria-label={ariaLabelLookup[contextType]}
+        disabled={disabled}
       >
         <Copy />
       </SlotOperationButton>
@@ -123,8 +124,8 @@ const CopiedSlotsBadge: React.FC<{
   const { t } = useTranslation();
 
   const ariaLabelLookup = {
-    [ButtonContextType.Day]: t(AdminAria.CopiedSlotsDayBadge, { date }),
-    [ButtonContextType.Week]: t(AdminAria.CopiedSlotsWeekBadge, {
+    [ButtonContextType.Day]: t(SlotsAria.CopiedSlotsDayBadge, { date }),
+    [ButtonContextType.Week]: t(SlotsAria.CopiedSlotsWeekBadge, {
       weekStart: date.startOf("week"),
       weekEnd: date.endOf("week"),
     }),

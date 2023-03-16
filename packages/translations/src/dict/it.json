@@ -316,17 +316,28 @@
     "SeePastDates": "Indietro",
     "SeeFutureDates": "Avanti",
 
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
+  },
+
+  "SlotsAria": {
     "ToggleSlotOperations": "Visualizza pulsanti per modificare gli slot.",
     "CopySlotsWeek": "Copia slot dalla settimana {{ weekStart, EEEE d MMMM }} a {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
     "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}} - {{ weekEnd, EEEE d MMMM }}}}",
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
-    "PasteSlots": "Incolla slot {{ date, EEEE d MMMM }}}}",
-    "CreateSlots": "Crea nuovo slot",
-    "EnableEdit": "Abilita la modifica",
+    "PasteSlotsDay": "Paste copied slots into {{ date, EEEE d MMMM }}",
+    "PasteSlotsWeek": "Paste copied slots into week {{ weekStart, EEEE d MMMM }} - {{ weekEnd, EEEE d MMMM }}",
+    "CreateSlot": "Create new slot on {{ date, EEEE d MMMM }}",
+    "EnableEdit": "Abilita la modifica"
+  },
+
+  "AttendanceAria": {
     "AddAttendedCustomers": "Aggiungi clienti presenti",
-    "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "PreviousInterval": "Intervallo precedente",
+    "NextInterval": "Intervallo successivo",
+    "MarkPresent": "Segna come presente",
+    "MarkAbsent": "Segna come assente"
   },
 
   "SlotFormAria": {

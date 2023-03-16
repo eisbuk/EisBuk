@@ -19,7 +19,14 @@ import {
 } from "@firebase/firestore";
 import { v4 as uuidv4 } from "uuid";
 
-import { CreateAuthUserPayload } from "@eisbuk/shared";
+import {
+  CreateAuthUserPayload,
+  Customer,
+  CustomerBookings,
+  OrganizationData,
+  SlotAttendnace,
+  SlotInterface,
+} from "@eisbuk/shared";
 
 import { CloudFunction, defaultUser } from "../../temp";
 
@@ -42,18 +49,31 @@ declare global {
       addAuthUser: (
         payload: CreateAuthUserPayload
       ) => Chainable<HttpsCallableResult>;
-      /**
-       * A sort of a proxy handler: passes organization and file names back to node environment
-       * process (using `cy.task` API). The files get read and parsed (JSON)
-       * and firestore gets updated with combined test data (read from all fo the provided files)
-       * @param {string} organization the unique name of the firestore organization used for current test
-       * @param {string[]} files an array of names of the JSON files containing test data
-       * @returns {Chainable<null>} a `PromiseLike` yielding `null` on success
-       */
-      updateFirestore: (
+      /** */
+      updateOrganization: (
         organization: string,
-        files: string[]
-      ) => Chainable<null>;
+        documents: OrganizationData
+      ) => Chainable<string>;
+      /** */
+      updateSlots: (
+        organization: string,
+        documents: Record<string, SlotInterface>
+      ) => Chainable<string>;
+      /** */
+      updateCustomers: (
+        organization: string,
+        documents: Record<string, Customer>
+      ) => Chainable<string>;
+      /** */
+      updateBookings: (
+        organization: string,
+        documents: Record<string, CustomerBookings>
+      ) => Chainable<string>;
+      /** */
+      updateAttendance: (
+        organization: string,
+        documents: Record<string, SlotAttendnace>
+      ) => Chainable<string>;
       /**
        * Retrieve recaptcha code from auth emulator
        * @param {string} phone phone number we're using to register
@@ -141,10 +161,39 @@ const addFirebaseCommands = (): void => {
   );
 
   Cypress.Commands.add(
-    "updateFirestore",
-    (organization: string, files: string[]) => {
-      cy.task("updateFirestore", { organization, files });
+    "updateOrganization",
+    (organization: string, documents: OrganizationData) => {
+      cy.task("updateOrganization", { organization, documents });
+      return cy.wrap(organization);
     }
+  );
+  Cypress.Commands.add(
+    "updateSlots",
+    (organization: string, documents: Record<string, SlotInterface>) => {
+      cy.task("updateSlots", { organization, documents });
+      return cy.wrap(organization);
+    }
+  );
+  Cypress.Commands.add(
+    "updateCustomers",
+    (organization: string, documents: Record<string, Customer>) =>
+      cy
+        .task("updateCustomers", { organization, documents })
+        .then(() => cy.wrap(organization))
+  );
+  Cypress.Commands.add(
+    "updateBookings",
+    (organization: string, documents: Record<string, CustomerBookings>) =>
+      cy
+        .task("updateBookings", { organization, documents })
+        .then(() => cy.wrap(organization))
+  );
+  Cypress.Commands.add(
+    "updateAttendance",
+    (organization: string, documents: Record<string, SlotAttendnace>) =>
+      cy
+        .task("updateAttendance", { organization, documents })
+        .then(() => cy.wrap(organization))
   );
 
   Cypress.Commands.add(

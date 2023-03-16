@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "@eisbuk/translations";
+import { AttendanceAria, useTranslation } from "@eisbuk/translations";
 import { Link } from "react-router-dom";
 
 import ListItem from "@mui/material/ListItem";
@@ -18,8 +18,6 @@ import IntervalPicker from "./IntervalPicker";
 import useDebounce from "@/hooks/useDebounce";
 
 import { ETheme } from "@/themes";
-
-import { __attendanceButton__ } from "./__testData__/testIds";
 
 interface Props extends CustomerWithAttendance {
   /**
@@ -93,7 +91,10 @@ const UserAttendance: React.FC<Props> = ({
    * - dispatches `markAttendance`/`markAbsence` to firestore (according to current state)
    * - if dispatching `markAttendance`, uses last remembered interval (or booked interval) as `attendedInterval` value
    */
-  const handleClick = () => {
+  const handleAttendanceButtonClick = (e: React.SyntheticEvent) => {
+    // The user attendance row is also clickable (redirecting to the user profile), so we're
+    // preventing default to not bubble the attendance button click event.
+    e.preventDefault();
     const newAttended = !attendedInterval;
     setLocalAttended(newAttended);
     if (newAttended) {
@@ -179,10 +180,14 @@ const UserAttendance: React.FC<Props> = ({
         <div className={buttonContainerClasses}>
           <Button
             className={buttonClasses}
-            data-testid={__attendanceButton__}
+            aria-label={
+              localAttended
+                ? t(AttendanceAria.MarkAbsent)
+                : t(AttendanceAria.MarkPresent)
+            }
             variant="contained"
             size="small"
-            onClick={handleClick}
+            onClick={handleAttendanceButtonClick}
             disabled={disableButton}
             style={{ justifySelf: "end" }}
           >

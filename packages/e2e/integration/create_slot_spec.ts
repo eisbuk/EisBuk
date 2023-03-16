@@ -1,7 +1,10 @@
 import { Category, SlotType } from "@eisbuk/shared";
-import i18n, { AdminAria, SlotFormAria } from "@eisbuk/translations";
+import i18n, { SlotsAria, SlotFormAria } from "@eisbuk/translations";
+import { DateTime } from "luxon";
 
 import { PrivateRoutes } from "../temp";
+
+import { __testDate__ } from "../constants";
 
 const t = i18n.t;
 
@@ -11,8 +14,12 @@ const createSlotSpec = () => {
     cy.signIn();
     cy.visit(PrivateRoutes.Slots);
 
-    cy.getAttrWith("aria-label", t(AdminAria.EnableEdit)).click();
-    cy.getAttrWith("aria-label", t(AdminAria.CreateSlots), false)
+    cy.getAttrWith("aria-label", t(SlotsAria.EnableEdit)).click();
+    cy.getAttrWith(
+      "aria-label",
+      t(SlotsAria.CreateSlot, { date: DateTime.fromISO(__testDate__) }),
+      false
+    )
       .eq(0)
       // we're doing force: true here since the button isn't visible
       // due to cypress' weird scrolling behaviour

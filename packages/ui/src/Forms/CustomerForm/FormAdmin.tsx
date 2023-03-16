@@ -199,7 +199,7 @@ const CustomerCard: React.FC<FormAdminProps> = ({
             <ExtendBookingDateField
               onBookingDateExtended={onBookingDateExtended}
               formDisabled={!isEditing}
-              extendedDate={customer?.extendedDate}
+              extendedDate={customer?.extendedDate || undefined}
             />
 
             {additionalActions && (

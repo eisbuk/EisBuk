@@ -40,6 +40,7 @@
     "ResendSMS": "Click to try and resend code to {{ phone }}. If the problem persists, contact the organization admin",
     "SMSDataRatesMayApply": "By tapping Verify, an SMS may be sent. Message & data rates may apply."
   },
+
   "AuthError": {
     "NetworkError": "A network error has occurred",
     "EmailNotFound": "That email address doesn't match an existing account",
@@ -315,17 +316,28 @@
     "SeePastDates": "See past dates",
     "SeeFutureDates": "See future dates",
 
+    "CloseModal": "Close the modal",
+    "BirthdayMenu": "See upcomming birthdays"
+  },
+
+  "SlotsAria": {
     "ToggleSlotOperations": "Toggle visibility of slot operation buttons",
     "CopySlotsWeek": "Copy slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopySlotsDay": "Copy slots from {{ date, EEEE d MMMM }}",
     "CopiedSlotsWeekBadge": "Copied slots from week {{ weekStart, EEEE d MMMM }} to {{ weekEnd, EEEE d MMMM }}",
     "CopiedSlotsDayBadge": "Copied slots on {{ date, EEEE d MMMM }}",
-    "PasteSlots": "Paste copied slots on {{ date, EEEE d MMMM }}",
-    "CreateSlots": "Create new slots on",
-    "EnableEdit": "Enable Edit",
+    "PasteSlotsDay": "Paste copied slots into {{ date, EEEE d MMMM }}",
+    "PasteSlotsWeek": "Paste copied slots into week {{ weekStart, d MMMM }} - {{ weekEnd, d MMMM }}",
+    "CreateSlot": "Create new slot on {{ date, EEEE d MMMM }}",
+    "EnableEdit": "Enable Edit"
+  },
+
+  "AttendanceAria": {
     "AddAttendedCustomers": "Add attended customers",
-    "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "PreviousInterval": "Previous interval",
+    "NextInterval": "Next interval",
+    "MarkPresent": "Mark as present",
+    "MarkAbsent": "Mark as absent"
   },
 
   "SlotFormAria": {

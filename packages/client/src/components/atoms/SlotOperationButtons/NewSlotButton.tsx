@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 
-import { useTranslation, AdminAria, DateFormat } from "@eisbuk/translations";
+import { useTranslation, SlotsAria } from "@eisbuk/translations";
 import { PlusCircle } from "@eisbuk/svg";
 
 import { ButtonContextType } from "@/enums/components";
@@ -40,7 +40,7 @@ export const NewSlotButton: React.FC = () => {
     return null;
   }
 
-  const { contextType, date: luxonDate } = buttonGroupContext;
+  const { contextType, date, disabled } = buttonGroupContext;
 
   // prevent component from rendering and log error to console (but don't throw)
   // if trying to render under any context other than `day`
@@ -53,7 +53,7 @@ export const NewSlotButton: React.FC = () => {
 
   // prevent component from rendering and log error to console (but don't throw)
   // if no `date` param provided within the context
-  if (!luxonDate) {
+  if (!date) {
     console.error(__noDateProvidedError);
     return null;
   }
@@ -61,7 +61,7 @@ export const NewSlotButton: React.FC = () => {
   const openForm = (e: React.SyntheticEvent) => {
     e.preventDefault();
     openSlotForm({
-      date: luxonDate?.toISODate(),
+      date: date?.toISODate(),
     });
   };
 
@@ -69,10 +69,8 @@ export const NewSlotButton: React.FC = () => {
     <SlotOperationButton
       onClick={openForm}
       data-testid={__newSlotButtonId__}
-      aria-label={`${t(AdminAria.CreateSlots)} ${t(DateFormat.Full, {
-        date: luxonDate,
-      })}`}
-      // aria-label={`Create new slots on ${luxonDate.toFormat("DDDD")}`}
+      aria-label={t(SlotsAria.CreateSlot, { date })}
+      disabled={disabled}
     >
       <PlusCircle />
     </SlotOperationButton>
