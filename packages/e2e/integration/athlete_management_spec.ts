@@ -21,7 +21,7 @@ describe("Athlete form", () => {
     cy.signIn();
   });
 
-  it("fills in the customer form and submit it", () => {
+  it("fills in the customer form and submits it", () => {
     cy.visit(PrivateRoutes.Athletes);
     cy.getAttrWith("data-testid", "add-athlete").click();
 
