@@ -125,6 +125,19 @@ describe("Booking flow", () => {
     });
 
     it("allows booking if within extended date period", () => {
+      cy.intercept(
+        "POST",
+        "/google.firestore.v1.Firestore/Write/channel?database=projects%2Feisbuk%2Fdatabases*",
+        (req) => {
+          if (req.body.includes("bookedSlots")) req.alias = "bookSlot";
+        }
+      );
+
+      cy.intercept(
+        "GET",
+        "/google.firestore.v1.Firestore/Listen/channel?database=projects%2Feisbuk%2Fdatabases*"
+      ).as("getRequests");
+
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -163,11 +176,14 @@ describe("Booking flow", () => {
       );
 
       // should be able to book interval
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(0)
-        .click({
-          force: true,
-        });
+      cy.getAttrWith("aria-label", i18n.t(BookingAria.BookButton)).eq(0).click({
+        force: true,
+      });
+
+      cy.wait("@bookSlot").its("response.statusCode").should("eq", 200);
+      cy.wait("@getRequests").its("response.statusCode").should("eq", 200);
+      cy.wait("@getRequests").its("response.statusCode").should("eq", 200);
+
       cy.contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
