@@ -68,7 +68,7 @@ service cloud.firestore {
       )
     }
     function checkValidEmail(email) {
-      return email.matches("[-_\\.a-z0-9A-Z]*@[-_a-z0-9A-Z\\.]*\\.[a-z][a-z]+")
+      return email.matches("^\\w+([\\.#$%&*+/=?^`.{|}~-]?\\w+)*@\\w+([\\.#$%&*+/=?^`.{|}~-]?\\w+)*(\\.\\w\\w+)+$")
     }
     function checkValidPhoneNumber(phone) {
       return phone.matches('(\\+|00)[0-9]{9,15}')
