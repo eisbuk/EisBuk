@@ -8,6 +8,12 @@ import { Copy } from "@eisbuk/svg";
 
 import { useTranslation, SlotsAria } from "@eisbuk/translations";
 
+import {
+  __copiedSlotsBadgeId__,
+  __copyDayButtonId__,
+  __copyWeekButtonId__,
+} from "@eisbuk/shared";
+
 import { ButtonContextType } from "@/enums/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
@@ -24,8 +30,6 @@ import {
   __copyButtonWrongContextError,
   __noDateCopy,
 } from "@/lib/errorMessages";
-
-import { __copyButtonId__ } from "@/__testData__/testIds";
 
 /**
  * Button to handle copy operation:
@@ -98,15 +102,20 @@ export const CopyButton: React.FC = () => {
     }),
   };
 
+  const testIdLookup = {
+    [ButtonContextType.Day]: __copyDayButtonId__,
+    [ButtonContextType.Week]: __copyWeekButtonId__,
+  };
   return (
     <CopiedSlotsBadge
       displayBadge={Boolean(displayBadge)}
       contextType={contextType}
       date={date}
+      data-testid={__copiedSlotsBadgeId__}
     >
       <SlotOperationButton
         onClick={onCopy}
-        data-testid={__copyButtonId__}
+        data-testid={testIdLookup[contextType]}
         aria-label={ariaLabelLookup[contextType]}
         disabled={disabled}
       >
@@ -134,6 +143,7 @@ const CopiedSlotsBadge: React.FC<{
   return (
     <Badge
       aria-label={ariaLabelLookup[contextType]}
+      data-testid={__copiedSlotsBadgeId__}
       aria-hidden={!displayBadge}
       color="secondary"
       variant="dot"

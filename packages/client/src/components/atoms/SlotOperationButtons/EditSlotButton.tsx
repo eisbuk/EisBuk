@@ -16,7 +16,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __editSlotButtonId__ } from "@/__testData__/testIds";
+import { __editSlotButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button to edit an existing slot.

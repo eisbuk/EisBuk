@@ -1,6 +1,10 @@
 import { DateTime } from "luxon";
 
-import { SlotInterface } from "@eisbuk/shared";
+import {
+  SlotInterface,
+  __copyWeekButtonId__,
+  __copiedSlotsBadgeId__,
+} from "@eisbuk/shared";
 import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
 
 import { PrivateRoutes } from "../temp";
@@ -34,22 +38,21 @@ describe("Slots copy button - copied slots badge", () => {
     const weekEnd = testDateLuxon.endOf("week");
 
     // The badge should not be shown as there are no slots copied yet.
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsWeekBadge, { weekStart, weekEnd })
-    ).should("have.attr", "aria-hidden", "true");
+    cy.getAttrWith("data-testid", __copiedSlotsBadgeId__).should(
+      "have.attr",
+      "aria-hidden",
+      "true"
+    );
 
     // Copy the slots for the current week
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopySlotsWeek, { weekStart, weekEnd })
-    ).click({ force: true });
+    cy.getAttrWith("data-testid", __copyWeekButtonId__).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current week.
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsWeekBadge, { weekStart, weekEnd })
-    ).should("have.attr", "aria-hidden", "false");
+    cy.getAttrWith("data-testid", __copiedSlotsBadgeId__).should(
+      "have.attr",
+      "aria-hidden",
+      "false"
+    );
 
     // Go to the next week
     cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();

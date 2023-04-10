@@ -12,7 +12,7 @@ import makeStyles from "@mui/styles/makeStyles";
 
 import { ETheme } from "@/themes";
 
-import { OrgSubCollection } from "@eisbuk/shared";
+import { OrgSubCollection, __addAthleteId__ } from "@eisbuk/shared";
 import { Layout } from "@eisbuk/ui";
 import {
   useTranslation,
@@ -76,7 +76,7 @@ const AthletesPage: React.FC = () => {
         )}
         <Link to={PrivateRoutes.NewAthlete}>
           <Fab
-            data-testid="add-athlete"
+            data-testid={__addAthleteId__}
             color="primary"
             aria-label={t(ActionButton.AddAthlete)}
             className={[classes.fab, classes.buttonPrimary].join(" ")}

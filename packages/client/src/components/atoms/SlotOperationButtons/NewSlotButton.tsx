@@ -16,7 +16,7 @@ import {
 
 import { createModal } from "@/features/modal/useModal";
 
-import { __newSlotButtonId__ } from "@/__testData__/testIds";
+import { __newSlotButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button to create a new slot. Opens up a blank SlotForm 'onClick' to

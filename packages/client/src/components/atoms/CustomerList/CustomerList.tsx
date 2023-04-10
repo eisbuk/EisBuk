@@ -10,12 +10,10 @@ import TextField from "@mui/material/TextField";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { CustomerFull } from "@eisbuk/shared";
+import { CustomerFull, __customersListId__ } from "@eisbuk/shared";
 import { useTranslation, CustomerLabel } from "@eisbuk/translations";
 
 import CustomerListItem from "./CustomerListItem";
-
-import { __customersListId__ } from "@/__testData__/testIds";
 
 interface Props {
   customers?: CustomerFull[];

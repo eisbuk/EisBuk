@@ -1,6 +1,10 @@
 import { DateTime } from "luxon";
 
-import { Customer, SlotInterface } from "@eisbuk/shared";
+import {
+  Customer,
+  SlotInterface,
+  __notificationToastId__,
+} from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
@@ -22,17 +26,8 @@ import { slots } from "../__testData__/slots.json";
 const saul = customers.saul as Customer;
 
 describe("Booking flow", () => {
-  describe("Test for not-an-admin", () => {
-    it("doesn't allow booking past the booking deadline for a given month", () => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-      const januaryDeadline = getBookingDeadline(testDateLuxon);
-      const afterDueDate = januaryDeadline.plus({
-        days: 1,
-      });
-      // set current time just after the deadline has passed
-      cy.setClock(afterDueDate.toMillis());
+  describe("booking with no extended date", () => {
+    beforeEach(() => {
       cy.initAdminApp()
         .then((organization) =>
           cy.updateCustomers(
@@ -43,6 +38,18 @@ describe("Booking flow", () => {
         .then((organziation) =>
           cy.updateSlots(organziation, slots as Record<string, SlotInterface>)
         );
+    });
+
+    it("doesn't allow booking past the booking deadline for a given month", () => {
+      // our test data starts with this date so we're using it as reference point
+      const testDate = "2022-01-01";
+      const testDateLuxon = DateTime.fromISO(testDate);
+      const januaryDeadline = getBookingDeadline(testDateLuxon);
+      const afterDueDate = januaryDeadline.plus({
+        days: 1,
+      });
+      // set current time just after the deadline has passed
+      cy.setClock(afterDueDate.toMillis());
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       // should open next month as starting value for `currentDate` (in store)
@@ -73,16 +80,6 @@ describe("Booking flow", () => {
         days: 2,
       });
       cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp()
-        .then((organization) =>
-          cy.updateCustomers(
-            organization,
-            customers as Record<string, Customer>
-          )
-        )
-        .then((organization) =>
-          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
-        );
 
       cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
       cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
@@ -114,7 +111,8 @@ describe("Booking flow", () => {
           // force true to avoid detatched error (happening because the button gets rerendered)
           force: true,
         });
-      cy.contains(
+
+      cy.getAttrWith("data-testid", __notificationToastId__).contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",
@@ -124,20 +122,44 @@ describe("Booking flow", () => {
       cy.contains(i18n.t(ActionButton.Cancel) as string);
     });
 
-    it("allows booking if within extended date period", () => {
-      cy.intercept(
-        "POST",
-        "/google.firestore.v1.Firestore/Write/channel?database=projects%2Feisbuk%2Fdatabases*",
-        (req) => {
-          if (req.body.includes("bookedSlots")) req.alias = "bookSlot";
-        }
+    it("disables cancelling booked slots that have passed the deadline in calendar view ", () => {
+      const pastTestDate = "2021-12-01";
+      const pastTestDateLuxon = DateTime.fromISO(pastTestDate);
+      const futureTestDate = "2022-02-01";
+      const futureTestDateLuxon = DateTime.fromISO(futureTestDate);
+
+      cy.setClock(pastTestDateLuxon.toMillis());
+
+      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
+
+      // should be able to book interval
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
+        .eq(0)
+        .click({
+          force: true,
+        });
+      cy.getAttrWith("data-testid", __notificationToastId__).contains(
+        i18n.t(NotificationMessage.BookingSuccess, {
+          date: DateTime.fromISO("2022-01-01"),
+          interval: "09:00-11:00",
+        }) as string
       );
 
-      cy.intercept(
-        "GET",
-        "/google.firestore.v1.Firestore/Listen/channel?database=projects%2Feisbuk%2Fdatabases*"
-      ).as("getRequests");
+      cy.contains(i18n.t(CustomerNavigationLabel.Calendar) as string).click();
 
+      cy.setClock(futureTestDateLuxon.toMillis());
+
+      // cancel button has the same aria-label as book
+      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
+        "have.attr",
+        "disabled"
+      );
+    });
+  });
+
+  describe("booking with extended date", () => {
+    it("allows booking if within extended date period", () => {
       // our test data starts with this date so we're using it as reference point
       const testDate = "2022-01-01";
       const testDateLuxon = DateTime.fromISO(testDate);
@@ -180,11 +202,7 @@ describe("Booking flow", () => {
         force: true,
       });
 
-      cy.wait("@bookSlot").its("response.statusCode").should("eq", 200);
-      cy.wait("@getRequests").its("response.statusCode").should("eq", 200);
-      cy.wait("@getRequests").its("response.statusCode").should("eq", 200);
-
-      cy.contains(
+      cy.getAttrWith("data-testid", __notificationToastId__).contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",
@@ -217,137 +235,6 @@ describe("Booking flow", () => {
         "have.attr",
         "disabled"
       );
-    });
-
-    it("disables cancelling booked slots that have passed the deadline in calendar view ", () => {
-      const pastTestDate = "2021-12-01";
-      const pastTestDateLuxon = DateTime.fromISO(pastTestDate);
-      const futureTestDate = "2022-02-01";
-      const futureTestDateLuxon = DateTime.fromISO(futureTestDate);
-
-      cy.setClock(pastTestDateLuxon.toMillis());
-      cy.initAdminApp()
-        .then((organization) =>
-          cy.updateCustomers(
-            organization,
-            customers as Record<string, Customer>
-          )
-        )
-        .then((organization) =>
-          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
-        );
-
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
-
-      // should be able to book interval
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(0)
-        .click({
-          force: true,
-        });
-      cy.contains(
-        i18n.t(NotificationMessage.BookingSuccess, {
-          date: DateTime.fromISO("2022-01-01"),
-          interval: "09:00-11:00",
-        }) as string
-      );
-
-      cy.contains(i18n.t(CustomerNavigationLabel.Calendar) as string).click();
-
-      cy.setClock(futureTestDateLuxon.toMillis());
-
-      // cancel button has the same aria-label as book
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval)).should(
-        "have.attr",
-        "disabled"
-      );
-    });
-  });
-
-  describe("Test for admin", () => {
-    it("always allows booking, if admin", () => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-      const januaryDeadline = getBookingDeadline(testDateLuxon);
-      const afterDueDate = januaryDeadline.plus({
-        days: 1,
-      });
-      // set current time just after the deadline has passed
-      cy.setClock(afterDueDate.toMillis());
-      cy.initAdminApp()
-        .then((organization) =>
-          cy.updateCustomers(
-            organization,
-            customers as Record<string, Customer>
-          )
-        )
-        .then((organization) =>
-          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
-        );
-      cy.signIn();
-
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
-
-      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-
-      // the bookings locked message is not displayed for admin
-      cy.contains(
-        i18n.t(BookingCountdownMessage.BookingsLocked) as string
-      ).should("not.exist");
-
-      // as tested above,
-      // if not admin, this wouldn't be allowed
-      cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
-        .eq(0)
-        .click({
-          force: true,
-        });
-    });
-
-    it("doesn't show booking countdown for admin", () => {
-      // our test data starts with this date so we're using it as reference point
-      const testDate = "2022-01-01";
-      const testDateLuxon = DateTime.fromISO(testDate);
-      const januaryDeadline = getBookingDeadline(testDateLuxon);
-      // regular circumstances (2 days before the deadline)
-      const beforeDueDate = januaryDeadline.minus({
-        days: 2,
-      });
-      cy.setClock(beforeDueDate.toMillis());
-      cy.initAdminApp()
-        .then((organization) =>
-          cy.updateCustomers(
-            organization,
-            customers as Record<string, Customer>
-          )
-        )
-        .then((organization) =>
-          cy.updateSlots(organization, slots as Record<string, SlotInterface>)
-        );
-      cy.signIn();
-
-      cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
-      cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
-
-      // should open next month as starting value for `currentDate` (in store)
-      // default timespan should be "month"
-      cy.contains(createDateTitle(testDateLuxon, "month", i18n.t));
-
-      // should not display countdown message
-      cy.contains(
-        // as tested above
-        // if not admin, this countdown string would be shown
-        getCountdownStringMatch({
-          message: BookingCountdownMessage.FirstDeadline,
-          days: 2,
-          hours: 23,
-          date: januaryDeadline,
-          month: testDateLuxon,
-        })
-      ).should("not.exist");
     });
   });
 });

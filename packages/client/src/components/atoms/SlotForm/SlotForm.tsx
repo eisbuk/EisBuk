@@ -12,7 +12,14 @@ import Button from "@mui/material/Button";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
-import { SlotInterface, SlotInterval, SlotType, fromISO } from "@eisbuk/shared";
+import {
+  SlotInterface,
+  SlotInterval,
+  SlotType,
+  fromISO,
+  __cancelFormId__,
+  __slotFormId__,
+} from "@eisbuk/shared";
 import {
   useTranslation,
   SlotFormTitle,
@@ -33,8 +40,6 @@ import SlotIntervals from "./SlotIntervals";
 import { createNewSlot, updateSlot } from "@/store/actions/slotOperations";
 
 import { slotToFormValues } from "./utils";
-
-import { __cancelFormId__, __slotFormId__ } from "@/__testData__/testIds";
 
 // #region validation
 const timeFieldValidation = yup

@@ -16,10 +16,7 @@ import {
 } from "@eisbuk/translations";
 
 import ErrorMessage from "@/components/atoms/ErrorMessage";
-import {
-  __inputDialogSubmitId__,
-  __emailInput__,
-} from "@/__testData__/testIds";
+import { __inputDialogSubmitId__, __emailInput__ } from "@eisbuk/shared";
 
 // #region interfaces
 interface Props {

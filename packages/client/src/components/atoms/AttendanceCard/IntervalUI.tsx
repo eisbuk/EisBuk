@@ -1,5 +1,7 @@
 import React, { useRef, useCallback } from "react";
 
+import { __primaryIntervalId__ } from "@eisbuk/shared";
+
 import makeStyles from "@mui/styles/makeStyles";
 
 interface Props {
@@ -97,6 +99,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
       <span
         ref={primaryRef}
         className={[classes.primary, classes.interval].join(" ")}
+        data-testid={__primaryIntervalId__}
       >
         {primaryInterval}
       </span>

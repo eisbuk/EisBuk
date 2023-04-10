@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, __addAthleteId__ } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
@@ -165,7 +165,7 @@ export default (): void => {
       // use force as button will be detached after click
       .click({ force: true });
     // open new form
-    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getAttrWith("data-testid", __addAthleteId__).click();
   });
   // #region CustomerForm
 

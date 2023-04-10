@@ -19,7 +19,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __deleteButtonId__ } from "@/__testData__/testIds";
+import { __deleteButtonId__ } from "@eisbuk/shared";
 import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
