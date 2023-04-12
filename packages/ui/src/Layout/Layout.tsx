@@ -1,6 +1,6 @@
 import React from "react";
 
-import { EisbukLogo } from "@eisbuk/svg";
+import { EisbukLogo, SVGComponent } from "@eisbuk/svg";
 
 import UserAvatar, { UserAvatarProps } from "../UserAvatar";
 import AdminBar from "./AdminBar";
@@ -17,7 +17,7 @@ interface LayoutProps {
 }
 export interface LinkItem {
   /** @TODO This should be an SVG component */
-  Icon: string;
+  Icon: SVGComponent;
   label: string;
   slug: string;
 }

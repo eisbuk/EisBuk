@@ -18,7 +18,7 @@
     "react": "^16.13.1"
   },
   "scripts": {
-    "build": "vite build && tsc",
+    "build": "vite build && tsc && cp src/@types/svg.d.ts dist && sed -i '1i/// <reference types=\"./svg\" />' dist/index.d.ts",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "echo \"There's no typececk for SVG package, skipping...\""

@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { SVGComponent } from "@eisbuk/svg";
+
 interface Item {
-  Icon: string;
+  Icon: SVGComponent;
   label: string;
   slug: string;
 }
