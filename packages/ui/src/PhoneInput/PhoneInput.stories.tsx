@@ -9,14 +9,20 @@ export default {
   component: PhoneInput,
 } as ComponentMeta<typeof PhoneInput>;
 
+const phone = "+385991234567";
+
 export const Default = (): JSX.Element => (
   <Formik
-    initialValues={{}}
+    initialValues={{
+      phone,
+      phoneError: phone,
+      disabledPhone: phone,
+    }}
     initialErrors={{ phoneError: "This is an error" }}
     initialTouched={{ phoneError: true }}
     onSubmit={() => {}}
   >
-    <div className="w-[360px]">
+    <div className="w-[360px] space-y-4">
       <Field
         name="phone"
         label="Phone"
@@ -28,6 +34,13 @@ export const Default = (): JSX.Element => (
         label="Phone with error"
         placeholder="Phone"
         component={PhoneInput}
+      />
+      <Field
+        name="disabledPhone"
+        label="Disabled Phone"
+        placeholder="Phone"
+        component={PhoneInput}
+        disabled
       />
     </div>
   </Formik>
