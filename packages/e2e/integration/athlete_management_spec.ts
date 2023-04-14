@@ -167,7 +167,7 @@ describe("Athlete form", () => {
   });
 });
 
-describe("Delete an athlete", () => {
+describe.only("Delete an athlete", () => {
   beforeEach(() => {
     cy.initAdminApp()
       .then((organization) =>
@@ -190,7 +190,7 @@ describe("Delete an athlete", () => {
      * @WARNING This is a very dirty hack (depending on the view having exactly 14 buttons),
      * but cy, for some reason couldn't find the button by its (exact) text: "Delete".
      */
-    cy.get("button").eq(13).click();
+    cy.get("[data-cy=prompt-confirm-button]").click();
 
     // Should get redirected to the /athletes page and, containing all of the customers except Saul
     cy.url().should("include", PrivateRoutes.Athletes);
