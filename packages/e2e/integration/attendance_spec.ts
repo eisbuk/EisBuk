@@ -124,9 +124,7 @@ describe("AddAttendedCustomersDialog", () => {
       const intervals = ["09:00-11:00", "09:00-10:00", "10:00-11:00"];
 
       // The initial interval (booked by gus) is the last interval of the slot
-      cy.getAttrWith("data-testid", __primaryIntervalId__).contains(
-        intervals[2]
-      );
+      cy.getByTestId(__primaryIntervalId__).contains(intervals[2]);
       // With the last slot attended, the next button should be disabled
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).should(
         "be.disabled"

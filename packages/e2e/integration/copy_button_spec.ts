@@ -38,17 +38,17 @@ describe("Slots copy button - copied slots badge", () => {
     const weekEnd = testDateLuxon.endOf("week");
 
     // The badge should not be shown as there are no slots copied yet.
-    cy.getAttrWith("data-testid", __copiedSlotsBadgeId__).should(
+    cy.getByTestId(__copiedSlotsBadgeId__).should(
       "have.attr",
       "aria-hidden",
       "true"
     );
 
     // Copy the slots for the current week
-    cy.getAttrWith("data-testid", __copyWeekButtonId__).click({ force: true });
+    cy.getByTestId(__copyWeekButtonId__).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current week.
-    cy.getAttrWith("data-testid", __copiedSlotsBadgeId__).should(
+    cy.getByTestId(__copiedSlotsBadgeId__).should(
       "have.attr",
       "aria-hidden",
       "false"

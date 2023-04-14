@@ -112,7 +112,7 @@ describe("Booking flow", () => {
           force: true,
         });
 
-      cy.getAttrWith("data-testid", __notificationToastId__).contains(
+      cy.getByTestId(__notificationToastId__).contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",
@@ -139,7 +139,7 @@ describe("Booking flow", () => {
         .click({
           force: true,
         });
-      cy.getAttrWith("data-testid", __notificationToastId__).contains(
+      cy.getByTestId(__notificationToastId__).contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: DateTime.fromISO("2022-01-01"),
           interval: "09:00-11:00",
@@ -202,7 +202,7 @@ describe("Booking flow", () => {
         force: true,
       });
 
-      cy.getAttrWith("data-testid", __notificationToastId__).contains(
+      cy.getByTestId(__notificationToastId__).contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",
