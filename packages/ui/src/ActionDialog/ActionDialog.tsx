@@ -31,6 +31,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
         className="w-full !text-gray-700 font-medium bg-gray-100 hover:bg-opacity-0 md:w-auto"
         size={ButtonSize.LG}
         onClick={onCancel}
+        data-cy="prompt-cancel-button"
       >
         {cancelLabel}
       </Button>
@@ -45,6 +46,7 @@ const ActionDialog: React.FC<ActionDialogProps> = ({
         size={ButtonSize.LG}
         onClick={onConfirm}
         disabled={disabled}
+        data-cy="prompt-confirm-button"
       >
         {confirmLabel}
       </Button>

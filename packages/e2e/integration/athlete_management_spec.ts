@@ -186,11 +186,8 @@ describe("Delete an athlete", () => {
       .contains(i18n.t(ActionButton.DeleteCustomer) as string)
       .click();
     // Confirm the prompt
-    /**
-     * @WARNING This is a very dirty hack (depending on the view having exactly 14 buttons),
-     * but cy, for some reason couldn't find the button by its (exact) text: "Delete".
-     */
-    cy.get("button").eq(13).click();
+    /** @TODO create 'cy.getBySel' command for these situations */
+    cy.get("[data-cy=prompt-confirm-button]").click();
 
     // Should get redirected to the /athletes page and, containing all of the customers except Saul
     cy.url().should("include", PrivateRoutes.Athletes);
