@@ -95,11 +95,11 @@ describe("athlete profile", () => {
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
     // dashes
-    cy.getByTestId(__birthdayInputId__).first().clearAndType("12-12-1990");
+    cy.getByTestId(__birthdayInputId__).clearAndType("12-12-1990");
     cy.getByTestId(__birthdayInputId__).should("contain.value", "12/12/1990");
 
     // dots
-    cy.getByTestId(__birthdayInputId__).first().clearAndType("12.12.1990");
+    cy.getByTestId(__birthdayInputId__).clearAndType("12.12.1990");
     cy.getAttrWith("value", "12/12/1990");
   });
 
