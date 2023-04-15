@@ -4,6 +4,7 @@ import {
   SlotInterface,
   __copyWeekButtonId__,
   __copiedSlotsBadgeId__,
+  __copyDayButtonId__,
 } from "@eisbuk/shared";
 import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
 
@@ -34,9 +35,6 @@ describe("Slots copy button - copied slots badge", () => {
   });
 
   it("shows the week copied badge only if in 'week' context and the week in clipboard is the currently observed week", () => {
-    const weekStart = testDateLuxon.startOf("week");
-    const weekEnd = testDateLuxon.endOf("week");
-
     // The badge should not be shown as there are no slots copied yet.
     cy.getByTestId(__copiedSlotsBadgeId__).should(
       "have.attr",
@@ -57,44 +55,39 @@ describe("Slots copy button - copied slots badge", () => {
     // Go to the next week
     cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
 
-    const nextWeekStart = weekStart.plus({ weeks: 1 });
-    const nextWeekEnd = weekEnd.plus({ weeks: 1 });
-
     // The badge should not be shown anymore as the copied slots belong to the previous week.
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsWeekBadge, {
-        weekStart: nextWeekStart,
-        weekEnd: nextWeekEnd,
-      })
-    ).should("have.attr", "aria-hidden", "true");
+    cy.getByTestId(__copiedSlotsBadgeId__).should(
+      "have.attr",
+      "aria-hidden",
+      "true"
+    );
   });
 
   it("shows the day copied badge only if in 'day' context and the day in clipboard is the corresponding day", () => {
     const date = testDateLuxon;
 
     // The badge should not be shown as there are no slots copied yet.
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsDayBadge, { date })
-    ).should("have.attr", "aria-hidden", "true");
+    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).should(
+      "have.attr",
+      "aria-hidden",
+      "true"
+    );
 
     // Copy the slots for the current day
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopySlotsDay, { date })
-    ).click({ force: true });
+    cy.getByTestId(`${__copyDayButtonId__}${date}`).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current day.
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsDayBadge, { date })
-    ).should("have.attr", "aria-hidden", "false");
+    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).should(
+      "have.attr",
+      "aria-hidden",
+      "false"
+    );
 
     // Check different date slot (the badge should not be shown)
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(SlotsAria.CopiedSlotsDayBadge, { date: date.plus({ days: 1 }) })
-    ).should("have.attr", "aria-hidden", "true");
+    cy.getByTestId(`${__copiedSlotsBadgeId__}${date.plus({ days: 1 })}`).should(
+      "have.attr",
+      "aria-hidden",
+      "true"
+    );
   });
 });

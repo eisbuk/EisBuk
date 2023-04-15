@@ -103,7 +103,7 @@ export const CopyButton: React.FC = () => {
   };
 
   const testIdLookup = {
-    [ButtonContextType.Day]: __copyDayButtonId__,
+    [ButtonContextType.Day]: `${__copyDayButtonId__}${date}`,
     [ButtonContextType.Week]: __copyWeekButtonId__,
   };
   return (
@@ -140,10 +140,15 @@ const CopiedSlotsBadge: React.FC<{
     }),
   };
 
+  const testIdLookup = {
+    [ButtonContextType.Day]: `${__copiedSlotsBadgeId__}${date}`,
+    [ButtonContextType.Week]: __copiedSlotsBadgeId__,
+  };
+
   return (
     <Badge
       aria-label={ariaLabelLookup[contextType]}
-      data-testid={__copiedSlotsBadgeId__}
+      data-testid={testIdLookup[contextType]}
       aria-hidden={!displayBadge}
       color="secondary"
       variant="dot"
