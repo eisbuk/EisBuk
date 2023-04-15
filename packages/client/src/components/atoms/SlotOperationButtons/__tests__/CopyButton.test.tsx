@@ -55,7 +55,7 @@ describe("SlotOperationButtons", () => {
           <CopyButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__copyDayButtonId__).click();
+      screen.getByTestId(`${__copyDayButtonId__}${testDate}`).click();
       // test dispatch being called with the result of `newCopySlotDay` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
         mockCopyDayImplementation(testDate)

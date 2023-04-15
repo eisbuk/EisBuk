@@ -68,7 +68,7 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       screen.getByTestId(__newSlotButtonId__);
-      screen.getByTestId(__copyDayButtonId__);
+      screen.getByTestId(`${__copyDayButtonId__}${dummyDate}`);
       screen.getByTestId(__pasteButtonId__);
       screen.getByTestId(__deleteButtonId__);
     });
