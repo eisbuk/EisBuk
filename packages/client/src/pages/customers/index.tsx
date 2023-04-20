@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
-import { DateTime } from "luxon";
 
 import { OrgSubCollection, Customer, __addAthleteId__ } from "@eisbuk/shared";
 import { Layout, CustomerGrid, SearchBar } from "@eisbuk/ui";
@@ -15,13 +14,10 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { PrivateRoutes } from "@/enums/routes";
 
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
-import {
-  getCustomersByBirthday,
-  getCustomersList,
-} from "@/store/selectors/customers";
+import { getCustomersList } from "@/store/selectors/customers";
 
 import useTitle from "@/hooks/useTitle";
 
@@ -40,12 +36,7 @@ const AthletesPage: React.FC = () => {
 
   useTitle(t(NavigationLabel.Athletes));
 
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   const customers = useSelector(getCustomersList(true));
 

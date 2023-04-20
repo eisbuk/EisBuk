@@ -45,6 +45,7 @@ export * from "./CustomerList";
 export * from "./CustomerGrid";
 export * from "./SearchBar";
 export * from "./AttendanceCard";
+export * from "./BirthdayMenu";
 
 export {
   NotificationToast,

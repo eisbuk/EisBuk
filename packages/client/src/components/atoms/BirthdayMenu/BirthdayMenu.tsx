@@ -52,14 +52,16 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({ customers }) => {
     }, timeDiff);
     return () => clearTimeout(timeout);
   }, [timeDiff]);
-  const getTodaysBirthdays = useMemo(
-    (): number =>
-      customers.length > 0 &&
+
+  const getTodaysBirthdays = useMemo((): number => {
+    console.log("Birthday: ", customers[0].birthday);
+    console.log("Today: ", DateTime.now().toISODate().substring(5));
+
+    return customers.length > 0 &&
       customers[0].birthday === DateTime.now().toISODate().substring(5)
-        ? customers[0].customers.length
-        : 0,
-    [customers]
-  );
+      ? customers[0].customers.length
+      : 0;
+  }, [customers]);
 
   return (
     <>

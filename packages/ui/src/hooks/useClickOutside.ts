@@ -1,4 +1,4 @@
-/** @DUPLICATE_FILE @eisbuk/ui/src/hooks/useClickOutside.ts */
+/** @DUPLICATE_FILE @eisbuk/client/src/hooks/useClickOutside.ts */
 import { useEffect, RefObject } from "react";
 
 interface ClickCallback {

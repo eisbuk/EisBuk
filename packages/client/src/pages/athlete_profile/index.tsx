@@ -1,5 +1,4 @@
 import React from "react";
-import { DateTime } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useHistory, Redirect } from "react-router-dom";
 
@@ -13,13 +12,9 @@ import { SendBookingLinkMethod } from "@/enums/other";
 import { PrivateRoutes, Routes } from "@/enums/routes";
 
 import { NotificationsContainer } from "@/features/notifications/components";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 
-import {
-  getCustomerById,
-  getCustomersByBirthday,
-  getCustomersList,
-} from "@/store/selectors/customers";
+import { getCustomerById, getCustomersList } from "@/store/selectors/customers";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -44,12 +39,7 @@ const AthleteProfilePage: React.FC = () => {
 
   // Layout content
   const customers = useSelector(getCustomersList());
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   // Get customer (if exists)
   const { athlete } = useParams<{ athlete?: string }>();

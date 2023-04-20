@@ -1,6 +1,5 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { DateTime } from "luxon";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
 import { Button, CalendarNav, Layout } from "@eisbuk/ui";
@@ -12,7 +11,7 @@ import { getOrganization } from "@/lib/getters";
 import AttendanceSheet, {
   AttendanceSheetSlot,
 } from "@/components/atoms/AttendanceSheet";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
@@ -20,7 +19,6 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
-import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
@@ -40,13 +38,7 @@ const DashboardPage: React.FC = () => {
 
   const date = useSelector(getCalendarDay);
 
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   /**
    * This button, unlike the one in attendance page doesn't link

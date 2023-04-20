@@ -240,7 +240,7 @@ export interface CustomerWithAttendance extends CustomerFull {
  * Object with birthday prop and customer prop
  */
 export interface CustomersByBirthday {
-  birthday: string;
+  date: string;
   customers: CustomerFull[];
 }
 /**

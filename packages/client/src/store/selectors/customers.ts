@@ -73,20 +73,20 @@ export const getCustomersByBirthday =
       // we're using just the (mm/dd) date without the year
       const trimmedBirthday = customer.birthday.substring(5);
       const index = customersByBirthday.findIndex(
-        (entry) => entry.birthday === trimmedBirthday
+        (entry) => entry.date === trimmedBirthday
       );
       index !== -1
         ? customersByBirthday[index].customers.push(customer)
         : customersByBirthday.push({
-            birthday: trimmedBirthday,
+            date: trimmedBirthday,
             customers: [customer],
           });
     });
     const sortedCustomersByBirthday = customersByBirthday.sort((a, b) =>
-      a.birthday.localeCompare(b.birthday)
+      a.date.localeCompare(b.date)
     );
     const index = sortedCustomersByBirthday.findIndex(
-      (entry) => date.toISODate().substring(5) <= entry.birthday
+      (entry) => date.toISODate().substring(5) <= entry.date
     );
     const rearrangedCustomers = sortedCustomersByBirthday
       .slice(index === -1 ? 0 : index)

@@ -22,9 +22,8 @@ import ByDayView from "./views/ByDay";
 import ByMonthView from "./views/ByMonth";
 
 import { NotificationsContainer } from "@/features/notifications/components";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 
-import { getCustomersByBirthday } from "@/store/selectors/customers";
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
@@ -82,13 +81,7 @@ const AttendancePage: React.FC = () => {
       </Link>
     ) : undefined;
 
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   const additionalButtons = (
     <>
