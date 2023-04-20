@@ -1,6 +1,6 @@
 import React from "react";
 
-import { CustomerFull, Customer } from "@eisbuk/shared";
+import { CustomerFull, Customer, __customerListId__ } from "@eisbuk/shared";
 import { useTranslation, CustomerLabel } from "@eisbuk/translations";
 
 import CustomerListItem from "./CustomerListItem";
@@ -33,7 +33,7 @@ const CustomerList: React.FC<Props> = ({
             </th>
           </tr>
         </thead>
-        <tbody data-testid="customer-list">
+        <tbody data-testid={__customerListId__}>
           {customers?.map(
             (customer, i) =>
               (filterRegex.test(customer.name) ||
