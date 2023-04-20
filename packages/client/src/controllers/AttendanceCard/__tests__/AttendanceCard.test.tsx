@@ -115,7 +115,7 @@ describe("AttendanceCard", () => {
         "AddAttendedCustomersDialog"
       );
       expect(dispatchCallPayload.props).toEqual({
-        ...testSlot,
+        ...{ ...testSlot, categories: attendanceCard.categories },
         customers: [saul, walt],
         defaultInterval: "10:00-11:00",
       });

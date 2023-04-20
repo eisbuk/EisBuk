@@ -78,7 +78,10 @@ const BirthdayMenu: React.FC<BirthdayMenuProps> = ({
         </Button>
 
         {Boolean(todaysBirthdays) && (
-          <div className="absolute w-5 h-5 p-px flex justify-center items-center top-0 right-0 text-sm text-white bg-red-400 rounded-full">
+          <div
+            className="absolute w-5 h-5 p-px flex justify-center items-center top-0 right-0 text-sm text-white bg-red-400 rounded-full"
+            data-testid="birthday-badge"
+          >
             {todaysBirthdays}
           </div>
         )}

@@ -64,11 +64,7 @@ const CustomerArea: React.FC = () => {
   const calendarNavProps = useDate();
 
   // Get customer data necessary for rendering/functoinality
-  const { name, surname, photoURL } = useSelector(getBookingsCustomer) || {};
-  const displayCustomer = {
-    displayName: [name, surname].filter((n) => Boolean(n)).join(" ") || "",
-    photoURL,
-  };
+  const userData = useSelector(getBookingsCustomer) || {};
 
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
   const CustomerView = viewsLookup[view];
@@ -106,7 +102,7 @@ const CustomerArea: React.FC = () => {
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
       additionalAdminContent={additionalAdminContent}
-      user={displayCustomer}
+      user={userData}
     >
       {view !== "ProfileView" && (
         <CalendarNav
