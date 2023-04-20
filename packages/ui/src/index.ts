@@ -41,6 +41,8 @@ export * from "./Table";
 export * from "./AttendanceVarianceTable";
 export * from "./Forms/CustomerForm";
 export * from "./Forms";
+export * from "./CustomerGrid";
+export * from "./SearchBar";
 
 export {
   NotificationToast,

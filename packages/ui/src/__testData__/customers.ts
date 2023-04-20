@@ -1,4 +1,4 @@
-/** @DUPLICATE_FILE @eisbuk/ui/src/__testData__/customers.ts */
+/** @DUPLICATE_FILE @eisbuk/client/src/__testData__/customers.ts */
 import { DateTime } from "luxon";
 
 import { Category, CustomerFull, luxon2ISODate } from "@eisbuk/shared";
