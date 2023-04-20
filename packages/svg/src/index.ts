@@ -12,6 +12,7 @@ export { default as Cog } from "./assets/cog.svg";
 export { default as User } from "./assets/user.svg";
 export { default as Users } from "./assets/users.svg";
 export { default as ClipboardList } from "./assets/clipboard-list.svg";
+export { default as ClipboardCheck } from "./assets/clipboard-check.svg";
 export { default as DocumentDuplicate } from "./assets/document-duplicate.svg";
 export { default as Printer } from "./assets/printer.svg";
 export { default as Copy } from "./assets/copy.svg";

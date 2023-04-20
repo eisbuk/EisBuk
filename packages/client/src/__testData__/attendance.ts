@@ -1,6 +1,7 @@
-import { CustomerWithAttendance } from "@/types/components";
+/** @DUPLICATE_FILE @eisbuk/ui/src/__testData__/attendance.ts */
+import { CustomerWithAttendance } from "@eisbuk/shared";
 
-import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
+import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
 import { comparePeriods } from "@/utils/sort";
 

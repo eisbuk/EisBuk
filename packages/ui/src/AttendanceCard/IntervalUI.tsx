@@ -2,16 +2,12 @@ import React, { useRef, useCallback } from "react";
 
 import { __primaryIntervalId__ } from "@eisbuk/shared";
 
-import makeStyles from "@mui/styles/makeStyles";
-
 interface Props {
   attendedInterval: string | null;
   bookedInterval: string | null;
 }
 
 const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
-  const classes = useStyles();
-
   // intervals to display
   const primaryInterval = attendedInterval;
   const secondaryInterval =
@@ -47,7 +43,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
         handleFlip({
           node: node!,
           animateFrom: primaryRect,
-          duration: 200,
+          duration: 150,
           onFinish: () => {
             // on finish, save the DOMRect of secondary (to be used in case of dismount/FLIP back to primary position)
             secondaryRect.current = node!.getBoundingClientRect();
@@ -57,7 +53,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
         // animate strike through
         if (strikeRef.current) animateStrikeThrough(strikeRef.current);
         // fade in the next `primaryInterval` not to (visually) interfere with our FLIP transition
-        handleFadeIn(primaryRef.current!, 200);
+        handleFadeIn(primaryRef.current!, 150);
         break;
 
       // if `primaryRef` (primaryInterval) is defined and the node (`secondaryInterval`) is not, should transition the string
@@ -67,7 +63,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
         handleFlip({
           node: primaryRef.current!,
           animateFrom: secondaryRect.current!,
-          duration: 200,
+          duration: 150,
           onFinish: () => {
             // clear up ref to `secondaryInterval` DOMRect as the element is currently not on the screen and this is stale
             secondaryRect.current = null;
@@ -86,19 +82,23 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
   }, []);
 
   return (
-    <div className={classes.intervalContainer}>
+    <div className="relative w-full h-full">
       {secondaryInterval && (
         <div
           ref={animateIntervals}
-          className={[classes.secondary, classes.interval].join(" ")}
+          className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 text-md text-red-400 select-none cursor-default whitespace-nowrap"
         >
           <span>{secondaryInterval}</span>
-          <div ref={strikeRef} className={classes.strikeThrough} />
+          <div
+            ref={strikeRef}
+            className="absolute h-0.5 top-1/2 left-1/2 -translate-x-1/2 w-[110%] bg-red-400"
+          />
         </div>
       )}
+
       <span
         ref={primaryRef}
-        className={[classes.primary, classes.interval].join(" ")}
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-xl select-none cursor-default whitespace-nowrap"
         data-testid={__primaryIntervalId__}
       >
         {primaryInterval}
@@ -106,46 +106,6 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
     </div>
   );
 };
-
-// #region styles
-const useStyles = makeStyles((theme) => ({
-  intervalContainer: {
-    position: "relative",
-    width: "100%",
-    borderLeft: "1px solid grey",
-    borderRight: "1px solid grey",
-  },
-  secondary: {
-    color: "red",
-    position: "absolute",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    fontSize: "14px",
-  },
-  strikeThrough: {
-    position: "absolute",
-    left: "50%",
-    top: "50%",
-    transform: "translate(-50%, -100%)",
-    width: "110%",
-    height: "1px",
-    background: "red",
-  },
-  interval: {
-    userSelect: "none",
-    cursor: "default",
-    whiteSpace: "nowrap",
-  },
-  primary: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    fontFamily: theme.typography.h1.fontFamily,
-    fontSize: "20px",
-  },
-}));
-// #endregion styles
 
 // #region handleFlip
 /**
@@ -229,7 +189,7 @@ const animateStrikeThrough = (node: HTMLElement) => {
       { transform: "translate(-50%, 0) scale(100%, 100%)" },
       { transform: "translate(-50%, 0) scale(100%, 100%)" },
     ],
-    { duration: 500 }
+    { duration: 350 }
   );
 };
 

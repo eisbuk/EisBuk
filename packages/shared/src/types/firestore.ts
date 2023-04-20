@@ -229,6 +229,14 @@ export interface CustomerFull extends Customer {
 }
 
 /**
+ * A customer interface extended with attendance data.
+ */
+export interface CustomerWithAttendance extends CustomerFull {
+  bookedInterval: string | null;
+  attendedInterval: string | null;
+}
+
+/**
  * Object with birthday prop and customer prop
  */
 export interface CustomersByBirthday {

@@ -1,4 +1,4 @@
-/** @DUPLICATE_FILE @eisbuk/ui/src/hooks/useDebounce.ts */
+/** @DUPLICATE_FILE @eisbuk/client/src/hooks/useDebounce.ts */
 import { useEffect, useState } from "react";
 
 interface DebounceHook {

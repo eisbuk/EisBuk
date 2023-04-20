@@ -67,6 +67,8 @@ export const getMonthStr: GetMonthString = (startDate, offset) =>
  * Calculates the `startTime` of earliset interval and the `endTime` of latest interval,
  * @param intervals a record of all intervals
  * @returns a string representation of slot's timespan: `${startTime} - ${endTime}`
+ *
+ * @DUPLICATE in @eisbuk/ui/src/AttendanceCard/utils.ts
  */
 export const getSlotTimespan = (
   intervals: SlotInterface["intervals"]

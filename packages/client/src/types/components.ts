@@ -1,7 +1,7 @@
 import { SvgIconTypeMap } from "@mui/material/SvgIcon";
 import { OverridableComponent } from "@mui/material/OverridableComponent";
 
-import { CustomerFull, SlotInterface } from "@eisbuk/shared";
+import { SlotInterface } from "@eisbuk/shared";
 
 // #region svg
 
@@ -18,13 +18,6 @@ export type SvgProps = Parameters<
 export type SvgComponent = OverridableComponent<SvgIconTypeMap<unknown, "svg">>;
 
 // #endregion svg
-
-// #region attendanceCard
-export interface CustomerWithAttendance extends CustomerFull {
-  bookedInterval: string | null;
-  attendedInterval: string | null;
-}
-// #endregion attendanceCard
 
 // #region bookingCard
 export interface SlotWithBookedInterval extends SlotInterface {

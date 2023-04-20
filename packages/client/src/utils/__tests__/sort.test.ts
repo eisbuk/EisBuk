@@ -1,5 +1,4 @@
-import { CustomerWithAttendance } from "@/types/components";
-import { Customer } from "@eisbuk/shared";
+import { Customer, CustomerWithAttendance } from "@eisbuk/shared";
 
 import {
   compareCustomerBookings,
