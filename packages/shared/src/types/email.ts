@@ -30,19 +30,16 @@ export type ClientEmailPayload = {
 
 export interface EmailTypeButtons {
   [EmailType.SendBookingsLink]: {
-    organizationName: string;
     bookingsLink: string;
     name: string;
     surname: string;
   };
   [EmailType.SendCalendarFile]: {
-    organizationName: string;
     name: string;
     surname: string;
     calendarFile: string;
   };
   [EmailType.SendExtendedBookingsDate]: {
-    organizationName: string;
     bookingsMonth: string;
     extendedBookingsDate: string;
     name: string;

@@ -21,19 +21,16 @@ const EmailTemplateSettings: React.FC = () => {
 
   const buttons: EmailTypeButtons = {
     [EmailType.SendBookingsLink]: {
-      organizationName: "organizationName",
       bookingsLink: "bookingsLink",
       name: "name",
       surname: "surname",
     },
     [EmailType.SendCalendarFile]: {
-      organizationName: "organizationName",
       name: "name",
       surname: "surname",
       calendarFile: "calendarFile",
     },
     [EmailType.SendExtendedBookingsDate]: {
-      organizationName: "organizationName",
       bookingsMonth: "bookingsMonth",
       extendedBookingsDate: "extendedBookingsDate",
       name: "name",
