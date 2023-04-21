@@ -8,10 +8,7 @@ import { cleanup, screen, render } from "@testing-library/react";
 import SlotCard from "../SlotCard";
 
 import { __slotId__ } from "../__testData__/testIds";
-import {
-  __deleteButtonId__,
-  __editSlotButtonId__,
-} from "@/__testData__/testIds";
+import { __deleteButtonId__, __editSlotButtonId__ } from "@eisbuk/shared";
 import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();

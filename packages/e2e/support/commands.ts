@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, __addAthleteId__ } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 // ***********************************************************
@@ -31,6 +31,11 @@ declare global {
         label: string,
         strict?: boolean
       ) => Chainable<JQuery<HTMLElement>>;
+      /**
+       * @param {string} testId Element data-testid attribute
+       * @returns {Chainable<Element>} a `PromiseLike` yielding found `Element`
+       */
+      getByTestId: (testId: string) => Chainable<JQuery<HTMLElement>>;
       /**
        * @param {number} millis milliseconds from UNIX epoch, such as it's received from `Date.now()`.
        */
@@ -101,6 +106,10 @@ export default (): void => {
     return cy.get(`[${attr}${glob}="${label}"]`);
   });
 
+  Cypress.Commands.add("getByTestId", (testId) => {
+    return cy.get(`[data-testid="${testId}"]`);
+  });
+
   Cypress.Commands.add("setClock", (millis) =>
     cy.clock().then((clock) => {
       clock.restore();
@@ -165,7 +174,7 @@ export default (): void => {
       // use force as button will be detached after click
       .click({ force: true });
     // open new form
-    cy.getAttrWith("data-testid", "add-athlete").click();
+    cy.getByTestId(__addAthleteId__).click();
   });
   // #region CustomerForm
 

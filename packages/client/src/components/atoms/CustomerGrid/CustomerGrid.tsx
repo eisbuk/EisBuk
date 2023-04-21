@@ -5,13 +5,15 @@ import TextField from "@mui/material/TextField";
 
 import makeStyles from "@mui/styles/makeStyles";
 
-import { CustomerFull, OrganizationData } from "@eisbuk/shared";
+import {
+  CustomerFull,
+  OrganizationData,
+  __customersGridId__,
+} from "@eisbuk/shared";
 
 import { PrivateRoutes } from "@/enums/routes";
 
 import CustomerGridItem from "./CustomerGridItem";
-
-import { __customersGridId__ } from "@/__testData__/testIds";
 
 interface CustomerGridProps {
   customers?: CustomerFull[];

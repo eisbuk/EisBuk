@@ -1,5 +1,7 @@
 import React from "react";
 
+import { __notificationToastId__ } from "@eisbuk/shared";
+
 import { Close } from "@eisbuk/svg";
 
 export enum NotificationToastVariant {
@@ -30,6 +32,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
       className: [...baseClasses, colorClassLookup[variant], className].join(
         " "
       ),
+      "data-testid": __notificationToastId__,
     },
     [
       <span

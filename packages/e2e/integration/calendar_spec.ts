@@ -65,7 +65,7 @@ xdescribe("Date Switcher", () => {
 
       // should show a has-booked-slots badge on days with slots
       // the customer has booked
-      cy.getAttrWith("data-testid", __dayWithSlots__)
+      cy.getByTestId(__dayWithSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
@@ -73,7 +73,7 @@ xdescribe("Date Switcher", () => {
 
       // should show a has-slots badge on days with existing slots
       // but no bookings for a day
-      cy.getAttrWith("data-testid", __dayWithBookedSlots__)
+      cy.getByTestId(__dayWithBookedSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
@@ -97,13 +97,13 @@ xdescribe("Date Switcher", () => {
 
       openCalendar(testDateLuxon, "day");
 
-      cy.getAttrWith("data-testid", __dayWithBookedSlots__)
+      cy.getByTestId(__dayWithBookedSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")
         .and("equal", DateTime.fromISO("2022-01-01").toFormat("DD"));
 
-      cy.getAttrWith("data-testid", __dayWithSlots__)
+      cy.getByTestId(__dayWithSlots__)
         .children()
         .eq(0)
         .should("have.attr", "aria-label")

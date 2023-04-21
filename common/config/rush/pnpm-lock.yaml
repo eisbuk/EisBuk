@@ -125,6 +125,7 @@ importers:
       cypress-mochawesome-reporter: ^2.3.0
       datebook: ^7.0.8
       debugging-aid: ^0.5.3
+      dom-serializer: ~2.0.0
       eslint: ^8.13.0
       eslint-config-google: ^0.14.0
       eslint-import-resolver-typescript: ^2.7.1
@@ -273,6 +274,7 @@ importers:
       chromatic: 5.10.2_@babel+core@7.20.7
       cypress-mochawesome-reporter: 2.4.0_mocha@8.4.0
       debugging-aid: 0.5.3
+      dom-serializer: 2.0.0
       eslint: 8.30.0
       eslint-config-google: 0.14.0_eslint@8.30.0
       eslint-import-resolver-typescript: 2.7.1_d2c3661c31f85a218e01ce5e6ffddfeb

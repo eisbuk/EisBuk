@@ -6,9 +6,16 @@ import React, { useContext } from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { SlotInterface, luxon2ISODate } from "@eisbuk/shared";
-
-import * as testIds from "@/__testData__/testIds";
+import {
+  SlotInterface,
+  luxon2ISODate,
+  __copyDayButtonId__,
+  __copyWeekButtonId__,
+  __editSlotButtonId__,
+  __deleteButtonId__,
+  __newSlotButtonId__,
+  __pasteButtonId__,
+} from "@eisbuk/shared";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -45,8 +52,8 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(testIds.__editSlotButtonId__);
-      screen.getByTestId(testIds.__deleteButtonId__);
+      screen.getByTestId(__editSlotButtonId__);
+      screen.getByTestId(__deleteButtonId__);
     });
     test("should render whitelisted buttons 'contextType=\"day\"' without error with all appropriate buttons passed in", () => {
       render(
@@ -60,10 +67,10 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(testIds.__newSlotButtonId__);
-      screen.getByTestId(testIds.__copyButtonId__);
-      screen.getByTestId(testIds.__pasteButtonId__);
-      screen.getByTestId(testIds.__deleteButtonId__);
+      screen.getByTestId(__newSlotButtonId__);
+      screen.getByTestId(`${__copyDayButtonId__}${dummyDate}`);
+      screen.getByTestId(__pasteButtonId__);
+      screen.getByTestId(__deleteButtonId__);
     });
 
     test("should render whitelisted buttons 'contextType=\"week\"' without error with all appropriate buttons passed in", () => {
@@ -77,9 +84,9 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(testIds.__copyButtonId__);
-      screen.getByTestId(testIds.__pasteButtonId__);
-      screen.getByTestId(testIds.__deleteButtonId__);
+      screen.getByTestId(__copyWeekButtonId__);
+      screen.getByTestId(__pasteButtonId__);
+      screen.getByTestId(__deleteButtonId__);
     });
   });
 

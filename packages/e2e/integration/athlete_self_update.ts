@@ -1,4 +1,4 @@
-import { Customer } from "@eisbuk/shared";
+import { Customer, __birthdayInputId__ } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   CustomerNavigationLabel,
@@ -95,15 +95,11 @@ describe("athlete profile", () => {
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
     // dashes
-    cy.getAttrWith("placeholder", "dd/mm/yyyy")
-      .first()
-      .clearAndType("12-12-1990");
-    cy.getAttrWith("value", "12/12/1990");
+    cy.getByTestId(__birthdayInputId__).clearAndType("12-12-1990");
+    cy.getByTestId(__birthdayInputId__).should("contain.value", "12/12/1990");
 
     // dots
-    cy.getAttrWith("placeholder", "dd/mm/yyyy")
-      .first()
-      .clearAndType("12.12.1990");
+    cy.getByTestId(__birthdayInputId__).clearAndType("12.12.1990");
     cy.getAttrWith("value", "12/12/1990");
   });
 

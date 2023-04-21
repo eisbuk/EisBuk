@@ -16,7 +16,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __editSlotButtonId__ } from "@/__testData__/testIds";
+import { __editSlotButtonId__ } from "@eisbuk/shared";
 import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();

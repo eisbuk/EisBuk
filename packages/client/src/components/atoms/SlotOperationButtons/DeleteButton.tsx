@@ -21,7 +21,7 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __deleteButtonId__ } from "@/__testData__/testIds";
+import { __deleteButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button in charge of delete functionality.

@@ -11,10 +11,7 @@ import * as reactRedux from "react-redux";
 import AddToCalendar from "../AddToCalendar";
 
 import { expectedIcsFile } from "../__testData__/testData";
-import {
-  __inputDialogSubmitId__,
-  __emailInput__,
-} from "@/__testData__/testIds";
+import { __inputDialogSubmitId__, __emailInput__ } from "@eisbuk/shared";
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
 import * as bookingActions from "@/store/actions/bookingOperations";

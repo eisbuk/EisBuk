@@ -17,7 +17,7 @@ import {
 
 import { pasteSlotsDay, pasteSlotsWeek } from "@/store/actions/copyPaste";
 
-import { __pasteButtonId__ } from "@/__testData__/testIds";
+import { __pasteButtonId__ } from "@eisbuk/shared";
 
 interface Props {
   onPaste?: () => void;

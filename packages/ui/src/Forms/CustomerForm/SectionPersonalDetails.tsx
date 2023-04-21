@@ -8,7 +8,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 import { User, Cake, Mail, Phone } from "@eisbuk/svg";
-import { isValidPhoneNumber } from "@eisbuk/shared";
+import { isValidPhoneNumber, __birthdayInputId__ } from "@eisbuk/shared";
 
 import FormSection from "../FormSection";
 import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";
@@ -60,6 +60,7 @@ const SectionPersonalDetails: React.FC<SectionProps> = ({
         variant={FormFieldVariant.Date}
         width={FormFieldWitdh.MD}
         label={t(CustomerLabel.Birthday)}
+        data-testid={__birthdayInputId__}
         Icon={Cake}
       />
 
