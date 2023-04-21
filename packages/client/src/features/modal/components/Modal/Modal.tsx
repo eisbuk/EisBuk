@@ -96,7 +96,7 @@ export const ModalContainer: React.FC<{ onClose?: () => void }> = ({
       children.map((child) => (
         <div
           key={child.key}
-          className="center-absolute bg-white rounded overflow-hidden shadow-2xl"
+          className="center-absolute rounded overflow-hidden shadow-2xl"
         >
           {child}
         </div>

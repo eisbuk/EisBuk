@@ -22,7 +22,7 @@ const BirthdayDialog: React.FC<BirthdayDialogProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="relative bg-white rounded max-w-[400px] w-screen h-full overflow-hidden">
+    <div className="relative bg-white rounded max-w-[400px] w-screen h-full overflow-hidden border border-cyan-900">
       <div className="w-full h-16 px-4 flex items-center justify-between bg-gray-800 text-white">
         <h2 className="text-xl">{t(BirthdayMenu.UpcomingBirthdays)}</h2>
         <IconButton className="!w-7 !h-7 opacity-80" onClick={onClose}>

@@ -37,7 +37,7 @@ const AdminBar: React.FC<AdminBarProps> = ({
                 className={[
                   "h-full rounded-none",
                   isActive
-                    ? "bg-cyan-700"
+                    ? "!bg-cyan-700"
                     : "text-opacity-80 hover:bg-white/5 active:bg-white/10",
                 ].join(" ")}
                 startAdornment={<Icon />}

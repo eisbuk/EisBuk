@@ -58,7 +58,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
       aria-label="add-athletes-dialog"
       className={[
         className,
-        "relative h-full w-[90vw] overflow-hidden pt-16 pb-0 rounded sm:w-[70vw] md:w-[35vw]",
+        "relative h-full w-[90vw] bg-white overflow-hidden pt-16 pb-0 rounded sm:w-[70vw] md:w-[35vw]",
       ].join(" ")}
     >
       <h2 className="absolute left-6 top-8 -translate-y-1/2 text-xl font-bold">
