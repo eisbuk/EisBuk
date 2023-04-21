@@ -1,11 +1,16 @@
 import { DateTime } from "luxon";
 
-import { Customer, SlotInterface } from "@eisbuk/shared";
+import {
+  Customer,
+  SlotInterface,
+  __notificationToastId__,
+} from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
   BookingCountdownMessage,
   createDateTitle,
+  NotificationMessage,
 } from "@eisbuk/translations";
 
 import { Routes } from "../temp";
@@ -46,16 +51,29 @@ describe("Booking flow", () => {
 
     // the bookings locked message is not displayed for admin
     cy.contains(
-      i18n.t(BookingCountdownMessage.BookingsLocked) as string
+      i18n.t(BookingCountdownMessage.BookingsLocked, {
+        month: testDateLuxon,
+      }) as string
     ).should("not.exist");
 
     // as tested above,
     // if not admin, this wouldn't be allowed
     cy.getAttrWith("aria-label", i18n.t(ActionButton.BookInterval))
       .eq(0)
+      // We need to check if the button is disabled, before clicking
+      // as it will sometimes be disabled for a split second, until the admin
+      // state is loaded
+      .should("not.be.disabled")
       .click({
         force: true,
       });
+    // Check that the booking was successful
+    cy.getByTestId(__notificationToastId__).contains(
+      i18n.t(NotificationMessage.BookingSuccess, {
+        date: DateTime.fromISO("2022-01-01"),
+        interval: "09:00-11:00",
+      }) as string
+    );
   });
 
   it("doesn't show booking countdown for admin", () => {
