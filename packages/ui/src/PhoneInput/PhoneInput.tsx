@@ -1,7 +1,9 @@
 import { FieldInputProps, FieldProps } from "formik";
 import React, { useState } from "react";
 
-import TextInput, { TextInputProps } from "../TextInput";
+import { Phone } from "@eisbuk/svg";
+
+import TextInput, { IconAdornment, TextInputProps } from "../TextInput";
 
 import CountryCodesDropdown, {
   splitByDialCode,
@@ -43,6 +45,7 @@ const initCountryDropdown =
 const PhoneInput: React.FC<PhoneInputFieldProps> = ({
   field: f,
   defaultDialCode,
+  disabled,
   ...props
 }) => {
   const {
@@ -96,20 +99,28 @@ const PhoneInput: React.FC<PhoneInputFieldProps> = ({
   return (
     <TextInput
       {...props}
+      disabled={disabled}
       field={{
         ...field,
-        value: textValue,
+        // If disabled, we're showing the full text value (including the dial code), without the dial code picker
+        value: disabled ? fieldValue : textValue,
         name,
         onChange: handleTextChange,
         onBlur: handleTextBlur,
       }}
       StartAdornment={
-        <CountryCodesDropdown
-          onChange={handleCodeChange}
-          name="dialCode"
-          className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
-          value={dialCode}
-        />
+        // We're showing only the text value if the field is disabled
+        // (with a start adornment icon for some eye candy)
+        disabled ? (
+          <IconAdornment Icon={Phone} position="start" disabled={true} />
+        ) : (
+          <CountryCodesDropdown
+            onChange={handleCodeChange}
+            name="dialCode"
+            className="border-0 border-r !rounded-r-none !border-gray-300 px-6 cursor-pointer"
+            value={dialCode}
+          />
+        )
       }
     />
   );

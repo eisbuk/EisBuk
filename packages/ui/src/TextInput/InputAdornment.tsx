@@ -1,7 +1,9 @@
 import React from "react";
 
+import { SVGComponent } from "@eisbuk/svg";
+
 interface IconAdornmentProps {
-  Icon: JSX.Element | null;
+  Icon?: SVGComponent;
   position: "start" | "end";
   disabled?: boolean;
 }
@@ -12,13 +14,13 @@ interface AddOnAdornmentProps {
 
 interface ButtonAdornmentProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  Icon: JSX.Element | null;
+  Icon?: SVGComponent;
   label: string;
   disabled?: boolean;
 }
 
 export const IconAdornment: React.FC<IconAdornmentProps> = ({
-  Icon,
+  Icon = () => null,
   position,
   disabled = false,
 }) => {
@@ -28,7 +30,7 @@ export const IconAdornment: React.FC<IconAdornmentProps> = ({
   return (
     <div className={padding}>
       <div className={`h-5 w-5 ${colour}`} aria-hidden="true">
-        {Icon}
+        <Icon />
       </div>
     </div>
   );
@@ -41,7 +43,7 @@ export const AddOnAdornment: React.FC<AddOnAdornmentProps> = ({ label }) => (
 );
 
 export const ButtonAdornment: React.FC<ButtonAdornmentProps> = ({
-  Icon,
+  Icon = () => null,
   label,
   onClick = () => {},
   disabled = false,
@@ -55,7 +57,7 @@ export const ButtonAdornment: React.FC<ButtonAdornmentProps> = ({
     {...props}
   >
     <div className="h-5 w-5 text-gray-400" aria-hidden="true">
-      {Icon}
+      <Icon />
     </div>
     <span>{label}</span>
   </button>

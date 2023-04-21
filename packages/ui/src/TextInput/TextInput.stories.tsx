@@ -75,9 +75,7 @@ export const Default = (): JSX.Element => (
           label="Icon"
           component={TextInput}
           placeholder="chris@myriadcode.co"
-          StartAdornment={
-            <IconAdornment Icon={<Calendar />} position="start" />
-          }
+          StartAdornment={<IconAdornment Icon={Calendar} position="start" />}
         />
         <Field
           name="addOn"
@@ -103,7 +101,7 @@ export const Default = (): JSX.Element => (
           label="Button"
           component={TextInput}
           placeholder="John Smith"
-          EndAdornment={<ButtonAdornment Icon={<Calendar />} label="Sort" />}
+          EndAdornment={<ButtonAdornment Icon={Calendar} label="Sort" />}
         />
       </Form>
     </Formik>

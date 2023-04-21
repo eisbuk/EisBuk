@@ -119,12 +119,6 @@ const CustomerCard: React.FC<FormAdminProps> = ({
           </span>
           <span className="align-middle">{t(ActionButton.Back)}</span>
         </button>
-
-        <div className="flex justify-between mb-10 items-center">
-          <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
-            {title}
-          </h1>
-        </div>
       </div>
 
       <div className="flex flex-col gap-y-10 justify-between md:px-11">
@@ -150,6 +144,22 @@ const CustomerCard: React.FC<FormAdminProps> = ({
         >
           {({ isSubmitting, resetForm }) => (
             <Form>
+              <div className="flex flex-wrap justify-left gap-x-10 mb-5 items-center">
+                <h1 className="relative inline-block mb-5 text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
+                  {title}
+                </h1>
+
+                {!isCreate && (
+                  <FormActionButtons
+                    className="mb-5"
+                    isSubmitting={isSubmitting}
+                    isEditing={isEditing}
+                    onCancel={handleCancel(resetForm)}
+                    onEdit={toggleEdit}
+                  />
+                )}
+              </div>
+
               <SectionPersonalDetails
                 defaultDialCode={defaultDialCode}
                 disabled={!isEditing}
@@ -157,37 +167,13 @@ const CustomerCard: React.FC<FormAdminProps> = ({
               <SectionMedicalDetails disabled={!isEditing} />
               <SectionAdminOnly disabled={!isEditing} />
 
-              <div className="flex justify-self-end gap-x-2 mt-5">
-                {isEditing ? (
-                  <>
-                    <FormButton
-                      type="reset"
-                      onClick={handleCancel(resetForm)}
-                      color={FormButtonColor.Gray}
-                      disabled={isSubmitting}
-                    >
-                      {t(ActionButton.Cancel)}
-                    </FormButton>
-                    <FormButton
-                      type="submit"
-                      color={FormButtonColor.Green}
-                      disabled={isSubmitting}
-                    >
-                      {t(ActionButton.Save)}
-                    </FormButton>
-                  </>
-                ) : (
-                  <>
-                    <FormButton
-                      type="button"
-                      onClick={toggleEdit}
-                      color={FormButtonColor.Cyan}
-                    >
-                      {t(ActionButton.Edit)}
-                    </FormButton>
-                  </>
-                )}
-              </div>
+              <FormActionButtons
+                className="mt-5"
+                isSubmitting={isSubmitting}
+                isEditing={isEditing}
+                onCancel={handleCancel(resetForm)}
+                onEdit={toggleEdit}
+              />
             </Form>
           )}
         </Formik>
@@ -220,6 +206,58 @@ const CustomerCard: React.FC<FormAdminProps> = ({
           </FormSection>
         )}
       </div>
+    </div>
+  );
+};
+
+interface FormActionButtonProps {
+  className?: string;
+  onEdit: () => void;
+  onCancel: () => void;
+  isEditing: boolean;
+  isSubmitting: boolean;
+}
+
+const FormActionButtons: React.FC<FormActionButtonProps> = ({
+  className = "",
+  onEdit,
+  onCancel,
+  isEditing,
+  isSubmitting,
+}) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className={`flex justify-self-end gap-x-2 ${className}`}>
+      {isEditing ? (
+        <>
+          <FormButton
+            type="reset"
+            onClick={onCancel}
+            color={FormButtonColor.Gray}
+            disabled={isSubmitting}
+          >
+            {t(ActionButton.Cancel)}
+          </FormButton>
+          <FormButton
+            type="submit"
+            color={FormButtonColor.Green}
+            disabled={isSubmitting}
+          >
+            {t(ActionButton.Save)}
+          </FormButton>
+        </>
+      ) : (
+        <>
+          <FormButton
+            type="button"
+            onClick={onEdit}
+            color={FormButtonColor.Cyan}
+          >
+            {t(ActionButton.Edit)}
+          </FormButton>
+        </>
+      )}
     </div>
   );
 };

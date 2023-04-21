@@ -87,7 +87,7 @@ describe("CustomerForm", () => {
       });
 
       // Toggle edit mode
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
 
       // Fields should be enabled as we're in edit mode
       formFields.forEach((field) => {
@@ -109,7 +109,7 @@ describe("CustomerForm", () => {
       });
 
       // Clicking cancel should disable the fields again
-      userEvent.click(screen.getByText(t(ActionButton.Cancel)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Cancel))[0]);
       formFields.forEach((field) => {
         expect(screen.getByLabelText(field)).toHaveProperty("disabled", true);
       });
@@ -121,8 +121,8 @@ describe("CustomerForm", () => {
       });
 
       // So should clicking save
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
-      userEvent.click(screen.getByText(t(ActionButton.Save)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
       // Formik's submit is async-ish in nature, so we need to wait for it to finish
       await waitFor(() => {
         formFields.forEach((field) => {
@@ -138,7 +138,7 @@ describe("CustomerForm", () => {
     });
 
     test("should reset the form and call 'onCancel' on cancel button click", async () => {
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
 
       // Edit one field to test it being reset
       const nameField = screen.getByLabelText(
@@ -149,7 +149,7 @@ describe("CustomerForm", () => {
 
       // Cancel the form
       await act(async () => {
-        userEvent.click(screen.getByText(t(ActionButton.Cancel)));
+        userEvent.click(screen.getAllByText(t(ActionButton.Cancel))[0]);
       });
       expect(screen.getByLabelText(t(CustomerLabel.Name))).toHaveProperty(
         "value",
@@ -159,7 +159,7 @@ describe("CustomerForm", () => {
     });
 
     test("should call onSave (and not reset the form) on save click", async () => {
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
 
       // Edit one field to test it being reset
       const nameField = screen.getByLabelText(
@@ -169,7 +169,7 @@ describe("CustomerForm", () => {
       userEvent.type(nameField, "Not saul");
 
       // Save the form
-      userEvent.click(screen.getByText(t(ActionButton.Save)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
       await waitFor(() => {
         expect(mockSave).toHaveBeenCalled();
       });
@@ -225,7 +225,7 @@ describe("CustomerForm", () => {
       );
       expect(extendedBookingDateField).toHaveProperty("disabled", true);
 
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
       expect(extendedBookingDateField).toHaveProperty("disabled", true);
     });
 
@@ -253,7 +253,7 @@ describe("CustomerForm", () => {
       userEvent.type(extendedBookingDateField, "02/02/2022");
 
       // Enabling the form should disable and reset the extended booking date field
-      userEvent.click(screen.getByText(t(ActionButton.Edit)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Edit))[0]);
       // The old component was detached from the dom, so we need to re-query
       extendedBookingDateField = screen.getByLabelText(
         t(CustomerLabel.ExtendedBookingDate)
@@ -283,7 +283,7 @@ describe("CustomerForm", () => {
 
       // Canceling the form should disable and reset the extended booking date field
       await act(async () => {
-        userEvent.click(screen.getByText(t(ActionButton.Cancel)));
+        userEvent.click(screen.getAllByText(t(ActionButton.Cancel))[0]);
       });
       expect(extendedBookingDateField).toHaveProperty("disabled", true);
       await waitFor(() => {
@@ -321,7 +321,7 @@ describe("CustomerForm", () => {
 
       userEvent.clear(extendedBookingDateField);
       userEvent.type(extendedBookingDateField, "02/02/2022");
-      userEvent.click(screen.getByText(t(ActionButton.Save)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
 
       await waitFor(() => {
         expect(mockBookingDateExtended).toHaveBeenCalledWith("2022-02-02");
@@ -337,7 +337,7 @@ describe("CustomerForm", () => {
 
       userEvent.clear(extendedBookingDateField);
       userEvent.type(extendedBookingDateField, "02/02/2022");
-      userEvent.click(screen.getByText(t(ActionButton.Save)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
 
       await waitFor(() => {
         expect(
@@ -418,7 +418,7 @@ describe("CustomerForm", () => {
       ) as HTMLInputElement;
       userEvent.click(competitiveCategoryField);
 
-      userEvent.click(screen.getByText(t(ActionButton.Save)));
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
       await waitFor(() => {
         expect(mockSave).toHaveBeenCalled();
       });

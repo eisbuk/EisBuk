@@ -54,7 +54,7 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
     { className },
     <div className="content-container gap-2.5 flex items-center flex-wrap md:justify-between">
       <DateNavigation
-        className="w-full md:w-[280px]"
+        className="w-full md:w-[320px]"
         content={createDateTitle(date, jump)}
         onPrev={updateDate(-1)}
         onNext={updateDate(1)}

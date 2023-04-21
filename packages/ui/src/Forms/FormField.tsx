@@ -1,6 +1,8 @@
 import React from "react";
 import { Field } from "formik";
 
+import { SVGComponent } from "@eisbuk/svg";
+
 import TextInput, { TextInputProps as TIP, IconAdornment } from "../TextInput";
 import DateInput from "../DateInput";
 import Checkbox, { CheckboxProps as CBP } from "../Checkbox";
@@ -24,7 +26,7 @@ export enum FormFieldWitdh {
 interface BaseProps {
   label: string;
   helpText?: string;
-  Icon?: React.FC;
+  Icon?: SVGComponent;
   width?: FormFieldWitdh;
   disabled?: boolean;
   innerRef?: React.RefObject<HTMLInputElement>;
@@ -72,7 +74,7 @@ const FormField: React.FC<FormFieldProps> = ({
   const additionalProps = {
     ...(Icon && {
       StartAdornment: (
-        <IconAdornment Icon={<Icon />} position="start" disabled={disabled} />
+        <IconAdornment Icon={Icon} position="start" disabled={disabled} />
       ),
     }),
   };

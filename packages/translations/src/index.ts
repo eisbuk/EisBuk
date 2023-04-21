@@ -26,7 +26,7 @@ i18n
   // init i18next
   // for all options read: https://www.i18next.com/overview/configuration-options
   .init({
-    debug: true,
+    debug: false,
     fallbackLng: "en",
     react: {
       // this is temp as to not cause problems due to fallback not specified
