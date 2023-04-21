@@ -1,0 +1,10 @@
+{
+  "extends": "../scaffold/tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "baseUrl": ".",
+    "lib": ["ESNext"]
+  },
+  "exclude": ["node_modules", ".eslintrc.js", "vite.config.ts", "dist"],
+  "include": ["src/**/*.ts"]
+}

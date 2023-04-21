@@ -678,6 +678,34 @@ importers:
       vite: 2.9.15
       vite-plugin-svgr: 2.1.1_vite@2.9.15
 
+  ../../packages/test-data:
+    specifiers:
+      '@eisbuk/shared': workspace:*
+      '@types/luxon': ^2.0.5
+      '@typescript-eslint/eslint-plugin': ^5.20.0
+      '@typescript-eslint/parser': ^5.20.0
+      eslint: ^8.13.0
+      eslint-config-google: ^0.14.0
+      eslint-import-resolver-typescript: ^2.7.1
+      eslint-plugin-import: ^2.26.0
+      eslint-plugin-promise: ^6.0.0
+      eslint-plugin-unused-imports: ^2.0.0
+      luxon: ^2.0.5
+      typescript: ~4.6.3
+    devDependencies:
+      '@eisbuk/shared': link:../shared
+      '@types/luxon': 2.4.0
+      '@typescript-eslint/eslint-plugin': 5.47.1_73a824a44ba50ab5a46891e6909ec6c2
+      '@typescript-eslint/parser': 5.47.1_eslint@8.30.0+typescript@4.6.4
+      eslint: 8.30.0
+      eslint-config-google: 0.14.0_eslint@8.30.0
+      eslint-import-resolver-typescript: 2.7.1_d2c3661c31f85a218e01ce5e6ffddfeb
+      eslint-plugin-import: 2.26.0_eslint@8.30.0
+      eslint-plugin-promise: 6.1.1_eslint@8.30.0
+      eslint-plugin-unused-imports: 2.0.0_aed4e321597ed8d59c3edef475b69df2
+      luxon: 2.5.0
+      typescript: 4.6.4
+
   ../../packages/translations:
     specifiers:
       '@eisbuk/shared': workspace:*

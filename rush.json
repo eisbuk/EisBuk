@@ -424,6 +424,10 @@
     {
       "packageName": "@eisbuk/react-redux-firebase-firestore",
       "projectFolder": "packages/react-redux-firebase-firestore"
+    },
+    {
+      "packageName": "@eisbuk/test-data",
+      "projectFolder": "packages/test-data"
     }
   ]
 }
