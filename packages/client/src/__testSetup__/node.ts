@@ -44,21 +44,22 @@ export const setUpOrganization: SetUpOrganization = async ({
   const orgRef = adminDb.doc(`${Collection.Organizations}/${organization}`);
   const secretsRef = adminDb.doc(`${Collection.Secrets}/${organization}`);
 
-  const orgData = {
+  const orgData: OrganizationData = {
     admins: [email],
     emailFrom,
     emailTemplates,
     ...additionalSetup,
   };
 
-  const SmtpOrgData = setSecrets
-    ? Object.assign(orgData, { smtpConfigured: true })
-    : orgData;
+  if (setSecrets) {
+    orgData.smtpConfigured = true;
+  }
+
   const promises = [
     // Create a new user in auth
     createUserWithEmailAndPassword(auth, email, pass),
     // Set given user as admin in org structure
-    orgRef.set(SmtpOrgData),
+    orgRef.set(orgData),
   ];
 
   // Add secrets if so specified
