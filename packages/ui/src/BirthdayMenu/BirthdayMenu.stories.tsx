@@ -5,7 +5,7 @@ import { CustomersByBirthday } from "@eisbuk/shared";
 
 import BirthdayMenu from "./BirthdayMenu";
 
-import { saul, walt, gus, jian } from "../__testData__/customers";
+import { saul, walt, gus, jian } from "@eisbuk/test-data/customers";
 
 export default {
   title: "Birthday Menu",

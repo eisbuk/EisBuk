@@ -14,7 +14,7 @@ import { CustomerForm } from "../index";
 
 import { isoToDate } from "../../../utils/date";
 
-import { saul } from "../__testData__";
+import { saul } from "../__testData__/index";
 
 const t = (...params: Parameters<typeof i18n.t>) => i18n.t(...params) as string;
 

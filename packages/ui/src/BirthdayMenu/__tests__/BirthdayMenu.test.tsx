@@ -1,5 +1,5 @@
-import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import React from "react";
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -7,9 +7,8 @@ import i18n, { BirthdayMenu as BirthdayMenuLabel } from "@eisbuk/translations";
 
 import BirthdayMenu from "../BirthdayMenu";
 
-import * as customerRecord from "../../__testData__/customers";
-
-const { saul } = customerRecord;
+/** @TODO This should be named exports */
+import { default as customerRecord } from "@eisbuk/test-data/customers";
 
 const customers = Object.values(customerRecord);
 
@@ -60,9 +59,11 @@ describe("BirthdayMenu", () => {
   });
 
   test("should propagate customer click", () => {
+    const { id, name, surname } = customers[0];
+
     // Open the popup
     screen.getByRole("button").click();
-    screen.getByText(`${saul.name} ${saul.surname}`).click();
-    expect(mockCustomerClick).toHaveBeenCalledWith(saul.id);
+    screen.getByText(`${name} ${surname}`).click();
+    expect(mockCustomerClick).toHaveBeenCalledWith(id);
   });
 });

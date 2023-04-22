@@ -4,7 +4,7 @@ import { cleanup, render, screen } from "@testing-library/react";
 
 import CustomerListItem from "../CustomerListItem";
 
-import { saul } from "../../__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 describe("CustomerList", () => {
   afterEach(() => {

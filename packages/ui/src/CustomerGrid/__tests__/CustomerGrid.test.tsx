@@ -4,7 +4,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 
 import CustomerGrid from "../CustomerGrid";
 
-import { saul } from "../../__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 describe("CustomerGrid", () => {
   afterEach(() => {

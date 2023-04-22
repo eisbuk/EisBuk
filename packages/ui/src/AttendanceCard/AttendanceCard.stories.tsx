@@ -8,9 +8,9 @@ import AttendanceCardContainer from "./AttendanceCardContainer";
 import UserAttendance from "./UserAttendance";
 import Divider from "./Divider";
 
-import { intervalStrings as intervals } from "../__testData__/attendance";
-import { saul, walt, gus } from "../__testData__/customers";
-import { baseSlot } from "../__testData__/slots";
+import { intervalStrings as intervals } from "@eisbuk/test-data/attendance";
+import { saul, walt, gus } from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 export default {
   title: "Attendance Card",

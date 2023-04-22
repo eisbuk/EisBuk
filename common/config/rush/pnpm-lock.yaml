@@ -765,6 +765,7 @@ importers:
       '@babel/preset-typescript': ^7.14.5
       '@eisbuk/shared': workspace:*
       '@eisbuk/svg': workspace:*
+      '@eisbuk/test-data': workspace:*
       '@eisbuk/translations': workspace:*
       '@storybook/addon-actions': ^6.4.22
       '@storybook/addon-essentials': ^6.4.22
@@ -825,6 +826,7 @@ importers:
       '@babel/preset-env': 7.19.4_@babel+core@7.20.7
       '@babel/preset-react': 7.18.6_@babel+core@7.20.7
       '@babel/preset-typescript': 7.18.6_@babel+core@7.20.7
+      '@eisbuk/test-data': link:../test-data
       '@storybook/addon-actions': 6.5.15_react-dom@16.14.0+react@16.14.0
       '@storybook/addon-essentials': 6.5.15_b5b593f4d559b797f95ba0005be0844e
       '@storybook/addon-interactions': 6.5.15_abf1ed0d7effdbd05a9c0649c7f909ec

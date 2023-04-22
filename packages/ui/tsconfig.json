@@ -1,6 +1,7 @@
 {
   "extends": "../scaffold/tsconfig.ui.json",
   "compilerOptions": {
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
     "rootDir": "src",
     "paths": {

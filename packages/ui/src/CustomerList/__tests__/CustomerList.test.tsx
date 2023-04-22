@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 import CustomerList from "../CustomerList";
 
-import { saul, gus } from "../../__testData__/customers";
+import { saul, gus } from "@eisbuk/test-data/customers";
 
 const deletedGus = { ...gus, deleted: true };
 

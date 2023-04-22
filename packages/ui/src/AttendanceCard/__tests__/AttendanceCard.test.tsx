@@ -8,8 +8,8 @@ import UserAttendance from "../UserAttendance";
 
 import { comparePeriods } from "../../utils/sort";
 
-import { saul } from "../../__testData__/customers";
-import { baseSlot } from "../../__testData__/slots";
+import { saul } from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 // interval values we're using across tests
 const intervals = Object.keys(baseSlot.intervals).sort(comparePeriods);
