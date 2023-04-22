@@ -1,3 +1,4 @@
+import { vi, expect, test } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 
@@ -6,7 +7,7 @@ import { Calendar } from "@eisbuk/svg";
 import TabItem from "../TabItem";
 
 test("TabItem should fire custom onClick handler", () => {
-  const mockOnClick = jest.fn();
+  const mockOnClick = vi.fn();
 
   const buttonLabel = "Calendar";
 

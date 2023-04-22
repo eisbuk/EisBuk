@@ -1,3 +1,5 @@
+import { describe, test, expect } from "vitest";
+
 import { IntervalDuration } from "../types";
 
 import { calculateDuration } from "../utils";

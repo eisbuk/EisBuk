@@ -1,11 +1,7 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { describe, afterEach, vi, test, expect } from "vitest";
 import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import * as formik from "formik";
 import { Field } from "formik";
 
 import { __decrementId__, __incrementId__ } from "@eisbuk/shared";
@@ -14,24 +10,27 @@ import TimePickerField from "../TimePickerField";
 
 import { renderWithFormik } from "../../../utils/testUtils";
 
-const mockSetValue = jest.fn();
+const mockSetValue = vi.fn();
 
-const useFieldSpy = jest.spyOn(formik, "useField");
-useFieldSpy.mockImplementation(
-  () =>
-    [
+vi.mock("formik", async () => {
+  const formik = await vi.importActual("formik");
+
+  return {
+    ...(formik as Record<string, any>),
+    useField: () => [
       {},
       {},
       {
         setValue: mockSetValue,
       },
-    ] as any
-);
+    ],
+  };
+});
 
 describe("SlotForm,", () => {
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("TimePickerField", () => {
@@ -65,12 +64,12 @@ describe("SlotForm,", () => {
       expect(mockSetValue).toHaveBeenCalledWith("07:00");
     });
 
-    test('should default to"08:00" + increment/decrement if clicked with invalid time string', () => {
+    test('should default to"08:00" + increment/decrement if clicked with invalid time string', async () => {
       renderWithFormik(
         <Field component={TimePickerField} name="time" value="invalid_string" />
       );
       screen.getByTestId(__incrementId__).click();
-      expect(mockSetValue).toHaveBeenCalledWith("09:00");
+      await waitFor(() => expect(mockSetValue).toHaveBeenCalledWith("09:00"));
     });
   });
 });

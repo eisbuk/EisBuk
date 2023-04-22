@@ -8,8 +8,8 @@ import { type SlotFormValues } from "./data";
  * @returns
  */
 export const slotToFormValues = (
-  slot?: Partial<SlotInterface> & { date: string }
-): Partial<SlotFormValues & { date?: string }> | undefined => {
+  slot?: Partial<SlotInterface>
+): Partial<SlotFormValues> | undefined => {
   // fail early if no slot provided
   if (!slot) return undefined;
 

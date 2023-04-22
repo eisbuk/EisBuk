@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { describe, afterEach, test, expect, beforeEach } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 import CustomerList from "../CustomerList";

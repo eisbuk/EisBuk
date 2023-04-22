@@ -1,3 +1,4 @@
+import { vi, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 
@@ -11,11 +12,11 @@ const month = deadline.plus({ months: 1 });
 
 describe("BookingsCountdown", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should fire 'onFialize' on finalize button click (on second deadline variant)", () => {
-    const mockOnFinalize = jest.fn();
+    const mockOnFinalize = vi.fn();
     render(
       <BookingsCountdown
         {...{ deadline, month }}

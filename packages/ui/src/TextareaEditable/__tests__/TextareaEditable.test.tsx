@@ -1,3 +1,4 @@
+import { vi, expect, test, describe } from "vitest";
 import React, { useEffect, useState } from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -59,7 +60,7 @@ describe("TextareaEditable", () => {
 
       // Create this function logic to call onSubmit with only the values (relevant for testing)
       // without additional formik helpers
-      const mockSubmit = jest.fn();
+      const mockSubmit = vi.fn();
       const onSubmit: FormikConfig<typeof initialValues>["onSubmit"] = (
         values
       ) => mockSubmit(values);

@@ -1,7 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
+import { vi, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 
@@ -11,12 +8,12 @@ import { saul } from "../../__testData__/customers";
 
 describe("CustomerList", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
   describe("CustomerListItem", () => {
-    const mockOnClick = jest.fn();
+    const mockOnClick = vi.fn();
 
     const saulRegex = new RegExp(saul.name);
 

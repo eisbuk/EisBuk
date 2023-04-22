@@ -1,7 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
@@ -21,14 +18,14 @@ const birthdays = customers.map((customer, ix) => ({
   customers: [customer],
 }));
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
 describe("BirthdayMenu", () => {
-  const mockShowAllClick = jest.fn();
-  const mockCustomerClick = jest.fn();
+  const mockShowAllClick = vi.fn();
+  const mockCustomerClick = vi.fn();
 
   beforeEach(() => {
     render(
@@ -41,7 +38,7 @@ describe("BirthdayMenu", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should display only the first 5 customers", () => {

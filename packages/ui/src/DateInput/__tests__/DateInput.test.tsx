@@ -1,7 +1,4 @@
-/**
- * @jest-environment jsdom
- */
-
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { screen, render, waitFor, cleanup } from "@testing-library/react";
 import { Formik, Field, FormikValues, Form } from "formik";
@@ -9,7 +6,7 @@ import userEvent from "@testing-library/user-event";
 
 import DateInput from "../DateInput";
 
-const mockSubmit = jest.fn();
+const mockSubmit = vi.fn();
 
 const testFieldName = "test";
 
@@ -24,7 +21,7 @@ const TestForm = ({ initialValues }: FormikValues) => (
 
 describe("Date Input", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 

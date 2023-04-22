@@ -1,3 +1,4 @@
+import { test, expect, describe } from "vitest";
 import { sortIntervals } from "../helpers";
 
 interface TestParams {
