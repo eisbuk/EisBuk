@@ -2,6 +2,15 @@
   "name": "@eisbuk/test-data",
   "version": "1.0.0",
   "description": "Test data shared across the project",
+  "exports": {
+    "./attendance": "./dist/attendance/index.js",
+    "./customers": "./dist/customers/index.js",
+    "./dataTriggers": "./dist/dataTriggers/index.js",
+    "./date": "./dist/date/index.js",
+    "./migrations": "./dist/migrations/index.js",
+    "./slots": "./dist/slots/index.js",
+    "./testIds": "./dist/testIds/index.js"
+  },
   "devDependencies": {
     "@eisbuk/shared": "workspace:*",
     "@types/luxon": "^2.0.5",
