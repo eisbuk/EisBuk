@@ -33,7 +33,7 @@ const NotificationsContainer: React.FC<{
       // being changed before the animation runs out
       return () => {
         if (timeout) {
-          clearTimeout();
+          clearTimeout(timeout);
         }
       };
     }

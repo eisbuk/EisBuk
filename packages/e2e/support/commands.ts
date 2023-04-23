@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-namespace */
+// eslint-disable-next-line import/no-unresolved -- the file is resolved all fine...
 import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
 
 import { Customer, __addAthleteId__ } from "@eisbuk/shared";
