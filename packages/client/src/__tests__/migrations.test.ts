@@ -53,7 +53,7 @@ describe("Migrations", () => {
         const slotsByDayRef = adminDb.collection(
           getSlotsByDayPath(organization)
         );
-        // set up initial stateconst pruningMonthRef = slotsByDayRef.doc(pruningMonthString);
+        // set up initial state
         const pruningMonthRef = slotsByDayRef.doc(pruningMonthString);
         const emptyMonthRef = slotsByDayRef.doc(emptyMonthString);
         await pruningMonthRef.set(unprunedMonth);

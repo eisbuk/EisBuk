@@ -1,3 +1,4 @@
+/** @DUPLICATE_FILE @eisbuk/ui/src/__testData__/slots.ts */
 import { DateTime } from "luxon";
 
 import {

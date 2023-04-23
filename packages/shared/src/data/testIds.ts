@@ -48,11 +48,11 @@ export const __bookingCardId__ = "booking-interval-card";
 // #endregion BookingCard
 
 // #region CustomerList
-export const __customersListId__ = "customer-list";
+export const __customerListId__ = "customer-list";
 // #endregion CustomerList
 
 // #region CustomerGrid
-export const __customersGridId__ = "customer-grid";
+export const __customerGridId__ = "customer-grid";
 export const __customersDialogId__ = "customer-dialog";
 // #endregion CustomerGrid
 

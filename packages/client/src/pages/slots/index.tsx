@@ -26,7 +26,7 @@ import SlotOperationButtons, {
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
 import SlotCard from "@/components/atoms/SlotCard";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
@@ -35,7 +35,6 @@ import {
   getDayFromClipboard,
   getWeekFromClipboard,
 } from "@/store/selectors/copyPaste";
-import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import {
   addSlotToClipboard,
@@ -69,12 +68,7 @@ const SlotsPage: React.FC = () => {
     (state: LocalStore) => state.firestore.data.attendance || {}
   );
 
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   const { t } = useTranslation();
 

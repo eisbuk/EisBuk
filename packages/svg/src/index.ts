@@ -1,72 +1,38 @@
-import TestSVG from "./assets/SVG.svg";
-import Ice from "./assets/ice.svg";
-import OffIce from "./assets/off-ice.svg";
-import ExclamationCircle from "./assets/exclamation-circle.svg";
-import Close from "./assets/close.svg";
-import AccountCircle from "./assets/account-circle.svg";
-import Calendar from "./assets/calendar.svg";
-import ChevronLeft from "./assets/chevron-left.svg";
-import ChevronRight from "./assets/chevron-right.svg";
-import EisbukLogo from "./assets/logo.svg";
-import Cog from "./assets/cog.svg";
-import User from "./assets/user.svg";
-import Users from "./assets/users.svg";
-import ClipboardList from "./assets/clipboard-list.svg";
-import DocumentDuplicate from "./assets/document-duplicate.svg";
-import Printer from "./assets/printer.svg";
-import Copy from "./assets/copy.svg";
-import PlusCircle from "./assets/plus-circle.svg";
-import Trash from "./assets/trash.svg";
-import Pencil from "./assets/pencil.svg";
-import Cake from "./assets/cake.svg";
-import Mail from "./assets/mail.svg";
-import Phone from "./assets/phone.svg";
-import ShieldCheck from "./assets/shield-check.svg";
-import CheckCircle from "./assets/check-circle.svg";
-import XCircle from "./assets/x-circle.svg";
-import QuestionMarkCircle from "./assets/question-mark-circle.svg";
-import Annotation from "./assets/annotation.svg";
-import Eye from "./assets/eye.svg";
-import EyeOff from "./assets/eye-off.svg";
-import Identification from "./assets/identification.svg";
-import FolderOpen from "./assets/folder-open.svg";
+export { default as TestSVG } from "./assets/SVG.svg";
+export { default as Ice } from "./assets/ice.svg";
+export { default as OffIce } from "./assets/off-ice.svg";
+export { default as ExclamationCircle } from "./assets/exclamation-circle.svg";
+export { default as Close } from "./assets/close.svg";
+export { default as AccountCircle } from "./assets/account-circle.svg";
+export { default as Calendar } from "./assets/calendar.svg";
+export { default as ChevronLeft } from "./assets/chevron-left.svg";
+export { default as ChevronRight } from "./assets/chevron-right.svg";
+export { default as EisbukLogo } from "./assets/logo.svg";
+export { default as Cog } from "./assets/cog.svg";
+export { default as User } from "./assets/user.svg";
+export { default as Users } from "./assets/users.svg";
+export { default as ClipboardList } from "./assets/clipboard-list.svg";
+export { default as ClipboardCheck } from "./assets/clipboard-check.svg";
+export { default as DocumentDuplicate } from "./assets/document-duplicate.svg";
+export { default as Printer } from "./assets/printer.svg";
+export { default as Copy } from "./assets/copy.svg";
+export { default as PlusCircle } from "./assets/plus-circle.svg";
+export { default as Trash } from "./assets/trash.svg";
+export { default as Pencil } from "./assets/pencil.svg";
+export { default as Cake } from "./assets/cake.svg";
+export { default as Mail } from "./assets/mail.svg";
+export { default as Phone } from "./assets/phone.svg";
+export { default as ShieldCheck } from "./assets/shield-check.svg";
+export { default as CheckCircle } from "./assets/check-circle.svg";
+export { default as XCircle } from "./assets/x-circle.svg";
+export { default as QuestionMarkCircle } from "./assets/question-mark-circle.svg";
+export { default as Annotation } from "./assets/annotation.svg";
+export { default as Eye } from "./assets/eye.svg";
+export { default as EyeOff } from "./assets/eye-off.svg";
+export { default as Identification } from "./assets/identification.svg";
+export { default as FolderOpen } from "./assets/folder-open.svg";
+export { default as Plus } from "./assets/plus.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
 export type { SVGComponent };
-
-// Export SVGs as react components
-export {
-  TestSVG,
-  ExclamationCircle,
-  Close,
-  AccountCircle,
-  Calendar,
-  ChevronLeft,
-  ChevronRight,
-  Ice,
-  OffIce,
-  EisbukLogo,
-  Cog,
-  User,
-  Users,
-  ClipboardList,
-  DocumentDuplicate,
-  Printer,
-  Copy,
-  PlusCircle,
-  Trash,
-  Pencil,
-  Cake,
-  Mail,
-  Phone,
-  ShieldCheck,
-  CheckCircle,
-  XCircle,
-  QuestionMarkCircle,
-  Annotation,
-  Eye,
-  EyeOff,
-  Identification,
-  FolderOpen,
-};

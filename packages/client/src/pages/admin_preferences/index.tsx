@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
-import { DateTime } from "luxon";
 
 import { defaultEmailTemplates, OrganizationData } from "@eisbuk/shared";
 import i18n, {
@@ -17,13 +16,12 @@ import { Cog, Mail } from "@eisbuk/svg";
 import { getOrganization } from "@/lib/getters";
 
 import AdminsField from "./AdminsField";
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
 import { getOrganizationSettings } from "@/store/selectors/app";
 import { getLocalAuth } from "@/store/selectors/auth";
-import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { isEmpty } from "@/utils/helpers";
 
@@ -60,12 +58,7 @@ const OrganizationSettings: React.FC = () => {
 
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   const { t } = useTranslation();
 

@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { DateTime } from "luxon";
 import { useSelector } from "react-redux";
 import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
@@ -22,11 +21,10 @@ import { useSecretKey, useDate } from "./hooks";
 import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import BirthdayMenu from "@/components/atoms/BirthdayMenu";
+import BirthdayMenu from "@/controllers/BirthdayMenu";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCustomersByBirthday } from "@/store/selectors/customers";
 
 import { adminLinks } from "@/data/navigation";
 
@@ -51,13 +49,7 @@ const CustomerArea: React.FC = () => {
 
   const isAdmin = useSelector(getIsAdmin);
 
-  const customersByBirthday = useSelector(
-    getCustomersByBirthday(DateTime.now())
-  );
-
-  const additionalAdminContent = (
-    <BirthdayMenu customers={customersByBirthday} />
-  );
+  const additionalAdminContent = <BirthdayMenu />;
 
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
@@ -72,11 +64,7 @@ const CustomerArea: React.FC = () => {
   const calendarNavProps = useDate();
 
   // Get customer data necessary for rendering/functoinality
-  const { name, surname, photoURL } = useSelector(getBookingsCustomer) || {};
-  const displayCustomer = {
-    displayName: [name, surname].filter((n) => Boolean(n)).join(" ") || "",
-    photoURL,
-  };
+  const userData = useSelector(getBookingsCustomer) || {};
 
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
   const CustomerView = viewsLookup[view];
@@ -114,7 +102,7 @@ const CustomerArea: React.FC = () => {
       Notifications={NotificationsContainer}
       additionalButtons={additionalButtons}
       additionalAdminContent={additionalAdminContent}
-      user={displayCustomer}
+      user={userData}
     >
       {view !== "ProfileView" && (
         <CalendarNav

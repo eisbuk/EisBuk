@@ -1,5 +1,4 @@
-import { CustomerWithAttendance } from "@/types/components";
-import { Customer } from "@eisbuk/shared";
+import { Customer, CustomerWithAttendance } from "@eisbuk/shared";
 
 /**
  * `Array.protorype.sort()` callback function:
@@ -11,6 +10,8 @@ import { Customer } from "@eisbuk/shared";
  * Returns -1 if the first period is earlier than the second; if
  * they're equal it returns -1 if the first period is longer than the second one
  * i.e. if its finishing time is later.
+ *
+ * @DUPICATE in @eisbuk/ui/src/AttendanceCard/utils.ts
  */
 export const comparePeriods = (first: string, second: string): number => {
   const [firstStart, firstEnd] = first.split("-");

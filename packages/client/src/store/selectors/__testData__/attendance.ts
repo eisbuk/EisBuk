@@ -2,7 +2,7 @@ import { luxon2ISODate } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
-import { AttendanceCardProps } from "@/components/atoms/AttendanceCard";
+import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
 import { testDate, testDateLuxon } from "@/__testData__/date";
 import { baseSlot, createIntervals } from "@/__testData__/slots";

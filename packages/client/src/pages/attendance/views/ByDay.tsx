@@ -1,39 +1,27 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import Container from "@mui/material/Container";
-import List from "@mui/material/List";
-import makeStyles from "@mui/styles/makeStyles";
-
-import AttendanceCard from "@/components/atoms/AttendanceCard";
+import AttendanceCard from "@/controllers/AttendanceCard";
 
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { getCustomersList } from "@/store/selectors/customers";
 
 const AttendanceByDayView: React.FC = () => {
-  const classes = useStyles();
-
   const attendanceCards = useSelector(getSlotsWithAttendance);
   const allCustomers = useSelector(getCustomersList(true));
 
   return (
-    <Container className={classes.root} maxWidth="md">
-      <List>
+    <div className="content-container">
+      <div className="max-w-[1024px] py-12 mx-auto">
         {attendanceCards.map((attendanceCard) => (
           <AttendanceCard
             key={attendanceCard.id}
             {...{ ...attendanceCard, allCustomers }}
           />
         ))}
-      </List>
-    </Container>
+      </div>
+    </div>
   );
 };
-
-const useStyles = makeStyles(() => ({
-  root: {
-    padding: "0.25rem",
-  },
-}));
 
 export default AttendanceByDayView;

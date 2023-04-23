@@ -30,15 +30,15 @@ const customers: LocalStore["firestore"]["data"]["customers"] = {
 
 const expectedCustomersBirthdays = [
   {
-    birthday: "12-22",
+    date: "12-22",
     customers: [{ ...jane, birthday: "2000-12-22" }],
   },
   {
-    birthday: "12-25",
+    date: "12-25",
     customers: [{ ...mike, birthday: "2012-12-25" }],
   },
   {
-    birthday: "01-22",
+    date: "01-22",
     customers: [
       { ...saul, birthday: "1990-01-22" },
       { ...jian, birthday: "1993-01-22" },

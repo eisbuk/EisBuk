@@ -1,35 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 
-import { User } from "@eisbuk/svg";
+import Avatar from "./Avatar";
 
 export interface UserAvatarProps {
-  displayName?: string;
+  name?: string;
+  surname?: string;
   photoURL?: string;
 }
 
-const UserAvatar: React.FC<UserAvatarProps> = ({ displayName, photoURL }) => {
-  const [avatarUrl, setAvatarUrl] = useState(photoURL);
+export const UserAvatar: React.FC<UserAvatarProps> = ({
+  name = "",
+  surname = "",
+  photoURL,
+}) => {
+  const displayName = [name, surname].join(" ").trim();
 
   const containerClassNames = containerClasses.join(" ");
   const userNameClassNames = userNameClasses.join(" ");
-  const avatarClassNames = avatarClasses.join(" ");
-
-  // Get avatar for display
-  // default: if no valid 'photoURL' fall back to the placeholder
-  const displayAvatar = avatarUrl ? (
-    <img
-      className="rounded-full object-cover"
-      src={avatarUrl}
-      onError={({ currentTarget }) => {
-        currentTarget.onerror = null;
-        setAvatarUrl(undefined);
-      }}
-    />
-  ) : (
-    <div className="m-[-2px] mb-[-6px]">
-      <User />
-    </div>
-  );
 
   return (
     <div className={containerClassNames}>
@@ -39,7 +26,7 @@ const UserAvatar: React.FC<UserAvatarProps> = ({ displayName, photoURL }) => {
         </div>
       )}
 
-      <div className={avatarClassNames}>{displayAvatar}</div>
+      <Avatar photoURL={photoURL} />
     </div>
   );
 };
@@ -59,17 +46,6 @@ const userNameClasses = [
   "font-medium",
   "text-right",
   "md:text-justify",
-];
-
-const avatarClasses = [
-  "flex",
-  "items-center",
-  "justify-center",
-  "rounded-full",
-  "h-10",
-  "w-10",
-  "bg-teal-400",
-  "overflow-hidden",
 ];
 
 export default UserAvatar;

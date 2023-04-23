@@ -1,5 +1,7 @@
 import Modal, { ModalContainer } from "./Modal";
 
+import { BirthdayDialog } from "@eisbuk/ui";
+
 import CancelBookingDialog from "./CancelBookingDialog";
 import FinalizeBookingsDialog from "./FinalizeBookingsDialog";
 import SendBookingsLinkDialog from "./SendBookingsLinkDialog";
@@ -9,7 +11,6 @@ import DeleteSlotDialog from "./DeleteSlotDialog";
 import DeleteSlotDisabledDialog from "./DeleteSlotDisabledDialog";
 import AddAttendedCustomersDialog from "./AddAttendedCustomersDialog";
 import SlotForm from "@/components/atoms/SlotForm";
-import BirthdayDialog from "@/components/atoms/BirthdayMenu/BirthdayDialog";
 
 /**
  * A whitelist of components to be renderd inside of modal.

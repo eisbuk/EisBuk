@@ -1,21 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 
-import Typography from "@mui/material/Typography";
-
-import makeStyles from "@mui/styles/makeStyles";
-
-import { CustomerFull, SlotInterface } from "@eisbuk/shared";
+import { Customer, CustomerFull, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
   useTranslation,
 } from "@eisbuk/translations";
+import { CustomerList, IconButton, SearchBar } from "@eisbuk/ui";
+import { Close } from "@eisbuk/svg";
 
 import { BaseModalProps } from "../../types";
-import IconButton from "@mui/material/IconButton";
-import Close from "@mui/icons-material/Close";
-import CustomerList from "@/components/atoms/CustomerList";
+
 import { markAttendance } from "@/store/actions/attendanceOperations";
 
 type AddAttendedCustomersProps = BaseModalProps &
@@ -35,11 +31,7 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
   const { t } = useTranslation();
 
   const { id: slotId } = slot;
-  const handleCustomerClick = ({
-    id: customerId,
-    name,
-    surname,
-  }: CustomerFull) => {
+  const handleCustomerClick = ({ id: customerId, name, surname }: Customer) => {
     dispatch(
       markAttendance({
         customerId,
@@ -51,6 +43,9 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
     );
   };
 
+  // Search logic
+  const [filterString, setFilterString] = useState("");
+
   // Close the modal when there are no more customers to show
   useEffect(() => {
     if (!customers.length) {
@@ -58,71 +53,37 @@ const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
     }
   }, [customers]);
 
-  const classes = useStyles();
-
   return (
     <div
       aria-label="add-athletes-dialog"
-      className={[className, classes.container].join(" ")}
+      className={[
+        className,
+        "relative h-full w-[90vw] bg-white overflow-hidden pt-16 pb-0 rounded sm:w-[70vw] md:w-[35vw]",
+      ].join(" ")}
     >
-      <Typography variant="h6" component="h2" className={classes.title}>
+      <h2 className="absolute left-6 top-8 -translate-y-1/2 text-xl font-bold">
         {i18n.t(ActionButton.AddCustomers)}
-      </Typography>
+      </h2>
       <IconButton
-        className={classes.closeButton}
+        className="absolute w-12 h-12 top-8 right-8 -translate-y-1/2 translate-x-1/2 text-gray-500"
         aria-label={t(AdminAria.CloseModal)}
         onClick={() => onClose()}
-        size="large"
       >
         <Close />
       </IconButton>
+
+      <SearchBar
+        value={filterString}
+        onChange={(e) => setFilterString(e.target.value)}
+      />
       <CustomerList
-        className={classes.listContainer}
-        tableContainerClassName={classes.tableContainer}
+        className="h-[calc(100vh-14rem)] overflow-y-auto"
         customers={customers}
+        filterString={filterString}
         onCustomerClick={handleCustomerClick}
       />
     </div>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  container: {
-    borderRadius: 6,
-    height: "100%",
-    width: "90vw",
-    position: "relative",
-    paddingTop: "4rem",
-    paddingBottom: "0",
-    backgroundColor: theme.palette.primary.light,
-    overflow: "hidden",
-    [theme.breakpoints.up("sm")]: {
-      width: "70vw",
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "35vw",
-    },
-  },
-  title: {
-    position: "absolute",
-    left: "1.5rem",
-    top: "2rem",
-    transform: "translateY(-50%)",
-  },
-  closeButton: {
-    position: "absolute",
-    top: "2rem",
-    right: "2rem",
-    transform: "translate(50%, -50%)",
-  },
-  listContainer: {
-    backgroundColor: "rgba(255, 255, 255, 0.6)",
-  },
-  tableContainer: {
-    overflowY: "auto",
-    overflowX: "hidden",
-    maxHeight: "calc(100vh - 14rem)",
-  },
-}));
 
 export default AddAttendedCustomersDialog;

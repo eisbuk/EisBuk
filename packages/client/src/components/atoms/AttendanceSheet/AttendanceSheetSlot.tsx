@@ -8,9 +8,11 @@ import TableCell from "@mui/material/TableCell";
 import makeStyles from "@mui/styles/makeStyles";
 import createStyles from "@mui/styles/createStyles";
 
-import { SlotInterface, SlotType } from "@eisbuk/shared";
-
-import { CustomerWithAttendance } from "@/types/components";
+import {
+  SlotInterface,
+  SlotType,
+  CustomerWithAttendance,
+} from "@eisbuk/shared";
 
 import { getColorForSlotType } from "@/utils/theme";
 import { calculateIntervalDuration } from "@/utils/helpers";

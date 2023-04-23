@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
-import i18n, { AdminAria } from "@eisbuk/translations";
 
 import { __testDate__ } from "../constants";
 
@@ -24,14 +23,10 @@ describe("birthday badge", () => {
         .startOf("day")
         .toMillis() - DateTime.fromISO(__testDate__).toMillis();
     cy.visit(PrivateRoutes.Root);
-    cy.getAttrWith("aria-label", i18n.t(AdminAria.BirthdayMenu) as string)
-      .children()
-      .eq(1)
-      .should("have.text", 0);
+    // We should start with 2 birthdays on test date (1st of March): saul and walt in our test data
+    cy.getAttrWith("data-testid", "birthday-badge").should("have.text", 2);
+    // Passing the midnight, the birthday menu should update to 1 birthday (gus in our test data)
     cy.tick(time);
-    cy.getAttrWith("aria-label", i18n.t(AdminAria.BirthdayMenu) as string)
-      .children()
-      .eq(1)
-      .should("have.text", 1);
+    cy.getAttrWith("data-testid", "birthday-badge").should("have.text", 1);
   });
 });

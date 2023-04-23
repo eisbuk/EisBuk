@@ -1,7 +1,7 @@
-import UserAvatar from "./UserAvatar";
+export { UserAvatar, type UserAvatarProps } from "./UserAvatar";
 
-export { UserAvatar };
-
-export type { UserAvatarProps } from "./UserAvatar";
-
-export default UserAvatar;
+export {
+  CustomerAvatar,
+  BadgeSize,
+  type CustomerAvatarProps,
+} from "./CustomerAvatar";

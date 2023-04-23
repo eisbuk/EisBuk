@@ -113,11 +113,7 @@ describe("AddAttendedCustomersDialog", () => {
 
       // We should be back at the initial state: Gus is marked as present.
       // We can check this by checking that the mark absent button is visible.
-      //
-      // There's a bit of asymetry here:
-      // The button is used to mark customer as absent, but it displays "👍" icon, and vice versa.
-      // The reason for this is that the button is used as a toggle, so it displays the current state, not the action.
-      cy.contains(gus.name).contains("👍");
+      cy.getAttrWith("aria-label", i18n.t(AttendanceAria.MarkAbsent));
     });
 
     it("changes the attended interval using the interval picker element", () => {
