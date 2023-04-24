@@ -7,7 +7,7 @@ import {
   AttendanceVarianceHeaders,
 } from "@eisbuk/translations";
 
-import { Table, TableCell, CellType, CellTextAlign } from "..";
+import Table, { TableCell, CellType, CellTextAlign } from "../Table";
 import VarianceBadge from "./VarianceBadge";
 import {
   padEmptyDates,

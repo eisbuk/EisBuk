@@ -3,13 +3,41 @@
   "version": "1.0.0",
   "description": "Test data shared across the project",
   "exports": {
-    "./attendance": "./dist/attendance/index.js",
-    "./customers": "./dist/customers/index.js",
-    "./dataTriggers": "./dist/dataTriggers/index.js",
-    "./date": "./dist/date/index.js",
-    "./migrations": "./dist/migrations/index.js",
-    "./slots": "./dist/slots/index.js",
-    "./testIds": "./dist/testIds/index.js"
+    "./attendance": {
+      "import": "./dist/attendance/index.es.js",
+      "require": "./dist/attendance/index.js",
+      "default": "./dist/attendance/index.js"
+    },
+    "./customers": {
+      "import": "./dist/customers/index.es.js",
+      "require": "./dist/customers/index.js",
+      "default": "./dist/customers/index.js"
+    },
+    "./dataTriggers": {
+      "import": "./dist/dataTriggers/index.es.js",
+      "require": "./dist/dataTriggers/index.js",
+      "default": "./dist/dataTriggers/index.js"
+    },
+    "./date": {
+      "import": "./dist/date/index.es.js",
+      "require": "./dist/date/index.js",
+      "default": "./dist/date/index.js"
+    },
+    "./migrations": {
+      "import": "./dist/migrations/index.es.js",
+      "require": "./dist/migrations/index.js",
+      "default": "./dist/migrations/index.js"
+    },
+    "./testIds": {
+      "import": "./dist/testIds/index.es.js",
+      "require": "./dist/testIds/index.js",
+      "default": "./dist/testIds/index.js"
+    },
+    "./slots": {
+      "import": "./dist/slots/index.es.js",
+      "require": "./dist/slots/index.js",
+      "default": "./dist/slots/index.js"
+    }
   },
   "devDependencies": {
     "@eisbuk/shared": "workspace:*",
@@ -23,10 +51,11 @@
     "eslint-plugin-promise": "~6.1.1",
     "eslint-plugin-unused-imports": "~2.0.0",
     "typescript": "~5.0.4",
-    "luxon": "^2.0.5"
+    "luxon": "^2.0.5",
+    "vite": "~4.3.1"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.build.json",
+    "build": "vite build && tsc --project tsconfig.build.json",
     "lint": "eslint .",
     "lint:strict": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",

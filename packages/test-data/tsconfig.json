@@ -3,7 +3,8 @@
   "compilerOptions": {
     "rootDir": "src",
     "baseUrl": ".",
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    "target": "ESNext"
   },
   "exclude": ["node_modules", ".eslintrc.js", "vite.config.ts", "dist"],
   "include": ["src/**/*.ts"]

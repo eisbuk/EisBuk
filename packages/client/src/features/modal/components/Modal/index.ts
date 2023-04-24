@@ -1,5 +1,1 @@
-import Modal, { ModalContainer } from "./Modal";
-
-export { ModalContainer };
-
-export default Modal;
+export { default as Modal, ModalContainer } from "./Modal";
