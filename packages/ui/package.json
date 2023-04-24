@@ -85,7 +85,7 @@
     "react-router-dom": "5.x",
     "tailwindcss": "~3.0.24",
     "typescript": "~5.0.4",
-    "vite": "^2.9.9",
+    "vite": "~4.3.1",
     "vitest": "~0.21.1",
     "storybook-addon-pseudo-states": "~1.9.0",
     "uuid": "^8.3.2",

@@ -50,7 +50,7 @@
     "eslint-plugin-unused-imports": "~2.0.0",
     "react": "^16.13.1",
     "typescript": "~5.0.4",
-    "vite": "^2.9.9",
+    "vite": "~4.3.1",
     "vite-plugin-svgr": "~2.1.0"
   }
 }
