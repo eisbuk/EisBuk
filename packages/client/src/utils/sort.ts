@@ -11,7 +11,7 @@ import { Customer, CustomerWithAttendance } from "@eisbuk/shared";
  * they're equal it returns -1 if the first period is longer than the second one
  * i.e. if its finishing time is later.
  *
- * @DUPICATE in @eisbuk/ui/src/AttendanceCard/utils.ts
+ * @DUPICATE in @eisbuk/ui/src/utils/sort.ts
  */
 export const comparePeriods = (first: string, second: string): number => {
   const [firstStart, firstEnd] = first.split("-");

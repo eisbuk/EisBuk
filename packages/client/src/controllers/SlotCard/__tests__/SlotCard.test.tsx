@@ -5,10 +5,13 @@
 import React from "react";
 import { cleanup, screen, render } from "@testing-library/react";
 
-import SlotCard from "../SlotCard";
+import SlotCard from "../SlotCardController";
 
-import { __slotId__ } from "../__testData__/testIds";
-import { __deleteButtonId__, __editSlotButtonId__ } from "@eisbuk/shared";
+import {
+  __deleteButtonId__,
+  __editSlotButtonId__,
+  __slotCardId__,
+} from "@eisbuk/shared";
 import { baseSlot } from "@/__testData__/slots";
 
 const mockDispatch = jest.fn();
@@ -100,13 +103,13 @@ describe("SlotCard", () => {
 
     test("should fire 'onClick' function if provided", () => {
       render(<SlotCard {...baseSlot} enableEdit onClick={mockOnClick} />);
-      screen.getByTestId(__slotId__).click();
+      screen.getByTestId(__slotCardId__).click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
     test("should not explode on click if no 'onClick' handler has been provided", () => {
       render(<SlotCard {...baseSlot} enableEdit />);
-      screen.getByTestId(__slotId__).click();
+      screen.getByTestId(__slotCardId__).click();
     });
   });
 });

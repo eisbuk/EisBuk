@@ -1,3 +1,7 @@
+// #region SlotCard
+export const __slotCardId__ = "slot-card";
+// #endregion SlotCard
+
 // #region SlotForm
 export const __slotFormId__ = "slot-form-title";
 export const __cancelFormId__ = "form-cancel-button";
