@@ -1,24 +1,13 @@
 import React from "react";
-import { useField } from "formik";
 import { DateTime } from "luxon";
+import { useField } from "formik";
 
-import TextField, { TextFieldProps } from "@mui/material/TextField";
-import Box from "@mui/material/Box";
-import IconButton from "@mui/material/IconButton";
+import { Plus, Minus } from "@eisbuk/svg";
+import { __decrementId__, __incrementId__ } from "@eisbuk/shared";
 
-import makeStyles from "@mui/styles/makeStyles";
-
-import ErrorMessage from "@/components/atoms/ErrorMessage";
-
-import { __decrementId__, __incrementId__ } from "./__testData__/testIds";
-
-type Props = Omit<TextFieldProps, "name"> & {
-  /**
-   * Name for the input field. Used for HTML input element,
-   * as well as a parameter for `useField()` hook
-   */
-  name: string;
-};
+import TextInput, { TextInputFieldProps } from "../../TextInput";
+import IconButton from "../../IconButton";
+import FormError from "../FormError";
 
 /**
  * Formik time input field with text input and `+`/`-` buttons.
@@ -31,18 +20,10 @@ type Props = Omit<TextFieldProps, "name"> & {
  *
  * **Important:** should be rendered as a decendant of `<Formik>` element (for context) and will throw otherwise.
  */
-const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
-  const classes = useStyles();
-
-  const [{ value }, { error }, { setValue }] = useField<string>(name);
-
-  /**
-   * Change handler function, used to handle direct change (typing) of input.
-   * @param e change event
-   */
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
-  };
+const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
+  const [{ value }, { error }, { setValue }] = useField<string>(
+    props.field.name
+  );
 
   /**
    * An `onBlur` handler used to add "0" prefix to single digit hours, i.e.
@@ -81,53 +62,32 @@ const TimePickerField: React.FC<Props> = ({ name, ...props }) => {
   };
 
   return (
-    <Box className={classes.container}>
+    <div className="relative flex items-center">
       <IconButton
-        color="primary"
+        className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
         onClick={handleClick(-1)}
         data-testid={__decrementId__}
-        size="large"
       >
-        -
+        <Minus />
       </IconButton>
-      <TextField
+      <TextInput
+        className="mx-2"
         {...props}
-        onChange={handleChange}
         onBlur={correctTimestring}
-        value={value}
+        error={Boolean(error || props.error)}
       />
       <IconButton
-        color="primary"
+        className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
         onClick={handleClick(1)}
         data-testid={__incrementId__}
-        size="large"
       >
-        +
+        <Plus />
       </IconButton>
-      <ErrorMessage className={classes.error} overridePosition>
+      <FormError className="absolute bottom-0 left-1/2 -translate-x-1/2 whitespace-nowrap">
         {error}
-      </ErrorMessage>
-    </Box>
+      </FormError>
+    </div>
   );
 };
-
-const useStyles = makeStyles(() => ({
-  container: {
-    position: "relative",
-    padding: "1.75rem 0",
-    display: "flex",
-    alignItems: "center",
-  },
-  error: {
-    position: "absolute",
-    bottom: 8,
-    left: "50%",
-    width: "100%",
-    display: "inline-block",
-    whitespace: "nowrap",
-    textAlign: "center",
-    transform: "translateX(-50%)",
-  },
-}));
 
 export default TimePickerField;

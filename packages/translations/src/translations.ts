@@ -219,9 +219,6 @@ export enum ActionButton {
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
   CodeNotReceived = "ActionButton.CodeNotReceived",
 
-  CreateSlot = "ActionButton.CreateSlot",
-  EditSlot = "ActionButton.EditSlot",
-
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",
   DeleteCustomer = "ActionButton.DeleteCustomer",

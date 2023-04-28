@@ -177,6 +177,9 @@ export interface SlotInterface {
   notes?: string;
 }
 
+/** Slot interface with optional id */
+export type SlotInterfaceLoose = Omit<SlotInterface, "id"> & { id?: string };
+
 /**
  * Record of slots keyed by slot id
  */

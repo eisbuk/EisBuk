@@ -10,7 +10,7 @@ import i18n, { AttendanceAria } from "@eisbuk/translations";
 
 import UserAttendance from "../UserAttendance";
 
-import { comparePeriods } from "../utils";
+import { comparePeriods } from "../../utils/sort";
 
 import { saul } from "../../__testData__/customers";
 import { baseSlot } from "../../__testData__/slots";

@@ -5,19 +5,19 @@
 import React from "react";
 import { cleanup, screen } from "@testing-library/react";
 
+import { __timeIntervalFieldId__ } from "@eisbuk/shared";
+
 import SlotIntervals from "../SlotIntervals";
 
-import { renderWithFormik } from "@/__testUtils__/wrappers";
+import { renderWithFormik } from "../../../utils/testUtils";
 
-import { __timeIntervalFieldId__ } from "../__testData__/testIds";
-
-describe("SlotForm ->", () => {
+describe("SlotForm", () => {
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();
   });
 
-  describe("SlotIntervals ->", () => {
+  describe("SlotIntervals", () => {
     // some dummy values will be using on an off as initial values
     const interval1 = "09:00-10:00";
     const interval2 = "12:00-15:00";

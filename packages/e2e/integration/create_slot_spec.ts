@@ -1,5 +1,10 @@
 import { Category, SlotType } from "@eisbuk/shared";
-import i18n, { SlotsAria, SlotFormAria } from "@eisbuk/translations";
+import i18n, {
+  SlotsAria,
+  SlotFormAria,
+  ActionButton,
+  ValidationMessage,
+} from "@eisbuk/translations";
 import { DateTime } from "luxon";
 
 import { PrivateRoutes } from "../temp";
@@ -27,8 +32,8 @@ const createSlotSpec = () => {
   });
 
   it("fills in slot form and submits it", () => {
-    cy.getAttrWith("aria-label", SlotType.Ice).click();
-    cy.getAttrWith("aria-label", Category.Competitive).click();
+    cy.getAttrWith("value", SlotType.Ice).check();
+    cy.getAttrWith("value", Category.Competitive).check();
 
     cy.getAttrWith("aria-label", t(SlotFormAria.IntervalStart))
       .eq(0)
@@ -39,8 +44,8 @@ const createSlotSpec = () => {
       .clear()
       .type("10:30");
 
-    cy.getAttrWith("aria-label", t(SlotFormAria.SlotNotes)).type("some notes");
-    cy.getAttrWith("aria-label", t(SlotFormAria.ConfirmCreateSlot)).click();
+    cy.getAttrWith("name", "notes").type("some notes");
+    cy.clickButton(t(ActionButton.Save));
 
     /** @TODO check for created slot or snackbar */
 
@@ -48,13 +53,11 @@ const createSlotSpec = () => {
   });
 
   it("creates an off-ice slot", () => {
-    cy.getAttrWith("aria-label", SlotType.OffIce).click();
+    cy.getAttrWith("value", SlotType.OffIce).check();
 
-    cy.getAttrWith("aria-label", t(SlotFormAria.SlotCategory)).should(
-      "have.attr",
-      "aria-disabled",
-      "true"
-    );
+    Object.values(Category).forEach((cat) => {
+      cy.getAttrWith("value", cat).should("be.disabled").should("be.checked");
+    });
 
     cy.getAttrWith("aria-label", t(SlotFormAria.IntervalStart))
       .eq(0)
@@ -64,13 +67,13 @@ const createSlotSpec = () => {
       .eq(0)
       .clear()
       .type("10:30");
-    cy.getAttrWith("aria-label", t(SlotFormAria.SlotNotes)).type("some notes");
-    cy.getAttrWith("aria-label", t(SlotFormAria.ConfirmCreateSlot)).click();
+    cy.getAttrWith("name", "notes").type("some notes");
+    cy.clickButton(t(ActionButton.Save));
   });
 
   it("creates a multi-interval slot", () => {
-    cy.getAttrWith("aria-label", SlotType.Ice).click();
-    cy.getAttrWith("aria-label", Category.Competitive).click();
+    cy.getAttrWith("value", SlotType.Ice).check();
+    cy.getAttrWith("value", Category.Competitive).click();
 
     cy.getAttrWith("aria-label", t(SlotFormAria.IntervalStart))
       .eq(0)
@@ -92,8 +95,8 @@ const createSlotSpec = () => {
       .clear()
       .type("10:30");
 
-    cy.getAttrWith("aria-label", t(SlotFormAria.SlotNotes)).type("some notes");
-    cy.getAttrWith("aria-label", t(SlotFormAria.ConfirmCreateSlot)).click();
+    cy.getAttrWith("name", "notes").type("some notes");
+    cy.clickButton(t(ActionButton.Save));
   });
 
   it("shows 'invalid time format' validation error", () => {
@@ -103,8 +106,10 @@ const createSlotSpec = () => {
     cy.getAttrWith("type", "text").eq(0).clear().type("9");
     cy.getAttrWith("type", "text").eq(1).clear().type("10 pm");
 
-    cy.getAttrWith("aria-label", t(SlotFormAria.ConfirmCreateSlot)).click();
-    cy.getAttrWith("role", "dialog").contains("Invalid time format");
+    cy.clickButton(t(ActionButton.Save));
+    cy.getAttrWith("role", "dialog").contains(
+      t(ValidationMessage.InvalidTime) as string
+    );
   });
 
   it("shows validation error for inconsistent period start/end", () => {
@@ -114,9 +119,9 @@ const createSlotSpec = () => {
     cy.getAttrWith("type", "text").eq(0).clear().type("9:00");
     cy.getAttrWith("type", "text").eq(1).clear().type("7:00");
 
-    cy.getAttrWith("aria-label", t(SlotFormAria.ConfirmCreateSlot)).click();
+    cy.clickButton(t(ActionButton.Save));
     cy.getAttrWith("role", "dialog").contains(
-      "Start time is greater than end time"
+      t(ValidationMessage.TimeMismatch) as string
     );
   });
 };

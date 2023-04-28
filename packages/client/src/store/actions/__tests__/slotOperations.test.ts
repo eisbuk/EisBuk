@@ -16,7 +16,7 @@ import * as getters from "@/lib/getters";
 
 import { NotifVariant } from "@/enums/store";
 
-import { createNewSlot, deleteSlot, updateSlot } from "../slotOperations";
+import { deleteSlot, upsertSlot } from "../slotOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
@@ -27,7 +27,6 @@ import { setupTestSlots } from "../__testUtils__/firestore";
 import {
   initialSlotIds,
   initialSlots,
-  testFormValues,
   testSlot,
 } from "../__testData__/slotOperations";
 
@@ -41,12 +40,12 @@ const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
  */
 const dummyGetState = () => ({} as any);
 
-describe("Slot operations ->", () => {
+describe("Slot operations", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
   });
 
-  describe("createSlot ->", () => {
+  describe("create new slot", () => {
     testWithEmulator(
       "should add new slot to firestore (with generated uuid) and show success notification",
       async () => {
@@ -61,7 +60,7 @@ describe("Slot operations ->", () => {
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
-        await createNewSlot(testFormValues)(mockDispatch, store.getState);
+        await upsertSlot(testSlot)(mockDispatch, store.getState);
         const slotsCollRef = collection(db, getSlotsPath(organization));
         const slotsInFS = (await getDocs(slotsCollRef)).docs;
         // check that the new slot was created
@@ -94,7 +93,7 @@ describe("Slot operations ->", () => {
           throw testError;
         });
         // run the thunk
-        await createNewSlot(testFormValues)(mockDispatch, dummyGetState);
+        await upsertSlot(testSlot)(mockDispatch, dummyGetState);
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -107,7 +106,7 @@ describe("Slot operations ->", () => {
     );
   });
 
-  describe("editSlot ->", () => {
+  describe("update slot", () => {
     testWithEmulator(
       "should edit an existing slot in firestore and show succes notification",
       async () => {
@@ -131,16 +130,16 @@ describe("Slot operations ->", () => {
         const updates = {
           categories: Object.values(Category),
           type: SlotType.OffIce,
-          intervals: [
-            {
+          intervals: {
+            "09:00-10:00": {
               startTime: "09:00",
               endTime: "10:00",
             },
-          ],
+          },
         };
         // run the thunk
-        await updateSlot({
-          ...testFormValues,
+        await upsertSlot({
+          ...testSlot,
           ...updates,
           id: slotId,
         })(mockDispatch, store.getState);
@@ -151,9 +150,6 @@ describe("Slot operations ->", () => {
           ...testSlot,
           id: slotId,
           ...updates,
-          intervals: {
-            ["09:00-10:00"]: updates.intervals[0],
-          },
         });
         // check that the success notif has been called
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -174,8 +170,8 @@ describe("Slot operations ->", () => {
           throw testError;
         });
         // run the failing thunk
-        await updateSlot({
-          ...testFormValues,
+        await upsertSlot({
+          ...testSlot,
           id: "slot",
         })(mockDispatch, dummyGetState);
         // check err snackbar being called
@@ -190,7 +186,7 @@ describe("Slot operations ->", () => {
     );
   });
 
-  describe("deleteSlot ->", () => {
+  describe("deleteSlot", () => {
     testWithEmulator(
       "should delete slot from firestore and show succes notification",
       async () => {

@@ -74,6 +74,6 @@ export const EditSlotButton: React.FC = () => {
   );
 };
 
-const useSlotFormModal = createModal("SlotForm");
+const useSlotFormModal = createModal("SlotFormDialog");
 
 export default EditSlotButton;

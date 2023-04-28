@@ -1,6 +1,6 @@
-import { SlotFormValues } from "@/lib/data";
-
 import { SlotInterface } from "@eisbuk/shared";
+
+import { type SlotFormValues } from "./data";
 
 /**
  * Process slot interface into form friendly values
@@ -8,8 +8,8 @@ import { SlotInterface } from "@eisbuk/shared";
  * @returns
  */
 export const slotToFormValues = (
-  slot: SlotInterface | undefined
-): (SlotFormValues & { date: string }) | undefined => {
+  slot?: Partial<SlotInterface> & { date: string }
+): Partial<SlotFormValues & { date?: string }> | undefined => {
   // fail early if no slot provided
   if (!slot) return undefined;
 
@@ -20,7 +20,8 @@ export const slotToFormValues = (
     ...slotValues
   } = slot;
 
-  const intervals = Object.values(slotIntervals);
-
-  return { ...slotValues, intervals };
+  return {
+    ...slotValues,
+    ...(slotIntervals && { intervals: Object.values(slotIntervals) }),
+  };
 };

@@ -61,7 +61,7 @@ export const NewSlotButton: React.FC = () => {
   const openForm = (e: React.SyntheticEvent) => {
     e.preventDefault();
     openSlotForm({
-      date: date?.toISODate(),
+      date: date!.toISODate(),
     });
   };
 
@@ -77,6 +77,6 @@ export const NewSlotButton: React.FC = () => {
   );
 };
 
-const useSlotFormModal = createModal("SlotForm");
+const useSlotFormModal = createModal("SlotFormDialog");
 
 export default NewSlotButton;

@@ -6,11 +6,11 @@ import React from "react";
 import { screen, cleanup } from "@testing-library/react";
 import * as formik from "formik";
 
+import { __deleteIntervalId__ } from "@eisbuk/shared";
+
 import TimeIntervalField from "../TimeIntervalField";
 
-import { renderWithFormik } from "@/__testUtils__/wrappers";
-
-import { __deleteIntervalId__ } from "../__testData__/testIds";
+import { renderWithFormik } from "../../../utils/testUtils";
 
 const mockSetValue = jest.fn();
 const mockSetError = jest.fn();

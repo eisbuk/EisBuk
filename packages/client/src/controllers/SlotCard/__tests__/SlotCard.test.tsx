@@ -71,7 +71,7 @@ describe("SlotCard", () => {
     test("should open slot form on edit slot click", () => {
       screen.getByTestId(__editSlotButtonId__).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
-      expect(mockDispatchCallPayload.component).toEqual("SlotForm");
+      expect(mockDispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(mockDispatchCallPayload.props).toEqual({
         date: baseSlot.date,
         slotToEdit: baseSlot,

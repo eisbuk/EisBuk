@@ -1,9 +1,5 @@
 import React from "react";
-import makeStyles from "@mui/styles/makeStyles";
-import createStyles from "@mui/styles/createStyles";
 import { useField } from "formik";
-
-import Button from "@mui/material/Button";
 
 import { SlotInterval } from "@eisbuk/shared";
 import {
@@ -12,19 +8,19 @@ import {
   SlotFormAria,
 } from "@eisbuk/translations";
 
-import { defaultInterval } from "@/lib/data";
-
+import Button, { ButtonSize } from "../../Button";
 import TimeIntervalField from "./TimeIntervalField";
+
+import { defaultInterval } from "./data";
 
 const SlotIntervals: React.FC = () => {
   const { t } = useTranslation();
-
-  const classes = useStyles();
 
   const [{ value: intervals }, , { setValue }] =
     useField<SlotInterval[]>("intervals");
 
   const addInterval = () => {
+    // e.preventDefault();
     const newIntervals = [...intervals, defaultInterval];
     setValue(newIntervals);
   };
@@ -35,7 +31,13 @@ const SlotIntervals: React.FC = () => {
 
   return (
     <>
-      <h5 className={classes.intervalsTitle}>{t(SlotFormLabel.Intervals)}</h5>
+      <label
+        htmlFor="intervals"
+        className="block mb-4 text-sm font-medium text-gray-700"
+      >
+        {t(SlotFormLabel.Intervals)}
+      </label>
+
       {intervals?.map((_, i) => (
         <TimeIntervalField
           key={i}
@@ -44,13 +46,13 @@ const SlotIntervals: React.FC = () => {
           dark={i % 2 === 1}
         />
       ))}
-      <div className={classes.buttonContainer}>
+      <div className="flex justify-center items-center">
         <Button
           onClick={addInterval}
-          color="primary"
-          variant="contained"
-          className={classes.addInterval}
+          className="mt-6 bg-cyan-700 active:bg-cyan-600"
           aria-label={t(SlotFormAria.AddInterval)}
+          size={ButtonSize.MD}
+          type="button"
         >
           {t(SlotFormLabel.AddInterval)}
         </Button>
@@ -58,29 +60,5 @@ const SlotIntervals: React.FC = () => {
     </>
   );
 };
-
-const useStyles = makeStyles((theme) =>
-  createStyles({
-    intervalsTitle: {
-      letterSpacing: 1,
-      fontSize: theme.typography.pxToRem(18),
-      fontWeight: theme.typography.fontWeightBold,
-      fontFamily: theme.typography.fontFamily,
-      color: theme.palette.primary.light,
-    },
-    addInterval: {
-      marginTop: theme.spacing(3),
-      borderRadius: theme.spacing(100),
-      // The following is a workaround to not overrule the Mui base button styles
-      // by Tailwind's preflight reset
-      backgroundColor: theme.palette.primary.main,
-    },
-    buttonContainer: {
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-    },
-  })
-);
 
 export default SlotIntervals;

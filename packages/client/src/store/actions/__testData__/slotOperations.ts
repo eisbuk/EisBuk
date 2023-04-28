@@ -29,12 +29,3 @@ export const testSlot = {
   ...baseSlot,
   intervals: createIntervals(15),
 };
-/**
- * The create slot data compliant with form values interface
- * - the date is DateTime instead of Timestamp
- * - the intervals are array rather than record
- */
-export const testFormValues = {
-  ...baseSlot,
-  intervals: Object.values(createIntervals(15)),
-};
