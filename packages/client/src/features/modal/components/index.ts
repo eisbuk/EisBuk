@@ -11,6 +11,7 @@ import DeleteSlotDialog from "./DeleteSlotDialog";
 import DeleteSlotDisabledDialog from "./DeleteSlotDisabledDialog";
 import AddAttendedCustomersDialog from "./AddAttendedCustomersDialog";
 import SlotFormDialog from "./SlotFormDialog";
+import SendICSDialog from "./SendICSDialog";
 
 /**
  * A whitelist of components to be renderd inside of modal.
@@ -26,6 +27,7 @@ export const componentWhitelist = {
   AddAttendedCustomersDialog,
   BirthdayDialog,
   SlotFormDialog,
+  SendICSDialog,
 };
 
 export { Modal, ModalContainer };

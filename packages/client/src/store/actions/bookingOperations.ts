@@ -1,14 +1,7 @@
 import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
 import { DateTime } from "luxon";
 
-import {
-  BookingSubCollection,
-  Customer,
-  SlotInterface,
-  ClientEmailPayload,
-  EmailType,
-  CustomerBase,
-} from "@eisbuk/shared";
+import { Customer, SlotInterface, CustomerBase } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
@@ -20,7 +13,7 @@ import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getBookedSlotDocPath, getBookingsPath } from "@/utils/firestore";
+import { getBookedSlotDocPath } from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<
@@ -224,101 +217,5 @@ export const customerSelfRegister: {
         })
       );
       return { id: "", secretKey: "", codeOk: false };
-    }
-  };
-
-/**
- * Keeps track of calendar events created by customer
- */
-export const createCalendarEvents =
-  ({
-    monthStr,
-    secretKey,
-    eventUids,
-  }: {
-    monthStr: string;
-    secretKey: Customer["secretKey"];
-    eventUids: string[];
-  }): FirestoreThunk =>
-  async (dispatch) => {
-    try {
-      const db = getFirestore();
-      const docRef = doc(
-        db,
-        getBookingsPath(getOrganization()),
-        secretKey,
-        BookingSubCollection.Calendar,
-        monthStr
-      );
-      await setDoc(docRef, { uids: eventUids });
-      // show success message
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.SlotsAddedToCalendar),
-          variant: NotifVariant.Success,
-        })
-      );
-    } catch (err) {
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
-          variant: NotifVariant.Error,
-          error: err as Error,
-        })
-      );
-    }
-  };
-
-/**
- * Send email of ics file
- */
-interface SendICSFile {
-  (payload: {
-    name: Customer["name"];
-    surname: Customer["surname"];
-    email: string;
-    icsFile: string;
-    secretKey: Customer["secretKey"];
-  }): FirestoreThunk;
-}
-
-export const sendICSFile: SendICSFile =
-  ({ icsFile, email, secretKey, name, surname }) =>
-  async (dispatch) => {
-    try {
-      const handler = CloudFunction.SendEmail;
-      const payload: Omit<
-        ClientEmailPayload[EmailType.SendCalendarFile],
-        "organization"
-      > = {
-        type: EmailType.SendCalendarFile,
-        customer: {
-          name,
-          surname,
-          secretKey,
-          email,
-        },
-        attachments: {
-          filename: "bookedSlots.ics",
-          content: icsFile,
-        },
-      };
-
-      await createCloudFunctionCaller(handler, payload)();
-
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.EmailSent),
-          variant: NotifVariant.Success,
-        })
-      );
-    } catch (err) {
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.Error),
-          variant: NotifVariant.Error,
-          error: err as Error,
-        })
-      );
     }
   };

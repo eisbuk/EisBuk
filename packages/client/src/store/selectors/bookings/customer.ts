@@ -9,7 +9,7 @@ import { LocalStore } from "@/types/store";
  */
 export const getBookingsCustomer = (
   state: LocalStore
-): Omit<Customer, "secretKey"> | undefined => {
+): Omit<Customer, "secretKey"> => {
   // get extended date (if any)
   const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
   if (bookingsInStore.length > 1) {

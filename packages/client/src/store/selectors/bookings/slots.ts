@@ -203,6 +203,9 @@ export const getBookingsForCalendar = (
     .sort((a, b) => (a.date < b.date ? -1 : 1));
 };
 
+export const getHasBookingsForCalendar = (state: LocalStore): boolean =>
+  Boolean(getBookingsForCalendar(state).length);
+
 export const getBookedAndAttendedSlotsForCalendar = (
   state: LocalStore
 ): (SlotInterface & { interval: SlotInterval } & { booked: boolean })[] => {
