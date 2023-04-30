@@ -2,15 +2,12 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-import { Button, CalendarNav, Layout } from "@eisbuk/ui";
+import { AttendanceSheet, Button, CalendarNav, Layout } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 import { Printer } from "@eisbuk/svg";
 
 import { getOrganization } from "@/lib/getters";
 
-import AttendanceSheet, {
-  AttendanceSheetSlot,
-} from "@/components/atoms/AttendanceSheet";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
@@ -23,6 +20,7 @@ import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { adminLinks } from "@/data/navigation";
+import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -34,9 +32,10 @@ const DashboardPage: React.FC = () => {
     { collection: OrgSubCollection.SlotsByDay },
   ]);
 
-  const attendanceSlots = useSelector(getSlotsWithAttendance);
-
   const date = useSelector(getCalendarDay);
+
+  const organizationName = useSelector(getOrgDisplayName);
+  const attendanceSlots = useSelector(getSlotsWithAttendance);
 
   const additionalAdminContent = <BirthdayMenu />;
 
@@ -74,14 +73,11 @@ const DashboardPage: React.FC = () => {
         jump="day"
         additionalContent={printButton}
       />
-      <AttendanceSheet date={date}>
-        {attendanceSlots.map(
-          (slot) =>
-            slot.customers.length > 0 && (
-              <AttendanceSheetSlot key={slot.id} {...slot} />
-            )
-        )}
-      </AttendanceSheet>
+      <AttendanceSheet
+        date={date}
+        data={attendanceSlots}
+        organizationName={organizationName}
+      />
     </Layout>
   );
 };

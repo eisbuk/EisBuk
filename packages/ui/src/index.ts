@@ -48,6 +48,7 @@ export * from "./AttendanceCard";
 export * from "./BirthdayMenu";
 export * from "./SlotCard";
 export * from "./Forms/SlotForm";
+export * from "./AttendanceSheet";
 
 export {
   NotificationToast,

@@ -56,6 +56,7 @@ const SendICSDialog: React.FC<SendICSDialogProps> = ({
           <p className="mb-6 w-[90%]">{t(Prompt.EnterEmailMessage)}</p>
           <Field
             name="email"
+            type="email"
             data-testid={__emailInput__}
             component={TextInput}
           />
