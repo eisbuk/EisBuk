@@ -50,7 +50,7 @@ const EmailTemplateSettings: React.FC = () => {
                   input={input}
                 />
 
-                <EmailTemplate input={input} label={name}></EmailTemplate>
+                <EmailTemplate input={input} label={name} />
                 <PreviewField name={name} template={temp} />
               </div>
             </FormSection>

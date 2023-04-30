@@ -173,7 +173,7 @@ export enum EmailTemplateLabel {
   BookingsLink = "EmailTemplateLabel.BookingsLink",
   Name = "EmailTemplateLabel.Name",
   Surname = "EmailTemplateLabel.Surname",
-  IcsFile = "EmailTemplateLabel.IcsFile",
+  CalendarFile = "EmailTemplateLabel.IcsFile",
   BookingsMonth = "EmailTemplateLabel.BookingsMonth",
   ExtendedBookingsDate = "EmailTemplateLabel.ExtendedBookingsDate",
   Subject = "EmailTemplateLabel.Subject",
