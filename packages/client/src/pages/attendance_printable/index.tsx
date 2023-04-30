@@ -73,11 +73,13 @@ const DashboardPage: React.FC = () => {
         jump="day"
         additionalContent={printButton}
       />
-      <AttendanceSheet
-        date={date}
-        data={attendanceSlots}
-        organizationName={organizationName}
-      />
+      <div className="content-container">
+        <AttendanceSheet
+          date={date}
+          data={attendanceSlots}
+          organizationName={organizationName}
+        />
+      </div>
     </Layout>
   );
 };
