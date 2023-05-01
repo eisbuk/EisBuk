@@ -2,12 +2,6 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import _ from "lodash";
 
-import Button from "@mui/material/Button";
-import Paper from "@mui/material/Paper";
-import Typography from "@mui/material/Typography";
-
-import makeStyles from "@mui/styles/makeStyles";
-
 import { useTranslation, AuthMessage } from "@eisbuk/translations";
 
 import { signOut } from "@/store/actions/authOperations";
@@ -19,6 +13,7 @@ import girlIceSkating from "@/assets/images/login/girl-ice-skating-silhouette.sv
 import iceSkatingSilhouette from "@/assets/images/login/ice-skating-silhouette.svg";
 
 import { getLocalAuth } from "@/store/selectors/auth";
+import { Button } from "@eisbuk/ui";
 
 // #region backgroundImages
 const backgrounds = [
@@ -70,36 +65,22 @@ const Unauthorized: React.FC<Props> = ({ backgroundIndex }) => {
   const logOut = () => dispatch(signOut());
   const { t } = useTranslation();
 
-  const classes = useStyles();
-
   return (
-    <Paper style={style}>
-      <Typography component="h1" variant="h2">
+    <div className="content-container" style={style}>
+      <h1 className="mt-4 mb-2 text-2xl text-gray-600">
         {t(AuthMessage.NotAuthorized)}
-      </Typography>
-      <Typography component="h2" variant="h4">
-        {t(AuthMessage.AdminsOnly)}
-      </Typography>
-      <Typography component="h2" variant="h5">
+      </h1>
+      <h2 className="text-gray-500">{t(AuthMessage.AdminsOnly)}</h2>
+      <p className="text-gray-500 mb-4">
         {t(AuthMessage.LoggedInWith)}{" "}
         <b>{userAuthData?.email || userAuthData?.phoneNumber || ""}</b>
-      </Typography>
+      </p>
 
-      <Button
-        className={classes.buttonPrimary}
-        variant="contained"
-        onClick={logOut}
-      >
+      <Button className="bg-cyan-700" onClick={logOut}>
         {t(AuthMessage.TryAgain)}
       </Button>
-    </Paper>
+    </div>
   );
 };
-
-const useStyles = makeStyles((theme) => ({
-  // The following is a workaround to not overrule the Mui base button styles
-  // by Tailwind's preflight reset
-  buttonPrimary: { backgroundColor: theme.palette.primary.main },
-}));
 
 export default Unauthorized;
