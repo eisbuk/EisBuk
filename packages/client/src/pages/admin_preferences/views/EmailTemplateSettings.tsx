@@ -42,7 +42,7 @@ const EmailTemplateSettings: React.FC = () => {
       {organization.emailTemplates &&
         Object.entries(organization.emailTemplates).map(([name, temp]) => {
           return (
-            <FormSection title={t(EmailTemplateLabel[name])}>
+            <FormSection key={name} title={t(EmailTemplateLabel[name])}>
               <div className="flex-row">
                 <Buttons
                   buttons={buttons}

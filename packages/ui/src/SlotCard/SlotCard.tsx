@@ -103,7 +103,11 @@ const SlotCard: React.FC<SlotCardProps> = ({
       </div>
 
       <div className="flex items-center">
-        <SlotTypeIcon className="h-full bg-inherit py-1" type={type} />
+        <SlotTypeIcon
+          key="slot-type-icon"
+          className="h-full bg-inherit py-1"
+          type={type}
+        />
 
         {additionalActions}
       </div>

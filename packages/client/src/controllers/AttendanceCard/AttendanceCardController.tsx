@@ -100,10 +100,12 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       {attendedCustomers.map(
         (customer) =>
           customer.bookedInterval && (
-            <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
+            <Link
+              key={customer.id}
+              to={`${PrivateRoutes.Athletes}/${customer.id}`}
+            >
               <UserAttendance
                 {...customer}
-                key={customer.id}
                 intervals={orderedIntervals}
                 markAttendance={({ attendedInterval }) =>
                   dispatch(
@@ -134,10 +136,12 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       {attendedCustomers.map(
         (customer) =>
           !customer.bookedInterval && (
-            <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
+            <Link
+              key={customer.id}
+              to={`${PrivateRoutes.Athletes}/${customer.id}`}
+            >
               <UserAttendance
                 {...customer}
-                key={customer.id}
                 intervals={orderedIntervals}
                 markAttendance={({ attendedInterval }) =>
                   dispatch(

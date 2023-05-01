@@ -183,10 +183,9 @@ const SlotsPage: React.FC = () => {
                   );
 
                   return (
-                    <div className="col-span-2 xl:col-span-1">
+                    <div key={slot.id} className="col-span-2 xl:col-span-1">
                       <SlotCard
                         className="w-full"
-                        key={slot.id}
                         {...{ ...slot, selected }}
                         disableDelete={hasBookings}
                         onClick={

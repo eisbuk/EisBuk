@@ -35,6 +35,7 @@ const SlotCardController: React.FC<SlotCardControllerProps> = ({
 }) => {
   const additionalActions = enableEdit ? (
     <SlotOperationButtons
+      key="slot-operation-buttons"
       className="ml-auto"
       contextType={ButtonContextType.Slot}
       disableDelete={disableDelete}

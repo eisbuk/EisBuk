@@ -48,9 +48,9 @@ const Buttons: React.FC<ButtonsProps> = ({ buttons, emailType, input }) => {
     <div className="flex pt-6 flex-wrap">
       {Object.values(buttons[emailType]).map((button) => (
         <Button
+          key={button}
           color={ButtonColor.Primary}
           onClick={() => insertString(button as string)}
-          value={button}
           type="button"
           className="mx-1 mb-1"
         >
