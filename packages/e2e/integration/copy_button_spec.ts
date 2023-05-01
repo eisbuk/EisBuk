@@ -36,39 +36,26 @@ describe("Slots copy button - copied slots badge", () => {
 
   it("shows the week copied badge only if in 'week' context and the week in clipboard is the currently observed week", () => {
     // The badge should not be shown as there are no slots copied yet.
-    cy.getByTestId(__copiedSlotsBadgeId__).should(
-      "have.attr",
-      "aria-hidden",
-      "true"
-    );
+    cy.getByTestId(__copiedSlotsBadgeId__).getAttrWith("aria-hidden", "true");
 
     // Copy the slots for the current week
     cy.getByTestId(__copyWeekButtonId__).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current week.
-    cy.getByTestId(__copiedSlotsBadgeId__).should(
-      "have.attr",
-      "aria-hidden",
-      "false"
-    );
+    cy.getByTestId(__copiedSlotsBadgeId__).getAttrWith("aria-hidden", "false");
 
     // Go to the next week
     cy.getAttrWith("aria-label", i18n.t(AdminAria.SeeFutureDates)).click();
 
     // The badge should not be shown anymore as the copied slots belong to the previous week.
-    cy.getByTestId(__copiedSlotsBadgeId__).should(
-      "have.attr",
-      "aria-hidden",
-      "true"
-    );
+    cy.getByTestId(__copiedSlotsBadgeId__).getAttrWith("aria-hidden", "true");
   });
 
   it("shows the day copied badge only if in 'day' context and the day in clipboard is the corresponding day", () => {
     const date = testDateLuxon;
 
     // The badge should not be shown as there are no slots copied yet.
-    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).should(
-      "have.attr",
+    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).getAttrWith(
       "aria-hidden",
       "true"
     );
@@ -77,17 +64,14 @@ describe("Slots copy button - copied slots badge", () => {
     cy.getByTestId(`${__copyDayButtonId__}${date}`).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current day.
-    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).should(
-      "have.attr",
+    cy.getByTestId(`${__copiedSlotsBadgeId__}${date}`).getAttrWith(
       "aria-hidden",
       "false"
     );
 
     // Check different date slot (the badge should not be shown)
-    cy.getByTestId(`${__copiedSlotsBadgeId__}${date.plus({ days: 1 })}`).should(
-      "have.attr",
-      "aria-hidden",
-      "true"
-    );
+    cy.getByTestId(
+      `${__copiedSlotsBadgeId__}${date.plus({ days: 1 })}`
+    ).getAttrWith("aria-hidden", "true");
   });
 });

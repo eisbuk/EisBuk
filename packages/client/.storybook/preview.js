@@ -1,13 +1,10 @@
 import React from "react";
-import { muiTheme } from "storybook-addon-material-ui5";
 import { StoryRouter } from "storybook-react-router";
 import { Provider } from "react-redux";
 
 // Import stylesheet importing tailwind to allow
 // for tailwind styles creation for stories
 import "../src/main.css";
-
-import { available as availableThemes } from "@/themes";
 
 import { store } from "@/store";
 import { changeCalendarDate } from "@/store/actions/appActions";
@@ -31,5 +28,4 @@ export const decorators = [
       </Provider>
     );
   },
-  muiTheme(availableThemes),
 ];

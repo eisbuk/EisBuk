@@ -3,9 +3,6 @@ import { Provider as ReduxProvider } from "react-redux";
 import { BrowserRouter, useHistory } from "react-router-dom";
 import { getAuth } from "@firebase/auth";
 
-import CssBaseline from "@mui/material/CssBaseline";
-import { ThemeProvider, StyledEngineProvider } from "@mui/material/styles";
-
 import { store } from "@/store";
 
 import AppContent from "@/AppContent";
@@ -14,7 +11,6 @@ import { Modal } from "@/features/modal/components";
 
 import useConnectAuthToStore from "@/react-redux-firebase-auth/hooks/useConnectAuthToStore";
 
-import { currentTheme } from "@/themes";
 import { NotificationsProvider } from "./features/notifications/context";
 
 import { closeAllModals } from "./features/modal/actions";
@@ -36,17 +32,10 @@ const App: React.FC = () => {
 
   return (
     <ReduxProvider store={store}>
-      <StyledEngineProvider injectFirst>
-        <ThemeProvider theme={currentTheme}>
-          <NotificationsProvider
-            timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}
-          >
-            <CssBaseline />
-            <AppContent />
-            <Modal />
-          </NotificationsProvider>
-        </ThemeProvider>
-      </StyledEngineProvider>
+      <NotificationsProvider timeouts={{ minTimeout: 1200, maxTimeout: 2000 }}>
+        <AppContent />
+        <Modal />
+      </NotificationsProvider>
     </ReduxProvider>
   );
 };
