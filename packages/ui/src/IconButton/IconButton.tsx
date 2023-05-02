@@ -47,6 +47,7 @@ const IconButton: React.FC<IconButtonProps> = ({
   ...props
 }) => (
   <button
+    type="button"
     {...props}
     title={alt}
     className={[

@@ -46,21 +46,25 @@ const Button: React.FC<ButtonProps> = ({
     children
   );
 
-  return React.createElement(as, { ...props, className, disabled }, [
-    startAdornment && (
-      <div key="start-adornment" className="h-5 shrink-0">
-        {startAdornment}
-      </div>
-    ),
+  return React.createElement(
+    as,
+    { type: "button", ...props, className, disabled },
+    [
+      startAdornment && (
+        <div key="start-adornment" className="h-5 shrink-0">
+          {startAdornment}
+        </div>
+      ),
 
-    content,
+      content,
 
-    endAdornment && (
-      <div key="end-adornment" className="h-5 shrink-0">
-        {endAdornment}
-      </div>
-    ),
-  ]);
+      endAdornment && (
+        <div key="end-adornment" className="h-5 shrink-0">
+          {endAdornment}
+        </div>
+      ),
+    ]
+  );
 };
 
 const baseClasses = [
