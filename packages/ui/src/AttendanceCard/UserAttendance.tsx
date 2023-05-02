@@ -127,11 +127,11 @@ const UserAttendance: React.FC<Props> = ({
 
   return (
     <li
-      className={`relative w-full h-20 px-4 py-2 flex flex-wrap sm:flex-nowrap justify-between items-center ${backgroundColor} ${
+      className={`relative w-full px-4 py-8 gap-y-8 sm:py-2 flex flex-wrap items-center sm:flex-nowrap ${backgroundColor} ${
         customer.deleted ? "opacity-50" : ""
       }`}
     >
-      <div className="flex w-full justify-start items-center whitespace-nowrap">
+      <div className="w-[80%] sm:w-full sm:order-1 flex justify-start items-center whitespace-nowrap">
         <CustomerAvatar
           className="w-12 h-12 mr-4"
           badgeSize={BadgeSize.MD}
@@ -140,21 +140,23 @@ const UserAttendance: React.FC<Props> = ({
         <span>{customerString}</span>
       </div>
 
-      {bookedInterval ? (
-        <AttendanceButton
-          checked={localAttended}
-          onClick={handleAttendanceButtonClick}
-          disabled={disableButton}
-        />
-      ) : (
-        <RemoveButton
-          onClick={handleAttendanceButtonClick}
-          disabled={disableButton}
-        />
-      )}
+      <div className="text-left sm:order-3">
+        {bookedInterval ? (
+          <AttendanceButton
+            checked={localAttended}
+            onClick={handleAttendanceButtonClick}
+            disabled={disableButton}
+          />
+        ) : (
+          <RemoveButton
+            onClick={handleAttendanceButtonClick}
+            disabled={disableButton}
+          />
+        )}
+      </div>
 
       <div
-        className={`w-full m-2 flex justify-center sm:w-auto sm:absolute sm:right-24 ${backgroundColor}`}
+        className={`flex w-full sm:my-0 sm:order-2 m-2 justify-center ${backgroundColor}`}
       >
         <IntervalPicker
           // Through text (css 'color') property, we're making the interval picker arrows the same color as the background
