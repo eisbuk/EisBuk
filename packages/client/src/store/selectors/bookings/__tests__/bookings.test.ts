@@ -1,3 +1,4 @@
+import { describe, vi, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
 import {
@@ -36,7 +37,7 @@ import { getBookingsForCalendar, getMonthEmptyForBooking } from "../slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
-const dateNowSpy = jest.spyOn(Date, "now").mockReturnValue(mockDate.toMillis());
+const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(mockDate.toMillis());
 
 const setupBookingsTest = ({
   category,

@@ -1,10 +1,10 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test } from "vitest";
 import { screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 import { DateTime } from "luxon";
 
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
@@ -20,7 +20,7 @@ import { baseSlot } from "@/__testData__/slots";
 
 // We're mocking the 'cancelBooking' thunk as it uses firebase package
 // and we don't need the setup for this test
-jest.mock("@/store/actions/bookingOperations", () => ({
+vi.mock("@/store/actions/bookingOperations", () => ({
   cancelBooking: () => {},
 }));
 

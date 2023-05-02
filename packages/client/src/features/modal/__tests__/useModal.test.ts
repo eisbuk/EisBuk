@@ -1,9 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import { SlotInterface, SlotType } from "@eisbuk/shared";
-import * as reactRedux from "react-redux";
+import { describe, vi, expect, test } from "vitest";
 
 import { ModalPayload } from "../types";
 
@@ -34,9 +34,20 @@ const modal1: Omit<ModalPayload<"CancelBookingDialog">, "id"> = {
   props: { ...dummySlot, secretKey: "12345", interval },
 };
 
+const mockDispatch = vi.fn();
+vi.mock("react-redux", async () => {
+  const rr = (await vi.importActual("react-redux")) as object;
+
+  return {
+    ...rr,
+    useDispatch: () => mockDispatch,
+  };
+});
+
 describe("useModal hook", () => {
   test("should open a modal on open call", () => {
     const store = getNewStore();
+    mockDispatch.mockImplementation(store.dispatch);
 
     const useModal = createModal(modal1.component);
     const testRes = testHookWithRedux(store, useModal, modal1.props);
@@ -73,6 +84,7 @@ describe("useModal hook", () => {
 
   test("should open the modal with props explicitly passed in on 'openWithProps'", () => {
     const store = getNewStore();
+    mockDispatch.mockImplementation(store.dispatch);
 
     const useModal = createModal(modal1.component);
     const testRes = testHookWithRedux(store, useModal);
@@ -86,6 +98,7 @@ describe("useModal hook", () => {
 
   test("should not open the modal on 'open' call if props not passed in through hook call", () => {
     const store = getNewStore();
+    mockDispatch.mockImplementation(store.dispatch);
 
     const useModal = createModal(modal1.component);
     const testRes = testHookWithRedux(store, useModal);
@@ -97,11 +110,8 @@ describe("useModal hook", () => {
   });
 
   test("should dispatch 'updateModal' only if the props aren't deeply equal", () => {
-    const dispatchSpy = jest.fn();
-    const useDispatchSpy = jest.spyOn(reactRedux, "useDispatch");
-    useDispatchSpy.mockImplementation(() => dispatchSpy);
-
     const store = getNewStore();
+    mockDispatch.mockImplementation(store.dispatch);
 
     // Initialise useModal with 'modal1' props
     const useModal = createModal(modal1.component);
@@ -109,11 +119,10 @@ describe("useModal hook", () => {
     testRes.result.open();
 
     // Clear previous calls to dispatch ('updateModal' on hook mount and 'openModal' on explicit call)
-    dispatchSpy.mockClear();
-    useDispatchSpy.mockImplementation(() => dispatchSpy);
+    mockDispatch.mockClear();
 
     // Update props with the same structure (store shouldn't get updated)
     testRes.updateProps({ ...modal1.props });
-    expect(dispatchSpy).not.toHaveBeenCalled();
+    expect(mockDispatch).not.toHaveBeenCalled();
   });
 });

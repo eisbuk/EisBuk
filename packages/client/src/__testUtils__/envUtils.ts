@@ -1,8 +1,6 @@
-type TestClosure = (
-  name: string,
-  fn?: jest.ProvidesCallback,
-  timeout?: number
-) => void;
+import { test, TestFunction } from "vitest";
+
+type TestClosure = (name: string, fn?: TestFunction, timeout?: number) => void;
 
 /**
  * A boolean flag set to `true` if the emulators exist in current environment
@@ -19,6 +17,6 @@ export const testWithEmulator: TestClosure = (...args) => {
   if (__withEmulators__) {
     test(...args);
   } else {
-    xtest(...args);
+    test.skip(...args);
   }
 };

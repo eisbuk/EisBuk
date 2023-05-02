@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -21,16 +22,16 @@ import * as copyPasteActions from "@/store/actions/copyPaste";
 
 import { __copyDayButtonId__, __copyWeekButtonId__ } from "@eisbuk/shared";
 
-const mockDispatch = jest.fn();
-const mockSelector = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+const mockSelector = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
   useSelector: () => mockSelector,
 }));
 
 describe("SlotOperationButtons", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
@@ -44,9 +45,9 @@ describe("SlotOperationButtons", () => {
       // - mock implementation within the component
       const mockCopyDayImplementation = (date: DateTime) =>
         ({ type: "copy_day", date } as any);
-      jest
-        .spyOn(copyPasteActions, "copySlotsDay")
-        .mockImplementation(mockCopyDayImplementation);
+      vi.spyOn(copyPasteActions, "copySlotsDay").mockImplementation(
+        mockCopyDayImplementation
+      );
       render(
         <SlotOperationButtons
           date={testDate}
@@ -68,9 +69,9 @@ describe("SlotOperationButtons", () => {
       // - mock implementation within the component
       const mockCopyWeekImplementation = () => ({ type: "copy_week" } as any);
       // mock implementation of `newCopySlotWeek` within the component
-      jest
-        .spyOn(copyPasteActions, "copySlotsWeek")
-        .mockImplementation(mockCopyWeekImplementation);
+      vi.spyOn(copyPasteActions, "copySlotsWeek").mockImplementation(
+        mockCopyWeekImplementation
+      );
       render(
         <SlotOperationButtons
           date={testDate}
@@ -86,7 +87,7 @@ describe("SlotOperationButtons", () => {
   });
 
   describe("'CopyButton' edge cases/error handling test", () => {
-    const spyConsoleError = jest.spyOn(console, "error");
+    const spyConsoleError = vi.spyOn(console, "error");
 
     test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
       render(<CopyButton />);

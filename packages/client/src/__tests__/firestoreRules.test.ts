@@ -1,5 +1,6 @@
+import { describe } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";

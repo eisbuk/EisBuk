@@ -1,5 +1,6 @@
+import { describe, vi, expect, test, afterEach } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import { User } from "@firebase/auth";
@@ -13,22 +14,22 @@ import { getNewStore } from "@/store/createStore";
 // a minimalist dummy entry for a user
 const testUser: User = { uid: "some uuid", email: defaultUser.email } as User;
 
-const mockQueryAuthStatus = jest.fn();
+const mockQueryAuthStatus = vi.fn();
 // mock the entire functions package as we're only using `httpsCallable`
-jest.mock("@firebase/functions", () => ({
-  getFunctions: jest.fn(),
+vi.mock("@firebase/functions", () => ({
+  getFunctions: vi.fn(),
   // httpsCallable will always return mockQueryAuthStatus as `queryAuthStatus`
   // is the only usage of `httpsCallable` in `authOperations` package
   httpsCallable: () => mockQueryAuthStatus,
 }));
-jest.mock("@firebase/app", () => ({
-  ...jest.requireActual("@firebase/app"),
-  getApp: jest.fn(),
+vi.mock("@firebase/app", () => ({
+  ...vi.importActual("@firebase/app"),
+  getApp: vi.fn(),
 }));
 
 describe("Auth operations", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("test updating auth state on user changed", () => {

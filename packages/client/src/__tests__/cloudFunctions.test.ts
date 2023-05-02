@@ -1,5 +1,6 @@
+import { describe, expect } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";

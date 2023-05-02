@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach, beforeEach } from "vitest";
 import { screen, render, cleanup, waitFor } from "@testing-library/react";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
@@ -12,7 +13,7 @@ import * as customerOperations from "@/store/actions/customerOperations";
 
 import { saul } from "@/__testData__/customers";
 
-const mockOnClose = jest.fn();
+const mockOnClose = vi.fn();
 // Mock extendBookingDate to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
 // rather than just being called
@@ -20,12 +21,12 @@ const mockExtendBookingDate = (...params: any) => ({
   params,
   type: "extendBookingDate",
 });
-jest
-  .spyOn(customerOperations, "extendBookingDate")
-  .mockImplementation(mockExtendBookingDate as any);
+vi.spyOn(customerOperations, "extendBookingDate").mockImplementation(
+  mockExtendBookingDate as any
+);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -42,7 +43,7 @@ describe("ExtendBookingDateDialog", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 

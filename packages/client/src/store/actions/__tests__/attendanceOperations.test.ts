@@ -1,5 +1,6 @@
+import { describe, vi, expect, afterEach } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
@@ -33,8 +34,8 @@ const slotId = observedSlotId;
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 const shortSaul = {
   customerId: saul.id,
@@ -44,7 +45,7 @@ const shortSaul = {
 
 describe("Attendance operations ->", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("markAttendance ->", () => {
@@ -147,7 +148,7 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockImplementationOnce(() => {
           throw testError;
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await markAttendance({
           ...shortSaul,
           slotId,
@@ -265,7 +266,7 @@ describe("Attendance operations ->", () => {
         getFirestoreSpy.mockImplementationOnce(() => {
           throw testError;
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await markAbsence({
           ...shortSaul,
           slotId,

@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test } from "vitest";
 import { screen } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
 
@@ -22,29 +23,39 @@ import { saul } from "@/__testData__/customers";
 import { getSecretKey } from "@/store/selectors/app";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-const mockUseParams = jest.fn();
-jest.mock("react-router", () => ({
-  ...jest.requireActual("react-router"),
-  useParams: () => mockUseParams(),
-}));
+const mockUseParams = vi.fn();
+vi.mock("react-router", async () => {
+  const rr = (await vi.importActual("react-router")) as object;
 
-const mockUseFirestoreSubscribe = jest.fn();
-jest.mock("@eisbuk/react-redux-firebase-firestore", () => ({
-  ...jest.requireActual("@eisbuk/react-redux-firebase-firestore"),
-  useFirestoreSubscribe: (...params: any[]) =>
-    mockUseFirestoreSubscribe(...params),
-}));
+  return {
+    ...rr,
+    useParams: () => mockUseParams(),
+  };
+});
+
+const mockUseFirestoreSubscribe = vi.fn();
+vi.mock("@eisbuk/react-redux-firebase-firestore", async () => {
+  const rrff = (await vi.importActual(
+    "@eisbuk/react-redux-firebase-firestore"
+  )) as object;
+
+  return {
+    ...rrff,
+    useFirestoreSubscribe: (...params: any[]) =>
+      mockUseFirestoreSubscribe(...params),
+  };
+});
 
 // The following mocks are here as to not break the app
 // and keep the test somewhat sandboxed
-jest.mock("@/store/actions/bookingOperations", () => ({
-  bookSlot: jest.fn(),
-  cancelBooking: jest.fn(),
+vi.mock("@/store/actions/bookingOperations", () => ({
+  bookSlot: vi.fn(),
+  cancelBooking: vi.fn(),
 }));
-jest.mock("@/features/notifications/hooks", () => ({
+vi.mock("@/features/notifications/hooks", () => ({
   useNotifications: () => ({
     active: undefined,
-    handleRemoveNotification: jest.fn(),
+    handleRemoveNotification: vi.fn(),
   }),
 }));
 

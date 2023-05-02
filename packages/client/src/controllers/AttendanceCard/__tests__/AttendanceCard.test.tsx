@@ -1,10 +1,10 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test } from "vitest";
 import { screen } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
 import i18n, { AttendanceAria } from "@eisbuk/translations";
 import { CustomerWithAttendance } from "@eisbuk/shared";
@@ -20,8 +20,8 @@ import { renderWithRouter } from "@/__testUtils__/wrappers";
 import { gus, saul, walt } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -53,13 +53,13 @@ const mockMarkAbsImplementation = (
 });
 
 // mock implementations of attendance operations for easier testing
-jest
-  .spyOn(attendanceOperations, "markAttendance")
-  .mockImplementation(mockMarkAttImplementation as any);
+vi.spyOn(attendanceOperations, "markAttendance").mockImplementation(
+  mockMarkAttImplementation as any
+);
 
-jest
-  .spyOn(attendanceOperations, "markAbsence")
-  .mockImplementation(mockMarkAbsImplementation as any);
+vi.spyOn(attendanceOperations, "markAbsence").mockImplementation(
+  mockMarkAbsImplementation as any
+);
 
 // provide a polyfill for element.animate function
 if (typeof Element.prototype.animate !== "function") {

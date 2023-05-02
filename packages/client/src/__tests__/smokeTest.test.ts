@@ -1,5 +1,6 @@
+import { describe, expect, test } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import i18n, { ActionButton } from "@eisbuk/translations";

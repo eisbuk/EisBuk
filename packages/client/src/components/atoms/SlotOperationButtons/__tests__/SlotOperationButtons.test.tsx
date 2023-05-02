@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React, { useContext } from "react";
+import { describe, vi, test, afterEach } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -30,9 +31,9 @@ import DeleteButton from "../DeleteButton";
 
 import { baseSlot } from "@/__testData__/slots";
 
-jest.mock("react-redux", () => ({
-  useDispatch: () => jest.fn(),
-  useSelector: () => jest.fn(),
+vi.mock("react-redux", () => ({
+  useDispatch: () => vi.fn(),
+  useSelector: () => vi.fn(),
 }));
 
 const dummyDate = DateTime.fromISO("2021-03-01");

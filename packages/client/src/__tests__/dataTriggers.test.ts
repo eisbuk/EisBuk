@@ -1,5 +1,6 @@
+import { describe, expect } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 import { v4 as uuid } from "uuid";
 

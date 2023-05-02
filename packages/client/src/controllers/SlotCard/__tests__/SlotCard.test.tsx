@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, beforeEach } from "vitest";
 import { cleanup, screen, render } from "@testing-library/react";
 
 import SlotCard from "../SlotCardController";
@@ -14,21 +15,21 @@ import {
 } from "@eisbuk/shared";
 import { baseSlot } from "@/__testData__/slots";
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
+vi.mock("react-redux", () => ({
+  ...vi.importActual("react-redux"),
   useDispatch: () => mockDispatch,
 }));
 
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
+vi.mock("react-router-dom", () => ({
+  ...vi.importActual("react-router-dom"),
   useParams: () => ({ secretKey: "secret_key" }),
 }));
 
 describe("SlotCard", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Smoke test", () => {
@@ -65,7 +66,7 @@ describe("SlotCard", () => {
   describe("SlotOperationButtons functionality", () => {
     beforeEach(() => {
       render(<SlotCard {...baseSlot} enableEdit />);
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     test("should open slot form on edit slot click", () => {
@@ -88,7 +89,7 @@ describe("SlotCard", () => {
     test("should show delete-disabled dialog on delete button click if delete disabled", () => {
       cleanup();
       render(<SlotCard {...baseSlot} enableEdit disableDelete />);
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       screen.getByTestId(__deleteButtonId__).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(mockDispatchCallPayload.component).toEqual(
@@ -99,7 +100,7 @@ describe("SlotCard", () => {
   });
 
   describe("Test clicking on slot card", () => {
-    const mockOnClick = jest.fn();
+    const mockOnClick = vi.fn();
 
     test("should fire 'onClick' function if provided", () => {
       render(<SlotCard {...baseSlot} enableEdit onClick={mockOnClick} />);

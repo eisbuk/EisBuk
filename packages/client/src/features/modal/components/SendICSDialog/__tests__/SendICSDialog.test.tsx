@@ -1,7 +1,8 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
+import { describe, vi, expect, test, afterEach, beforeEach } from "vitest";
 import React from "react";
 import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -15,19 +16,18 @@ import * as icsOperations from "@/store/actions/icsCalendarOperations";
 
 import { saul } from "@/__testData__/customers";
 
-jest
-  .spyOn(icsOperations, "sendBookingsCalendar")
+vi.spyOn(icsOperations, "sendBookingsCalendar")
   // Mock the thunk to, instead of returning the thunk to the caller (redux dispatch),
   // return the parameters it was called with, so we can assert on them.
-  .mockImplementation((...params) => params as any);
+  .mockImplementation((...params: any[]) => params as any);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
+  ...vi.importActual("react-redux"),
   useDispatch: () => mockDispatch,
 }));
 
-const mockOnClose = jest.fn();
+const mockOnClose = vi.fn();
 
 describe("SendICSDialog", () => {
   describe("ICS File Email Test", () => {
@@ -43,7 +43,7 @@ describe("SendICSDialog", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     test("should close the modal on cancel", () => {

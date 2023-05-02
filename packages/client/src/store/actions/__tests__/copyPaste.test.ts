@@ -1,5 +1,6 @@
+import { describe, vi, expect, beforeEach } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
@@ -45,14 +46,14 @@ import {
   testWeek,
 } from "../__testData__/copyPaste";
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 describe("Copy Paste actions", () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("copySlotsDay", () => {

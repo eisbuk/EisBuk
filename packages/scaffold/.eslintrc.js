@@ -29,6 +29,7 @@ module.exports = {
     ".eslintrc.js",
     ".eslintrc.ui.js",
     "vite.config.ts",
+    "vitest.config.ts",
   ],
   rules: {
     // Using this rule would mean that every object literal should have quotes as properties, as such { "foo": true }

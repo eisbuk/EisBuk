@@ -1,4 +1,4 @@
-import * as reactRedux from "react-redux";
+import { describe, vi, expect, test, afterEach } from "vitest";
 
 import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -39,18 +39,18 @@ const runGetDialogTableTests = (tests: TestParams[]) =>
 // #region sendBookingsLinkSetup
 // mocks we're using to test calling the right cloud function
 // for 'sendBookingsLink'
-const mockSendMail = jest.fn();
-const mockSendSMS = jest.fn();
-const mockCreateFunctionCaller = jest
+const mockSendMail = vi.fn();
+const mockSendSMS = vi.fn();
+const mockCreateFunctionCaller = vi
   .fn()
   .mockImplementation((func, payload) =>
     func === CloudFunction.SendEmail
       ? () => mockSendMail(payload)
       : func === CloudFunction.SendSMS
       ? () => mockSendSMS(payload)
-      : jest.fn()
+      : vi.fn()
   );
-jest.mock("@/utils/firebase", () => ({
+vi.mock("@/utils/firebase", () => ({
   createCloudFunctionCaller: (...params: any[]) =>
     mockCreateFunctionCaller(...params),
 }));
@@ -58,7 +58,7 @@ jest.mock("@/utils/firebase", () => ({
 
 describe("Send bookings link dialog utils", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("getDialogPrompt", () =>
@@ -104,10 +104,10 @@ describe("Send bookings link dialog utils", () => {
     ]));
 
   describe("sendBookingsLink", () => {
-    const mockDispatch = jest.fn();
-    jest
-      .spyOn(reactRedux, "useSelector")
-      .mockImplementation(() => mockDispatch);
+    const mockDispatch = vi.fn();
+    vi.doMock("react-redux", () => ({
+      useDispatch: () => mockDispatch,
+    }));
 
     // bookings link we're using throughout
     const bookingsLink = `https://test-hostname.com${Routes.CustomerArea}/${saul.secretKey}`;

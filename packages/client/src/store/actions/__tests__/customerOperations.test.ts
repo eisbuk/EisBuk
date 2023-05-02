@@ -1,7 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
+import { describe, vi, expect, afterEach } from "vitest";
 import * as firestore from "@firebase/firestore";
 import { getDocs, collection, doc, getDoc } from "@firebase/firestore";
 
@@ -32,7 +33,7 @@ import { setupTestCustomer } from "../__testUtils__/firestore";
 
 import { saul } from "@/__testData__/customers";
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
 
 /**
  * A dummy function passed in place of `getState` to our thunk.
@@ -42,12 +43,12 @@ const mockDispatch = jest.fn();
  */
 const getState = () => ({} as any);
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 describe("customerOperations", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("updateCustomer", () => {

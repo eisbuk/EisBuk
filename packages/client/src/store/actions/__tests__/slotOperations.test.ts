@@ -1,8 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
-import * as firestore from "@firebase/firestore";
+import { describe, vi, expect, beforeEach } from "vitest";
 import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 
 import { Category, SlotType } from "@eisbuk/shared";
@@ -30,10 +30,26 @@ import {
   testSlot,
 } from "../__testData__/slotOperations";
 
-const mockDispatch = jest.fn();
+const mockDispatch = vi.fn();
+vi.mock("react-redux", async () => {
+  const rr = (await vi.importActual("react-redux")) as object;
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+  return {
+    ...rr,
+    useDispatch: () => mockDispatch,
+  };
+});
+
+const getFirestoreSpy = vi.fn();
+vi.doMock("@firebase/firestore", async () => {
+  const firestore = (await vi.importActual("@firebase/firestore")) as object;
+  return {
+    ...firestore,
+    getFirestore: () => getFirestoreSpy(),
+  };
+});
+
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 /**
  * Passing this for typesafety where the actual `store.getState` isn't needed
@@ -42,7 +58,7 @@ const dummyGetState = () => ({} as any);
 
 describe("Slot operations", () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("create new slot", () => {
@@ -56,7 +72,7 @@ describe("Slot operations", () => {
             setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        getFirestoreSpy.mockImplementation(db as any);
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
@@ -89,7 +105,7 @@ describe("Slot operations", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementation(() => {
           throw testError;
         });
         // run the thunk
@@ -123,7 +139,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        getFirestoreSpy.mockImplementation(db as any);
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // updates we're applying to slot
@@ -166,7 +182,7 @@ describe("Slot operations", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementation(() => {
           throw testError;
         });
         // run the failing thunk
@@ -227,7 +243,7 @@ describe("Slot operations", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        getFirestoreSpy.mockImplementation(() => {
           throw testError;
         });
         // run the failing thunk

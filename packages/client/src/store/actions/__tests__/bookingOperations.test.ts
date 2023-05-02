@@ -1,5 +1,6 @@
+import { describe, vi, expect, beforeEach } from "vitest";
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
@@ -49,8 +50,8 @@ import { waitForCondition } from "@/__testUtils__/helpers";
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 const { secretKey } = saul;
 
@@ -91,7 +92,7 @@ const testSlot = {
 
 describe("Booking operations", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("'bookInterval'", () => {
@@ -131,7 +132,7 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         getFirestoreSpy.mockReturnValueOnce(db as any);
         await testThunk(mockDispatch, store.getState);
         // get all `bookedSlots` for customer
@@ -179,7 +180,7 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -216,7 +217,7 @@ describe("Booking operations", () => {
               organization,
             }),
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
@@ -265,7 +266,7 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -311,7 +312,7 @@ describe("Booking operations", () => {
               }),
             ]),
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
@@ -364,7 +365,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
           bookingNotes: "",
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -393,7 +394,7 @@ describe("Booking operations", () => {
             }),
           ]),
       });
-      const mockDispatch = jest.fn();
+      const mockDispatch = vi.fn();
       // make sure tested thunk uses test generated organization
       getOrganizationSpy.mockReturnValue(organization);
       // create a thunk curried with test input values
@@ -419,12 +420,12 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        vi.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
           throw testError;
         });
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -452,7 +453,7 @@ describe("Booking operations", () => {
           );
         },
       });
-      const mockDispatch = jest.fn();
+      const mockDispatch = vi.fn();
       // make sure tested thunk uses test generated organization
       getOrganizationSpy.mockReturnValue(organization);
       // create a thunk curried with test input values
@@ -483,7 +484,7 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        vi.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
           throw testError;
         });
         // run the thunk
@@ -491,7 +492,7 @@ describe("Booking operations", () => {
           ...saul,
           registrationCode: "",
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         await testThunk(mockDispatch, () => ({} as any));
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

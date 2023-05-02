@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach, beforeEach } from "vitest";
 import { screen, render } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -15,8 +16,8 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 const month = DateTime.fromISO("2022-01-01");
 
 describe("FinalizeBookingsDialog", () => {
-  const mockOnClose = jest.fn();
-  const finalizeBookingsSpy = jest
+  const mockOnClose = vi.fn();
+  const finalizeBookingsSpy = vi
     .spyOn(finalizeUtils, "finalizeBookings")
     .mockImplementation((() => {}) as any);
 
@@ -32,7 +33,7 @@ describe("FinalizeBookingsDialog", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should call onClose on cancel", () => {

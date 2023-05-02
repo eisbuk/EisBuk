@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test } from "vitest";
 import { screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -20,18 +21,22 @@ import { renderWithRedux } from "@/__testUtils__/wrappers";
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
-  ...jest.requireActual("react-redux"),
-  useDispatch: () => mockDispatch,
-}));
+const mockDispatch = vi.fn();
+vi.mock("react-redux", async () => {
+  const rr = (await vi.importActual("react-redux")) as object;
+
+  return {
+    ...rr,
+    useDispatch: () => mockDispatch,
+  };
+});
 
 describe("BookingsCountdown", () => {
   test("should open a finalize bookings modal on 'Finalize' button click", () => {
     // Set up test state so that the second deadline is shown
     const testDate = DateTime.fromISO("2022-01-01");
     // In order to keep tests consistent we need to also mock the `Date.now`
-    jest.spyOn(Date, "now").mockReturnValue(testDate.toMillis());
+    vi.spyOn(Date, "now").mockReturnValue(testDate.toMillis());
     const month = testDate;
     const extendedDate = testDate.plus({ days: 2 }).toISODate();
     const store = getNewStore();

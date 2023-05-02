@@ -1,3 +1,4 @@
+import { describe, vi, expect } from "vitest";
 import { Customer } from "@eisbuk/shared";
 
 import { getCustomerDocPath } from "@/utils/firestore";
@@ -20,7 +21,7 @@ describe("Finalize bookings dialog utils", () => {
         const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
         saulRef.set({ ...saul, extendedDate: "2022-01-01" } as Customer);
         // We want the tests to use test organization rather than the default one
-        jest.spyOn(getters, "getOrganization").mockReturnValue(organization);
+        vi.spyOn(getters, "getOrganization").mockReturnValue(organization);
         await finalizeBookings(saul.id, saul.secretKey);
         const { extendedDate } = (await saulRef.get()).data() as Customer;
         expect(extendedDate).toBeFalsy();

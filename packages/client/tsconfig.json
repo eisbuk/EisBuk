@@ -13,8 +13,8 @@
     "dist",
     "scripts",
     ".eslintrc.js",
-    // TODO: remove this after customer-area-rehaul cleanup
-    "src/pages/customer_area_archive/*"
+    "vitest.config.ts",
+    "vitest.setup.ts"
   ],
   "include": ["src", "vite.config.ts"]
 }

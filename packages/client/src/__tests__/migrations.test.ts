@@ -1,7 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
+import { describe, expect } from "vitest";
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
 import {
@@ -86,7 +87,7 @@ describe("Migrations", () => {
    * on a feature which will probably be ran twice during the duration of the project.
    * We can quickly revisit this when doing test chores, if not, it can easily be deleted.
    */
-  xdescribe("'deleteOrphanedBookings'", () => {
+  describe.skip("'deleteOrphanedBookings'", () => {
     testWithEmulator(
       "should remove bookings without customer entries",
       async () => {
