@@ -19,6 +19,7 @@ export interface Props
   numAttended: number;
   slot: SlotInterface;
   onAddCustomers?: () => void;
+  disableAddCustomers?: boolean;
 }
 
 /**
@@ -33,6 +34,7 @@ const AttendanceCardContainer: React.FC<Props> = ({
   numAttended,
   children,
   onAddCustomers,
+  disableAddCustomers = false,
   slot,
   ...props
 }) => {
@@ -68,14 +70,19 @@ const AttendanceCardContainer: React.FC<Props> = ({
         </div>
       </div>
 
-      <ul>{children}</ul>
+      <ul className="divide-y divide-gray-400">{children}</ul>
 
       <Divider />
 
       <IconButton
         aria-label={t(AttendanceAria.AddAttendedCustomers)}
-        className="!w-full h-12 py-1 text-center rounded-none hover:bg-gray-300 active:bg-gray-200 active:text-gray-500"
+        className={`!w-full h-12 py-1 text-center rounded-none ${
+          disableAddCustomers
+            ? "text-gray-300"
+            : "active:bg-gray-200 active:text-gray-500"
+        }`}
         onClick={onAddCustomers}
+        disabled={disableAddCustomers}
       >
         <Plus />
       </IconButton>

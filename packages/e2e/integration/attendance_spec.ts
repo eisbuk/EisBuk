@@ -56,7 +56,7 @@ describe("AddAttendedCustomersDialog", () => {
         .should("not.exist");
     });
 
-    it("closes the add-athletes-dialog when there are no more customers to show", () => {
+    it("closes the add-athletes-dialog and disables the 'add customers' button when there are no more customers to show", () => {
       cy.getAttrWith(
         "aria-label",
         i18n.t(AttendanceAria.AddAttendedCustomers) as string
@@ -70,6 +70,12 @@ describe("AddAttendedCustomersDialog", () => {
 
       // All customers are added, add-athletes-dialog should automatically close
       cy.getAttrWith("aria-label", "add-athletes-dialog").should("not.exist");
+
+      // There are no more customers to add, the add customers button should be disabled
+      cy.getAttrWith(
+        "aria-label",
+        i18n.t(AttendanceAria.AddAttendedCustomers) as string
+      ).should("be.disabled");
     });
   });
 

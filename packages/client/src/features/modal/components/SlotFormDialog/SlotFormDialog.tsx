@@ -24,7 +24,7 @@ const SlotFormDialog: React.FC<SlotFormDialogProps> = ({
   return (
     <SlotForm
       {...props}
-      className="max-w-[720px] h-full max-h-[90vh] mx-auto shadow-lg rounded border border-cyan-900"
+      className="max-w-[640px] w-screen h-full max-h-[90vh] mx-auto shadow-lg rounded border border-cyan-900"
       onClose={onClose}
       onSubmit={handleSubmit}
     />

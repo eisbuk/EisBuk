@@ -44,6 +44,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
     >
       <div className="w-full flex flex-col gap-x-8 gap-y-4 sm:flex-row sm:justify-evenly">
         <Field
+          key="startTime"
           name={`${name}.startTime`}
           label={t("SlotForm.StartTime")}
           data-testid={__startTimeInputId__}
@@ -52,6 +53,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
           error={Boolean(error)}
         />
         <Field
+          key="endTime"
           name={`${name}.endTime`}
           label={t("SlotForm.EndTime")}
           data-testid={__endTimeInputId__}

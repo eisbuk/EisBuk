@@ -96,36 +96,44 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       numAttended={attendedCustomers.length}
       slot={slot}
       onAddCustomers={openAddCustomers}
+      disableAddCustomers={!filteredCustomers.length}
     >
       {attendedCustomers.map(
         (customer) =>
           customer.bookedInterval && (
-            <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
-              <UserAttendance
-                {...customer}
+            <div
+            // This div is here to show the border provided by the 'divide' class on the container,
+            // which, doesn't work on 'a' element rendered by 'Link', for some reason
+            >
+              <Link
                 key={customer.id}
-                intervals={orderedIntervals}
-                markAttendance={({ attendedInterval }) =>
-                  dispatch(
-                    createAttendanceThunk({
-                      customerId: customer.id,
-                      name: customer.name,
-                      surname: customer.surname,
-                      attendedInterval,
-                    })
-                  )
-                }
-                markAbsence={() =>
-                  dispatch(
-                    createAbsenceThunk({
-                      customerId: customer.id,
-                      name: customer.name,
-                      surname: customer.surname,
-                    })
-                  )
-                }
-              />
-            </Link>
+                to={`${PrivateRoutes.Athletes}/${customer.id}`}
+              >
+                <UserAttendance
+                  {...customer}
+                  intervals={orderedIntervals}
+                  markAttendance={({ attendedInterval }) =>
+                    dispatch(
+                      createAttendanceThunk({
+                        customerId: customer.id,
+                        name: customer.name,
+                        surname: customer.surname,
+                        attendedInterval,
+                      })
+                    )
+                  }
+                  markAbsence={() =>
+                    dispatch(
+                      createAbsenceThunk({
+                        customerId: customer.id,
+                        name: customer.name,
+                        surname: customer.surname,
+                      })
+                    )
+                  }
+                />
+              </Link>
+            </div>
           )
       )}
 
@@ -134,32 +142,39 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       {attendedCustomers.map(
         (customer) =>
           !customer.bookedInterval && (
-            <Link to={`${PrivateRoutes.Athletes}/${customer.id}`}>
-              <UserAttendance
-                {...customer}
+            <div
+            // This div is here to show the border provided by the 'divide' class on the container,
+            // which, doesn't work on 'a' element rendered by 'Link', for some reason
+            >
+              <Link
                 key={customer.id}
-                intervals={orderedIntervals}
-                markAttendance={({ attendedInterval }) =>
-                  dispatch(
-                    createAttendanceThunk({
-                      customerId: customer.id,
-                      name: customer.name,
-                      surname: customer.surname,
-                      attendedInterval,
-                    })
-                  )
-                }
-                markAbsence={() =>
-                  dispatch(
-                    createAbsenceThunk({
-                      customerId: customer.id,
-                      name: customer.name,
-                      surname: customer.surname,
-                    })
-                  )
-                }
-              />
-            </Link>
+                to={`${PrivateRoutes.Athletes}/${customer.id}`}
+              >
+                <UserAttendance
+                  {...customer}
+                  intervals={orderedIntervals}
+                  markAttendance={({ attendedInterval }) =>
+                    dispatch(
+                      createAttendanceThunk({
+                        customerId: customer.id,
+                        name: customer.name,
+                        surname: customer.surname,
+                        attendedInterval,
+                      })
+                    )
+                  }
+                  markAbsence={() =>
+                    dispatch(
+                      createAbsenceThunk({
+                        customerId: customer.id,
+                        name: customer.name,
+                        surname: customer.surname,
+                      })
+                    )
+                  }
+                />
+              </Link>
+            </div>
           )
       )}
     </AttendanceCardContainer>

@@ -18,6 +18,7 @@ export interface TextInputProps extends InputHTMLAttributes {
   inputClassName?: string;
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;
+  innerRef?: React.RefObject<HTMLInputElement>;
   /**
    * `error` prop is here in case we want to explicitly invelidate the field from the caller.
    * This is convenient in cases we want to invalidate (and color red) multiple text inputs
@@ -40,6 +41,12 @@ const TextInput: React.FC<TextInputFieldProps> = ({
   containerClassName = "",
   inputClassName = "",
   error = false,
+  // We sometimes use the innerRef through Formik's FieldProps,
+  // but then that innerRef gets passed along to this component. This
+  // way, we're making sure it doesn't end up in the DOM element (thus avoiding React warning)
+  //
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  innerRef,
   ...props
 }) => {
   const { field, form, ...rest } = props;
@@ -76,10 +83,13 @@ const TextInput: React.FC<TextInputFieldProps> = ({
       </label>
       <div className={containerClasses}>
         {StartAdornment && (
-          <div className={adornmentClasses}>{StartAdornment}</div>
+          <div key="startAdornment" className={adornmentClasses}>
+            {StartAdornment}
+          </div>
         )}
 
         {React.createElement(inputElement, {
+          key: "inputElement",
           type: "text",
           id: name,
           placeholder: placeholder,
@@ -90,7 +100,11 @@ const TextInput: React.FC<TextInputFieldProps> = ({
           ...rest,
         })}
 
-        {EndAdornment && <div className={adornmentClasses}>{EndAdornment}</div>}
+        {EndAdornment && (
+          <div key="endEdornment" className={adornmentClasses}>
+            {EndAdornment}
+          </div>
+        )}
       </div>
       <p className={helpTextClasses}>{!disabled && supportContent}</p>
     </div>
