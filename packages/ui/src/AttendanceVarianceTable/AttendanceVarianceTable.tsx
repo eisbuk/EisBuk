@@ -73,58 +73,66 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
   const items = getTableItems(dates, data);
 
   return (
-    <Table
-      headers={headers}
-      items={items}
-      renderHeaders={(headers) => (
-        <tr>
-          {Object.keys(headers).map((key) => (
-            <TableCell
-              type={CellType.Header}
-              key={key}
-              textAlign={
-                headers[key] !== t(AttendanceVarianceHeaders.Athlete)
-                  ? CellTextAlign.Center
-                  : CellTextAlign.Left
-              }
-              isWaypoint={isWeekend(key)}
-            >
-              {headers[key]}
-            </TableCell>
-          ))}
-        </tr>
-      )}
-      renderRow={(rowItem, rowIx, itemArr) => {
-        const { type: rowType, ...data } = rowItem;
+    <div className="flex flex-col">
+      <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+        <div className="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
+          <div className="shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <Table
+              headers={headers}
+              items={items}
+              renderHeaders={(headers) => (
+                <tr>
+                  {Object.keys(headers).map((key) => (
+                    <TableCell
+                      type={CellType.Header}
+                      key={key}
+                      textAlign={
+                        headers[key] !== t(AttendanceVarianceHeaders.Athlete)
+                          ? CellTextAlign.Center
+                          : CellTextAlign.Left
+                      }
+                      isWaypoint={isWeekend(key)}
+                    >
+                      {headers[key]}
+                    </TableCell>
+                  ))}
+                </tr>
+              )}
+              renderRow={(rowItem, rowIx, itemArr) => {
+                const { type: rowType, ...data } = rowItem;
 
-        const rowClasses = rowIx % 2 === 0 ? undefined : "bg-white";
-        const cellClasses =
-          rowIx === itemArr.length - 1 ? undefined : "border-b-2";
+                const rowClasses = rowIx % 2 === 0 ? undefined : "bg-white";
+                const cellClasses =
+                  rowIx === itemArr.length - 1 ? undefined : "border-b-2";
 
-        return (
-          <tr key={rowIx} className={rowClasses}>
-            {Object.entries(data).map(([date, cellItem], itemIx) =>
-              rowType === HoursType.Booked ? (
-                <BookedRowCells
-                  key={`${date}-${cellItem}`}
-                  cellItem={cellItem}
-                  itemIx={itemIx}
-                  date={date}
-                />
-              ) : (
-                <DeltaRowCells
-                  key={`${date}-${cellItem}`}
-                  cellItem={cellItem}
-                  itemIx={itemIx}
-                  date={date}
-                  classes={cellClasses}
-                />
-              )
-            )}
-          </tr>
-        );
-      }}
-    />
+                return (
+                  <tr key={rowIx} className={rowClasses}>
+                    {Object.entries(data).map(([date, cellItem], itemIx) =>
+                      rowType === HoursType.Booked ? (
+                        <BookedRowCells
+                          key={`${date}-${cellItem}`}
+                          cellItem={cellItem}
+                          itemIx={itemIx}
+                          date={date}
+                        />
+                      ) : (
+                        <DeltaRowCells
+                          key={`${date}-${cellItem}`}
+                          cellItem={cellItem}
+                          itemIx={itemIx}
+                          date={date}
+                          classes={cellClasses}
+                        />
+                      )
+                    )}
+                  </tr>
+                );
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

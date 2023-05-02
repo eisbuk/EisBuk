@@ -1,22 +1,40 @@
 import React from "react";
-import i18n, { OrganizationLabel } from "@eisbuk/translations";
-import { CountryCodesDropdownFormik } from "@eisbuk/ui";
+import { Field, FieldProps } from "formik";
 
-import FormSection, {
-  FormSectionFieldProps,
-} from "@/components/atoms/FormSection";
+import i18n, { OrganizationLabel } from "@eisbuk/translations";
+import { CountryCodesDropdownFormik, FormSection, TextInput } from "@eisbuk/ui";
 
 const GeneralSettings: React.FC = () => {
   return (
     <>
-      <FormSection content={generalFields} title="General" />
-      <FormSection content={emailFields} title="Email" />
-      <FormSection content={smsFields} title="SMS" />
+      <FormSection title="General">
+        {generalFields.map(({ component = TextInput, ...field }) => (
+          <Field key={field.name} component={component} {...field} />
+        ))}
+      </FormSection>
+      <FormSection title="Email">
+        {emailFields.map(({ component = TextInput, ...field }) => (
+          <Field key={field.name} component={component} {...field} />
+        ))}
+      </FormSection>
+      <FormSection title="SMS">
+        {smsFields.map(({ component = TextInput, ...field }) => (
+          <Field key={field.name} component={component} {...field} />
+        ))}
+      </FormSection>
     </>
   );
 };
 
 // #region fieldSetup
+interface FormSectionFieldProps {
+  name: string;
+  label: string;
+  multiline?: boolean;
+  rows?: number;
+  component?: React.FC<Pick<FieldProps, "field">>;
+}
+
 const generalFields: FormSectionFieldProps[] = [
   {
     name: "displayName",

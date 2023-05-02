@@ -173,7 +173,7 @@ export enum EmailTemplateLabel {
   BookingsLink = "EmailTemplateLabel.BookingsLink",
   Name = "EmailTemplateLabel.Name",
   Surname = "EmailTemplateLabel.Surname",
-  IcsFile = "EmailTemplateLabel.IcsFile",
+  CalendarFile = "EmailTemplateLabel.IcsFile",
   BookingsMonth = "EmailTemplateLabel.BookingsMonth",
   ExtendedBookingsDate = "EmailTemplateLabel.ExtendedBookingsDate",
   Subject = "EmailTemplateLabel.Subject",
@@ -218,9 +218,6 @@ export enum ActionButton {
   SignIn = "ActionButton.SignIn",
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
   CodeNotReceived = "ActionButton.CodeNotReceived",
-
-  CreateSlot = "ActionButton.CreateSlot",
-  EditSlot = "ActionButton.EditSlot",
 
   AddAthlete = "ActionButton.AddAthlete",
   AddCustomers = "ActionButton.AddCustomers",

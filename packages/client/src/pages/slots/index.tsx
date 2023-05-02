@@ -25,7 +25,7 @@ import SlotOperationButtons, {
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
-import SlotCard from "@/components/atoms/SlotCard";
+import SlotCard from "@/controllers/SlotCard";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";
 
@@ -183,8 +183,10 @@ const SlotsPage: React.FC = () => {
                   );
 
                   return (
-                    <div key={slot.id} className="col-span-2 md:col-span-1">
+                    <div className="col-span-2 xl:col-span-1">
                       <SlotCard
+                        className="w-full"
+                        key={slot.id}
                         {...{ ...slot, selected }}
                         disableDelete={hasBookings}
                         onClick={

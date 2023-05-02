@@ -131,9 +131,11 @@ describe("Download ics file to Add To Calendar", () => {
       .first()
       .click({ force: true });
 
-    cy.contains(i18n.t(ActionButton.AddToCalendar).toString()).click();
-    cy.getAttrWith("type", "email").type(saul.email || "valid@email.com");
-    cy.getAttrWith("type", "submit").click();
+    cy.contains(i18n.t(ActionButton.AddToCalendar) as string).click();
+    cy.getAttrWith("type", "email").clearAndType(
+      saul.email || "valid@email.com"
+    );
+    cy.clickButton(i18n.t(ActionButton.Send));
 
     cy.contains(i18n.t(NotificationMessage.SlotsAddedToCalendar) as string);
     cy.contains(i18n.t(NotificationMessage.EmailSent) as string);

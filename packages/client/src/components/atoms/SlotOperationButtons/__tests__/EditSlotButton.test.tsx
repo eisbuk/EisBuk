@@ -31,7 +31,7 @@ describe("SlotOperationButtons", () => {
   });
 
   describe("'EditSlotButton' functionality test", () => {
-    test("should open 'SlotForm' on click (with current slot as 'slotToEdit')", () => {
+    test("should open 'SlotFormDialog' on click (with current slot as 'slotToEdit')", () => {
       render(
         <SlotOperationButtons
           slot={baseSlot}
@@ -42,7 +42,7 @@ describe("SlotOperationButtons", () => {
       );
       screen.getByTestId(__editSlotButtonId__).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
-      expect(dispatchCallPayload.component).toEqual("SlotForm");
+      expect(dispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(dispatchCallPayload.props).toEqual({
         date: baseSlot.date,
         slotToEdit: baseSlot,

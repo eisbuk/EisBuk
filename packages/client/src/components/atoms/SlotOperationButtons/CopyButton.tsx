@@ -2,8 +2,6 @@ import React, { useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { DateTime } from "luxon";
 
-import Badge from "@mui/material/Badge";
-
 import { Copy } from "@eisbuk/svg";
 
 import { useTranslation, SlotsAria } from "@eisbuk/translations";
@@ -146,16 +144,19 @@ const CopiedSlotsBadge: React.FC<{
   };
 
   return (
-    <Badge
+    <div
+      className="relative"
       aria-label={ariaLabelLookup[contextType]}
       data-testid={testIdLookup[contextType]}
-      aria-hidden={!displayBadge}
-      color="secondary"
-      variant="dot"
-      invisible={!displayBadge}
     >
+      <div
+        aria-hidden={!displayBadge}
+        className={`absolute w-2.5 h-2.5 right-0 -translate-y-1/4 translate-x-1/4 bg-gray-700 rounded-full ${
+          displayBadge ? "scale-x-full scale-y-full" : "scale-x-0 scale-y-0"
+        } duration-200 ease-in`}
+      />
       {children}
-    </Badge>
+    </div>
   );
 };
 

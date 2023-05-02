@@ -1,7 +1,13 @@
 import React, { useState } from "react";
 import { Field, Form, useField } from "formik";
 
-import { Button, ButtonColor, TextInput, IconButton } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  TextInput,
+  IconButton,
+  FormSection,
+} from "@eisbuk/ui";
 import {
   useTranslation,
   ActionButton,
@@ -46,56 +52,52 @@ const AdminsField: React.FC<{
 
   return (
     <Form onSubmit={(e) => addAdmin(e)}>
-      <div className="pb-8">
-        <h2 className="text-xl text-gray-700 font-medium tracking-wide">
-          {t(OrganizationLabel.Admins)}
-        </h2>
-      </div>
+      <FormSection title={t(OrganizationLabel.Admins)}>
+        <div className="flex flex-wrap gap-2">
+          {admins.map((admin, i) => (
+            <div key={admin}>
+              <Field
+                name={`admins[${i}]`}
+                onChange={updateAdmin(i)}
+                component={TextInput}
+                value={admin}
+                disabled={admin === currentUser}
+                EndAdornment={
+                  admin !== currentUser && (
+                    <IconButton
+                      className="text-gray-500"
+                      type="button"
+                      onClick={() => removeAdmin(admin)}
+                    >
+                      <XCircle />
+                    </IconButton>
+                  )
+                }
+              />
+            </div>
+          ))}
+        </div>
 
-      <div className="flex flex-wrap gap-2">
-        {admins.map((admin, i) => (
-          <div key={admin}>
-            <Field
-              name={`admins[${i}]`}
-              onChange={updateAdmin(i)}
-              component={TextInput}
-              value={admin}
-              disabled={admin === currentUser}
-              EndAdornment={
-                admin !== currentUser && (
-                  <IconButton
-                    className="text-gray-500"
-                    type="button"
-                    onClick={() => removeAdmin(admin)}
-                  >
-                    <XCircle />
-                  </IconButton>
-                )
-              }
-            />
-          </div>
-        ))}
-      </div>
-
-      <div className="ml-full w-auto">
-        <Field
-          name="newAdmin"
-          className="ml-full w-[220px]"
-          component={TextInput}
-          onChange={handleSetAdmin}
-          value={admin}
-          placeholder={t(OrganizationLabel.AddNewAdmin)}
-          EndAdornment={
-            <Button
-              className="h-full !px-4"
-              color={ButtonColor.Primary}
-              type="submit"
-            >
-              {t(ActionButton.Add)}
-            </Button>
-          }
-        />
-      </div>
+        <div className="ml-full w-auto">
+          <Field
+            name="newAdmin"
+            className="ml-full w-[220px]"
+            component={TextInput}
+            onChange={handleSetAdmin}
+            value={admin}
+            placeholder={t(OrganizationLabel.AddNewAdmin)}
+            EndAdornment={
+              <Button
+                className="h-full !px-4 -mr-1"
+                color={ButtonColor.Primary}
+                type="submit"
+              >
+                {t(ActionButton.Add)}
+              </Button>
+            }
+          />
+        </div>
+      </FormSection>
     </Form>
   );
 };

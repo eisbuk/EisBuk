@@ -75,7 +75,7 @@ const AthletesPage: React.FC = () => {
           <button
             data-testid={__addAthleteId__}
             aria-label={t(ActionButton.AddAthlete)}
-            className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-4 text-white"
+            className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-3 text-white"
           >
             <Plus />
           </button>

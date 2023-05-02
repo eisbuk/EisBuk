@@ -74,7 +74,7 @@ const AttendanceCardContainer: React.FC<Props> = ({
 
       <IconButton
         aria-label={t(AttendanceAria.AddAttendedCustomers)}
-        className="!w-full h-12 py-2 text-center rounded-none hover:bg-gray-300 active:bg-gray-200 active:text-gray-500"
+        className="!w-full h-12 py-1 text-center rounded-none hover:bg-gray-300 active:bg-gray-200 active:text-gray-500"
         onClick={onAddCustomers}
       >
         <Plus />

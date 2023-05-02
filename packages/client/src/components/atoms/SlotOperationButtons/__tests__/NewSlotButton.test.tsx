@@ -36,7 +36,7 @@ describe("SlotOperationButtons", () => {
     // provided in order to render properly (as it's a requirement)
     const dummyDate = DateTime.fromISO("2021-03-01");
 
-    test("should open 'SlotForm' on click", () => {
+    test("should open 'SlotFormDialog' on click", () => {
       render(
         <SlotOperationButtons
           date={dummyDate}
@@ -47,7 +47,7 @@ describe("SlotOperationButtons", () => {
       );
       screen.getByTestId(__newSlotButtonId__).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
-      expect(dispatchCallPayload.component).toEqual("SlotForm");
+      expect(dispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(dispatchCallPayload.props).toEqual({
         date: dummyDate.toISODate(),
       });

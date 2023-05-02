@@ -125,11 +125,9 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     // Click the 'back' button
     cy.clickButton(i18n.t(ActionButton.Back));
 
-    // Check that we're back on the attendance page (by querying for slot interval, displayed on attendance card)
+    // Check that we're back on the admin preferences page (by querying for organization admins label)
     cy.get<string>("@organization").then((organization) =>
-      cy.contains(
-        i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
-      )
+      cy.contains(i18n.t(OrganizationLabel.Admins, { organization }) as string)
     );
 
     // Check again for saul in the birthday menu dialog
@@ -151,11 +149,9 @@ describe("Test customer avatars linking to the respective customer profiles", ()
     // Click the 'back' button
     cy.clickButton(i18n.t(ActionButton.Back));
 
-    // Check that we're back on the attendance page (by querying for slot interval, displayed on attendance card)
+    // Check that we're back on the admin preferences page (by querying for organization admins label)
     cy.get<string>("@organization").then((organization) =>
-      cy.contains(
-        i18n.t(OrganizationLabel.SettingsTitle, { organization }) as string
-      )
+      cy.contains(i18n.t(OrganizationLabel.Admins, { organization }) as string)
     );
   });
 });

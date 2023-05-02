@@ -36,12 +36,14 @@ export const renderWithRouter = (
 
 // #region FormikWrapper
 
+/** @DUPLICATE in @eisbuk/ui/src/utils/testUtils.tsx */
 type PartialFormikProps = Partial<FormikConfig<Record<string, any>>>;
 
 /**
  * Function returne a router wrapper used for custom render function.
  * @param props Props to pass onto `Formik` and `updateFormValues` function used to extract current form `values` state
  * @returns a wrapper component accepting `children` as props and wrapping them in `MemoryRouter`
+ * @DUPLICATE in @eisbuk/ui/src/utils/testUtils.tsx
  */
 const createFormikWrapper =
   (props?: PartialFormikProps): React.FC =>
@@ -64,6 +66,7 @@ const createFormikWrapper =
  * @param ui we want to wrap with `Formik` and render for test
  * @param routerParams (optional) custom props passed to `Formik` component of the wrapper
  * @returns the result of `jest.render` function
+ * @DUPLICATE in @eisbuk/ui/src/utils/testUtils.tsx
  */
 export const renderWithFormik = (
   ui: JSX.Element,

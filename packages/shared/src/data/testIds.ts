@@ -1,7 +1,24 @@
+// #region SlotCard
+export const __slotCardId__ = "slot-card";
+// #endregion SlotCard
+
 // #region SlotForm
 export const __slotFormId__ = "slot-form-title";
 export const __cancelFormId__ = "form-cancel-button";
 export const __confirmFormId__ = "form-confirm-button";
+
+export const __deleteIntervalId__ = "delete-interval-button";
+export const __startTimeInputId__ = "start-time-input";
+export const __startTimeErrorId__ = "start-time-error";
+export const __endTimeInputId__ = "end-time-input";
+export const __endTimeErrorId__ = "end-time-error";
+
+export const __incrementId__ = "increment-button";
+export const __decrementId__ = "decrement-button";
+
+export const __selectTypeId__ = "select-type-field";
+export const __selectcategoriesId__ = "select-categories-field";
+export const __timeIntervalFieldId__ = "time-interval-field";
 // #endregion SlotForm
 
 // #region ConfirmDialog

@@ -10,7 +10,8 @@ import ExtendBookingDateDialog from "./ExtendBookingDateDialog";
 import DeleteSlotDialog from "./DeleteSlotDialog";
 import DeleteSlotDisabledDialog from "./DeleteSlotDisabledDialog";
 import AddAttendedCustomersDialog from "./AddAttendedCustomersDialog";
-import SlotForm from "@/components/atoms/SlotForm";
+import SlotFormDialog from "./SlotFormDialog";
+import SendICSDialog from "./SendICSDialog";
 
 /**
  * A whitelist of components to be renderd inside of modal.
@@ -25,7 +26,8 @@ export const componentWhitelist = {
   DeleteSlotDisabledDialog,
   AddAttendedCustomersDialog,
   BirthdayDialog,
-  SlotForm,
+  SlotFormDialog,
+  SendICSDialog,
 };
 
 export { Modal, ModalContainer };

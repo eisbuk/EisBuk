@@ -56,10 +56,7 @@ const AuthContainer: React.FC<{
   className?: string;
   children: RenderFunction;
 }> = ({ children, ...props }) => (
-  <div
-    className="relative rounded shadow-[0px_3px_5px_-1px_rgba(0,0,0,0.20),0px_6px_10px_0px_rgba(0,0,0,0.14),0px_1px_18px_0px_rgba(0,0,0,0.12)]"
-    {...props}
-  >
+  <div className="relative" {...props}>
     {children({ Header, Content, Footer, TextMessage, ActionButtons })}
   </div>
 );

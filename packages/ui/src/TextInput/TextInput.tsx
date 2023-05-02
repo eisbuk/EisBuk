@@ -18,6 +18,12 @@ export interface TextInputProps extends InputHTMLAttributes {
   inputClassName?: string;
   StartAdornment?: JSX.Element | null;
   EndAdornment?: JSX.Element | null;
+  /**
+   * `error` prop is here in case we want to explicitly invelidate the field from the caller.
+   * This is convenient in cases we want to invalidate (and color red) multiple text inputs
+   * beause of some higher order error.
+   */
+  error?: boolean;
 }
 export type TextInputFieldProps = Omit<FieldProps, "meta"> & TextInputProps;
 
@@ -33,13 +39,14 @@ const TextInput: React.FC<TextInputFieldProps> = ({
   className = "",
   containerClassName = "",
   inputClassName = "",
+  error = false,
   ...props
 }) => {
   const { field, form, ...rest } = props;
   const { name } = field;
   const { touched, errors } = form;
 
-  const hasValidationError = touched[name] && errors[name];
+  const hasValidationError = (touched[name] && errors[name]) || error;
 
   const helpTextColour = hasValidationError ? "text-red-600" : "text-gray-500";
   const containerBorderWidth = disabled ? "outline-0" : "outline-1 shadow-sm";

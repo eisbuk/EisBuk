@@ -32,6 +32,7 @@ export { default as EyeOff } from "./assets/eye-off.svg";
 export { default as Identification } from "./assets/identification.svg";
 export { default as FolderOpen } from "./assets/folder-open.svg";
 export { default as Plus } from "./assets/plus.svg";
+export { default as Minus } from "./assets/minus.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";

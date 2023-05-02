@@ -17,6 +17,7 @@ const Checkbox: React.FC<CheckboxFieldProps> = ({
   field,
   className = "",
   value,
+  type = "checkbox",
   ...props
 }) => {
   const { name, value: fieldValue, checked: fieldChecked } = field;
@@ -46,10 +47,10 @@ const Checkbox: React.FC<CheckboxFieldProps> = ({
         <input
           {...field}
           {...props}
+          type={type}
           id={controlId}
           disabled={disabled}
           aria-describedby="comments-description"
-          type="checkbox"
           className="focus:ring-cyan-700 h-4 w-4 text-gray-800 border-gray-300 rounded disabled:text-gray-200"
           value={value}
           checked={checked}

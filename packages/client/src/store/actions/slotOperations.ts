@@ -8,12 +8,10 @@ import {
   deleteDoc,
 } from "@firebase/firestore";
 
-import { SlotInterface, SlotInterval } from "@eisbuk/shared";
+import { SlotInterface, SlotInterfaceLoose } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { getOrganization } from "@/lib/getters";
-
-import { SlotFormValues } from "@/lib/data";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -41,105 +39,47 @@ export const deleteSlotsWeek = (date: DateTime): void => {
 };
 
 /**
- * Takes in slot values from `SlotForm` for new slot and updates the db.
- * @param payload `SlotForm` values + slot date
+ * A thunk used to create or update the slot in firestore.
+ * If id is provided, the action is considered an update, otherwise a new slot (with firestore assigned id) is created.
+ * @param payload slot data
  */
-export const createNewSlot =
+export const upsertSlot =
   (
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    {
-      date,
-      intervals: intervalsArr,
-      ...slotData
-    }: SlotFormValues & { date: string }
+    { id, ...slot }: SlotInterfaceLoose
   ): FirestoreThunk =>
   async (dispatch) => {
+    const isCreate = !id;
+
     try {
       const db = getFirestore();
-      const slotsCollRef = collection(db, getSlotsPath(getOrganization()));
+      const organization = getOrganization();
+      const slotsCollRef = collection(db, getSlotsPath(organization));
 
-      const intervals = intervalsArr.reduce(
-        (acc, { startTime, endTime }) => ({
-          ...acc,
-          [`${startTime}-${endTime}`]: { startTime, endTime },
-        }),
-        {} as Record<string, SlotInterval>
-      );
+      if (isCreate) {
+        await addDoc(slotsCollRef, slot);
+      } else {
+        const updatedSlot = { ...slot, id };
+        const slotDocRef = doc(db, getSlotDocPath(organization, id));
+        await setDoc(slotDocRef, updatedSlot);
+      }
 
-      const newSlot: Omit<SlotInterface, "id"> = {
-        ...slotData,
-        date,
-        intervals,
-      };
-
-      await addDoc(slotsCollRef, newSlot);
+      const message = isCreate
+        ? i18n.t(NotificationMessage.SlotAdded)
+        : i18n.t(NotificationMessage.SlotUpdated);
 
       // show success notification
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.SlotAdded),
-          variant: NotifVariant.Success,
-        })
-      );
+      dispatch(enqueueNotification({ message, variant: NotifVariant.Success }));
     } catch (err) {
+      console.error(err);
+      const message = isCreate
+        ? i18n.t(NotificationMessage.SlotAddError)
+        : i18n.t(NotificationMessage.SlotUpdateError);
+
       // show error notification if operation failed
       dispatch(
         enqueueNotification({
-          message: i18n.t(NotificationMessage.SlotAddError),
-          variant: NotifVariant.Error,
-          error: err as Error,
-        })
-      );
-    }
-  };
-
-/**
- * Takes in slot values from `SlotForm` for existing slot and updates the entry in db.
- * @param payload `SlotForm` values + slot date
- */
-export const updateSlot =
-  (
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    {
-      date,
-      intervals: intervalsArr,
-      id: slotId,
-      ...slotData
-    }: SlotFormValues & { date: string; id: string }
-  ): FirestoreThunk =>
-  async (dispatch) => {
-    try {
-      const db = getFirestore();
-      const slotDocRef = doc(db, getSlotDocPath(getOrganization(), slotId));
-
-      const intervals = intervalsArr.reduce(
-        (acc, { startTime, endTime }) => ({
-          ...acc,
-          [`${startTime}-${endTime}`]: { startTime, endTime },
-        }),
-        {} as Record<string, SlotInterval>
-      );
-      const updatedSlot: SlotInterface = {
-        ...slotData,
-        date,
-        intervals,
-        id: slotId,
-      };
-
-      await setDoc(slotDocRef, updatedSlot);
-
-      // show success notification
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.SlotUpdated),
-          variant: NotifVariant.Success,
-        })
-      );
-    } catch (err) {
-      // show error notification if operation failed
-      dispatch(
-        enqueueNotification({
-          message: i18n.t(NotificationMessage.SlotUpdateError),
+          message,
           variant: NotifVariant.Error,
           error: err as Error,
         })
