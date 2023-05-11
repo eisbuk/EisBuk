@@ -1,4 +1,5 @@
 import { describe, vi, expect, test, afterEach } from "vitest";
+import { getFirestore } from "@firebase/firestore";
 
 import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -126,7 +127,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-        })(mockDispatch, getState);
+        })(mockDispatch, getState, { getFirestore });
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
         expect(mockSendMail).toHaveBeenCalledWith({
@@ -155,7 +156,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
-        })(mockDispatch, getState);
+        })(mockDispatch, getState, { getFirestore });
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
         const sentSMS = mockSendSMS.mock.calls[0][0] as SMSMessage;
@@ -190,7 +191,7 @@ describe("Send bookings link dialog utils", () => {
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-        })(mockDispatch, getState);
+        })(mockDispatch, getState, { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.Error),

@@ -1,6 +1,5 @@
 import { DateTime } from "luxon";
 import {
-  getFirestore,
   collection,
   addDoc,
   doc,
@@ -48,7 +47,7 @@ export const upsertSlot =
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     { id, ...slot }: SlotInterfaceLoose
   ): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     const isCreate = !id;
 
     try {
@@ -94,7 +93,7 @@ export const upsertSlot =
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export const deleteSlot =
   (slotId: SlotInterface["id"]): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       const slotDocRef = doc(db, getSlotDocPath(getOrganization(), slotId));

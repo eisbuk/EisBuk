@@ -3,7 +3,6 @@ import {
   DocumentData,
   DocumentReference,
   doc,
-  getFirestore,
   setDoc,
 } from "@firebase/firestore";
 
@@ -29,7 +28,7 @@ import { getCustomersPath } from "@/utils/firestore";
  */
 export const updateCustomer =
   (customer: CustomerLoose): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
 
@@ -78,7 +77,7 @@ export const updateCustomer =
  */
 export const deleteCustomer =
   (customer: Customer): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       const docRef = doc(db, getCustomersPath(getOrganization()), customer.id);
@@ -110,7 +109,7 @@ export const deleteCustomer =
 
 export const extendBookingDate =
   (customer: Customer, extendedDate: string): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       await setDoc(

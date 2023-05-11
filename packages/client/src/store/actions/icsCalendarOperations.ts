@@ -1,6 +1,6 @@
 import { ICalendar } from "datebook";
 import { DateTime } from "luxon";
-import { doc, getFirestore, setDoc } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import {
@@ -125,7 +125,7 @@ const createCalendarEvents =
     secretKey: Customer["secretKey"];
     eventUids: string[];
   }): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       const docRef = doc(

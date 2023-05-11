@@ -1,9 +1,9 @@
-import { describe, vi, expect, afterEach } from "vitest";
 /**
  * @vitest-environment node
  */
 
 import * as firestore from "@firebase/firestore";
+import { describe, vi, expect, afterEach } from "vitest";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -34,7 +34,6 @@ const slotId = observedSlotId;
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
 
-const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 const shortSaul = {
@@ -69,13 +68,13 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(store.dispatch, store.getState);
+        })(store.dispatch, store.getState, { getFirestore });
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval, bookedInterval },
@@ -107,13 +106,13 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(store.dispatch, store.getState);
+        })(store.dispatch, store.getState, { getFirestore });
         // check updated db
         // booked should be null (since customer didn't book beforehand, but did attend)
         const expectedDoc = createDocumentWithObservedAttendance({
@@ -145,15 +144,15 @@ describe("Attendance operations ->", () => {
         });
         // cause synthetic error in execution
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         const mockDispatch = vi.fn();
         await markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(mockDispatch, store.getState);
+        })(mockDispatch, store.getState, { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.MarkAttendanceError, {
@@ -189,12 +188,12 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,
           slotId,
-        })(store.dispatch, store.getState);
+        })(store.dispatch, store.getState, { getFirestore });
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval: null, bookedInterval },
@@ -228,12 +227,12 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,
           slotId,
-        })(store.dispatch, store.getState);
+        })(store.dispatch, store.getState, { getFirestore });
         // check updated db
         // the customer should be removed (only the rest of the test data should be in the doc)
         const expectedDoc = createDocumentWithObservedAttendance({});
@@ -263,14 +262,14 @@ describe("Attendance operations ->", () => {
         });
         // cause synthetic error in execution
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         const mockDispatch = vi.fn();
         await markAbsence({
           ...shortSaul,
           slotId,
-        })(mockDispatch, store.getState);
+        })(mockDispatch, store.getState, { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.MarkAbsenceError, {

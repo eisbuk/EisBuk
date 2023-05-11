@@ -1,9 +1,8 @@
-import { describe, vi, expect, beforeEach } from "vitest";
 /**
  * @vitest-environment node
  */
 
-import * as firestore from "@firebase/firestore";
+import { describe, vi, expect, beforeEach } from "vitest";
 import * as functions from "@firebase/functions";
 import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
 import { DateTime } from "luxon";
@@ -50,7 +49,6 @@ import { waitForCondition } from "@/__testUtils__/helpers";
 import { saul } from "@/__testData__/customers";
 import { baseSlot } from "@/__testData__/slots";
 
-const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 const { secretKey } = saul;
@@ -87,8 +85,12 @@ const testSlot = {
   id: bookingId,
   categories: saul.categories,
 };
-
 // #endregion testData
+
+/**
+ * In some cases, we don't need an additional 'getFirestore' thunk argument, so we're passing this as a placeholder for type safety
+ */
+const dummyGetFirestore = () => ({} as any);
 
 describe("Booking operations", () => {
   beforeEach(() => {
@@ -123,8 +125,6 @@ describe("Booking operations", () => {
         });
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
-        // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValue(db as any);
         // create a thunk curried with test input values
         const testThunk = bookInterval({
           secretKey,
@@ -133,8 +133,9 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        getFirestoreSpy.mockReturnValueOnce(db as any);
-        await testThunk(mockDispatch, store.getState);
+        // mock `getFirestore` to return test db
+        const getFirestore = () => db as any;
+        await testThunk(mockDispatch, store.getState, { getFirestore });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -170,9 +171,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause error in the execution
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = bookInterval({
           secretKey,
@@ -181,7 +182,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingError, {
@@ -221,7 +222,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // create a thunk curried with test input values
         const testThunk = cancelBooking({
           secretKey,
@@ -231,7 +232,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState);
+        await testThunk(mockDispatch, store.getState, { getFirestore });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -256,9 +257,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = cancelBooking({
           secretKey,
@@ -267,7 +268,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingCanceledError, {
@@ -316,7 +317,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // create a thunk curried with test input values
         const testThunk = updateBookingNotes({
           secretKey,
@@ -326,7 +327,7 @@ describe("Booking operations", () => {
           bookingNotes,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState);
+        await testThunk(mockDispatch, store.getState, { getFirestore });
         // Check updates
         const updatedBooking = await getDoc(
           doc(
@@ -354,9 +355,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = updateBookingNotes({
           secretKey,
@@ -366,7 +367,7 @@ describe("Booking operations", () => {
           bookingNotes: "",
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesError),
@@ -400,7 +401,9 @@ describe("Booking operations", () => {
       // create a thunk curried with test input values
       const testThunk = customerSelfUpdate({ ...saul, name: "Jimmy" });
       // test updating of the db using created thunk and middleware args from stores' setup
-      await testThunk(mockDispatch, store.getState);
+      await testThunk(mockDispatch, store.getState, {
+        getFirestore: dummyGetFirestore,
+      });
       // Check updates
       const updatedSaul = await waitForCondition({
         documentPath: getBookingsDocPath(organization, saul.secretKey),
@@ -426,7 +429,9 @@ describe("Booking operations", () => {
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        await testThunk(mockDispatch, () => ({} as any), {
+          getFirestore: dummyGetFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.CustomerProfileError),
@@ -462,7 +467,9 @@ describe("Booking operations", () => {
         registrationCode,
       });
       // test updating of the db using created thunk and middleware args from stores' setup
-      const { id, secretKey } = await testThunk(mockDispatch, store.getState);
+      const { id, secretKey } = await testThunk(mockDispatch, store.getState, {
+        getFirestore: dummyGetFirestore,
+      });
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
       // Check updates
@@ -493,7 +500,9 @@ describe("Booking operations", () => {
           registrationCode: "",
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        await testThunk(mockDispatch, () => ({} as any), {
+          getFirestore: dummyGetFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.SelfRegError),

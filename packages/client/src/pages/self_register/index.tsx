@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector, useStore } from "react-redux";
 import { Redirect, useHistory } from "react-router-dom";
+import { getFirestore } from "@firebase/firestore";
 
 import {
   CustomerLabel,
@@ -53,7 +54,8 @@ const SelfRegisterPage: React.FC = () => {
   >[0]["onSave"] = async (values, { setErrors }) => {
     const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
-      getState
+      getState,
+      { getFirestore }
     );
     if (!codeOk) {
       setErrors({

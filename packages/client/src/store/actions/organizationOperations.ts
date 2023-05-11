@@ -1,4 +1,4 @@
-import { doc, getFirestore, setDoc } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 
 import { Collection, OrganizationData } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -18,7 +18,7 @@ export const updateOrganization =
     orgData: OrganizationData,
     setSubmitting: (isSubmitting: boolean) => void
   ): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       const docRef = doc(db, getOrganizationCollPath());

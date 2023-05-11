@@ -7,6 +7,7 @@ import {
 } from "redux";
 import { composeWithDevTools } from "redux-devtools-extension";
 import thunk from "redux-thunk";
+import { getFirestore } from "@firebase/firestore";
 
 import { createFirestoreReducer } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -19,7 +20,7 @@ import { createModalReducer } from "@/features/modal/reducer";
 import { createNotificationsReducer } from "@/features/notifications/reducer";
 
 // Create Redux Store with Reducers and Initial state
-const middlewares = [thunk];
+const middlewares = [thunk.withExtraArgument({ getFirestore })];
 
 type InitialState = Partial<{
   [key in keyof LocalStore]: Partial<LocalStore[key]>;

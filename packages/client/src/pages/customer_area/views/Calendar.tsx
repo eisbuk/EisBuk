@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector, useStore } from "react-redux";
+import { getFirestore } from "@firebase/firestore";
 
 import i18n, { Alerts } from "@eisbuk/translations";
 import {
@@ -55,7 +56,7 @@ const CalendarView: React.FC = () => {
       bookingNotes,
       date,
       interval,
-    })(dispatch, getState);
+    })(dispatch, getState, { getFirestore });
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (
     <IntervalCard

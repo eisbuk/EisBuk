@@ -1,4 +1,4 @@
-import { deleteDoc, doc, getFirestore, setDoc } from "@firebase/firestore";
+import { deleteDoc, doc, setDoc } from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface, CustomerBase } from "@eisbuk/shared";
@@ -35,7 +35,7 @@ interface UpdateBooking<
  */
 export const bookInterval: UpdateBooking =
   ({ slotId, secretKey, interval, date }): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
 
@@ -74,7 +74,7 @@ export const bookInterval: UpdateBooking =
  */
 export const cancelBooking: UpdateBooking =
   ({ slotId, secretKey, date, interval }) =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
 
@@ -109,7 +109,7 @@ export const cancelBooking: UpdateBooking =
 
 export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
   ({ secretKey, slotId, bookingNotes }) =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     const organization = getOrganization();
 
     try {

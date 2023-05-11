@@ -1,5 +1,5 @@
 import { DateTime } from "luxon";
-import { collection, getFirestore, writeBatch, doc } from "@firebase/firestore";
+import { collection, writeBatch, doc } from "@firebase/firestore";
 
 import {
   SlotInterface,
@@ -151,7 +151,7 @@ export const copySlotsWeek =
  */
 export const pasteSlotsDay =
   (newDate: DateTime): FirestoreThunk =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const db = getFirestore();
 
@@ -191,7 +191,7 @@ export const pasteSlotsDay =
  */
 export const pasteSlotsWeek =
   (newWeekStart: DateTime): FirestoreThunk =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const db = getFirestore();
 

@@ -1,9 +1,9 @@
-import { describe, vi, expect, test, afterEach } from "vitest";
 /**
  * @vitest-environment node
  */
 
 import { User } from "@firebase/auth";
+import { describe, vi, expect, test, afterEach } from "vitest";
 
 import { defaultUser } from "@/__testSetup__/envData";
 
@@ -27,6 +27,8 @@ vi.mock("@firebase/app", () => ({
   getApp: vi.fn(),
 }));
 
+const dummyGetFirestore = () => ({} as any);
+
 describe("Auth operations", () => {
   afterEach(() => {
     vi.clearAllMocks();
@@ -42,7 +44,7 @@ describe("Auth operations", () => {
           isAdmin: false,
         },
       });
-      await testThunk(dispatch, getState);
+      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
       expect(getState().auth).toEqual({
         isAdmin: false,
         isEmpty: false,
@@ -56,7 +58,7 @@ describe("Auth operations", () => {
           bookingsSecretKey: "secret-key",
         },
       });
-      await testThunk(dispatch, getState);
+      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
       expect(getState().auth).toEqual({
         isAdmin: false,
         isEmpty: false,
@@ -66,7 +68,7 @@ describe("Auth operations", () => {
       });
       // try with admin user
       mockQueryAuthStatus.mockResolvedValueOnce({ data: { isAdmin: true } });
-      await testThunk(dispatch, getState);
+      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
       expect(getState().auth).toEqual({
         userData: testUser,
         isAdmin: true,
@@ -79,10 +81,12 @@ describe("Auth operations", () => {
       // set up tests with authenticated admin
       const { dispatch, getState } = getNewStore();
       mockQueryAuthStatus.mockResolvedValueOnce({ data: { isAdmin: true } });
-      await updateAuthUser(testUser)(dispatch, getState);
+      await updateAuthUser(testUser)(dispatch, getState, {
+        getFirestore: dummyGetFirestore,
+      });
       // run the thunk
       const testThunk = updateAuthUser(null);
-      await testThunk(dispatch, getState);
+      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
       expect(getState().auth).toEqual({
         userData: null,
         isAdmin: false,

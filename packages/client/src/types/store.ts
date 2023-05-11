@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
 import { Dispatch, Reducer, Action as ReducerAction } from "redux";
+import { Firestore } from "@firebase/firestore";
 
 import { User } from "@firebase/auth";
 
@@ -156,7 +157,11 @@ type GetState = () => LocalStore;
  * to local store with respect to firestore update outcome
  */
 export interface FirestoreThunk {
-  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
+  (
+    dispatch: Dispatch<any>,
+    getState: GetState,
+    extraArgument: { getFirestore: () => Firestore }
+  ): Promise<void>;
 }
 
 /** Interface used for factory functions returning reducer for a slice of the store */

@@ -1,4 +1,4 @@
-import { getFirestore, doc, setDoc } from "@firebase/firestore";
+import { doc, setDoc } from "@firebase/firestore";
 
 import {
   CustomerAttendance,
@@ -44,7 +44,7 @@ interface UpdateAttendance<
  */
 export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
   ({ attendedInterval, slotId, customerId, name, surname }) =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const localState = getState();
 
@@ -98,7 +98,7 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
  */
 export const markAbsence: UpdateAttendance =
   ({ slotId, customerId, name, surname }) =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const localState = getState();
 

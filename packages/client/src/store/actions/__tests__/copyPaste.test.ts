@@ -1,8 +1,8 @@
-import { describe, vi, expect, beforeEach } from "vitest";
 /**
  * @vitest-environment node
  */
 
+import { describe, vi, expect, beforeEach } from "vitest";
 import * as firestore from "@firebase/firestore";
 import { collection, getDocs } from "@firebase/firestore";
 import { DateTime } from "luxon";
@@ -48,7 +48,6 @@ import {
 
 const mockDispatch = vi.fn();
 
-const getFirestoreSpy = vi.spyOn(firestore, "getFirestore");
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 describe("Copy Paste actions", () => {
@@ -81,9 +80,11 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        getFirestoreSpy.mockReturnValue(db as any);
+        const getFirestore = () => db as any;
         // run the thunk against a store
-        await copySlotsDay(testDateLuxon)(store.dispatch, store.getState);
+        await copySlotsDay(testDateLuxon)(store.dispatch, store.getState, {
+          getFirestore,
+        });
         // test that slots have been added to clipboard
         expect(getDayFromClipboard(store.getState())).toEqual(testDay);
         // check that week slots have been removed from the clipboard
@@ -121,9 +122,9 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        getFirestoreSpy.mockReturnValue(db as any);
+        const getFirestore = () => db as any;
         // run the thunk against a store
-        await copySlotsWeek()(store.dispatch, store.getState);
+        await copySlotsWeek()(store.dispatch, store.getState, { getFirestore });
         // test that slots have been added to clipboard
         expect(getWeekFromClipboard(store.getState())).toEqual(expectedWeek);
         // check that day slots have been removed from the clipboard
@@ -149,12 +150,14 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        getFirestoreSpy.mockReturnValue(db as any);
+        const getFirestore = () => db as any;
         // we're pasting to wednesday of test week
         const newDate = testDateLuxon.plus({ days: 2 });
         const newDateISO = luxon2ISODate(newDate);
         // run the thunk against the store
-        await pasteSlotsDay(newDate)(mockDispatch, store.getState);
+        await pasteSlotsDay(newDate)(mockDispatch, store.getState, {
+          getFirestore,
+        });
         const numSlotsToPaste = Object.keys(testDay).length;
         // check updated slots in db
         await db.testEnv.withSecurityRulesDisabled(async (context) => {
@@ -173,11 +176,13 @@ describe("Copy Paste actions", () => {
     testWithEmulator("should display error message on fail", async () => {
       // intentionally cause error
       const testError = new Error("test");
-      getFirestoreSpy.mockImplementationOnce(() => {
+      const getFirestore = () => {
         throw testError;
-      });
+      };
       // run the faulty thunk
-      await pasteSlotsDay(testDateLuxon)(mockDispatch, () => ({} as any));
+      await pasteSlotsDay(testDateLuxon)(mockDispatch, () => ({} as any), {
+        getFirestore,
+      });
       // check the error message being enqueued
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
@@ -209,10 +214,12 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        getFirestoreSpy.mockReturnValue(db as any);
+        const getFirestore = () => db as any;
         // run the thunk with next week as week to paste to
         const newDate = testDateLuxon.plus({ weeks: 1 });
-        await pasteSlotsWeek(newDate)(mockDispatch, store.getState);
+        await pasteSlotsWeek(newDate)(mockDispatch, store.getState, {
+          getFirestore,
+        });
         // test that slots have been updated
         const slotsCollRef = firestore.collection(
           db,
@@ -239,11 +246,13 @@ describe("Copy Paste actions", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the failing thunk
-        await pasteSlotsWeek(testDateLuxon)(mockDispatch, () => ({} as any));
+        await pasteSlotsWeek(testDateLuxon)(mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         // check the error message being enqueued
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
