@@ -1,4 +1,5 @@
 #! YAML library files must be named *.lib.yml
+#@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
@@ -14,9 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+      -  #@ checkout(0)
       - uses: actions/setup-node@v2
         with:
           node-version: "16"

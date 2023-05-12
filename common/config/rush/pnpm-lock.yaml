@@ -136,7 +136,7 @@ importers:
       formik: ^2.1.5
       formik-mui: ^4.0.0-alpha.3
       jest-junit: ^12.2.0
-      jest-smtp: ~0.0.2
+      jest-smtp: workspace:*
       lodash: ^4.17.20
       luxon: ^2.0.5
       mocha: ^8.2.1
@@ -273,7 +273,7 @@ importers:
       firebase-admin: 9.12.0_d5374f824c46cb534fb1c5a88156e82b
       firebase-functions: 3.24.1_firebase-admin@9.12.0
       jest-junit: 12.3.0
-      jest-smtp: 0.0.2
+      jest-smtp: link:../jest-smtp
       mocha: 8.4.0
       mochawesome: 7.1.3_mocha@8.4.0
       nyc: 15.1.0
@@ -509,6 +509,37 @@ importers:
       firebase-functions-test: 0.2.3_0a4be98cd8e06e91e0b921ff47358231
       mocha: 8.4.0
       tsconfig-paths: 3.14.2
+      typescript: 5.0.4
+
+  ../../packages/jest-smtp:
+    specifiers:
+      '@types/jest': ^27.4.1
+      '@types/mailparser': ^3.0.1
+      '@types/smtp-server': ^3.5.6
+      '@typescript-eslint/eslint-plugin': ~5.59.0
+      '@typescript-eslint/parser': ~5.59.0
+      eslint: ^8.13.0
+      eslint-config-prettier: ^8.1.0
+      eslint-plugin-prettier: ^3.3.1
+      mailparser: ^3.1.0
+      prettier: ^2.2.1
+      smtp-server: ^3.8.0
+      ts-jest: ^27.1.3
+      typescript: ~5.0.4
+    dependencies:
+      mailparser: 3.6.4
+      smtp-server: 3.11.0
+    devDependencies:
+      '@types/jest': 27.5.2
+      '@types/mailparser': 3.4.0
+      '@types/smtp-server': 3.5.7
+      '@typescript-eslint/eslint-plugin': 5.59.2_6f2d401c5fd243903c4e479a8f32a258
+      '@typescript-eslint/parser': 5.59.2_eslint@8.39.0+typescript@5.0.4
+      eslint: 8.39.0
+      eslint-config-prettier: 8.8.0_eslint@8.39.0
+      eslint-plugin-prettier: 3.4.1_ebdca7ebb407a7da069239edb9c113a4
+      prettier: 2.8.8
+      ts-jest: 27.1.5_4bd15f5c341e296e2fa4078b8a417587
       typescript: 5.0.4
 
   ../../packages/react-redux-firebase-firestore:
@@ -4723,7 +4754,7 @@ packages:
     dependencies:
       domhandler: 5.0.3
       selderee: 0.10.0
-    dev: true
+    dev: false
 
   /@sentry/browser/6.19.7:
     resolution: {integrity: sha512-oDbklp4O3MtAM4mtuwyZLrgO1qDVYIujzNJQzXmi9YzymJCuzMLSRDvhY83NNDCRxf0pds4DShgYeZdbSyKraA==}
@@ -6321,6 +6352,13 @@ packages:
     resolution: {integrity: sha512-oCavjEjRXuR6URJEtQm0eBdfsBiEcGBZbq21of8iGkeKxU1+1xgKuFPClaBZl2KB8ZZBSWlgk61tH6Mf+nvZVw==}
     dev: true
 
+  /@types/mailparser/3.4.0:
+    resolution: {integrity: sha512-MotFinA1sT2nPFtQw1WpaF3X6I1OdbEloaixMmk924BOYqwHmlZkoi7XcVUXHI+7i0to8JguHqYj5k/E6c9Chw==}
+    dependencies:
+      '@types/node': 16.18.25
+      iconv-lite: 0.6.3
+    dev: true
+
   /@types/markdown-it/12.2.3:
     resolution: {integrity: sha512-GKMHFfv3458yYy+v/N8gjufHO6MSZKCOXpZc5GXIWWy8uldwfmPn98vp81gZ5f9SVw8YYBctgfJ22a2d7AOMeQ==}
     dependencies:
@@ -6495,6 +6533,13 @@ packages:
 
   /@types/sizzle/2.3.3:
     resolution: {integrity: sha512-JYM8x9EGF163bEyhdJBpR2QX1R5naCJHC8ucJylJ3w9/CVBaskdQ8WqBf8MmQrd1kRvp/a4TS8HJ+bxzR7ZJYQ==}
+    dev: true
+
+  /@types/smtp-server/3.5.7:
+    resolution: {integrity: sha512-8HtcCeN1DCu3P3D4unfRlwRT2sM54PQSBnfwCf6HZl4CH234lTvTJxKXvZtcJajg8mCgiSLkJ6rratEhxgvhqQ==}
+    dependencies:
+      '@types/node': 16.18.25
+      '@types/nodemailer': 6.4.7
     dev: true
 
   /@types/stack-utils/2.0.1:
@@ -7532,7 +7577,7 @@ packages:
   /base32.js/0.1.0:
     resolution: {integrity: sha512-n3TkB02ixgBOhTvANakDb4xaMXnYUVkNoRFJjQflcqMQhyEKxEHdj3E6N8t8sUQ0mjH/3/JxzlXuz3ul/J90pQ==}
     engines: {node: '>=0.12.0'}
-    dev: true
+    dev: false
 
   /base64-js/1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
@@ -8893,7 +8938,6 @@ packages:
   /deepmerge/4.3.1:
     resolution: {integrity: sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==}
     engines: {node: '>=0.10.0'}
-    dev: true
 
   /default-browser-id/3.0.0:
     resolution: {integrity: sha512-OZ1y3y0SqSICtE8DE4S8YOE9UZOJ8wO16fKWVP5J1Qz42kV9jcnMVFrEE/noXb/ss3Q4pZIH79kxofzyNNtUNA==}
@@ -9113,7 +9157,6 @@ packages:
       domelementtype: 2.3.0
       domhandler: 5.0.3
       entities: 4.5.0
-    dev: true
 
   /dom-storage/2.1.0:
     resolution: {integrity: sha512-g6RpyWXzl0RR6OTElHKBl7nwnK87GUyZMYC7JWsB/IA73vpqK2K6LT39x4VepLxlSsWBFrPVLnsSR5Jyty0+2Q==}
@@ -9125,7 +9168,6 @@ packages:
 
   /domelementtype/2.3.0:
     resolution: {integrity: sha512-OLETBj6w0OsagBwdXnPdN0cnMfF9opN69co+7ZrbfPGrdpPVNBUj02spi6B1N7wChLQiPn4CSH/zJvXw56gmHw==}
-    dev: true
 
   /domexception/2.0.1:
     resolution: {integrity: sha512-yxJ2mFy/sibVQlu5qHjOkf9J3K6zgmCxgJ94u2EdvDOV09H+32LtRswEcUsmUWN72pVLOEnTSRaIVVzVQgS0dg==}
@@ -9139,7 +9181,6 @@ packages:
     engines: {node: '>= 4'}
     dependencies:
       domelementtype: 2.3.0
-    dev: true
 
   /domutils/1.7.0:
     resolution: {integrity: sha512-Lgd2XcJ/NjEw+7tFvfKxOzCYKZsdct5lczQ2ZaQY8Djz7pfAD3Gbp8ySJWtreII/vDlMVmxwa6pHmdxIYgttDg==}
@@ -9154,7 +9195,7 @@ packages:
       dom-serializer: 2.0.0
       domelementtype: 2.3.0
       domhandler: 5.0.3
-    dev: true
+    dev: false
 
   /dot-prop/5.3.0:
     resolution: {integrity: sha512-QM8q3zDe58hqUqjraQOmzZ1LIH9SWQJTlEKCH4kJ2oQvLZk7RbQXvtDM2XEq3fwkV9CCvvH4LA0AV+ogFsBM2Q==}
@@ -9264,7 +9305,7 @@ packages:
   /encoding-japanese/2.0.0:
     resolution: {integrity: sha512-++P0RhebUC8MJAwJOsT93dT+5oc5oPImp1HubZpAuCZ5kTLnhuuBhKHj2jJeO/Gj93idPBWmIuQ9QWMe5rX3pQ==}
     engines: {node: '>=8.10.0'}
-    dev: true
+    dev: false
 
   /encoding/0.1.13:
     resolution: {integrity: sha512-ETBauow1T35Y/WZMkio9jiM0Z5xjHHmJ4XmjZOq1l/dXz3lr2sRn87nJy20RupqSh1F2m3HHPSp8ShIPQJrJ3A==}
@@ -9308,7 +9349,6 @@ packages:
   /entities/4.5.0:
     resolution: {integrity: sha512-V0hjH4dGPh9Ao5p0MoRY6BVqtwCjhz6vI5LT8AJ55H+4g9/4vbHx1I54fS0XuclLhDHArPQCiMjDxjaL8fPxhw==}
     engines: {node: '>=0.12'}
-    dev: true
 
   /env-ci/5.5.0:
     resolution: {integrity: sha512-o0JdWIbOLP+WJKIUt36hz1ImQQFuN92nhsfTkHHap+J8CiI8WgGpH/a9jEGHh4/TU5BUUGjlnKXNoDb57+ne+A==}
@@ -9943,6 +9983,15 @@ packages:
       eslint: 8.39.0
     dev: true
 
+  /eslint-config-prettier/8.8.0_eslint@8.39.0:
+    resolution: {integrity: sha512-wLbQiFre3tdGgpDv67NQKnJuTlcUVYHas3k+DZCc2U2BadthoEY4B7hLPvAxaqdyOGCzuLfii2fqGph10va7oA==}
+    hasBin: true
+    peerDependencies:
+      eslint: '>=7.0.0'
+    dependencies:
+      eslint: 8.39.0
+    dev: true
+
   /eslint-import-resolver-node/0.3.7:
     resolution: {integrity: sha512-gozW2blMLJCeFpBwugLTGyvVjNoeo1knonXAcatC6bjPBZitotxdWf7Gimr25N4c0AAOo4eOUfaG82IJPDpqCA==}
     dependencies:
@@ -10007,6 +10056,23 @@ packages:
       resolve: 1.22.2
       semver: 6.3.0
       tsconfig-paths: 3.14.2
+    dev: true
+
+  /eslint-plugin-prettier/3.4.1_ebdca7ebb407a7da069239edb9c113a4:
+    resolution: {integrity: sha512-htg25EUYUeIhKHXjOinK4BgCcDwtLHjqaxCDsMy5nbnUMkKFvIhMVCp+5GFUXQ4Nr8lBsPqtGAqBenbpFqAA2g==}
+    engines: {node: '>=6.0.0'}
+    peerDependencies:
+      eslint: '>=5.0.0'
+      eslint-config-prettier: '*'
+      prettier: '>=1.13.0'
+    peerDependenciesMeta:
+      eslint-config-prettier:
+        optional: true
+    dependencies:
+      eslint: 8.39.0
+      eslint-config-prettier: 8.8.0_eslint@8.39.0
+      prettier: 2.8.8
+      prettier-linter-helpers: 1.0.0
     dev: true
 
   /eslint-plugin-promise/6.1.1_eslint@8.39.0:
@@ -10409,6 +10475,10 @@ packages:
 
   /fast-deep-equal/3.1.3:
     resolution: {integrity: sha512-f3qQ9oQy9j2AhBe/H9VC91wLmKBCCU/gDOnKNAYG5hswO7BLKj09Hc5HYNz9cGI++xlpDCIgDaitVs03ATR84Q==}
+
+  /fast-diff/1.2.0:
+    resolution: {integrity: sha512-xJuoT5+L99XlZ8twedaRf6Ax2TgQVxvgZOYoPKqZufmJib0tL2tegPBOZb1pVNgIhlqDlA0eO0c3wBvQcmzx4w==}
+    dev: true
 
   /fast-glob/3.2.12:
     resolution: {integrity: sha512-DVj4CQIYYow0BlaelwK1pHl5n5cRSJfM60UA0zK891sVInoPri2Ekj7+e1CT3/3qxXenpI+nBBmQAcJPJgaj4w==}
@@ -11693,7 +11763,6 @@ packages:
   /he/1.2.0:
     resolution: {integrity: sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==}
     hasBin: true
-    dev: true
 
   /history/4.10.1:
     resolution: {integrity: sha512-36nwAD620w12kuzPAsyINPWJqlNbij+hpK1k9XRloDtym8mxzGYl2c17LnV6IAGB2Dmg4tEa7G7DlawS0+qjew==}
@@ -11755,7 +11824,7 @@ packages:
       dom-serializer: 2.0.0
       htmlparser2: 8.0.2
       selderee: 0.10.0
-    dev: true
+    dev: false
 
   /htmlparser2/8.0.2:
     resolution: {integrity: sha512-GYdjWKDkbRLkZ5geuHs5NY1puJ+PXwP7+fHPRz06Eirsb9ugf6d8kkXav6ADhcODhFFPMIXyxkxSuMf3D6NCFA==}
@@ -11764,7 +11833,7 @@ packages:
       domhandler: 5.0.3
       domutils: 3.1.0
       entities: 4.5.0
-    dev: true
+    dev: false
 
   /http-cache-semantics/4.1.1:
     resolution: {integrity: sha512-er295DKPVsV82j5kw1Gjt+ADA/XYHsajl82cGNQG2eyoPkvgUhX+nDIyelzhIWbbsXP39EHcI6l5tYs2FYqYXQ==}
@@ -12047,7 +12116,7 @@ packages:
 
   /ipv6-normalize/1.0.1:
     resolution: {integrity: sha512-Bm6H79i01DjgGTCWjUuCjJ6QDo1HB96PT/xCYuyJUP9WFbVDrLSbG4EZCvOCun2rNswZb0c3e4Jt/ws795esHA==}
-    dev: true
+    dev: false
 
   /is-absolute-url/3.0.3:
     resolution: {integrity: sha512-opmNIX7uFnS96NtPmhWQgQx6/NYFgsUXYMllcfzwWKUMwfo8kku1TvE6hkNcH+Q1ts5cMVrsY7j0bxXQDciu9Q==}
@@ -12955,15 +13024,6 @@ packages:
       graceful-fs: 4.2.11
     dev: true
 
-  /jest-smtp/0.0.2:
-    resolution: {integrity: sha512-q0cocAe/8af7AkyuQZy3G43aOuV9VjCqmlw5amW+sL76zs9SvN8dkJsdgIup8MfsSz6qLq7c6BFr7aicC6pfxQ==}
-    peerDependencies:
-      jest: ^26.6.3
-    dependencies:
-      mailparser: 3.6.4
-      smtp-server: 3.11.0
-    dev: true
-
   /jest-snapshot/27.5.1:
     resolution: {integrity: sha512-yYykXI5a0I31xX67mgeLw1DZ0bJB+gpq5IpSuCAoyDi0+BhgU/RIrL+RTzDmkNTchvDFWKP8lp+w/42Z3us5sA==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
@@ -13496,7 +13556,7 @@ packages:
 
   /leac/0.6.0:
     resolution: {integrity: sha512-y+SqErxb8h7nE/fiEX07jsbuhrpO9lL8eca7/Y1nuWV2moNlXhyd59iDGcRf6moVyDMbmTNzL40SUyrFU/yDpg==}
-    dev: true
+    dev: false
 
   /leven/3.1.0:
     resolution: {integrity: sha512-qsda+H8jTaUaN/x5vzW2rzc+8Rw4TAQ/4KjB46IwK5VH+IlVeeeje/EoZRpiXvIqjFgK84QffqPztGI3VBLG1A==}
@@ -13519,7 +13579,7 @@ packages:
 
   /libbase64/1.2.1:
     resolution: {integrity: sha512-l+nePcPbIG1fNlqMzrh68MLkX/gTxk/+vdvAb388Ssi7UuUN31MI44w4Yf33mM3Cm4xDfw48mdf3rkdHszLNew==}
-    dev: true
+    dev: false
 
   /libmime/5.2.0:
     resolution: {integrity: sha512-X2U5Wx0YmK0rXFbk67ASMeqYIkZ6E5vY7pNWRKtnNzqjvdYYG8xtPDpCnuUEnPU9vlgNev+JoSrcaKSUaNvfsw==}
@@ -13528,7 +13588,7 @@ packages:
       iconv-lite: 0.6.3
       libbase64: 1.2.1
       libqp: 2.0.1
-    dev: true
+    dev: false
 
   /libmime/5.2.1:
     resolution: {integrity: sha512-A0z9O4+5q+ZTj7QwNe/Juy1KARNb4WaviO4mYeFC4b8dBT2EEqK2pkM+GC8MVnkOjqhl5nYQxRgnPYRRTNmuSQ==}
@@ -13537,11 +13597,11 @@ packages:
       iconv-lite: 0.6.3
       libbase64: 1.2.1
       libqp: 2.0.1
-    dev: true
+    dev: false
 
   /libqp/2.0.1:
     resolution: {integrity: sha512-Ka0eC5LkF3IPNQHJmYBWljJsw0UvM6j+QdKRbWyCdTmYwvIDE6a7bCm0UkTAL/K+3KXK5qXT/ClcInU01OpdLg==}
-    dev: true
+    dev: false
 
   /lie/3.3.0:
     resolution: {integrity: sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==}
@@ -13569,7 +13629,7 @@ packages:
     resolution: {integrity: sha512-C7bfi1UZmoj8+PQx22XyeXCuBlokoyWQL5pWSP+EI6nzRylyThouddufc2c1NDIcP9k5agmN9fLpA7VNJfIiqw==}
     dependencies:
       uc.micro: 1.0.6
-    dev: true
+    dev: false
 
   /listenercount/1.0.1:
     resolution: {integrity: sha512-3mk/Zag0+IJxeDrxSgaDPy4zZ3w05PRZeJNnlWhzFz5OkX49J4krc+A8X2d2M69vGMBEX0uyl8M+W+8gH+kBqQ==}
@@ -13949,7 +14009,7 @@ packages:
       mailsplit: 5.4.0
       nodemailer: 6.9.1
       tlds: 1.236.0
-    dev: true
+    dev: false
 
   /mailsplit/5.4.0:
     resolution: {integrity: sha512-wnYxX5D5qymGIPYLwnp6h8n1+6P6vz/MJn5AzGjZ8pwICWssL+CCQjWBIToOVHASmATot4ktvlLo6CyLfOXWYA==}
@@ -13957,7 +14017,7 @@ packages:
       libbase64: 1.2.1
       libmime: 5.2.0
       libqp: 2.0.1
-    dev: true
+    dev: false
 
   /make-dir/1.3.0:
     resolution: {integrity: sha512-2w31R7SJtieJJnQtGc7RVL2StM2vGYVfqUOvUDxH6bC6aJTxPxTF0GnIgCyu7tjockiUWAYQRbxa7vKn34s5sQ==}
@@ -15030,7 +15090,7 @@ packages:
   /nodemailer/6.7.3:
     resolution: {integrity: sha512-KUdDsspqx89sD4UUyUKzdlUOper3hRkDVkrKh/89G+d9WKsU5ox51NWS4tB1XR5dPUdR4SP0E3molyEfOvSa3g==}
     engines: {node: '>=6.0.0'}
-    dev: true
+    dev: false
 
   /nodemailer/6.7.8:
     resolution: {integrity: sha512-2zaTFGqZixVmTxpJRCFC+Vk5eGRd/fYtvIR+dl5u9QXLTQWGIf48x/JXvo58g9sa0bU6To04XUv554Paykum3g==}
@@ -15040,7 +15100,7 @@ packages:
   /nodemailer/6.9.1:
     resolution: {integrity: sha512-qHw7dOiU5UKNnQpXktdgQ1d3OFgRAekuvbJLcdG5dnEo/GtcTHRYM7+UfJARdOFU9WUQO8OiIamgWPmiSFHYAA==}
     engines: {node: '>=6.0.0'}
-    dev: true
+    dev: false
 
   /nopt/6.0.0:
     resolution: {integrity: sha512-ZwLpbTgdhuZUnZzjd7nb1ZV+4DoiC6/sfiVKok72ym/4Tlf+DFdlHYmT2JPmcNNWV6Pi3SDf1kT+A4r9RTuT9g==}
@@ -15543,7 +15603,7 @@ packages:
     dependencies:
       leac: 0.6.0
       peberminta: 0.8.0
-    dev: true
+    dev: false
 
   /parseurl/1.3.3:
     resolution: {integrity: sha512-CiyeOxFT/JZyN5m0z9PfXw4SCBJ6Sygz1Dpl0wqjlhDEGGBP1GnsUVEL0p63hoG1fcj3fHynXi9NYO4nWOL+qQ==}
@@ -15601,7 +15661,7 @@ packages:
 
   /peberminta/0.8.0:
     resolution: {integrity: sha512-YYEs+eauIjDH5nUEGi18EohWE0nV2QbGTqmxQcqgZ/0g+laPCQmuIqq7EBLVi9uim9zMgfJv0QBZEnQ3uHw/Tw==}
-    dev: true
+    dev: false
 
   /peek-stream/1.1.3:
     resolution: {integrity: sha512-FhJ+YbOSBb9/rIl2ZeE/QHEsWn7PqNYt8ARAY3kIgNGOk13g9FGyIY6JIl/xB/3TFRVoTv5as0l11weORrTekA==}
@@ -15859,6 +15919,13 @@ packages:
   /prepend-http/2.0.0:
     resolution: {integrity: sha512-ravE6m9Atw9Z/jjttRUZ+clIXogdghyZAuWJ3qEzjT+jI/dL1ifAqhZeC5VHzQp1MSt1+jxKkFNemj/iO7tVUA==}
     engines: {node: '>=4'}
+
+  /prettier-linter-helpers/1.0.0:
+    resolution: {integrity: sha512-GbK2cP9nraSSUF9N2XwUwqfzlAFlMNYYl+ShE/V+H8a9uNl/oUqB1w2EL54Jh0OlyRSd8RfWYJ3coVS4TROP2w==}
+    engines: {node: '>=6.0.0'}
+    dependencies:
+      fast-diff: 1.2.0
+    dev: true
 
   /prettier/2.8.8:
     resolution: {integrity: sha512-tdN8qQGvNjw4CHbY+XXk0JgCXn9QiF21a55rBe5LJAU+kDyC4WQn4+awm2Xfk2lQMk5fKup9XgzTZtGkjBdP9Q==}
@@ -16977,7 +17044,7 @@ packages:
     resolution: {integrity: sha512-DEL/RW/f4qLw/NrVg97xKaEBC8IpzIG2fvxnzCp3Z4yk4jQ3MXom+Imav9wApjxX2dfS3eW7x0DXafJr85i39A==}
     dependencies:
       parseley: 0.11.0
-    dev: true
+    dev: false
 
   /selenium-webdriver/4.0.0-rc-1:
     resolution: {integrity: sha512-bcrwFPRax8fifRP60p7xkWDGSJJoMkPAzufMlk5K2NyLPht/YZzR2WcIk1+3gR8VOCLlst1P2PI+MXACaFzpIw==}
@@ -17194,7 +17261,7 @@ packages:
       base32.js: 0.1.0
       ipv6-normalize: 1.0.1
       nodemailer: 6.7.3
-    dev: true
+    dev: false
 
   /socks-proxy-agent/5.0.1:
     resolution: {integrity: sha512-vZdmnjb9a2Tz6WEQVIurybSwElwPxMZaIc7PzqbJTrezcKNznv6giT7J7tZDZ1BojVaa1jvO/UiUdhDVB0ACoQ==}
@@ -18005,7 +18072,7 @@ packages:
   /tlds/1.236.0:
     resolution: {integrity: sha512-oP2PZ3KeGlgpHgsEfrtva3/K9kzsJUNliQSbCfrJ7JMCWFoCdtG+9YMq/g2AnADQ1v5tVlbtvKJZ4KLpy/P6MA==}
     hasBin: true
-    dev: true
+    dev: false
 
   /tmp-promise/3.0.2:
     resolution: {integrity: sha512-OyCLAKU1HzBjL6Ev3gxUeraJNlbNingmi8IrHHEsYH8LTmEuhvYfqvhn2F/je+mjf4N58UmZ96OMEy1JanSCpA==}
@@ -18111,6 +18178,39 @@ packages:
   /ts-dedent/2.2.0:
     resolution: {integrity: sha512-q5W7tVM71e2xjHZTlgfTDoPF/SmqKG5hddq9SzR49CH2hayqRKJtQ4mtRlSxKaJlR/+9rEM+mnBHf7I2/BQcpQ==}
     engines: {node: '>=6.10'}
+    dev: true
+
+  /ts-jest/27.1.5_4bd15f5c341e296e2fa4078b8a417587:
+    resolution: {integrity: sha512-Xv6jBQPoBEvBq/5i2TeSG9tt/nqkbpcurrEG1b+2yfBrcJelOZF9Ml6dmyMh7bcW9JyFbRYpR5rxROSlBLTZHA==}
+    engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
+    hasBin: true
+    peerDependencies:
+      '@babel/core': '>=7.0.0-beta.0 <8'
+      '@types/jest': ^27.0.0
+      babel-jest: '>=27.0.0 <28'
+      esbuild: '*'
+      jest: ^27.0.0
+      typescript: '>=3.8 <5.0'
+    peerDependenciesMeta:
+      '@babel/core':
+        optional: true
+      '@types/jest':
+        optional: true
+      babel-jest:
+        optional: true
+      esbuild:
+        optional: true
+    dependencies:
+      '@types/jest': 27.5.2
+      bs-logger: 0.2.6
+      fast-json-stable-stringify: 2.1.0
+      jest-util: 27.5.1
+      json5: 2.2.3
+      lodash.memoize: 4.1.2
+      make-error: 1.3.6
+      semver: 7.5.0
+      typescript: 5.0.4
+      yargs-parser: 20.2.9
     dev: true
 
   /ts-jest/27.1.5_a086f1e81e6cd4abe557a4ce97bb1da3:
@@ -18313,6 +18413,7 @@ packages:
 
   /uc.micro/1.0.6:
     resolution: {integrity: sha512-8Y75pvTYkLJW2hWQHXxoqRgV7qb9B+9vFEtidML+7koHUFapnVJAZ6cKs+Qjz5Aw3aZWHMC6u0wJE3At+nSGwA==}
+    dev: false
 
   /uglify-js/3.17.4:
     resolution: {integrity: sha512-T9q82TJI9e/C1TAxYvfb16xO120tMVFZrGA3f9/P4424DNu6ypK103y0GPFVa17yotwSyZW5iYXgjYHkGrJW/g==}

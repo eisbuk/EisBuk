@@ -304,9 +304,7 @@
     /**
      * The list of shell commands to run before the Rush installation starts
      */
-    "preRushInstall": [
-      // "common/scripts/pre-rush-install.js"
-    ],
+    "preRushInstall": ["git submodule update --recursive"],
 
     /**
      * The list of shell commands to run after the Rush installation finishes
@@ -428,6 +426,10 @@
     {
       "packageName": "@eisbuk/test-data",
       "projectFolder": "packages/test-data"
+    },
+    {
+      "packageName": "jest-smtp",
+      "projectFolder": "packages/jest-smtp"
     }
   ]
 }

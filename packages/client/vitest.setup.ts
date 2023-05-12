@@ -1,7 +1,10 @@
 import { expect, afterEach } from "vitest";
-import matchers, {
+
+import jestDomMatchers, {
   type TestingLibraryMatchers,
 } from "@testing-library/jest-dom/matchers";
+import { matchers as jestSmtpMatchers } from "jest-smtp";
+
 import { cleanup } from "@testing-library/react";
 
 // Required to appease TS
@@ -14,7 +17,9 @@ declare global {
   }
 }
 
-// Add custom jest matchers
-expect.extend(matchers);
+// Add custom jest DOM matchers
+expect.extend(jestDomMatchers);
+// Add custom jest-smtp matchers
+expect.extend(jestSmtpMatchers);
 
 afterEach(cleanup);

@@ -1,4 +1,5 @@
 #! YAML library files must be named *.lib.yml
+#@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
@@ -18,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
@@ -87,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
@@ -133,7 +134,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
@@ -149,8 +150,7 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+      -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
@@ -231,7 +231,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
+      -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
           node-version: "16"
