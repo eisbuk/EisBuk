@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import { DateTime } from "luxon";
 
 import { Close } from "@eisbuk/svg";
@@ -40,14 +40,14 @@ const BirthdayDialog: React.FC<BirthdayDialogProps> = ({
                 });
 
           return (
-            <React.Fragment key={title}>
+            <Fragment key={title}>
               <h3 className="flex items-center text-xl p-4">{title}</h3>
               <CustomerList
                 onCustomerClick={({ id }) => onCustomerClick(id)}
                 className="mb-2"
                 customers={customers}
               />
-            </React.Fragment>
+            </Fragment>
           );
         })}
       </div>
