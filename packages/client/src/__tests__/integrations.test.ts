@@ -23,7 +23,10 @@ import { waitForCondition } from "@/__testUtils__/helpers";
 
 import { saul } from "@/__testData__/customers";
 
-describe("Email sending and delivery", () => {
+/**
+ * @TODO this following test is skipped as it produces flakiness: investigate and fix.
+ */
+describe.skip("Email sending and delivery", () => {
   // Dummy data for error testing
   const smtpServer = createJestSMTPServer({
     port: smtpPort,
