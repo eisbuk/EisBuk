@@ -2,7 +2,6 @@
  * @vitest-environment node
  */
 
-import * as firestore from "@firebase/firestore";
 import { describe, vi, expect, afterEach } from "vitest";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -18,7 +17,7 @@ import { getNewStore } from "@/store/createStore";
 import { markAbsence, markAttendance } from "../attendanceOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getAttendanceDocPath } from "@/utils/firestore";
+import { doc, getAttendanceDocPath, getDoc } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestAttendance } from "../__testUtils__/firestore";
@@ -68,7 +67,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
@@ -79,11 +78,8 @@ describe("Attendance operations ->", () => {
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval, bookedInterval },
         });
-        const docRef = firestore.doc(
-          db,
-          getAttendanceDocPath(organization, slotId)
-        );
-        const resData = (await firestore.getDoc(docRef)).data();
+        const docRef = doc(db, getAttendanceDocPath(organization, slotId));
+        const resData = (await getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -106,7 +102,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
@@ -118,11 +114,8 @@ describe("Attendance operations ->", () => {
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { bookedInterval: null, attendedInterval },
         });
-        const docRef = firestore.doc(
-          db,
-          getAttendanceDocPath(organization, slotId)
-        );
-        const resData = (await firestore.getDoc(docRef)).data();
+        const docRef = doc(db, getAttendanceDocPath(organization, slotId));
+        const resData = (await getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -188,7 +181,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,
@@ -198,11 +191,8 @@ describe("Attendance operations ->", () => {
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval: null, bookedInterval },
         });
-        const docRef = firestore.doc(
-          db,
-          getAttendanceDocPath(organization, slotId)
-        );
-        const resData = (await firestore.getDoc(docRef)).data();
+        const docRef = doc(db, getAttendanceDocPath(organization, slotId));
+        const resData = (await getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );
@@ -227,7 +217,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,
@@ -236,11 +226,8 @@ describe("Attendance operations ->", () => {
         // check updated db
         // the customer should be removed (only the rest of the test data should be in the doc)
         const expectedDoc = createDocumentWithObservedAttendance({});
-        const docRef = firestore.doc(
-          db,
-          getAttendanceDocPath(organization, slotId)
-        );
-        const resData = (await firestore.getDoc(docRef)).data();
+        const docRef = doc(db, getAttendanceDocPath(organization, slotId));
+        const resData = (await getDoc(docRef)).data();
         expect(resData).toEqual(expectedDoc);
       }
     );

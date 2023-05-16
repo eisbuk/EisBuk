@@ -1,8 +1,6 @@
 import { v4 as uuid } from "uuid";
 import { createUserWithEmailAndPassword, signOut } from "@firebase/auth";
-import { Firestore } from "@google-cloud/firestore";
 import {
-  RulesTestContext,
   initializeTestEnvironment,
   RulesTestEnvironment,
 } from "@firebase/rules-unit-testing";
@@ -12,6 +10,7 @@ import { Collection } from "@eisbuk/shared";
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
+import { doc, FirestoreVariant, setDoc } from "@/utils/firestore";
 
 // #region setUpOrganization
 export interface TestOrganizationParams {
@@ -21,10 +20,7 @@ export interface TestOrganizationParams {
 }
 
 interface SetUpOrganization {
-  (
-    doLogin?: boolean,
-    db?: ReturnType<RulesTestContext["firestore"]> | Firestore
-  ): Promise<TestOrganizationParams>;
+  (doLogin?: boolean, db?: FirestoreVariant): Promise<TestOrganizationParams>;
 }
 
 /**
@@ -38,7 +34,7 @@ interface SetUpOrganization {
  */
 export const setUpOrganization: SetUpOrganization = async (
   doLogin = true,
-  db = adminDb
+  db = FirestoreVariant.server({ instance: adminDb })
 ) => {
   if (!__withEmulators__) {
     throw new Error(
@@ -50,13 +46,13 @@ export const setUpOrganization: SetUpOrganization = async (
   const email = `${organization}@eisbuk.it`;
   const pass = `password-${organization}`;
 
-  const orgRef = db.doc(`${Collection.Organizations}/${organization}`);
+  const orgRef = doc(db, `${Collection.Organizations}/${organization}`);
 
   await Promise.all<any>([
     // Create a new user in auth
     createUserWithEmailAndPassword(auth, email, pass),
     // Set given user as admin in org structure
-    orgRef.set({ admins: [email] }),
+    setDoc(orgRef, { admins: [email] }),
   ]);
 
   if (!doLogin) {
@@ -68,7 +64,7 @@ export const setUpOrganization: SetUpOrganization = async (
 // #endregion setUpOrganization
 
 // #region getTestEnv
-export type TestEnvFirestore = ReturnType<RulesTestContext["firestore"]>;
+export type TestEnvFirestore = FirestoreVariant;
 export type ExtendedTestEnvFirestore = TestEnvFirestore & {
   testEnv: RulesTestEnvironment;
 };
@@ -105,21 +101,21 @@ export const getTestEnv: GetTestEnv = async ({
   const testEnv = await initializeTestEnvironment({ projectId });
   let testOrganizationParams = {} as TestOrganizationParams;
   await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = context.firestore();
+    const db = FirestoreVariant.compat({ instance: context.firestore() });
     testOrganizationParams = await setUpOrganization(auth, db);
     // run setup function if any provided
     await setup(db, testOrganizationParams);
   });
   // return test context with respect to `auth`
-  const db: ExtendedTestEnvFirestore = auth
-    ? (testEnv
-        .authenticatedContext(testOrganizationParams.email, {
-          email: testOrganizationParams.email,
-        })
-        .firestore() as ExtendedTestEnvFirestore)
-    : (testEnv
-        .unauthenticatedContext()
-        .firestore() as ExtendedTestEnvFirestore);
+  const db = FirestoreVariant.compat({
+    instance: auth
+      ? testEnv
+          .authenticatedContext(testOrganizationParams.email, {
+            email: testOrganizationParams.email,
+          })
+          .firestore()
+      : testEnv.unauthenticatedContext().firestore(),
+  }) as ExtendedTestEnvFirestore;
 
   db["testEnv"] = testEnv;
 

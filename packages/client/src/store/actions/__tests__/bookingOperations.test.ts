@@ -4,7 +4,7 @@
 
 import { describe, vi, expect, beforeEach } from "vitest";
 import * as functions from "@firebase/functions";
-import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import {} from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -35,6 +35,11 @@ import {
   getBookedSlotDocPath,
   getBookedSlotsPath,
   getBookingsDocPath,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -134,7 +139,7 @@ describe("Booking operations", () => {
         });
         const mockDispatch = vi.fn();
         // mock `getFirestore` to return test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         await testThunk(mockDispatch, store.getState, { getFirestore });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
@@ -222,7 +227,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // create a thunk curried with test input values
         const testThunk = cancelBooking({
           secretKey,
@@ -317,7 +322,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // create a thunk curried with test input values
         const testThunk = updateBookingNotes({
           secretKey,
@@ -452,10 +457,11 @@ describe("Booking operations", () => {
         auth: false,
         setup: async (db, { organization }) => {
           // Set up organization 'registrationCode'
-          db.doc([Collection.Organizations, organization].join("/")).set(
-            { registrationCode },
-            { merge: true }
+          const docRef = doc(
+            db,
+            [Collection.Organizations, organization].join("/")
           );
+          await setDoc(docRef, { registrationCode }, { merge: true });
         },
       });
       const mockDispatch = vi.fn();

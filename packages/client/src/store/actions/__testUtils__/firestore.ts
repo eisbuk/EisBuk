@@ -1,5 +1,4 @@
 import { AnyAction, Store } from "redux";
-import { doc, setDoc } from "@firebase/firestore";
 import { v4 as uuid } from "uuid";
 
 import {
@@ -30,6 +29,8 @@ import {
   getBookingsDocPath,
   getCustomerDocPath,
   getSlotDocPath,
+  doc,
+  setDoc,
 } from "@/utils/firestore";
 
 interface AdminSetupFunction<

@@ -1,9 +1,8 @@
-import { describe } from "vitest";
 /**
  * @vitest-environment node
  */
 
-import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";
+import { describe } from "vitest";
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import pRetry from "p-retry";
 import { DateTime } from "luxon";
@@ -36,6 +35,10 @@ import {
   getSlotsByDayDocPath,
   getSlotsPath,
   getSMSQueueDocPath,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
 } from "@/utils/firestore";
 
 describe("Firestore rules", () => {

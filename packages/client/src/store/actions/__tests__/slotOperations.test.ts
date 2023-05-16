@@ -3,7 +3,7 @@
  */
 
 import { describe, vi, expect, beforeEach, test } from "vitest";
-import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import { QueryDocumentSnapshot } from "@firebase/firestore";
 
 import { Category, SlotType } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -19,7 +19,14 @@ import { NotifVariant } from "@/enums/store";
 import { deleteSlot, upsertSlot } from "../slotOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
+import {
+  getSlotDocPath,
+  getSlotsPath,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
@@ -63,7 +70,7 @@ describe("Slot operations", () => {
             setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
@@ -75,7 +82,7 @@ describe("Slot operations", () => {
         // check that the new slot was created
         expect(slotsInFS.length).toEqual(3);
         // since we're not setting the id manually, we're finding our test slot by filtering out initial slot ids
-        const testSlotInFS = slotsInFS
+        const testSlotInFS = (slotsInFS as QueryDocumentSnapshot[])
           .find((slot) => !initialSlotIds.includes(slot.data().id))
           ?.data() || { id: "fail" };
         // check that new slot contains proper data
@@ -129,7 +136,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // updates we're applying to slot
@@ -209,7 +216,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk

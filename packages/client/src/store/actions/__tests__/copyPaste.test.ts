@@ -3,8 +3,6 @@
  */
 
 import { describe, vi, expect, beforeEach } from "vitest";
-import * as firestore from "@firebase/firestore";
-import { collection, getDocs } from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import { fromISO, luxon2ISODate } from "@eisbuk/shared";
@@ -32,7 +30,12 @@ import {
   getWeekFromClipboard,
 } from "@/store/selectors/copyPaste";
 
-import { getSlotsPath } from "@/utils/firestore";
+import {
+  getSlotsPath,
+  collection,
+  getDocs,
+  FirestoreVariant,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
@@ -80,7 +83,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk against a store
         await copySlotsDay(testDateLuxon)(store.dispatch, store.getState, {
           getFirestore,
@@ -122,7 +125,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk against a store
         await copySlotsWeek()(store.dispatch, store.getState, { getFirestore });
         // test that slots have been added to clipboard
@@ -150,7 +153,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // we're pasting to wednesday of test week
         const newDate = testDateLuxon.plus({ days: 2 });
         const newDateISO = luxon2ISODate(newDate);
@@ -162,7 +165,10 @@ describe("Copy Paste actions", () => {
         // check updated slots in db
         await db.testEnv.withSecurityRulesDisabled(async (context) => {
           const slotsInStore = await getDocs(
-            collection(context.firestore(), getSlotsPath(organization))
+            collection(
+              FirestoreVariant.compat({ instance: context.firestore() }),
+              getSlotsPath(organization)
+            )
           );
           expect(slotsInStore.docs.length).toEqual(numSlotsToPaste);
           slotsInStore.forEach((slot) => {
@@ -214,18 +220,15 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db.instance as any;
         // run the thunk with next week as week to paste to
         const newDate = testDateLuxon.plus({ weeks: 1 });
         await pasteSlotsWeek(newDate)(mockDispatch, store.getState, {
           getFirestore,
         });
         // test that slots have been updated
-        const slotsCollRef = firestore.collection(
-          db,
-          getSlotsPath(organization)
-        );
-        const updatedSlots = await firestore.getDocs(slotsCollRef);
+        const slotsCollRef = collection(db, getSlotsPath(organization));
+        const updatedSlots = await getDocs(slotsCollRef);
         // process dates for comparison
         const updatedDates = updatedSlots.docs
           .map((doc) => doc.data().date)

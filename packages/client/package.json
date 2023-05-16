@@ -39,7 +39,8 @@
     "unix-timestamp": "^0.2.0",
     "use-sync-external-store": "1.0.0-alpha-5cccacd13-20211101",
     "uuid": "^8.3.2",
-    "yup": "0.32.9"
+    "yup": "0.32.9",
+    "variant": "~2.1.0"
   },
   "scripts": {
     "build": "echo \"Skipping @eisbuk/client build as part of rush's bulk 'build' script. To build the app for production run: 'rushx build:prod'\"",
