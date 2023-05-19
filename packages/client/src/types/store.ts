@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { DateTime } from "luxon";
 import { Dispatch, Reducer, Action as ReducerAction } from "redux";
-import { Firestore } from "@firebase/firestore";
 
 import { User } from "@firebase/auth";
 
@@ -18,6 +17,7 @@ import { NotificationsState } from "@/features/notifications/types";
 
 import { Action } from "@/enums/store";
 import { CustomerRoute } from "@/enums/routes";
+import { FirestoreVariant } from "@/utils/firestore";
 
 // #region app
 /**
@@ -160,7 +160,7 @@ export interface FirestoreThunk {
   (
     dispatch: Dispatch<any>,
     getState: GetState,
-    extraArgument: { getFirestore: () => Firestore }
+    extraArgument: { getFirestore: () => FirestoreVariant }
   ): Promise<void>;
 }
 

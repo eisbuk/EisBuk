@@ -10,7 +10,7 @@ import { Collection } from "@eisbuk/shared";
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
-import { doc, FirestoreVariant, setDoc } from "@/utils/firestore";
+import { doc, FirestoreVariant, getDoc, setDoc } from "@/utils/firestore";
 
 // #region setUpOrganization
 export interface TestOrganizationParams {

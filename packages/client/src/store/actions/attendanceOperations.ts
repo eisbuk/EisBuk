@@ -1,5 +1,3 @@
-import { doc, setDoc } from "@firebase/firestore";
-
 import {
   CustomerAttendance,
   SlotAttendnace,
@@ -15,7 +13,7 @@ import { getOrganization } from "@/lib/getters";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getAttendanceDocPath } from "@/utils/firestore";
+import { getAttendanceDocPath, doc, setDoc } from "@/utils/firestore";
 
 interface UpdateAttendance<
   P extends Record<string, any> = Record<string, unknown>

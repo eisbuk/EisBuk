@@ -1,11 +1,4 @@
 import { DateTime } from "luxon";
-import {
-  collection,
-  addDoc,
-  doc,
-  setDoc,
-  deleteDoc,
-} from "@firebase/firestore";
 
 import { SlotInterface, SlotInterfaceLoose } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -17,7 +10,15 @@ import { NotifVariant } from "@/enums/store";
 import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
-import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
+import {
+  getSlotDocPath,
+  getSlotsPath,
+  collection,
+  addDoc,
+  doc,
+  setDoc,
+  deleteDoc,
+} from "@/utils/firestore";
 
 /**
  * Deletes slots for the whole day from firestore and (in effect) local store
@@ -96,6 +97,7 @@ export const deleteSlot =
   async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
+
       const slotDocRef = doc(db, getSlotDocPath(getOrganization(), slotId));
 
       await deleteDoc(slotDocRef);

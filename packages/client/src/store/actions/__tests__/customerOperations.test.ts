@@ -63,7 +63,7 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with customer data
         await updateCustomer(noIdSaul)(mockDispatch, getState, {
           getFirestore,
@@ -104,7 +104,7 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // create a thunk with updated customer data
         const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
         const saulInDb = (await getDoc(saulDocRef)).data() as Customer;
@@ -161,7 +161,7 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with updated customer data
         await deleteCustomer(saul)(mockDispatch, store.getState, {
           getFirestore,
@@ -225,7 +225,7 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         await extendBookingDate(saul, extendedDate)(
           mockDispatch,
           () => ({} as any),

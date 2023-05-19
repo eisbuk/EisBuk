@@ -1,5 +1,3 @@
-import { doc, setDoc } from "@firebase/firestore";
-
 import { Collection, OrganizationData } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -10,6 +8,8 @@ import { NotifVariant } from "@/enums/store";
 import { FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
+
+import { doc, setDoc } from "@/utils/firestore";
 
 const getOrganizationCollPath = () =>
   `${Collection.Organizations}/${getOrganization()}`;

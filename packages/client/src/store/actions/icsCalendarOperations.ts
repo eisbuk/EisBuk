@@ -1,6 +1,5 @@
 import { ICalendar } from "datebook";
 import { DateTime } from "luxon";
-import { doc, setDoc } from "@firebase/firestore";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import {
@@ -28,7 +27,7 @@ import { getCalendarEventsByMonth } from "../selectors/calendar";
 import { enqueueNotification } from "@/features/notifications/actions";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
-import { getBookingsPath } from "@/utils/firestore";
+import { getBookingsPath, doc, setDoc } from "@/utils/firestore";
 
 /**
  * A thunk in charge of comparing the last calendar sent to the customer

@@ -1,11 +1,3 @@
-import {
-  collection,
-  DocumentData,
-  DocumentReference,
-  doc,
-  setDoc,
-} from "@firebase/firestore";
-
 import { CustomerLoose, Customer } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -17,7 +9,14 @@ import { getOrganization } from "@/lib/getters";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getCustomersPath } from "@/utils/firestore";
+import {
+  getCustomersPath,
+  collection,
+  FirestoreDocVariant,
+  doc,
+  setDoc,
+  addDoc,
+} from "@/utils/firestore";
 
 /**
  * Creates firestore async thunk:
@@ -33,18 +32,18 @@ export const updateCustomer =
       const db = getFirestore();
 
       const { id, ...updatedData } = customer;
-      let docRef: DocumentReference<DocumentData>;
+      let docRef: FirestoreDocVariant;
       if (id) {
         docRef = doc(db, getCustomersPath(getOrganization()), id);
+        await setDoc(docRef, updatedData, { merge: true });
       } else {
         const customersCollRef = collection(
           db,
           getCustomersPath(getOrganization())
         );
-        docRef = doc(customersCollRef);
+        await addDoc(customersCollRef, updatedData);
       }
 
-      await setDoc(docRef, updatedData, { merge: true });
       dispatch(
         enqueueNotification({
           message: i18n.t(NotificationMessage.CustomerUpdated, {

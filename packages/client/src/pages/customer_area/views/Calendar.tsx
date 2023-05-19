@@ -19,6 +19,7 @@ import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
 import { createModal } from "@/features/modal/useModal";
 import { ModalPayload } from "@/features/modal/types";
+import { FirestoreVariant } from "@/utils/firestore";
 
 const CalendarView: React.FC = () => {
   const { dispatch, getState } = useStore();
@@ -56,7 +57,9 @@ const CalendarView: React.FC = () => {
       bookingNotes,
       date,
       interval,
-    })(dispatch, getState, { getFirestore });
+    })(dispatch, getState, {
+      getFirestore: () => FirestoreVariant.client({ instance: getFirestore() }),
+    });
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (
     <IntervalCard

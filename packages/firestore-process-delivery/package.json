@@ -20,9 +20,9 @@
   },
   "types": "dist/index.d.ts",
   "dependencies": {
-    "@firebase/app-compat": "^0.1.21",
+    "@firebase/app-compat": "~0.2.10",
     "@google-cloud/firestore": "^4.13.2",
-    "firebase": "^8.2.4",
+    "firebase": "~9.22.0",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.1"
   },
@@ -30,7 +30,7 @@
     "@babel/core": "7.x",
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-typescript": "^7.14.5",
-    "@firebase/app-types": "^0.7.0",
+    "@firebase/app-types": "~0.9.0",
     "@grpc/grpc-js": "^1.6.2",
     "@types/jest": "^27.4.1",
     "@types/node": "^16.11.10",

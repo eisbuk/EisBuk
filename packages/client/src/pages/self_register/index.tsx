@@ -30,6 +30,7 @@ import {
   getDefaultCountryCode,
   getOrgDisplayName,
 } from "@/store/selectors/orgInfo";
+import { FirestoreVariant } from "@/utils/firestore";
 
 const SelfRegisterPage: React.FC = () => {
   const history = useHistory();
@@ -55,7 +56,10 @@ const SelfRegisterPage: React.FC = () => {
     const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
       getState,
-      { getFirestore }
+      {
+        getFirestore: () =>
+          FirestoreVariant.client({ instance: getFirestore() }),
+      }
     );
     if (!codeOk) {
       setErrors({

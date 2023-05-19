@@ -1,20 +1,30 @@
-import { fields, match, TypeNames, variantModule, VariantOf } from "variant";
+import {
+  fields,
+  match,
+  TypeNames,
+  variantModule,
+  VariantOf,
+  isType,
+} from "variant";
 import type {
   Firestore as ServerFirestore,
-  CollectionReference as ServerCollectioninstanceerence,
-  DocumentReference as ServerDocumentinstanceerence,
+  CollectionReference as ServerCollectionReference,
+  DocumentReference as ServerDocumentReference,
 } from "@google-cloud/firestore";
 import {
   type Firestore as ClientFirestore,
-  type CollectionReference as ClientCollectioninstanceerence,
-  type DocumentReference as ClientDocumentinstanceerence,
+  type CollectionReference as ClientCollectionReference,
+  type DocumentReference as ClientDocumentReference,
   type SetOptions,
   doc as clientDoc,
   collection as clientCollection,
   setDoc as clientSetDoc,
+  addDoc as clientAddDoc,
   getDoc as clientGetDoc,
   getDocs as clientGetDocs,
   deleteDoc as deleteDocClient,
+  writeBatch as writeBatchClient,
+  DocumentData,
 } from "@firebase/firestore";
 import firebase from "firebase/compat/app";
 
@@ -47,8 +57,8 @@ export type FirestoreVariant<
  * - Firebase compat (used by firestore-rules-unit-testing)
  */
 export const FirestoreDocVariant = variantModule({
-  [FirestoreEnv.Client]: fields<{ instance: ClientDocumentinstanceerence }>(),
-  [FirestoreEnv.Server]: fields<{ instance: ServerDocumentinstanceerence }>(),
+  [FirestoreEnv.Client]: fields<{ instance: ClientDocumentReference }>(),
+  [FirestoreEnv.Server]: fields<{ instance: ServerDocumentReference }>(),
   [FirestoreEnv.Compat]: fields<{
     instance: firebase.firestore.DocumentReference;
   }>(),
@@ -64,8 +74,8 @@ export type FirestoreDocVariant<
  * - Firebase compat (used by firestore-rules-unit-testing)
  */
 export const FirestoreCollectionVariant = variantModule({
-  [FirestoreEnv.Client]: fields<{ instance: ClientCollectioninstanceerence }>(),
-  [FirestoreEnv.Server]: fields<{ instance: ServerCollectioninstanceerence }>(),
+  [FirestoreEnv.Client]: fields<{ instance: ClientCollectionReference }>(),
+  [FirestoreEnv.Server]: fields<{ instance: ServerCollectionReference }>(),
   [FirestoreEnv.Compat]: fields<{
     instance: firebase.firestore.CollectionReference;
   }>(),
@@ -87,8 +97,10 @@ export type FirestoreCollectionVariant<
 export const doc = (
   node: FirestoreVariant | FirestoreCollectionVariant,
   ...pathSegments: string[]
-): FirestoreDocVariant =>
-  match(node, {
+): FirestoreDocVariant => {
+  const docPath = pathSegments.join("/");
+
+  return match(node, {
     [FirestoreEnv.Client]: ({ instance }) =>
       FirestoreDocVariant.client({
         // Even though 'doc' (aliased as 'clientDoc' here) works on both firestore and collection instanceerences,
@@ -100,13 +112,18 @@ export const doc = (
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
       FirestoreDocVariant.server({
-        instance: instance.doc(pathSegments.join("/")),
+        instance: docPath.length
+          ? instance.doc(docPath)
+          : (instance as ServerCollectionReference).doc(),
       }),
     [FirestoreEnv.Compat]: ({ instance }) =>
       FirestoreDocVariant.compat({
-        instance: instance.doc(pathSegments.join("/")),
+        instance: docPath.length
+          ? instance.doc(docPath)
+          : (instance as firebase.firestore.CollectionReference).doc(),
       }),
   });
+};
 
 /**
  * Implementation of firestore `collection` function that works on all Firestore variants.
@@ -140,6 +157,18 @@ export const collection = (
       }),
   });
 
+export const addDoc = async (
+  collection: FirestoreCollectionVariant,
+  data: DocumentData
+) => {
+  const res = await match(collection, {
+    [FirestoreEnv.Client]: ({ instance }) => clientAddDoc(instance, data),
+    [FirestoreEnv.Server]: ({ instance }) => instance.add(data),
+    [FirestoreEnv.Compat]: ({ instance }) => instance.add(data),
+  });
+  return res;
+};
+
 /**
  * Implementation of firestore `setDoc` function that works on all Firestore variants.
  * For each variant applies the correct `setDoc`/`set` function/method to update the given doc.
@@ -150,7 +179,7 @@ export const collection = (
  */
 export const setDoc = async (
   doc: FirestoreDocVariant,
-  data: Parameters<typeof clientSetDoc>[1],
+  data: DocumentData,
   options: SetOptions = {}
 ) => {
   const res = await match(doc, {
@@ -206,5 +235,59 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
   });
   return res;
 };
+
+// eslint-disable-next-line require-jsdoc
+class BatchMismatch extends Error {
+  // eslint-disable-next-line require-jsdoc
+  constructor(batchType: FirestoreEnv, docType: FirestoreEnv) {
+    super(
+      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`
+    );
+    return this;
+  }
+}
+
+export const writeBatch = (db: FirestoreVariant) =>
+  match(db, {
+    [FirestoreEnv.Client]: ({ instance }) => {
+      const batch = writeBatchClient(instance);
+      return {
+        ...batch,
+        set: (doc: FirestoreDocVariant, data: DocumentData) => {
+          if (!isType(doc, FirestoreDocVariant.client)) {
+            throw new BatchMismatch(FirestoreEnv.Client, doc.type);
+          }
+          return batch.set(doc.instance, data);
+        },
+        commit: batch.commit,
+      };
+    },
+    [FirestoreEnv.Server]: ({ instance }) => {
+      const batch = instance.batch();
+      return {
+        ...batch,
+        set: (doc: FirestoreDocVariant, data: DocumentData) => {
+          if (!isType(doc, FirestoreDocVariant.server)) {
+            throw new BatchMismatch(FirestoreEnv.Server, doc.type);
+          }
+          return batch.set(doc.instance, data);
+        },
+        commit: batch.commit,
+      };
+    },
+    [FirestoreEnv.Compat]: ({ instance }) => {
+      const batch = instance.batch();
+      return {
+        ...batch,
+        set: (doc: FirestoreDocVariant, data: DocumentData) => {
+          if (!isType(doc, FirestoreDocVariant.compat)) {
+            throw new BatchMismatch(FirestoreEnv.Compat, doc.type);
+          }
+          return batch.set(doc.instance, data);
+        },
+        commit: batch.commit,
+      };
+    },
+  });
 
 // #endregion functions

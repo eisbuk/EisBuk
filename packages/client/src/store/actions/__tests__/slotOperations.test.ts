@@ -70,7 +70,7 @@ describe("Slot operations", () => {
             setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
@@ -136,7 +136,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // updates we're applying to slot
@@ -216,7 +216,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk

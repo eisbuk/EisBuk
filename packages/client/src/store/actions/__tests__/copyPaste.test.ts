@@ -83,7 +83,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk against a store
         await copySlotsDay(testDateLuxon)(store.dispatch, store.getState, {
           getFirestore,
@@ -125,7 +125,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk against a store
         await copySlotsWeek()(store.dispatch, store.getState, { getFirestore });
         // test that slots have been added to clipboard
@@ -153,7 +153,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // we're pasting to wednesday of test week
         const newDate = testDateLuxon.plus({ days: 2 });
         const newDateISO = luxon2ISODate(newDate);
@@ -220,7 +220,7 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with next week as week to paste to
         const newDate = testDateLuxon.plus({ weeks: 1 });
         await pasteSlotsWeek(newDate)(mockDispatch, store.getState, {

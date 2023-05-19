@@ -1,4 +1,3 @@
-import { deleteDoc, doc, setDoc } from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface, CustomerBase } from "@eisbuk/shared";
@@ -13,7 +12,12 @@ import { createCloudFunctionCaller } from "@/utils/firebase";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getBookedSlotDocPath } from "@/utils/firestore";
+import {
+  getBookedSlotDocPath,
+  deleteDoc,
+  doc,
+  setDoc,
+} from "@/utils/firestore";
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<

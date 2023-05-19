@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { collection, writeBatch, doc } from "@firebase/firestore";
 
 import {
   SlotInterface,
@@ -17,7 +16,7 @@ import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getSlotsPath } from "@/utils/firestore";
+import { getSlotsPath, collection, doc, writeBatch } from "@/utils/firestore";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer

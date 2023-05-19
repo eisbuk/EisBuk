@@ -67,7 +67,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
@@ -102,7 +102,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAttendance({
           ...shortSaul,
@@ -181,7 +181,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,
@@ -217,7 +217,7 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // run the thunk with test input values
         await markAbsence({
           ...shortSaul,

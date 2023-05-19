@@ -139,7 +139,7 @@ describe("Booking operations", () => {
         });
         const mockDispatch = vi.fn();
         // mock `getFirestore` to return test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         await testThunk(mockDispatch, store.getState, { getFirestore });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
@@ -227,7 +227,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // create a thunk curried with test input values
         const testThunk = cancelBooking({
           secretKey,
@@ -322,7 +322,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        const getFirestore = () => db.instance as any;
+        const getFirestore = () => db as any;
         // create a thunk curried with test input values
         const testThunk = updateBookingNotes({
           secretKey,

@@ -1,5 +1,5 @@
 import { describe, vi, expect, test, afterEach } from "vitest";
-import { getFirestore } from "@firebase/firestore";
+import { getFirestore as getClientFirestore } from "@firebase/firestore";
 
 import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -15,10 +15,14 @@ import { CloudFunction } from "@/enums/functions";
 import { enqueueNotification } from "@/features/notifications/actions";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "../utils";
+import { FirestoreVariant } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@/__testData__/customers";
+
+const getFirestore = () =>
+  FirestoreVariant.client({ instance: getClientFirestore() });
 
 // #region getDialogPromptSetup
 const testPhone = "12345";
