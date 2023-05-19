@@ -1,6 +1,7 @@
 {
   "extends": "../scaffold/tsconfig.ui.json",
   "compilerOptions": {
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
@@ -13,6 +14,7 @@
     "dist",
     "scripts",
     ".eslintrc.js",
+    "vite.config.ts",
     "vitest.config.ts",
     "vitest.setup.ts"
   ],

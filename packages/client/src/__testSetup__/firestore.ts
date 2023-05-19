@@ -10,7 +10,7 @@ import { Collection } from "@eisbuk/shared";
 import { adminDb, auth } from "./firestoreSetup";
 
 import { __withEmulators__ } from "@/__testUtils__/envUtils";
-import { doc, FirestoreVariant, getDoc, setDoc } from "@/utils/firestore";
+import { doc, FirestoreVariant, setDoc } from "@/utils/firestore";
 
 // #region setUpOrganization
 export interface TestOrganizationParams {
@@ -101,13 +101,13 @@ export const getTestEnv: GetTestEnv = async ({
   const testEnv = await initializeTestEnvironment({ projectId });
   let testOrganizationParams = {} as TestOrganizationParams;
   await testEnv.withSecurityRulesDisabled(async (context) => {
-    const db = FirestoreVariant.compat({ instance: context.firestore() });
+    const db = FirestoreVariant.server({ instance: context.firestore() });
     testOrganizationParams = await setUpOrganization(auth, db);
     // run setup function if any provided
     await setup(db, testOrganizationParams);
   });
   // return test context with respect to `auth`
-  const db = FirestoreVariant.compat({
+  const db = FirestoreVariant.server({
     instance: auth
       ? testEnv
           .authenticatedContext(testOrganizationParams.email, {

@@ -159,5 +159,9 @@ module.exports = {
 
     // no-case-declarations
     "no-case-declarations": "off",
+
+    // broken and unnecessary rule
+    "no-extra-semi": "off",
+    "@typescript-eslint/no-extra-semi": "off",
   },
 };

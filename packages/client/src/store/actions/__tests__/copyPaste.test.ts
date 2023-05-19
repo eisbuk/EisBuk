@@ -166,7 +166,7 @@ describe("Copy Paste actions", () => {
         await db.testEnv.withSecurityRulesDisabled(async (context) => {
           const slotsInStore = await getDocs(
             collection(
-              FirestoreVariant.compat({ instance: context.firestore() }),
+              FirestoreVariant.server({ instance: context.firestore() }),
               getSlotsPath(organization)
             )
           );

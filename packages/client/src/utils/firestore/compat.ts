@@ -26,12 +26,10 @@ import {
   writeBatch as writeBatchClient,
   DocumentData,
 } from "@firebase/firestore";
-import firebase from "firebase/compat/app";
 
 export enum FirestoreEnv {
   Client = "client",
   Server = "server",
-  Compat = "compat",
 }
 
 // #region client/server variants
@@ -44,7 +42,6 @@ export enum FirestoreEnv {
 export const FirestoreVariant = variantModule({
   [FirestoreEnv.Client]: fields<{ instance: ClientFirestore }>(),
   [FirestoreEnv.Server]: fields<{ instance: ServerFirestore }>(),
-  [FirestoreEnv.Compat]: fields<{ instance: firebase.firestore.Firestore }>(),
 });
 export type FirestoreVariant<
   K extends TypeNames<typeof FirestoreVariant> = undefined
@@ -59,9 +56,6 @@ export type FirestoreVariant<
 export const FirestoreDocVariant = variantModule({
   [FirestoreEnv.Client]: fields<{ instance: ClientDocumentReference }>(),
   [FirestoreEnv.Server]: fields<{ instance: ServerDocumentReference }>(),
-  [FirestoreEnv.Compat]: fields<{
-    instance: firebase.firestore.DocumentReference;
-  }>(),
 });
 export type FirestoreDocVariant<
   K extends TypeNames<typeof FirestoreDocVariant> = undefined
@@ -76,9 +70,6 @@ export type FirestoreDocVariant<
 export const FirestoreCollectionVariant = variantModule({
   [FirestoreEnv.Client]: fields<{ instance: ClientCollectionReference }>(),
   [FirestoreEnv.Server]: fields<{ instance: ServerCollectionReference }>(),
-  [FirestoreEnv.Compat]: fields<{
-    instance: firebase.firestore.CollectionReference;
-  }>(),
 });
 export type FirestoreCollectionVariant<
   K extends TypeNames<typeof FirestoreCollectionVariant> = undefined
@@ -116,12 +107,6 @@ export const doc = (
           ? instance.doc(docPath)
           : (instance as ServerCollectionReference).doc(),
       }),
-    [FirestoreEnv.Compat]: ({ instance }) =>
-      FirestoreDocVariant.compat({
-        instance: docPath.length
-          ? instance.doc(docPath)
-          : (instance as firebase.firestore.CollectionReference).doc(),
-      }),
   });
 };
 
@@ -151,10 +136,6 @@ export const collection = (
       FirestoreCollectionVariant.server({
         instance: instance.collection(pathSegments.join("/")),
       }),
-    [FirestoreEnv.Compat]: ({ instance }) =>
-      FirestoreCollectionVariant.compat({
-        instance: instance.collection(pathSegments.join("/")),
-      }),
   });
 
 export const addDoc = async (
@@ -164,7 +145,6 @@ export const addDoc = async (
   const res = await match(collection, {
     [FirestoreEnv.Client]: ({ instance }) => clientAddDoc(instance, data),
     [FirestoreEnv.Server]: ({ instance }) => instance.add(data),
-    [FirestoreEnv.Compat]: ({ instance }) => instance.add(data),
   });
   return res;
 };
@@ -186,7 +166,6 @@ export const setDoc = async (
     [FirestoreEnv.Client]: ({ instance }) =>
       clientSetDoc(instance, data, options),
     [FirestoreEnv.Server]: ({ instance }) => instance.set(data),
-    [FirestoreEnv.Compat]: ({ instance }) => instance.set(data, options),
   });
   return res;
 };
@@ -201,7 +180,6 @@ export const getDoc = async (doc: FirestoreDocVariant) => {
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) => clientGetDoc(instance),
     [FirestoreEnv.Server]: ({ instance }) => instance.get(),
-    [FirestoreEnv.Compat]: ({ instance }) => instance.get(),
   });
   return res;
 };
@@ -216,7 +194,6 @@ export const deleteDoc = async (doc: FirestoreDocVariant) => {
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) => deleteDocClient(instance),
     [FirestoreEnv.Server]: ({ instance }) => instance.delete(),
-    [FirestoreEnv.Compat]: ({ instance }) => instance.delete(),
   });
   return res;
 };
@@ -231,7 +208,6 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
   const res = await match(collection, {
     [FirestoreEnv.Client]: ({ instance }) => clientGetDocs(instance),
     [FirestoreEnv.Server]: ({ instance }) => instance.get(),
-    [FirestoreEnv.Compat]: ({ instance }) => instance.get(),
   });
   return res;
 };
@@ -269,19 +245,6 @@ export const writeBatch = (db: FirestoreVariant) =>
         set: (doc: FirestoreDocVariant, data: DocumentData) => {
           if (!isType(doc, FirestoreDocVariant.server)) {
             throw new BatchMismatch(FirestoreEnv.Server, doc.type);
-          }
-          return batch.set(doc.instance, data);
-        },
-        commit: batch.commit,
-      };
-    },
-    [FirestoreEnv.Compat]: ({ instance }) => {
-      const batch = instance.batch();
-      return {
-        ...batch,
-        set: (doc: FirestoreDocVariant, data: DocumentData) => {
-          if (!isType(doc, FirestoreDocVariant.compat)) {
-            throw new BatchMismatch(FirestoreEnv.Compat, doc.type);
           }
           return batch.set(doc.instance, data);
         },
