@@ -5,8 +5,11 @@
 import { describe, vi, expect, beforeEach } from "vitest";
 import { DateTime } from "luxon";
 
-import { fromISO, luxon2ISODate } from "@eisbuk/shared";
+import { SlotsById, fromISO, luxon2ISODate } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { testDateLuxon } from "@eisbuk/test-data/date";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 import * as getters from "@/lib/getters";
 import { __storybookDate__ } from "@/lib/constants";
@@ -40,14 +43,73 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
 
-import { testDateLuxon } from "@/__testData__/date";
-import {
-  expectedDay,
-  expectedWeek,
-  testDay,
-  testSlots,
-  testWeek,
-} from "../__testData__/copyPaste";
+// #region testData
+/** Day we'll be using to test copy/paste slots day */
+export const testDay = {
+  ["slot-0"]: {
+    ...baseSlot,
+    id: "slot-0",
+  },
+  ["slot-1"]: {
+    ...baseSlot,
+    id: "slot-1",
+  },
+};
+
+/** Wednesday of test week (for slots in the same week, different day) */
+const twoDaysFromNow = testDateLuxon.plus({ days: 2 });
+const newDateISO = luxon2ISODate(twoDaysFromNow);
+const testWeekWednesday = {
+  ["slot-2"]: {
+    ...baseSlot,
+    id: "slot-2",
+    date: newDateISO,
+  },
+  ["slot-3"]: {
+    ...baseSlot,
+    id: "slot-3",
+    date: newDateISO,
+  },
+  ["slot-4"]: {
+    ...baseSlot,
+    id: "slot-4",
+    date: newDateISO,
+  },
+};
+
+/** Slots belonging to test week (keyed only by slot id) */
+const testWeek = {
+  ...testDay,
+  ...testWeekWednesday,
+};
+
+/** Next week for test data, keyed only by slot id (should get filtered out) */
+const nextWeek = Array(3)
+  .fill(testDateLuxon)
+  .reduce((acc, baseDate, i) => {
+    const slotId = `dummy-slot-${i}`;
+    const luxonDay = baseDate.plus({ weeks: 1, days: i * 2 });
+    const date = luxon2ISODate(luxonDay);
+
+    return {
+      ...acc,
+      [slotId]: { ...baseSlot, date, id: slotId },
+    };
+  }, {} as SlotsById);
+
+/** All test slots used to populate the initial store */
+export const testSlots = { ...testWeek, ...nextWeek };
+
+/** Expected structure to be dispatched on `copySlotsDay` test */
+export const expectedDay = testDay;
+
+/** Expected structure to be dispatched on `copySlotsWeek` test */
+export const expectedWeek = {
+  weekStart: testDateLuxon,
+  slots: Object.values(testWeek),
+};
+
+// #endregion testData
 
 const mockDispatch = vi.fn();
 

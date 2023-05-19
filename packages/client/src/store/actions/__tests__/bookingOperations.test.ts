@@ -4,7 +4,6 @@
 
 import { describe, vi, expect, beforeEach } from "vitest";
 import * as functions from "@firebase/functions";
-import {} from "@firebase/firestore";
 import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -13,6 +12,9 @@ import {
   CustomerBookingEntry,
   sanitizeCustomer,
 } from "@eisbuk/shared";
+
+import { saul } from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -50,9 +52,6 @@ import {
 } from "../__testUtils__/firestore";
 
 import { waitForCondition } from "@/__testUtils__/helpers";
-
-import { saul } from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
 
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 

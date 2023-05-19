@@ -4,7 +4,11 @@
 
 import { describe, vi, expect, afterEach } from "vitest";
 
+import { CustomerAttendance, SlotAttendnace } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { saul } from "@eisbuk/test-data/customers";
+import { testDate } from "@eisbuk/test-data/date";
 
 import { NotifVariant } from "@/enums/store";
 
@@ -22,16 +26,34 @@ import { doc, getAttendanceDocPath, getDoc } from "@/utils/firestore";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestAttendance } from "../__testUtils__/firestore";
 
-import {
-  createDocumentWithObservedAttendance,
-  observedSlotId,
-} from "../__testData__/attendanceOperations";
-import { saul } from "@/__testData__/customers";
-
-// test data
-const slotId = observedSlotId;
+// #region testData
+/** The id of our observed slot (the one we're updating throughout the tests) */
+const slotId = "slot-0";
 const bookedInterval = "11:00-12:00";
 const attendedInterval = "11:00-12:30";
+
+/** Dummy attendance for prepopulated attendance doc */
+const dummyAttendance: CustomerAttendance = {
+  bookedInterval: "10:00-10:30",
+  attendedInterval: "10:00-10:30",
+};
+
+/**
+ * Creates a dummy document (slot attendance entry) populated with predefined data (the data that should not be altered throughout the tests) and
+ * adds `variableAttendance` entry (received as arg) into the `attendances` record
+ * @param variableAttendance a record to be added to observed slot representing observed attendance (passed as customerId-attendance object key-value pair)
+ */
+const createDocumentWithObservedAttendance = (variableAttendance: {
+  [customerId: string]: CustomerAttendance;
+}): SlotAttendnace => ({
+  date: testDate,
+  attendances: {
+    ["dummy-customer-0"]: dummyAttendance,
+    ["dummy-customer-1"]: dummyAttendance,
+    ...variableAttendance,
+  },
+});
+// #endregion testData
 
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 

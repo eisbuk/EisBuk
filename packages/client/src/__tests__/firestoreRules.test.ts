@@ -23,8 +23,8 @@ import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { baseSlot } from "@/__testData__/slots";
-import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
+import { saul } from "@eisbuk/test-data/customers";
 import {
   getAttendanceDocPath,
   getBookedSlotDocPath,

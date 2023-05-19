@@ -1,11 +1,12 @@
 import { describe, expect, test } from "vitest";
+
+import { testDate } from "@eisbuk/test-data/date";
+
 import { getNewStore } from "@/store/createStore";
 
 import { getCalendarData } from "../calendar";
 
 import { attendance, attendanceSlotsByDay } from "../__testData__/attendance";
-import { expectedCalendarData } from "../__testData__/calendar";
-import { testDate } from "@/__testData__/date";
 
 describe("calendar selector", () => {
   describe("calendar slots", () => {
@@ -19,7 +20,10 @@ describe("calendar selector", () => {
         },
       });
       const res = getCalendarData(testDate)(store.getState());
-      expect(res).toEqual(expectedCalendarData);
+      expect(res).toEqual({
+        "2021-03-01": "booked",
+        "2021-03-02": "hasSlots",
+      });
     });
   });
 });

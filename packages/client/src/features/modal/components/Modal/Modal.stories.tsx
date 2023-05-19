@@ -3,11 +3,13 @@ import { Provider as StoreProvider } from "react-redux";
 
 import { Button, Layout } from "@eisbuk/ui";
 
+import { baseSlot, createIntervals } from "@eisbuk/test-data/slots";
+
 import { getNewStore } from "@/store/createStore";
 
 import Modal from "./Modal";
+
 import { openModal } from "@/features/modal/actions";
-import { testSlot } from "@/store/actions/__testData__/slotOperations";
 
 export default {
   title: "Modal",
@@ -15,6 +17,11 @@ export default {
 };
 
 const store = getNewStore();
+
+const testSlot = {
+  ...baseSlot,
+  intervals: createIntervals(15),
+};
 
 export const CancelBookingsDialog = (): JSX.Element => (
   <StoreProvider store={store}>
@@ -26,7 +33,6 @@ export const CancelBookingsDialog = (): JSX.Element => (
               id: "modal",
               component: "CancelBookingDialog",
               props: {
-                id: "slot",
                 ...testSlot,
                 interval: Object.values(testSlot.intervals)[0],
                 secretKey: "12345",

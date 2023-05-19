@@ -12,6 +12,17 @@ import {
   DeprecatedCategory,
 } from "@eisbuk/shared";
 
+import {
+  emptyMonth,
+  emptyMonthString,
+  prunedMonth,
+  pruningMonthString,
+  unprunedMonth,
+} from "@eisbuk/test-data/migrations";
+import * as customers from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
+import { saul } from "@eisbuk/test-data/customers";
+
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { CloudFunction } from "@/enums/functions";
@@ -28,17 +39,6 @@ import {
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
-
-import {
-  emptyMonth,
-  emptyMonthString,
-  prunedMonth,
-  pruningMonthString,
-  unprunedMonth,
-} from "../__testData__/migrations";
-import * as customers from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
-import { saul } from "@/__testData__/customers";
 
 export const invokeFunction =
   (functionName: string) =>

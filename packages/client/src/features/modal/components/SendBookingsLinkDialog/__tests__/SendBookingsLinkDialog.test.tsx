@@ -13,7 +13,7 @@ import { SendBookingLinkMethod } from "@/enums/other";
 import SendBookingsLinkDialog from "../SendBookingsLinkDialog";
 import * as utils from "../utils";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 const mockOnClose = vi.fn();
 // Mock sendBookingsLink to a, sort of, identity function

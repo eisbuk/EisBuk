@@ -18,7 +18,7 @@ import {
 } from "@/lib/errorMessages";
 
 import { __editSlotButtonId__ } from "@eisbuk/shared";
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 const mockDispatch = vi.fn();
 vi.mock("react-redux", () => ({

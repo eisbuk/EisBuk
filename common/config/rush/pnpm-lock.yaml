@@ -65,6 +65,7 @@ importers:
       '@eisbuk/react-redux-firebase-firestore': workspace:*
       '@eisbuk/shared': workspace:*
       '@eisbuk/svg': workspace:*
+      '@eisbuk/test-data': workspace:*
       '@eisbuk/translations': workspace:*
       '@eisbuk/ui': workspace:*
       '@emotion/react': ^11.8.1
@@ -223,6 +224,7 @@ importers:
       '@babel/preset-react': 7.18.6_@babel+core@7.21.8
       '@babel/preset-typescript': 7.21.5_@babel+core@7.21.8
       '@cypress/code-coverage': 3.10.4_69ad0397f129c478e2d82d95d979b675
+      '@eisbuk/test-data': link:../test-data
       '@firebase/rules-unit-testing': 2.0.7_firebase@9.22.0
       '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.8.14

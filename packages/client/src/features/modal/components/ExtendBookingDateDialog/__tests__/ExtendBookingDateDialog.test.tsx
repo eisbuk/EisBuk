@@ -11,7 +11,7 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import ExtendBookingDateDialog from "../ExtendBookingDateDialog";
 import * as customerOperations from "@/store/actions/customerOperations";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 const mockOnClose = vi.fn();
 // Mock extendBookingDate to a, sort of, identity function

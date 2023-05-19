@@ -19,7 +19,7 @@ import { FirestoreVariant } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 const getFirestore = () =>
   FirestoreVariant.client({ instance: getClientFirestore() });

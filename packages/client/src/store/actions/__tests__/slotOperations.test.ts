@@ -8,6 +8,12 @@ import { QueryDocumentSnapshot } from "@firebase/firestore";
 import { Category, SlotType } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
+import { testDate } from "@eisbuk/test-data/date";
+import {
+  baseSlot as baseSlotWithId,
+  createIntervals,
+} from "@eisbuk/test-data/slots";
+
 import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { getNewStore } from "@/store/createStore";
@@ -31,11 +37,30 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
 
-import {
-  initialSlotIds,
-  initialSlots,
-  testSlot,
-} from "../__testData__/slotOperations";
+// #region testData
+export const monthStr = testDate.substring(0, 7);
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { id, ...baseSlot } = baseSlotWithId;
+
+const initialSlotIds = ["dummy-slot-0", "dummy-slot-1"];
+
+/** Initial slots present in the store (for setup) */
+const initialSlots = {
+  [initialSlotIds[0]]: { ...baseSlot, id: initialSlotIds[0] },
+  [initialSlotIds[1]]: {
+    ...baseSlot,
+    id: initialSlotIds[1],
+    intervals: createIntervals(11),
+  },
+};
+
+/** The slot we're expecting to be created in the store */
+const testSlot = {
+  ...baseSlot,
+  intervals: createIntervals(15),
+};
+// #endregion testData
 
 const mockDispatch = vi.fn();
 vi.mock("react-redux", async () => {

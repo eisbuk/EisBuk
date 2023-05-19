@@ -15,8 +15,8 @@ import {
   attendanceSlotsByDay,
   expectedStruct,
 } from "../../__testData__/attendance";
-import { testDate, testDateLuxon } from "@/__testData__/date";
-import { walt, jian, saul } from "@/__testData__/customers";
+import { testDate, testDateLuxon } from "@eisbuk/test-data/date";
+import { walt, jian, saul } from "@eisbuk/test-data/customers";
 
 describe("Selectors ->", () => {
   describe("Test 'getSlotsWithAttendance'", () => {

@@ -36,10 +36,10 @@ import {
   emptyAttendance,
   organization as organizationData,
   intervals,
-} from "@/__testData__/dataTriggers";
-import { saul, walt } from "@/__testData__/customers";
-import { baseSlot, createIntervals } from "@/__testData__/slots";
-import { testDate, testDateLuxon } from "@/__testData__/date";
+} from "@eisbuk/test-data/dataTriggers";
+import { saul, walt } from "@eisbuk/test-data/customers";
+import { baseSlot, createIntervals } from "@eisbuk/test-data/slots";
+import { testDate, testDateLuxon } from "@eisbuk/test-data/date";
 
 const slotId = baseSlot.id;
 const customerId = saul.id;

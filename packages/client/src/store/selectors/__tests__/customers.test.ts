@@ -7,7 +7,7 @@ import { getNewStore } from "@/store/createStore";
 
 import { getCustomersByBirthday } from "../customers";
 
-import { saul, walt, jian, mike, jane } from "@/__testData__/customers";
+import { saul, walt, jian, mike, jane } from "@eisbuk/test-data/customers";
 
 const customers: LocalStore["firestore"]["data"]["customers"] = {
   [saul.id]: {

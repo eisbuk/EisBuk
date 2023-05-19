@@ -17,8 +17,8 @@ import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
 import { renderWithRouter } from "@/__testUtils__/wrappers";
 
-import { gus, saul, walt } from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
+import { gus, saul, walt } from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
 
 const mockDispatch = vi.fn();
 vi.mock("react-redux", () => ({

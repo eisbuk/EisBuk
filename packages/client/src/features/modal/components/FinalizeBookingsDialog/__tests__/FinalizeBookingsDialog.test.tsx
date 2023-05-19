@@ -10,7 +10,7 @@ import { DateTime } from "luxon";
 import FinalizeBookingsDialog from "../FinalizeBookingsDialog";
 import * as finalizeUtils from "../utils";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 const month = DateTime.fromISO("2022-01-01");

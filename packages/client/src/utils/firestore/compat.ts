@@ -165,7 +165,7 @@ export const setDoc = async (
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
       clientSetDoc(instance, data, options),
-    [FirestoreEnv.Server]: ({ instance }) => instance.set(data),
+    [FirestoreEnv.Server]: ({ instance }) => instance.set(data, options),
   });
   return res;
 };

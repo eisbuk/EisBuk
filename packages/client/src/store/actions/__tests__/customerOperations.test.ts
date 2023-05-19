@@ -35,7 +35,7 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 const mockDispatch = vi.fn();
 

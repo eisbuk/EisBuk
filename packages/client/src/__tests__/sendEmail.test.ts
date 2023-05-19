@@ -7,7 +7,7 @@ import {
   EmailInterpolationValues,
 } from "@eisbuk/shared";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/test-data/customers";
 
 import { setUpOrganization } from "@/__testSetup__/node";
 import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
