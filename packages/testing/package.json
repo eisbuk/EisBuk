@@ -23,6 +23,11 @@
       "require": "./dist/date/index.js",
       "default": "./dist/date/index.js"
     },
+    "./envData": {
+      "import": "./dist/envData/index.es.js",
+      "require": "./dist/envData/index.js",
+      "default": "./dist/envData/index.js"
+    },
     "./migrations": {
       "import": "./dist/migrations/index.es.js",
       "require": "./dist/migrations/index.js",

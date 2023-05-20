@@ -1,9 +1,9 @@
 import { getApp } from "@firebase/app";
 import { getFunctions, httpsCallable } from "@firebase/functions";
 
-import { getOrganization } from "@/lib/getters";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
-import { CloudFunction } from "@/enums/functions";
+import { getOrganization } from "@/lib/getters";
 
 /**
  * Invokes cloud function

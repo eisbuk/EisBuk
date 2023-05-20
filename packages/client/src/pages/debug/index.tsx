@@ -12,8 +12,7 @@ import {
   ButtonSize,
   Layout,
 } from "@eisbuk/ui";
-
-import { CloudFunction } from "@/enums/functions";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 

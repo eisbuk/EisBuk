@@ -7,6 +7,7 @@ import {
   SlotInterface,
   CustomerWithAttendance,
 } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import { AttendanceCardContainer, UserAttendance, Divider } from "@eisbuk/ui";
 
 import {
@@ -17,7 +18,6 @@ import {
 import { createModal } from "@/features/modal/useModal";
 
 import { comparePeriods } from "@/utils/sort";
-import { PrivateRoutes } from "@/enums/routes";
 
 export interface Props extends SlotInterface {
   /**

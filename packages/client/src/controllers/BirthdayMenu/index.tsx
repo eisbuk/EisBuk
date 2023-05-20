@@ -4,8 +4,7 @@ import { DateTime } from "luxon";
 import { useHistory } from "react-router-dom";
 
 import { BirthdayMenu } from "@eisbuk/ui";
-
-import { PrivateRoutes } from "@/enums/routes";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import { createModal } from "@/features/modal/useModal";
 import { getCustomersByBirthday } from "@/store/selectors/customers";

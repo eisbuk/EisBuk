@@ -9,8 +9,8 @@ import {
   Customer,
   EmailType,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
-import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";

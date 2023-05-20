@@ -3,13 +3,12 @@ import { Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
+import { Routes, PrivateRoutes } from "@eisbuk/shared/ui";
 import {
   CollectionSubscription,
   usePaginateFirestore,
   useFirestoreSubscribe,
 } from "@eisbuk/react-redux-firebase-firestore";
-
-import { Routes, PrivateRoutes } from "@/enums/routes";
 
 import { getOrganization } from "@/lib/getters";
 

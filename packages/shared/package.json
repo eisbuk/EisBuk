@@ -9,6 +9,11 @@
       "import": "./dist/index.es.js",
       "require": "./dist/index.js",
       "default": "./dist.index.es.js"
+    },
+    "./ui": {
+      "import": "./dist/ui/index.es.js",
+      "require": "./dist/ui/index.js",
+      "default": "./dist/ui/index.js"
     }
   },
   "types": "dist/index.d.ts",
@@ -26,6 +31,7 @@
     "eslint-plugin-import": "~2.27.5",
     "eslint-plugin-promise": "~6.1.1",
     "eslint-plugin-unused-imports": "~2.0.0",
+    "luxon": "^2.0.5",
     "react": "^16.13.1",
     "vite": "~4.3.1",
     "typescript": "~5.0.4",
@@ -40,7 +46,8 @@
     "typecheck": "tsc --noEmit",
     "test": "jest --watch"
   },
-  "dependencies": {
-    "luxon": "^2.0.5"
+  "peerDependencies": {
+    "luxon": "^2.0.5",
+    "react": "^16.13.1"
   }
 }

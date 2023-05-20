@@ -1,10 +1,10 @@
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface, CustomerBase } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { NotifVariant } from "@/enums/store";
-import { CloudFunction } from "@/enums/functions";
 
 import { FirestoreThunk } from "@/types/store";
 

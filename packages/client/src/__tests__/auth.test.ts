@@ -1,8 +1,8 @@
-import { describe, expect } from "vitest";
 /**
  * @vitest-environment node
  */
 
+import { describe, expect } from "vitest";
 import {
   httpsCallable,
   HttpsCallableResult,
@@ -10,10 +10,9 @@ import {
 } from "@firebase/functions";
 
 import { Collection, AuthStatus, HTTPSErrors } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
-
-import { CloudFunction } from "@/enums/functions";
 
 import { getCustomerDocPath } from "@/utils/firestore";
 

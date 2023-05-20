@@ -8,12 +8,11 @@ import {
   EmailPayload,
   EmailType,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 import {
   DeliveryStatus,
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
-
-import { CloudFunction } from "@/enums/functions";
 
 import { setUpOrganization, smtpHost, smtpPort } from "@/__testSetup__/node";
 import { functions } from "@/__testSetup__/firestoreSetup";

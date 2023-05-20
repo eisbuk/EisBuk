@@ -1,9 +1,9 @@
-import { describe, expect } from "vitest";
 /**
  * @vitest-environment node
  */
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
+import { describe, expect } from "vitest";
 
 import {
   HTTPSErrors,
@@ -16,11 +16,10 @@ import {
   Customer,
   DeliveryQueue,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 import { emailFrom, setUpOrganization } from "@/__testSetup__/node";
-
-import { CloudFunction } from "@/enums/functions";
 
 import {
   getBookingsDocPath,

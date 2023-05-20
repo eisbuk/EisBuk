@@ -5,7 +5,7 @@
 import { User } from "@firebase/auth";
 import { describe, vi, expect, test, afterEach } from "vitest";
 
-import { defaultUser } from "@/__testSetup__/envData";
+import { defaultUser } from "@eisbuk/testing/envData";
 
 import { updateAuthUser } from "../authOperations";
 

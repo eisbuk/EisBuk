@@ -10,13 +10,13 @@ import {
   SlotsByDay,
   SlotsById,
 } from "@eisbuk/shared";
+import { CustomerRoute } from "@eisbuk/shared/ui";
 import { FirestoreState } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ModalState } from "@/features/modal/types";
 import { NotificationsState } from "@/features/notifications/types";
 
 import { Action } from "@/enums/store";
-import { CustomerRoute } from "@/enums/routes";
 import { FirestoreVariant } from "@/utils/firestore";
 
 // #region app

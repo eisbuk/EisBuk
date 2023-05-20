@@ -2,6 +2,7 @@ import { describe, vi, expect, test, afterEach } from "vitest";
 import { getFirestore as getClientFirestore } from "@firebase/firestore";
 
 import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
+import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
@@ -9,8 +10,6 @@ import { getNewStore } from "@/store/createStore";
 
 import { SendBookingLinkMethod } from "@/enums/other";
 import { NotifVariant } from "@/enums/store";
-import { Routes } from "@/enums/routes";
-import { CloudFunction } from "@/enums/functions";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 

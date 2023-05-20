@@ -10,7 +10,7 @@ import {
 } from "@eisbuk/translations";
 import { CustomerForm, Layout } from "@eisbuk/ui";
 
-import { Routes } from "@/enums/routes";
+import { Routes } from "@eisbuk/shared/ui";
 
 import { getOrganization } from "@/lib/getters";
 

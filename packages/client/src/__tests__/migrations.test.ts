@@ -11,6 +11,7 @@ import {
   Category,
   DeprecatedCategory,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import {
   emptyMonth,
@@ -24,8 +25,6 @@ import { baseSlot } from "@eisbuk/testing/slots";
 import { saul } from "@eisbuk/testing/customers";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
-
-import { CloudFunction } from "@/enums/functions";
 
 import { setUpOrganization } from "@/__testSetup__/node";
 

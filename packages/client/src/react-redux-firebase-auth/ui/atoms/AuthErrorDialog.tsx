@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 
 import { useTranslation, ActionButton } from "@eisbuk/translations";
 
-import useClickOutside from "@/hooks/useClickOutside";
+import { useClickOutside } from "@eisbuk/shared/ui";
 
 interface Props {
   message: string;

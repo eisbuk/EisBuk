@@ -6,13 +6,11 @@ import i18n, {
   SlotTypeLabel,
   useTranslation,
 } from "@eisbuk/translations";
-import { SlotInterface } from "@eisbuk/shared";
+import { SlotInterface, getSlotTimespan } from "@eisbuk/shared";
 import { Plus } from "@eisbuk/svg";
 
 import IconButton from "../IconButton";
 import Divider from "./Divider";
-
-import { getSlotTimespan } from "./utils";
 
 export interface Props
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "slot"> {

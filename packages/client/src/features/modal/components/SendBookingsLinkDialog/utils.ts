@@ -4,6 +4,7 @@ import {
   EmailType,
   SMSMessage,
 } from "@eisbuk/shared";
+import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 
 import { createCloudFunctionCaller } from "@/utils/firebase";
@@ -11,9 +12,7 @@ import { createCloudFunctionCaller } from "@/utils/firebase";
 import { FirestoreThunk } from "@/types/store";
 
 import { SendBookingLinkMethod } from "@/enums/other";
-import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
-import { Routes } from "@/enums/routes";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 import { getOrganization } from "@/lib/getters";

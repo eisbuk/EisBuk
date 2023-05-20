@@ -1,14 +1,11 @@
 {
-  "extends": "../scaffold/tsconfig.json",
+  "extends": "../scaffold/tsconfig.ui.json",
   "compilerOptions": {
     "rootDir": "src",
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"]
-    },
-    "lib": ["ESNext"],
-
-    "types": ["node", "jest"]
+    }
   },
   "exclude": ["node_modules", ".eslintrc.js", "vite.config.ts", "dist"],
   "include": ["./src/**/*.ts"]

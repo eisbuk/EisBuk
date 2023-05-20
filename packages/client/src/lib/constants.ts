@@ -1,7 +1,7 @@
 // storybook env constants
 
 import { getOrgFromLocation } from "@/utils/helpers";
-import { __testOrganization__ } from "@/__testSetup__/envData";
+import { __testOrganization__ } from "@eisbuk/testing/envData";
 
 // sometimes we want to change the behaviour of our app regardless of NODE_ENV (which can't be set explicitly with our current config)
 // therefore we're using the `__buildEnv__`, which we can control through `process.env.BUILD_ENV`, if undefined, will fall back to `process.env.NODE_ENV`

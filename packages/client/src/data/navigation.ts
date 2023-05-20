@@ -1,8 +1,7 @@
 import { LinkItem } from "@eisbuk/ui";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, { NavigationLabel } from "@eisbuk/translations";
 import { ClipboardList, Users, DocumentDuplicate, Cog } from "@eisbuk/svg";
-
-import { PrivateRoutes } from "@/enums/routes";
 
 export const adminLinks: LinkItem[] = [
   {

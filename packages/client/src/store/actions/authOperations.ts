@@ -2,11 +2,11 @@ import { getAuth, User } from "@firebase/auth";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { AuthStatus } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { getOrganization } from "@/lib/getters";
 
 import { Action, NotifVariant } from "@/enums/store";
-import { CloudFunction } from "@/enums/functions";
 
 import { AuthReducerAction, FirestoreThunk } from "@/types/store";
 

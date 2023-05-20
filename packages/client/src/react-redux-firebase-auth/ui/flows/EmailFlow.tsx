@@ -11,6 +11,7 @@ import {
 import { useHistory } from "react-router-dom";
 import * as yup from "yup";
 
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import {
   useTranslation,
   ActionButton as ActionButtonLabel,
@@ -19,7 +20,6 @@ import {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { PrivateRoutes } from "@/enums/routes";
 import { EmailAuthStep } from "../../enums";
 
 import AuthContainer from "../atoms/AuthContainer";

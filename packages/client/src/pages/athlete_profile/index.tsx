@@ -4,12 +4,12 @@ import { useParams, Link, useHistory, Redirect } from "react-router-dom";
 
 import { CustomerForm, Layout, FormButton, FormButtonColor } from "@eisbuk/ui";
 import { Customer, CustomerLoose, OrgSubCollection } from "@eisbuk/shared";
+import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 import { Phone, Calendar, Mail } from "@eisbuk/svg";
 import { ActionButton, useTranslation } from "@eisbuk/translations";
 
 import { SendBookingLinkMethod } from "@/enums/other";
-import { PrivateRoutes, Routes } from "@/enums/routes";
 
 import { NotificationsContainer } from "@/features/notifications/components";
 import BirthdayMenu from "@/controllers/BirthdayMenu";

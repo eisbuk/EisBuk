@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { DateTime } from "luxon";
 
-import { OrgSubCollection, SlotInterface } from "@eisbuk/shared";
+import {
+  OrgSubCollection,
+  SlotInterface,
+  getSlotTimespan,
+} from "@eisbuk/shared";
 import {
   Button,
   ButtonColor,
@@ -42,7 +46,6 @@ import {
 } from "@/store/actions/copyPaste";
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { getSlotTimespan } from "@/utils/helpers";
 import { comparePeriods } from "@/utils/sort";
 
 import { adminLinks } from "@/data/navigation";

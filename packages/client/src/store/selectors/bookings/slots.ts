@@ -7,6 +7,7 @@ import {
   CustomerBookingEntry,
   SlotsByDay,
   SlotInterval,
+  getSlotTimespan,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
@@ -14,7 +15,7 @@ import { LocalStore } from "@/types/store";
 import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
-import { getSlotTimespan, isEmpty } from "@/utils/helpers";
+import { isEmpty } from "@/utils/helpers";
 import { comparePeriods } from "@/utils/sort";
 
 interface CategoryFilter {

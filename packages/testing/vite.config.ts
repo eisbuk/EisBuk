@@ -5,6 +5,7 @@ const entries = [
   "customers",
   "dataTriggers",
   "date",
+  "envData",
   "migrations",
   "slots",
   "testIds",
