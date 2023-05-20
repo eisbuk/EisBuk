@@ -26,13 +26,13 @@ import {
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 import {
   currentMonthStartDate,
   expectedMonthCustomer,
   slotsByDay,
 } from "../../__testData__/slots";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 import { getBookingsForCalendar, getMonthEmptyForBooking } from "../slots";
 
 // set date mock to be a consistent date throughout

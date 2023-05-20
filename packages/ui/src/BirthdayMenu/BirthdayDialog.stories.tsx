@@ -2,7 +2,7 @@ import React from "react";
 
 import BirthdayDialog from "./BirthdayDialog";
 
-import * as customersRecord from "@eisbuk/test-data/customers";
+import * as customersRecord from "@eisbuk/testing/customers";
 
 export default {
   title: "Birthday Dialog",

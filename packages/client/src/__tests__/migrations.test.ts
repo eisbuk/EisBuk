@@ -18,10 +18,10 @@ import {
   prunedMonth,
   pruningMonthString,
   unprunedMonth,
-} from "@eisbuk/test-data/migrations";
-import * as customers from "@eisbuk/test-data/customers";
-import { baseSlot } from "@eisbuk/test-data/slots";
-import { saul } from "@eisbuk/test-data/customers";
+} from "@eisbuk/testing/migrations";
+import * as customers from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
+import { saul } from "@eisbuk/testing/customers";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 

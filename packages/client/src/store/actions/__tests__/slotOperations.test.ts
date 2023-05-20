@@ -8,11 +8,11 @@ import { QueryDocumentSnapshot } from "@firebase/firestore";
 import { Category, SlotType } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { testDate } from "@eisbuk/test-data/date";
+import { testDate } from "@eisbuk/testing/date";
 import {
   baseSlot as baseSlotWithId,
   createIntervals,
-} from "@eisbuk/test-data/slots";
+} from "@eisbuk/testing/slots";
 
 import { getTestEnv } from "@/__testSetup__/firestore";
 

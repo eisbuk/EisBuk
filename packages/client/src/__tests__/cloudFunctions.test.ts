@@ -31,7 +31,7 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 describe("Cloud functions", () => {
   describe("ping", () => {

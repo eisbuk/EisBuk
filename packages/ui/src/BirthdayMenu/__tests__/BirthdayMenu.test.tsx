@@ -8,7 +8,7 @@ import i18n, { BirthdayMenu as BirthdayMenuLabel } from "@eisbuk/translations";
 import BirthdayMenu from "../BirthdayMenu";
 
 /** @TODO This should be named exports */
-import { default as customerRecord } from "@eisbuk/test-data/customers";
+import { default as customerRecord } from "@eisbuk/testing/customers";
 
 const customers = Object.values(customerRecord);
 

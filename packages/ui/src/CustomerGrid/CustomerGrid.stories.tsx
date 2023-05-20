@@ -6,7 +6,7 @@ import { CustomerFull } from "@eisbuk/shared";
 import CustomerGrid from "./CustomerGrid";
 import { SearchBar } from "../SearchBar";
 
-import * as c from "@eisbuk/test-data/customers";
+import * as c from "@eisbuk/testing/customers";
 
 export default {
   title: "Customer Grid",

@@ -11,7 +11,7 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import DeleteCustomerDialog from "../DeleteCustomerDialog";
 import * as customerOperations from "@/store/actions/customerOperations";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 const mockOnClose = vi.fn();
 const mockOnCloseAll = vi.fn();

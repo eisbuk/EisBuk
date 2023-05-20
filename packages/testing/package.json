@@ -1,5 +1,5 @@
 {
-  "name": "@eisbuk/test-data",
+  "name": "@eisbuk/testing",
   "version": "1.0.0",
   "description": "Test data shared across the project",
   "exports": {

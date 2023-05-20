@@ -29,7 +29,7 @@ import CopyButton from "../CopyButton";
 import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 vi.mock("react-redux", () => ({
   useDispatch: () => vi.fn(),

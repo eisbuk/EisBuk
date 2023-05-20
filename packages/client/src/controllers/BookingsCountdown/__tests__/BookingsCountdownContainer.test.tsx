@@ -18,8 +18,8 @@ import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
-import { saul } from "@eisbuk/test-data/customers";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { saul } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
 vi.mock("react-redux", async () => {

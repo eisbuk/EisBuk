@@ -13,7 +13,7 @@ import {
   __editSlotButtonId__,
   __slotCardId__,
 } from "@eisbuk/shared";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
 

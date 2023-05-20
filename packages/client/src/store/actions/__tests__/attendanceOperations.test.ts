@@ -7,8 +7,8 @@ import { describe, vi, expect, afterEach } from "vitest";
 import { CustomerAttendance, SlotAttendnace } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { saul } from "@eisbuk/test-data/customers";
-import { testDate } from "@eisbuk/test-data/date";
+import { saul } from "@eisbuk/testing/customers";
+import { testDate } from "@eisbuk/testing/date";
 
 import { NotifVariant } from "@/enums/store";
 

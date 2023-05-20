@@ -4,9 +4,9 @@ import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
-import { testDate, testDateLuxon } from "@eisbuk/test-data/date";
-import { baseSlot, createIntervals } from "@eisbuk/test-data/slots";
-import { walt, jian, saul } from "@eisbuk/test-data/customers";
+import { testDate, testDateLuxon } from "@eisbuk/testing/date";
+import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
+import { walt, jian, saul } from "@eisbuk/testing/customers";
 import { DateTime } from "luxon";
 
 /**

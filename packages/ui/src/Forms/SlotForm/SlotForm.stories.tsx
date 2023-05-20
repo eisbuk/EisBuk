@@ -3,8 +3,8 @@ import { ComponentMeta } from "@storybook/react";
 
 import { SlotType } from "@eisbuk/shared";
 
-import { baseSlot } from "@eisbuk/test-data/slots";
-import { testDate } from "@eisbuk/test-data/date";
+import { baseSlot } from "@eisbuk/testing/slots";
+import { testDate } from "@eisbuk/testing/date";
 
 import SlotForm from "./SlotForm";
 

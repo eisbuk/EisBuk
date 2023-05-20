@@ -9,7 +9,7 @@ import { adminDb } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 import { finalizeBookings } from "../utils";
 
 describe("Finalize bookings dialog utils", () => {

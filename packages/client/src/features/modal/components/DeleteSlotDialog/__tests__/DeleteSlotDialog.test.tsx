@@ -11,7 +11,7 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import DeleteSlotDialog from "../DeleteSlotDialog";
 import * as slotOperations from "@/store/actions/slotOperations";
 
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockOnClose = vi.fn();
 // Mock deleteSlot to a, sort of, identity function

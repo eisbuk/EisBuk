@@ -8,8 +8,8 @@ import { DateTime } from "luxon";
 import { SlotsById, fromISO, luxon2ISODate } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
-import { testDateLuxon } from "@eisbuk/test-data/date";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { testDateLuxon } from "@eisbuk/testing/date";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 import * as getters from "@/lib/getters";
 import { __storybookDate__ } from "@/lib/constants";

@@ -14,7 +14,7 @@ import SendICSDialog from "../SendICSDialog";
 
 import * as icsOperations from "@/store/actions/icsCalendarOperations";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 vi.spyOn(icsOperations, "sendBookingsCalendar")
   // Mock the thunk to, instead of returning the thunk to the caller (redux dispatch),

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
 
-import { testDate } from "@eisbuk/test-data/date";
+import { testDate } from "@eisbuk/testing/date";
 
 import { getNewStore } from "@/store/createStore";
 

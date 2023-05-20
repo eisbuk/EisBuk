@@ -21,7 +21,7 @@ import { functions } from "@/__testSetup__/firestoreSetup";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitForCondition } from "@/__testUtils__/helpers";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 /**
  * @TODO this following test is skipped as it produces flakiness: investigate and fix.

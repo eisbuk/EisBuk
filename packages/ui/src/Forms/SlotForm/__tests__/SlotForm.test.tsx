@@ -32,8 +32,8 @@ import { defaultInterval, defaultSlotFormValues } from "../data";
 
 import SlotForm from "../SlotForm";
 
-import { testDate, testDateLuxon } from "@eisbuk/test-data/date";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { testDate, testDateLuxon } from "@eisbuk/testing/date";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const baseProps = {
   date: testDate,

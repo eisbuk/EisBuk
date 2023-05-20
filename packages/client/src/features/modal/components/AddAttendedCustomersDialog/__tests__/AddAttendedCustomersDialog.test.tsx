@@ -11,8 +11,8 @@ import i18n, { AdminAria } from "@eisbuk/translations";
 import AddAttendedCustomersDialog from "../AddAttendedCustomersDialog";
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { saul, walt } from "@eisbuk/test-data/customers";
-import { baseSlot } from "@eisbuk/test-data/slots";
+import { saul, walt } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockOnClose = vi.fn();
 // Mock markAttendance to a, sort of, identity function

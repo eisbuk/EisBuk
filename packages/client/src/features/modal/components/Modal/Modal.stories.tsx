@@ -3,7 +3,7 @@ import { Provider as StoreProvider } from "react-redux";
 
 import { Button, Layout } from "@eisbuk/ui";
 
-import { baseSlot, createIntervals } from "@eisbuk/test-data/slots";
+import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 
 import { getNewStore } from "@/store/createStore";
 

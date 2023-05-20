@@ -44,7 +44,7 @@
   "devDependencies": {
     "@eisbuk/shared": "workspace:*",
     "@eisbuk/svg": "workspace:*",
-    "@eisbuk/test-data": "workspace:*",
+    "@eisbuk/testing": "workspace:*",
     "@eisbuk/translations": "workspace:*",
     "@storybook/addon-actions": "^7.0.7",
     "@storybook/addon-essentials": "^7.0.7",

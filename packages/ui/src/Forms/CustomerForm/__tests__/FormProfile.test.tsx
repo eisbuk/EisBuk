@@ -7,7 +7,7 @@ import i18n, { ActionButton, CustomerLabel } from "@eisbuk/translations";
 
 import { CustomerForm } from "../index";
 
-import { saul } from "@eisbuk/test-data/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 describe("CustomerForm", () => {
   describe("Profile", () => {

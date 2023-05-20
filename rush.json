@@ -424,8 +424,8 @@
       "projectFolder": "packages/react-redux-firebase-firestore"
     },
     {
-      "packageName": "@eisbuk/test-data",
-      "projectFolder": "packages/test-data"
+      "packageName": "@eisbuk/testing",
+      "projectFolder": "packages/testing"
     },
     {
       "packageName": "jest-smtp",

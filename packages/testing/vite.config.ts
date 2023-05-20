@@ -1,6 +1,4 @@
 import { defineConfig } from "vite";
-import path from "path";
-import ts from "typescript";
 
 const entries = [
   "attendance",
