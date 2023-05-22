@@ -3,7 +3,8 @@ import { DateTime } from "luxon";
 import { useField } from "formik";
 
 import { Plus, Minus } from "@eisbuk/svg";
-import { __decrementId__, __incrementId__ } from "@eisbuk/shared";
+
+import { __decrementId__, __incrementId__ } from "@eisbuk/testing/testIds";
 
 import TextInput, { TextInputFieldProps } from "../../TextInput";
 import IconButton from "../../IconButton";

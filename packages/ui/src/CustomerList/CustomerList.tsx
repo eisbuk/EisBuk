@@ -1,7 +1,9 @@
 import React from "react";
 
-import { CustomerFull, Customer, __customerListId__ } from "@eisbuk/shared";
+import { CustomerFull, Customer } from "@eisbuk/shared";
 import { useTranslation, CustomerLabel } from "@eisbuk/translations";
+
+import { __customerListId__ } from "@eisbuk/testing/testIds";
 
 import CustomerListItem from "./CustomerListItem";
 

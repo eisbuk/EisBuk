@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 
 import { Pencil } from "@eisbuk/svg";
 
+import { __editSlotButtonId__ } from "@eisbuk/testing/testIds";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButton from "./SlotOperationButton";
@@ -15,8 +17,6 @@ import {
   __noSlotProvidedError,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { __editSlotButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button to edit an existing slot.

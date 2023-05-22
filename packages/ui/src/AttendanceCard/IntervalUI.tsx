@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from "react";
 
-import { __primaryIntervalId__ } from "@eisbuk/shared";
+import { __primaryIntervalId__ } from "@eisbuk/testing/testIds";
 
 interface Props {
   attendedInterval: string | null;

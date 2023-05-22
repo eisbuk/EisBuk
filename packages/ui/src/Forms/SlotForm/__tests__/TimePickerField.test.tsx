@@ -4,7 +4,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Field } from "formik";
 
-import { __decrementId__, __incrementId__ } from "@eisbuk/shared";
+import { __decrementId__, __incrementId__ } from "@eisbuk/testing/testIds";
 
 import TimePickerField from "../TimePickerField";
 

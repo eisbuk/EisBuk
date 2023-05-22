@@ -18,4 +18,6 @@ export {
   CustomerRoute,
   CloudFunction,
 } from "@eisbuk/shared/dist/ui";
+
 export { defaultUser } from "@eisbuk/testing/dist/envData";
+export * from "@eisbuk/testing/dist/testIds";

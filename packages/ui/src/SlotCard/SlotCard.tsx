@@ -1,12 +1,9 @@
 import React from "react";
 
-import {
-  SlotInterface,
-  SlotInterval,
-  SlotType,
-  __slotCardId__,
-} from "@eisbuk/shared";
+import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
 import i18n, { CategoryLabel } from "@eisbuk/translations";
+
+import { __slotCardId__ } from "@eisbuk/testing/testIds";
 
 import SlotTypeIcon from "../SlotTypeIcon";
 

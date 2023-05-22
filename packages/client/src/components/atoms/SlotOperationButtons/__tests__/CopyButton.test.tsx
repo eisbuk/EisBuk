@@ -8,6 +8,11 @@ import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
 import {
+  __copyDayButtonId__,
+  __copyWeekButtonId__,
+} from "@eisbuk/testing/testIds";
+
+import {
   __noDateCopy,
   __copyButtonWrongContextError,
   __slotButtonNoContextError,
@@ -19,8 +24,6 @@ import SlotOperationButtons from "../SlotOperationButtons";
 import CopyButton from "../CopyButton";
 
 import * as copyPasteActions from "@/store/actions/copyPaste";
-
-import { __copyDayButtonId__, __copyWeekButtonId__ } from "@eisbuk/shared";
 
 const mockDispatch = vi.fn();
 const mockSelector = vi.fn();

@@ -1,5 +1,7 @@
-import { Customer, __addAthleteId__ } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
+
+import { __addAthleteId__ } from "../temp";
 
 /**
  * As painful as the node resolution is nowadays, it was easier to simply extract the type

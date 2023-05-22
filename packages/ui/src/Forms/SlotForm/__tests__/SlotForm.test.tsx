@@ -15,8 +15,6 @@ import {
   DeprecatedCategory,
   fromISO,
   SlotType,
-  __timeIntervalFieldId__,
-  __deleteIntervalId__,
 } from "@eisbuk/shared";
 import i18n, {
   SlotFormTitle,
@@ -27,6 +25,11 @@ import i18n, {
   ValidationMessage,
   DateFormat,
 } from "@eisbuk/translations";
+
+import {
+  __timeIntervalFieldId__,
+  __deleteIntervalId__,
+} from "@eisbuk/testing/testIds";
 
 import { defaultInterval, defaultSlotFormValues } from "../data";
 

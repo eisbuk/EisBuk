@@ -2,7 +2,7 @@ import React from "react";
 import { describe, afterEach, vi, test, expect } from "vitest";
 import { cleanup, screen } from "@testing-library/react";
 
-import { __timeIntervalFieldId__ } from "@eisbuk/shared";
+import { __timeIntervalFieldId__ } from "@eisbuk/testing/testIds";
 
 import SlotIntervals from "../SlotIntervals";
 

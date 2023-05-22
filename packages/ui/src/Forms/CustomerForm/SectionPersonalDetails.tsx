@@ -8,7 +8,9 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 import { User, Cake, Mail, Phone } from "@eisbuk/svg";
-import { isValidPhoneNumber, __birthdayInputId__ } from "@eisbuk/shared";
+import { isValidPhoneNumber } from "@eisbuk/shared";
+
+import { __birthdayInputId__ } from "@eisbuk/testing/testIds";
 
 import FormSection from "../FormSection";
 import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";

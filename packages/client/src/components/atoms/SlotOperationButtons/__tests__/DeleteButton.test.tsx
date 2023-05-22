@@ -7,6 +7,9 @@ import { describe, vi, expect, test, beforeEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
+import { __deleteButtonId__ } from "@eisbuk/testing/testIds";
+import { baseSlot } from "@eisbuk/testing/slots";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
@@ -19,9 +22,6 @@ import {
   __noSlotToDelete,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { __deleteButtonId__ } from "@eisbuk/shared";
-import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
 

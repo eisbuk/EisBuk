@@ -1,9 +1,9 @@
 import i18n, { AttendanceAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
 
-import { Customer, SlotInterface, __primaryIntervalId__ } from "@eisbuk/shared";
+import { Customer, SlotInterface } from "@eisbuk/shared";
 
-import { PrivateRoutes } from "../temp";
+import { PrivateRoutes, __primaryIntervalId__ } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { attendance } from "../__testData__/attendance.json";

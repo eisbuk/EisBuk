@@ -1,6 +1,6 @@
 import React from "react";
 
-import { __notificationToastId__ } from "@eisbuk/shared";
+import { __notificationToastId__ } from "@eisbuk/testing/testIds";
 
 import { Close } from "@eisbuk/svg";
 

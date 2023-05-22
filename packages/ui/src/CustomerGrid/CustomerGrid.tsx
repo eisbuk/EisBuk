@@ -1,6 +1,8 @@
 import React from "react";
 
-import { Customer, CustomerFull, __customerGridId__ } from "@eisbuk/shared";
+import { Customer, CustomerFull } from "@eisbuk/shared";
+
+import { __customerGridId__ } from "@eisbuk/testing/testIds";
 
 import CustomerGridItem from "./CustomerGridItem";
 

@@ -3,7 +3,7 @@ import { describe, afterEach, vi, test, expect } from "vitest";
 import { screen, cleanup } from "@testing-library/react";
 import * as formik from "formik";
 
-import { __deleteIntervalId__ } from "@eisbuk/shared";
+import { __deleteIntervalId__ } from "@eisbuk/testing/testIds";
 
 import TimeIntervalField from "../TimeIntervalField";
 

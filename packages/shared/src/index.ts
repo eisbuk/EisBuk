@@ -8,7 +8,6 @@ export * from "./types/email";
 export * from "./types/utils";
 export * from "./utils";
 export * from "./data/templates";
-export * from "./data/testIds";
 
 export * from "./enums/deprecated";
 

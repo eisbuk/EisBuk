@@ -7,6 +7,8 @@ import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
+import { __pasteButtonId__ } from "@eisbuk/testing/testIds";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
@@ -19,8 +21,6 @@ import {
   __pasteButtonWrongContextError,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { __pasteButtonId__ } from "@eisbuk/shared";
 
 const mockDispatch = vi.fn();
 

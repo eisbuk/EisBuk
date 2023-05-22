@@ -8,7 +8,8 @@ import { screen, render, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
-import { __emailInput__ } from "@eisbuk/shared";
+
+import { __emailInput__ } from "@eisbuk/testing/testIds";
 
 import SendICSDialog from "../SendICSDialog";
 

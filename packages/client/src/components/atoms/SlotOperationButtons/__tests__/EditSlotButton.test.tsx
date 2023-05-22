@@ -6,6 +6,9 @@ import React from "react";
 import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 
+import { __editSlotButtonId__ } from "@eisbuk/testing/testIds";
+import { baseSlot } from "@eisbuk/testing/slots";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButtons from "../SlotOperationButtons";
@@ -16,9 +19,6 @@ import {
   __noSlotProvidedError,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { __editSlotButtonId__ } from "@eisbuk/shared";
-import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
 vi.mock("react-redux", () => ({

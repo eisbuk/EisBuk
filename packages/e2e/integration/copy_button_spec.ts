@@ -1,14 +1,14 @@
 import { DateTime } from "luxon";
 
+import { SlotInterface } from "@eisbuk/shared";
+import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
+
 import {
-  SlotInterface,
+  PrivateRoutes,
   __copyWeekButtonId__,
   __copiedSlotsBadgeId__,
   __copyDayButtonId__,
-} from "@eisbuk/shared";
-import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
-
-import { PrivateRoutes } from "../temp";
+} from "../temp";
 
 import { slots } from "../__testData__/slots.json";
 

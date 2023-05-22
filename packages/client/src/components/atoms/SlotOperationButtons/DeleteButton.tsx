@@ -3,6 +3,8 @@ import { useDispatch } from "react-redux";
 
 import { Trash } from "@eisbuk/svg";
 
+import { __deleteButtonId__ } from "@eisbuk/testing/testIds";
+
 import { ButtonContextType } from "@/enums/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
@@ -20,8 +22,6 @@ import {
   __noSlotToDelete,
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
-
-import { __deleteButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button in charge of delete functionality.
