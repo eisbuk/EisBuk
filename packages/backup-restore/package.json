@@ -24,7 +24,7 @@
     "@babel/core": "7.x",
     "@babel/plugin-transform-runtime": "^7.12.10",
     "@babel/preset-typescript": "^7.14.5",
-    "@google-cloud/firestore": "^4.13.2",
+    "@google-cloud/firestore": "~6.5.0",
     "@grpc/grpc-js": "^1.6.2",
     "@types/jest": "^27.4.1",
     "@types/inquirer": "^8.2.1",
