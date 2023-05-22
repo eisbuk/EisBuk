@@ -44,7 +44,7 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
           ~/.cache/Cypress
-        key: ${{ runner.os }}-modules-emulators-cypress-node16-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+        key: ${{ runner.os }}-modules-emulators-cypress-node16-v3-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
