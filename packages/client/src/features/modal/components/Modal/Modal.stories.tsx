@@ -1,5 +1,4 @@
 import React from "react";
-import { ComponentMeta } from "@storybook/react";
 import { Provider as StoreProvider } from "react-redux";
 
 import { Button, Layout } from "@eisbuk/ui";
@@ -13,7 +12,7 @@ import { testSlot } from "@/store/actions/__testData__/slotOperations";
 export default {
   title: "Modal",
   component: Modal,
-} as ComponentMeta<typeof Modal>;
+};
 
 const store = getNewStore();
 

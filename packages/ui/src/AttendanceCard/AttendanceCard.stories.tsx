@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ComponentMeta } from "@storybook/react";
 
 import { CustomerAttendance } from "@eisbuk/shared";
 
@@ -15,7 +14,7 @@ import { baseSlot } from "../__testData__/slots";
 export default {
   title: "Attendance Card",
   component: AttendanceCardContainer,
-} as ComponentMeta<typeof AttendanceCardContainer>;
+};
 
 const saulBookings = {
   bookedInterval: intervals[0],

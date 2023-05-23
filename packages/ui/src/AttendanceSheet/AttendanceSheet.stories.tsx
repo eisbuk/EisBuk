@@ -1,12 +1,12 @@
 import React from "react";
 
-import AttendanceSheet from "./AttendanceSheet";
-
 import { fromISO, SlotType } from "@eisbuk/shared";
 
-import { intervalStrings as intervals } from "../__testData__/attendance";
-import { saul, walt, gus, jane } from "../__testData__/customers";
-import { baseSlot } from "../__testData__/slots";
+import { intervalStrings as intervals } from "@eisbuk/test-data/attendance";
+import { saul, walt, gus, jane } from "@eisbuk/test-data/customers";
+import { baseSlot } from "@eisbuk/test-data/slots";
+
+import AttendanceSheet from "./AttendanceSheet";
 
 export default {
   title: "Attendance Sheet",
