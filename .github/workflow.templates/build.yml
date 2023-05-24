@@ -14,7 +14,7 @@ name: OnPush
   - push
 
 jobs:
-  build_v16:
+  build_v18:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -22,7 +22,7 @@ jobs:
       -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -83,7 +83,7 @@ jobs:
           echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
           echo $igoriceteam >> $GITHUB_STEP_SUMMARY
           echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v16:
+  test_v18:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -91,7 +91,7 @@ jobs:
       -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -144,7 +144,7 @@ jobs:
       -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -160,7 +160,7 @@ jobs:
       -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_cypress()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -222,7 +222,7 @@ jobs:
     name: Coveralls finish
     needs:
       - cypress-run
-      - test_v16
+      - test_v18
     runs-on: ubuntu-latest
     steps:
       -  #@ check_secrets()
@@ -241,7 +241,7 @@ jobs:
       -  #@ checkout()
       - uses: actions/setup-node@v2
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()

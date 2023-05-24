@@ -2,7 +2,7 @@ name: OnPush
 "on":
 - push
 jobs:
-  build_v16:
+  build_v18:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -13,7 +13,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -23,7 +23,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -89,7 +89,7 @@ jobs:
         echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
         echo $igoriceteam >> $GITHUB_STEP_SUMMARY
         echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v16:
+  test_v18:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -100,7 +100,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -110,7 +110,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -130,7 +130,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -140,7 +140,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -161,7 +161,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
       uses: actions/cache@v2
       with:
@@ -172,7 +172,7 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
           ~/.cache/Cypress
-        key: ${{ runner.os }}-modules-emulators-cypress-node16-v3-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+        key: ${{ runner.os }}-modules-emulators-cypress-node18-v1-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -245,7 +245,7 @@ jobs:
     name: Coveralls finish
     needs:
     - cypress-run
-    - test_v16
+    - test_v18
     runs-on: ubuntu-latest
     steps:
     - name: Check if secrets are available
@@ -269,7 +269,7 @@ jobs:
         fetch-depth: 1
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -279,7 +279,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -297,7 +297,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -307,7 +307,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -360,7 +360,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -370,7 +370,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v3-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
