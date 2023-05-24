@@ -12,7 +12,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:

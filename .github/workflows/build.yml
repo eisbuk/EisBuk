@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -94,7 +94,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -170,7 +170,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -199,7 +199,7 @@ jobs:
       uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
       uses: actions/cache@v2
       with:
@@ -304,7 +304,7 @@ jobs:
     - uses: actions/checkout@v2
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -331,7 +331,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -393,7 +393,7 @@ jobs:
         fetch-depth: 0
     - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
