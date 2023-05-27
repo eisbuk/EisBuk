@@ -12,7 +12,7 @@ export default defineConfig({
     },
     supportFile: "support/index.ts",
     specPattern: "integration/**/*.{js,jsx,ts,tsx}",
-    baseUrl: "http://localhost:5000",
+    baseUrl: "http://127.0.0.1:5000",
   },
 
   reporter: "cypress-mochawesome-reporter",

@@ -21,7 +21,7 @@
     "@sentry/tracing": "^6.16.1",
     "clsx": "^1.1.1",
     "datebook": "^7.0.8",
-    "firebase-tools": "^9.16.6",
+    "firebase-tools": "^12.2.1",
     "firebaseui": "^6.0.1",
     "formik": "^2.1.5",
     "formik-mui": "^4.0.0-alpha.3",

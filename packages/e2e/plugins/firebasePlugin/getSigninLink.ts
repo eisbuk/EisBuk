@@ -21,7 +21,7 @@ const handleGetSigninLink: TaskHandler<GetSigninLinkPayload, string> = async ({
   email: requestEmail,
 }) => {
   const reqOptions: Partial<http.RequestOptions> = {
-    hostname: "localhost",
+    hostname: "127.0.0.1",
     path: `/emulator/v1/projects/${projectId}/oobCodes`,
     port: 9099,
   };

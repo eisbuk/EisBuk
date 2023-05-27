@@ -15,23 +15,25 @@ interface ResPayload {
   }[];
 }
 
-const handleGetRecaptchaCode: TaskHandler<GetRecaptchaPayload, string> =
-  async ({ projectId, phone }) => {
-    const reqOptions: Partial<http.RequestOptions> = {
-      hostname: "localhost",
-      path: `/emulator/v1/projects/${projectId}/verificationCodes`,
-      port: 9099,
-    };
-
-    const res = await sendHttp<ResPayload>(reqOptions);
-
-    return (
-      res.verificationCodes
-        // search from end to front (to find the latest code)
-        .reverse()
-        .find(({ phoneNumber }) => phoneNumber === phone)!.code
-    );
+const handleGetRecaptchaCode: TaskHandler<
+  GetRecaptchaPayload,
+  string
+> = async ({ projectId, phone }) => {
+  const reqOptions: Partial<http.RequestOptions> = {
+    hostname: "127.0.0.1",
+    path: `/emulator/v1/projects/${projectId}/verificationCodes`,
+    port: 9099,
   };
+
+  const res = await sendHttp<ResPayload>(reqOptions);
+
+  return (
+    res.verificationCodes
+      // search from end to front (to find the latest code)
+      .reverse()
+      .find(({ phoneNumber }) => phoneNumber === phone)!.code
+  );
+};
 
 const sendHttp = <R extends Record<string, any>>(
   options: http.RequestOptions

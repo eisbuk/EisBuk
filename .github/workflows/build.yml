@@ -188,7 +188,7 @@ jobs:
         browser: chrome
         install: false
         working-directory: packages/e2e
-        wait-on: http://localhost:8080, http://localhost:5000
+        wait-on: http://127.0.0.1:8080, http://127.0.0.1:5000
         record: ${{ secrets.CYPRESS_KEY != 0 }}
         config-file: cypress-ci.config.ts
       env:

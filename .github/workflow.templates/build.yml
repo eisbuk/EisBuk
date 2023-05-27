@@ -178,7 +178,7 @@ jobs:
           install: false
 
           working-directory: packages/e2e
-          wait-on: http://localhost:8080, http://localhost:5000
+          wait-on: http://127.0.0.1:8080, http://127.0.0.1:5000
 
           #! skip recording if no 'secrets.CYPRESS_KEY' found
           #! we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY

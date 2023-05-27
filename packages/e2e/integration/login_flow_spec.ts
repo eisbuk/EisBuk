@@ -449,7 +449,7 @@ describe("login", () => {
 });
 
 const signInWithEmailLinkURL =
-  "http://localhost:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithEmailLink?key=api-key";
+  "http://127.0.0.1:9099/identitytoolkit.googleapis.com/v1/accounts:signInWithEmailLink?key=api-key";
 
 /**
  * A helper used to construct firebase auth error,
