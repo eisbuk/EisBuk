@@ -1,8 +1,8 @@
-import { describe, expect } from "vitest";
 /**
  * @vitest-environment node
  */
 import { v4 as uuid } from "uuid";
+import { describe, expect } from "vitest";
 
 import {
   Collection,
@@ -26,7 +26,7 @@ import {
   getSlotsByDayDocPath,
 } from "@/utils/firestore";
 
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor, waitForCondition } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import {
@@ -666,57 +666,68 @@ describe("Cloud functions -> Data triggers ->", () => {
       "should update document in attendedSlots collection if attended interval changes",
       async () => {
         const { organization } = await setUpOrganization();
+
         // create customer and slot
+        await Promise.all([
+          adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot),
+          adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
+        ]);
 
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        const attendanceDocPath = getAttendanceDocPath(organization, slotId);
 
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, saul.id)
-        );
-        await customerRef.set(saul);
-
-        const attendance = {
-          [saul.id]: {
-            ...attendanceWithTestCustomer.attendances[saul.id],
-            bookedInterval: null,
-          },
-        };
-
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...attendance },
-        });
-
-        // update interval
-        const updatedAttendance = {
-          [saul.id]: {
-            bookedInterval: null,
-            attendedInterval: intervals[1],
-          },
-        };
-
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...updatedAttendance },
-        });
-
-        // get document in attended slots
-        const docResUpdated = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(data && data.interval === intervals[1]),
-        });
-
-        const updatedAttendedSlot = {
+        // Mark saul as present
+        await adminDb.doc(attendanceDocPath).set({
           date: baseSlot.date,
-          interval: intervals[1],
-        };
+          attendances: {
+            [saul.id]: {
+              bookedInterval: null,
+              attendedInterval: intervals[0],
+            },
+          },
+        });
 
-        // assert it equals the updated version
-        expect(docResUpdated).toEqual(updatedAttendedSlot);
+        const attendedSlotPath = getAttendedSlotDocPath(
+          organization,
+          saul.secretKey,
+          slotId
+        );
+
+        // The attended slot should be created in saul's bookings
+        await waitFor(async () => {
+          const attendedSlotDoc = await adminDb
+            .collection("organizations")
+            .doc(organization)
+            .collection("bookings")
+            .doc(saul.secretKey)
+            .collection("attendedSlots")
+            .doc(slotId)
+            .get();
+
+          const data = attendedSlotDoc.data();
+          expect(data).toEqual({
+            date: baseSlot.date,
+            interval: intervals[0],
+          });
+        });
+
+        await adminDb.doc(attendanceDocPath).set({
+          date: baseSlot.date,
+          attendances: {
+            [saul.id]: {
+              bookedInterval: null,
+              attendedInterval: intervals[1],
+            },
+          },
+        });
+
+        // The attended slot should be updated with the new interval
+        await waitFor(async () => {
+          const attendedSlotDoc = await adminDb.doc(attendedSlotPath).get();
+          expect(attendedSlotDoc.data()).toEqual({
+            date: baseSlot.date,
+            interval: intervals[1],
+          });
+        });
       }
     );
   });

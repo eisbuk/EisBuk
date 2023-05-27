@@ -353,6 +353,13 @@ export const createPublicOrgInfo = functions
     await publicOrgInfoDocRef.set(updates, { merge: true });
   });
 
+/**
+ * A data trigger used to create entries for `attendedSlots` in each respective customer's bookings, to make it
+ * available for the client to see (in their calendar) that they have been marked present for a certain slot.
+ *
+ * Note: We're only creating attended slot entries for customers who haven't booked the same slot
+ * (as the booking is displayed in their calendar in that case)
+ */
 export const createAttendedSlotOnAttendance = functions
   .region(__functionsZone__)
   .firestore.document(
@@ -363,22 +370,12 @@ export const createAttendedSlotOnAttendance = functions
 
     const db = admin.firestore();
 
-    const currentAttendanceData = change.after.data() as SlotAttendnace;
-    const previousAttendanceData = change.before.data() as SlotAttendnace;
+    const currentAttendanceData = (change.after.data() || {}) as SlotAttendnace;
+    const previousAttendanceData = (change.before.data() ||
+      {}) as SlotAttendnace;
 
-    const hasCurrentAttendances =
-      change.after.exists &&
-      Object.keys(currentAttendanceData.attendances).length;
-    const hasPreviousAttendances =
-      change.before.exists &&
-      Object.keys(previousAttendanceData.attendances).length;
-
-    const currentAttendances = hasCurrentAttendances
-      ? currentAttendanceData.attendances
-      : {};
-    const previousAttendances = hasPreviousAttendances
-      ? previousAttendanceData.attendances
-      : {};
+    const currentAttendances = currentAttendanceData?.attendances || {};
+    const previousAttendances = previousAttendanceData?.attendances || {};
 
     const ids = [
       ...new Set([
@@ -387,64 +384,69 @@ export const createAttendedSlotOnAttendance = functions
       ]),
     ];
 
-    const idsMap = ids.map((id) => {
-      const hasPreviousBooking =
-        previousAttendances[id] && previousAttendances[id].bookedInterval;
-      const isBooking =
-        currentAttendances[id] && currentAttendances[id].bookedInterval;
+    const updates = ids.map((id) => {
+      const previousAttendance = previousAttendances[id];
+      const currentAttendance = currentAttendances[id];
 
-      if (hasPreviousBooking || isBooking) return { [id]: "noUpdate" };
+      const hasBooked =
+        previousAttendance?.bookedInterval || currentAttendance?.bookedInterval;
 
-      return currentAttendanceData.attendances[id]
-        ? previousAttendanceData.attendances[id]
-          ? currentAttendances[id].attendedInterval ===
-            previousAttendances[id].attendedInterval
-            ? { [id]: "noUpdate" }
-            : { [id]: "update" }
-          : { [id]: "update" }
-        : { [id]: "delete" };
+      const interval = currentAttendance?.attendedInterval || null;
+
+      return {
+        customerId: id,
+        // If updating the interval (in the next step), we're updating with respect to the currently attended interval
+        interval,
+        // We don't update if customer has bookings (in that case, no attended interval is ever created)
+        // or if attended interval from previous attendance is the same as the current one.
+        //
+        // For all other cases we're preforming some form of update, be it update or delete (determined by existance of the interval)
+        update: !(
+          hasBooked || previousAttendance?.attendedInterval === interval
+        ),
+      };
     });
 
-    const updates = idsMap.map(
-      (customer) =>
-        // eslint-disable-next-line no-async-promise-executor, consistent-return
-        new Promise<FirebaseFirestore.WriteResult | void>(async (resolve) => {
-          const customerId = Object.keys(customer)[0];
-          const value = Object.values(customer)[0];
+    const batch = db.batch();
 
-          if (value === "noUpdate") return resolve();
+    // Schedule the updates
+    await Promise.all(
+      updates.map(async ({ customerId, interval, update }) => {
+        // Exit early if no update
+        if (!update) {
+          return;
+        }
 
-          const { secretKey } = (
-            await db
-              .collection(Collection.Organizations)
-              .doc(organization)
-              .collection(OrgSubCollection.Customers)
-              .doc(customerId)
-              .get()
-          ).data() as Customer;
+        const { secretKey } = await db
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Customers)
+          .doc(customerId)
+          .get()
+          .then((doc) => doc.data() as Customer);
 
-          const attendedSlotsEntryRef = db
-            .collection(Collection.Organizations)
-            .doc(organization)
-            .collection(OrgSubCollection.Bookings)
-            .doc(secretKey)
-            .collection(BookingSubCollection.AttendedSlots)
-            .doc(slotId);
+        const attendedSlotRef = db
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Bookings)
+          .doc(secretKey)
+          .collection(BookingSubCollection.AttendedSlots)
+          .doc(slotId);
 
-          value === "update"
-            ? resolve(
-                await attendedSlotsEntryRef.set(
-                  {
-                    date: currentAttendanceData.date,
-                    interval:
-                      currentAttendanceData.attendances[customerId]
-                        .attendedInterval,
-                  },
-                  { merge: true }
-                )
-              )
-            : resolve(await attendedSlotsEntryRef.delete());
-        })
+        // If interval exists, we're updating (or creating) the attended slot
+        if (interval) {
+          batch.set(attendedSlotRef, {
+            date: currentAttendanceData.date,
+            interval,
+          });
+          return;
+        }
+
+        // Finally, if interval doesn't exist, we're deleting the attended slot
+        batch.delete(attendedSlotRef);
+        return;
+      })
     );
-    await Promise.all(updates);
+
+    await batch.commit();
   });
