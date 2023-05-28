@@ -2,25 +2,17 @@ import { describe, expect, beforeEach, afterAll } from "vitest";
 import { httpsCallable } from "@firebase/functions";
 import { createJestSMTPServer } from "jest-smtp";
 
-import {
-  ClientEmailPayload,
-  CustomerFull,
-  EmailPayload,
-  EmailType,
-} from "@eisbuk/shared";
+import { ClientEmailPayload, CustomerFull, EmailType } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
-import {
-  DeliveryStatus,
-  ProcessDocument,
-} from "@eisbuk/firestore-process-delivery";
-
-import { setUpOrganization, smtpHost, smtpPort } from "@/__testSetup__/node";
-import { functions } from "@/__testSetup__/firestoreSetup";
-
-import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { DeliveryStatus } from "@eisbuk/firestore-process-delivery";
 
 import { saul } from "@eisbuk/testing/customers";
+
+import { setUpOrganization, smtpHost, smtpPort } from "@/__testSetup__/node";
+import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
+
+import { testWithEmulator } from "@/__testUtils__/envUtils";
+import { waitFor } from "@/__testUtils__/helpers";
 
 /**
  * @TODO this following test is skipped as it produces flakiness: investigate and fix.
@@ -75,10 +67,11 @@ describe.skip("Email sending and delivery", () => {
       const deliveryDocPath = (res.data as any).deliveryDocumentPath;
 
       // Wait for the process delivery to complete before making further assertions
-      await waitForCondition<ProcessDocument<EmailPayload>>({
-        documentPath: deliveryDocPath,
-        condition: (data) => data?.delivery?.status === DeliveryStatus.Success,
-        verbose: true,
+      await waitFor(async () => {
+        const deliverySnap = await adminDb.doc(deliveryDocPath).get();
+        expect(deliverySnap.data()?.delivery?.status).toEqual(
+          DeliveryStatus.Success
+        );
       });
 
       // There should be a single email payload, but with multiple recipients ('to' and 'bcc')

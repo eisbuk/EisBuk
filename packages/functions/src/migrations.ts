@@ -41,7 +41,6 @@ export const pruneSlotsByDay = functions
         const slotsByDay = await slotsByDayRef.get();
 
         if (slotsByDay.empty) {
-          functions.logger.log("No 'slotsByDay' found");
           return { success: true };
         }
 
@@ -54,26 +53,19 @@ export const pruneSlotsByDay = functions
           // a countdown counter, starting from num days and decremented on each day entry deletion
           // used to determine whether to update the month record with deleted entries or delete the record altogether
           let nonEmptySlots = dates.length;
-          functions.logger.log({
-            message: `checking month ${monthSnapshot.id}`,
-            nonEmptySlots,
-          });
 
           // updated month record with delete sentinels as values for days to delete
           const updatedRecord = dates.reduce((acc, date) => {
             const dayEntry = monthEntry[date];
             if (!Object.values(dayEntry).length) {
               nonEmptySlots--;
-              functions.logger.log({ date, isEmpty: true, nonEmptySlots });
               return { ...acc, [date]: FieldValue.delete() };
             }
-            functions.logger.log({ date, isEmpty: false, nonEmptySlots });
             return { ...acc, [date]: dayEntry };
           }, {} as Record<string, FieldValue>);
 
           // if there are non empty slots, update the record with deleted entries
           // if there are no slots in the entire month, delete the month entry altogether
-          functions.logger.info({ month: monthSnapshot.id, nonEmptySlots });
           if (nonEmptySlots) {
             batch.set(monthRef, updatedRecord, { merge: true });
           } else {
@@ -83,11 +75,8 @@ export const pruneSlotsByDay = functions
 
         await batch.commit();
 
-        functions.logger.log("Successfully pruned 'slotsByDay'");
-
         return { success: true };
       } catch (error) {
-        functions.logger.error(error);
         return { success: false };
       }
     }

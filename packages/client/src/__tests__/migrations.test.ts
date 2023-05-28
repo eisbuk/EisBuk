@@ -37,7 +37,7 @@ import {
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor } from "@/__testUtils__/helpers";
 
 export const invokeFunction =
   (functionName: string) =>
@@ -95,9 +95,11 @@ describe("Migrations", () => {
         // set customer to store (to create a regular booking)
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         // wait for saul's booking to get created
-        await waitForCondition({
-          condition: (data) => Boolean(data),
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(bookingsSnap.exists).toEqual(true);
         });
         // add additional bookings (without customer)
         await adminDb

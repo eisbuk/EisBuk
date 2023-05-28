@@ -51,7 +51,7 @@ import {
   setupTestSlots,
 } from "../__testUtils__/firestore";
 
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor } from "@/__testUtils__/helpers";
 
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
@@ -387,7 +387,7 @@ describe("Booking operations", () => {
     testWithEmulator("should update the customer in firestore", async () => {
       // set up initial state
       const store = getNewStore();
-      const { organization } = await getTestEnv({
+      const { organization, db } = await getTestEnv({
         auth: false,
         setup: (db, { organization }) =>
           Promise.all([
@@ -409,11 +409,14 @@ describe("Booking operations", () => {
         getFirestore: dummyGetFirestore,
       });
       // Check updates
-      const updatedSaul = await waitForCondition({
-        documentPath: getBookingsDocPath(organization, saul.secretKey),
-        condition: (data) => data?.name === "Jimmy",
+      await waitFor(async () => {
+        const bookingsSnap = await getDoc(
+          doc(db, getBookingsDocPath(organization, saul.secretKey))
+        );
+        expect(bookingsSnap.data()).toEqual(
+          sanitizeCustomer({ ...saul, name: "Jimmy" })
+        );
       });
-      expect(updatedSaul).toEqual(sanitizeCustomer({ ...saul, name: "Jimmy" }));
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
@@ -452,7 +455,7 @@ describe("Booking operations", () => {
       const registrationCode = "TEST_REG_CODE";
       // set up initial state
       const store = getNewStore();
-      const { organization } = await getTestEnv({
+      const { organization, db } = await getTestEnv({
         auth: false,
         setup: async (db, { organization }) => {
           // Set up organization 'registrationCode'
@@ -478,11 +481,12 @@ describe("Booking operations", () => {
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
       // Check updates
-      const updatedSaul = await waitForCondition({
-        documentPath: getBookingsDocPath(organization, secretKey),
-        condition: (data) => Boolean(data),
+      await waitFor(async () => {
+        const bookingsSnap = await getDoc(
+          doc(db, getBookingsDocPath(organization, secretKey))
+        );
+        expect(bookingsSnap.data()).toEqual({ ...saul, id, secretKey });
       });
-      expect(updatedSaul).toEqual({ ...saul, id, secretKey });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.SelfRegSuccess),

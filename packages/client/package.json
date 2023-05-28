@@ -55,6 +55,7 @@
     "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app BUILD_ENV=production vite",
     "start:staging": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production DEPLOY_STAGE=staging vite",
     "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch src\")'",
+    "test:functions": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch cloudFunctions\")'",
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch dataTriggers\")'",
     "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch firestoreRules\")'",
     "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch integrations\")'",
