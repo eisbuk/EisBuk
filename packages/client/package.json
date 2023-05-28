@@ -59,7 +59,7 @@
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch dataTriggers\")'",
     "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch firestoreRules\")'",
     "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch integrations\")'",
-    "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run \")'",
+    "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" CI=true vitest run \")'",
     "test:quicktest": "echo Running tests with no emulators support && vitest --watch src",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators",
     "storybook": "storybook dev -p 6006",
