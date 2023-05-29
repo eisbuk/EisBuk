@@ -59,8 +59,7 @@
     "mocha": "^8.2.1",
     "tsconfig-paths": "^3.10.1",
     "typescript": "~5.0.4",
-    "@types/nodemailer": "~6.4.4",
-    "@babel/plugin-proposal-private-property-in-object": "~7.20.5"
+    "@types/nodemailer": "~6.4.4"
   },
   "private": true
 }
