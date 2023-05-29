@@ -3,7 +3,6 @@ import { defineConfig } from "vite";
 const entries = [
   "attendance",
   "customers",
-  "dataTriggers",
   "date",
   "envData",
   "migrations",

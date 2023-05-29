@@ -12,14 +12,9 @@ import {
   SlotType,
   OrganizationData,
   sanitizeCustomer,
+  defaultEmailTemplates,
 } from "@eisbuk/shared";
 
-import {
-  emptyAttendance,
-  organization as organizationData,
-  intervals,
-  dummyAttendance as dummyCustomerAttendance,
-} from "@eisbuk/testing/dataTriggers";
 import { saul, walt } from "@eisbuk/testing/customers";
 import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 import { testDate, testDateLuxon } from "@eisbuk/testing/date";
@@ -55,7 +50,12 @@ describe("Cloud functions -> Data triggers ->", () => {
         // set up dummy data in the base slot, not to be overwritten by Saul's attendance
         const baseAttendance = {
           date: baseSlot.date,
-          attendances: dummyCustomerAttendance,
+          attendances: {
+            ["dummy-customer"]: {
+              bookedInterval: Object.keys(baseSlot.intervals)[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[1],
+            },
+          },
         };
         await adminDb
           .doc(getAttendanceDocPath(organization, baseSlot.id))
@@ -91,9 +91,9 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb
             .doc(getAttendanceDocPath(organization, baseSlot.id))
             .get();
+          // check that only the test customer's attendance's deleted, but not the rest of the data
           expect(snap.data()).toEqual(baseAttendance);
         });
-        // check that only the test customer's attendance's deleted, but not the rest of the data
       }
     );
   });
@@ -215,7 +215,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb
             .doc(getAttendanceDocPath(organization, baseSlot.id))
             .get();
-          expect(snap.data()).toEqual(emptyAttendance);
+          expect(snap.data()).toEqual({
+            date: baseSlot.date,
+            attendances: {},
+          });
         });
         // we're manually deleting attendance to test that it won't get created on slot update
         // the attendance entry for slot shouldn't be edited manually in production
@@ -390,6 +393,19 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
       async () => {
+        const organizationData: OrganizationData = {
+          displayName: "Los Pollos Hermanos",
+          location: "Albuquerque",
+          admins: ["Gus Fring"],
+          emailFrom: "gus@lospollos.hermanos",
+          emailTemplates: defaultEmailTemplates,
+          emailNameFrom: "Gus",
+          smsFrom: "Gus",
+          smsTemplate: "SMS Temp here",
+          existingSecrets: ["authToken", "exampleSecret"],
+          emailBcc: "gus@lospollos.hermanos",
+        };
+
         // use random string for organization to ensure test is ran in pristine environment each time
         // but avoid `setUpOrganization()` as we want to set up organization ourselves
         const organization = uuid();
@@ -455,7 +471,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           date: baseSlot.date,
           attendances: {
             [saul.id]: {
-              attendedInterval: intervals[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
               bookedInterval: null,
             },
           },
@@ -469,7 +485,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           expect(snap.data()).toEqual({
             date: baseSlot.date,
-            interval: intervals[0],
+            interval: Object.keys(baseSlot.intervals)[0],
           });
         });
 
@@ -478,7 +494,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           date: baseSlot.date,
           attendances: {
             [saul.id]: {
-              attendedInterval: intervals[1],
+              attendedInterval: Object.keys(baseSlot.intervals)[1],
               bookedInterval: null,
             },
           },
@@ -492,7 +508,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           expect(attendedSlotDoc.data()).toEqual({
             date: baseSlot.date,
-            interval: intervals[1],
+            interval: Object.keys(baseSlot.intervals)[1],
           });
         });
 
@@ -576,7 +592,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           )
           .set({
             date: baseSlot.date,
-            interval: intervals[0],
+            interval: Object.keys(baseSlot.intervals)[0],
           });
 
         // Wait for the update to appear in attendance document
@@ -588,8 +604,8 @@ describe("Cloud functions -> Data triggers ->", () => {
             date: baseSlot.date,
             attendances: {
               [testCustomer.id]: {
-                bookedInterval: intervals[0],
-                attendedInterval: intervals[0],
+                bookedInterval: Object.keys(baseSlot.intervals)[0],
+                attendedInterval: Object.keys(baseSlot.intervals)[0],
               },
             },
           });
@@ -601,11 +617,11 @@ describe("Cloud functions -> Data triggers ->", () => {
           attendances: {
             [controlledCustomer.id]: {
               bookedInterval: null,
-              attendedInterval: intervals[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
             },
             [testCustomer.id]: {
-              bookedInterval: intervals[0],
-              attendedInterval: intervals[0],
+              bookedInterval: Object.keys(baseSlot.intervals)[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
             },
           },
         });
