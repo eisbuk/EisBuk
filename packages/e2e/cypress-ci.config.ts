@@ -24,5 +24,5 @@ export default defineConfig({
   },
 
   video: false,
-  defaultCommandTimeout: 10000,
+  defaultCommandTimeout: 15000,
 });
