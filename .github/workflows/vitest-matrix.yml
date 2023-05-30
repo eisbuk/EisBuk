@@ -1,0 +1,54 @@
+name: VitestMatrix
+"on":
+  push:
+    branches:
+    - vitest-matrix/**
+  schedule:
+  - cron: 30 5 * * 1,3
+jobs:
+  test-v18:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        dummy1:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        dummy2:
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "18"
+    - name: Cache node modules and firebase emulators
+      uses: actions/cache@v2
+      with:
+        path: |
+          ~/.rush
+          ~/.pnpm-store
+          common/temp
+          **/node_modules
+          ~/.cache/firebase/emulators
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
+    - name: Add rush directory to PATH
+      run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
+    - name: Install and build packages
+      run: rush update
+    - name: Build packages
+      run: rush build
+    - name: Run tests
+      run: cd packages/client && rushx test:emulators:ci
