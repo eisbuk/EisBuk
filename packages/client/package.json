@@ -59,7 +59,7 @@
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch dataTriggers\")'",
     "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch firestoreRules\")'",
     "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch integrations\")'",
-    "test:emulators:ci": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" CI=true vitest run \")'",
+    "test:emulators:ci": "export CI=true && export VITEST_JUNIT_SUITE_NAME=\"Client tests\" && bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --reporter=junit --outputFile=junit.xml\")'",
     "test:quicktest": "echo Running tests with no emulators support && vitest --watch src",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators",
     "storybook": "storybook dev -p 6006",
@@ -149,7 +149,7 @@
     "ts-node": "^10.5.0",
     "typescript": "~5.0.4",
     "vite": "~4.3.1",
-    "vitest": "~0.21.1",
+    "vitest": "~0.31.3",
     "vite-plugin-environment": "^1.1.0",
     "vite-plugin-svgr": "~2.1.0",
     "webpack": "^5.72.0"
