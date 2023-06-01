@@ -129,7 +129,7 @@ jobs:
       with:
         name: Vitest report
         path: packages/client/junit.xml
-        reporter: jest-junit
+        reporter: java-junit
     - name: Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
