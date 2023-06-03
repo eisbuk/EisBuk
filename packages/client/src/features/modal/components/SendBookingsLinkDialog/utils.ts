@@ -7,7 +7,7 @@ import {
 import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 
 import { FirestoreThunk } from "@/types/store";
 
@@ -79,7 +79,7 @@ interface SendBookingsLink {
 
 export const sendBookingsLink: SendBookingsLink =
   ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     try {
       if (!secretKey || !email) {
         // this should be unreachable
@@ -119,7 +119,7 @@ export const sendBookingsLink: SendBookingsLink =
 
       const { handler, payload, successMessage } = config[method];
 
-      await createCloudFunctionCaller(handler, payload)();
+      await createFunctionCaller(getFunctions(), handler, payload)();
 
       dispatch(
         enqueueNotification({

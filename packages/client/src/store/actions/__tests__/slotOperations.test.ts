@@ -36,6 +36,7 @@ import {
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
+import { runThunk } from "@/__testUtils__/helpers";
 
 // #region testData
 export const monthStr = testDate.substring(0, 7);
@@ -95,11 +96,12 @@ describe("Slot operations", () => {
             setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
-        await upsertSlot(testSlot)(mockDispatch, store.getState, {
+        const testThunk = upsertSlot(testSlot);
+        await runThunk(testThunk, mockDispatch, store.getState, {
           getFirestore,
         });
         const slotsCollRef = collection(db, getSlotsPath(organization));
@@ -132,7 +134,8 @@ describe("Slot operations", () => {
         throw testError;
       };
       // run the thunk
-      await upsertSlot(testSlot)(mockDispatch, dummyGetState, { getFirestore });
+      const testThunk = upsertSlot(testSlot);
+      await runThunk(testThunk, mockDispatch, dummyGetState, { getFirestore });
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
@@ -176,11 +179,14 @@ describe("Slot operations", () => {
           },
         };
         // run the thunk
-        await upsertSlot({
+        const testThunk = upsertSlot({
           ...testSlot,
           ...updates,
           id: slotId,
-        })(mockDispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // check that the slot is properly updated
         const slotDocRef = doc(db, getSlotDocPath(organization, slotId));
         const testSlotInFS = (await getDoc(slotDocRef)).data();
@@ -208,10 +214,13 @@ describe("Slot operations", () => {
           throw testError;
         };
         // run the failing thunk
-        await upsertSlot({
+        const testThunk = upsertSlot({
           ...testSlot,
           id: "slot",
-        })(mockDispatch, dummyGetState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, dummyGetState, {
+          getFirestore,
+        });
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -245,7 +254,8 @@ describe("Slot operations", () => {
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
-        await deleteSlot(slotId)(mockDispatch, store.getState, {
+        const testThunk = deleteSlot(slotId);
+        await runThunk(testThunk, mockDispatch, store.getState, {
           getFirestore,
         });
         // check that the slot was deleted from db
@@ -271,7 +281,10 @@ describe("Slot operations", () => {
           throw testError;
         };
         // run the failing thunk
-        await deleteSlot("id")(mockDispatch, dummyGetState, { getFirestore });
+        const testThunk = deleteSlot("id");
+        await runThunk(testThunk, mockDispatch, dummyGetState, {
+          getFirestore,
+        });
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

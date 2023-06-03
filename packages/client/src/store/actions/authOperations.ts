@@ -1,4 +1,5 @@
 import { getAuth, User } from "@firebase/auth";
+import { Functions } from "@firebase/functions";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import { AuthStatus } from "@eisbuk/shared";
@@ -12,7 +13,7 @@ import { AuthReducerAction, FirestoreThunk } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 
 /**
  * Creates firestore async thunk:
@@ -48,6 +49,7 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
  * @returns promise resolving to auth status object `{isAdmin, bookingsSecretKey?}`
  */
 export const checkAuthStatus = async (
+  functions: Functions,
   authString: string
 ): Promise<AuthStatus> => {
   const organization = getOrganization();
@@ -57,10 +59,14 @@ export const checkAuthStatus = async (
     return { isAdmin: false };
   }
 
-  const res = await createCloudFunctionCaller(CloudFunction.QueryAuthStatus, {
-    organization,
-    authString,
-  })();
+  const res = await createFunctionCaller(
+    functions,
+    CloudFunction.QueryAuthStatus,
+    {
+      organization,
+      authString,
+    }
+  )();
 
   return res.data;
 };
@@ -73,7 +79,7 @@ export const checkAuthStatus = async (
  */
 export const updateAuthUser =
   (user: User | null): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     // stop early (and log out) if no user recieved
     if (!user) {
       dispatch({ type: Action.Logout });
@@ -82,7 +88,10 @@ export const updateAuthUser =
 
     const { email, phoneNumber } = user;
 
-    const authStatus = await checkAuthStatus(email || phoneNumber || "");
+    const authStatus = await checkAuthStatus(
+      getFunctions(),
+      email || phoneNumber || ""
+    );
 
     dispatch({
       type: Action.UpdateAuthInfo,

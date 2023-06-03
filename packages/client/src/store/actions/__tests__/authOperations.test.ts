@@ -10,24 +10,22 @@ import { defaultUser } from "@eisbuk/testing/envData";
 import { updateAuthUser } from "../authOperations";
 
 import { getNewStore } from "@/store/createStore";
+import { runThunk } from "@/__testUtils__/helpers";
 
 // a minimalist dummy entry for a user
 const testUser: User = { uid: "some uuid", email: defaultUser.email } as User;
 
 const mockQueryAuthStatus = vi.fn();
 // mock the entire functions package as we're only using `httpsCallable`
-vi.mock("@firebase/functions", () => ({
-  getFunctions: vi.fn(),
-  // httpsCallable will always return mockQueryAuthStatus as `queryAuthStatus`
-  // is the only usage of `httpsCallable` in `authOperations` package
-  httpsCallable: () => mockQueryAuthStatus,
-}));
-vi.mock("@firebase/app", () => ({
-  ...vi.importActual("@firebase/app"),
-  getApp: vi.fn(),
-}));
-
-const dummyGetFirestore = () => ({} as any);
+vi.mock("@firebase/functions", async () => {
+  const functions = (await vi.importActual("@firebase/functions")) as object;
+  return {
+    ...functions,
+    // httpsCallable will always return mockQueryAuthStatus as `queryAuthStatus`
+    // is the only usage of `httpsCallable` in `authOperations` package
+    httpsCallable: () => mockQueryAuthStatus,
+  };
+});
 
 describe("Auth operations", () => {
   afterEach(() => {
@@ -44,7 +42,7 @@ describe("Auth operations", () => {
           isAdmin: false,
         },
       });
-      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
+      await runThunk(testThunk, dispatch, getState);
       expect(getState().auth).toEqual({
         isAdmin: false,
         isEmpty: false,
@@ -58,7 +56,7 @@ describe("Auth operations", () => {
           bookingsSecretKey: "secret-key",
         },
       });
-      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
+      await runThunk(testThunk, dispatch, getState);
       expect(getState().auth).toEqual({
         isAdmin: false,
         isEmpty: false,
@@ -68,7 +66,7 @@ describe("Auth operations", () => {
       });
       // try with admin user
       mockQueryAuthStatus.mockResolvedValueOnce({ data: { isAdmin: true } });
-      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
+      await runThunk(testThunk, dispatch, getState);
       expect(getState().auth).toEqual({
         userData: testUser,
         isAdmin: true,
@@ -81,12 +79,11 @@ describe("Auth operations", () => {
       // set up tests with authenticated admin
       const { dispatch, getState } = getNewStore();
       mockQueryAuthStatus.mockResolvedValueOnce({ data: { isAdmin: true } });
-      await updateAuthUser(testUser)(dispatch, getState, {
-        getFirestore: dummyGetFirestore,
-      });
+      let testThunk = updateAuthUser(testUser);
+      await runThunk(testThunk, dispatch, getState);
       // run the thunk
-      const testThunk = updateAuthUser(null);
-      await testThunk(dispatch, getState, { getFirestore: dummyGetFirestore });
+      testThunk = updateAuthUser(null);
+      await runThunk(testThunk, dispatch, getState);
       expect(getState().auth).toEqual({
         userData: null,
         isAdmin: false,

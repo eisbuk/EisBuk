@@ -19,6 +19,7 @@ import { FirestoreVariant } from "@/utils/firestore";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
 import { saul } from "@eisbuk/testing/customers";
+import { runThunk } from "@/__testUtils__/helpers";
 
 const getFirestore = () =>
   FirestoreVariant.client({ instance: getClientFirestore() });
@@ -45,9 +46,9 @@ const runGetDialogTableTests = (tests: TestParams[]) =>
 // for 'sendBookingsLink'
 const mockSendMail = vi.fn();
 const mockSendSMS = vi.fn();
-const mockCreateFunctionCaller = vi
+const mockCallFunction = vi
   .fn()
-  .mockImplementation((func, payload) =>
+  .mockImplementation((_, func, payload) =>
     func === CloudFunction.SendEmail
       ? () => mockSendMail(payload)
       : func === CloudFunction.SendSMS
@@ -55,8 +56,7 @@ const mockCreateFunctionCaller = vi
       : vi.fn()
   );
 vi.mock("@/utils/firebase", () => ({
-  createCloudFunctionCaller: (...params: any[]) =>
-    mockCreateFunctionCaller(...params),
+  createFunctionCaller: (...params: any[]) => mockCallFunction(...params),
 }));
 // #endregion sendBookingsLinkSetup
 
@@ -126,11 +126,12 @@ describe("Send bookings link dialog utils", () => {
     testWithEmulator(
       "should call a mail sending cloud function if method = 'email'",
       async () => {
-        await sendBookingsLink({
+        const testThunk = sendBookingsLink({
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-        })(mockDispatch, getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, getState, { getFirestore });
         // check results
         expect(mockSendMail).toHaveBeenCalledTimes(1);
         expect(mockSendMail).toHaveBeenCalledWith({
@@ -155,11 +156,14 @@ describe("Send bookings link dialog utils", () => {
     testWithEmulator(
       "should call an SMS sending cloud function if method = 'sms'",
       async () => {
-        await sendBookingsLink({
+        const testThunk = sendBookingsLink({
           ...saul,
           method: SendBookingLinkMethod.SMS,
           bookingsLink,
-        })(mockDispatch, getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, getState, {
+          getFirestore,
+        });
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
         const sentSMS = mockSendSMS.mock.calls[0][0] as SMSMessage;
@@ -186,15 +190,16 @@ describe("Send bookings link dialog utils", () => {
       "should show error notification if function call unsuccessful",
       async () => {
         // intentionally cause error to test error handling
-        mockCreateFunctionCaller.mockImplementation(() => {
+        mockCallFunction.mockImplementation(() => {
           throw new Error();
         });
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        await sendBookingsLink({
+        const testThunk = sendBookingsLink({
           ...saul,
           method: SendBookingLinkMethod.Email,
           bookingsLink,
-        })(mockDispatch, getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, getState, { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.Error),

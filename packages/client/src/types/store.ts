@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { Dispatch, Reducer, Action as ReducerAction } from "redux";
 
 import { User } from "@firebase/auth";
+import { Functions } from "@firebase/functions";
 
 import {
   AuthStatus,
@@ -152,6 +153,10 @@ export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {
 
 // #region misc
 type GetState = () => LocalStore;
+export interface ThunkExtraArgument {
+  getFirestore: () => FirestoreVariant;
+  getFunctions: () => Functions;
+}
 /**
  * Async Thunk in charge of updating the firestore and dispatching action
  * to local store with respect to firestore update outcome
@@ -160,7 +165,7 @@ export interface FirestoreThunk {
   (
     dispatch: Dispatch<any>,
     getState: GetState,
-    extraArgument: { getFirestore: () => FirestoreVariant }
+    extraArgument: ThunkExtraArgument
   ): Promise<void>;
 }
 

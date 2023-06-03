@@ -3,7 +3,6 @@
  */
 
 import { describe, vi, expect, beforeEach } from "vitest";
-import * as functions from "@firebase/functions";
 import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -51,7 +50,7 @@ import {
   setupTestSlots,
 } from "../__testUtils__/firestore";
 
-import { waitFor } from "@/__testUtils__/helpers";
+import { waitFor, runThunk } from "@/__testUtils__/helpers";
 
 const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
@@ -90,11 +89,6 @@ const testSlot = {
   categories: saul.categories,
 };
 // #endregion testData
-
-/**
- * In some cases, we don't need an additional 'getFirestore' thunk argument, so we're passing this as a placeholder for type safety
- */
-const dummyGetFirestore = () => ({} as any);
 
 describe("Booking operations", () => {
   beforeEach(() => {
@@ -138,8 +132,10 @@ describe("Booking operations", () => {
         });
         const mockDispatch = vi.fn();
         // mock `getFirestore` to return test db
-        const getFirestore = () => db as any;
-        await testThunk(mockDispatch, store.getState, { getFirestore });
+        const getFirestore = () => db;
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -186,7 +182,9 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingError, {
@@ -236,7 +234,9 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState, { getFirestore });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -272,7 +272,9 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingCanceledError, {
@@ -321,7 +323,7 @@ describe("Booking operations", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // create a thunk curried with test input values
         const testThunk = updateBookingNotes({
           secretKey,
@@ -331,7 +333,9 @@ describe("Booking operations", () => {
           bookingNotes,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState, { getFirestore });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // Check updates
         const updatedBooking = await getDoc(
           doc(
@@ -371,7 +375,9 @@ describe("Booking operations", () => {
           bookingNotes: "",
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any), { getFirestore });
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesError),
@@ -405,9 +411,7 @@ describe("Booking operations", () => {
       // create a thunk curried with test input values
       const testThunk = customerSelfUpdate({ ...saul, name: "Jimmy" });
       // test updating of the db using created thunk and middleware args from stores' setup
-      await testThunk(mockDispatch, store.getState, {
-        getFirestore: dummyGetFirestore,
-      });
+      await runThunk(testThunk, mockDispatch, store.getState);
       // Check updates
       await waitFor(async () => {
         const bookingsSnap = await getDoc(
@@ -430,14 +434,14 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        vi.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        const getFunctions = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any), {
-          getFirestore: dummyGetFirestore,
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -475,9 +479,11 @@ describe("Booking operations", () => {
         registrationCode,
       });
       // test updating of the db using created thunk and middleware args from stores' setup
-      const { id, secretKey } = await testThunk(mockDispatch, store.getState, {
-        getFirestore: dummyGetFirestore,
-      });
+      const { id, secretKey } = await runThunk(
+        testThunk,
+        mockDispatch,
+        store.getState
+      );
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
       // Check updates
@@ -500,17 +506,17 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        vi.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        const getFunctions = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = customerSelfRegister({
           ...saul,
           registrationCode: "",
         });
         const mockDispatch = vi.fn();
-        await testThunk(mockDispatch, () => ({} as any), {
-          getFirestore: dummyGetFirestore,
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

@@ -5,7 +5,7 @@ import { getCustomerDocPath } from "@/utils/firestore";
 import * as getters from "@/lib/getters";
 
 import { setUpOrganization } from "@/__testSetup__/firestore";
-import { adminDb } from "@/__testSetup__/firestoreSetup";
+import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
@@ -22,7 +22,7 @@ describe("Finalize bookings dialog utils", () => {
         saulRef.set({ ...saul, extendedDate: "2022-01-01" } as Customer);
         // We want the tests to use test organization rather than the default one
         vi.spyOn(getters, "getOrganization").mockReturnValue(organization);
-        await finalizeBookings(saul.id, saul.secretKey);
+        await finalizeBookings(functions, saul.id, saul.secretKey);
         const { extendedDate } = (await saulRef.get()).data() as Customer;
         expect(extendedDate).toBeFalsy();
       }

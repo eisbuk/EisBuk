@@ -10,6 +10,8 @@ import {
 } from "@eisbuk/translations";
 import { CustomerForm, Layout } from "@eisbuk/ui";
 
+import { functions } from "@/setup";
+
 import { Routes } from "@eisbuk/shared/ui";
 
 import { getOrganization } from "@/lib/getters";
@@ -59,6 +61,7 @@ const SelfRegisterPage: React.FC = () => {
       {
         getFirestore: () =>
           FirestoreVariant.client({ instance: getFirestore() }),
+        getFunctions: () => functions,
       }
     );
     if (!codeOk) {

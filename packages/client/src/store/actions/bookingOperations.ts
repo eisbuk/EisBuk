@@ -8,7 +8,7 @@ import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -152,34 +152,36 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
  */
 export const customerSelfUpdate: {
   (paylod: CustomerBase & { secretKey: string }): FirestoreThunk;
-} = (customer) => async (dispatch) => {
-  try {
-    const organization = getOrganization();
+} =
+  (customer) =>
+  async (dispatch, _, { getFunctions }) => {
+    try {
+      const organization = getOrganization();
 
-    const handler = CloudFunction.CustomerSelfUpdate;
-    const payload = {
-      organization,
-      customer,
-    };
+      const handler = CloudFunction.CustomerSelfUpdate;
+      const payload = {
+        organization,
+        customer,
+      };
 
-    await createCloudFunctionCaller(handler, payload)();
+      await createFunctionCaller(getFunctions(), handler, payload)();
 
-    dispatch(
-      enqueueNotification({
-        variant: NotifVariant.Success,
-        message: i18n.t(NotificationMessage.CustomerProfileUpdated),
-      })
-    );
-  } catch (err) {
-    dispatch(
-      enqueueNotification({
-        variant: NotifVariant.Error,
-        message: i18n.t(NotificationMessage.CustomerProfileError),
-        error: err as Error,
-      })
-    );
-  }
-};
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Success,
+          message: i18n.t(NotificationMessage.CustomerProfileUpdated),
+        })
+      );
+    } catch (err) {
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Error,
+          message: i18n.t(NotificationMessage.CustomerProfileError),
+          error: err as Error,
+        })
+      );
+    }
+  };
 
 export const customerSelfRegister: {
   (paylod: CustomerBase & { registrationCode: string }): (
@@ -187,7 +189,7 @@ export const customerSelfRegister: {
   ) => Promise<{ id: string; secretKey: string; codeOk: boolean }>;
 } =
   ({ registrationCode, ...customer }) =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     try {
       const organization = getOrganization();
 
@@ -198,7 +200,11 @@ export const customerSelfRegister: {
         registrationCode,
       };
 
-      const res = await createCloudFunctionCaller(handler, payload)();
+      const res = await createFunctionCaller(
+        getFunctions(),
+        handler,
+        payload
+      )();
       const { id, secretKey } = res.data;
 
       dispatch(

@@ -10,6 +10,8 @@ import {
   IntervalCardVariant,
 } from "@eisbuk/ui";
 
+import { functions } from "@/setup";
+
 import {
   getIsBookingAllowed,
   getBookedAndAttendedSlotsForCalendar,
@@ -59,6 +61,7 @@ const CalendarView: React.FC = () => {
       interval,
     })(dispatch, getState, {
       getFirestore: () => FirestoreVariant.client({ instance: getFirestore() }),
+      getFunctions: () => functions,
     });
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (

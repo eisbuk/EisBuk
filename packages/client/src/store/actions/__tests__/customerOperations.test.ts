@@ -7,6 +7,8 @@ import { describe, vi, expect, afterEach } from "vitest";
 import { Customer, Category } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
+import { saul } from "@eisbuk/testing/customers";
+
 import "@/__testSetup__/firestoreSetup";
 import { getTestEnv } from "@/__testSetup__/firestore";
 
@@ -34,8 +36,7 @@ import {
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
-
-import { saul } from "@eisbuk/testing/customers";
+import { runThunk } from "@/__testUtils__/helpers";
 
 const mockDispatch = vi.fn();
 
@@ -65,7 +66,8 @@ describe("customerOperations", () => {
         // make sure that the db used by the thunk is test db
         const getFirestore = () => db as any;
         // run the thunk with customer data
-        await updateCustomer(noIdSaul)(mockDispatch, getState, {
+        const testThunk = updateCustomer(noIdSaul);
+        await runThunk(testThunk, mockDispatch, getState, {
           getFirestore,
         });
         const customersRef = collection(db, getCustomersPath(organization));
@@ -114,7 +116,9 @@ describe("customerOperations", () => {
         };
         const testThunk = updateCustomer(updatedSaul);
         // run the thunk with mocked data
-        await testThunk(store.dispatch, store.getState, { getFirestore });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         const updatedSaulInDb = (await getDoc(saulDocRef)).data() as Customer;
         expect(updatedSaulInDb).toEqual(updatedSaul);
       }
@@ -128,7 +132,7 @@ describe("customerOperations", () => {
       };
       // run thunk
       const testThunk = updateCustomer(saul);
-      await testThunk(mockDispatch, getState, { getFirestore });
+      await runThunk(testThunk, mockDispatch, getState, { getFirestore });
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
@@ -161,9 +165,10 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk with updated customer data
-        await deleteCustomer(saul)(mockDispatch, store.getState, {
+        const testThunk = deleteCustomer(saul);
+        await runThunk(testThunk, mockDispatch, store.getState, {
           getFirestore,
         });
         const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
@@ -192,7 +197,8 @@ describe("customerOperations", () => {
         throw testError;
       };
       // run thunk
-      await deleteCustomer(saul)(mockDispatch, getState, { getFirestore });
+      const testThunk = deleteCustomer(saul);
+      await runThunk(testThunk, mockDispatch, getState, { getFirestore });
       // check err snackbar being called
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
@@ -225,12 +231,11 @@ describe("customerOperations", () => {
         // make sure tests are ran against test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // make sure that the db used by the thunk is test db
-        const getFirestore = () => db as any;
-        await extendBookingDate(saul, extendedDate)(
-          mockDispatch,
-          () => ({} as any),
-          { getFirestore }
-        );
+        const getFirestore = () => db;
+        const testThunk = extendBookingDate(saul, extendedDate);
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         // exteneded date should be created in `customers` entry
         const updatedCustomer = await getDoc(
           doc(db, getCustomersPath(organization), saul.id)
@@ -258,11 +263,8 @@ describe("customerOperations", () => {
         const getFirestore = () => {
           throw testError;
         };
-        await extendBookingDate(saul, "2022-01-01")(
-          mockDispatch,
-          () => ({} as any),
-          { getFirestore }
-        );
+        const testThunk = extendBookingDate(saul, "2022-01-01");
+        runThunk(testThunk, mockDispatch, () => ({} as any), { getFirestore });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingDateExtendedError, {

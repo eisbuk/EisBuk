@@ -1,3 +1,38 @@
+import { getFirestore as getFirestoreActual } from "@firebase/firestore";
+
+import { FirestoreThunk, LocalStore } from "@/types/store";
+
+import { functions } from "@/__testSetup__/firestoreSetup";
+
+import { FirestoreVariant } from "@/utils/firestore";
+
+type Dispatch = Parameters<FirestoreThunk>[0];
+type GetState = Parameters<FirestoreThunk>[1];
+type AdditionalArguments = Partial<Parameters<FirestoreThunk>[2]>;
+
+/**
+ * Wraps thunk with additional arguments to reduce boilerplate in tests.
+ * I needed, however, additinal arguments can be passed in as second argument.
+ * @param thunk
+ * @param additionalArguments
+ * @returns
+ */
+export const runThunk = <
+  T extends (...args: Parameters<FirestoreThunk>) => any
+>(
+  thunk: T,
+  dispatch: Dispatch,
+  getState: GetState = () => ({} as LocalStore),
+  additionalArguments: AdditionalArguments = {}
+): ReturnType<T> => {
+  const getFirestore =
+    additionalArguments.getFirestore ||
+    (() => FirestoreVariant.client({ instance: getFirestoreActual() }));
+  const getFunctions = additionalArguments.getFunctions || (() => functions);
+
+  return thunk(dispatch, getState, { getFirestore, getFunctions });
+};
+
 const __isCI__ = process.env.CI;
 
 /**

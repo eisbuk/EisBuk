@@ -26,7 +26,7 @@ import {
 import { getCalendarEventsByMonth } from "../selectors/calendar";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 import { getBookingsPath, doc, setDoc } from "@/utils/firestore";
 
 /**
@@ -178,7 +178,7 @@ const sendICSFile =
     name,
     surname,
   }: SendICSFilePayload): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     try {
       const handler = CloudFunction.SendEmail;
       const payload = {
@@ -195,7 +195,7 @@ const sendICSFile =
         },
       } as Omit<ClientEmailPayload[EmailType.SendCalendarFile], "organization">;
 
-      await createCloudFunctionCaller(handler, payload)();
+      await createFunctionCaller(getFunctions(), handler, payload)();
 
       dispatch(
         enqueueNotification({

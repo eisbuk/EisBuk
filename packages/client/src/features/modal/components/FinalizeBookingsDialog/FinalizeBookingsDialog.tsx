@@ -4,6 +4,8 @@ import { DateTime } from "luxon";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
+import { functions } from "@/setup";
+
 import { finalizeBookings } from "./utils";
 
 interface FinalizeBookingProps {
@@ -22,7 +24,7 @@ const FinalizeBookingsDialog: React.FC<FinalizeBookingProps> = ({
   secretKey,
 }) => {
   const onConfirm = () => {
-    finalizeBookings(customerId, secretKey);
+    finalizeBookings(functions, customerId, secretKey);
     onClose();
   };
 

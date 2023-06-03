@@ -25,6 +25,7 @@ import { doc, getAttendanceDocPath, getDoc } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestAttendance } from "../__testUtils__/firestore";
+import { runThunk } from "@/__testUtils__/helpers";
 
 // #region testData
 /** The id of our observed slot (the one we're updating throughout the tests) */
@@ -89,13 +90,16 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk with test input values
-        await markAttendance({
+        const testThunk = markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(store.dispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval, bookedInterval },
@@ -124,13 +128,16 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk with test input values
-        await markAttendance({
+        const testThunk = markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(store.dispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         // check updated db
         // booked should be null (since customer didn't book beforehand, but did attend)
         const expectedDoc = createDocumentWithObservedAttendance({
@@ -163,11 +170,14 @@ describe("Attendance operations ->", () => {
           throw testError;
         };
         const mockDispatch = vi.fn();
-        await markAttendance({
+        const testThunk = markAttendance({
           ...shortSaul,
           slotId,
           attendedInterval,
-        })(mockDispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.MarkAttendanceError, {
@@ -203,12 +213,15 @@ describe("Attendance operations ->", () => {
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // make sure test thunk uses the test env db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk with test input values
-        await markAbsence({
+        const testThunk = markAbsence({
           ...shortSaul,
           slotId,
-        })(store.dispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         // check updated db
         const expectedDoc = createDocumentWithObservedAttendance({
           [saul.id]: { attendedInterval: null, bookedInterval },
@@ -241,10 +254,13 @@ describe("Attendance operations ->", () => {
         // make sure test thunk uses the test env db
         const getFirestore = () => db as any;
         // run the thunk with test input values
-        await markAbsence({
+        const testThunk = markAbsence({
           ...shortSaul,
           slotId,
-        })(store.dispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         // check updated db
         // the customer should be removed (only the rest of the test data should be in the doc)
         const expectedDoc = createDocumentWithObservedAttendance({});
@@ -275,10 +291,13 @@ describe("Attendance operations ->", () => {
           throw testError;
         };
         const mockDispatch = vi.fn();
-        await markAbsence({
+        const testThunk = markAbsence({
           ...shortSaul,
           slotId,
-        })(mockDispatch, store.getState, { getFirestore });
+        });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.MarkAbsenceError, {

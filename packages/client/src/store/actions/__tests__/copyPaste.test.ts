@@ -42,6 +42,7 @@ import {
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupCopyPaste, setupTestSlots } from "../__testUtils__/firestore";
+import { runThunk } from "@/__testUtils__/helpers";
 
 // #region testData
 /** Day we'll be using to test copy/paste slots day */
@@ -145,9 +146,10 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk against a store
-        await copySlotsDay(testDateLuxon)(store.dispatch, store.getState, {
+        const testThunk = copySlotsDay(testDateLuxon);
+        await runThunk(testThunk, store.dispatch, store.getState, {
           getFirestore,
         });
         // test that slots have been added to clipboard
@@ -189,7 +191,10 @@ describe("Copy Paste actions", () => {
         // make sure the tests use the test db
         const getFirestore = () => db as any;
         // run the thunk against a store
-        await copySlotsWeek()(store.dispatch, store.getState, { getFirestore });
+        const testThunk = copySlotsWeek();
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
         // test that slots have been added to clipboard
         expect(getWeekFromClipboard(store.getState())).toEqual(expectedWeek);
         // check that day slots have been removed from the clipboard
@@ -220,7 +225,8 @@ describe("Copy Paste actions", () => {
         const newDate = testDateLuxon.plus({ days: 2 });
         const newDateISO = luxon2ISODate(newDate);
         // run the thunk against the store
-        await pasteSlotsDay(newDate)(mockDispatch, store.getState, {
+        const testThunk = pasteSlotsDay(newDate);
+        await runThunk(testThunk, mockDispatch, store.getState, {
           getFirestore,
         });
         const numSlotsToPaste = Object.keys(testDay).length;
@@ -248,7 +254,8 @@ describe("Copy Paste actions", () => {
         throw testError;
       };
       // run the faulty thunk
-      await pasteSlotsDay(testDateLuxon)(mockDispatch, () => ({} as any), {
+      const testThunk = pasteSlotsDay(testDateLuxon);
+      runThunk(testThunk, mockDispatch, () => ({} as any), {
         getFirestore,
       });
       // check the error message being enqueued
@@ -282,10 +289,11 @@ describe("Copy Paste actions", () => {
         // make sure test generated organziation is used
         getOrganizationSpy.mockReturnValue(organization);
         // make sure the tests use the test db
-        const getFirestore = () => db as any;
+        const getFirestore = () => db;
         // run the thunk with next week as week to paste to
         const newDate = testDateLuxon.plus({ weeks: 1 });
-        await pasteSlotsWeek(newDate)(mockDispatch, store.getState, {
+        const testThunk = pasteSlotsWeek(newDate);
+        await runThunk(testThunk, mockDispatch, store.getState, {
           getFirestore,
         });
         // test that slots have been updated
@@ -315,7 +323,8 @@ describe("Copy Paste actions", () => {
           throw testError;
         };
         // run the failing thunk
-        await pasteSlotsWeek(testDateLuxon)(mockDispatch, () => ({} as any), {
+        const testThunk = pasteSlotsWeek(testDateLuxon);
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
           getFirestore,
         });
         // check the error message being enqueued

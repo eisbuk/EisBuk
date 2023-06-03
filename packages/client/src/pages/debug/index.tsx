@@ -14,13 +14,15 @@ import {
 } from "@eisbuk/ui";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
+import { functions } from "@/setup";
+
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 
 import { adminLinks } from "@/data/navigation";
 
@@ -32,7 +34,7 @@ const auth = getAuth();
  * @returns
  */
 export const createAdminTestUsers = async (): Promise<void> => {
-  await createCloudFunctionCaller(CloudFunction.CreateOrganization)();
+  await createFunctionCaller(functions, CloudFunction.CreateOrganization)();
   // Auth emulator is not currently accessible from within the functions
   try {
     await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
@@ -77,9 +79,13 @@ const DebugPage: React.FC = () => {
 
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(CloudFunction.CreateTestData, {
-              numUsers: 10,
-            })}
+            onClick={createFunctionCaller(
+              functions,
+              CloudFunction.CreateTestData,
+              {
+                numUsers: 10,
+              }
+            )}
             color={ButtonColor.Primary}
           >
             Create test users
@@ -88,7 +94,10 @@ const DebugPage: React.FC = () => {
 
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(CloudFunction.CreateTestSlots)}
+            onClick={createFunctionCaller(
+              functions,
+              CloudFunction.CreateTestSlots
+            )}
             color={ButtonColor.Primary}
           >
             Create test slots
@@ -97,7 +106,10 @@ const DebugPage: React.FC = () => {
 
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(CloudFunction.PruneSlotsByDay)}
+            onClick={createFunctionCaller(
+              functions,
+              CloudFunction.PruneSlotsByDay
+            )}
             color={ButtonColor.Primary}
           >
             Prune slots by day
@@ -106,7 +118,8 @@ const DebugPage: React.FC = () => {
 
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(
+            onClick={createFunctionCaller(
+              functions,
               CloudFunction.DeleteOrphanedBookings
             )}
             color={ButtonColor.Primary}
@@ -117,7 +130,8 @@ const DebugPage: React.FC = () => {
 
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(
+            onClick={createFunctionCaller(
+              functions,
               CloudFunction.MigrateCategoriesToExplicitMinors
             )}
             color={ButtonColor.Primary}
@@ -127,7 +141,8 @@ const DebugPage: React.FC = () => {
         </div>
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(
+            onClick={createFunctionCaller(
+              functions,
               CloudFunction.CustomersToPluralCategories
             )}
             color={ButtonColor.Primary}
@@ -137,7 +152,8 @@ const DebugPage: React.FC = () => {
         </div>
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(
+            onClick={createFunctionCaller(
+              functions,
               CloudFunction.PopulateDefaultEmailTemplates
             )}
             color={ButtonColor.Primary}
@@ -147,7 +163,8 @@ const DebugPage: React.FC = () => {
         </div>
         <div className="p-2">
           <DebugPageButton
-            onClick={createCloudFunctionCaller(
+            onClick={createFunctionCaller(
+              functions,
               CloudFunction.RemoveInvalidCustomerPhones
             )}
             color={ButtonColor.Primary}
