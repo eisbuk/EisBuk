@@ -7,6 +7,10 @@ const __isCI__ = Boolean(process.env.CI);
 export default defineConfig({
   plugins: [react()],
   test: {
+    coverage: {
+      provider: "c8",
+      reporter: ["lcov"],
+    },
     // We're testing with firebase emulators, which, can be a bit slow
     // (either when emulators are just being started, as well as when multiple test threads make requests against them),
     // while our tests are fast.
