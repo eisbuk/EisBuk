@@ -19,6 +19,8 @@
     "@firebase/functions": "~0.9.4",
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
+    "@vitest/coverage-c8": "~0.31.4",
+    "@vitest/ui": "~0.31.4",
     "clsx": "^1.1.1",
     "datebook": "^7.0.8",
     "firebase-tools": "^12.2.1",
@@ -54,14 +56,15 @@
     "start:eisbuk": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production vite",
     "start:igorice": "REACT_APP_EISBUK_SITE=igorice.web.app BUILD_ENV=production vite",
     "start:staging": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production DEPLOY_STAGE=staging vite",
-    "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch src\")'",
-    "test:functions": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch cloudFunctions\")'",
-    "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch dataTriggers\")'",
-    "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch firestoreRules\")'",
-    "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --watch integrations\")'",
-    "test:emulators:ci": "export CI=true && export VITEST_JUNIT_SUITE_NAME=\"Client tests\" && bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --outputFile=junit.xml\")'",
-    "test:quicktest": "echo Running tests with no emulators support && vitest --watch src",
-    "test": "echo 'Running all tests; using emulators.' && rushx test:emulators",
+    "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest\")'",
+    "test:emulators:ui": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --ui\")'",
+    "test:functions": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest cloudFunctions\")'",
+    "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest dataTriggers\")'",
+    "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest firestoreRules\")'",
+    "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest integrations\")'",
+    "test:emulators:ci": "export CI=true && export VITEST_JUNIT_SUITE_NAME=\"Client tests\" && bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --reporter=html --outputFile.junit=junit.xml/\")'",
+    "test:quicktest": "echo Running tests with no emulators support && vitest --ui",
+    "test": "echo 'Running all tests; using emulators.' && rushx test:emulators:ui",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -152,7 +155,6 @@
     "vitest": "~0.31.3",
     "vite-plugin-environment": "^1.1.0",
     "vite-plugin-svgr": "~2.1.0",
-    "webpack": "^5.72.0",
-    "@vitest/coverage-c8": "~0.31.4"
+    "webpack": "^5.72.0"
   }
 }
