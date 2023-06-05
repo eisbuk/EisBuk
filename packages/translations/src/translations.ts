@@ -141,6 +141,7 @@ export enum ValidationMessage {
   InvalidPhone = "Validations.InvalidPhone",
   TimeMismatch = "Validations.TimeMismatch",
   WeakPassword = "Validations.WeakPassword",
+  InvalidInterval = "Validations.InvalidInterval",
   InvalidSmsFrom = "Validations.InvalidSmsFrom",
   InvalidSmsFromLength = "Validations.InvalidSmsFromLength",
   InvalidRegistrationCode = "Validations.InvalidRegistrationCode",
@@ -231,6 +232,8 @@ export enum ActionButton {
   SendBookingsEmail = "ActionButton.SendBookingsEmail",
   SendBookingsSMS = "ActionButton.SendBookingsSMS",
   ExtendBookingDate = "ActionButton.ExtendBookingDate",
+
+  CustomInterval = "ActionButton.CustomInterval",
 
   Save = "ActionButton.Save",
   Back = "ActionButton.Back",
@@ -362,6 +365,8 @@ export enum AttendanceAria {
   NextInterval = "AttendanceAria.NextInterval",
   MarkPresent = "AttendanceAria.MarkPresent",
   MarkAbsent = "AttendanceAria.MarkAbsent",
+  AddCustomInterval = "AttendanceAria.AddCustomInterval",
+  CancelCustomInterval = "AttendanceAria.CancelCustomInterval",
 }
 
 export enum SlotFormAria {

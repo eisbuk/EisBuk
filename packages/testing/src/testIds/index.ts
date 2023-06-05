@@ -91,4 +91,7 @@ export const __birthdayInputId__ = "birthday-input";
 
 // #region AttendanceIntervals
 export const __primaryIntervalId__ = "primary-interval";
+export const __customIntervalInputId__ = "custom-interval-input";
+export const __cancelCustomIntervalId__ = "cancel-custom-interval";
+export const __addCustomIntervalId__ = "add-custom-interval";
 // #endregion AttendanceIntervals

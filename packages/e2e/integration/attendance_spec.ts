@@ -1,9 +1,14 @@
-import i18n, { AttendanceAria } from "@eisbuk/translations";
+import i18n, { ActionButton, AttendanceAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
 
-import { PrivateRoutes, __primaryIntervalId__ } from "../temp";
+import {
+  PrivateRoutes,
+  __addCustomIntervalId__,
+  __customIntervalInputId__,
+  __primaryIntervalId__,
+} from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { attendance } from "../__testData__/attendance.json";
@@ -38,6 +43,7 @@ describe("AddAttendedCustomersDialog", () => {
         )
         .then(() => cy.visit(PrivateRoutes.Root));
     });
+
     it("Adds attended athletes from eligible (by slot category) althetes from the list", () => {
       cy.getAttrWith(
         "aria-label",
@@ -158,5 +164,28 @@ describe("AddAttendedCustomersDialog", () => {
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).click();
       cy.contains(gus.name).contains(intervals[2]);
     });
+
+    it("adds a new interval to the slot and marks alhlete's attendance with it using 'Custom interval' input", () => {
+      // Intervals in slot "09:00-11:00", "09:00-10:00", "10:00-11:00";
+      const newInterval = "11:00-12:00";
+
+      // Show custom interval input (for Gus as the first athlete in the list)
+      cy.clickButton(i18n.t(ActionButton.CustomInterval));
+
+      cy.getByTestId(__customIntervalInputId__).type(newInterval);
+      cy.getByTestId(__addCustomIntervalId__).click();
+
+      // The input should no-longer be shown (the button should be show instead)
+      cy.getByTestId(__customIntervalInputId__).should("not.exist");
+      cy.get(`button:contains(${i18n.t(ActionButton.CustomInterval)})`);
+
+      // We verify the attendance has been updated by checking for the interval string being there (even though the input was removed)
+      cy.contains(newInterval);
+
+      // The slot time should be extended (as the interval time, before update was 09:00-11:00) to 09:00-12:00
+      cy.contains("09:00 - 12:00");
+    });
+
+    /** @TODO test validation errors, the test wasn't working due to some issues with input being "disabled" (wasn't really disabled) */
   });
 });

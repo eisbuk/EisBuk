@@ -5,11 +5,13 @@ import { AttendanceAria, useTranslation } from "@eisbuk/translations";
 
 import IconButton from "../IconButton";
 import IntervalUI from "./IntervalUI";
+import CustomIntervalInput from "./CustomIntervalInput";
 
 interface Props
   extends Omit<React.HTMLAttributes<HTMLDivElement>, "onChange" | "color"> {
   intervals: string[];
   onChange?: (attendedInterval: string) => void;
+  onCustomInterval?: (interval: string) => void;
   attendedInterval: string;
   bookedInterval: string | null;
   disabled?: boolean;
@@ -20,6 +22,7 @@ const IntervalPicker: React.FC<Props> = ({
   bookedInterval,
   attendedInterval,
   onChange = () => {},
+  onCustomInterval = () => {},
   className,
   disabled,
   ...props
@@ -52,36 +55,42 @@ const IntervalPicker: React.FC<Props> = ({
 
   return (
     <div
-      className={`flex items-center w-64 h-10 font-mono ${className}`}
+      className={`w-64 h-24 py-4 flex flex-col items-center font-mono ${className}`}
       {...props}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
-      <IconButton
-        onClick={handleClick(-1)}
-        disabled={leftDisabled}
-        aria-label={t(AttendanceAria.PreviousInterval)}
-        className={`!w-16 !h-7 px-3 rounded text-inherit ${
-          leftDisabled ? "bg-cyan-700/30" : "bg-cyan-700 active:bg-cyan-600"
-        }`}
-        disableHover
-      >
-        <ChevronLeft />
-      </IconButton>
+      <div className="w-full h-10 flex items-center">
+        <IconButton
+          onClick={handleClick(-1)}
+          disabled={leftDisabled}
+          aria-label={t(AttendanceAria.PreviousInterval)}
+          className={`!w-16 !h-7 px-3 rounded text-inherit ${
+            leftDisabled ? "bg-cyan-700/30" : "bg-cyan-700 active:bg-cyan-600"
+          }`}
+          disableHover
+        >
+          <ChevronLeft />
+        </IconButton>
 
-      <IntervalUI {...{ attendedInterval, bookedInterval }} />
+        <IntervalUI {...{ attendedInterval, bookedInterval }} />
 
-      <IconButton
-        onClick={handleClick(1)}
-        disabled={rightDisabled}
-        aria-label={t(AttendanceAria.NextInterval)}
-        className={`!w-16 !h-7 px-3 rounded text-inherit ${
-          rightDisabled ? "bg-cyan-700/30" : "bg-cyan-700 active:bg-cyan-600"
-        }`}
-        disableHover
-      >
-        <ChevronRight />
-      </IconButton>
+        <IconButton
+          onClick={handleClick(1)}
+          disabled={rightDisabled}
+          aria-label={t(AttendanceAria.NextInterval)}
+          className={`!w-16 !h-7 px-3 rounded text-inherit ${
+            rightDisabled ? "bg-cyan-700/30" : "bg-cyan-700 active:bg-cyan-600"
+          }`}
+          disableHover
+        >
+          <ChevronRight />
+        </IconButton>
+      </div>
+
+      <CustomIntervalInput disabled={disabled} onInterval={onCustomInterval} />
     </div>
   );
 };
-
 export default IntervalPicker;

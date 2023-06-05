@@ -13,7 +13,14 @@ import { getOrganization } from "@/lib/getters";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getAttendanceDocPath, doc, setDoc } from "@/utils/firestore";
+import {
+  getAttendanceDocPath,
+  doc,
+  setDoc,
+  getDoc,
+  getSlotDocPath,
+} from "@/utils/firestore";
+import { upsertSlot } from "./slotOperations";
 
 interface UpdateAttendance<
   P extends Record<string, any> = Record<string, unknown>
@@ -81,6 +88,54 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
         })
       );
     }
+  };
+
+/**
+ * Function called to mark attendance (with custom interval) for customer on given slot:
+ * - creates the additinal interval in the slot entry
+ * - if customer had booked, updates `attended` interval
+ * - if customer had not booked creates a new entry with `booked = null` and `attended` the value of provided interval
+ *
+ * @param {Object} payload
+ * @param {string} payload.slotId
+ * @param {string} payload.customerId
+ * @param {string} payload.attendedInterval
+ * @returns {FirestoreThunk} a ReduxThunk, reading necessary data from `firestore` entry in redux store
+ * and dispatching updates to firestore (which then update local store through web sockets, beyond functionality of this Thunk)
+ */
+export const markAttendanceWithCustomInterval: UpdateAttendance<{
+  attendedInterval: string;
+}> =
+  ({ attendedInterval, slotId, ...attendanceProps }) =>
+  async (...thunkProps) => {
+    const { getFirestore } = thunkProps[2];
+
+    // Add the new interval to the slot entry
+    const [startTime, endTime] = attendedInterval.split("-");
+
+    const organization = getOrganization();
+
+    const slot = await getDoc(
+      doc(getFirestore(), getSlotDocPath(organization, slotId))
+    ).then((snap) => snap.data() as SlotInterface);
+
+    await upsertSlot({
+      ...slot,
+      intervals: {
+        ...slot.intervals,
+        [attendedInterval]: {
+          startTime,
+          endTime,
+        },
+      },
+    })(...thunkProps);
+
+    // Mark the attendance
+    await markAttendance({
+      attendedInterval,
+      slotId,
+      ...attendanceProps,
+    })(...thunkProps);
   };
 
 /**
