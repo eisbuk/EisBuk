@@ -1,3 +1,4 @@
+import { describe, vi, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
 import {
@@ -25,18 +26,18 @@ import {
 import { changeCalendarDate } from "@/store/actions/appActions";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 import {
   currentMonthStartDate,
   expectedMonthCustomer,
   slotsByDay,
 } from "../../__testData__/slots";
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 import { getBookingsForCalendar, getMonthEmptyForBooking } from "../slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
-const dateNowSpy = jest.spyOn(Date, "now").mockReturnValue(mockDate.toMillis());
+const dateNowSpy = vi.spyOn(Date, "now").mockReturnValue(mockDate.toMillis());
 
 const setupBookingsTest = ({
   category,

@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup, waitFor } from "@testing-library/react";
 
 import i18n, { AdminAria } from "@eisbuk/translations";
@@ -10,10 +11,10 @@ import i18n, { AdminAria } from "@eisbuk/translations";
 import AddAttendedCustomersDialog from "../AddAttendedCustomersDialog";
 import * as attendanceOperations from "@/store/actions/attendanceOperations";
 
-import { saul, walt } from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
+import { saul, walt } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
-const mockOnClose = jest.fn();
+const mockOnClose = vi.fn();
 // Mock markAttendance to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
 // rather than just being called
@@ -21,12 +22,12 @@ const mockMarkAttendance = (params: any) => ({
   params,
   type: "markAttendance",
 });
-jest
-  .spyOn(attendanceOperations, "markAttendance")
-  .mockImplementation(mockMarkAttendance as any);
+vi.spyOn(attendanceOperations, "markAttendance").mockImplementation(
+  mockMarkAttendance as any
+);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -36,7 +37,7 @@ describe("AddAttendedCustomersDialog", () => {
   const defaultInterval = Object.keys(baseSlot.intervals)[0];
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 

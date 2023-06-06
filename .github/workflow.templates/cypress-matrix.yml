@@ -1,4 +1,5 @@
 #! YAML library files must be named *.lib.yml
+#@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
@@ -29,11 +30,10 @@ jobs:
         dummy1: [1, 2, 3, 4, 5, 6]
         dummy2: [1, 2, 3, 4, 5, 6]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_cypress()
       -  #@ rush_add_path()
       -  #@ rush_update()

@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
@@ -10,9 +7,7 @@ import i18n, { BirthdayMenu as BirthdayMenuLabel } from "@eisbuk/translations";
 
 import BirthdayMenu from "../BirthdayMenu";
 
-import * as customerRecord from "../../__testData__/customers";
-
-const { saul } = customerRecord;
+import * as customerRecord from "@eisbuk/testing/customers";
 
 const customers = Object.values(customerRecord);
 
@@ -21,14 +16,14 @@ const birthdays = customers.map((customer, ix) => ({
   customers: [customer],
 }));
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
 describe("BirthdayMenu", () => {
-  const mockShowAllClick = jest.fn();
-  const mockCustomerClick = jest.fn();
+  const mockShowAllClick = vi.fn();
+  const mockCustomerClick = vi.fn();
 
   beforeEach(() => {
     render(
@@ -41,7 +36,7 @@ describe("BirthdayMenu", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should display only the first 5 customers", () => {
@@ -63,9 +58,11 @@ describe("BirthdayMenu", () => {
   });
 
   test("should propagate customer click", () => {
+    const { id, name, surname } = customers[0];
+
     // Open the popup
     screen.getByRole("button").click();
-    screen.getByText(`${saul.name} ${saul.surname}`).click();
-    expect(mockCustomerClick).toHaveBeenCalledWith(saul.id);
+    screen.getByText(`${name} ${surname}`).click();
+    expect(mockCustomerClick).toHaveBeenCalledWith(id);
   });
 });

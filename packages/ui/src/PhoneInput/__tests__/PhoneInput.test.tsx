@@ -1,3 +1,4 @@
+import { vi, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -17,7 +18,7 @@ const runPhoneInputTableTests = (tests: PhoneInputTest[]) =>
   tests.forEach(
     ({ name, initialValue, defaultDialCode, testAction, wantValue }) => {
       // We only care about the submit values for this test case
-      const mockSubmit = jest.fn();
+      const mockSubmit = vi.fn();
       const handleSubmit: FormikConfig<{ phone: string }>["onSubmit"] = (
         values
       ) => mockSubmit(values);
@@ -54,7 +55,7 @@ const runPhoneInputTableTests = (tests: PhoneInputTest[]) =>
 
 describe("PhoneInput", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should initialise the dropdown with the 'defaultDialCode' used as default value", () => {

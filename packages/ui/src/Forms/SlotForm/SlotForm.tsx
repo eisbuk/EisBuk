@@ -87,7 +87,7 @@ export interface SlotFormProps {
 
 const SlotForm: React.FC<SlotFormProps> = ({
   className = "",
-  date,
+  date: dateFromProps,
   slotToEdit,
   onSubmit = () => {},
   onClose = () => {},
@@ -96,7 +96,8 @@ const SlotForm: React.FC<SlotFormProps> = ({
 
   // get initial values and date
   // get date from `slotToEdit` or fallback to date passed in
-  const slotToEditValues = slotToFormValues({ ...slotToEdit, date });
+  const slotToEditValues = slotToFormValues(slotToEdit);
+  const date = slotToEdit?.date || dateFromProps;
 
   const initialValues = {
     ...defaultSlotFormValues,

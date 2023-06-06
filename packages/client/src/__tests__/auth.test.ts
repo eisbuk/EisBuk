@@ -1,7 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
+import { describe, expect } from "vitest";
 import {
   httpsCallable,
   HttpsCallableResult,
@@ -9,16 +10,15 @@ import {
 } from "@firebase/functions";
 
 import { Collection, AuthStatus, HTTPSErrors } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
-
-import { CloudFunction } from "@/enums/functions";
 
 import { getCustomerDocPath } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 import { setUpOrganization } from "@/__testSetup__/node";
 
 describe("Test authentication", () => {

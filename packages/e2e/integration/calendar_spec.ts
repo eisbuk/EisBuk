@@ -8,12 +8,7 @@ import i18n, {
   NotificationMessage,
 } from "@eisbuk/translations";
 
-import {
-  PrivateRoutes,
-  Routes,
-  __dayWithBookedSlots__,
-  __dayWithSlots__,
-} from "../temp";
+import { PrivateRoutes, Routes } from "../temp";
 
 import { slots } from "../__testData__/slots.json";
 import { customers } from "../__testData__/customers.json";
@@ -32,6 +27,9 @@ const openCalendar = (
   date: DateTime = testDateLuxon,
   jump: DateTimeUnit = "week"
 ) => cy.contains(i18n.t(createDateTitle(date, jump)) as string).click();
+
+const __dayWithSlots__ = "day-with-slots";
+const __dayWithBookedSlots__ = "day-with-booked-slots";
 
 /** @TEMP skip as it uses the old customer_area page */
 

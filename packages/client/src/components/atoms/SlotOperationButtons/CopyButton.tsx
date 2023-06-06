@@ -10,7 +10,7 @@ import {
   __copiedSlotsBadgeId__,
   __copyDayButtonId__,
   __copyWeekButtonId__,
-} from "@eisbuk/shared";
+} from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 

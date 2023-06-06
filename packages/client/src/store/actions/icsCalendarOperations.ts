@@ -1,6 +1,5 @@
 import { ICalendar } from "datebook";
 import { DateTime } from "luxon";
-import { doc, getFirestore, setDoc } from "@firebase/firestore";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 import {
@@ -10,8 +9,8 @@ import {
   Customer,
   EmailType,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
-import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
 
 import { FirestoreThunk } from "@/types/store";
@@ -27,8 +26,8 @@ import {
 import { getCalendarEventsByMonth } from "../selectors/calendar";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
-import { getBookingsPath } from "@/utils/firestore";
+import { createFunctionCaller } from "@/utils/firebase";
+import { getBookingsPath, doc, setDoc } from "@/utils/firestore";
 
 /**
  * A thunk in charge of comparing the last calendar sent to the customer
@@ -125,7 +124,7 @@ const createCalendarEvents =
     secretKey: Customer["secretKey"];
     eventUids: string[];
   }): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFirestore }) => {
     try {
       const db = getFirestore();
       const docRef = doc(
@@ -179,7 +178,7 @@ const sendICSFile =
     name,
     surname,
   }: SendICSFilePayload): FirestoreThunk =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     try {
       const handler = CloudFunction.SendEmail;
       const payload = {
@@ -196,7 +195,7 @@ const sendICSFile =
         },
       } as Omit<ClientEmailPayload[EmailType.SendCalendarFile], "organization">;
 
-      await createCloudFunctionCaller(handler, payload)();
+      await createFunctionCaller(getFunctions(), handler, payload)();
 
       dispatch(
         enqueueNotification({

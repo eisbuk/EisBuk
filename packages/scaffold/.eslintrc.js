@@ -29,6 +29,7 @@ module.exports = {
     ".eslintrc.js",
     ".eslintrc.ui.js",
     "vite.config.ts",
+    "vitest.config.ts",
   ],
   rules: {
     // Using this rule would mean that every object literal should have quotes as properties, as such { "foo": true }
@@ -158,5 +159,9 @@ module.exports = {
 
     // no-case-declarations
     "no-case-declarations": "off",
+
+    // broken and unnecessary rule
+    "no-extra-semi": "off",
+    "@typescript-eslint/no-extra-semi": "off",
   },
 };

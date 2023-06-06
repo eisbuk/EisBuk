@@ -1,10 +1,13 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
+
+import { __newSlotButtonId__ } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -17,17 +20,15 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __newSlotButtonId__ } from "@eisbuk/shared";
+const mockDispatch = vi.fn();
 
-const mockDispatch = jest.fn();
-
-jest.mock("react-redux", () => ({
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
 describe("SlotOperationButtons", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
@@ -55,7 +56,7 @@ describe("SlotOperationButtons", () => {
   });
 
   describe("'NewSlotButton' edge cases/error handling test", () => {
-    const spyConsoleError = jest.spyOn(console, "error");
+    const spyConsoleError = vi.spyOn(console, "error");
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<NewSlotButton />);

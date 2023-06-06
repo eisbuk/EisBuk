@@ -1,89 +1,23 @@
 /**
- * This is a file with temporary values copy/pasted from client app.
- * This should be replaced with single-source-of-truth
+ * This file serves as a "gateway" for imports, which, are defined in a single-source-of-truth place, but we can't
+ * import them directly, using package.json provided 'exports' field (node16 resolution), so we're importing them by specifying
+ * the full path (including '/dist/' segment).
+ *
+ * This file is here to avoid having to change all the imports in the tests, and then change them, yet again, when cypress is updated to
+ * use Webpack 5 (enabling node16 resolution).
+ *
+ * @TODO This should be updated (in the files), and this file removed completely, when Cypress' preprocessor is updated to use Webpack 5
+ * (or Cypress sees reason and uses Vite instead of Webpack)
+ * The issue: https://github.com/cypress-io/cypress/issues/19555
  */
 
-import { SlotInterface, SlotInterval } from "@eisbuk/shared";
+export { getSlotTimespan } from "@eisbuk/shared";
+export {
+  Routes,
+  PrivateRoutes,
+  CustomerRoute,
+  CloudFunction,
+} from "@eisbuk/shared/dist/ui";
 
-/** */
-export enum Routes {
-  Login = "/login",
-  Unauthorized = "/unautorized",
-  SelfRegister = "/self_register",
-  CustomerArea = "/customer_area",
-  AttendancePrintable = "/attendance_printable",
-  Debug = "/debug",
-}
-
-/** */
-export enum CustomerRoute {
-  Calendar = "calendar",
-  BookIce = "book_ice",
-  BookOffIce = "book_off_ice",
-}
-
-/** */
-export enum PrivateRoutes {
-  Root = "/",
-  Athletes = "/athletes",
-  NewAthlete = "/athletes/new",
-  Slots = "/slots",
-  AdminPreferences = "/admin_preferences",
-}
-
-/** */
-export enum CloudFunction {
-  Ping = "ping",
-  SendEmail = "sendEmail",
-  SendSMS = "sendSMS",
-
-  FinalizeBookings = "finalizeBookings",
-
-  CreateTestData = "createTestData",
-  CreateOrganization = "createOrganization",
-  CreateDefaultUser = "createDefaultUser",
-  CreateUser = "createUser",
-  CreateTestSlots = "createTestSlots",
-  SetupEmailForTesting = "setupEmailForTesting",
-
-  PruneSlotsByDay = "pruneSlotsByDay",
-  DeleteOrphanedBookings = "deleteOrphanedBookings",
-}
-
-/** */
-export const defaultUser = {
-  email: "test@eisbuk.it",
-  password: "test00",
-  phone: "+3912345678",
-};
-
-export const __dayWithSlots__ = "day-with-slots";
-export const __dayWithBookedSlots__ = "day-with-booked-slots";
-
-/**
- * Calculates the `startTime` of earliset interval and the `endTime` of latest interval,
- * @param intervals a record of all intervals
- * @returns a string representation of slot's timespan: `${startTime} - ${endTime}`
- */
-export const getSlotTimespan = (
-  intervals: SlotInterface["intervals"]
-): string => {
-  // calculate single { startTime, endTime } object
-  const { startTime, endTime } = Object.values(intervals).reduce(
-    (acc, interval) => {
-      const startTime =
-        !acc.startTime || acc.startTime > interval.startTime
-          ? interval.startTime
-          : acc.startTime;
-      const endTime =
-        !acc.endTime || acc.endTime < interval.endTime
-          ? interval.endTime
-          : acc.endTime;
-
-      return { startTime, endTime };
-    },
-    {} as SlotInterval
-  );
-  // return time string
-  return `${startTime} - ${endTime}`;
-};
+export { defaultUser } from "@eisbuk/testing/dist/envData";
+export * from "@eisbuk/testing/dist/testIds";

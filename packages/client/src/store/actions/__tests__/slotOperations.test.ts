@@ -1,12 +1,18 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
-import * as firestore from "@firebase/firestore";
-import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import { describe, vi, expect, beforeEach, test } from "vitest";
+import { QueryDocumentSnapshot } from "@firebase/firestore";
 
 import { Category, SlotType } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
+
+import { testDate } from "@eisbuk/testing/date";
+import {
+  baseSlot as baseSlotWithId,
+  createIntervals,
+} from "@eisbuk/testing/slots";
 
 import { getTestEnv } from "@/__testSetup__/firestore";
 
@@ -19,21 +25,55 @@ import { NotifVariant } from "@/enums/store";
 import { deleteSlot, upsertSlot } from "../slotOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getSlotDocPath, getSlotsPath } from "@/utils/firestore";
+import {
+  getSlotDocPath,
+  getSlotsPath,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { setupTestSlots } from "../__testUtils__/firestore";
+import { runThunk } from "@/__testUtils__/helpers";
 
-import {
-  initialSlotIds,
-  initialSlots,
-  testSlot,
-} from "../__testData__/slotOperations";
+// #region testData
+export const monthStr = testDate.substring(0, 7);
 
-const mockDispatch = jest.fn();
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const { id, ...baseSlot } = baseSlotWithId;
 
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const initialSlotIds = ["dummy-slot-0", "dummy-slot-1"];
+
+/** Initial slots present in the store (for setup) */
+const initialSlots = {
+  [initialSlotIds[0]]: { ...baseSlot, id: initialSlotIds[0] },
+  [initialSlotIds[1]]: {
+    ...baseSlot,
+    id: initialSlotIds[1],
+    intervals: createIntervals(11),
+  },
+};
+
+/** The slot we're expecting to be created in the store */
+const testSlot = {
+  ...baseSlot,
+  intervals: createIntervals(15),
+};
+// #endregion testData
+
+const mockDispatch = vi.fn();
+vi.mock("react-redux", async () => {
+  const rr = (await vi.importActual("react-redux")) as object;
+
+  return {
+    ...rr,
+    useDispatch: () => mockDispatch,
+  };
+});
+
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 /**
  * Passing this for typesafety where the actual `store.getState` isn't needed
@@ -42,7 +82,7 @@ const dummyGetState = () => ({} as any);
 
 describe("Slot operations", () => {
   beforeEach(async () => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("create new slot", () => {
@@ -56,17 +96,20 @@ describe("Slot operations", () => {
             setupTestSlots({ db, store, slots: initialSlots, organization }),
         });
         // make sure test uses the test firestore db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
-        await upsertSlot(testSlot)(mockDispatch, store.getState);
+        const testThunk = upsertSlot(testSlot);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         const slotsCollRef = collection(db, getSlotsPath(organization));
         const slotsInFS = (await getDocs(slotsCollRef)).docs;
         // check that the new slot was created
         expect(slotsInFS.length).toEqual(3);
         // since we're not setting the id manually, we're finding our test slot by filtering out initial slot ids
-        const testSlotInFS = slotsInFS
+        const testSlotInFS = (slotsInFS as QueryDocumentSnapshot[])
           .find((slot) => !initialSlotIds.includes(slot.data().id))
           ?.data() || { id: "fail" };
         // check that new slot contains proper data
@@ -84,26 +127,24 @@ describe("Slot operations", () => {
       }
     );
 
-    testWithEmulator(
-      "should show error notification if operation is failed",
-      async () => {
-        // intentionally cause error
-        const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
-          throw testError;
-        });
-        // run the thunk
-        await upsertSlot(testSlot)(mockDispatch, dummyGetState);
-        // check err snackbar being called
-        expect(mockDispatch).toHaveBeenCalledWith(
-          enqueueNotification({
-            message: i18n.t(NotificationMessage.SlotAddError),
-            variant: NotifVariant.Error,
-            error: testError,
-          })
-        );
-      }
-    );
+    test("should show error notification if operation is failed", async () => {
+      // intentionally cause error
+      const testError = new Error("test");
+      const getFirestore = () => {
+        throw testError;
+      };
+      // run the thunk
+      const testThunk = upsertSlot(testSlot);
+      await runThunk(testThunk, mockDispatch, dummyGetState, { getFirestore });
+      // check err snackbar being called
+      expect(mockDispatch).toHaveBeenCalledWith(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.SlotAddError),
+          variant: NotifVariant.Error,
+          error: testError,
+        })
+      );
+    });
   });
 
   describe("update slot", () => {
@@ -123,7 +164,7 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // updates we're applying to slot
@@ -138,11 +179,14 @@ describe("Slot operations", () => {
           },
         };
         // run the thunk
-        await upsertSlot({
+        const testThunk = upsertSlot({
           ...testSlot,
           ...updates,
           id: slotId,
-        })(mockDispatch, store.getState);
+        });
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // check that the slot is properly updated
         const slotDocRef = doc(db, getSlotDocPath(organization, slotId));
         const testSlotInFS = (await getDoc(slotDocRef)).data();
@@ -166,14 +210,17 @@ describe("Slot operations", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the failing thunk
-        await upsertSlot({
+        const testThunk = upsertSlot({
           ...testSlot,
           id: "slot",
-        })(mockDispatch, dummyGetState);
+        });
+        await runThunk(testThunk, mockDispatch, dummyGetState, {
+          getFirestore,
+        });
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
@@ -203,11 +250,14 @@ describe("Slot operations", () => {
             }),
         });
         // make sure test uses the test firestore db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // make sure test uses the test generated organization
         getOrganizationSpy.mockReturnValueOnce(organization);
         // run the thunk
-        await deleteSlot(slotId)(mockDispatch, store.getState);
+        const testThunk = deleteSlot(slotId);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // check that the slot was deleted from db
         const slotsCollRef = collection(db, getSlotsPath(organization));
         const slotsInFS = (await getDocs(slotsCollRef)).docs;
@@ -227,11 +277,14 @@ describe("Slot operations", () => {
       async () => {
         // intentionally cause error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the failing thunk
-        await deleteSlot("id")(mockDispatch, dummyGetState);
+        const testThunk = deleteSlot("id");
+        await runThunk(testThunk, mockDispatch, dummyGetState, {
+          getFirestore,
+        });
         // check err snackbar being called
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

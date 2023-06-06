@@ -41,7 +41,6 @@ export const pruneSlotsByDay = functions
         const slotsByDay = await slotsByDayRef.get();
 
         if (slotsByDay.empty) {
-          functions.logger.log("No 'slotsByDay' found");
           return { success: true };
         }
 
@@ -76,11 +75,8 @@ export const pruneSlotsByDay = functions
 
         await batch.commit();
 
-        functions.logger.log("Successfully pruned 'slotsByDay'");
-
         return { success: true };
       } catch (error) {
-        functions.logger.error(error);
         return { success: false };
       }
     }

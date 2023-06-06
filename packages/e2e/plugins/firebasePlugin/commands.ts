@@ -106,13 +106,13 @@ const app = initializeApp({ projectId: "eisbuk", apiKey: "api-key" });
 initializeFirestore(app, {});
 
 const auth = getAuth(app);
-connectAuthEmulator(auth, "http://localhost:9099");
+connectAuthEmulator(auth, "http://127.0.0.1:9099");
 
 const db = getFirestore(app);
-connectFirestoreEmulator(db, "localhost", 8080);
+connectFirestoreEmulator(db, "127.0.0.1", 8080);
 
 const functions = getFunctions(app, "europe-west6");
-connectFunctionsEmulator(functions, "localhost", 5001);
+connectFunctionsEmulator(functions, "127.0.0.1", 5001);
 
 /**
  * A procedure used to register custom firebase commands in form of `cy[command]`.

@@ -10,7 +10,9 @@ import i18n, {
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { Customer, __emailInput__ } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
+
+import { __emailInput__ } from "@eisbuk/testing/testIds";
 
 import { BaseModalProps } from "../../types";
 

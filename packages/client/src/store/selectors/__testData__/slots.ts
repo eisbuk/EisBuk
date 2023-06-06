@@ -4,7 +4,7 @@ import { Category, SlotType, luxon2ISODate, SlotsByDay } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 /**
  * Start date of `currentWeek` we'll be using for tests

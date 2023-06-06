@@ -1,10 +1,6 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { cleanup, screen, waitFor, render } from "@testing-library/react";
-import "@testing-library/jest-dom";
 
 import i18n, { AttendanceAria } from "@eisbuk/translations";
 
@@ -12,8 +8,8 @@ import UserAttendance from "../UserAttendance";
 
 import { comparePeriods } from "../../utils/sort";
 
-import { saul } from "../../__testData__/customers";
-import { baseSlot } from "../../__testData__/slots";
+import { saul } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 // interval values we're using across tests
 const intervals = Object.keys(baseSlot.intervals).sort(comparePeriods);
@@ -35,7 +31,7 @@ const getMarkAbsent = () =>
 describe("AttendanceCard", () => {
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Test marking attendance functionality", () => {
@@ -55,7 +51,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should call 'markAttendance' on attendance button click if `attended = null` (and default to booked interval if no interval was specified)", () => {
-      const mockMarkAttendance = jest.fn();
+      const mockMarkAttendance = vi.fn();
       render(
         <UserAttendance
           {...saul}
@@ -72,7 +68,7 @@ describe("AttendanceCard", () => {
     });
 
     test("should call 'markAbsence' on attendance button click if `attended != null`", () => {
-      const mockMarkAbsence = jest.fn();
+      const mockMarkAbsence = vi.fn();
       render(
         <UserAttendance
           {...saul}
@@ -119,7 +115,7 @@ describe("AttendanceCard", () => {
   });
 
   describe("Test interval picker ->", () => {
-    const mockMarkAttendance = jest.fn();
+    const mockMarkAttendance = vi.fn();
 
     beforeEach(() => {
       render(
@@ -134,7 +130,7 @@ describe("AttendanceCard", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     test("should show booked interval (if any) when the attended and booked interval are different", () => {
@@ -216,10 +212,10 @@ describe("AttendanceCard", () => {
   });
 
   describe("Test debounce", () => {
-    const mockMarkAttendance = jest.fn();
+    const mockMarkAttendance = vi.fn();
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     test("should only dispatch interval update once if changes are too close to each other", async () => {

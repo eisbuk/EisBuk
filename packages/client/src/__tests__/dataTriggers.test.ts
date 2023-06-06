@@ -1,7 +1,9 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
+
 import { v4 as uuid } from "uuid";
+import { describe, expect } from "vitest";
 
 import {
   Collection,
@@ -10,7 +12,12 @@ import {
   SlotType,
   OrganizationData,
   sanitizeCustomer,
+  defaultEmailTemplates,
 } from "@eisbuk/shared";
+
+import { saul, walt } from "@eisbuk/testing/customers";
+import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
+import { testDate, testDateLuxon } from "@eisbuk/testing/date";
 
 import { adminDb } from "@/__testSetup__/firestoreSetup";
 import { setUpOrganization } from "@/__testSetup__/node";
@@ -25,25 +32,9 @@ import {
   getSlotsByDayDocPath,
 } from "@/utils/firestore";
 
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import {
-  testBooking,
-  attendanceWithTestCustomer,
-  baseAttendance,
-  emptyAttendance,
-  organization as organizationData,
-  intervals,
-} from "@/__testData__/dataTriggers";
-import { saul, walt } from "@/__testData__/customers";
-import { baseSlot, createIntervals } from "@/__testData__/slots";
-import { testDate, testDateLuxon } from "@/__testData__/date";
-
-const slotId = baseSlot.id;
-const customerId = saul.id;
-const secretKey = saul.secretKey;
-const customerBooking = sanitizeCustomer(saul);
 const testMonth = testDate.substring(0, 7);
 
 describe("Cloud functions -> Data triggers ->", () => {
@@ -52,33 +43,57 @@ describe("Cloud functions -> Data triggers ->", () => {
       "should create attendance entry for booking and not overwrite existing data in slot",
       async () => {
         const { organization } = await setUpOrganization();
-        // set up booking entry for customers booking info
+        // set up Saul's bookings entry
         await adminDb
-          .doc(getBookingsDocPath(organization, secretKey))
-          .set(customerBooking);
-        // set up dummy data in the same slot, not to be overwritten
+          .doc(getBookingsDocPath(organization, saul.secretKey))
+          .set(sanitizeCustomer(saul));
+        // set up dummy data in the base slot, not to be overwritten by Saul's attendance
+        const baseAttendance = {
+          date: baseSlot.date,
+          attendances: {
+            ["dummy-customer"]: {
+              bookedInterval: Object.keys(baseSlot.intervals)[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[1],
+            },
+          },
+        };
         await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
+          .doc(getAttendanceDocPath(organization, baseSlot.id))
           .set(baseAttendance);
         // add new booking trying to trigger attendance entry
-        const testBookingDocRef = adminDb.doc(
-          getBookedSlotDocPath(organization, secretKey, slotId)
+        const bookedSlotDocRef = adminDb.doc(
+          getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
         );
-        await testBookingDocRef.set(testBooking);
+        const bookedSlot = {
+          data: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        };
+        await bookedSlotDocRef.set(bookedSlot);
         // check proper updates triggerd by write to bookings
-        const docRes = await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data && data.attendances[customerId]),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.data()).toEqual({
+            ...baseAttendance,
+            attendances: {
+              ...baseAttendance.attendances,
+              [saul.id]: {
+                bookedInterval: bookedSlot.interval,
+                attendedInterval: bookedSlot.interval,
+              },
+            },
+          });
         });
-        expect(docRes).toEqual(attendanceWithTestCustomer);
         // test customer's attendnace being removed from slot's attendnace
-        await testBookingDocRef.delete();
-        const docRes2 = await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data && !data.attendances[customerId]),
+        await bookedSlotDocRef.delete();
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          // check that only the test customer's attendance's deleted, but not the rest of the data
+          expect(snap.data()).toEqual(baseAttendance);
         });
-        // check that only the test customer's attendance's deleted, but not the rest of the data
-        expect(docRes2).toEqual(baseAttendance);
       }
     );
   });
@@ -94,23 +109,28 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         const { organization } = await setUpOrganization();
         // add new slot to trigger slot aggregation
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
+        await adminDb
+          .doc(getSlotDocPath(organization, baseSlot.id))
+          .set(baseSlot);
         // check that the slot has been aggregated to `slotsByDay`
         const expectedSlotsByDay = { [testDate]: { [baseSlot.id]: baseSlot } };
-        const slotsByDayEntry = await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
-          condition: (data) => Boolean(data && data[testDate]),
+        const slotsByDayEntry = await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.data()).toEqual(expectedSlotsByDay);
+          return snap.data();
         });
-        expect(slotsByDayEntry).toEqual(expectedSlotsByDay);
         // test adding another slot on different day of the same month
         await adminDb.doc(getSlotDocPath(organization, newSlotId)).set(newSlot);
-        const newSlotsByDayEntry = await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
-          condition: (data) => Boolean(data && data[dayAfter]),
-        });
-        expect(newSlotsByDayEntry).toEqual({
-          ...slotsByDayEntry,
-          [dayAfter]: { [newSlotId]: newSlot },
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.data()).toEqual({
+            ...slotsByDayEntry,
+            [dayAfter]: { [newSlotId]: newSlot },
+          });
         });
       }
     );
@@ -120,11 +140,14 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         // set up test state
         const { organization } = await setUpOrganization();
-        const slotRef = adminDb.doc(getSlotDocPath(organization, slotId));
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
         await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
-          condition: (data) => Boolean(data && data[testDate]),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.exists).toEqual(true);
+          expect(Boolean(snap.data()![testDate])).toEqual(true);
         });
         // test slot updating
         const newIntervals = createIntervals(18);
@@ -137,12 +160,12 @@ describe("Cloud functions -> Data triggers ->", () => {
         const expectedSlotsByDay = {
           [testDate]: { [baseSlot.id]: updatedSlot },
         };
-        const updatedSlotsByDay = await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
-          condition: (data) =>
-            Boolean(data && data[testDate][slotId].type === updatedSlot.type),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.data()).toEqual(expectedSlotsByDay);
         });
-        expect(updatedSlotsByDay).toEqual(expectedSlotsByDay);
       }
     );
 
@@ -151,20 +174,29 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         // set up test state
         const { organization } = await setUpOrganization();
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-        const newSlotRef = adminDb.doc(getSlotDocPath(organization, slotId));
+        await adminDb
+          .doc(getSlotDocPath(organization, baseSlot.id))
+          .set(baseSlot);
+        const newSlotRef = adminDb.doc(
+          getSlotDocPath(organization, baseSlot.id)
+        );
         await newSlotRef.set(newSlot);
-        await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
           // wait until both slots are aggregated
-          condition: (data) =>
-            Boolean(data && data[testDate] && data[dayAfter]),
+          const data = snap.data()!;
+          expect(Boolean(data[testDate] && data[dayAfter])).toEqual(true);
         });
         // test removing of the additional slot
         await newSlotRef.delete();
-        await waitForCondition({
-          documentPath: getSlotsByDayDocPath(organization, testMonth),
-          condition: (data) => Boolean(data && !data[dayAfter][newSlotId]),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.exists).toEqual(true);
+          expect(Boolean(snap.data()![testDate][newSlotId])).toEqual(false);
         });
       }
     );
@@ -176,18 +208,22 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         const { organization } = await setUpOrganization();
         // add new slot to trigger adding attendance for given slot
-        const slotRef = adminDb.doc(getSlotDocPath(organization, slotId));
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
         await slotRef.set(baseSlot);
         // check proper updates triggerd by write to slot
-        const docRes = await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.data()).toEqual({
+            date: baseSlot.date,
+            attendances: {},
+          });
         });
-        expect(docRes).toEqual(emptyAttendance);
         // we're manually deleting attendance to test that it won't get created on slot update
         // the attendance entry for slot shouldn't be edited manually in production
         const attendanceDocRef = adminDb.doc(
-          getAttendanceDocPath(organization, slotId)
+          getAttendanceDocPath(organization, baseSlot.id)
         );
         await attendanceDocRef.delete();
         // wait for attendance entry to be deleted
@@ -208,18 +244,22 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         // we're following the same setup from the test before
         const { organization } = await setUpOrganization();
-        const slotRef = adminDb.doc(getSlotDocPath(organization, slotId));
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
         await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.exists).toEqual(true);
         });
         // delete the slot entry
         await slotRef.delete();
         // expect attendance to be deleted too
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => !data,
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.exists).toEqual(false);
         });
       }
     );
@@ -229,18 +269,22 @@ describe("Cloud functions -> Data triggers ->", () => {
       async () => {
         const { organization } = await setUpOrganization();
         // we're following the same setup from the test before
-        const slotRef = adminDb.doc(getSlotDocPath(organization, slotId));
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
         await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.exists).toEqual(true);
         });
         // delete the slot entry
         await slotRef.delete();
         // expect attendance to be deleted too
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => !data,
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.exists).toEqual(false);
         });
       }
     );
@@ -260,33 +304,27 @@ describe("Cloud functions -> Data triggers ->", () => {
         const orgSecretsRef = adminDb.doc(secretsPath);
         await orgSecretsRef.set({ testSecret: "abc123" });
         // check proper updates triggerd by write to secrets
-        let existingSecrets = (
-          await waitForCondition<OrganizationData>({
-            documentPath: organizationPath,
-            condition: (data) => Boolean(data?.existingSecrets?.length),
-          })
-        ).existingSecrets;
-        expect(existingSecrets).toEqual(["testSecret"]);
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          expect(snap.data()!.existingSecrets).toEqual(["testSecret"]);
+        });
 
         // add another secret
         await orgSecretsRef.set({ anotherSecret: "abc234" }, { merge: true });
-        existingSecrets = (
-          await waitForCondition<OrganizationData>({
-            documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets?.length === 2,
-          })
-        ).existingSecrets;
-        expect(existingSecrets).toEqual(["testSecret", "anotherSecret"]);
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          expect(snap.data()!.existingSecrets).toEqual([
+            "testSecret",
+            "anotherSecret",
+          ]);
+        });
 
         // removing one secret should remove it from array (without removing other secrets)
         await orgSecretsRef.set({ anotherSecret: "abc234" });
-        existingSecrets = (
-          await waitForCondition<OrganizationData>({
-            documentPath: organizationPath,
-            condition: (data) => data?.existingSecrets?.length === 1,
-          })
-        ).existingSecrets;
-        expect(existingSecrets).toEqual(["anotherSecret"]);
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          expect(snap.data()!.existingSecrets).toEqual(["anotherSecret"]);
+        });
       }
     );
 
@@ -307,15 +345,14 @@ describe("Cloud functions -> Data triggers ->", () => {
         });
 
         // check proper updates triggerd by write to secrets
-        const orgData = (await waitForCondition({
-          documentPath: organizationPath,
-          condition: (data) => Boolean(data?.existingSecrets?.length),
-        })) as OrganizationData;
-
-        expect(orgData.existingSecrets).toEqual(
-          expect.arrayContaining(["smtpHost"])
-        );
-        expect(orgData.smtpConfigured).toBeFalsy();
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          const data = snap.data() as OrganizationData;
+          expect(data.existingSecrets).toEqual(
+            expect.arrayContaining(["smtpHost"])
+          );
+          expect(data.smtpConfigured).toBeFalsy();
+        });
 
         const secrets = {
           smtpHost: "localhost",
@@ -326,14 +363,16 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         await orgSecretsRef.set(secrets, { merge: true });
         // check proper updates triggerd by write to secrets
-        const orgDataPostUpdate = await waitForCondition<OrganizationData>({
-          documentPath: organizationPath,
-          condition: (data) =>
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          const data = snap.data() as OrganizationData;
+          expect(
             Object.keys(secrets).every((key) =>
-              data?.existingSecrets?.includes(key)
-            ),
+              data.existingSecrets!.includes(key)
+            )
+          ).toEqual(true);
+          expect(data.smtpConfigured).toEqual(true);
         });
-        expect(orgDataPostUpdate.smtpConfigured).toEqual(true);
 
         const notAllSecrets = {
           smtpHost: "localhost",
@@ -342,14 +381,10 @@ describe("Cloud functions -> Data triggers ->", () => {
         };
         await orgSecretsRef.set(notAllSecrets);
         // check proper updates triggerd by write to secrets
-        const orgDataPostDelete = await waitForCondition<OrganizationData>({
-          documentPath: organizationPath,
-          condition: (data) =>
-            data!.existingSecrets!.every((key) =>
-              Object.keys(notAllSecrets).includes(key)
-            ),
+        await waitFor(async () => {
+          const snap = await adminDb.doc(organizationPath).get();
+          expect(snap.data()!.smtpConfigured).toEqual(false);
         });
-        expect(orgDataPostDelete.smtpConfigured).toEqual(false);
       }
     );
   });
@@ -358,6 +393,19 @@ describe("Cloud functions -> Data triggers ->", () => {
     testWithEmulator(
       "should update/create general info in organization data to publicOrgInfo collection when organization data is updated",
       async () => {
+        const organizationData: OrganizationData = {
+          displayName: "Los Pollos Hermanos",
+          location: "Albuquerque",
+          admins: ["Gus Fring"],
+          emailFrom: "gus@lospollos.hermanos",
+          emailTemplates: defaultEmailTemplates,
+          emailNameFrom: "Gus",
+          smsFrom: "Gus",
+          smsTemplate: "SMS Temp here",
+          existingSecrets: ["authToken", "exampleSecret"],
+          emailBcc: "gus@lospollos.hermanos",
+        };
+
         // use random string for organization to ensure test is ran in pristine environment each time
         // but avoid `setUpOrganization()` as we want to set up organization ourselves
         const organization = uuid();
@@ -375,17 +423,16 @@ describe("Cloud functions -> Data triggers ->", () => {
         await orgRef.set(organizationData);
 
         // check for publicOrgInfo
-        const docRes = await waitForCondition({
-          documentPath: publicOrgPath,
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const snap = await adminDb.doc(publicOrgPath).get();
+          expect(snap.data()).toEqual({ displayName, location, emailFrom });
         });
-        expect(docRes).toEqual({ displayName, location, emailFrom });
 
         // test non existence of publicOrgInfo after organization is deleted
         await orgRef.delete();
-        await waitForCondition({
-          documentPath: publicOrgPath,
-          condition: (data) => Boolean(!data),
+        await waitFor(async () => {
+          const snap = await adminDb.doc(publicOrgPath).get();
+          expect(snap.exists).toEqual(false);
         });
       }
     );
@@ -393,329 +440,219 @@ describe("Cloud functions -> Data triggers ->", () => {
 
   describe("createAttendedSlotsForAttendance", () => {
     testWithEmulator(
-      "should create document in attendedSlots collection when customer is marked as attended",
+      "should update the document in attendedSlots with respect to customer's attendance on slot",
       async () => {
         const { organization } = await setUpOrganization();
-        // create customer and slot
+        // Create customer and slot
+        await Promise.all([
+          adminDb.doc(getSlotDocPath(organization, baseSlot.id)).set(baseSlot),
+          adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
+        ]);
 
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-        // await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
-        });
+        // Wait for the attendance document to be created, as well
+        // as customer's bookings document
+        await Promise.all([
+          waitFor(async () => {
+            const snap = await adminDb
+              .doc(getAttendanceDocPath(organization, baseSlot.id))
+              .get();
+            expect(snap.exists);
+          }),
+          await waitFor(async () => {
+            const snap = await adminDb
+              .doc(getBookingsDocPath(organization, saul.secretKey))
+              .get();
+            expect(snap.exists);
+          }),
+        ]);
 
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, saul.id)
-        );
-        await customerRef.set(saul);
-
-        const nonBookedattendanceWithTestCustomerAttendances = {
-          [saul.id]: {
-            ...attendanceWithTestCustomer.attendances[saul.id],
-
-            bookedInterval: null,
-          },
-        };
-        // set attendance for customer
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
-        });
-
-        // // get document in attended slots
-        const docRes = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(data && data.interval),
-        });
-        const attendedSlot = {
+        // Mark customer as present
+        await adminDb.doc(getAttendanceDocPath(organization, baseSlot.id)).set({
           date: baseSlot.date,
-          interval:
-            attendanceWithTestCustomer.attendances[saul.id].attendedInterval,
-        };
-        // assert it has same date and interval as attended
-        expect(docRes).toEqual(attendedSlot);
-      }
-    );
-
-    testWithEmulator(
-      "should delete document in attendedSlots collection when customer is marked as absent",
-      async () => {
-        const { organization } = await setUpOrganization();
-        // create customer and slot
-
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-        // await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
-        });
-
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, saul.id)
-        );
-        await customerRef.set(saul);
-        await waitForCondition({
-          documentPath: getCustomerDocPath(organization, saul.id),
-          condition: (data) => Boolean(data),
-        });
-
-        // set attendance
-        const nonBookedattendanceWithTestCustomerAttendances = {
-          [saul.id]: {
-            ...attendanceWithTestCustomer.attendances[saul.id],
-
-            bookedInterval: null,
+          attendances: {
+            [saul.id]: {
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
+              bookedInterval: null,
+            },
           },
-        };
-        // set attendance for customer
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...nonBookedattendanceWithTestCustomerAttendances },
+        });
+        // The attended slot should be created in customer's bookings
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            )
+            .get();
+          expect(snap.data()).toEqual({
+            date: baseSlot.date,
+            interval: Object.keys(baseSlot.intervals)[0],
+          });
         });
 
-        // // get document in attended slots
-        const docRes = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(data && data.interval),
-        });
-        const attendedSlot = {
+        // Update customer's attended interval for the slot
+        await adminDb.doc(getAttendanceDocPath(organization, baseSlot.id)).set({
           date: baseSlot.date,
-          interval:
-            attendanceWithTestCustomer.attendances[saul.id].attendedInterval,
-        };
-        // assert it has same date and interval as attended
-        expect(docRes).toEqual(attendedSlot);
-
-        // set empty attendance for customer
-        await adminDb
-          .doc(getAttendanceDocPath(organization, slotId))
-          .set({ ...attendanceWithTestCustomer, attendances: {} });
-
-        // get document in attended slots
-
-        const docResEmpty = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(!data),
+          attendances: {
+            [saul.id]: {
+              attendedInterval: Object.keys(baseSlot.intervals)[1],
+              bookedInterval: null,
+            },
+          },
+        });
+        // The attended slot should be updated with the new interval
+        await waitFor(async () => {
+          const attendedSlotDoc = await adminDb
+            .doc(
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            )
+            .get();
+          expect(attendedSlotDoc.data()).toEqual({
+            date: baseSlot.date,
+            interval: Object.keys(baseSlot.intervals)[1],
+          });
         });
 
-        // assert it doesn't exist
-        expect(docResEmpty).toBeUndefined();
+        // Mark customer as absent
+        await adminDb.doc(getAttendanceDocPath(organization, baseSlot.id)).set({
+          date: baseSlot.date,
+          attendances: {},
+        });
+        // The attended slot document should be deleted
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            )
+            .get();
+          expect(snap.exists).toEqual(false);
+        });
       }
     );
 
     testWithEmulator(
       "should not create document in attendedSlots collection if customer had booked the slot",
       async () => {
+        // We're testing that the data trigger event shouldn't create an attended slot for customer with booking.
+        // This is a bit of a tricky one as no update will happen immediately after the attendance has been updated
+        // and we don't want to use flaky methods like waiting for a hardcoded amount of time to check for the update (not having happened).
+        //
+        // Therefore, we're testing for two customers: one with booking (test variable), and one without booking (controlled variable),
+        // applying attendance update to the test customer, after that, applying the attendance update to the controlled customer,
+        // waiting for controlled customer's attended slot to be crated, and then checking that the test customer's attended slot hasn't been created.
+
         const { organization } = await setUpOrganization();
-        // create customer and slot
 
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-        // await slotRef.set(baseSlot);
-        await waitForCondition({
-          documentPath: getAttendanceDocPath(organization, slotId),
-          condition: (data) => Boolean(data),
+        const testCustomer = saul;
+        const controlledCustomer = walt;
+
+        // Create the slot and customers entries
+        await Promise.all([
+          adminDb.doc(getSlotDocPath(organization, baseSlot.id)).set(baseSlot),
+          adminDb
+            .doc(getCustomerDocPath(organization, testCustomer.id))
+            .set(testCustomer),
+          adminDb
+            .doc(getCustomerDocPath(organization, controlledCustomer.id))
+            .set(controlledCustomer),
+        ]);
+
+        // Wait for the attendance document to be created, as well
+        // as bookings document for each respective customer
+        await Promise.all([
+          waitFor(async () => {
+            const snap = await adminDb
+              .doc(getAttendanceDocPath(organization, baseSlot.id))
+              .get();
+            expect(snap.exists).toEqual(true);
+          }),
+          waitFor(async () => {
+            const snap = await adminDb
+              .doc(getBookingsDocPath(organization, testCustomer.secretKey))
+              .get();
+            expect(snap.exists).toEqual(true);
+          }),
+          waitFor(async () => {
+            const snap = await adminDb
+              .doc(
+                getBookingsDocPath(organization, controlledCustomer.secretKey)
+              )
+              .get();
+            expect(snap.exists).toEqual(true);
+          }),
+        ]);
+
+        // Book slot for test customer
+        await adminDb
+          .doc(
+            getBookedSlotDocPath(
+              organization,
+              testCustomer.secretKey,
+              baseSlot.id
+            )
+          )
+          .set({
+            date: baseSlot.date,
+            interval: Object.keys(baseSlot.intervals)[0],
+          });
+
+        // Wait for the update to appear in attendance document
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .get();
+          expect(snap.data()).toEqual({
+            date: baseSlot.date,
+            attendances: {
+              [testCustomer.id]: {
+                bookedInterval: Object.keys(baseSlot.intervals)[0],
+                attendedInterval: Object.keys(baseSlot.intervals)[0],
+              },
+            },
+          });
         });
 
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, saul.id)
-        );
-        await customerRef.set(saul);
-        await waitForCondition({
-          documentPath: getCustomerDocPath(organization, saul.id),
-          condition: (data) => Boolean(data),
-        });
-
-        const bookedAttendanceWithTestCustomerAttendances = {
-          [saul.id]: {
-            ...attendanceWithTestCustomer.attendances[saul.id],
-          },
-        };
-        // set attendance for customer
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...bookedAttendanceWithTestCustomerAttendances },
-        });
-
-        // // get document in attended slots
-        const docRes = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(!data),
-        });
-
-        expect(docRes).toBeUndefined();
-      }
-    );
-
-    testWithEmulator("should mark multiple athletes as attended", async () => {
-      const { organization } = await setUpOrganization();
-
-      await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-      await waitForCondition({
-        documentPath: getAttendanceDocPath(organization, slotId),
-        condition: (data) => Boolean(data),
-      });
-
-      // set two customers
-      const saulrRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
-      await saulrRef.set(saul);
-
-      const waltCustomerRef = adminDb.doc(
-        getCustomerDocPath(organization, walt.id)
-      );
-      await waltCustomerRef.set(walt);
-
-      // set nonBooked attendance for saul
-
-      const saulNonBookedAttendance = {
-        [saul.id]: {
-          bookedInterval: null,
-          attendedInterval: intervals[1],
-        },
-      };
-
-      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-        ...attendanceWithTestCustomer,
-        attendances: { ...saulNonBookedAttendance },
-      });
-
-      await waitForCondition({
-        documentPath: getAttendanceDocPath(organization, slotId),
-        condition: (data) => Boolean(data),
-      });
-
-      // set nonBooked attendance for walt
-
-      const waltNonBookedAttendance = {
-        [saul.id]: {
-          bookedInterval: null,
-          attendedInterval: intervals[1],
-        },
-        [walt.id]: {
-          bookedInterval: null,
-          attendedInterval: intervals[1],
-        },
-      };
-
-      await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-        ...attendanceWithTestCustomer,
-        attendances: { ...waltNonBookedAttendance },
-      });
-
-      await waitForCondition({
-        documentPath: getAttendanceDocPath(organization, slotId),
-        condition: (data) => Boolean(data),
-      });
-
-      // get documents in attended slots
-
-      const saulResUpdated = await waitForCondition({
-        documentPath: getAttendedSlotDocPath(
-          organization,
-          saul.secretKey,
-          slotId
-        ),
-        condition: (data) => Boolean(data),
-      });
-
-      // saul's attendedSlot
-      const saulUpdatedAttendedSlot = {
-        date: baseSlot.date,
-        interval: intervals[1],
-      };
-
-      const waltDocResUpdated = await waitForCondition({
-        documentPath: getAttendedSlotDocPath(
-          organization,
-          walt.secretKey,
-          slotId
-        ),
-        condition: (data) => Boolean(data),
-      });
-
-      const waltUpdatedAttendedSlot = {
-        date: baseSlot.date,
-        interval: intervals[1],
-      };
-
-      // assert they're both there
-
-      expect(saulResUpdated).toEqual(saulUpdatedAttendedSlot);
-
-      expect(waltDocResUpdated).toEqual(waltUpdatedAttendedSlot);
-    });
-
-    testWithEmulator(
-      "should update document in attendedSlots collection if attended interval changes",
-      async () => {
-        const { organization } = await setUpOrganization();
-        // create customer and slot
-
-        await adminDb.doc(getSlotDocPath(organization, slotId)).set(baseSlot);
-
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, saul.id)
-        );
-        await customerRef.set(saul);
-
-        const attendance = {
-          [saul.id]: {
-            ...attendanceWithTestCustomer.attendances[saul.id],
-            bookedInterval: null,
-          },
-        };
-
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...attendance },
-        });
-
-        // update interval
-        const updatedAttendance = {
-          [saul.id]: {
-            bookedInterval: null,
-            attendedInterval: intervals[1],
-          },
-        };
-
-        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
-          ...attendanceWithTestCustomer,
-          attendances: { ...updatedAttendance },
-        });
-
-        // get document in attended slots
-        const docResUpdated = await waitForCondition({
-          documentPath: getAttendedSlotDocPath(
-            organization,
-            saul.secretKey,
-            slotId
-          ),
-          condition: (data) => Boolean(data && data.interval === intervals[1]),
-        });
-
-        const updatedAttendedSlot = {
+        // Mark controlled customer as present (without having booked)
+        adminDb.doc(getAttendanceDocPath(organization, baseSlot.id)).set({
           date: baseSlot.date,
-          interval: intervals[1],
-        };
+          attendances: {
+            [controlledCustomer.id]: {
+              bookedInterval: null,
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
+            },
+            [testCustomer.id]: {
+              bookedInterval: Object.keys(baseSlot.intervals)[0],
+              attendedInterval: Object.keys(baseSlot.intervals)[0],
+            },
+          },
+        });
 
-        // assert it equals the updated version
-        expect(docResUpdated).toEqual(updatedAttendedSlot);
+        // Wait for controlled customer's attended slot document to be created
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(
+              getAttendedSlotDocPath(
+                organization,
+                controlledCustomer.secretKey,
+                baseSlot.id
+              )
+            )
+            .get();
+          expect(snap.exists).toEqual(true);
+        });
+
+        // Assert that test customer's attended slot document hasn't been created (which, if the behaviour is faulty, it would have been by now)
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(
+              getAttendedSlotDocPath(
+                organization,
+                testCustomer.secretKey,
+                baseSlot.id
+              )
+            )
+            .get();
+          expect(snap.exists).toEqual(false);
+        });
       }
     );
   });

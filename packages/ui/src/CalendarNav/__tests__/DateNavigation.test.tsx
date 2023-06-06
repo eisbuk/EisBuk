@@ -1,4 +1,5 @@
 import React from "react";
+import { vi, expect, test, describe } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import DateNavigation from "../DateNavigation";
@@ -6,8 +7,8 @@ import DateNavigation from "../DateNavigation";
 describe("CelandarNav", () => {
   describe("DateNavigation", () => {
     test("should call 'onPrev' and 'onNext' on respective arrow click", () => {
-      const mockOnPrev = jest.fn();
-      const mockOnNext = jest.fn();
+      const mockOnPrev = vi.fn();
+      const mockOnNext = vi.fn();
       render(
         <DateNavigation content="" onPrev={mockOnPrev} onNext={mockOnNext} />
       );

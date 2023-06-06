@@ -8,12 +8,11 @@ import {
   DateFormat,
 } from "@eisbuk/translations";
 import { Customer, CustomersByBirthday } from "@eisbuk/shared";
+import { useClickOutside } from "@eisbuk/shared/ui";
 import { Cake } from "@eisbuk/svg";
 
 import Button from "../Button";
 import { CustomerAvatar, BadgeSize } from "../UserAvatar";
-
-import useClickOutside from "../hooks/useClickOutside";
 
 interface BirthdayMenuProps {
   birthdays: CustomersByBirthday[];

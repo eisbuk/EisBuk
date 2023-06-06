@@ -3,12 +3,13 @@ import { Field, useField } from "formik";
 
 import { useTranslation, SlotFormAria } from "@eisbuk/translations";
 import { Trash } from "@eisbuk/svg";
+
 import {
   __deleteIntervalId__,
   __endTimeInputId__,
   __startTimeInputId__,
   __timeIntervalFieldId__,
-} from "@eisbuk/shared";
+} from "@eisbuk/testing/testIds";
 
 import TimePickerField from "./TimePickerField";
 import IconButton from "../../IconButton";

@@ -1,8 +1,9 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
 import { httpsCallable, FunctionsError } from "@firebase/functions";
+import { describe, expect } from "vitest";
 
 import {
   HTTPSErrors,
@@ -15,11 +16,10 @@ import {
   Customer,
   DeliveryQueue,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 import { emailFrom, setUpOrganization } from "@/__testSetup__/node";
-
-import { CloudFunction } from "@/enums/functions";
 
 import {
   getBookingsDocPath,
@@ -28,9 +28,9 @@ import {
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor } from "@/__testUtils__/helpers";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 describe("Cloud functions", () => {
   describe("ping", () => {
@@ -128,9 +128,11 @@ describe("Cloud functions", () => {
 
         // Wait for the bookings data trigger to run as the secret key check uses bookgins
         // collection to check for secret key being valid
-        await waitForCondition({
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(Boolean(bookingsSnap.data())).toEqual(true);
         });
 
         const payload: ClientEmailPayload[EmailType.SendCalendarFile] = {
@@ -207,9 +209,11 @@ describe("Cloud functions", () => {
         const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
         await saulRef.set({ ...saul, extendedDate: "2022-01-01" });
         // wait for bookings to get created (through data trigger)
-        await waitForCondition({
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
-          condition: (data) => Boolean(data?.extendedDate),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(Boolean(bookingsSnap.data()?.extendedDate)).toEqual(true);
         });
         // run the function
         await httpsCallable(
@@ -221,9 +225,11 @@ describe("Cloud functions", () => {
           secretKey: saul.secretKey,
         });
         // wait for the bookings data to update
-        await waitForCondition({
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
-          condition: (data) => !data?.extendedDate,
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(Boolean(bookingsSnap.data()?.extendedDate)).toEqual(false);
         });
       }
     );
@@ -297,9 +303,11 @@ describe("Cloud functions", () => {
         await saulRef.set(saul);
 
         // wait for bookings to get created (through data trigger)
-        await waitForCondition({
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(Boolean(bookingsSnap.data())).toEqual(true);
         });
 
         // run the function to update customer
@@ -312,13 +320,12 @@ describe("Cloud functions", () => {
         });
 
         // check that customer has been updated
-        const updatedData = await waitForCondition({
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
-          condition: (data) => Boolean(data),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(bookingsSnap.data()).toEqual(sanitizeCustomer(saul));
         });
-
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        expect(updatedData).toEqual(sanitizeCustomer(saul));
       }
     );
 
@@ -439,37 +446,37 @@ describe("Cloud functions", () => {
         const customerDoc = customersColl.docs[0];
 
         // Get newly created customer's 'secretKey'
-        const customerInDb = (await waitForCondition({
-          documentPath: customerDoc.ref.path,
-          condition: (data) => Boolean(data?.secretKey && data?.id),
-        })) as Customer;
+        const { id, secretKey } = await waitFor(async () => {
+          const customerSnap = await customerDoc.ref.get();
+          const customerData = customerSnap.data() as Customer;
+          const { secretKey, id } = customerData;
 
-        const { secretKey, id } = customerInDb;
-
-        // Check that the customer has been properly updated
-        expect(secretKey).toBeTruthy();
-        expect(id).toBeTruthy();
-        expect(customerDoc.data()).toEqual({
-          ...minimalSaul,
-          secretKey,
-          id,
-          // Should set up empty categories
-          categories: [],
-        });
-
-        // Check that bookings doc has been created
-        const bookingsCustomer = await waitForCondition({
-          documentPath: getBookingsDocPath(organization, secretKey),
-          condition: (data) => Boolean(data),
-        });
-
-        expect(bookingsCustomer).toEqual(
-          sanitizeCustomer({
+          expect(Boolean(secretKey)).toEqual(true);
+          expect(Boolean(id)).toEqual(true);
+          expect(customerData).toEqual({
             ...minimalSaul,
             secretKey,
             id,
-          } as Customer)
-        );
+            // Should set up empty categories
+            categories: [],
+          });
+
+          return customerData;
+        });
+
+        // Check that bookings doc has been created
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, secretKey))
+            .get();
+          expect(bookingsSnap.data()).toEqual(
+            sanitizeCustomer({
+              ...minimalSaul,
+              secretKey,
+              id,
+            } as Customer)
+          );
+        });
 
         // As smtp is configured, check that an email has been sent to the admin
         const emailQueue = await adminDb

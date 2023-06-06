@@ -1,3 +1,6 @@
+import { describe, expect, test } from "vitest";
+import { httpsCallable } from "@firebase/functions";
+
 import {
   ClientEmailPayload,
   EmailType,
@@ -5,13 +8,12 @@ import {
   defaultEmailTemplates,
   EmailInterpolationValues,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 import { setUpOrganization } from "@/__testSetup__/node";
 import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
-import { httpsCallable } from "@firebase/functions";
-import { CloudFunction } from "@/enums/functions";
 
 type SendEmailTest =
   | {

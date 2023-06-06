@@ -284,6 +284,12 @@ export interface CustomerBookings extends Customer {
   bookedSlots?: {
     [slotId: string]: CustomerBookingEntry;
   };
+  /**
+   * Slots the customer was marked as attended for, but hasn't booked, keyed by slot id and containing `date` and `bookedInterval`
+   */
+  attendedSlots?: {
+    [slotId: string]: CustomerBookingEntry;
+  };
 }
 /**
  * Bookings added to calendar
@@ -378,9 +384,7 @@ export interface FirestoreSchema {
       [OrgSubCollection.Customers]: {
         [customerId: string]: CustomerFull;
       };
-      [OrgSubCollection.Bookings]: {
-        [secretKey: string]: CustomerBookings;
-      };
+      [OrgSubCollection.Bookings]: CustomerBookings;
       [OrgSubCollection.Attendance]: {
         [slotId: string]: SlotAttendnace;
       };

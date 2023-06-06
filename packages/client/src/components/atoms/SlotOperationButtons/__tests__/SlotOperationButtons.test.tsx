@@ -1,21 +1,22 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React, { useContext } from "react";
+import { describe, vi, test, afterEach } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime } from "luxon";
 
+import { SlotInterface, luxon2ISODate } from "@eisbuk/shared";
+
 import {
-  SlotInterface,
-  luxon2ISODate,
   __copyDayButtonId__,
   __copyWeekButtonId__,
   __editSlotButtonId__,
   __deleteButtonId__,
   __newSlotButtonId__,
   __pasteButtonId__,
-} from "@eisbuk/shared";
+} from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -28,11 +29,11 @@ import CopyButton from "../CopyButton";
 import PasteButton from "../PasteButton";
 import DeleteButton from "../DeleteButton";
 
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
-jest.mock("react-redux", () => ({
-  useDispatch: () => jest.fn(),
-  useSelector: () => jest.fn(),
+vi.mock("react-redux", () => ({
+  useDispatch: () => vi.fn(),
+  useSelector: () => vi.fn(),
 }));
 
 const dummyDate = DateTime.fromISO("2021-03-01");

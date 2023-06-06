@@ -1,3 +1,4 @@
+import { vi, expect, test, describe } from "vitest";
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -8,7 +9,7 @@ import { FormikComponent as Dropdown } from "../Dropdown";
 describe("Dropdown", () => {
   describe("FormikField", () => {
     test("should integrate with Formik seamlessly", async () => {
-      const mockSubmit = jest.fn();
+      const mockSubmit = vi.fn();
       const handleSubmit: FormikConfig<{ dropdown: string }>["onSubmit"] = (
         values
       ) => mockSubmit(values);

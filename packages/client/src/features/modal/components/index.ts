@@ -1,4 +1,4 @@
-import Modal, { ModalContainer } from "./Modal";
+export { Modal, ModalContainer } from "./Modal";
 
 import { BirthdayDialog } from "@eisbuk/ui";
 
@@ -29,5 +29,3 @@ export const componentWhitelist = {
   SlotFormDialog,
   SendICSDialog,
 };
-
-export { Modal, ModalContainer };

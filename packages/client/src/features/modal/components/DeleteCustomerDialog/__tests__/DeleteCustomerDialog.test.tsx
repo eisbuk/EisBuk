@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach, beforeEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
@@ -10,10 +11,10 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import DeleteCustomerDialog from "../DeleteCustomerDialog";
 import * as customerOperations from "@/store/actions/customerOperations";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 
-const mockOnClose = jest.fn();
-const mockOnCloseAll = jest.fn();
+const mockOnClose = vi.fn();
+const mockOnCloseAll = vi.fn();
 // Mock deleteCustomer to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
 // rather than just being called
@@ -21,12 +22,12 @@ const mockDeleteCustomer = (params: any) => ({
   ...params,
   type: "deleteCustomer",
 });
-jest
-  .spyOn(customerOperations, "deleteCustomer")
-  .mockImplementation(mockDeleteCustomer as any);
+vi.spyOn(customerOperations, "deleteCustomer").mockImplementation(
+  mockDeleteCustomer as any
+);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -42,7 +43,7 @@ describe("DeleteCustomerDialog", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 

@@ -6,7 +6,7 @@ import { CustomerFull } from "@eisbuk/shared";
 import CustomerList from "./CustomerList";
 import { SearchBar } from "../SearchBar";
 
-import * as c from "../__testData__/customers";
+import * as c from "@eisbuk/testing/customers";
 
 export default {
   title: "Customer List",

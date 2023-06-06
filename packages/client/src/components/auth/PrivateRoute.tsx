@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { Routes } from "@/enums/routes";
+import { Routes } from "@eisbuk/shared/ui";
 
 import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";

@@ -1,8 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
-import { doc, getDoc, setDoc, deleteDoc } from "@firebase/firestore";
+import { describe } from "vitest";
 import { assertFails, assertSucceeds } from "@firebase/rules-unit-testing";
 import pRetry from "p-retry";
 import { DateTime } from "luxon";
@@ -23,8 +23,8 @@ import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 
-import { baseSlot } from "@/__testData__/slots";
-import { saul } from "@/__testData__/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
+import { saul } from "@eisbuk/testing/customers";
 import {
   getAttendanceDocPath,
   getBookedSlotDocPath,
@@ -35,6 +35,10 @@ import {
   getSlotsByDayDocPath,
   getSlotsPath,
   getSMSQueueDocPath,
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
 } from "@/utils/firestore";
 
 describe("Firestore rules", () => {

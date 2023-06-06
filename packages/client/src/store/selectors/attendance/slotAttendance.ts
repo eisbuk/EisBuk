@@ -1,10 +1,9 @@
-import { luxon2ISODate } from "@eisbuk/shared";
+import { luxon2ISODate, getSlotTimespan } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
-import { getSlotTimespan } from "@/utils/helpers";
 import { compareCustomerBookings } from "@/utils/sort";
 
 /**

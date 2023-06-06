@@ -1,21 +1,18 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { vi, afterEach, expect, test, describe } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 
 import CustomerGrid from "../CustomerGrid";
 
-import { saul } from "../../__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 
 describe("CustomerGrid", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should call 'onCustomerClick', passing customer as a param on customer item click", async () => {
-    const mockOnCustomerClick = jest.fn();
+    const mockOnCustomerClick = vi.fn();
     render(
       <CustomerGrid customers={[saul]} onCustomerClick={mockOnCustomerClick} />
     );

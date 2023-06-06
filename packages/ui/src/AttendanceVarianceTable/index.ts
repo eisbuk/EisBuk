@@ -1,8 +1,4 @@
-import AttendanceVarianceTable, {
-  HoursType,
-  type TableData,
+export {
+  default as AttendanceVarianceTable,
   type DayAttendanceHours,
 } from "./AttendanceVarianceTable";
-
-export default AttendanceVarianceTable;
-export { HoursType, type TableData, type DayAttendanceHours };

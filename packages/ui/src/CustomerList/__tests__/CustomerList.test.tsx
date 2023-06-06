@@ -1,13 +1,10 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { describe, afterEach, test, expect, beforeEach } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 
 import CustomerList from "../CustomerList";
 
-import { saul, gus } from "../../__testData__/customers";
+import { saul, gus } from "@eisbuk/testing/customers";
 
 const deletedGus = { ...gus, deleted: true };
 

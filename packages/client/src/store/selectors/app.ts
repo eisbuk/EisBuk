@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 
 import { LocalStore } from "@/types/store";
-import { OrganizationData } from "@eisbuk/shared/dist";
+import { OrganizationData } from "@eisbuk/shared";
 
 /**
  * Get start time of current calendar day

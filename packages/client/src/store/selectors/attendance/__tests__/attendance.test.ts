@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { getNewStore } from "@/store/createStore";
 
 import { getSlotsWithAttendance } from "../slotAttendance";
@@ -14,8 +15,8 @@ import {
   attendanceSlotsByDay,
   expectedStruct,
 } from "../../__testData__/attendance";
-import { testDate, testDateLuxon } from "@/__testData__/date";
-import { walt, jian, saul } from "@/__testData__/customers";
+import { testDate, testDateLuxon } from "@eisbuk/testing/date";
+import { walt, jian, saul } from "@eisbuk/testing/customers";
 
 describe("Selectors ->", () => {
   describe("Test 'getSlotsWithAttendance'", () => {

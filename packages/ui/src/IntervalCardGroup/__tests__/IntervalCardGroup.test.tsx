@@ -1,3 +1,4 @@
+import { vi, afterEach, expect, test, describe } from "vitest";
 import React from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 
@@ -29,11 +30,11 @@ const dummySlot = {
 describe("IntervalCardGroup", () => {
   afterEach(() => {
     cleanup;
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should call 'onBook' with appropriate interval", () => {
-    const mockOnBook = jest.fn();
+    const mockOnBook = vi.fn();
     render(<IntervalCardGroup {...dummySlot} onBook={mockOnBook} />);
     const [firstIntervalButton, , lastIntervalButton] =
       screen.getAllByRole("button");
@@ -48,7 +49,7 @@ describe("IntervalCardGroup", () => {
   });
 
   test("should call 'onCancel' when 'Cancel' button is clicked on a booked IntervalCard", () => {
-    const mockOnCancel = jest.fn();
+    const mockOnCancel = vi.fn();
     render(
       <IntervalCardGroup
         {...dummySlot}

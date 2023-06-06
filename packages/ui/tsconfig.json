@@ -1,12 +1,19 @@
 {
   "extends": "../scaffold/tsconfig.ui.json",
   "compilerOptions": {
+    "moduleResolution": "nodenext",
     "baseUrl": ".",
     "rootDir": "src",
     "paths": {
       "@assets/*": ["src/assets/*"]
     }
   },
-  "exclude": ["node_modules", "dist", ".eslintrc.js", "vite.config.ts"],
+  "exclude": [
+    "node_modules",
+    "dist",
+    ".eslintrc.js",
+    "vite.config.ts",
+    "vitest.config.ts"
+  ],
   "include": ["src"]
 }

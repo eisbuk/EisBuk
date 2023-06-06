@@ -1,7 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
+import { describe, expect } from "vitest";
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
 import {
@@ -10,10 +11,20 @@ import {
   Category,
   DeprecatedCategory,
 } from "@eisbuk/shared";
+import { CloudFunction } from "@eisbuk/shared/ui";
+
+import {
+  emptyMonth,
+  emptyMonthString,
+  prunedMonth,
+  pruningMonthString,
+  unprunedMonth,
+} from "@eisbuk/testing/migrations";
+import * as customers from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
+import { saul } from "@eisbuk/testing/customers";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
-
-import { CloudFunction } from "@/enums/functions";
 
 import { setUpOrganization } from "@/__testSetup__/node";
 
@@ -26,18 +37,7 @@ import {
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { waitForCondition } from "@/__testUtils__/helpers";
-
-import {
-  emptyMonth,
-  emptyMonthString,
-  prunedMonth,
-  pruningMonthString,
-  unprunedMonth,
-} from "../__testData__/migrations";
-import * as customers from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
-import { saul } from "@/__testData__/customers";
+import { waitFor } from "@/__testUtils__/helpers";
 
 export const invokeFunction =
   (functionName: string) =>
@@ -86,7 +86,7 @@ describe("Migrations", () => {
    * on a feature which will probably be ran twice during the duration of the project.
    * We can quickly revisit this when doing test chores, if not, it can easily be deleted.
    */
-  xdescribe("'deleteOrphanedBookings'", () => {
+  describe.skip("'deleteOrphanedBookings'", () => {
     testWithEmulator(
       "should remove bookings without customer entries",
       async () => {
@@ -95,9 +95,11 @@ describe("Migrations", () => {
         // set customer to store (to create a regular booking)
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         // wait for saul's booking to get created
-        await waitForCondition({
-          condition: (data) => Boolean(data),
-          documentPath: getBookingsDocPath(organization, saul.secretKey),
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          expect(bookingsSnap.exists).toEqual(true);
         });
         // add additional bookings (without customer)
         await adminDb

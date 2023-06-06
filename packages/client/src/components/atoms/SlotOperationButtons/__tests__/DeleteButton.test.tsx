@@ -1,10 +1,14 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, beforeEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
+
+import { __deleteButtonId__ } from "@eisbuk/testing/testIds";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -19,12 +23,9 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __deleteButtonId__ } from "@eisbuk/shared";
-import { baseSlot } from "@/__testData__/slots";
+const mockDispatch = vi.fn();
 
-const mockDispatch = jest.fn();
-
-jest.mock("react-redux", () => ({
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -39,9 +40,9 @@ const mockDelDayImplementation = (date: DateTime) => ({
   type: "delete_slot_day",
   date,
 });
-jest
-  .spyOn(slotOperations, "deleteSlotsDay")
-  .mockImplementation(mockDelDayImplementation as any);
+vi.spyOn(slotOperations, "deleteSlotsDay").mockImplementation(
+  mockDelDayImplementation as any
+);
 
 /**
  * Mock implementation of `deleteSlotsWeek` we'll be using to both mock function within component
@@ -53,9 +54,9 @@ const mockDelWeekImplementation = (date: DateTime) => ({
   type: "delete_slot_week",
   date,
 });
-jest
-  .spyOn(slotOperations, "deleteSlotsWeek")
-  .mockImplementation(mockDelWeekImplementation as any);
+vi.spyOn(slotOperations, "deleteSlotsWeek").mockImplementation(
+  mockDelWeekImplementation as any
+);
 // #endregion mockDeleteActions
 
 // a dummy date we're using to test deleting of slots day and slots week
@@ -63,7 +64,7 @@ const testDate = DateTime.fromISO("2021-03-01");
 
 describe("SlotOperationButtons", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
@@ -139,7 +140,7 @@ describe("SlotOperationButtons", () => {
   });
 
   describe("'DeleteButton' edge cases/error handling test", () => {
-    const spyConsoleError = jest.spyOn(console, "error");
+    const spyConsoleError = vi.spyOn(console, "error");
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<DeleteButton />);

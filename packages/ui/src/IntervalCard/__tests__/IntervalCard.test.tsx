@@ -1,4 +1,5 @@
 import React from "react";
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { cleanup, render, screen, waitFor } from "@testing-library/react";
 
 import { SlotType } from "@eisbuk/shared";
@@ -26,12 +27,12 @@ interface TestParams {
 
 const runBookingTableTests = (tests: TestParams[]) => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
-  const mockOnBook = jest.fn();
-  const mockOnCancel = jest.fn();
+  const mockOnBook = vi.fn();
+  const mockOnCancel = vi.fn();
 
   tests.forEach(({ variant, state, onBook, onCancel }) =>
     test(`variant: "${variant}", state: "${state}", should call 'onBook': ${onBook}, should call 'onCancel': ${onCancel}`, () => {
@@ -98,11 +99,11 @@ describe("IntervalCard", () => {
   });
 
   describe("Test NotesSection in calendar card", () => {
-    const mockOnNotesEditStart = jest.fn();
+    const mockOnNotesEditStart = vi.fn();
     // We're using an async function to handle 'onNotesEditSave' in order
     // to simulate (and test) real world behaviour where the save will be an
     // async function writing to db
-    const mockOnNotesEditSave = jest.fn(
+    const mockOnNotesEditSave = vi.fn(
       () =>
         new Promise<void>((resolve) => {
           setTimeout(() => resolve(), 100);
@@ -122,7 +123,7 @@ describe("IntervalCard", () => {
     });
 
     afterEach(() => {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
     });
 
     test("should display 'notes', but disable edit and action buttons if not in editing mode", () => {

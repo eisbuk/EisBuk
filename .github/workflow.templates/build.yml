@@ -1,4 +1,5 @@
 #! YAML library files must be named *.lib.yml
+#@ load("setup.lib.yml", "checkout")
 #@ load("cache.lib.yml", "cache_node", "cache_cypress")
 #@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
 #@ load("secrets.lib.yml", "check_secrets")
@@ -13,15 +14,15 @@ name: OnPush
   - push
 
 jobs:
-  build_v16:
+  build_v18:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -30,8 +31,8 @@ jobs:
         run: |
           cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:prod | tee build.output
           echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
-          # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
-          # And store for use in later steps
+          #! Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
+          #! And store for use in later steps
           cat build.output|awk '/^dist\// {print}' >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
         env:
@@ -64,39 +65,40 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS
         run: |
           set -e
-          # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
-          # of the preview channel
+          #! Deploy the preview to firebase hosting, passing the current git branch to be used for the name
+          #! of the preview channel
           firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
-          # To pass the info to a later task, use the $GITHUB_ENV file
-          # This horrible contraption converts lines like
-          # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
-          # ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
-          # to a form like this:
-          # igorice=https://igorice--dev-n0jjvnkh.web.app
-          # eisbuk=https://eisbuk--dev-xjkubzx5.web.app
-          # suitable to be included in the $GITHUB_ENV file
+          #! To pass the info to a later task, use the $GITHUB_ENV file
+          #! This horrible contraption converts lines like
+          #! ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
+          #! ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
+          #! to a form like this:
+          #! igorice=https://igorice--dev-n0jjvnkh.web.app
+          #! eisbuk=https://eisbuk--dev-xjkubzx5.web.app
+          #! suitable to be included in the $GITHUB_ENV file
           cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
-          # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+          #! documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
       - name: Populate job summary with URLs
         run: |
           echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
           echo $igoriceteam >> $GITHUB_STEP_SUMMARY
           echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v16:
+  test_v18:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
       -  #@ rush_build()
       - name: Run tests
         run: cd packages/client && rushx test:emulators:ci
+
       -  #@ check_secrets()
       - name: Test Report
         uses: dorny/test-reporter@v1
@@ -105,9 +107,9 @@ jobs:
         if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
 
         with:
-          name: JEST Tests
+          name: Vitest report
           path: packages/client/junit.xml
-          reporter: jest-junit
+          reporter: java-junit
       - name: Coveralls
         uses: coverallsapp/github-action@master
         if: steps.has_secret.outputs.HAS_SECRETS
@@ -128,15 +130,16 @@ jobs:
         if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
         run: |
           echo Check out coverage results at https://storage.googleapis.com/cypress-logs-bucket/${{ steps.results-destination.outputs.RESULTS_DESTINATION }}/coverage/lcov-report/index.html
+
   run-lint:
     name: Lint source
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -149,11 +152,10 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_cypress()
       -  #@ rush_add_path()
       -  #@ rush_update()
@@ -171,7 +173,7 @@ jobs:
           install: false
 
           working-directory: packages/e2e
-          wait-on: http://localhost:8080, http://localhost:5000
+          wait-on: http://127.0.0.1:8080, http://127.0.0.1:5000
 
           #! skip recording if no 'secrets.CYPRESS_KEY' found
           #! we're doing this to allow dependabot to run cypress tests without failing on account of CYPRESS_KEY
@@ -215,7 +217,7 @@ jobs:
     name: Coveralls finish
     needs:
       - cypress-run
-      - test_v16
+      - test_v18
     runs-on: ubuntu-latest
     steps:
       -  #@ check_secrets()
@@ -231,10 +233,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      -  #@ checkout()
+      - uses: actions/setup-node@v3
         with:
-          node-version: "16"
+          node-version: "18"
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()

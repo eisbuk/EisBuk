@@ -36,11 +36,11 @@ const app = initializeApp({
 });
 
 export const auth = getAuth(app);
-connectAuthEmulator(auth, "http://localhost:9098");
+connectAuthEmulator(auth, "http://127.0.0.1:9098");
 
 export const db = getFirestore();
-connectFirestoreEmulator(db, "localhost", 8081);
+connectFirestoreEmulator(db, "127.0.0.1", 8081);
 
 export const functions = getFunctions(app, "europe-west6");
-connectFunctionsEmulator(functions, "localhost", 5002);
+connectFunctionsEmulator(functions, "127.0.0.1", 5002);
 // #endregion clientSDK

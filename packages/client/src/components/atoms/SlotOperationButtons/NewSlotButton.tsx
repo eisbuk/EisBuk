@@ -3,6 +3,8 @@ import React, { useContext } from "react";
 import { useTranslation, SlotsAria } from "@eisbuk/translations";
 import { PlusCircle } from "@eisbuk/svg";
 
+import { __newSlotButtonId__ } from "@eisbuk/testing/testIds";
+
 import { ButtonContextType } from "@/enums/components";
 
 import { ButtonGroupContext } from "./SlotOperationButtons";
@@ -15,8 +17,6 @@ import {
 } from "@/lib/errorMessages";
 
 import { createModal } from "@/features/modal/useModal";
-
-import { __newSlotButtonId__ } from "@eisbuk/shared";
 
 /**
  * Button to create a new slot. Opens up a blank SlotForm 'onClick' to

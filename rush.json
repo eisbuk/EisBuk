@@ -121,7 +121,7 @@
    * LTS schedule: https://nodejs.org/en/about/releases/
    * LTS versions: https://nodejs.org/en/download/releases/
    */
-  "nodeSupportedVersionRange": ">=12.13.0 <13.0.0 || >=14.15.0 <15.0.0 || >=16.13.0 <17.0.0",
+  "nodeSupportedVersionRange": ">=18.0.0 <19.0.0",
 
   /**
    * Odd-numbered major versions of Node.js are experimental.  Even-numbered releases
@@ -304,9 +304,7 @@
     /**
      * The list of shell commands to run before the Rush installation starts
      */
-    "preRushInstall": [
-      // "common/scripts/pre-rush-install.js"
-    ],
+    "preRushInstall": ["git submodule update --recursive"],
 
     /**
      * The list of shell commands to run after the Rush installation finishes
@@ -424,6 +422,14 @@
     {
       "packageName": "@eisbuk/react-redux-firebase-firestore",
       "projectFolder": "packages/react-redux-firebase-firestore"
+    },
+    {
+      "packageName": "@eisbuk/testing",
+      "projectFolder": "packages/testing"
+    },
+    {
+      "packageName": "jest-smtp",
+      "projectFolder": "packages/jest-smtp"
     }
   ]
 }

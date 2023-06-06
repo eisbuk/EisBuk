@@ -1,10 +1,13 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
+
+import { __pasteButtonId__ } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -19,17 +22,15 @@ import {
   __slotButtonNoContextError,
 } from "@/lib/errorMessages";
 
-import { __pasteButtonId__ } from "@eisbuk/shared";
+const mockDispatch = vi.fn();
 
-const mockDispatch = jest.fn();
-
-jest.mock("react-redux", () => ({
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
-xdescribe("SlotOperationButtons", () => {
+describe.skip("SlotOperationButtons", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 
@@ -48,9 +49,9 @@ xdescribe("SlotOperationButtons", () => {
       const mockPasteDayImplementation = (date: DateTime) =>
         ({ type: "paste_day", date } as any);
       // mock implementation of `newPasteSlotDay` within the component
-      jest
-        .spyOn(copyPasteActions, "pasteSlotsDay")
-        .mockImplementation(mockPasteDayImplementation);
+      vi.spyOn(copyPasteActions, "pasteSlotsDay").mockImplementation(
+        mockPasteDayImplementation
+      );
       render(
         <SlotOperationButtons
           date={dummyDate}
@@ -74,9 +75,9 @@ xdescribe("SlotOperationButtons", () => {
       const mockPasteWeekImplementation = (date: DateTime) =>
         ({ type: "paste_week", date } as any);
       // mock implementation of `newPasteSlotWeek` within the component
-      jest
-        .spyOn(copyPasteActions, "pasteSlotsWeek")
-        .mockImplementation(mockPasteWeekImplementation);
+      vi.spyOn(copyPasteActions, "pasteSlotsWeek").mockImplementation(
+        mockPasteWeekImplementation
+      );
       render(
         <SlotOperationButtons
           date={dummyDate}
@@ -108,7 +109,7 @@ xdescribe("SlotOperationButtons", () => {
   });
 
   describe("'PasteButton' edge cases/error handling test", () => {
-    const spyConsoleError = jest.spyOn(console, "error");
+    const spyConsoleError = vi.spyOn(console, "error");
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<PasteButton />);

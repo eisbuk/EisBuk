@@ -15,6 +15,8 @@ module.exports = useTSConfig(
       "postcss.config.js",
       "tailwind.config.js",
       "storybook-static",
+      "vitest.config.ts",
+      "vitest.setup.ts",
     ],
   },
   [path.join(__dirname, "tsconfig.json")]

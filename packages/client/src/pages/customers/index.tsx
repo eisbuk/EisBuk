@@ -2,7 +2,8 @@ import React from "react";
 import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 
-import { OrgSubCollection, Customer, __addAthleteId__ } from "@eisbuk/shared";
+import { OrgSubCollection, Customer } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import { Layout, CustomerGrid, SearchBar } from "@eisbuk/ui";
 import {
   useTranslation,
@@ -12,7 +13,7 @@ import {
 import { Plus } from "@eisbuk/svg";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-import { PrivateRoutes } from "@/enums/routes";
+import { __addAthleteId__ } from "@eisbuk/testing/testIds";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components";

@@ -21,7 +21,6 @@ import HoverText from "./HoverText";
 import IconButton from "./IconButton";
 import TextareaEditable from "./TextareaEditable";
 import Table from "./Table";
-import AttendanceVarianceTable from "./AttendanceVarianceTable";
 import PhoneInput from "./PhoneInput";
 import Dropdown, { DropdownFormik } from "./Dropdown";
 import CountryCodesDropdown, {
@@ -70,7 +69,6 @@ export {
   IconButton,
   TextareaEditable,
   Table,
-  AttendanceVarianceTable,
   PhoneInput,
   Dropdown,
   DropdownFormik,

@@ -1,10 +1,8 @@
 /**
- * @jest-environment node
+ * @vitest-environment node
  */
 
-import * as firestore from "@firebase/firestore";
-import * as functions from "@firebase/functions";
-import { collection, doc, getDoc, getDocs } from "@firebase/firestore";
+import { describe, vi, expect, beforeEach } from "vitest";
 import { DateTime } from "luxon";
 
 import i18n, { NotificationMessage } from "@eisbuk/translations";
@@ -13,6 +11,9 @@ import {
   CustomerBookingEntry,
   sanitizeCustomer,
 } from "@eisbuk/shared";
+
+import { saul } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -35,6 +36,11 @@ import {
   getBookedSlotDocPath,
   getBookedSlotsPath,
   getBookingsDocPath,
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
@@ -44,13 +50,9 @@ import {
   setupTestSlots,
 } from "../__testUtils__/firestore";
 
-import { waitForCondition } from "@/__testUtils__/helpers";
+import { waitFor, runThunk } from "@/__testUtils__/helpers";
 
-import { saul } from "@/__testData__/customers";
-import { baseSlot } from "@/__testData__/slots";
-
-const getFirestoreSpy = jest.spyOn(firestore, "getFirestore");
-const getOrganizationSpy = jest.spyOn(getters, "getOrganization");
+const getOrganizationSpy = vi.spyOn(getters, "getOrganization");
 
 const { secretKey } = saul;
 
@@ -86,12 +88,11 @@ const testSlot = {
   id: bookingId,
   categories: saul.categories,
 };
-
 // #endregion testData
 
 describe("Booking operations", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("'bookInterval'", () => {
@@ -122,8 +123,6 @@ describe("Booking operations", () => {
         });
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
-        // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValue(db as any);
         // create a thunk curried with test input values
         const testThunk = bookInterval({
           secretKey,
@@ -131,9 +130,12 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
-        getFirestoreSpy.mockReturnValueOnce(db as any);
-        await testThunk(mockDispatch, store.getState);
+        const mockDispatch = vi.fn();
+        // mock `getFirestore` to return test db
+        const getFirestore = () => db;
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -169,9 +171,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause error in the execution
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = bookInterval({
           secretKey,
@@ -179,8 +181,10 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingError, {
@@ -216,11 +220,11 @@ describe("Booking operations", () => {
               organization,
             }),
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db as any;
         // create a thunk curried with test input values
         const testThunk = cancelBooking({
           secretKey,
@@ -230,7 +234,9 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
           collection(db, getBookedSlotsPath(organization, secretKey))
@@ -255,9 +261,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = cancelBooking({
           secretKey,
@@ -265,8 +271,10 @@ describe("Booking operations", () => {
           interval: intervals[0],
           date: baseSlot.date,
         });
-        const mockDispatch = jest.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingCanceledError, {
@@ -311,11 +319,11 @@ describe("Booking operations", () => {
               }),
             ]),
         });
-        const mockDispatch = jest.fn();
+        const mockDispatch = vi.fn();
         // make sure tested thunk uses test generated organization
         getOrganizationSpy.mockReturnValue(organization);
         // mock `getFirestore` to return test db
-        getFirestoreSpy.mockReturnValueOnce(db as any);
+        const getFirestore = () => db;
         // create a thunk curried with test input values
         const testThunk = updateBookingNotes({
           secretKey,
@@ -325,7 +333,9 @@ describe("Booking operations", () => {
           bookingNotes,
         });
         // test updating of the db using created thunk and middleware args from stores' setup
-        await testThunk(mockDispatch, store.getState);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
         // Check updates
         const updatedBooking = await getDoc(
           doc(
@@ -353,9 +363,9 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        getFirestoreSpy.mockImplementationOnce(() => {
+        const getFirestore = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = updateBookingNotes({
           secretKey,
@@ -364,8 +374,10 @@ describe("Booking operations", () => {
           date: baseSlot.date,
           bookingNotes: "",
         });
-        const mockDispatch = jest.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFirestore,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesError),
@@ -381,7 +393,7 @@ describe("Booking operations", () => {
     testWithEmulator("should update the customer in firestore", async () => {
       // set up initial state
       const store = getNewStore();
-      const { organization } = await getTestEnv({
+      const { organization, db } = await getTestEnv({
         auth: false,
         setup: (db, { organization }) =>
           Promise.all([
@@ -393,19 +405,22 @@ describe("Booking operations", () => {
             }),
           ]),
       });
-      const mockDispatch = jest.fn();
+      const mockDispatch = vi.fn();
       // make sure tested thunk uses test generated organization
       getOrganizationSpy.mockReturnValue(organization);
       // create a thunk curried with test input values
       const testThunk = customerSelfUpdate({ ...saul, name: "Jimmy" });
       // test updating of the db using created thunk and middleware args from stores' setup
-      await testThunk(mockDispatch, store.getState);
+      await runThunk(testThunk, mockDispatch, store.getState);
       // Check updates
-      const updatedSaul = await waitForCondition({
-        documentPath: getBookingsDocPath(organization, saul.secretKey),
-        condition: (data) => data?.name === "Jimmy",
+      await waitFor(async () => {
+        const bookingsSnap = await getDoc(
+          doc(db, getBookingsDocPath(organization, saul.secretKey))
+        );
+        expect(bookingsSnap.data()).toEqual(
+          sanitizeCustomer({ ...saul, name: "Jimmy" })
+        );
       });
-      expect(updatedSaul).toEqual(sanitizeCustomer({ ...saul, name: "Jimmy" }));
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
@@ -419,13 +434,15 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        const getFunctions = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
-        const mockDispatch = jest.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.CustomerProfileError),
@@ -442,17 +459,18 @@ describe("Booking operations", () => {
       const registrationCode = "TEST_REG_CODE";
       // set up initial state
       const store = getNewStore();
-      const { organization } = await getTestEnv({
+      const { organization, db } = await getTestEnv({
         auth: false,
         setup: async (db, { organization }) => {
           // Set up organization 'registrationCode'
-          db.doc([Collection.Organizations, organization].join("/")).set(
-            { registrationCode },
-            { merge: true }
+          const docRef = doc(
+            db,
+            [Collection.Organizations, organization].join("/")
           );
+          await setDoc(docRef, { registrationCode }, { merge: true });
         },
       });
-      const mockDispatch = jest.fn();
+      const mockDispatch = vi.fn();
       // make sure tested thunk uses test generated organization
       getOrganizationSpy.mockReturnValue(organization);
       // create a thunk curried with test input values
@@ -461,15 +479,20 @@ describe("Booking operations", () => {
         registrationCode,
       });
       // test updating of the db using created thunk and middleware args from stores' setup
-      const { id, secretKey } = await testThunk(mockDispatch, store.getState);
+      const { id, secretKey } = await runThunk(
+        testThunk,
+        mockDispatch,
+        store.getState
+      );
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
       // Check updates
-      const updatedSaul = await waitForCondition({
-        documentPath: getBookingsDocPath(organization, secretKey),
-        condition: (data) => Boolean(data),
+      await waitFor(async () => {
+        const bookingsSnap = await getDoc(
+          doc(db, getBookingsDocPath(organization, secretKey))
+        );
+        expect(bookingsSnap.data()).toEqual({ ...saul, id, secretKey });
       });
-      expect(updatedSaul).toEqual({ ...saul, id, secretKey });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.SelfRegSuccess),
@@ -483,16 +506,18 @@ describe("Booking operations", () => {
       async () => {
         // intentionally cause an error
         const testError = new Error("test");
-        jest.spyOn(functions, "getFunctions").mockImplementationOnce(() => {
+        const getFunctions = () => {
           throw testError;
-        });
+        };
         // run the thunk
         const testThunk = customerSelfRegister({
           ...saul,
           registrationCode: "",
         });
-        const mockDispatch = jest.fn();
-        await testThunk(mockDispatch, () => ({} as any));
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
+        });
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.SelfRegError),

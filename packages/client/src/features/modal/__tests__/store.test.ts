@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
 import { SlotInterface, SlotType } from "@eisbuk/shared";

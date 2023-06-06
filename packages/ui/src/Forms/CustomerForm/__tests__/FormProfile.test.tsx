@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { vi, expect, test, describe } from "vitest";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -10,7 +7,7 @@ import i18n, { ActionButton, CustomerLabel } from "@eisbuk/translations";
 
 import { CustomerForm } from "../index";
 
-import { saul } from "../__testData__";
+import { saul } from "@eisbuk/testing/customers";
 
 describe("CustomerForm", () => {
   describe("Profile", () => {
@@ -61,7 +58,7 @@ describe("CustomerForm", () => {
     });
 
     test("should reset the form and call 'onCancel' on cancel button click", async () => {
-      const mockCancel = jest.fn();
+      const mockCancel = vi.fn();
       render(<CustomerForm.Profile customer={saul} onCancel={mockCancel} />);
       userEvent.click(screen.getByText(i18n.t(ActionButton.Edit) as string));
 
@@ -87,7 +84,7 @@ describe("CustomerForm", () => {
     });
 
     test("should call onSave (and not reset the form) on save click", async () => {
-      const mockSave = jest.fn();
+      const mockSave = vi.fn();
       render(<CustomerForm.Profile customer={saul} onSave={mockSave} />);
       userEvent.click(screen.getByText(i18n.t(ActionButton.Edit) as string));
 

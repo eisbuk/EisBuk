@@ -1,5 +1,3 @@
-import { getFirestore, doc, setDoc } from "@firebase/firestore";
-
 import {
   CustomerAttendance,
   SlotAttendnace,
@@ -15,7 +13,7 @@ import { getOrganization } from "@/lib/getters";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getAttendanceDocPath } from "@/utils/firestore";
+import { getAttendanceDocPath, doc, setDoc } from "@/utils/firestore";
 
 interface UpdateAttendance<
   P extends Record<string, any> = Record<string, unknown>
@@ -44,7 +42,7 @@ interface UpdateAttendance<
  */
 export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
   ({ attendedInterval, slotId, customerId, name, surname }) =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const localState = getState();
 
@@ -98,7 +96,7 @@ export const markAttendance: UpdateAttendance<{ attendedInterval: string }> =
  */
 export const markAbsence: UpdateAttendance =
   ({ slotId, customerId, name, surname }) =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const localState = getState();
 

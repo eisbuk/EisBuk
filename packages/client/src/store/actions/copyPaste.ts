@@ -1,5 +1,4 @@
 import { DateTime } from "luxon";
-import { collection, getFirestore, writeBatch, doc } from "@firebase/firestore";
 
 import {
   SlotInterface,
@@ -17,7 +16,7 @@ import { FirestoreThunk, SlotsWeek } from "@/types/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { getSlotsPath } from "@/utils/firestore";
+import { getSlotsPath, collection, doc, writeBatch } from "@/utils/firestore";
 
 /**
  * Creates Redux 'remove slot from clipboard' action for copyPaste reducer
@@ -151,7 +150,7 @@ export const copySlotsWeek =
  */
 export const pasteSlotsDay =
   (newDate: DateTime): FirestoreThunk =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const db = getFirestore();
 
@@ -191,7 +190,7 @@ export const pasteSlotsDay =
  */
 export const pasteSlotsWeek =
   (newWeekStart: DateTime): FirestoreThunk =>
-  async (dispatch, getState) => {
+  async (dispatch, getState, { getFirestore }) => {
     try {
       const db = getFirestore();
 

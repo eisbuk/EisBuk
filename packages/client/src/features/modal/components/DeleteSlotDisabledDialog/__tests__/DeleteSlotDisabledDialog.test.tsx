@@ -1,8 +1,9 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
 import React from "react";
+import { describe, vi, expect, test, afterEach, beforeEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
@@ -10,9 +11,9 @@ import i18n, { ActionButton } from "@eisbuk/translations";
 import DeleteSlotDisabledDialog from "../DeleteSlotDisabledDialog";
 import * as slotOperations from "@/store/actions/slotOperations";
 
-import { baseSlot } from "@/__testData__/slots";
+import { baseSlot } from "@eisbuk/testing/slots";
 
-const mockOnClose = jest.fn();
+const mockOnClose = vi.fn();
 // Mock deleteSlot to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
 // rather than just being called
@@ -20,12 +21,12 @@ const mockDeleteSlot = (params: any) => ({
   ...params,
   type: "deleteSlot",
 });
-jest
-  .spyOn(slotOperations, "deleteSlot")
-  .mockImplementation(mockDeleteSlot as any);
+vi.spyOn(slotOperations, "deleteSlot").mockImplementation(
+  mockDeleteSlot as any
+);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
@@ -41,7 +42,7 @@ describe("DeleteSlotDisabledDialog", () => {
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     cleanup();
   });
 

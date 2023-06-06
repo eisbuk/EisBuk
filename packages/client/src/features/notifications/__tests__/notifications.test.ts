@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { NotificationInterface } from "../types";
 
 import { NotifVariant } from "@/enums/store";
@@ -35,7 +36,7 @@ const runNotificationsTableTests = (tests: TestParams[]) => {
       test(name, () => {
         // Fail for non existing scenario
         if (testQueue.length > 1 && testCanEvict) {
-          fail(
+          throw new Error(
             `canEvict can only be 'true' on empty and single notification queue. The testQueue you've provided has length ${
               testQueue.length
             }. Test queue:

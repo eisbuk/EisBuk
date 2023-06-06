@@ -1,52 +1,76 @@
-import { DocumentData } from "@google-cloud/firestore";
-import pRetry from "p-retry";
+import { getFirestore as getFirestoreActual } from "@firebase/firestore";
 
-import { adminDb } from "@/__testSetup__/firestoreSetup";
+import { FirestoreThunk, LocalStore } from "@/types/store";
 
-interface WaitForConditionParams<D extends DocumentData = DocumentData> {
-  documentPath: string;
-  condition: (data?: D) => boolean;
-  attempts?: number;
-  sleep?: number;
-  verbose?: boolean;
-}
+import { functions } from "@/__testSetup__/firestoreSetup";
+
+import { FirestoreVariant } from "@/utils/firestore";
+
+type Dispatch = Parameters<FirestoreThunk>[0];
+type GetState = Parameters<FirestoreThunk>[1];
+type AdditionalArguments = Partial<Parameters<FirestoreThunk>[2]>;
 
 /**
- * Retries to fetch item until condition is true or the max number of attempts exceeded.
- * The firestore instance is read from config (so it doesn't need to be passed in)
- * @param params
- * - documentPath: string path in format `"<collection>/<doc>/<collection>/<doc>"`.
- * Needs to have even number of path nodes (as ons is for `collection` and another for `documentId`)
- * - condition: a function receiving data from requseted document returning boolean condition
- * - attempts: max number of attempts
- * - sleep: pause between attempts
+ * Wraps thunk with additional arguments to reduce boilerplate in tests.
+ * I needed, however, additinal arguments can be passed in as second argument.
+ * @param thunk
+ * @param additionalArguments
  * @returns
  */
-export const waitForCondition = <D extends DocumentData = DocumentData>({
-  documentPath,
-  condition,
-  attempts = 10,
-  sleep = 400,
-  verbose = false,
-}: WaitForConditionParams<D>): Promise<D> => {
-  const docId = documentPath.split("/").slice(-1);
+export const runThunk = <
+  T extends (...args: Parameters<FirestoreThunk>) => any
+>(
+  thunk: T,
+  dispatch: Dispatch,
+  getState: GetState = () => ({} as LocalStore),
+  additionalArguments: AdditionalArguments = {}
+): ReturnType<T> => {
+  const getFirestore =
+    additionalArguments.getFirestore ||
+    (() => FirestoreVariant.client({ instance: getFirestoreActual() }));
+  const getFunctions = additionalArguments.getFunctions || (() => functions);
 
-  const docRef = adminDb.doc(documentPath);
+  return thunk(dispatch, getState, { getFirestore, getFunctions });
+};
 
-  return pRetry(
-    // Try to fetch the document with provided id in the provided collection
-    // until the condition has been met
-    async () => {
-      const doc = (await docRef.get()).data() as D | undefined;
-      // used for debugging
-      if (verbose) {
-        console.log(doc);
-      }
-      if (condition(doc)) {
-        return Promise.resolve(doc as D);
-      }
-      return Promise.reject(new Error(`${docId} was not updated successfully`));
-    },
-    { retries: attempts, minTimeout: sleep, maxTimeout: sleep }
-  );
+const __isCI__ = process.env.CI;
+
+/**
+ * A test helper, runs the callback with 50 ms interval until the assertion is fulfilled or it times out.
+ * If it times out, it rejects with the latest error.
+ * @param {Function} cb The callback to run (this would normally hold assertions)
+ * @param {number} [timeout] The timeout in ms - default is 8000 as our test timeout is 10000 and we assume that most of the
+ * assertions will be fulfilled within the remaining 2 seconds, leaving us room for the problematic ones to wait a bit longer,
+ * whilst still failing within the test timeout constraints (in order to provide the helpful error message, rather than a test timeout error).
+ */
+export const waitFor = <CB extends () => any>(
+  cb: CB,
+  // The CI machine tends to be slower than the local ones, so we're allowing for more breathing room
+  timeout = __isCI__ ? 13000 : 8000
+) => {
+  return new Promise<ReturnType<CB>>((resolve, reject) => {
+    let error: any = null;
+
+    // Retry the assertion every 50ms
+    const interval = setInterval(() => {
+      // Run callback as a promise (this way we're able to .then/.catch regardless of the 'cb' being sync or async)
+      (async () => cb())()
+        .then((res) => {
+          if (interval) {
+            clearInterval(interval);
+          }
+          return resolve(res);
+        })
+        .catch((err) => {
+          // Store the error to reject with later (if timed out)
+          error = err;
+        });
+    }, 50);
+
+    // When timed out, reject with the latest error
+    setTimeout(() => {
+      clearInterval(interval);
+      reject(error);
+    }, timeout);
+  });
 };

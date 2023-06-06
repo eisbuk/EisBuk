@@ -1,4 +1,5 @@
 import React from "react";
+import { vi, afterEach, expect, test, describe } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 
 import { SlotType } from "@eisbuk/shared";
@@ -21,14 +22,14 @@ describe("IntervalCard", () => {
 
   describe("BookingButton", () => {
     test("should fire 'onClick' when clicked", () => {
-      const mockOnClick = jest.fn();
+      const mockOnClick = vi.fn();
       render(<BookingButton {...baseProps} onClick={mockOnClick} />);
       screen.getByRole("button").click();
       expect(mockOnClick).toHaveBeenCalled();
     });
 
     test("should be disabled if the IntervalCard is disabled", () => {
-      const mockOnClick = jest.fn();
+      const mockOnClick = vi.fn();
       render(
         <BookingButton
           {...baseProps}

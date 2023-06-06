@@ -1,7 +1,5 @@
 import { DateTime } from "luxon";
 
-import { SlotInterface, SlotInterval } from "@eisbuk/shared";
-
 /**
  * Returns initials from provided name and last name
  * @param name
@@ -62,36 +60,6 @@ export const getMonthStr: GetMonthString = (startDate, offset) =>
     .plus({ months: offset })
     .toISODate()
     .substring(0, 7);
-
-/**
- * Calculates the `startTime` of earliset interval and the `endTime` of latest interval,
- * @param intervals a record of all intervals
- * @returns a string representation of slot's timespan: `${startTime} - ${endTime}`
- *
- * @DUPLICATE in @eisbuk/ui/src/AttendanceCard/utils.ts
- */
-export const getSlotTimespan = (
-  intervals: SlotInterface["intervals"]
-): string => {
-  // calculate single { startTime, endTime } object
-  const { startTime, endTime } = Object.values(intervals).reduce(
-    (acc, interval) => {
-      const startTime =
-        !acc.startTime || acc.startTime > interval.startTime
-          ? interval.startTime
-          : acc.startTime;
-      const endTime =
-        !acc.endTime || acc.endTime < interval.endTime
-          ? interval.endTime
-          : acc.endTime;
-
-      return { startTime, endTime };
-    },
-    {} as SlotInterval
-  );
-  // return time string
-  return `${startTime} - ${endTime}`;
-};
 
 /**
  * @param  {string} location (for instance website.web.app)

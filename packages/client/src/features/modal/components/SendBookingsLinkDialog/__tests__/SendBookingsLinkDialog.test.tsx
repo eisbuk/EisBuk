@@ -1,7 +1,8 @@
 /**
- * @jest-environment jsdom
+ * @vitest-environment jsdom
  */
 
+import { describe, vi, expect, test, afterEach } from "vitest";
 import React from "react";
 import { screen, render } from "@testing-library/react";
 
@@ -12,9 +13,9 @@ import { SendBookingLinkMethod } from "@/enums/other";
 import SendBookingsLinkDialog from "../SendBookingsLinkDialog";
 import * as utils from "../utils";
 
-import { saul } from "@/__testData__/customers";
+import { saul } from "@eisbuk/testing/customers";
 
-const mockOnClose = jest.fn();
+const mockOnClose = vi.fn();
 // Mock sendBookingsLink to a, sort of, identity function
 // to test it being dispatched to the store (with appropriate params)
 // rather than just being called
@@ -22,23 +23,23 @@ const mockSendBookingsLink = (params: any) => ({
   ...params,
   type: "sendBookingsLink",
 });
-jest
-  .spyOn(utils, "sendBookingsLink")
-  .mockImplementation(mockSendBookingsLink as any);
+vi.spyOn(utils, "sendBookingsLink").mockImplementation(
+  mockSendBookingsLink as any
+);
 
-const mockDispatch = jest.fn();
-jest.mock("react-redux", () => ({
+const mockDispatch = vi.fn();
+vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
 // Bookings link we'll receive from 'getBookingsLink()' inside the component
-// host -> 'localhost' (we're in jest-environment jsdom)
+// host -> 'localhost' (we're in vitest-environment jsdom)
 // secretKey -> saul's secret key (we're using saul as a test customer in all tests below)
-const testBookingsLink = `https://localhost/customer_area/${saul.secretKey}`;
+const testBookingsLink = `https://localhost:3000/customer_area/${saul.secretKey}`;
 
 describe("SendBookingsLinkDialog", () => {
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   test("should call onClose on cancel", () => {

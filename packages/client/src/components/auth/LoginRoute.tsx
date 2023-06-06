@@ -2,7 +2,7 @@ import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { PrivateRoutes, Routes } from "@/enums/routes";
+import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 
 import {
   getBookingsSecretKey,

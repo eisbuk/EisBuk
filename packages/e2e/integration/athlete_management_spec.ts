@@ -1,15 +1,11 @@
-import {
-  Customer,
-  __addAthleteId__,
-  __birthdayInputId__,
-} from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   NotificationMessage,
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { PrivateRoutes } from "../temp";
+import { PrivateRoutes, __addAthleteId__, __birthdayInputId__ } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";

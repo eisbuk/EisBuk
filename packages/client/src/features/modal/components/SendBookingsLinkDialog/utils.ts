@@ -4,16 +4,15 @@ import {
   EmailType,
   SMSMessage,
 } from "@eisbuk/shared";
+import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 
-import { createCloudFunctionCaller } from "@/utils/firebase";
+import { createFunctionCaller } from "@/utils/firebase";
 
 import { FirestoreThunk } from "@/types/store";
 
 import { SendBookingLinkMethod } from "@/enums/other";
-import { CloudFunction } from "@/enums/functions";
 import { NotifVariant } from "@/enums/store";
-import { Routes } from "@/enums/routes";
 
 import { enqueueNotification } from "@/features/notifications/actions";
 import { getOrganization } from "@/lib/getters";
@@ -80,7 +79,7 @@ interface SendBookingsLink {
 
 export const sendBookingsLink: SendBookingsLink =
   ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
-  async (dispatch) => {
+  async (dispatch, _, { getFunctions }) => {
     try {
       if (!secretKey || !email) {
         // this should be unreachable
@@ -120,7 +119,7 @@ export const sendBookingsLink: SendBookingsLink =
 
       const { handler, payload, successMessage } = config[method];
 
-      await createCloudFunctionCaller(handler, payload)();
+      await createFunctionCaller(getFunctions(), handler, payload)();
 
       dispatch(
         enqueueNotification({

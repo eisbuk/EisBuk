@@ -1,3 +1,4 @@
+import { vi, expect, test, describe } from "vitest";
 import React from "react";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
@@ -9,7 +10,7 @@ import CountryCodesDropdown, {
 
 describe("CountryCodesDropdown", () => {
   test("should call 'onChange' with country's dial code, on select", () => {
-    const mockOnChange = jest.fn();
+    const mockOnChange = vi.fn();
     const onChange = (e: React.ChangeEvent<HTMLSelectElement>) =>
       mockOnChange(e.target.value);
 
@@ -24,7 +25,7 @@ describe("CountryCodesDropdown", () => {
   });
 
   test("should integrate seamlessly with Formik, through formik Field", async () => {
-    const mockSubmit = jest.fn();
+    const mockSubmit = vi.fn();
     const onSubmit: FormikConfig<{ countryCode: string }>["onSubmit"] = (
       values
     ) => mockSubmit(values);

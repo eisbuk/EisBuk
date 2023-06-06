@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { describe, afterEach, beforeEach, vi, test, expect } from "vitest";
 import {
   cleanup,
   render,
@@ -18,8 +15,6 @@ import {
   DeprecatedCategory,
   fromISO,
   SlotType,
-  __timeIntervalFieldId__,
-  __deleteIntervalId__,
 } from "@eisbuk/shared";
 import i18n, {
   SlotFormTitle,
@@ -31,12 +26,17 @@ import i18n, {
   DateFormat,
 } from "@eisbuk/translations";
 
+import {
+  __timeIntervalFieldId__,
+  __deleteIntervalId__,
+} from "@eisbuk/testing/testIds";
+
 import { defaultInterval, defaultSlotFormValues } from "../data";
 
 import SlotForm from "../SlotForm";
 
-import { testDate, testDateLuxon } from "../../../__testData__/date";
-import { baseSlot } from "../../../__testData__/slots";
+import { testDate, testDateLuxon } from "@eisbuk/testing/date";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 const baseProps = {
   date: testDate,
@@ -47,7 +47,7 @@ const baseProps = {
 describe("SlotForm", () => {
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Smoke test", () => {
@@ -93,7 +93,7 @@ describe("SlotForm", () => {
     const differentDate = "2020-01-01";
     const differentDateLuxon = fromISO("2020-01-01");
 
-    test("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
+    test.only("should render \"Edit Slot\" title if 'slotToEdit' passed in", () => {
       render(
         <SlotForm
           {...baseProps}
@@ -133,8 +133,8 @@ describe("SlotForm", () => {
   });
 
   describe("Test dialog button actions", () => {
-    const mockOnClose = jest.fn();
-    const mockOnSubmit = jest.fn();
+    const mockOnClose = vi.fn();
+    const mockOnSubmit = vi.fn();
 
     /** @TODO_TEST This is broken and should be examined */
     test.skip("should call on submit with set values and close the form", async () => {

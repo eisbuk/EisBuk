@@ -1,4 +1,4 @@
-import { LocalStore } from "@/types/store";
+import { LocalStore, ThunkExtraArgument } from "@/types/store";
 import {
   legacy_createStore as createStore,
   applyMiddleware,
@@ -19,7 +19,9 @@ import { createModalReducer } from "@/features/modal/reducer";
 import { createNotificationsReducer } from "@/features/notifications/reducer";
 
 // Create Redux Store with Reducers and Initial state
-const middlewares = [thunk];
+const constructMiddleware = (extraArgument?: ThunkExtraArgument) => [
+  ...(extraArgument ? [thunk.withExtraArgument(extraArgument)] : []),
+];
 
 type InitialState = Partial<{
   [key in keyof LocalStore]: Partial<LocalStore[key]>;
@@ -32,7 +34,8 @@ type InitialState = Partial<{
  * @returns a new store set up for our app
  */
 export const getNewStore = (
-  initialState: InitialState = {}
+  initialState: InitialState = {},
+  extraArgument?: ThunkExtraArgument
 ): Store<LocalStore> =>
   createStore(
     combineReducers({
@@ -44,5 +47,5 @@ export const getNewStore = (
       notifications: createNotificationsReducer(initialState.notifications),
     }),
     {},
-    composeWithDevTools(applyMiddleware(...middlewares))
+    composeWithDevTools(applyMiddleware(...constructMiddleware(extraArgument)))
   );

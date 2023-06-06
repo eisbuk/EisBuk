@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { ComponentMeta } from "@storybook/react";
 
 import { CustomerAttendance } from "@eisbuk/shared";
 
@@ -8,14 +7,14 @@ import AttendanceCardContainer from "./AttendanceCardContainer";
 import UserAttendance from "./UserAttendance";
 import Divider from "./Divider";
 
-import { intervalStrings as intervals } from "../__testData__/attendance";
-import { saul, walt, gus } from "../__testData__/customers";
-import { baseSlot } from "../__testData__/slots";
+import { intervalStrings as intervals } from "@eisbuk/testing/attendance";
+import { saul, walt, gus } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 export default {
   title: "Attendance Card",
   component: AttendanceCardContainer,
-} as ComponentMeta<typeof AttendanceCardContainer>;
+};
 
 const saulBookings = {
   bookedInterval: intervals[0],

@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 import { Dispatch, Reducer, Action as ReducerAction } from "redux";
 
 import { User } from "@firebase/auth";
+import { Functions } from "@firebase/functions";
 
 import {
   AuthStatus,
@@ -10,13 +11,14 @@ import {
   SlotsByDay,
   SlotsById,
 } from "@eisbuk/shared";
+import { CustomerRoute } from "@eisbuk/shared/ui";
 import { FirestoreState } from "@eisbuk/react-redux-firebase-firestore";
 
 import { ModalState } from "@/features/modal/types";
 import { NotificationsState } from "@/features/notifications/types";
 
 import { Action } from "@/enums/store";
-import { CustomerRoute } from "@/enums/routes";
+import { FirestoreVariant } from "@/utils/firestore";
 
 // #region app
 /**
@@ -151,12 +153,20 @@ export interface SlotsByCustomerRoute<S extends SlotsById | SlotsByDay> {
 
 // #region misc
 type GetState = () => LocalStore;
+export interface ThunkExtraArgument {
+  getFirestore: () => FirestoreVariant;
+  getFunctions: () => Functions;
+}
 /**
  * Async Thunk in charge of updating the firestore and dispatching action
  * to local store with respect to firestore update outcome
  */
 export interface FirestoreThunk {
-  (dispatch: Dispatch<any>, getState: GetState): Promise<void>;
+  (
+    dispatch: Dispatch<any>,
+    getState: GetState,
+    extraArgument: ThunkExtraArgument
+  ): Promise<void>;
 }
 
 /** Interface used for factory functions returning reducer for a slice of the store */

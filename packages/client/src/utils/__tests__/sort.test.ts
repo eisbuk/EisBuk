@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { Customer, CustomerWithAttendance } from "@eisbuk/shared";
 
 import {

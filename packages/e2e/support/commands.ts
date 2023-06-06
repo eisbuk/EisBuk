@@ -1,8 +1,16 @@
-/* eslint-disable @typescript-eslint/no-namespace */
-import { HttpRequestInterceptor } from "cypress/types/net-stubbing";
-
-import { Customer, __addAthleteId__ } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
+
+import { __addAthleteId__ } from "../temp";
+
+/**
+ * As painful as the node resolution is nowadays, it was easier to simply extract the type
+ * from the way we plan to use it (and that is to call it from `cy.intercept` with the `req` param)
+ */
+type HttpRequestInterceptor = Extract<
+  Parameters<typeof cy.intercept>[2],
+  (req: any) => any
+>;
 
 // ***********************************************************
 //

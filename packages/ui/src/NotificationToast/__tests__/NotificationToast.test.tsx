@@ -1,4 +1,5 @@
 import React from "react";
+import { vi, expect, test, describe } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import NotificationToast, {
@@ -7,7 +8,7 @@ import NotificationToast, {
 
 describe("NotificationToast", () => {
   test("should call 'onClose' on close button click", () => {
-    const mockOnClose = jest.fn();
+    const mockOnClose = vi.fn();
     render(
       <NotificationToast
         onClose={mockOnClose}

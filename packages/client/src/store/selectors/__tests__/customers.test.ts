@@ -1,3 +1,4 @@
+import { describe, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
 import { LocalStore } from "@/types/store";
@@ -6,7 +7,7 @@ import { getNewStore } from "@/store/createStore";
 
 import { getCustomersByBirthday } from "../customers";
 
-import { saul, walt, jian, mike, jane } from "@/__testData__/customers";
+import { saul, walt, jian, mike, jane } from "@eisbuk/testing/customers";
 
 const customers: LocalStore["firestore"]["data"]["customers"] = {
   [saul.id]: {

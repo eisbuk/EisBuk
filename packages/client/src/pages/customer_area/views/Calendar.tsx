@@ -1,5 +1,6 @@
 import React from "react";
 import { useSelector, useStore } from "react-redux";
+import { getFirestore } from "@firebase/firestore";
 
 import i18n, { Alerts } from "@eisbuk/translations";
 import {
@@ -8,6 +9,8 @@ import {
   IntervalCardState,
   IntervalCardVariant,
 } from "@eisbuk/ui";
+
+import { functions } from "@/setup";
 
 import {
   getIsBookingAllowed,
@@ -18,6 +21,7 @@ import { updateBookingNotes } from "@/store/actions/bookingOperations";
 
 import { createModal } from "@/features/modal/useModal";
 import { ModalPayload } from "@/features/modal/types";
+import { FirestoreVariant } from "@/utils/firestore";
 
 const CalendarView: React.FC = () => {
   const { dispatch, getState } = useStore();
@@ -55,7 +59,10 @@ const CalendarView: React.FC = () => {
       bookingNotes,
       date,
       interval,
-    })(dispatch, getState);
+    })(dispatch, getState, {
+      getFirestore: () => FirestoreVariant.client({ instance: getFirestore() }),
+      getFunctions: () => functions,
+    });
 
   const slotsToRender = bookedAndAttendedSlots.map((props) => (
     <IntervalCard

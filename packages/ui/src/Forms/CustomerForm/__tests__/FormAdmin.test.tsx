@@ -1,8 +1,5 @@
-/**
- * @jest-environment jsdom
- */
-
 import React from "react";
+import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -17,21 +14,21 @@ import { CustomerForm } from "../index";
 
 import { isoToDate } from "../../../utils/date";
 
-import { saul } from "../__testData__";
+import { saul } from "../__testData__/index";
 
 const t = (...params: Parameters<typeof i18n.t>) => i18n.t(...params) as string;
 
 describe("CustomerForm", () => {
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe("Admin - edit customer - form", () => {
-    const mockSave = jest.fn();
-    const mockDelete = jest.fn();
-    const mockCancel = jest.fn();
-    const mockClose = jest.fn();
+    const mockSave = vi.fn();
+    const mockDelete = vi.fn();
+    const mockCancel = vi.fn();
+    const mockClose = vi.fn();
 
     beforeEach(() => {
       render(
@@ -307,7 +304,7 @@ describe("CustomerForm", () => {
     });
 
     test("should call 'onBookingDateExtended' when new extended date saved", async () => {
-      const mockBookingDateExtended = jest.fn();
+      const mockBookingDateExtended = vi.fn();
       render(
         <CustomerForm.Admin
           customer={saul}
@@ -387,7 +384,7 @@ describe("CustomerForm", () => {
     });
 
     test("should call 'onClose' on both 'back' and 'cancel' button clicks", () => {
-      const mockClose = jest.fn();
+      const mockClose = vi.fn();
       render(<CustomerForm.Admin onClose={mockClose} />);
       userEvent.click(screen.getByText(t(ActionButton.Back)));
       expect(mockClose).toHaveBeenCalled();
@@ -396,8 +393,8 @@ describe("CustomerForm", () => {
     });
 
     test("should call 'onSave' on save button click and close the form if the submission is successful", async () => {
-      const mockSave = jest.fn();
-      const mockClose = jest.fn();
+      const mockSave = vi.fn();
+      const mockClose = vi.fn();
       render(<CustomerForm.Admin onSave={mockSave} onClose={mockClose} />);
 
       // Fill out the mimimal fields

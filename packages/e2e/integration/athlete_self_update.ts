@@ -1,4 +1,4 @@
-import { Customer, __birthdayInputId__ } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   CustomerNavigationLabel,
@@ -6,7 +6,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { Routes } from "../temp";
+import { Routes, __birthdayInputId__ } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 

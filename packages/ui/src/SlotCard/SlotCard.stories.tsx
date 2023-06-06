@@ -4,10 +4,10 @@ import { ComponentMeta } from "@storybook/react";
 import { Category, SlotInterface, SlotType } from "@eisbuk/shared";
 import { Pencil, Trash } from "@eisbuk/svg";
 
+import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
+
 import SlotCard from "./SlotCard";
 import Button from "../Button";
-
-import { baseSlot, createIntervals } from "../__testData__/slots";
 
 export default {
   title: "Slot Card",

@@ -1,4 +1,5 @@
 import React from "react";
+import { vi, afterEach, expect, test, describe } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { DateTime, DateTimeUnit } from "luxon";
 
@@ -14,14 +15,14 @@ interface TestParams {
 const runDateTableTests = (tests: TestParams[]) => {
   afterEach(() => {
     cleanup();
-    jest.clearAllMocks;
+    vi.clearAllMocks;
   });
 
   tests.forEach(({ currentDate, jump, next, prev }) => {
     test(`CurrentDate: "${currentDate}", jump: "${jump}", want prev: "${prev}", want next: "${next}"`, () => {
       const date = DateTime.fromISO(currentDate);
 
-      const mockOnChange = jest.fn();
+      const mockOnChange = vi.fn();
 
       render(<CalendarNav onChange={mockOnChange} {...{ jump, date }} />);
 

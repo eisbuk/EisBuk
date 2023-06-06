@@ -2,15 +2,18 @@ name: OnPush
 "on":
 - push
 jobs:
-  build_v16:
+  build_v18:
     name: Build and deploy to preview channel
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -20,7 +23,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -31,8 +34,8 @@ jobs:
       run: |
         cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:prod | tee build.output
         echo "BUILD_STATS<<EOF" >> $GITHUB_ENV
-        # Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
-        # And store for use in later steps
+        #! Select all lines starting with 'dist/' from build.output (those are the lines reporting the build file sizes)
+        #! And store for use in later steps
         cat build.output|awk '/^dist\// {print}' >> $GITHUB_ENV
         echo "EOF" >> $GITHUB_ENV
       env:
@@ -68,33 +71,36 @@ jobs:
       if: steps.has_secret.outputs.HAS_SECRETS
       run: |
         set -e
-        # Deploy the preview to firebase hosting, passing the current git branch to be used for the name
-        # of the preview channel
+        #! Deploy the preview to firebase hosting, passing the current git branch to be used for the name
+        #! of the preview channel
         firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
-        # To pass the info to a later task, use the $GITHUB_ENV file
-        # This horrible contraption converts lines like
-        # ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
-        # ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
-        # to a form like this:
-        # igorice=https://igorice--dev-n0jjvnkh.web.app
-        # eisbuk=https://eisbuk--dev-xjkubzx5.web.app
-        # suitable to be included in the $GITHUB_ENV file
+        #! To pass the info to a later task, use the $GITHUB_ENV file
+        #! This horrible contraption converts lines like
+        #! ✔  hosting:channel: Channel URL (igorice): https://igorice--dev-n0jjvnkh.web.app [expires 2022-03-29 13:10:04] [version a47ca837c7966792]
+        #! ✔  hosting:channel: Channel URL (eisbuk): https://eisbuk--dev-xjkubzx5.web.app [expires 2022-03-29 13:10:04] [version 6638d82269ac0062]
+        #! to a form like this:
+        #! igorice=https://igorice--dev-n0jjvnkh.web.app
+        #! eisbuk=https://eisbuk--dev-xjkubzx5.web.app
+        #! suitable to be included in the $GITHUB_ENV file
         cat deploy.output | grep 'Channel URL' | grep 'hosting:channel:.*https://'|sed -e "s/\x1b\[[0-9;]*m//g;s|.*(||;s|)[^h]*|=|;s/.\[.*//" >> $GITHUB_ENV
-        # documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
+        #! documented here: https://docs.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-environment-variable
     - name: Populate job summary with URLs
       run: |
         echo Preview channels deployed: >> $GITHUB_STEP_SUMMARY
         echo $igoriceteam >> $GITHUB_STEP_SUMMARY
         echo $eisbuk >> $GITHUB_STEP_SUMMARY
-  test_v16:
+  test_v18:
     name: Run tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -104,7 +110,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -121,9 +127,9 @@ jobs:
       uses: dorny/test-reporter@v1
       if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
       with:
-        name: JEST Tests
+        name: Vitest report
         path: packages/client/junit.xml
-        reporter: jest-junit
+        reporter: java-junit
     - name: Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -168,9 +174,12 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -180,7 +189,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -195,11 +204,13 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v2
       with:
-        node-version: "16"
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
       uses: actions/cache@v2
       with:
@@ -210,7 +221,7 @@ jobs:
           **/node_modules
           ~/.cache/firebase/emulators
           ~/.cache/Cypress
-        key: ${{ runner.os }}-modules-emulators-cypress-node16-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
+        key: ${{ runner.os }}-modules-emulators-cypress-node18-v1-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -226,7 +237,7 @@ jobs:
         browser: chrome
         install: false
         working-directory: packages/e2e
-        wait-on: http://localhost:8080, http://localhost:5000
+        wait-on: http://127.0.0.1:8080, http://127.0.0.1:5000
         record: ${{ secrets.CYPRESS_KEY != 0 }}
         config-file: cypress-ci.config.ts
       env:
@@ -283,7 +294,7 @@ jobs:
     name: Coveralls finish
     needs:
     - cypress-run
-    - test_v16
+    - test_v18
     runs-on: ubuntu-latest
     steps:
     - name: Check if secrets are available
@@ -302,9 +313,12 @@ jobs:
     timeout-minutes: 10
     steps:
     - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
       with:
-        node-version: "16"
+        submodules: recursive
+        fetch-depth: 1
+    - uses: actions/setup-node@v3
+      with:
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -314,7 +328,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -328,10 +342,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
+        submodules: recursive
         fetch-depth: 0
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -341,7 +356,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
@@ -390,10 +405,11 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
+        submodules: recursive
         fetch-depth: 0
-    - uses: actions/setup-node@v2
+    - uses: actions/setup-node@v3
       with:
-        node-version: "16"
+        node-version: "18"
     - name: Cache node modules and firebase emulators
       uses: actions/cache@v2
       with:
@@ -403,7 +419,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node16-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
