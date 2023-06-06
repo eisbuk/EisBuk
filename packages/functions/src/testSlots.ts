@@ -74,8 +74,9 @@ const fillDay = async (day: DateTime, organization: string): Promise<void> => {
     }, {} as SlotInterface["intervals"]);
 
     // populate slot with data
+    const id = `${date}-${startHour}` as string;
     const slotToCreate: SlotInterface = {
-      id: `${day}-${startHour}`,
+      id,
       date,
       intervals,
       categories: _.sampleSize(
@@ -86,7 +87,7 @@ const fillDay = async (day: DateTime, organization: string): Promise<void> => {
       type: _.sample(TYPES)!,
     };
 
-    return slotsColl.add(slotToCreate);
+    return slotsColl.doc(id).set(slotToCreate);
   });
 
   await Promise.all(toCreate);
