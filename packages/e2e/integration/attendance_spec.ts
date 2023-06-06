@@ -143,13 +143,13 @@ describe("AddAttendedCustomersDialog", () => {
         "aria-label",
         i18n.t(AttendanceAria.PreviousInterval)
       ).click();
-      cy.contains(gus.name).contains(intervals[1]);
+      cy.getByTestId(__primaryIntervalId__).contains(intervals[1]);
 
       cy.getAttrWith(
         "aria-label",
         i18n.t(AttendanceAria.PreviousInterval)
       ).click();
-      cy.contains(gus.name).contains(intervals[0]);
+      cy.getByTestId(__primaryIntervalId__).contains(intervals[0]);
 
       // On the first interval, the previous button should be disabled
       cy.getAttrWith(
@@ -159,10 +159,10 @@ describe("AddAttendedCustomersDialog", () => {
 
       // Revert back to the last interval
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).click();
-      cy.contains(gus.name).contains(intervals[1]);
+      cy.getByTestId(__primaryIntervalId__).contains(intervals[1]);
 
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).click();
-      cy.contains(gus.name).contains(intervals[2]);
+      cy.getByTestId(__primaryIntervalId__).contains(intervals[2]);
     });
 
     it("adds a new interval to the slot and marks alhlete's attendance with it using 'Custom interval' input", () => {
