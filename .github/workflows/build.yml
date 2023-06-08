@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -102,7 +102,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -173,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -181,7 +181,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -204,7 +204,7 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -212,7 +212,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -312,7 +312,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -320,7 +320,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -340,7 +340,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 0
@@ -348,7 +348,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -403,7 +403,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 0
@@ -411,7 +411,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
