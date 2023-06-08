@@ -29,6 +29,6 @@ run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
 #@ def set_results_destination(action_id="results-destination", additional_id=''):
 name: Set destination of test results
 if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-run: #@ "echo \"::set-output name=RESULTS_DESTINATION::$(date +%%Y-%%m-%%d)/${{ github.run_id }}%s\"" % additional_id
+run: #@ "echo \"RESULTS_DESTINATION=$(date +%%Y-%%m-%%d)/${{ github.run_id }}%s\" >> $GITHUB_OUTPUT" % additional_id
 id: #@ action_id
 #@ end
