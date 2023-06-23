@@ -22,6 +22,10 @@ interface Props extends CustomerWithAttendance {
    * Function used to mark customer as absent
    */
   markAbsence?: () => void;
+  /**
+   * Function used to mark customer as present, with a custom interval
+   */
+  onCustomInterval?: (interval: string) => void;
 }
 
 /**
@@ -36,6 +40,7 @@ const UserAttendance: React.FC<Props> = ({
   intervals,
   markAttendance = () => {},
   markAbsence = () => {},
+  onCustomInterval = () => {},
   ...customer
 }) => {
   const { t } = useTranslation();
@@ -127,7 +132,7 @@ const UserAttendance: React.FC<Props> = ({
 
   return (
     <li
-      className={`relative w-full px-4 py-8 gap-y-8 sm:py-2 flex flex-wrap items-center sm:flex-nowrap ${backgroundColor} ${
+      className={`relative w-full px-4 py-8 gap-y-8 sm:py-0 flex flex-wrap items-center sm:flex-nowrap ${backgroundColor} ${
         customer.deleted ? "opacity-50" : ""
       }`}
     >
@@ -166,6 +171,7 @@ const UserAttendance: React.FC<Props> = ({
           attendedInterval={selectedInterval}
           bookedInterval={bookedInterval}
           onChange={handleIntervalChange}
+          onCustomInterval={onCustomInterval}
         />
       </div>
     </li>

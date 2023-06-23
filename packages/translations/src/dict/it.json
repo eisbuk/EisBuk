@@ -170,6 +170,7 @@
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
     "WeakPassword": "La password deve contenere almeno {{ min }} caratteri",
+    "InvalidInterval": "Please provide a valid interval value, e.g. 09:00 - 11:00",
     "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
     "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri",
     "InvalidRegistrationCode": "Il codice di registrazione non è valido. Controlla anche le maiuscole/minuscole"
@@ -218,6 +219,8 @@
     "SendBookingsEmail": "Invia email link prenotazioni",
     "SendBookingsSMS": "Invia SMS link prenotazioni",
     "ExtendBookingDate": "Estendi data di prenotazione",
+
+    "CustomInterval": "Custom Interval",
 
     "Save": "Salva",
     "Back": "Indietro",
@@ -334,7 +337,9 @@
     "PreviousInterval": "Intervallo precedente",
     "NextInterval": "Intervallo successivo",
     "MarkPresent": "Segna come presente",
-    "MarkAbsent": "Segna come assente"
+    "MarkAbsent": "Segna come assente",
+    "AddCustomInterval": "Add custom interval",
+    "CancelCustomInterval": "Cancel adding custom interval"
   },
 
   "SlotFormAria": {

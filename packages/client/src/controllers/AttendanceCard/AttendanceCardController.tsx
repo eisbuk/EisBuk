@@ -1,18 +1,17 @@
 import React, { useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { Link } from "react-router-dom";
 
 import {
   CustomerFull,
   SlotInterface,
   CustomerWithAttendance,
 } from "@eisbuk/shared";
-import { PrivateRoutes } from "@eisbuk/shared/ui";
 import { AttendanceCardContainer, UserAttendance, Divider } from "@eisbuk/ui";
 
 import {
   markAbsence,
   markAttendance,
+  markAttendanceWithCustomInterval,
 } from "@/store/actions/attendanceOperations";
 
 import { createModal } from "@/features/modal/useModal";
@@ -84,6 +83,10 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
     params: Omit<Parameters<typeof markAttendance>[0], "slotId">
   ) => markAttendance({ slotId, ...params });
 
+  const createCustomIntervalAttendanceThunk = (
+    params: Omit<Parameters<typeof markAttendance>[0], "slotId">
+  ) => markAttendanceWithCustomInterval({ slotId, ...params });
+
   const createAbsenceThunk = (
     params: Omit<
       Parameters<typeof markAttendance>[0],
@@ -101,38 +104,40 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       {attendedCustomers.map(
         (customer) =>
           customer.bookedInterval && (
-            <div
-            // This div is here to show the border provided by the 'divide' class on the container,
-            // which, doesn't work on 'a' element rendered by 'Link', for some reason
-            >
-              <Link
-                key={customer.id}
-                to={`${PrivateRoutes.Athletes}/${customer.id}`}
-              >
-                <UserAttendance
-                  {...customer}
-                  intervals={orderedIntervals}
-                  markAttendance={({ attendedInterval }) =>
-                    dispatch(
-                      createAttendanceThunk({
-                        customerId: customer.id,
-                        name: customer.name,
-                        surname: customer.surname,
-                        attendedInterval,
-                      })
-                    )
-                  }
-                  markAbsence={() =>
-                    dispatch(
-                      createAbsenceThunk({
-                        customerId: customer.id,
-                        name: customer.name,
-                        surname: customer.surname,
-                      })
-                    )
-                  }
-                />
-              </Link>
+            <div key={customer.id}>
+              <UserAttendance
+                {...customer}
+                intervals={orderedIntervals}
+                markAttendance={({ attendedInterval }) =>
+                  dispatch(
+                    createAttendanceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                      attendedInterval,
+                    })
+                  )
+                }
+                onCustomInterval={(interval) =>
+                  dispatch(
+                    createCustomIntervalAttendanceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                      attendedInterval: interval,
+                    })
+                  )
+                }
+                markAbsence={() =>
+                  dispatch(
+                    createAbsenceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                    })
+                  )
+                }
+              />
             </div>
           )
       )}
@@ -142,38 +147,41 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
       {attendedCustomers.map(
         (customer) =>
           !customer.bookedInterval && (
-            <div
-            // This div is here to show the border provided by the 'divide' class on the container,
-            // which, doesn't work on 'a' element rendered by 'Link', for some reason
-            >
-              <Link
-                key={customer.id}
-                to={`${PrivateRoutes.Athletes}/${customer.id}`}
-              >
-                <UserAttendance
-                  {...customer}
-                  intervals={orderedIntervals}
-                  markAttendance={({ attendedInterval }) =>
-                    dispatch(
-                      createAttendanceThunk({
-                        customerId: customer.id,
-                        name: customer.name,
-                        surname: customer.surname,
-                        attendedInterval,
-                      })
-                    )
-                  }
-                  markAbsence={() =>
-                    dispatch(
-                      createAbsenceThunk({
-                        customerId: customer.id,
-                        name: customer.name,
-                        surname: customer.surname,
-                      })
-                    )
-                  }
-                />
-              </Link>
+            <div key={customer.id}>
+              <UserAttendance
+                {...customer}
+                intervals={orderedIntervals}
+                markAttendance={({ attendedInterval }) =>
+                  dispatch(
+                    createAttendanceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                      attendedInterval,
+                    })
+                  )
+                }
+                onCustomInterval={(interval) => {
+                  console.log("Interval", interval);
+                  dispatch(
+                    createCustomIntervalAttendanceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                      attendedInterval: interval,
+                    })
+                  );
+                }}
+                markAbsence={() =>
+                  dispatch(
+                    createAbsenceThunk({
+                      customerId: customer.id,
+                      name: customer.name,
+                      surname: customer.surname,
+                    })
+                  )
+                }
+              />
             </div>
           )
       )}

@@ -2,13 +2,12 @@ import { Customer, SlotInterface } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   AdminAria,
-  AttendanceAria,
   BirthdayMenu,
   CustomerFormTitle,
   OrganizationLabel,
 } from "@eisbuk/translations";
 import { DateTime } from "luxon";
-import { getSlotTimespan, PrivateRoutes } from "temp";
+import { PrivateRoutes } from "temp";
 
 import { customers } from "../__testData__/customers.json";
 import { slots } from "../__testData__/slots.json";
@@ -46,47 +45,6 @@ describe("Test customer avatars linking to the respective customer profiles", ()
       cy.contains(name);
       cy.contains(surname);
     });
-  });
-
-  it("links to the customer profile when clicking on a customer in attendance (\"/\") page (and redirects back on 'back' click)", () => {
-    cy.initAdminApp()
-      .then((organization) =>
-        cy.updateCustomers(organization, customers as Record<string, Customer>)
-      )
-      .then((organization) =>
-        cy.updateSlots(organization, slots as Record<string, SlotInterface>)
-      );
-
-    cy.signIn();
-    // Set clock to "2022-01-01" as there is a test slot on that date
-    cy.setClock(DateTime.fromISO("2022-01-01").toMillis()).then(() =>
-      cy.visit(PrivateRoutes.Root)
-    );
-
-    // Add saul as having attended the slot
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(AttendanceAria.AddAttendedCustomers) as string
-    ).click();
-    cy.contains(saul.name).click();
-
-    // Close the modal and click on saul to open his profile
-    cy.getAttrWith("aria-label", i18n.t(AdminAria.CloseModal)).click();
-    cy.contains(saul.name).click();
-
-    // Check that we're in the customer profile page
-    cy.contains(
-      i18n.t(CustomerFormTitle.AthleteProfile, {
-        name: saul.name,
-        surname: saul.surname,
-      }) as string
-    );
-
-    // Click the 'back' button
-    cy.clickButton(i18n.t(ActionButton.Back));
-
-    // Check that we're back on the attendance page (by querying for slot interval, displayed on attendance card)
-    cy.contains(getSlotTimespan(slots["slot-1"].intervals));
   });
 
   it("links to the customer profile when clicking on a customer on birthday menu (and redirects back to the given page on 'back' click)", () => {

@@ -2,7 +2,11 @@ import React from "react";
 import { vi, beforeEach, afterEach, expect, test, describe } from "vitest";
 import { cleanup, screen, waitFor, render } from "@testing-library/react";
 
-import i18n, { AttendanceAria } from "@eisbuk/translations";
+import i18n, {
+  ActionButton,
+  AttendanceAria,
+  ValidationMessage,
+} from "@eisbuk/translations";
 
 import UserAttendance from "../UserAttendance";
 
@@ -10,6 +14,7 @@ import { comparePeriods } from "../../utils/sort";
 
 import { saul } from "@eisbuk/testing/customers";
 import { baseSlot } from "@eisbuk/testing/slots";
+import userEvent from "@testing-library/user-event";
 
 // interval values we're using across tests
 const intervals = Object.keys(baseSlot.intervals).sort(comparePeriods);
@@ -244,6 +249,104 @@ describe("AttendanceCard", () => {
       expect(mockMarkAttendance).toHaveBeenCalledWith({
         attendedInterval: intervals[2],
       });
+    });
+  });
+
+  describe("Test custom interval attandance", () => {
+    const mockOnCustomInterval = vi.fn();
+
+    beforeEach(() => {
+      render(
+        <UserAttendance
+          {...saul}
+          intervals={intervals}
+          bookedInterval={intervals[0]}
+          attendedInterval={null}
+          onCustomInterval={mockOnCustomInterval}
+        />
+      );
+    });
+
+    afterEach(() => {
+      vi.clearAllMocks();
+      cleanup();
+    });
+
+    test("should call onCustomInterval with interval value when custom interval is submitted", async () => {
+      screen.getByText(i18n.t(ActionButton.CustomInterval) as string).click();
+
+      // The click should have toggeled the display of text input
+      const input = screen.getByRole("textbox");
+      userEvent.type(input, "10:00 - 11:00");
+
+      screen
+        .getByRole("button", {
+          name: i18n.t(AttendanceAria.AddCustomInterval),
+        })
+        .click();
+
+      await waitFor(() =>
+        expect(mockOnCustomInterval).toHaveBeenCalledWith("10:00-11:00")
+      );
+    });
+
+    test("should show validation errors for empty field or invalid interval", async () => {
+      screen.getByText(i18n.t(ActionButton.CustomInterval) as string).click();
+
+      const input = screen.getByRole("textbox");
+
+      // Try submitting an empty interval
+      screen
+        .getByRole("button", {
+          name: i18n.t(AttendanceAria.AddCustomInterval),
+        })
+        .click();
+      await waitFor(() =>
+        screen.getByText(i18n.t(ValidationMessage.InvalidInterval) as string)
+      );
+
+      // Try submitting an invalid interval
+      userEvent.type(input, "10:00x- 11:00");
+      await waitFor(() =>
+        screen.getByText(i18n.t(ValidationMessage.InvalidInterval) as string)
+      );
+
+      expect(mockOnCustomInterval).not.toHaveBeenCalled();
+
+      // Fix the error and submit
+      userEvent.clear(input);
+      userEvent.type(input, "10:00 - 11:00");
+      screen
+        .getByRole("button", {
+          name: i18n.t(AttendanceAria.AddCustomInterval),
+        })
+        .click();
+      await waitFor(() =>
+        expect(mockOnCustomInterval).toHaveBeenCalledWith("10:00-11:00")
+      );
+    });
+
+    test("should hide the custom interval input on cancel button click or 'Esc' press", async () => {
+      screen.getByText(i18n.t(ActionButton.CustomInterval) as string).click();
+
+      // Verify the input is shown
+      screen.getByRole("textbox");
+
+      // Cancel button click
+      screen
+        .getByRole("button", {
+          name: i18n.t(AttendanceAria.CancelCustomInterval),
+        })
+        .click();
+      expect(screen.queryByRole("textbox")).toBeNull();
+
+      // Show the input again
+      screen.getByText(i18n.t(ActionButton.CustomInterval) as string).click();
+      screen.getByRole("textbox");
+
+      // 'Esc' press
+      userEvent.type(screen.getByRole("textbox"), "{esc}");
+      expect(screen.queryByRole("textbox")).toBeNull();
     });
   });
 });

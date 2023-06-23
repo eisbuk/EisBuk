@@ -25,12 +25,22 @@ import { __functionsZone__ } from "./constants";
 type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
   Partial<{ secretKey: string; id: string }>;
 
+export const addIdToSlot = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
+  )
+  .onCreate(async ({ ref }, context) => {
+    const { slotId } = context.params as Record<string, string>;
+    ref.update({ id: slotId });
+  });
+
 /**
  * Adds server generated `id` and a `secretKey` to a customer on create.
  * Updates a copy of a subset of customer's data in customer's bookings doc, accessible by
  * anonymous users who have access to `secretKey`.
  */
-export const addIdAndSecretKey = functions
+export const addCustomerIdAndSecretKey = functions
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`

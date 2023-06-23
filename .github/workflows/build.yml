@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -15,7 +15,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -54,7 +54,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Create Sentry release
       uses: getsentry/action-release@v1
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -94,7 +94,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -102,7 +102,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -122,7 +122,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Test Report
       uses: dorny/test-reporter@v1
       if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
@@ -144,7 +144,7 @@ jobs:
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      run: echo "RESULTS_DESTINATION=$(date +%Y-%m-%d)/${{ github.run_id }}" >> $GITHUB_OUTPUT
       id: results-destination
     - name: Install rclone
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
@@ -173,7 +173,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -181,7 +181,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -204,7 +204,7 @@ jobs:
     name: Cypress browser tests
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -212,7 +212,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -246,7 +246,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -261,7 +261,7 @@ jobs:
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      run: echo "RESULTS_DESTINATION=$(date +%Y-%m-%d)/${{ github.run_id }}" >> $GITHUB_OUTPUT
       id: results-destination
     - name: Install rclone
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
@@ -300,7 +300,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Finalize Coveralls
       uses: coverallsapp/github-action@master
       if: steps.has_secret.outputs.HAS_SECRETS
@@ -312,7 +312,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 1
@@ -320,7 +320,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -340,7 +340,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 0
@@ -348,7 +348,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -366,7 +366,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Build client storybook
       run: cd packages/client && rushx build-storybook
     - name: Publish storybook
@@ -376,7 +376,7 @@ jobs:
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      run: echo "RESULTS_DESTINATION=$(date +%Y-%m-%d)/${{ github.run_id }}" >> $GITHUB_OUTPUT
       id: results-destination
     - name: Install rclone
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
@@ -403,7 +403,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         submodules: recursive
         fetch-depth: 0
@@ -411,7 +411,7 @@ jobs:
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v2
+      uses: actions/cache@v3
       with:
         path: |
           ~/.rush
@@ -429,7 +429,7 @@ jobs:
     - name: Check if secrets are available
       id: has_secret
       if: success() || failure()
-      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo ::set-output name=HAS_SECRETS::true || echo ::set-output name=HAS_SECRETS::'
+      run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Build ui storybook
       run: cd packages/ui && rushx build-storybook
     - name: Publish storybook
@@ -439,7 +439,7 @@ jobs:
       run: echo "${{ secrets.GCLOUD_JSON_BASE64 }}" | base64 -d > .gcloud.json
     - name: Set destination of test results
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS
-      run: echo "::set-output name=RESULTS_DESTINATION::$(date +%Y-%m-%d)/${{ github.run_id }}"
+      run: echo "RESULTS_DESTINATION=$(date +%Y-%m-%d)/${{ github.run_id }}" >> $GITHUB_OUTPUT
       id: results-destination
     - name: Install rclone
       if: (success() || failure()) && steps.has_secret.outputs.HAS_SECRETS

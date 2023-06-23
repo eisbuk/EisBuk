@@ -18,14 +18,27 @@ import { getTestEnv } from "@/__testSetup__/firestore";
 
 import { getNewStore } from "@/store/createStore";
 
-import { markAbsence, markAttendance } from "../attendanceOperations";
+import {
+  markAbsence,
+  markAttendance,
+  markAttendanceWithCustomInterval,
+} from "../attendanceOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
-import { doc, getAttendanceDocPath, getDoc } from "@/utils/firestore";
+import {
+  doc,
+  getAttendanceDocPath,
+  getDoc,
+  getSlotDocPath,
+} from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
-import { setupTestAttendance } from "../__testUtils__/firestore";
-import { runThunk } from "@/__testUtils__/helpers";
+import {
+  setupTestAttendance,
+  setupTestSlots,
+} from "../__testUtils__/firestore";
+import { runThunk, waitFor } from "@/__testUtils__/helpers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 // #region testData
 /** The id of our observed slot (the one we're updating throughout the tests) */
@@ -64,12 +77,12 @@ const shortSaul = {
   surname: saul.surname,
 };
 
-describe("Attendance operations ->", () => {
+describe("Attendance operations", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  describe("markAttendance ->", () => {
+  describe("markAttendance", () => {
     testWithEmulator(
       "should update attendance for provided customer on provided slot (and not overwrite the rest of the data for given document in the process)",
       async () => {
@@ -192,7 +205,91 @@ describe("Attendance operations ->", () => {
     );
   });
 
-  describe("markAbsence ->", () => {
+  describe("markAttendanceWithCustomInterval", () => {
+    testWithEmulator(
+      "shoud add the interval to the slot and mark attendance",
+      async () => {
+        // set up test state
+        const store = getNewStore();
+        const { db, organization } = await getTestEnv({
+          setup: async (db, { organization }) => {
+            await setupTestSlots({
+              store,
+              db,
+              slots: {
+                [baseSlot.id]: baseSlot,
+              },
+              organization,
+            });
+            // Wait for the attendance document to be created (by data trigger)
+            await waitFor(async () => {
+              const snap = await getDoc(
+                doc(db, getAttendanceDocPath(organization, baseSlot.id))
+              );
+              expect(snap.exists).toEqual(true);
+            });
+            // Update attendance doc with dummy data
+            setupTestAttendance({
+              store,
+              db,
+              attendance: {
+                [baseSlot.id]: createDocumentWithObservedAttendance({}),
+              },
+              organization,
+            });
+          },
+        });
+
+        // make sure tested thunk uses test generated organization
+        getOrganizationSpy.mockReturnValue(organization);
+        // make sure tested thunk uses test generated organization
+        const getFirestore = () => db;
+
+        const customIntervalString = "12:00-13:00";
+        const [startTime, endTime] = customIntervalString.split("-");
+        const customInterval = {
+          startTime,
+          endTime,
+        };
+
+        const testThunk = markAttendanceWithCustomInterval({
+          ...shortSaul,
+          slotId: baseSlot.id,
+          attendedInterval: customIntervalString,
+        });
+        await runThunk(testThunk, store.dispatch, store.getState, {
+          getFirestore,
+        });
+
+        // The new interval should be added to the slot
+        const slotDoc = await getDoc(
+          doc(db, getSlotDocPath(organization, baseSlot.id))
+        );
+        expect(slotDoc.data()).toEqual({
+          ...baseSlot,
+          intervals: {
+            ...baseSlot.intervals,
+            [customIntervalString]: customInterval,
+          },
+        });
+
+        // The customer's attendance should be market in the attendance doc
+        const attendanceDoc = await getDoc(
+          doc(db, getAttendanceDocPath(organization, baseSlot.id))
+        );
+        expect(attendanceDoc.data()).toEqual(
+          createDocumentWithObservedAttendance({
+            [shortSaul.customerId]: {
+              bookedInterval: null,
+              attendedInterval: customIntervalString,
+            },
+          })
+        );
+      }
+    );
+  });
+
+  describe("markAbsence", () => {
     testWithEmulator(
       "should mark customers attended interval as 'null' if customer booked beforehand (and not overwrite the rest of the data for given document in the process)",
       async () => {
