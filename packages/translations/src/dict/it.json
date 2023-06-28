@@ -25,7 +25,7 @@
   "Authorization": {
     "NotAuthorized": "Non sei autorizzato ad accedere.",
     "AdminsOnly": "Questo spazio è riservato agli amministratori",
-    "ContactAdminsForRegistration": "The {{ authMethod }} {{ authString }} was not found in our registry. Please try a different authentication method or get in touch at {{ organizationEmail }}",
+    "ContactAdminsForRegistration": "{{ authMethod }} {{ authString }}: non trovato. Prova con un'altra modalità di accesso (offriamo telefono e email). Se il problema persiste contatta {{ organizationEmail }}",
     "LoggedInWith": "Hai effettuato l'accesso con:",
     "TryAgain": "Esci e riprova con un altro utente.",
 
@@ -49,8 +49,8 @@
     "Unknown": "Errore sconosciuto"
   },
   "AuthTitle": {
-    "SignInWithEmail": "Accedi con la email",
-    "SignInWithEmailLink": "Sign in with email link",
+    "SignInWithEmail": "Accedi con nome e password",
+    "SignInWithEmailLink": "Accedi con la mail",
     "SignInWithPhone": "Accedi con il telefono",
     "SignInWithGoogle": "Accedi con Google",
 
@@ -58,7 +58,7 @@
     "CreateAccount": "Crea un account",
     "RecoverPassword": "Recupera password",
     "CheckYourEmail": "Controlla la email",
-    "SendSignInLink": "Send sign in link",
+    "SendSignInLink": "Invia link per l'accesso",
     "ConfirmEmail": "Conferma la email",
     "ResendEmail": "Invia di nuovo la email",
     "ResendSMS": "Invia di nuovo il codice",
@@ -84,7 +84,7 @@
 
   "FormTitle": {
     "NewCustomer": "Nuovo Atleta",
-    "AthleteProfile": "Athlete Profile: {{ name }} {{ surname }}",
+    "AthleteProfile": "Profilo di {{ name }} {{ surname }}",
     "NewSlot": "Crea Slot",
     "EditSlot": "Modifica Slot"
   },
@@ -97,8 +97,8 @@
     "EndTime": "Ora di fine"
   },
   "BookingNotesForm": {
-    "Placeholder": "Personal notes...",
-    "HelpText": "Annotazioni personali..."
+    "Placeholder": "Ricordarsi di...",
+    "HelpText": "Annotazioni personali (visibili solo a te)"
   },
 
   "CustomerLabel": {
@@ -134,7 +134,7 @@
     "SmsTemplate": "Modello Di SMS",
     "DisplayName": "Nome Dell'Organizzazione",
     "Location": "Posizione",
-    "CountryCode": "Country code",
+    "CountryCode": "Prefisso internazionale di default",
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
     "Email": "Email",
@@ -170,10 +170,10 @@
     "InvalidPhone": "Inserire un numero di telefono valido, completo di prefisso internazionale (+39 per l'Italia)",
     "TimeMismatch": "L'ora di inizio è maggiore dell'ora di fine",
     "WeakPassword": "La password deve contenere almeno {{ min }} caratteri",
-    "InvalidInterval": "Please provide a valid interval value, e.g. 09:00 - 11:00",
+    "InvalidInterval": "Usare questo formato: 09:00 - 11:00",
     "InvalidSmsFrom": "Formato non valido: Solo lettere o numeri e nessun simbolo/spazio",
     "InvalidSmsFromLength": "Formato non valido: Massimo 11 caratteri",
-    "InvalidRegistrationCode": "Il codice di registrazione non è valido. Controlla anche le maiuscole/minuscole"
+    "InvalidRegistrationCode": "Il codice di registrazione non è valido. Controlla anche le maiuscole/minuscole e gli spazi"
   },
 
   "Prompt": {
@@ -194,7 +194,7 @@
     "NoPhoneMessage": "Non è presente un numero di telefono per questo atleta; aggiungi un numero e riprova.",
 
     "ExtendBookingDateTitle": "Lascia prenotare {{ name }} {{ surname }} oltre la solita data",
-    "ExtendBookingDateBody": "Please confirm you wish to extended the date for {{ name }} {{ surname }}'s bookings until {{ extendedDate, EEEE d MMMM }}",
+    "ExtendBookingDateBody": "Conferma l'autorizzazione per {{ name }} {{ surname }} a prenotare fino al {{ extendedDate, EEEE d MMMM }}",
 
     "CancelBookingTitle": "Cancellare la prenotazione per",
     "FinalizeBookingsTitle": "Ho finito con le prenotazioni",
@@ -220,7 +220,7 @@
     "SendBookingsSMS": "Invia SMS link prenotazioni",
     "ExtendBookingDate": "Estendi data di prenotazione",
 
-    "CustomInterval": "Custom Interval",
+    "CustomInterval": "Intervallo ad hoc",
 
     "Save": "Salva",
     "Back": "Indietro",
@@ -242,14 +242,14 @@
 
   "Notification": {
     "BookingSuccess": "Prenotazione effettuata: {{ date, EEEE d MMMM }}, {{ interval }}",
-    "BookingError": "Error booking interval: {{ date, EEEE d MMMM }}, {{ interval }}",
+    "BookingError": "Errore prentando {{ date, EEEE d MMMM }}, {{ interval }} - si prega di riprovare",
     "BookingCanceled": "Prenotazione rimossa: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingCanceledError": "Errore nel rimuovere la prenotazione: {{ date, EEEE d MMMM }}, {{ interval }}",
     "BookingNotesUpdated": "Nota della prenotazione aggiornata",
     "BookingNotesError": "Errore durante l'aggiornamento della nota alla prenotazione",
 
-    "CopyPasteErrorWeek": "Error copying slots week",
-    "CopyPasteErrorDay": "Error copying slots day",
+    "CopyPasteErrorWeek": "Errore nella copia della settimana",
+    "CopyPasteErrorDay": "Errore nella copia del giorno",
 
     "SlotAdded": "Slot Aggiunto",
     "SlotAddError": "Errore nell'aggiunta dello slot",
@@ -274,8 +274,8 @@
 
     "SlotsAddedToCalendar": "Slot Aggiunti Al Calendario",
 
-    "MarkAbsenceError": "Error marking {{ name }} {{ surname }}'s absence",
-    "MarkAttendanceError": "Error marking {{ name }} {{ surname }}'s attendance",
+    "MarkAbsenceError": "Errore nel segnare {{ name }} {{ surname }} assente",
+    "MarkAttendanceError": "Errore nel segnare {{ name }} {{ surname }} presente",
 
     "SelfRegSuccess": "Registrazione completata",
     "SelfRegError": "Errore durante la registrazione",
@@ -283,8 +283,8 @@
     "CustomerProfileError": "Errore durante l'aggiornamento del profilo",
     "CustomerUpdated": "Profilo cliente aggiornato: {{ name }} {{ surname }}",
     "CustomerUpdateError": "Errore durante l'aggiornamento del profilo cliente: {{ name }} {{ surname }}",
-    "CustomerDeleted": "{{ name }} {{ surname }} deleted",
-    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}"
+    "CustomerDeleted": "{{ name }} {{ surname }} eliminato",
+    "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}"
   },
 
   "BookingCountdownMessage": {
@@ -316,8 +316,8 @@
     "SeePastDates": "Indietro",
     "SeeFutureDates": "Avanti",
 
-    "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "CloseModal": "Chiudi",
+    "BirthdayMenu": "Prossimi compleanni"
   },
 
   "SlotsAria": {
@@ -326,9 +326,9 @@
     "CopySlotsDay": "Copia slot da {{ date, EEEE d MMMM }}",
     "CopiedSlotsWeekBadge": "Slot copiati {{ weekStart, EEEE d MMMM }}} - {{ weekEnd, EEEE d MMMM }}}}",
     "CopiedSlotsDayBadge": "Slot copiati {{ date, EEEE d MMMM }}}}",
-    "PasteSlotsDay": "Paste copied slots into {{ date, EEEE d MMMM }}",
-    "PasteSlotsWeek": "Paste copied slots into week {{ weekStart, EEEE d MMMM }} - {{ weekEnd, EEEE d MMMM }}",
-    "CreateSlot": "Create new slot on {{ date, EEEE d MMMM }}",
+    "PasteSlotsDay": "Slot incollati nel giorno {{ date, EEEE d MMMM }}",
+    "PasteSlotsWeek": "Slot incollati nella settimana {{ weekStart, EEEE d MMMM }} - {{ weekEnd, EEEE d MMMM }}",
+    "CreateSlot": "Crea slot per il {{ date, EEEE d MMMM }}",
     "EnableEdit": "Abilita la modifica"
   },
 
@@ -338,8 +338,8 @@
     "NextInterval": "Intervallo successivo",
     "MarkPresent": "Segna come presente",
     "MarkAbsent": "Segna come assente",
-    "AddCustomInterval": "Add custom interval",
-    "CancelCustomInterval": "Cancel adding custom interval"
+    "AddCustomInterval": "Aggiungi intervallo ad hoc",
+    "CancelCustomInterval": "Elimina intervallo ad hoc"
   },
 
   "SlotFormAria": {
