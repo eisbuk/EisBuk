@@ -7,6 +7,8 @@ import {
 } from "@firebase/auth";
 
 import { useTranslation, AuthTitle } from "@eisbuk/translations";
+import { Google, Key } from "@eisbuk/svg";
+import { HoverText, IconButton, IconButtonSize } from "@eisbuk/ui";
 
 import AuthButton from "./atoms/AuthButton";
 import AuthContainer from "./atoms/AuthContainer";
@@ -56,14 +58,31 @@ const AuthDialog: React.FC = () => {
         <AuthContainer>
           {({ Content }) => (
             <Content>
-              <ul className="list-none my-4">
-                {buttons.map(({ authFlow, label, ...button }) => (
+              <ul className="list-none my-4 mb-8">
+                {mainButtons.map(({ authFlow, label, ...button }) => (
                   <AuthButton
                     key={label}
                     {...button}
                     label={t(label)}
                     onClick={() => setAuthFlow(authFlow)}
                   />
+                ))}
+              </ul>
+
+              <ul className="list-none flex gap-2 items-center">
+                <span className="h-0.5 w-full bg-gray-100" />
+                {additionalButtons.map(({ authFlow, label, Icon }) => (
+                  <li
+                    className="cursor-pointer m-1"
+                    onClick={() => setAuthFlow(authFlow)}
+                    aria-label={t(label)}
+                  >
+                    <HoverText text={t(label)}>
+                      <IconButton size={IconButtonSize.XS} className="">
+                        <Icon />
+                      </IconButton>
+                    </HoverText>
+                  </li>
                 ))}
               </ul>
             </Content>
@@ -73,7 +92,7 @@ const AuthDialog: React.FC = () => {
   }
 };
 
-export const buttons = [
+export const mainButtons = [
   {
     color: "#ffff",
     backgroundColor: "#02bd7e",
@@ -82,25 +101,28 @@ export const buttons = [
     authFlow: AuthFlow.Phone,
   },
   {
+    color: "#ffff",
+    backgroundColor: "#db4437",
+    label: `${AuthTitle.SignInWithEmailLink}`,
+    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
+    authFlow: AuthFlow.EmailLink,
+  },
+];
+
+export const additionalButtons = [
+  {
     color: "#757575",
     backgroundColor: "#ffffff",
     label: AuthTitle.SignInWithGoogle,
-    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg",
+    Icon: Google,
     authFlow: AuthFlow.Google,
   },
   {
     color: "#ffff",
-    backgroundColor: "#db4437",
-    label: AuthTitle.SignInWithEmail,
-    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
-    authFlow: AuthFlow.Email,
-  },
-  {
-    color: "#ffff",
     backgroundColor: "rgba(0,0,0,0.8)",
-    label: `${AuthTitle.SignInWithEmailLink}`,
-    icon: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg",
-    authFlow: AuthFlow.EmailLink,
+    label: AuthTitle.SignInWithEmail,
+    Icon: Key,
+    authFlow: AuthFlow.Email,
   },
 ];
 
