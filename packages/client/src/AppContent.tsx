@@ -13,7 +13,6 @@ import {
 import { getOrganization } from "@/lib/getters";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
-import Unauthorized from "@/components/auth/Unauthorized";
 import LoginRoute from "@/components/auth/LoginRoute";
 
 import AttendancePage from "@/pages/attendance";
@@ -87,7 +86,6 @@ const AppContent: React.FC = () => {
         path={`${Routes.CustomerArea}/:secretKey`}
         component={CustomerAreaPage}
       />
-      <Route path={Routes.Unauthorized} component={Unauthorized} exact />
       <Route path={Routes.SelfRegister} component={SelfRegister} exact />
       <Route path={Routes.Debug} component={DebugPage} />
     </Switch>
