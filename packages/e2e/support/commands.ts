@@ -138,8 +138,6 @@ export default (): void => {
       birthday,
       categories,
       certificateExpiration,
-      covidCertificateReleaseDate,
-      covidCertificateSuspended,
     } = customer;
 
     if (name) {
@@ -164,14 +162,6 @@ export default (): void => {
       cy.getAttrWith("placeholder", "dd/mm/yyyy")
         .eq(1)
         .type(certificateExpiration);
-    }
-    if (covidCertificateReleaseDate) {
-      cy.getAttrWith("placeholder", "dd/mm/yyyy")
-        .eq(2)
-        .type(covidCertificateReleaseDate);
-    }
-    if (covidCertificateSuspended) {
-      cy.getAttrWith("name", "covidCertificateSuspended").check();
     }
   });
 

@@ -415,8 +415,6 @@ describe("Cloud functions", () => {
       surname: saul.surname,
       email: saul.email,
       certificateExpiration: saul.certificateExpiration,
-      covidCertificateReleaseDate: saul.covidCertificateReleaseDate,
-      covidCertificateSuspended: saul.covidCertificateSuspended,
     };
     testWithEmulator(
       "should create a new customer with data passed in as well as bookings entry",

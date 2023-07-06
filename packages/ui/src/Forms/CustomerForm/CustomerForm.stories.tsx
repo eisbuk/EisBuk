@@ -19,8 +19,6 @@ const customer = {
   phone: "+44 78930 788900",
   birthday: "2012-12-12",
   certificateExpiration: "2021-19-03",
-  covidCertificateReleaseDate: "",
-  covidCertificateSuspended: true,
   subscriptionNumber: "123456",
   extendedDate: "2022-01-01",
 };

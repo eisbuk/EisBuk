@@ -8,8 +8,6 @@
       "email": "saul@better.call",
       "phone": "+393456777",
       "birthday": "2001-03-01",
-      "covidCertificateReleaseDate": "2021-01-01",
-      "covidCertificateSuspended": true,
       "categories": ["competitive"],
       "secretKey": "123445",
       "subscriptionNumber": ""
@@ -24,8 +22,6 @@
       "email": "walt@im_the_one_who.knocks",
       "phone": "123456777",
       "birthday": "2002-03-01",
-      "covidCertificateReleaseDate": "2021-01-01",
-      "covidCertificateSuspended": false,
       "secretKey": "000001",
       "subscriptionNumber": ""
     },
@@ -39,8 +35,6 @@
       "email": "gus@lospollos.me",
       "phone": "123456777",
       "birthday": "2001-03-02",
-      "covidCertificateReleaseDate": "2021-01-01",
-      "covidCertificateSuspended": false,
       "secretKey": "000002",
       "subscriptionNumber": ""
     },
@@ -54,8 +48,6 @@
       "email": "mike@lospollos.me",
       "phone": "123456777",
       "birthday": "2021-01-01",
-      "covidCertificateReleaseDate": "2021-01-01",
-      "covidCertificateSuspended": false,
       "secretKey": "000002",
       "subscriptionNumber": ""
     }

@@ -44,17 +44,12 @@ describe("athlete profile", () => {
     cy.getAttrWith("name", "certificateExpiration").clearAndType(
       saul.certificateExpiration || ""
     );
-    cy.getAttrWith("name", "covidCertificateReleaseDate").clearAndType(
-      saul.covidCertificateReleaseDate || ""
-    );
-    cy.getAttrWith("name", "covidCertificateSuspended").click();
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
   });
 
   it("allows customer form submission with minimal fields", () => {
     cy.getAttrWith("name", "certificateExpiration").clear();
-    cy.getAttrWith("name", "covidCertificateReleaseDate").clear();
 
     cy.getAttrWith("type", "submit").click();
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);

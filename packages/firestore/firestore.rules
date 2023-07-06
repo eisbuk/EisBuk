@@ -173,7 +173,6 @@ service cloud.firestore {
           // Check optional dates
           checkOptionalValidDate(request.resource.data, "birthday") &&
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
-          checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (allows updates even if "adults")
           request.resource.data.categories.hasOnly(getAllCategories()) &&
           // Check valid email
@@ -187,9 +186,7 @@ service cloud.firestore {
             !("phone" in request.resource.data) || 
             request.resource.data.phone == "" || 
             checkValidPhoneNumber(request.resource.data.phone)
-          ) &&
-          // Check release date suspended type
-          checkOptionalBoolean(request.resource.data, "covidCertificateSuspended")
+          )
         )
         allow create: if (
           isAdmin(organization) &&
@@ -199,7 +196,6 @@ service cloud.firestore {
           // Check optional dates
           checkOptionalValidDate(request.resource.data, "birthday") &&
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
-          checkOptionalValidDate(request.resource.data, "covidCertificateReleaseDate") &&
           // Check category (shouldn't allow creation with "adults" category)
           request.resource.data.categories.hasOnly(getCategories()) &&
           // Check valid email
@@ -213,9 +209,7 @@ service cloud.firestore {
             !("phone" in request.resource.data) || 
             request.resource.data.phone == "" || 
             checkValidPhoneNumber(request.resource.data.phone)
-          ) &&
-          // Check release date suspended type
-          checkOptionalBoolean(request.resource.data, "covidCertificateSuspended")
+          ) 
         )
       } 
       // #region customer-checks

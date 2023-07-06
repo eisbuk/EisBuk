@@ -17,23 +17,12 @@ export const CustomerAvatar: React.FC<CustomerAvatarProps> = ({
   customer,
   ...props
 }) => {
-  const {
-    photoURL,
-    certificateExpiration,
-    covidCertificateReleaseDate,
-    covidCertificateSuspended,
-  } = customer;
+  const { photoURL, certificateExpiration } = customer;
 
   const [badges, setBadges] = useState<Badge[]>([]);
 
   useEffect(() => {
     const badges = [];
-
-    const covidCertBadge = getCovidCertBadge(
-      covidCertificateSuspended,
-      covidCertificateReleaseDate
-    );
-    if (covidCertBadge) badges.push(covidCertBadge);
 
     const medCertBadge = getMedCertBadge(certificateExpiration);
     if (medCertBadge) badges.push(medCertBadge);
@@ -131,25 +120,5 @@ const getMedCertBadge = (certificateExpiration?: string): Badge | undefined => {
     ? { color: "bg-red-200 text-red-500 border border-red-300", Icon }
     : untilCertExpiration < 20
     ? { color: "bg-yellow-200 text-red-500 border border-red-500", Icon }
-    : undefined;
-};
-
-const getCovidCertBadge = (
-  covidCertificateSuspended = true,
-  covidCertificateReleaseDate?: string
-): Badge | undefined => {
-  // get covid certificate data
-  const luxonCovidCertDate = DateTime.fromISO(
-    covidCertificateReleaseDate || ""
-  );
-  // elapsed days from covid certificate release date, fallback is -1: customer dosan't have a covid certificate (yet)
-  const daysFromCovidCert = -luxonCovidCertDate.diffNow("days")?.days || -1;
-
-  const Icon = () => <span className="text-xs font-bold">C</span>;
-
-  return daysFromCovidCert > 365 // Covid certificate expires in one year
-    ? { color: "bg-red-400 text-white border border-green-500", Icon }
-    : covidCertificateSuspended
-    ? { color: "bg-blue-300 text-white border border-green-500", Icon }
     : undefined;
 };

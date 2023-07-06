@@ -112,8 +112,6 @@
     "DateOfBirth": "Data di nascita",
     "MedicalCertificate": "Scadenza Cert. Medico",
     "CardNumber": "Numero Tessera",
-    "CovidCertificateReleaseDate": "Data di rilascio della Certificazione verde COVID-19",
-    "CovidCertificateSuspended": "Certificazione verde sospesa",
     "ExtendedBookingDate": "Estendi scadenza prenotazioni",
     "MedicalDetails": "Dettagli Medici",
     "ManageMedicalDetails": "Gestisci i tuoi dettagli medici",

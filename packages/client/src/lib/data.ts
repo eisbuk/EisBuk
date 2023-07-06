@@ -36,8 +36,6 @@ export const defaultCustomerFormValues: Omit<CustomerFull, "secretKey" | "id"> =
     birthday: "",
     categories: [],
     certificateExpiration: "",
-    covidCertificateReleaseDate: "",
-    covidCertificateSuspended: false,
     subscriptionNumber: "",
   };
 

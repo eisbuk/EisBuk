@@ -648,27 +648,6 @@ describe("Firestore rules", () => {
       }
     );
     testWithEmulator(
-      "should not allow create/update if 'covidCertificateReleaseDate' provided, but not a valid date",
-      async () => {
-        const { db, organization } = await getTestEnv({});
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { covidCertificateReleaseDate, ...noCovidSaul } = saul;
-        await assertFails(
-          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
-            ...saul,
-            covidCertificateReleaseDate: "2022-22-24",
-          })
-        );
-        // should allow if (optional) `covidCertificateReleaseDate` is not provided
-        await assertSucceeds(
-          setDoc(
-            doc(db, getCustomerDocPath(organization, saul.id)),
-            noCovidSaul
-          )
-        );
-      }
-    );
-    testWithEmulator(
       "should not allow create/update if 'certificateExpiration' provided, but not a valid date",
       async () => {
         const { db, organization } = await getTestEnv({});
@@ -831,26 +810,6 @@ describe("Firestore rules", () => {
             ...saul,
             categories: [DeprecatedCategory.Adults],
           })
-        );
-      }
-    );
-    testWithEmulator(
-      "should not allow create/update if 'covidCertificateSuspended' provided, but not boolean",
-      async () => {
-        const { db, organization } = await getTestEnv({});
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { covidCertificateSuspended, ...noSuspendedSaul } = saul;
-        await assertFails(
-          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
-            ...saul,
-            covidCertificateSuspended: "not-a-boolean",
-          })
-        );
-        await assertSucceeds(
-          setDoc(
-            doc(db, getCustomerDocPath(organization, saul.id)),
-            noSuspendedSaul
-          )
         );
       }
     );

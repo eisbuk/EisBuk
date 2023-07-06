@@ -71,9 +71,6 @@ describe("Athlete self registration", () => {
       .should("have.value", newEmail)
       .should("be.disabled");
 
-    // We're not filling in the 'certificateExpiration' not 'covidCertificateReleaseDate' as those fields
-    // should be optional
-
     // The wrong registration code should show as validation error
     cy.getAttrWith("name", "registrationCode").type("wrong-code");
     cy.clickButton(t(ActionButton.Save));

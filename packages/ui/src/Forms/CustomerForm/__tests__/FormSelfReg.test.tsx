@@ -28,8 +28,6 @@ describe("CustomerForm", () => {
 
         // Medical fields
         i18n.t(CustomerLabel.CertificateExpiration),
-        i18n.t(CustomerLabel.CovidCertificateReleaseDate),
-        i18n.t(CustomerLabel.CovidCertificateSuspended),
       ] as string[];
 
       // All (standard) fields should be enabled
