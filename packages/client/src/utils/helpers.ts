@@ -119,13 +119,7 @@ export const calculateIntervalDuration = (interval: string | null) => {
   const diffMillis =
     getMillisFromMidnight(endTime) - getMillisFromMidnight(startTime);
 
-  return diffMillis <= hourInMillis * 0.5
-    ? 0.5
-    : diffMillis <= hourInMillis
-    ? 1
-    : diffMillis <= hourInMillis * 1.5
-    ? 1.5
-    : 2;
+  return Math.ceil((diffMillis / hourInMillis) * 2) * 0.5;
 };
 /**
  * interpolate text including <p/>

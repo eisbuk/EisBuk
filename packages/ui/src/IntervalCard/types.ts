@@ -17,6 +17,7 @@ export enum IntervalCardVariant {
 }
 
 export enum IntervalDuration {
+  "0.5h",
   "1h",
   "1.5h",
   "2h",
