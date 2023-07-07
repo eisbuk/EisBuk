@@ -83,6 +83,16 @@ describe("auth-related redirects", () => {
       // Check for admin preferences page
       cy.visit(PrivateRoutes.AdminPreferences);
       cy.contains(`${name} ${surname}`);
+
+      // If landing on 'customer_area' page, should automatically be redirected to their own customer area page (with their secret key)
+      cy.visit(Routes.CustomerArea);
+      cy.contains(`${name} ${surname}`);
+
+      // The following is an edge case, is a bit tricky to implement and we should confirm that is, in fact, the desired behaviour
+      //
+      // // If landing on customer area page, with wrong secret key, should be redirected to their own page page
+      // cy.visit([Routes.CustomerArea, "wrong_secret_key"].join("/"));
+      // cy.contains(`${name} ${surname}`);
     });
   });
 
@@ -115,6 +125,14 @@ describe("auth-related redirects", () => {
       // Check for admin preferences page
       cy.visit(PrivateRoutes.AdminPreferences);
       cy.url().should("include", "/self_register");
+
+      // Landing on '/customer_area' page, without the secret key, should redirect to self_register
+      cy.visit(Routes.CustomerArea);
+      cy.url().should("include", "/self_register");
+
+      // Even if langing on login page, should be redirected to self_register
+      cy.visit(Routes.Login);
+      cy.url().should("include", "/self_register");
     });
   });
 
@@ -127,6 +145,11 @@ describe("auth-related redirects", () => {
       // Check that we're redirected to attendance page by checking for attendance page sub-nav
       cy.contains(i18n.t(AttendanceNavigationLabel.Day) as string);
       cy.contains(i18n.t(AttendanceNavigationLabel.Month) as string);
+
+      // Edge case: if landing on '/customer_area' page, without the secret key, should redirect to '/athletes' page.
+      // From there, the admin can navigate to any customer's '/customer_area' page (with appropriate secret key)
+      cy.visit(Routes.CustomerArea);
+      cy.url().should("include", PrivateRoutes.Athletes);
     });
   });
 });
