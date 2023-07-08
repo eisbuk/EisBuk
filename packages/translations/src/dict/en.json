@@ -77,11 +77,6 @@
     "CourseMinors": "course-minors",
     "Competitive": "competitive"
   },
-  "DeprecatedCategory": {
-    "Adults": "adults",
-    "PreCompetitive": "pre-competitive",
-    "Course": "course"
-  },
 
   "FormTitle": {
     "NewCustomer": "New Athlete",

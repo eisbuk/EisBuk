@@ -10,12 +10,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
-import {
-  Category,
-  DeprecatedCategory,
-  fromISO,
-  SlotType,
-} from "@eisbuk/shared";
+import { Category, fromISO, SlotType } from "@eisbuk/shared";
 import i18n, {
   SlotFormTitle,
   SlotTypeLabel,
@@ -75,15 +70,6 @@ describe("SlotForm", () => {
       });
       // intervals field
       screen.getByTestId(__timeIntervalFieldId__);
-    });
-
-    test("should render a deprecated categories for backwards compatibility, but disable them for selection", () => {
-      Object.values(DeprecatedCategory).forEach((label) => {
-        const checkbox = screen.getByLabelText(
-          i18n.t(CategoryLabel[label]) as string
-        );
-        expect(checkbox).toHaveProperty("disabled", true);
-      });
     });
   });
 

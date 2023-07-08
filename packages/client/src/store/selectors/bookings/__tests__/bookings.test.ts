@@ -4,7 +4,6 @@ import { DateTime } from "luxon";
 import {
   BookingSubCollection,
   Category,
-  DeprecatedCategory,
   sanitizeCustomer,
   OrgSubCollection,
   SlotsByDay,
@@ -44,7 +43,7 @@ const setupBookingsTest = ({
   date,
   slotsByDay,
 }: {
-  category: Category | DeprecatedCategory;
+  category: Category;
   date: DateTime;
   slotsByDay: NonNullable<LocalStore["firestore"]["data"]["slotsByDay"]>;
 }): ReturnType<typeof getNewStore> => {
@@ -79,80 +78,6 @@ describe("Selectors ->", () => {
       });
       const res = getSlotsForCustomer(store.getState());
       expect(res).toEqual(expectedMonthCustomer);
-    });
-
-    const courseAdultsSlot = {
-      ...baseSlot,
-      id: "course",
-      categories: [Category.CourseAdults],
-    };
-    const preCompetitiveAdultsSlot = {
-      ...baseSlot,
-      id: "pre-competitive",
-      categories: [Category.PreCompetitiveAdults],
-    };
-    const adultsSlot = {
-      ...baseSlot,
-      id: "adults",
-      categories: [DeprecatedCategory.Adults as unknown as Category],
-    };
-    const competitiveSlot = {
-      ...baseSlot,
-      id: "competitive",
-      categories: [Category.Competitive],
-    };
-
-    test('should display both "pre-competitive-adults" and "course-adults" slots to unsorted "adults" customers', () => {
-      const date = DateTime.fromISO(baseSlot.date);
-      const currentMonthString = baseSlot.date.substring(0, 7);
-      const store = setupBookingsTest({
-        category: DeprecatedCategory.Adults,
-        date,
-        slotsByDay: {
-          [currentMonthString]: {
-            ["2021-03-01"]: {
-              [courseAdultsSlot.id]: courseAdultsSlot,
-              [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
-              [competitiveSlot.id]: competitiveSlot,
-            },
-          },
-        },
-      });
-      const res = getSlotsForCustomer(store.getState());
-      // Should only filter the "competitive" slot
-      expect(res).toEqual({
-        ["2021-03-01"]: {
-          [courseAdultsSlot.id]: courseAdultsSlot,
-          [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
-        },
-      });
-    });
-
-    test('should display slots with category "adults" to both "pre-competitive-adults" and "course-adults" customers', () => {
-      const date = DateTime.fromISO(baseSlot.date);
-      const currentMonthString = baseSlot.date.substring(0, 7);
-      const store = setupBookingsTest({
-        category: Category.CourseAdults,
-        date,
-        slotsByDay: {
-          [currentMonthString]: {
-            /** @TODO_TESTS hardcoded test date, make this a bit more concise */
-            ["2021-03-01"]: {
-              [courseAdultsSlot.id]: courseAdultsSlot,
-              [preCompetitiveAdultsSlot.id]: preCompetitiveAdultsSlot,
-              [adultsSlot.id]: adultsSlot,
-              [competitiveSlot.id]: competitiveSlot,
-            },
-          },
-        },
-      });
-      const res = getSlotsForCustomer(store.getState());
-      expect(res).toEqual({
-        ["2021-03-01"]: {
-          [courseAdultsSlot.id]: courseAdultsSlot,
-          [adultsSlot.id]: adultsSlot,
-        },
-      });
     });
   });
 

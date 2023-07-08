@@ -8,7 +8,7 @@ import i18n, {
   CustomerFormTitle,
   CustomerLabel,
 } from "@eisbuk/translations";
-import { Category, DeprecatedCategory } from "@eisbuk/shared";
+import { Category } from "@eisbuk/shared";
 
 import { CustomerForm } from "../index";
 
@@ -93,13 +93,6 @@ describe("CustomerForm", () => {
         expect(screen.getByLabelText(category)).toHaveProperty(
           "disabled",
           false
-        );
-      });
-      // Deprecated categories, however, while shown, should be disabled
-      Object.values(DeprecatedCategory).forEach((category) => {
-        expect(screen.getByLabelText(category)).toHaveProperty(
-          "disabled",
-          true
         );
       });
 

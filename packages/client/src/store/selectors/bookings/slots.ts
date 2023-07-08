@@ -1,8 +1,6 @@
 import {
   Category,
   SlotsById,
-  DeprecatedCategory,
-  CategoryUnion,
   SlotInterface,
   CustomerBookingEntry,
   SlotsByDay,
@@ -17,10 +15,6 @@ import { getBookingsCustomer } from "./customer";
 
 import { isEmpty } from "@/utils/helpers";
 import { comparePeriods } from "@/utils/sort";
-
-interface CategoryFilter {
-  (categories: CategoryUnion[]): boolean;
-}
 
 /**
  * Get subscribed slots from state
@@ -42,35 +36,6 @@ export const getAttendedSlots = (
   state.firestore.data?.attendedSlots || {};
 
 /**
- * An util higher order function returning the condition for category filtering
- * based on received category.
- * @param category category (of a customer we're filtering for)
- * @returns a filtering function used check if slot's categories contain the category or should be filtered out
- */
-const createCategoryFilter = (
-  customerCategory: CategoryUnion[]
-): CategoryFilter =>
-  // For unspecified "adults" we're showing all the "adult-" prefixed category slots
-  customerCategory.includes(DeprecatedCategory.Adults)
-    ? (categories) =>
-        categories.includes(DeprecatedCategory.Adults) ||
-        categories.includes(Category.CourseAdults) ||
-        categories.includes(Category.PreCompetitiveAdults)
-    : // For customers belonging to "adult-" prefixed category, we're showing the specific category slots
-    // as well as general "adult" slots
-    customerCategory.some((cat) =>
-        [Category.PreCompetitiveAdults, Category.CourseAdults].includes(
-          cat as Category
-        )
-      )
-    ? (categories) =>
-        categories.includes(DeprecatedCategory.Adults) ||
-        categories.some((slotCat) => customerCategory.includes(slotCat))
-    : // For all non adult categories, we're only displaying the slot if it contains that exact category
-      (categories) =>
-        categories.some((slotCat) => customerCategory.includes(slotCat));
-
-/**
  * A helper function we're using to filter out slots not within provided category.
  * @param slotsRecord record of slots keyed by slotId
  * @param category customer's category we're checking against
@@ -78,17 +43,15 @@ const createCategoryFilter = (
  */
 const filterSlotsByCategory = (
   slotsRecord: SlotsById,
-  category: CategoryUnion[]
+  category: Category[]
 ): [SlotsById, boolean] => {
   let isEmptyWhenFiltered = true;
 
-  const categoryFilter = createCategoryFilter(category);
-
   const filteredRecord = Object.keys(slotsRecord).reduce((acc, slotId) => {
     const slot = slotsRecord[slotId];
-    const categories = slot.categories as CategoryUnion[];
+    const categories = slot.categories;
 
-    if (categoryFilter(categories)) {
+    if (categories.some((slotCat) => category.includes(slotCat))) {
       isEmptyWhenFiltered = false;
       return { ...acc, [slotId]: slot };
     }

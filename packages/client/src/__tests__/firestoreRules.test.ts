@@ -14,7 +14,6 @@ import {
   SlotType,
   Customer,
   sanitizeCustomer,
-  DeprecatedCategory,
 } from "@eisbuk/shared";
 
 import { defaultCustomerFormValues } from "@/lib/data";
@@ -96,8 +95,6 @@ describe("Firestore rules", () => {
   });
 
   describe("Slots rules", () => {
-    // const getSlotDocPath(organization, baseSlot.id) = [getSlotsPath(organization), baseSlot.id].join("/");
-
     testWithEmulator("should not allow access to unauth user", async () => {
       const { db, organization } = await getTestEnv({
         auth: false,
@@ -150,6 +147,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if slot type not valid",
       async () => {
@@ -162,6 +160,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if slot category not valid",
       async () => {
@@ -177,43 +176,7 @@ describe("Firestore rules", () => {
         );
       }
     );
-    testWithEmulator(
-      'should allow updating a slot with "adults" category, but disallow new creating new slots with said category',
-      () => {
-        async () => {
-          const slotWithAdults = {
-            ...baseSlot,
-            categories: [DeprecatedCategory.Adults],
-            id: "slot-with-adults",
-          };
 
-          const { db, organization } = await getTestEnv({
-            setup: (db, { organization }) =>
-              Promise.all([
-                setDoc(
-                  doc(db, getSlotDocPath(organization, "slot-with-adults")),
-                  slotWithAdults
-                ),
-              ]),
-          });
-
-          // The deprecated category already exists in the slot, we should allow it to stay there
-          await assertSucceeds(
-            setDoc(doc(db, getSlotDocPath(organization, "slot-with-adults")), {
-              ...baseSlot,
-              categories: [Category.Competitive, DeprecatedCategory.Adults],
-            })
-          );
-          // We're not allowing the creation of new slots with deprecated values
-          await assertFails(
-            setDoc(doc(db, getSlotDocPath(organization, "new-slot")), {
-              ...baseSlot,
-              categories: [Category.Competitive, DeprecatedCategory.Adults],
-            })
-          );
-        };
-      }
-    );
     /**
      * @TODO as firestore.rules don't allow loops or iterations
      * we need to apply this when we agree on maximum number of intervals per slot
@@ -341,6 +304,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow update access to non-admins",
       async () => {
@@ -367,6 +331,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow delete access to non-admins (as it's handled through cloud functions)",
       async () => {
@@ -479,6 +444,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update of booking subscribing to non-existing interval",
       async () => {
@@ -504,6 +470,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update of invalid booking entry",
       async () => {
@@ -532,6 +499,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow customer to subscribe to slot not supporting their category",
       async () => {
@@ -625,6 +593,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should allow create/update with empty strings as values of optional strings (as is in CustomerForm in production)",
       async () => {
@@ -647,6 +616,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if 'certificateExpiration' provided, but not a valid date",
       async () => {
@@ -668,6 +638,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if birthday provided, but not a valid date",
       async () => {
@@ -689,6 +660,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if phone provided but not valid",
       async () => {
@@ -752,6 +724,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if email provided but not valid",
       async () => {
@@ -773,6 +746,7 @@ describe("Firestore rules", () => {
         );
       }
     );
+
     testWithEmulator(
       "should not allow create/update if invalid category",
       async () => {
@@ -786,33 +760,7 @@ describe("Firestore rules", () => {
         );
       }
     );
-    testWithEmulator(
-      'should allow updating customer in "adults" category, but disallow creation of new customers in (non-spacific) "adults" category',
-      async () => {
-        const { db, organization } = await getTestEnv({
-          setup: (db, { organization }) =>
-            setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
-              ...saul,
-              categories: [DeprecatedCategory.Adults],
-            }),
-        });
-        // Should allow updating, even though category = "adults"
-        await assertSucceeds(
-          setDoc(doc(db, getCustomerDocPath(organization, saul.id)), {
-            ...saul,
-            categories: [DeprecatedCategory.Adults],
-            name: "Jimmy",
-          })
-        );
-        // Should disallow creation of new customers with category "adults"
-        await assertFails(
-          setDoc(doc(db, getCustomerDocPath(organization, "new-customer")), {
-            ...saul,
-            categories: [DeprecatedCategory.Adults],
-          })
-        );
-      }
-    );
+
     testWithEmulator("should allow `extendedDate` update", async () => {
       const { db, organization } = await getTestEnv({
         setup: (db, { organization }) =>

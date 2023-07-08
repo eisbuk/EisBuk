@@ -10,14 +10,14 @@ import i18n, {
   CategoryLabel,
 } from "@eisbuk/translations";
 import { Identification } from "@eisbuk/svg";
-import { Category, DeprecatedCategory } from "@eisbuk/shared";
+import { Category } from "@eisbuk/shared";
 
 import FormSection from "../FormSection";
 import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";
 import Checkbox from "../../Checkbox";
 
 export interface AdminOnlyFields {
-  categories: Array<Category | DeprecatedCategory>;
+  categories: Category[];
   subscriptionNumber: string;
 }
 
@@ -35,17 +35,11 @@ const SectionAdminOnly: React.FC<SectionProps> = ({
 
   const { errors } = useFormikContext<AdminOnlyFields>();
 
-  type CategoryString = DeprecatedCategory | Category;
-  const deprecatedCategories: CategoryString[] =
-    Object.values(DeprecatedCategory);
-  const availableCategories = (
-    Object.values(Category) as CategoryString[]
-  ).concat(deprecatedCategories);
+  const availableCategories = Object.values(Category);
 
   const categoryOptions = availableCategories.map((category) => ({
     value: category,
     label: t(CategoryLabel[category]),
-    disabled: deprecatedCategories.includes(category),
   }));
 
   return (
@@ -70,7 +64,7 @@ const SectionAdminOnly: React.FC<SectionProps> = ({
             className="col-span-2"
             key={category.label}
             component={Checkbox}
-            disabled={contextProps.disabled || category.disabled}
+            disabled={contextProps.disabled}
           />
         ))}
       </fieldset>
