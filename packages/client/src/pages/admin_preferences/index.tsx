@@ -9,20 +9,17 @@ import i18n, {
   ValidationMessage,
   useTranslation,
 } from "@eisbuk/translations";
-import { Layout, Button, ButtonColor, ButtonSize, TabItem } from "@eisbuk/ui";
+import { Button, ButtonColor, ButtonSize, TabItem } from "@eisbuk/ui";
 import { Cog, Mail } from "@eisbuk/svg";
 
+import Layout from "@/controllers/Layout";
 import AdminsField from "./AdminsField";
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import { NotificationsContainer } from "@/features/notifications/components";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
 import { getOrganizationSettings } from "@/store/selectors/app";
 import { getLocalAuth } from "@/store/selectors/auth";
 
 import { isEmpty } from "@/utils/helpers";
-
-import { adminLinks } from "@/data/navigation";
 
 import EmailTemplateSettings from "./views/EmailTemplateSettings";
 import GeneralSettings from "./views/GeneralSettings";
@@ -55,7 +52,6 @@ const OrganizationSettings: React.FC = () => {
 
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
-  const additionalAdminContent = <BirthdayMenu />;
 
   const { t } = useTranslation();
 
@@ -99,13 +95,7 @@ const OrganizationSettings: React.FC = () => {
   );
 
   return (
-    <Layout
-      isAdmin
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-      additionalButtons={additionalButtons}
-    >
+    <Layout additionalButtons={additionalButtons}>
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
         <Formik
           {...{ initialValues }}

@@ -8,7 +8,7 @@ import {
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { CustomerForm, Layout } from "@eisbuk/ui";
+import { CustomerForm } from "@eisbuk/ui";
 
 import { functions } from "@/setup";
 
@@ -16,8 +16,8 @@ import { Routes } from "@eisbuk/shared/ui";
 
 import { getOrganization } from "@/lib/getters";
 
+import Layout from "@/controllers/Layout";
 import Loading from "@/components/auth/Loading";
-import { NotificationsContainer } from "@/features/notifications/components";
 
 import {
   getAuthEmail,
@@ -94,7 +94,7 @@ const SelfRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout Notifications={NotificationsContainer}>
+    <Layout>
       <div className="content-container w-full mx-auto">
         <div className="py-24 px-11">
           <div className="mb-28">

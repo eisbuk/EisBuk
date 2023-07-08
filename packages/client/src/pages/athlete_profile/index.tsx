@@ -2,7 +2,7 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useHistory, Redirect } from "react-router-dom";
 
-import { CustomerForm, Layout, FormButton, FormButtonColor } from "@eisbuk/ui";
+import { CustomerForm, FormButton, FormButtonColor } from "@eisbuk/ui";
 import { Customer, CustomerLoose, OrgSubCollection } from "@eisbuk/shared";
 import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -11,8 +11,7 @@ import { ActionButton, useTranslation } from "@eisbuk/translations";
 
 import { SendBookingLinkMethod } from "@/enums/other";
 
-import { NotificationsContainer } from "@/features/notifications/components";
-import BirthdayMenu from "@/controllers/BirthdayMenu";
+import Layout from "@/controllers/Layout";
 
 import { getCustomerById, getCustomersList } from "@/store/selectors/customers";
 
@@ -23,8 +22,6 @@ import { createModal } from "@/features/modal/useModal";
 import { updateCustomer } from "@/store/actions/customerOperations";
 
 import { getNewSubscriptionNumber } from "../customers/utils";
-
-import { adminLinks } from "@/data/navigation";
 
 // #region MainComponent
 const AthleteProfilePage: React.FC = () => {
@@ -37,9 +34,7 @@ const AthleteProfilePage: React.FC = () => {
   const { openWithProps: openDeleteCustomerDialog } = useDeleteCustomer();
   const { openWithProps: openExtendDateDialog } = useExtendDateModal();
 
-  // Layout content
   const customers = useSelector(getCustomersList());
-  const additionalAdminContent = <BirthdayMenu />;
 
   // Get customer (if exists)
   const { athlete } = useParams<{ athlete?: string }>();
@@ -60,12 +55,7 @@ const AthleteProfilePage: React.FC = () => {
   };
 
   return (
-    <Layout
-      isAdmin
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-    >
+    <Layout>
       <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
         <CustomerForm.Admin
           onSave={handleSave}

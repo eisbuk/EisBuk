@@ -5,26 +5,16 @@ import {
   signInWithEmailAndPassword,
 } from "@firebase/auth";
 
-import {
-  Button,
-  ButtonColor,
-  ButtonProps,
-  ButtonSize,
-  Layout,
-} from "@eisbuk/ui";
+import { Button, ButtonColor, ButtonProps, ButtonSize } from "@eisbuk/ui";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { functions } from "@/setup";
 
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-
-import { NotificationsContainer } from "@/features/notifications/components";
+import Layout from "@/controllers/Layout";
 
 import useTitle from "@/hooks/useTitle";
 
 import { createFunctionCaller } from "@/utils/firebase";
-
-import { adminLinks } from "@/data/navigation";
 
 const auth = getAuth();
 
@@ -58,15 +48,8 @@ const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
-  const additionalAdminContent = <BirthdayMenu />;
-
   return (
-    <Layout
-      adminLinks={adminLinks}
-      isAdmin
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-    >
+    <Layout>
       <div className="content-container py-8">
         <div className="p-2">
           <DebugPageButton

@@ -2,14 +2,13 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-import { AttendanceSheet, Button, CalendarNav, Layout } from "@eisbuk/ui";
+import { AttendanceSheet, Button, CalendarNav } from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 import { Printer } from "@eisbuk/svg";
 
 import { getOrganization } from "@/lib/getters";
 
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import { NotificationsContainer } from "@/features/notifications/components";
+import Layout from "@/controllers/Layout";
 
 import useTitle from "@/hooks/useTitle";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -19,7 +18,6 @@ import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
 
-import { adminLinks } from "@/data/navigation";
 import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
 const DashboardPage: React.FC = () => {
@@ -36,8 +34,6 @@ const DashboardPage: React.FC = () => {
 
   const organizationName = useSelector(getOrgDisplayName);
   const attendanceSlots = useSelector(getSlotsWithAttendance);
-
-  const additionalAdminContent = <BirthdayMenu />;
 
   /**
    * This button, unlike the one in attendance page doesn't link
@@ -60,12 +56,7 @@ const DashboardPage: React.FC = () => {
   );
 
   return (
-    <Layout
-      isAdmin
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-    >
+    <Layout>
       <CalendarNav
         className="print:hidden"
         onChange={(date) => dispatch(changeCalendarDate(date))}
