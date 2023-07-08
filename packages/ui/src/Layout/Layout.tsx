@@ -68,10 +68,19 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      <main className="overflow-y-auto">{children}</main>
+      {children}
     </div>
   );
 };
+
+export const LayoutContent: React.FC<{ wide?: boolean }> = ({
+  children,
+  wide = false,
+}) => (
+  <main className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
+    {children}
+  </main>
+);
 
 /** Get styles for top / botton row of the header */
 const getHeaderRowClasses = (

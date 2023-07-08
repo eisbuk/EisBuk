@@ -2,7 +2,12 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 import { luxon2ISODate, OrgSubCollection } from "@eisbuk/shared";
-import { AttendanceSheet, Button, CalendarNav } from "@eisbuk/ui";
+import {
+  AttendanceSheet,
+  Button,
+  CalendarNav,
+  LayoutContent,
+} from "@eisbuk/ui";
 import { useTranslation, NavigationLabel } from "@eisbuk/translations";
 import { Printer } from "@eisbuk/svg";
 
@@ -64,13 +69,13 @@ const DashboardPage: React.FC = () => {
         jump="day"
         additionalContent={printButton}
       />
-      <div className="content-container">
+      <LayoutContent>
         <AttendanceSheet
           date={date}
           data={attendanceSlots}
           organizationName={organizationName}
         />
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

@@ -2,7 +2,12 @@ import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams, Link, useHistory, Redirect } from "react-router-dom";
 
-import { CustomerForm, FormButton, FormButtonColor } from "@eisbuk/ui";
+import {
+  CustomerForm,
+  FormButton,
+  FormButtonColor,
+  LayoutContent,
+} from "@eisbuk/ui";
 import { Customer, CustomerLoose, OrgSubCollection } from "@eisbuk/shared";
 import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -56,25 +61,29 @@ const AthleteProfilePage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-        <CustomerForm.Admin
-          onSave={handleSave}
-          onClose={() => history.goBack()}
-          onDelete={() => {
-            if (customer) {
-              openDeleteCustomerDialog(customer);
+      <LayoutContent>
+        <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+          <CustomerForm.Admin
+            onSave={handleSave}
+            onClose={() => history.goBack()}
+            onDelete={() => {
+              if (customer) {
+                openDeleteCustomerDialog(customer);
+              }
+            }}
+            onBookingDateExtended={(extendedDate) => {
+              if (customer) {
+                openExtendDateDialog({ ...customer, extendedDate });
+              }
+            }}
+            customer={customer}
+            additionalActions={
+              customer && <ActionButtons customer={customer} />
             }
-          }}
-          onBookingDateExtended={(extendedDate) => {
-            if (customer) {
-              openExtendDateDialog({ ...customer, extendedDate });
-            }
-          }}
-          customer={customer}
-          additionalActions={customer && <ActionButtons customer={customer} />}
-          subscriptionNumber={subscriptionNumber}
-        />
-      </div>
+            subscriptionNumber={subscriptionNumber}
+          />
+        </div>
+      </LayoutContent>
     </Layout>
   );
 };

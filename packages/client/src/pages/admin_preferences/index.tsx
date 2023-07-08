@@ -9,7 +9,13 @@ import i18n, {
   ValidationMessage,
   useTranslation,
 } from "@eisbuk/translations";
-import { Button, ButtonColor, ButtonSize, TabItem } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  ButtonSize,
+  TabItem,
+  LayoutContent,
+} from "@eisbuk/ui";
 import { Cog, Mail } from "@eisbuk/svg";
 
 import Layout from "@/controllers/Layout";
@@ -96,49 +102,51 @@ const OrganizationSettings: React.FC = () => {
 
   return (
     <Layout additionalButtons={additionalButtons}>
-      <div className="content-container pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-        <Formik
-          {...{ initialValues }}
-          onSubmit={(values, actions) => handleSubmit(values, actions)}
-          validationSchema={OrganizationValidation}
-        >
-          {({ isSubmitting, isValidating, handleReset }) => (
-            <div className="md:px-11">
-              {view === Views.GeneralSettings && (
-                <AdminsField currentUser={currentUser} />
-              )}
-
-              <Form>
-                {view === Views.EmailTemplates ? (
-                  <EmailTemplateSettings />
-                ) : (
-                  <GeneralSettings />
+      <LayoutContent>
+        <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+          <Formik
+            {...{ initialValues }}
+            onSubmit={(values, actions) => handleSubmit(values, actions)}
+            validationSchema={OrganizationValidation}
+          >
+            {({ isSubmitting, isValidating, handleReset }) => (
+              <div className="md:px-11">
+                {view === Views.GeneralSettings && (
+                  <AdminsField currentUser={currentUser} />
                 )}
 
-                <div className="py-4 flex justify-end items-center gap-2">
-                  <Button
-                    onClick={handleReset}
-                    disabled={isSubmitting || isValidating}
-                    className="!text-cyan-500"
-                    size={ButtonSize.MD}
-                  >
-                    {t(ActionButton.Reset)}
-                  </Button>
-                  <Button
-                    disabled={isSubmitting || isValidating}
-                    color={ButtonColor.Primary}
-                    size={ButtonSize.MD}
-                    aria-label={"save"}
-                    type="submit"
-                  >
-                    {t(ActionButton.Save)}
-                  </Button>
-                </div>
-              </Form>
-            </div>
-          )}
-        </Formik>
-      </div>
+                <Form>
+                  {view === Views.EmailTemplates ? (
+                    <EmailTemplateSettings />
+                  ) : (
+                    <GeneralSettings />
+                  )}
+
+                  <div className="py-4 flex justify-end items-center gap-2">
+                    <Button
+                      onClick={handleReset}
+                      disabled={isSubmitting || isValidating}
+                      className="!text-cyan-500"
+                      size={ButtonSize.MD}
+                    >
+                      {t(ActionButton.Reset)}
+                    </Button>
+                    <Button
+                      disabled={isSubmitting || isValidating}
+                      color={ButtonColor.Primary}
+                      size={ButtonSize.MD}
+                      aria-label={"save"}
+                      type="submit"
+                    >
+                      {t(ActionButton.Save)}
+                    </Button>
+                  </div>
+                </Form>
+              </div>
+            )}
+          </Formik>
+        </div>
+      </LayoutContent>
     </Layout>
   );
 };

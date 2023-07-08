@@ -8,7 +8,7 @@ import {
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { CustomerForm } from "@eisbuk/ui";
+import { CustomerForm, LayoutContent } from "@eisbuk/ui";
 
 import { functions } from "@/setup";
 
@@ -95,24 +95,26 @@ const SelfRegisterPage: React.FC = () => {
 
   return (
     <Layout>
-      <div className="content-container w-full mx-auto">
-        <div className="py-24 px-11">
-          <div className="mb-28">
-            <h1 className="text-3xl text-gray-700 mb-2.5">
-              {t(CustomerLabel.Welcome, {
-                displayName: orgDisplayName || organization,
-              })}
-            </h1>
-            <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>
+      <LayoutContent>
+        <div className="w-full mx-auto">
+          <div className="py-24 px-11">
+            <div className="mb-28">
+              <h1 className="text-3xl text-gray-700 mb-2.5">
+                {t(CustomerLabel.Welcome, {
+                  displayName: orgDisplayName || organization,
+                })}
+              </h1>
+              <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>
+            </div>
+            <CustomerForm.SelfReg
+              onCancel={logOut}
+              onSave={submitForm}
+              customer={{ email, phone }}
+              defaultDialCode={defaultCountryCode}
+            />
           </div>
-          <CustomerForm.SelfReg
-            onCancel={logOut}
-            onSave={submitForm}
-            customer={{ email, phone }}
-            defaultDialCode={defaultCountryCode}
-          />
         </div>
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

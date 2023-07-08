@@ -12,6 +12,7 @@ import {
   ButtonColor,
   CalendarNav,
   SlotsDayContainer,
+  LayoutContent,
 } from "@eisbuk/ui";
 
 import { SlotsAria, useTranslation } from "@eisbuk/translations";
@@ -131,7 +132,7 @@ const SlotsPage: React.FC = () => {
         jump="week"
         additionalContent={extraButtons}
       />
-      <div className="content-container">
+      <LayoutContent>
         {daysToShow.map((dateISO) => {
           const date = DateTime.fromISO(dateISO);
 
@@ -194,7 +195,7 @@ const SlotsPage: React.FC = () => {
             </SlotsDayContainer>
           );
         })}
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

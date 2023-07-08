@@ -20,9 +20,11 @@ const AttendanceByDayView: React.FC = () => {
   const dates = Array.from(generateDatesInRange(startDate, endDate));
 
   return !data.length ? (
-    <EmptySpace>
-      {t(Alerts.NoAttendance, { currentDate: calendarDay })}
-    </EmptySpace>
+    <div className="content-container">
+      <EmptySpace>
+        {t(Alerts.NoAttendance, { currentDate: calendarDay })}
+      </EmptySpace>
+    </div>
   ) : (
     <AttendanceVarianceTable dates={dates} data={data} />
   );

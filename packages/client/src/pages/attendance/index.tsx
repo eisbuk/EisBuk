@@ -4,7 +4,13 @@ import { Link } from "react-router-dom";
 import { DateTime } from "luxon";
 import { useDispatch, useSelector } from "react-redux";
 
-import { CalendarNav, TabItem, CalendarNavProps, Button } from "@eisbuk/ui";
+import {
+  CalendarNav,
+  TabItem,
+  CalendarNavProps,
+  Button,
+  LayoutContent,
+} from "@eisbuk/ui";
 import { Calendar, Printer } from "@eisbuk/svg";
 import { OrgSubCollection } from "@eisbuk/shared";
 import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
@@ -28,8 +34,18 @@ enum Views {
 
 // Get appropriate view to render
 const viewsLookup = {
-  [Views.ByDay]: ByDayView,
-  [Views.ByMonth]: ByMonthView,
+  [Views.ByDay]: () => (
+    <LayoutContent>
+      <ByDayView />
+    </LayoutContent>
+  ),
+  [Views.ByMonth]: () => (
+    <LayoutContent wide>
+      <MonthWrapper>
+        <ByMonthView />
+      </MonthWrapper>
+    </LayoutContent>
+  ),
 };
 
 // TODO: This is duplicated in `customer_area` local hooks file => lift out
@@ -98,13 +114,7 @@ const AttendancePage: React.FC = () => {
         jump={calendarJump}
         additionalContent={calendarAdditionalContent}
       />
-      {view === Views.ByDay ? (
-        <AttendanceView />
-      ) : (
-        <MonthWrapper>
-          <AttendanceView />
-        </MonthWrapper>
-      )}
+      <AttendanceView />
     </Layout>
   );
 };

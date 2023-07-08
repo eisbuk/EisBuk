@@ -4,7 +4,7 @@ import { Link, useHistory } from "react-router-dom";
 
 import { OrgSubCollection, Customer } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
-import { CustomerGrid, SearchBar } from "@eisbuk/ui";
+import { CustomerGrid, SearchBar, LayoutContent } from "@eisbuk/ui";
 import {
   useTranslation,
   NavigationLabel,
@@ -46,32 +46,34 @@ const AthletesPage: React.FC = () => {
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
     <Layout>
-      <div className="content-container !pt-16">
-        {!isEmpty(customers) && (
-          <>
-            <SearchBar
-              value={filterString}
-              onChange={(e) => setFilterString(e.target.value)}
-            />
+      <LayoutContent>
+        <div className="!pt-16">
+          {!isEmpty(customers) && (
+            <>
+              <SearchBar
+                value={filterString}
+                onChange={(e) => setFilterString(e.target.value)}
+              />
 
-            <CustomerGrid
-              onCustomerClick={openCustomerCard}
-              filterString={filterString}
-              {...{ customers }}
-            />
-          </>
-        )}
+              <CustomerGrid
+                onCustomerClick={openCustomerCard}
+                filterString={filterString}
+                {...{ customers }}
+              />
+            </>
+          )}
 
-        <Link to={PrivateRoutes.NewAthlete}>
-          <button
-            data-testid={__addAthleteId__}
-            aria-label={t(ActionButton.AddAthlete)}
-            className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-3 text-white"
-          >
-            <Plus />
-          </button>
-        </Link>
-      </div>
+          <Link to={PrivateRoutes.NewAthlete}>
+            <button
+              data-testid={__addAthleteId__}
+              aria-label={t(ActionButton.AddAthlete)}
+              className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-3 text-white"
+            >
+              <Plus />
+            </button>
+          </Link>
+        </div>
+      </LayoutContent>
     </Layout>
   );
 };

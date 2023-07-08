@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
-import { CalendarNav, TabItem } from "@eisbuk/ui";
+import { CalendarNav, LayoutContent, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -96,11 +96,11 @@ const CustomerArea: React.FC = () => {
           jump="month"
         />
       )}
-      <div className="content-container">
+      <LayoutContent>
         <div className="px-[44px] py-4">
           <CustomerView />
         </div>
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };
