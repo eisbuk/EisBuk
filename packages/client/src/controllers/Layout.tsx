@@ -10,6 +10,7 @@ import BirthdayMenu from "@/controllers/BirthdayMenu";
 import { NotificationsContainer } from "@/features/notifications/components/index";
 
 import { getIsAdmin } from "@/store/selectors/auth";
+import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
 interface Props {
   user?: UserAvatarProps;
@@ -20,9 +21,17 @@ interface Props {
 const LayoutController: React.FC<Props> = (params) => {
   const isAdmin = useSelector(getIsAdmin);
 
+  const displayName = useSelector(getOrgDisplayName);
+  const logo = displayName ? (
+    <h1 className="font-fredoka font-semibold text-3xl text-white">
+      {displayName}
+    </h1>
+  ) : null;
+
   return (
     <Layout
       {...params}
+      logo={logo}
       isAdmin={isAdmin}
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}

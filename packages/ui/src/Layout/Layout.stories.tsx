@@ -15,6 +15,12 @@ export default {
   component: Layout,
 } as ComponentMeta<typeof Layout>;
 
+const logo = (
+  <div className="h-10 text-white">
+    <EisbukLogo />
+  </div>
+);
+
 const additionalButtons = (
   <>
     <TabItem Icon={AccountCircle} label="Book" active={true} />
@@ -70,12 +76,7 @@ const user = {
 };
 export const Admin = (): JSX.Element => (
   <Router initialEntries={[{ pathname: "/attendance" }]}>
-    <Layout
-      logo={<EisbukLogo />}
-      adminLinks={adminLinks}
-      isAdmin={true}
-      {...{ user }}
-    >
+    <Layout logo={logo} adminLinks={adminLinks} isAdmin={true} {...{ user }}>
       {dummyContent}
     </Layout>
   </Router>
@@ -83,10 +84,7 @@ export const Admin = (): JSX.Element => (
 
 export const CustomerArea = (): JSX.Element => (
   <Router>
-    <Layout
-      logo={<EisbukLogo />}
-      {...{ additionalButtons, Notifications, user }}
-    >
+    <Layout logo={logo} {...{ additionalButtons, Notifications, user }}>
       {dummyContent}
     </Layout>
   </Router>
