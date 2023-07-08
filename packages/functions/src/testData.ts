@@ -21,9 +21,14 @@ import { checkUser, throwUnauth } from "./utils";
 
 const uuidv4 = v4;
 
-interface Payload {
+interface CreateTestDataPayload {
   numUsers: number;
   organization: string;
+}
+
+interface CreateOrganizationPayload {
+  organization: string;
+  displayName?: string;
 }
 
 /**
@@ -31,16 +36,18 @@ interface Payload {
  */
 export const createTestData = functions
   .region(__functionsZone__)
-  .https.onCall(async ({ numUsers = 1, organization }: Payload, context) => {
-    if (!(await checkUser(organization, context.auth))) throwUnauth();
+  .https.onCall(
+    async ({ numUsers = 1, organization }: CreateTestDataPayload, context) => {
+      if (!(await checkUser(organization, context.auth))) throwUnauth();
 
-    functions.logger.info(`Creating ${numUsers} test users`);
-    functions.logger.error(`Creating ${numUsers} test users`);
+      functions.logger.info(`Creating ${numUsers} test users`);
+      functions.logger.error(`Creating ${numUsers} test users`);
 
-    await createUsers(numUsers, organization);
+      await createUsers(numUsers, organization);
 
-    return { success: true };
-  });
+      return { success: true };
+    }
+  );
 
 /**
  * Ping endpoint function
@@ -55,16 +62,22 @@ export const ping = functions.region(__functionsZone__).https.onCall((data) => {
  */
 export const createOrganization = functions
   .region(__functionsZone__)
-  .https.onCall(({ organization }: Pick<Payload, "organization">) => {
-    const db = admin.firestore();
+  .https.onCall(
+    ({ organization, displayName: dn }: CreateOrganizationPayload) => {
+      const db = admin.firestore();
 
-    const orgRef = db.collection(Collection.Organizations).doc(organization);
+      const orgRef = db.collection(Collection.Organizations).doc(organization);
 
-    return orgRef.set({
-      admins: ["test@eisbuk.it", "+3912345678"],
-      emailTemplates,
-    });
-  });
+      const displayName =
+        dn || organization.replace(/^[a-z]/, (c) => c.toUpperCase());
+
+      return orgRef.set({
+        displayName,
+        admins: ["test@eisbuk.it", "+3912345678"],
+        emailTemplates,
+      });
+    }
+  );
 
 // #region createAuthUser
 

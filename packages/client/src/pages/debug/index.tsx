@@ -24,7 +24,9 @@ const auth = getAuth();
  * @returns
  */
 export const createAdminTestUsers = async (): Promise<void> => {
-  await createFunctionCaller(functions, CloudFunction.CreateOrganization)();
+  await createFunctionCaller(functions, CloudFunction.CreateOrganization, {
+    displayName: "EisBuk Dev",
+  })();
   // Auth emulator is not currently accessible from within the functions
   try {
     await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
