@@ -5,6 +5,9 @@ module.exports = {
   theme: {
     ...baseConfig.theme,
     extend: {
+      fontFamily: {
+        fredoka: ["Fredoka One", "sans-serif"],
+      },
       ...baseConfig.theme.extend,
       keyframes: {
         ...baseConfig.theme.extend.keyframes,
