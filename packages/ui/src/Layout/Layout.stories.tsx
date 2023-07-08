@@ -2,7 +2,7 @@ import React from "react";
 import { ComponentMeta } from "@storybook/react";
 import { MemoryRouter as Router } from "react-router-dom";
 
-import { AccountCircle, Calendar } from "@eisbuk/svg";
+import { EisbukLogo, AccountCircle, Calendar } from "@eisbuk/svg";
 
 import Layout from "./Layout";
 import TabItem from "../TabItem";
@@ -70,7 +70,12 @@ const user = {
 };
 export const Admin = (): JSX.Element => (
   <Router initialEntries={[{ pathname: "/attendance" }]}>
-    <Layout adminLinks={adminLinks} isAdmin={true} {...{ user }}>
+    <Layout
+      logo={<EisbukLogo />}
+      adminLinks={adminLinks}
+      isAdmin={true}
+      {...{ user }}
+    >
       {dummyContent}
     </Layout>
   </Router>
@@ -78,7 +83,10 @@ export const Admin = (): JSX.Element => (
 
 export const CustomerArea = (): JSX.Element => (
   <Router>
-    <Layout {...{ additionalButtons, Notifications, user }}>
+    <Layout
+      logo={<EisbukLogo />}
+      {...{ additionalButtons, Notifications, user }}
+    >
       {dummyContent}
     </Layout>
   </Router>
