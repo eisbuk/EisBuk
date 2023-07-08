@@ -10,14 +10,14 @@ import i18n, {
   ValidationMessage,
   CustomerLabel,
 } from "@eisbuk/translations";
-import { Customer, CustomerFull } from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 
 import { PrivateRoutes, defaultUser } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 
 // extract saul from test data .json
-const saul = customers.saul as Required<CustomerFull>;
+const saul = customers.saul;
 
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>
@@ -412,8 +412,8 @@ describe("login", () => {
 
   describe("Login redirect", () => {
     it("Redirects to customer bookings page on customer (non-admin) login", () => {
-      const password = "password";
-      cy.addAuthUser({ email: saul.email, password });
+      const { email, password } = saul;
+      cy.addAuthUser({ email, password });
       // log in saul, who is not an admin, but exists in customers collection
       cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
       cy.getAttrWith("type", "email").type(saul.email);

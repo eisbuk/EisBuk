@@ -54,11 +54,11 @@ describe("auth-related redirects", () => {
 
   describe("authenticated non-admin", () => {
     it("redirects to customer area page from any of the private routes", () => {
-      const { email, name, surname } = customers.saul;
+      const { email, name, surname, password } = customers.saul;
 
       // Sign up (or sign in on each subsequent test) as saul.
       // Saul is already registered in the app (in customers collection).
-      cy.signUp(email, "123456");
+      cy.signUp(email, password);
 
       // Check for /athletes page
       cy.visit(PrivateRoutes.Athletes);
