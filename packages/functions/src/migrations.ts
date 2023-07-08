@@ -112,40 +112,6 @@ export const deleteOrphanedBookings = functions
     return { success: true };
   });
 
-export const customersToPluralCategories = functions
-  .region(__functionsZone__)
-  .https.onCall(async ({ organization }, { auth }) => {
-    if (!(await checkUser(organization, auth))) throwUnauth();
-
-    const batch = admin.firestore().batch();
-
-    const orgRef = admin
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(organization);
-    const customersRef = orgRef.collection(OrgSubCollection.Customers);
-
-    const allCustomers = await customersRef.get();
-
-    allCustomers.forEach((customer) => {
-      const data = customer.data();
-
-      if (!data.category) return;
-      const { category, ...noCategoryData } = data;
-      if (!Array.isArray(category)) {
-        functions.logger.info(`Converted customer: ${data.id}`);
-
-        batch.set(customer.ref, { ...noCategoryData, categories: [category] });
-      } else {
-        batch.set(customer.ref, { ...noCategoryData, categories: category });
-      }
-    });
-
-    await batch.commit();
-
-    return { success: true };
-  });
-
 export const populateDefaultEmailTemplates = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }, { auth }) => {
