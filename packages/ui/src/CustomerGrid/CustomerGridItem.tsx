@@ -4,6 +4,8 @@ import { Customer } from "@eisbuk/shared";
 
 import { CustomerAvatar, BadgeSize } from "../UserAvatar";
 
+import { shortName } from "../utils/helpers";
+
 export interface GridItemProps extends Customer {
   onClick?: (customer: Customer) => void;
 }
@@ -13,6 +15,8 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
   ...customer
 }) => {
   const customerValidated = customer.categories.length > 0;
+
+  const [sName, sSurname] = shortName(customer.name, customer.surname);
 
   return (
     <div
@@ -27,8 +31,8 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         className="w-20 h-20 mb-2"
         {...{ customer }}
       />
-      <p className="w-full text-center truncate">{customer.name}</p>
-      <p className="w-full text-center truncate">{customer.surname}</p>
+      <p className="w-full text-center truncate">{sName}</p>
+      <p className="w-full text-center truncate">{sSurname}</p>
     </div>
   );
 };

@@ -2,6 +2,8 @@ import React from "react";
 
 import Avatar from "./Avatar";
 
+import { shortName } from "../utils/helpers";
+
 export interface UserAvatarProps {
   name?: string;
   surname?: string;
@@ -13,7 +15,7 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
   surname = "",
   photoURL,
 }) => {
-  const displayName = [name, surname].join(" ").trim();
+  const displayName = shortName(name, surname).join(" ");
 
   const containerClassNames = containerClasses.join(" ");
   const userNameClassNames = userNameClasses.join(" ");
