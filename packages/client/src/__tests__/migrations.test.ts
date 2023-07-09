@@ -16,7 +16,6 @@ import {
   unprunedMonth,
 } from "@eisbuk/testing/migrations";
 import * as customers from "@eisbuk/testing/customers";
-import { saul } from "@eisbuk/testing/customers";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
@@ -117,66 +116,6 @@ describe("Migrations", () => {
       const { organization } = await setUpOrganization({ doLogin: false });
       await expect(
         invokeFunction(CloudFunction.DeleteOrphanedBookings)({ organization })
-      ).rejects.toThrow(HTTPSErrors.Unauth);
-    });
-  });
-
-  describe("customersToPluralCategories", () => {
-    testWithEmulator(
-      "should change customer's category field into an array instead of scalar",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const customer = {
-          ...saul,
-          category: saul.categories[0],
-          id: "course-customer",
-        };
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, customer.id)
-        );
-        await customerRef.set(customer);
-
-        await invokeFunction(CloudFunction.CustomersToPluralCategories)({
-          organization,
-        });
-
-        const { category, ...newCustomer } = customer;
-
-        expect((await customerRef.get()).data()).toEqual({
-          ...newCustomer,
-          categories: [category],
-        });
-      }
-    );
-    // Normally when you try to convert an array, firestore throws an INTERNAL error
-    testWithEmulator(
-      "should not throw an error if category is already an array",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const customer = {
-          ...saul,
-          id: "course-customer",
-        };
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, customer.id)
-        );
-        await customerRef.set(customer);
-
-        await expect(
-          invokeFunction(CloudFunction.CustomersToPluralCategories)({
-            organization,
-          })
-        ).resolves.not.toThrow();
-      }
-    );
-    testWithEmulator("should not allow calls to non-admins", async () => {
-      const { organization } = await setUpOrganization({ doLogin: false });
-      await expect(
-        invokeFunction(CloudFunction.CustomersToPluralCategories)({
-          organization,
-        })
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
   });
