@@ -1,0 +1,37 @@
+#! YAML library files must be named *.lib.yml
+#@ load("setup.lib.yml", "checkout")
+#@ load("cache.lib.yml", "cache_node")
+#@ load("rush.lib.yml", "rush_add_path", "rush_update", "rush_build")
+
+#! You can run this workflow bu pushing to a branch with the name
+#! cypress-matrix/<anything>
+
+name: VitestMatrix
+
+"on":
+  push:
+    branches:
+      - "vitest-matrix/**"
+  schedule:
+    - cron: "30 5 * * 1,3"
+
+jobs:
+  test-v18:
+    name: Run tests
+    runs-on: ubuntu-20.04
+    strategy:
+      fail-fast: false
+      matrix:
+        dummy1: [1, 2, 3, 4, 5, 6]
+        dummy2: [1, 2, 3, 4, 5, 6]
+    steps:
+      -  #@ checkout()
+      - uses: actions/setup-node@v2
+        with:
+          node-version: "18"
+      -  #@ cache_node()
+      -  #@ rush_add_path()
+      -  #@ rush_update()
+      -  #@ rush_build()
+      - name: Run tests
+        run: cd packages/client && rushx test:emulators:ci
