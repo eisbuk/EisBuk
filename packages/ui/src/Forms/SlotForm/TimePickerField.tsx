@@ -4,7 +4,7 @@ import { useField } from "formik";
 
 import { Plus, Minus } from "@eisbuk/svg";
 
-import { __decrementId__, __incrementId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import TextInput, { TextInputFieldProps } from "../../TextInput";
 import IconButton from "../../IconButton";
@@ -67,7 +67,7 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
       <IconButton
         className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
         onClick={handleClick(-1)}
-        data-testid={__decrementId__}
+        data-testid={testId("decrement-button")}
       >
         <Minus />
       </IconButton>
@@ -80,7 +80,7 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
       <IconButton
         className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
         onClick={handleClick(1)}
-        data-testid={__incrementId__}
+        data-testid={testId("increment-button")}
       >
         <Plus />
       </IconButton>

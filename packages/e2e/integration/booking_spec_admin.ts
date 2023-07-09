@@ -9,7 +9,7 @@ import i18n, {
   NotificationMessage,
 } from "@eisbuk/translations";
 
-import { Routes, __notificationToastId__ } from "../temp";
+import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { slots } from "../__testData__/slots.json";
@@ -64,7 +64,7 @@ describe("Booking flow", () => {
         force: true,
       });
     // Check that the booking was successful
-    cy.getByTestId(__notificationToastId__).contains(
+    cy.getByTestId("notification-toast").contains(
       i18n.t(NotificationMessage.BookingSuccess, {
         date: DateTime.fromISO("2022-01-01"),
         interval: "09:00-11:00",

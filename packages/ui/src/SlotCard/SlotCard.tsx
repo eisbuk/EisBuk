@@ -3,7 +3,7 @@ import React from "react";
 import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
 import i18n, { CategoryLabel } from "@eisbuk/translations";
 
-import { __slotCardId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import SlotTypeIcon from "../SlotTypeIcon";
 
@@ -62,7 +62,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
       } ${type === SlotType.Ice ? "outline-cyan-500" : "outline-yellow-600"} ${
         canClick ? "cursor-pointer" : "cursor-normal"
       } ${className}`}
-      data-testid={__slotCardId__}
+      data-testid={testId("slot-card")}
       onClick={onClick}
     >
       <div className="mb-4 pt-2 grid grid-cols-5 gap-x-6 gap-y-2">

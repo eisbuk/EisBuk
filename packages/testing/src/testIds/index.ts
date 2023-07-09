@@ -1,97 +1,145 @@
-// #region SlotCard
-export const __slotCardId__ = "slot-card";
-// #endregion SlotCard
+import { DateTime } from "luxon";
 
-// #region SlotForm
-export const __slotFormId__ = "slot-form-title";
-export const __cancelFormId__ = "form-cancel-button";
-export const __confirmFormId__ = "form-confirm-button";
+type TestIDList = [
+  // #region SlotCard
+  "slot-card",
+  // #endregion SlotCard
 
-export const __deleteIntervalId__ = "delete-interval-button";
-export const __startTimeInputId__ = "start-time-input";
-export const __startTimeErrorId__ = "start-time-error";
-export const __endTimeInputId__ = "end-time-input";
-export const __endTimeErrorId__ = "end-time-error";
+  // #region SlotForm
+  "slot-form-title",
+  "form-cancel-button",
+  "form-confirm-button",
 
-export const __incrementId__ = "increment-button";
-export const __decrementId__ = "decrement-button";
+  "delete-interval-button",
+  "start-time-input",
+  "start-time-error",
+  "end-time-input",
+  "end-time-error",
 
-export const __selectTypeId__ = "select-type-field";
-export const __selectcategoriesId__ = "select-categories-field";
-export const __timeIntervalFieldId__ = "time-interval-field";
-// #endregion SlotForm
+  "increment-button",
+  "decrement-button",
 
-// #region ConfirmDialog
-export const __confirmDialogYesId__ = "confirm-dialog-yes-button";
-export const __confirmDialogNoId__ = "confirm-dialog-no-button";
-// #endregion ConfirmDialog
+  "select-type-field",
+  "select-categories-field",
+  "time-interval-field",
+  // #endregion SlotForm
 
-// #region ConfirmDialog
-export const __inputDialogSubmitId__ = "input-dialog-submit-button";
-export const __emailInput__ = "input-dialog-email-input";
-// #endregion ConfirmDialog
+  // #region ConfirmDialog
+  "confirm-dialog-yes-button",
+  "confirm-dialog-no-button",
+  // #endregion ConfirmDialog
 
-// #region SlotOperationButtons
-export const __newSlotButtonId__ = "new-slot-button";
-export const __editSlotButtonId__ = "edit-slot-button";
-export const __copyButtonId__ = "copy-button";
-export const __copyDayButtonId__ = "copy-day-button";
-export const __copyWeekButtonId__ = "copy-week-button";
-export const __pasteButtonId__ = "paste-button";
-export const __deleteButtonId__ = "delete-button";
-export const __copiedSlotsBadgeId__ = "copied-slots-badge";
-// #endregion SlotOperationButtons
+  // #region ConfirmDialog
+  "input-dialog-submit-button",
+  "input-dialog-email-input",
+  // #endregion ConfirmDialog
 
-// #region SlotAlerts
-export const __noSlotsDateId__ = "no-slots-date";
-// #endregion SlotAlerts
+  // #region SlotOperationButtons
+  "new-slot-button",
+  "edit-slot-button",
+  // "copy-button",
+  "copy-week-button",
+  "paste-button",
+  "delete-button",
+  "copied-slots-week-badge",
+  // #endregion SlotOperationButtons
 
-// #region DateNavigation
-export const __dateNavNextId__ = "date-navigation-next-page";
-export const __dateNavPrevId__ = "date-navigation-previous-page";
-// #endregion DateNavigation
+  // #region SlotAlerts
+  "no-slots-date",
+  // #endregion SlotAlerts
 
-// #region DateSwitcher
-export const __calendarMenuId__ = "calendar-menu";
-export const __pickedDay__ = "picked-day";
-export const __dayWithSlots__ = "day-with-slots";
-export const __dayWithBookedSlots__ = "day-with-booked-slots";
-// #endregion DateSwitcher
+  // #region DateNavigation
+  "date-navigation-next-page",
+  "date-navigation-previous-page",
+  // #endregion DateNavigation
 
-// #region BookingCard
-export const __bookingCardId__ = "booking-interval-card";
-// #endregion BookingCard
+  // #region DateSwitcher
+  "calendar-menu",
+  "picked-day",
+  "day-with-slots",
+  "day-with-booked-slots",
+  // #endregion DateSwitcher
 
-// #region CustomerList
-export const __customerListId__ = "customer-list";
-// #endregion CustomerList
+  // #region BookingCard
+  "booking-interval-card",
+  // #endregion BookingCard
 
-// #region CustomerGrid
-export const __customerGridId__ = "customer-grid";
-export const __customerDialogId__ = "customer-dialog";
-// #endregion CustomerGrid
+  // #region CustomerList
+  "customer-list",
+  // #endregion CustomerList
 
-// #region DebugMenu
-export const __debugButtonId__ = "debug-button";
-export const __create100Athletes__ = "create-athletes";
-// #endregion DebugMenu
+  // #region CustomerGrid
+  "customer-grid",
+  "customer-dialog",
+  // #endregion CustomerGrid
 
-// #region Notifications
-export const __notificationButton__ = "notification-button";
-export const __notificationToastId__ = "notification-toast";
-// #endregion Notifications
+  // #region DebugMenu
+  "debug-button",
+  "create-athletes",
+  // #endregion DebugMenu
 
-// #region ActionButton
-export const __addAthleteId__ = "add-athlete";
-// #endregion ActionButton
+  // #region Notifications
+  "notification-button",
+  "notification-toast",
+  // #endregion Notifications
 
-// #region AthleteForm
-export const __birthdayInputId__ = "birthday-input";
-// #endregion AthleteForm
+  // #region ActionButton
+  "add-athlete",
+  // #endregion ActionButton
 
-// #region AttendanceIntervals
-export const __primaryIntervalId__ = "primary-interval";
-export const __customIntervalInputId__ = "custom-interval-input";
-export const __cancelCustomIntervalId__ = "cancel-custom-interval";
-export const __addCustomIntervalId__ = "add-custom-interval";
-// #endregion AttendanceIntervals
+  // #region AthleteForm
+  "birthday-input",
+  // #endregion AthleteForm
+
+  // #region AttendanceIntervals
+  "primary-interval",
+  "custom-interval-input",
+  "cancel-custom-interval",
+  "add-custom-interval"
+  // #endregion AttendanceIntervals
+];
+export type TestID = TestIDList[number];
+
+// #region test-id-with-metadata
+/** A lookup of all test ids which require metadata and their corresponding metadata interface */
+export interface TestIDMetaLookup {
+  "copy-day-button": { date: DateTime };
+  "copied-slots-day-badge": { date: DateTime };
+}
+export type TestIDWithMeta = keyof TestIDMetaLookup;
+
+/** A lookup of test ids (requring metadata) and handlers - processing their metadata and returning a constructed test id */
+const applyMetaLookup: {
+  [key in TestIDWithMeta]: (meta: TestIDMetaLookup[key]) => string;
+} = {
+  "copy-day-button": (meta) => `copy-day-button-${meta.date.toISODate()}`,
+  "copied-slots-day-badge": (meta) =>
+    `copied-slots-day-badge-${meta.date.toISODate()}`,
+};
+
+/** A type guard/predicate function checking if the `id` is of type `TestID` (without meta) or `TestIDWithMeta` */
+const hasMeta = (id: TestID | TestIDWithMeta): id is TestIDWithMeta =>
+  Boolean(applyMetaLookup[id as TestIDWithMeta]);
+
+/** Constructs a test id by applying its metadata in a correct manner */
+const applyMeta = <I extends TestIDWithMeta>(
+  id: I,
+  meta: TestIDMetaLookup[I]
+): string => applyMetaLookup[id](meta);
+// #endregion test-id-with-metadata
+
+export function testId<I extends TestIDWithMeta>(
+  id: I,
+  meta: TestIDMetaLookup[I]
+): string;
+export function testId(id: TestID): string;
+/** */
+export function testId<I extends TestID | TestIDWithMeta>(
+  id: I,
+  meta?: I extends TestIDWithMeta ? TestIDMetaLookup[I] : never
+): string {
+  if (hasMeta(id)) {
+    return applyMeta(id, meta!);
+  }
+  return id;
+}

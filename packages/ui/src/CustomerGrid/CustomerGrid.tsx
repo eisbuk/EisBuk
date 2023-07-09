@@ -2,7 +2,7 @@ import React from "react";
 
 import { Customer, CustomerFull } from "@eisbuk/shared";
 
-import { __customerGridId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import CustomerGridItem from "./CustomerGridItem";
 
@@ -25,7 +25,7 @@ const CustomerGrid: React.FC<CustomerGridProps> = ({
     <div {...props}>
       <div
         className="w-full h-full flex gap-4 flex-wrap justify-start"
-        data-testid={__customerGridId__}
+        data-testid={testId("customer-grid")}
       >
         {customers?.map(
           (customer, i) =>

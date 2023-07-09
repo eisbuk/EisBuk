@@ -9,11 +9,7 @@ import {
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
-import {
-  __addCustomIntervalId__,
-  __cancelCustomIntervalId__,
-  __customIntervalInputId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 const validationSchema = Yup.object().shape({
   interval: Yup.string()
@@ -91,14 +87,14 @@ const CustomIntervalInput: React.FC<{
               value={value}
               onChange={onChange}
               placeholder="08:00-09:00"
-              data-testid={__customIntervalInputId__}
+              data-testid={testId("custom-interval-input")}
             />
             <button
               type="reset"
               aria-label={t(AttendanceAria.CancelCustomInterval)}
               onClick={() => setShowInput(false)}
               className="flex-shrink-0 text-red-400 h-6 w-6 rounded"
-              data-testid={__cancelCustomIntervalId__}
+              data-testid={testId("cancel-custom-interval")}
             >
               <XCircle />
             </button>
@@ -106,7 +102,7 @@ const CustomIntervalInput: React.FC<{
               type="submit"
               aria-label={t(AttendanceAria.AddCustomInterval)}
               className="flex-shrink-0 text-lime-400 h-6 w-6 rounded"
-              data-testid={__addCustomIntervalId__}
+              data-testid={testId("add-custom-interval")}
             >
               <CheckCircle />
             </button>

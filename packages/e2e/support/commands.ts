@@ -1,7 +1,7 @@
 import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
-import { __addAthleteId__ } from "../temp";
+import { TestID, testId, TestIDMetaLookup, TestIDWithMeta } from "../temp";
 
 /**
  * As painful as the node resolution is nowadays, it was easier to simply extract the type
@@ -43,7 +43,11 @@ declare global {
        * @param {string} testId Element data-testid attribute
        * @returns {Chainable<Element>} a `PromiseLike` yielding found `Element`
        */
-      getByTestId: (testId: string) => Chainable<JQuery<HTMLElement>>;
+      getByTestId<I extends TestIDWithMeta>(
+        testId: I,
+        meta: TestIDMetaLookup[I]
+      ): Chainable<JQuery<HTMLElement>>;
+      getByTestId(testId: TestID): Chainable<JQuery<HTMLElement>>;
       /**
        * @param {number} millis milliseconds from UNIX epoch, such as it's received from `Date.now()`.
        */
@@ -114,8 +118,8 @@ export default (): void => {
     return cy.get(`[${attr}${glob}="${label}"]`);
   });
 
-  Cypress.Commands.add("getByTestId", (testId) => {
-    return cy.get(`[data-testid="${testId}"]`);
+  Cypress.Commands.add("getByTestId", (...params) => {
+    return cy.get(`[data-testid="${testId(...params)}"]`);
   });
 
   Cypress.Commands.add("setClock", (millis) =>
@@ -172,7 +176,7 @@ export default (): void => {
       // use force as button will be detached after click
       .click({ force: true });
     // open new form
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
   });
   // #region CustomerForm
 

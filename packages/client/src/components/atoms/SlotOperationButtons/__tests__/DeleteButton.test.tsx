@@ -7,7 +7,7 @@ import { describe, vi, expect, test, beforeEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { __deleteButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 import { ButtonContextType } from "@/enums/components";
@@ -79,7 +79,7 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       // initiate delete
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual("DeleteSlotDialog");
       expect(dispatchCallPayload.props).toEqual(baseSlot);
@@ -96,7 +96,7 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       // initiate delete
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual("DeleteSlotDisabledDialog");
       expect(dispatchCallPayload.props).toEqual(baseSlot);
@@ -112,7 +112,7 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       // initiate delete
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       // create a dummy delete slots week action object with proper values
       const mockDayDelAction = mockDelDayImplementation(testDate);
       // test (using mocking tactics explained above) if `deleteSlotsDay`
@@ -130,7 +130,7 @@ describe("SlotOperationButtons", () => {
         </SlotOperationButtons>
       );
       // initiate delete
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       // create a dummy delete slot action object with proper values
       const mockWeekDelAction = mockDelWeekImplementation(testDate);
       // test (using mocking tactics explained above) if `deleteSlotsWeek`
@@ -144,7 +144,7 @@ describe("SlotOperationButtons", () => {
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<DeleteButton />);
-      const buttonOnScreen = screen.queryByTestId(__deleteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("delete-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
@@ -155,7 +155,7 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__deleteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("delete-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noSlotToDelete);
     });
@@ -166,7 +166,7 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__deleteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("delete-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noDateDelete);
     });

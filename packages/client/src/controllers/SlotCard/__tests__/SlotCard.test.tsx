@@ -8,11 +8,7 @@ import { cleanup, screen, render } from "@testing-library/react";
 
 import SlotCard from "../SlotCardController";
 
-import {
-  __deleteButtonId__,
-  __editSlotButtonId__,
-  __slotCardId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
@@ -70,7 +66,7 @@ describe("SlotCard", () => {
     });
 
     test("should open slot form on edit slot click", () => {
-      screen.getByTestId(__editSlotButtonId__).click();
+      screen.getByTestId(testId("edit-slot-button")).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(mockDispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(mockDispatchCallPayload.props).toEqual({
@@ -80,7 +76,7 @@ describe("SlotCard", () => {
     });
 
     test("should initiate delete-slot flow on delete button click", () => {
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(mockDispatchCallPayload.component).toEqual("DeleteSlotDialog");
       expect(mockDispatchCallPayload.props).toEqual(baseSlot);
@@ -90,7 +86,7 @@ describe("SlotCard", () => {
       cleanup();
       render(<SlotCard {...baseSlot} enableEdit disableDelete />);
       vi.clearAllMocks();
-      screen.getByTestId(__deleteButtonId__).click();
+      screen.getByTestId(testId("delete-button")).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(mockDispatchCallPayload.component).toEqual(
         "DeleteSlotDisabledDialog"
@@ -104,13 +100,13 @@ describe("SlotCard", () => {
 
     test("should fire 'onClick' function if provided", () => {
       render(<SlotCard {...baseSlot} enableEdit onClick={mockOnClick} />);
-      screen.getByTestId(__slotCardId__).click();
+      screen.getByTestId(testId("slot-card")).click();
       expect(mockOnClick).toHaveBeenCalledTimes(1);
     });
 
     test("should not explode on click if no 'onClick' handler has been provided", () => {
       render(<SlotCard {...baseSlot} enableEdit />);
-      screen.getByTestId(__slotCardId__).click();
+      screen.getByTestId(testId("slot-card")).click();
     });
   });
 });

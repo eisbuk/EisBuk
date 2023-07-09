@@ -3,12 +3,7 @@ import { DateTime } from "luxon";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
 
-import {
-  PrivateRoutes,
-  __addCustomIntervalId__,
-  __customIntervalInputId__,
-  __primaryIntervalId__,
-} from "../temp";
+import { PrivateRoutes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { attendance } from "../__testData__/attendance.json";
@@ -132,7 +127,7 @@ describe("AddAttendedCustomersDialog", () => {
       const intervals = ["09:00-11:00", "09:00-10:00", "10:00-11:00"];
 
       // The initial interval (booked by gus) is the last interval of the slot
-      cy.getByTestId(__primaryIntervalId__).contains(intervals[2]);
+      cy.getByTestId("primary-interval").contains(intervals[2]);
       // With the last slot attended, the next button should be disabled
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).should(
         "be.disabled"
@@ -143,13 +138,13 @@ describe("AddAttendedCustomersDialog", () => {
         "aria-label",
         i18n.t(AttendanceAria.PreviousInterval)
       ).click();
-      cy.getByTestId(__primaryIntervalId__).contains(intervals[1]);
+      cy.getByTestId("primary-interval").contains(intervals[1]);
 
       cy.getAttrWith(
         "aria-label",
         i18n.t(AttendanceAria.PreviousInterval)
       ).click();
-      cy.getByTestId(__primaryIntervalId__).contains(intervals[0]);
+      cy.getByTestId("primary-interval").contains(intervals[0]);
 
       // On the first interval, the previous button should be disabled
       cy.getAttrWith(
@@ -159,10 +154,10 @@ describe("AddAttendedCustomersDialog", () => {
 
       // Revert back to the last interval
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).click();
-      cy.getByTestId(__primaryIntervalId__).contains(intervals[1]);
+      cy.getByTestId("primary-interval").contains(intervals[1]);
 
       cy.getAttrWith("aria-label", i18n.t(AttendanceAria.NextInterval)).click();
-      cy.getByTestId(__primaryIntervalId__).contains(intervals[2]);
+      cy.getByTestId("primary-interval").contains(intervals[2]);
     });
 
     it("adds a new interval to the slot and marks alhlete's attendance with it using 'Custom interval' input", () => {
@@ -172,11 +167,11 @@ describe("AddAttendedCustomersDialog", () => {
       // Show custom interval input (for Gus as the first athlete in the list)
       cy.clickButton(i18n.t(ActionButton.CustomInterval));
 
-      cy.getByTestId(__customIntervalInputId__).type(newInterval);
-      cy.getByTestId(__addCustomIntervalId__).click();
+      cy.getByTestId("custom-interval-input").type(newInterval);
+      cy.getByTestId("add-custom-interval").click();
 
       // The input should no-longer be shown (the button should be show instead)
-      cy.getByTestId(__customIntervalInputId__).should("not.exist");
+      cy.getByTestId("custom-interval-input").should("not.exist");
       cy.get(`button:contains(${i18n.t(ActionButton.CustomInterval)})`);
 
       // We verify the attendance has been updated by checking for the interval string being there (even though the input was removed)

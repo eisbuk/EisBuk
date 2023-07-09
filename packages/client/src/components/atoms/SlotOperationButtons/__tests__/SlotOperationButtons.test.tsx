@@ -9,14 +9,7 @@ import { DateTime } from "luxon";
 
 import { SlotInterface, luxon2ISODate } from "@eisbuk/shared";
 
-import {
-  __copyDayButtonId__,
-  __copyWeekButtonId__,
-  __editSlotButtonId__,
-  __deleteButtonId__,
-  __newSlotButtonId__,
-  __pasteButtonId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -53,8 +46,8 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__editSlotButtonId__);
-      screen.getByTestId(__deleteButtonId__);
+      screen.getByTestId(testId("edit-slot-button"));
+      screen.getByTestId(testId("delete-button"));
     });
     test("should render whitelisted buttons 'contextType=\"day\"' without error with all appropriate buttons passed in", () => {
       render(
@@ -68,10 +61,10 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__newSlotButtonId__);
-      screen.getByTestId(`${__copyDayButtonId__}${dummyDate}`);
-      screen.getByTestId(__pasteButtonId__);
-      screen.getByTestId(__deleteButtonId__);
+      screen.getByTestId(testId("new-slot-button"));
+      screen.getByTestId(testId("copy-day-button", { date: dummyDate }));
+      screen.getByTestId(testId("paste-button"));
+      screen.getByTestId(testId("delete-button"));
     });
 
     test("should render whitelisted buttons 'contextType=\"week\"' without error with all appropriate buttons passed in", () => {
@@ -85,9 +78,9 @@ describe("SlotOperationButtons", () => {
           <DeleteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__copyWeekButtonId__);
-      screen.getByTestId(__pasteButtonId__);
-      screen.getByTestId(__deleteButtonId__);
+      screen.getByTestId(testId("copy-week-button"));
+      screen.getByTestId(testId("paste-button"));
+      screen.getByTestId(testId("delete-button"));
     });
   });
 

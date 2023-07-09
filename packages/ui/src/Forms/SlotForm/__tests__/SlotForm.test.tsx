@@ -26,10 +26,7 @@ import i18n, {
   DateFormat,
 } from "@eisbuk/translations";
 
-import {
-  __timeIntervalFieldId__,
-  __deleteIntervalId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { defaultInterval, defaultSlotFormValues } from "../data";
 
@@ -74,7 +71,7 @@ describe("SlotForm", () => {
         screen.getByText(i18n.t(CategoryLabel[label]) as string);
       });
       // intervals field
-      screen.getByTestId(__timeIntervalFieldId__);
+      screen.getByTestId(testId("time-interval-field"));
     });
 
     test("should render a deprecated categories for backwards compatibility, but disable them for selection", () => {
@@ -115,19 +112,25 @@ describe("SlotForm", () => {
     });
 
     test("should render one field for empty form", () => {
-      const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
       expect(intervalFields.length).toEqual(1);
     });
 
     test("should create a new interval field on 'Add New' button click", () => {
       screen.getByText(i18n.t(SlotFormLabel.AddInterval) as string).click();
-      const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
       expect(intervalFields.length).toEqual(2);
     });
 
     test("should delete an interval field on 'Delete' button click", () => {
-      act(() => screen.getByTestId(__deleteIntervalId__).click());
-      const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
+      act(() => screen.getByTestId(testId("delete-interval-button")).click());
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
       expect(intervalFields.length).toEqual(0);
     });
   });
@@ -241,7 +244,7 @@ describe("SlotForm", () => {
         />
       );
       // delete first interval
-      screen.getAllByTestId(__deleteIntervalId__)[0].click();
+      screen.getAllByTestId(testId("delete-interval-button"))[0].click();
       // trigger submit
       screen.getByText(i18n.t(ActionButton.Save) as string).click();
       await waitFor(() =>

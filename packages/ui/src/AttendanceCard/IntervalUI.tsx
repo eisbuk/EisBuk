@@ -1,6 +1,6 @@
 import React, { useRef, useCallback } from "react";
 
-import { __primaryIntervalId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 interface Props {
   attendedInterval: string | null;
@@ -99,7 +99,7 @@ const IntervalUI: React.FC<Props> = ({ attendedInterval, bookedInterval }) => {
       <span
         ref={primaryRef}
         className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-black text-xl select-none cursor-default whitespace-nowrap"
-        data-testid={__primaryIntervalId__}
+        data-testid={testId("primary-interval")}
       >
         {primaryInterval}
       </span>

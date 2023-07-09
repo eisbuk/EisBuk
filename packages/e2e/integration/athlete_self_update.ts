@@ -6,7 +6,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { Routes, __birthdayInputId__ } from "../temp";
+import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 
@@ -90,11 +90,11 @@ describe("athlete profile", () => {
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
     // dashes
-    cy.getByTestId(__birthdayInputId__).clearAndType("12-12-1990");
-    cy.getByTestId(__birthdayInputId__).should("contain.value", "12/12/1990");
+    cy.getByTestId("birthday-input").clearAndType("12-12-1990");
+    cy.getByTestId("birthday-input").should("contain.value", "12/12/1990");
 
     // dots
-    cy.getByTestId(__birthdayInputId__).clearAndType("12.12.1990");
+    cy.getByTestId("birthday-input").clearAndType("12.12.1990");
     cy.getAttrWith("value", "12/12/1990");
   });
 

@@ -6,7 +6,7 @@ import React from "react";
 import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 
-import { __editSlotButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 import { ButtonContextType } from "@/enums/components";
@@ -41,7 +41,7 @@ describe("SlotOperationButtons", () => {
           <EditSlotButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__editSlotButtonId__).click();
+      screen.getByTestId(testId("edit-slot-button")).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(dispatchCallPayload.props).toEqual({
@@ -56,7 +56,7 @@ describe("SlotOperationButtons", () => {
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<EditSlotButton />);
-      const buttonOnScreen = screen.queryByTestId(__editSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("edit-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
@@ -67,7 +67,7 @@ describe("SlotOperationButtons", () => {
           <EditSlotButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__editSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("edit-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noSlotProvidedError);
     });
@@ -81,7 +81,7 @@ describe("SlotOperationButtons", () => {
           <EditSlotButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__editSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("edit-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(
         __editSlotButtonWrongContextError

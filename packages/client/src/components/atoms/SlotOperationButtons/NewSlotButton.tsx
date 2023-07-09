@@ -3,7 +3,7 @@ import React, { useContext } from "react";
 import { useTranslation, SlotsAria } from "@eisbuk/translations";
 import { PlusCircle } from "@eisbuk/svg";
 
-import { __newSlotButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -68,7 +68,7 @@ export const NewSlotButton: React.FC = () => {
   return (
     <SlotOperationButton
       onClick={openForm}
-      data-testid={__newSlotButtonId__}
+      data-testid={testId("new-slot-button")}
       aria-label={t(SlotsAria.CreateSlot, { date })}
       disabled={disabled}
     >

@@ -3,7 +3,7 @@ import { describe, afterEach, vi, test, expect } from "vitest";
 import { screen, cleanup } from "@testing-library/react";
 import * as formik from "formik";
 
-import { __deleteIntervalId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import TimeIntervalField from "../TimeIntervalField";
 
@@ -43,7 +43,7 @@ describe("'SlotForm',", () => {
       renderWithFormik(
         <TimeIntervalField {...baseProps} onDelete={mockDelete} />
       );
-      screen.getByTestId(__deleteIntervalId__).click();
+      screen.getByTestId(testId("delete-interval-button")).click();
       expect(mockDelete).toHaveBeenCalled();
     });
   });

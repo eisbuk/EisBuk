@@ -7,10 +7,7 @@ import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import {
-  __copyDayButtonId__,
-  __copyWeekButtonId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import {
   __noDateCopy,
@@ -59,7 +56,7 @@ describe("SlotOperationButtons", () => {
           <CopyButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(`${__copyDayButtonId__}${testDate}`).click();
+      screen.getByTestId(testId("copy-day-button", { date: testDate })).click();
       // test dispatch being called with the result of `newCopySlotDay` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
         mockCopyDayImplementation(testDate)
@@ -83,7 +80,7 @@ describe("SlotOperationButtons", () => {
           <CopyButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__copyWeekButtonId__).click();
+      screen.getByTestId(testId("copy-week-button")).click();
       // test dispatch being called with the result of `newCopySlotWeek` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(mockCopyWeekImplementation());
     });
@@ -94,8 +91,12 @@ describe("SlotOperationButtons", () => {
 
     test("should not render the button and should log error to console if not under 'SlotOperationButtons' context", () => {
       render(<CopyButton />);
-      const weekButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
-      const dayButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
+      const weekButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
+      const dayButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
       expect(weekButtonOnScreen).toEqual(null);
       expect(dayButtonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
@@ -107,8 +108,12 @@ describe("SlotOperationButtons", () => {
           <CopyButton />
         </SlotOperationButtons>
       );
-      const weekButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
-      const dayButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
+      const weekButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
+      const dayButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
       expect(weekButtonOnScreen).toEqual(null);
       expect(dayButtonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(
@@ -122,8 +127,12 @@ describe("SlotOperationButtons", () => {
           <CopyButton />
         </SlotOperationButtons>
       );
-      const weekButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
-      const dayButtonOnScreen = screen.queryByTestId(__copyWeekButtonId__);
+      const weekButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
+      const dayButtonOnScreen = screen.queryByTestId(
+        testId("copy-week-button")
+      );
       expect(weekButtonOnScreen).toEqual(null);
       expect(dayButtonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noDateCopy);

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { Trash } from "@eisbuk/svg";
 
-import { __deleteButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -101,7 +101,7 @@ export const DeleteButton: React.FC = () => {
   return (
     <SlotOperationButton
       onClick={handleDelete}
-      data-testid={__deleteButtonId__}
+      data-testid={testId("delete-button")}
       className={disableDelete ? "!text-gray-400" : ""}
       disabled={buttonsDisabled}
     >

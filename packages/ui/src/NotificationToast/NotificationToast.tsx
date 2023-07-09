@@ -1,6 +1,6 @@
 import React from "react";
 
-import { __notificationToastId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { Close } from "@eisbuk/svg";
 
@@ -32,7 +32,7 @@ const NotificationToast: React.FC<NotificationToastProps> = ({
       className: [...baseClasses, colorClassLookup[variant], className].join(
         " "
       ),
-      "data-testid": __notificationToastId__,
+      "data-testid": testId("notification-toast"),
     },
     [
       <span

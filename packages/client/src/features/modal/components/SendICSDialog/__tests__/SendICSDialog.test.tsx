@@ -9,7 +9,7 @@ import userEvent from "@testing-library/user-event";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
 
-import { __emailInput__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import SendICSDialog from "../SendICSDialog";
 
@@ -55,7 +55,7 @@ describe("SendICSDialog", () => {
     test("should send the ICS file to the email provided", async () => {
       const email = "test-email@email.com";
 
-      const emailInput = screen.getByTestId(__emailInput__);
+      const emailInput = screen.getByTestId(testId("input-dialog-email-input"));
       userEvent.clear(emailInput);
       userEvent.type(emailInput, email);
 

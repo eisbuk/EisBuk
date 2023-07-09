@@ -12,7 +12,7 @@ import i18n, {
 } from "@eisbuk/translations";
 import { Customer } from "@eisbuk/shared";
 
-import { __emailInput__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { BaseModalProps } from "../../types";
 
@@ -59,7 +59,7 @@ const SendICSDialog: React.FC<SendICSDialogProps> = ({
           <Field
             name="email"
             type="email"
-            data-testid={__emailInput__}
+            data-testid={testId("input-dialog-email-input")}
             component={TextInput}
           />
         </ActionDialog>

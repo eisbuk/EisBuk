@@ -13,7 +13,7 @@ import {
 import { Plus } from "@eisbuk/svg";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-import { __addAthleteId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import Layout from "@/controllers/Layout";
 
@@ -65,7 +65,7 @@ const AthletesPage: React.FC = () => {
 
           <Link to={PrivateRoutes.NewAthlete}>
             <button
-              data-testid={__addAthleteId__}
+              data-testid={testId("add-athlete")}
               aria-label={t(ActionButton.AddAthlete)}
               className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-3 text-white"
             >

@@ -4,7 +4,7 @@ import { cleanup, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { Field } from "formik";
 
-import { __decrementId__, __incrementId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import TimePickerField from "../TimePickerField";
 
@@ -57,9 +57,9 @@ describe("SlotForm,", () => {
 
     test('should increment/decrement time by an hour on"+"/"-" button click', () => {
       renderWithFormik(<Field component={TimePickerField} name="time" />);
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(testId("increment-button")).click();
       expect(mockSetValue).toHaveBeenCalledWith("09:00");
-      screen.getByTestId(__decrementId__).click();
+      screen.getByTestId(testId("decrement-button")).click();
       // we're testing change being called with one hour decrement from initial 'value' as 'value' doesn't due to mocking
       expect(mockSetValue).toHaveBeenCalledWith("07:00");
     });
@@ -68,7 +68,7 @@ describe("SlotForm,", () => {
       renderWithFormik(
         <Field component={TimePickerField} name="time" value="invalid_string" />
       );
-      screen.getByTestId(__incrementId__).click();
+      screen.getByTestId(testId("increment-button")).click();
       await waitFor(() => expect(mockSetValue).toHaveBeenCalledWith("09:00"));
     });
   });

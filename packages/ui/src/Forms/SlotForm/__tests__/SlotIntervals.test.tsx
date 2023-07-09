@@ -2,7 +2,7 @@ import React from "react";
 import { describe, afterEach, vi, test, expect } from "vitest";
 import { cleanup, screen } from "@testing-library/react";
 
-import { __timeIntervalFieldId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import SlotIntervals from "../SlotIntervals";
 
@@ -22,7 +22,9 @@ describe("SlotForm", () => {
 
     test("should render intervals from initial values", () => {
       renderWithFormik(<SlotIntervals />, { initialValues });
-      const intervalFields = screen.queryAllByTestId(__timeIntervalFieldId__);
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
       expect(intervalFields.length).toEqual(2);
     });
 
