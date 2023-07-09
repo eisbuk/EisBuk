@@ -33,3 +33,87 @@ export const sortIntervals = (a: string, b: string) => {
     ? 1
     : -1;
 };
+
+export const shortName = (name: string, surname: string) => {
+  const nameWords = name.split(" ");
+  const surnameWords = surname.split(" ");
+
+  const n = nameWords
+    .map((word, i) => (i === 0 ? word : `${word[0]}.`))
+    .join(" ");
+
+  const sn = surnameWords
+    .map((word, i, o) =>
+      i === o.length - 1
+        ? word
+        : surnameParticles.includes(word)
+        ? word
+        : `${word[0]}.`
+    )
+    .join(" ");
+
+  return [n, sn];
+};
+
+const surnameParticles = [
+  "de",
+  "di",
+  "von",
+  "van",
+  "del",
+  "della",
+  "des",
+  "du",
+  "el",
+  "la",
+  "le",
+  "los",
+  "las",
+  "der",
+  "den",
+  "het",
+  "ten",
+  "ter",
+  "op",
+  "of",
+  "zu",
+  "zum",
+  "zur",
+  "do",
+  "dos",
+  "da",
+  "das",
+  "dem",
+  "d",
+  "l",
+  "o",
+  "y",
+  "e",
+  "i",
+  "san",
+  "saint",
+  "st",
+  "s",
+  "al",
+  "bin",
+  "ibn",
+  "ben",
+  "bar",
+  "bat",
+  "abd",
+  "ap",
+  "ab",
+  "af",
+  "mac",
+  "mc",
+  "m",
+  "v",
+  "ve",
+  "vel",
+  "dal",
+  "dell",
+  "dello",
+  "dela",
+  "degli",
+  "delle",
+];
