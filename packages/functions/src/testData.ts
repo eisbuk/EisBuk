@@ -134,7 +134,7 @@ export const createUser = functions
 
 export const createDefaultUser = functions
   .region(__functionsZone__)
-  .https.onCall(async ({ organization }: Pick<Payload, "organization">) => {
+  .https.onCall(async ({ organization }: { organization: string }) => {
     const defaultEmail = "test@eisbuk.it";
     const defaultPhone = "+3912345678";
 
