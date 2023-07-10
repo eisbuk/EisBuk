@@ -23,6 +23,7 @@ import ByMonthView from "./views/ByMonth";
 
 import { NotificationsContainer } from "@/features/notifications/components";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 
 import { getCalendarDay } from "@/store/selectors/app";
 
@@ -81,8 +82,12 @@ const AttendancePage: React.FC = () => {
       </Link>
     ) : undefined;
 
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   const additionalButtons = (
     <>
       <TabItem

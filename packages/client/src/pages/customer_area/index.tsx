@@ -22,6 +22,7 @@ import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
 import { getIsAdmin } from "@/store/selectors/auth";
@@ -49,8 +50,12 @@ const CustomerArea: React.FC = () => {
 
   const isAdmin = useSelector(getIsAdmin);
 
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.SlotsByDay },

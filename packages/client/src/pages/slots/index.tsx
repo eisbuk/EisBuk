@@ -31,6 +31,7 @@ import SlotOperationButtons, {
 } from "@/components/atoms/SlotOperationButtons";
 import SlotCard from "@/controllers/SlotCard";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
@@ -71,8 +72,12 @@ const SlotsPage: React.FC = () => {
     (state: LocalStore) => state.firestore.data.attendance || {}
   );
 
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   const { t } = useTranslation();
 
   // We're using this to disable the slot buttons when we're pasting a week

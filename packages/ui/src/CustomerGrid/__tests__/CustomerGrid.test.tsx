@@ -12,6 +12,10 @@ describe("CustomerGrid", () => {
   });
 
   test("should call 'onCustomerClick', passing customer as a param on customer item click", async () => {
+    vi.mock("react-router-dom", () => ({
+      ...vi.importActual("react-router-dom"),
+      useHistory: () => ({ location: {} }),
+    }));
     const mockOnCustomerClick = vi.fn();
     render(
       <CustomerGrid customers={[saul]} onCustomerClick={mockOnCustomerClick} />

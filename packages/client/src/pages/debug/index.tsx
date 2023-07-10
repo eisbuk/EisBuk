@@ -17,6 +17,7 @@ import { CloudFunction } from "@eisbuk/shared/ui";
 import { functions } from "@/setup";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 
 import { NotificationsContainer } from "@/features/notifications/components";
 
@@ -58,8 +59,12 @@ const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   return (
     <Layout
       adminLinks={adminLinks}

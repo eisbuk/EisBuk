@@ -5,9 +5,12 @@ import { LocalStore } from "@/types/store";
 
 import { getNewStore } from "@/store/createStore";
 
-import { getCustomersByBirthday } from "../customers";
+import {
+  getCustomerByNoCategories,
+  getCustomersByBirthday,
+} from "../customers";
 
-import { saul, walt, jian, mike, jane } from "@eisbuk/testing/customers";
+import { saul, walt, jian, mike, jane, gus } from "@eisbuk/testing/customers";
 
 const customers: LocalStore["firestore"]["data"]["customers"] = {
   [saul.id]: {
@@ -78,6 +81,25 @@ describe("Customer Selectors", () => {
       const res = selector(store.getState());
       // the result should be the same as erlich doesn't have a birthday provided
       expect(res).toEqual(expectedCustomersBirthdays);
+    });
+  });
+
+  describe("Athletes approval", () => {
+    test("should get customers with no categories", () => {
+      const store = getNewStore({
+        firestore: {
+          data: {
+            customers: {
+              [saul.id]: saul,
+              [gus.id]: gus,
+              [jian.id]: jian,
+            },
+          },
+        },
+      });
+      const selector = getCustomerByNoCategories();
+      const res = selector(store.getState());
+      expect(res).toEqual([{ ...gus }]);
     });
   });
 });

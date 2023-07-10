@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import { Customer, CustomerFull } from "@eisbuk/shared";
 
@@ -21,6 +22,22 @@ const CustomerGrid: React.FC<CustomerGridProps> = ({
 }) => {
   const filterRegex = new RegExp(filterString, "i");
 
+  const history = useHistory();
+
+  const [toggled, setToggle] = useState(true);
+
+  useEffect(() => {
+    setToggle(
+      history.location.search !== "" &&
+        history.location.search === "?approvals=true"
+    );
+  }, [history.location.search]);
+
+  const customerMap = (customer: CustomerFull) =>
+    (filterRegex.test(customer.name) || filterRegex.test(customer.surname)) &&
+    !customer.deleted &&
+    (toggled ? customer.categories.length === 0 : true);
+
   return (
     <div {...props}>
       <div
@@ -29,12 +46,10 @@ const CustomerGrid: React.FC<CustomerGridProps> = ({
       >
         {customers?.map(
           (customer, i) =>
-            (filterRegex.test(customer.name) ||
-              filterRegex.test(customer.surname)) &&
-            !customer.deleted && (
+            customerMap(customer) && (
               <CustomerGridItem
                 key={customer.id || `temp-key-${i}`}
-                onClick={(customer) => onCustomerClick(customer)}
+                onClick={() => onCustomerClick(customer)}
                 {...customer}
               />
             )

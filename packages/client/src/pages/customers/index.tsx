@@ -1,14 +1,21 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 
 import { OrgSubCollection, Customer } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
-import { Layout, CustomerGrid, SearchBar } from "@eisbuk/ui";
+import {
+  Layout,
+  CustomerGrid,
+  SearchBar,
+  Button,
+  ButtonColor,
+} from "@eisbuk/ui";
 import {
   useTranslation,
   NavigationLabel,
   ActionButton,
+  AdminAria,
 } from "@eisbuk/translations";
 import { Plus } from "@eisbuk/svg";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -16,6 +23,7 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 import { __addAthleteId__ } from "@eisbuk/testing/testIds";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getCustomersList } from "@/store/selectors/customers";
@@ -35,17 +43,38 @@ const AthletesPage: React.FC = () => {
     { collection: OrgSubCollection.Customers },
   ]);
 
-  useTitle(t(NavigationLabel.Athletes));
+  const [toggled, setToggle] = useState(true);
 
-  const additionalAdminContent = <BirthdayMenu />;
+  useEffect(() => {
+    setToggle(
+      history.location.search !== "" &&
+        history.location.search === "?approvals=true"
+    );
+  }, [history.location.search]);
+
+  useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList(true));
 
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   // Search logic
   const [filterString, setFilterString] = React.useState("");
 
   const openCustomerCard = ({ id }: Customer) => {
     history.push(`${PrivateRoutes.Athletes}/${id}`);
+  };
+
+  const toggleApprovals = () => {
+    const toggled =
+      history.location.search && history.location.search === "?approvals=true";
+    toggled
+      ? history.push(`${PrivateRoutes.Athletes}`)
+      : history.push(`${PrivateRoutes.Athletes}/?approvals=true`);
   };
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
@@ -59,10 +88,25 @@ const AthletesPage: React.FC = () => {
       <div className="content-container !pt-16">
         {!isEmpty(customers) && (
           <>
-            <SearchBar
-              value={filterString}
-              onChange={(e) => setFilterString(e.target.value)}
-            />
+            <div className="flex w-full items-center justify-between">
+              <SearchBar
+                value={filterString}
+                onChange={(e) => setFilterString(e.target.value)}
+              />
+              <Button
+                aria-label={t(AdminAria.AthletesApprovalButton)}
+                onClick={toggleApprovals}
+                color={toggled ? ButtonColor.Primary : undefined}
+                className={[
+                  "h-8",
+                  !toggled
+                    ? "!text-black outline outline-gray-300 border-box"
+                    : "",
+                ].join(" ")}
+              >
+                {t(AdminAria.AthletesApprovalButton)}
+              </Button>
+            </div>
 
             <CustomerGrid
               onCustomerClick={openCustomerCard}

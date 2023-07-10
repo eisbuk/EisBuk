@@ -317,7 +317,9 @@
     "SeeFutureDates": "See future dates",
 
     "CloseModal": "Close the modal",
-    "BirthdayMenu": "See upcomming birthdays"
+    "BirthdayMenu": "See upcomming birthdays",
+    "AthletesApprovalIcon": "See athletes approval requests",
+    "AthletesApprovalButton": "Approval Requests"
   },
 
   "SlotsAria": {

@@ -94,3 +94,15 @@ export const getCustomersByBirthday =
 
     return rearrangedCustomers;
   };
+
+/**
+ * Gets customers that have empty categories array
+ * @returns a customer array
+ */
+export const getCustomerByNoCategories = () => (state: LocalStore) => {
+  const customersRecord = Object.values(getCustomersRecord(state) || {});
+  const customers = customersRecord.filter(
+    (customer) => !customer.categories.length
+  );
+  return customers || [];
+};

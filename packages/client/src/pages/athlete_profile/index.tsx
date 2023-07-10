@@ -13,6 +13,7 @@ import { SendBookingLinkMethod } from "@/enums/other";
 
 import { NotificationsContainer } from "@/features/notifications/components";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 
 import { getCustomerById, getCustomersList } from "@/store/selectors/customers";
 
@@ -39,8 +40,12 @@ const AthleteProfilePage: React.FC = () => {
 
   // Layout content
   const customers = useSelector(getCustomersList());
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   // Get customer (if exists)
   const { athlete } = useParams<{ athlete?: string }>();
   const customer = useSelector(getCustomerById(athlete || ""));

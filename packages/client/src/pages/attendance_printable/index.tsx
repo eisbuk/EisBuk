@@ -9,6 +9,7 @@ import { Printer } from "@eisbuk/svg";
 import { getOrganization } from "@/lib/getters";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import useTitle from "@/hooks/useTitle";
@@ -37,8 +38,12 @@ const DashboardPage: React.FC = () => {
   const organizationName = useSelector(getOrgDisplayName);
   const attendanceSlots = useSelector(getSlotsWithAttendance);
 
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   /**
    * This button, unlike the one in attendance page doesn't link
    * but initiates `window.print` which is very similar (99%) to

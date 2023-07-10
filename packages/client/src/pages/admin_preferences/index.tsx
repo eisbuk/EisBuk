@@ -14,6 +14,7 @@ import { Cog, Mail } from "@eisbuk/svg";
 
 import AdminsField from "./AdminsField";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
@@ -55,8 +56,12 @@ const OrganizationSettings: React.FC = () => {
 
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
-  const additionalAdminContent = <BirthdayMenu />;
-
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
   const { t } = useTranslation();
 
   const handleSubmit = (
