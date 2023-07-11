@@ -1,6 +1,4 @@
-import { DateTime } from "luxon";
-
-import { Category, CustomerFull, luxon2ISODate } from "@eisbuk/shared";
+import { Category, CustomerFull } from "@eisbuk/shared";
 
 export const saul: CustomerFull = {
   name: "Saul",
@@ -12,8 +10,6 @@ export const saul: CustomerFull = {
   email: "saul@gmail.com",
   phone: "+123456777",
   birthday: "2001-01-01",
-  covidCertificateReleaseDate: "2021-01-01",
-  covidCertificateSuspended: true,
   categories: [Category.Competitive],
   secretKey: "123445",
   subscriptionNumber: "",
@@ -30,8 +26,6 @@ export const walt: CustomerFull = {
   email: "walt@im_the_one_who.knocks",
   phone: "+123456777",
   birthday: "2002-01-01",
-  covidCertificateReleaseDate: "2021-01-01",
-  covidCertificateSuspended: false,
   secretKey: "000001",
   subscriptionNumber: "",
 };
@@ -47,8 +41,6 @@ export const gus: CustomerFull = {
   email: "gus@lospollos.me",
   phone: "+123456777",
   birthday: "2001-01-01",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
   secretKey: "000002",
   subscriptionNumber: "",
 };
@@ -64,8 +56,6 @@ export const jian: CustomerFull = {
   email: "mike.hunt@isyourrefrigeratorrunning.me",
   phone: "+123456777",
   birthday: "2001-01-01",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
   secretKey: "000002",
   subscriptionNumber: "",
 };
@@ -81,8 +71,6 @@ export const mike: CustomerFull = {
   email: "mike@ehrmantraut",
   phone: "+123456777",
   birthday: "2022-12-27",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
   secretKey: "000022",
   subscriptionNumber: "",
 };
@@ -96,8 +84,6 @@ export const jane: CustomerFull = {
   email: "jane@margolis",
   phone: "+123456777",
   birthday: "2009-12-23",
-  covidCertificateReleaseDate: luxon2ISODate(DateTime.now().plus({ days: 1 })),
-  covidCertificateSuspended: false,
   secretKey: "000222",
   subscriptionNumber: "",
 };

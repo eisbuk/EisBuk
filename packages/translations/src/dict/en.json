@@ -113,8 +113,6 @@
     "DateOfBirth": "Date Of Birth",
     "MedicalCertificate": "Medical Certificate Expiration",
     "CardNumber": "Card Number",
-    "CovidCertificateReleaseDate": "Date of release of EU Digital COVID Certificate",
-    "CovidCertificateSuspended": "COVID-19 Certificate suspended",
     "ExtendedBookingDate": "Extended booking date",
     "MedicalDetails": "Medical Details",
     "ManageMedicalDetails": "Manage your medical details",

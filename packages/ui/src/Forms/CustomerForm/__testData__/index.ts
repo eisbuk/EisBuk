@@ -8,8 +8,6 @@ export const saul: CustomerFull = {
   email: "saul@gmail.com",
   phone: "+123456777",
   birthday: "2001-01-01",
-  covidCertificateReleaseDate: "2021-01-01",
-  covidCertificateSuspended: true,
   categories: [Category.Competitive],
   secretKey: "123445",
   subscriptionNumber: "",

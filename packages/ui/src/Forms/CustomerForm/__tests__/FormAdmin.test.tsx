@@ -64,8 +64,6 @@ describe("CustomerForm", () => {
 
         // Medical fields
         t(CustomerLabel.CertificateExpiration),
-        t(CustomerLabel.CovidCertificateReleaseDate),
-        t(CustomerLabel.CovidCertificateSuspended),
 
         // Admin fields
         t(CustomerLabel.CardNumber),
@@ -362,8 +360,6 @@ describe("CustomerForm", () => {
 
         // Medical fields
         t(CustomerLabel.CertificateExpiration),
-        t(CustomerLabel.CovidCertificateReleaseDate),
-        t(CustomerLabel.CovidCertificateSuspended),
 
         // Admin fields
         t(CustomerLabel.CardNumber),

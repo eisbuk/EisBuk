@@ -118,8 +118,6 @@ export enum CustomerLabel {
   Birthday = "CustomerLabel.DateOfBirth",
   CertificateExpiration = "CustomerLabel.MedicalCertificate",
   CardNumber = "CustomerLabel.CardNumber",
-  CovidCertificateReleaseDate = "CustomerLabel.CovidCertificateReleaseDate",
-  CovidCertificateSuspended = "CustomerLabel.CovidCertificateSuspended",
   ExtendedBookingDate = "CustomerLabel.ExtendedBookingDate",
   MedicalDetails = "CustomerLabel.MedicalDetails",
   ManageMedicalDetails = "CustomerLabel.ManageMedicalDetails",

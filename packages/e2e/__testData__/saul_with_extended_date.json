@@ -8,8 +8,6 @@
       "email": "saul@better.call",
       "phone": "+123456777",
       "birthday": "2001-01-01",
-      "covidCertificateReleaseDate": "2021-01-01",
-      "covidCertificateSuspended": true,
       "categories": ["competitive"],
       "secretKey": "123445",
       "subscriptionNumber": "41",

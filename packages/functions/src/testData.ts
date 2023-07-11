@@ -215,10 +215,6 @@ const createUsers = async (
       certificateExpiration: DateTime.local()
         .plus({ days: _.random(-40, 200) })
         .toISODate(),
-      covidCertificateReleaseDate: DateTime.local()
-        .plus({ days: _.random(-500, 0) })
-        .toISODate(),
-      covidCertificateSuspended: _.sample([true, false])!,
     };
 
     await org

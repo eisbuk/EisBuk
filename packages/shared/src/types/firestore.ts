@@ -209,8 +209,6 @@ export interface CustomerBase {
   phone?: string;
   birthday?: string;
   certificateExpiration?: string;
-  covidCertificateReleaseDate?: string;
-  covidCertificateSuspended?: boolean;
   photoURL?: string;
 }
 /**
