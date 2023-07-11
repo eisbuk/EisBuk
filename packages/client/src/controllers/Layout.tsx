@@ -7,6 +7,7 @@ import i18n, { NavigationLabel } from "@eisbuk/translations";
 import { ClipboardList, Users, DocumentDuplicate, Cog } from "@eisbuk/svg";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
+import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components/index";
 
 import { getIsAdmin } from "@/store/selectors/auth";
@@ -28,6 +29,13 @@ const LayoutController: React.FC<Props> = (params) => {
     </h1>
   ) : null;
 
+  const additionalAdminContent = (
+    <React.Fragment>
+      <BirthdayMenu />
+      <AthletesApproval />
+    </React.Fragment>
+  );
+
   return (
     <Layout
       {...params}
@@ -35,7 +43,7 @@ const LayoutController: React.FC<Props> = (params) => {
       isAdmin={isAdmin}
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
-      additionalAdminContent={<BirthdayMenu />}
+      additionalAdminContent={additionalAdminContent}
     />
   );
 };
