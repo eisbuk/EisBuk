@@ -49,7 +49,9 @@ const AdminBar: React.FC<AdminBarProps> = ({
           );
         })}
       </div>
-      <div key="additional-content">{additionalContent}</div>
+      <div key="additional-content" className="flex align-center pr-2">
+        {additionalContent}
+      </div>
     </div>
   );
 };

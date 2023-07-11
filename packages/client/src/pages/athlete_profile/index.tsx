@@ -40,7 +40,6 @@ const AthleteProfilePage: React.FC = () => {
   const { openWithProps: openExtendDateDialog } = useExtendDateModal();
 
   const customers = useSelector(getCustomersList());
-
   // Get customer (if exists)
   const { athlete } = useParams<{ athlete?: string }>();
   const customer = useSelector(getCustomerById(athlete || ""));

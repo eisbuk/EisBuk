@@ -58,7 +58,6 @@ const OrganizationSettings: React.FC = () => {
 
   const organization = useSelector(getOrganizationSettings);
   const userAuthInfo = useSelector(getLocalAuth);
-
   const { t } = useTranslation();
 
   const handleSubmit = (

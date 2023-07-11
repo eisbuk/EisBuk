@@ -1,14 +1,15 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useHistory } from "react-router-dom";
 
 import { OrgSubCollection, Customer } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
-import { CustomerGrid, SearchBar, LayoutContent } from "@eisbuk/ui";
+import { CustomerGrid, SearchBar, LayoutContent, Button, ButtonColor,} from "@eisbuk/ui";
 import {
   useTranslation,
   NavigationLabel,
   ActionButton,
+  AdminAria,
 } from "@eisbuk/translations";
 import { Plus } from "@eisbuk/svg";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -32,15 +33,33 @@ const AthletesPage: React.FC = () => {
     { collection: OrgSubCollection.Customers },
   ]);
 
+  const [toggled, setToggle] = useState(true);
+
+  useEffect(() => {
+    setToggle(
+      history.location.search !== "" &&
+        history.location.search === "?approvals=true"
+    );
+  }, [history.location.search]);
+
   useTitle(t(NavigationLabel.Athletes));
 
   const customers = useSelector(getCustomersList(true));
+
 
   // Search logic
   const [filterString, setFilterString] = React.useState("");
 
   const openCustomerCard = ({ id }: Customer) => {
     history.push(`${PrivateRoutes.Athletes}/${id}`);
+  };
+
+  const toggleApprovals = () => {
+    const toggled =
+      history.location.search && history.location.search === "?approvals=true";
+    toggled
+      ? history.push(`${PrivateRoutes.Athletes}`)
+      : history.push(`${PrivateRoutes.Athletes}/?approvals=true`);
   };
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
@@ -54,6 +73,20 @@ const AthletesPage: React.FC = () => {
                 value={filterString}
                 onChange={(e) => setFilterString(e.target.value)}
               />
+              <Button
+                aria-label={t(AdminAria.AthletesApprovalButton)}
+                onClick={toggleApprovals}
+                color={toggled ? ButtonColor.Primary : undefined}
+                className={[
+                  "h-8",
+                  !toggled
+                    ? "!text-black outline outline-gray-300 border-box"
+                    : "",
+                ].join(" ")}
+              >
+                {t(AdminAria.AthletesApprovalButton)}
+              </Button>
+            {/* </div> */}
 
               <CustomerGrid
                 onCustomerClick={openCustomerCard}

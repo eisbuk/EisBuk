@@ -339,6 +339,8 @@ export enum AdminAria {
 
   CloseModal = "AdminAria.CloseModal",
   BirthdayMenu = "AdminAria.BirthdayMenu",
+  AthletesApprovalIcon = "AdminAria.AthletesApprovalIcon",
+  AthletesApprovalButton = "AdminAria.AthletesApprovalButton",
 }
 
 export enum SlotsAria {

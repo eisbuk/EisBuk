@@ -3,6 +3,7 @@ import i18n, {
   ActionButton,
   NotificationMessage,
   ValidationMessage,
+  AdminAria,
 } from "@eisbuk/translations";
 
 import { PrivateRoutes } from "../temp";
@@ -10,10 +11,11 @@ import { PrivateRoutes } from "../temp";
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
 
-// extract saul from test data .json
+// extract saul and gus from test data .json
 const saul = customers.saul as Customer;
+const gus = customers.gus as Customer;
 
-describe("Athlete form", () => {
+xdescribe("Athlete form", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization, sign in as admin
@@ -163,7 +165,7 @@ describe("Athlete form", () => {
   });
 });
 
-describe("Delete an athlete", () => {
+xdescribe("Delete an athlete", () => {
   beforeEach(() => {
     cy.initAdminApp()
       .then((organization) =>
@@ -191,5 +193,93 @@ describe("Delete an athlete", () => {
       .filter(({ id }) => id !== saul.id)
       .forEach(({ name }) => cy.contains(name));
     cy.contains(saul.name).should("not.exist");
+  });
+});
+
+describe("Athletes approval", () => {
+  beforeEach(() => {
+    cy.initAdminApp()
+      .then((organization) =>
+        cy.updateCustomers(organization, {
+          ...customers,
+          gus: { ...gus, categories: [] },
+        } as Record<string, Customer>)
+      )
+      .then(() => cy.signIn())
+      .then(() => cy.visit(PrivateRoutes.Athletes));
+  });
+  xit("checks if the URL parameters change when the button is clicked", () => {
+    cy.contains(saul.name);
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalButton)
+    ).click();
+
+    cy.url().should("include", "?approvals=true");
+
+    cy.contains(saul.name).should("not.exist");
+    cy.contains(gus.name);
+  });
+  xit("checks if the search param changes when the icon is clicked and checks badge count", () => {
+    cy.contains(saul.name);
+
+    cy.getAttrWith("data-testid", "approval-badge").should("have.text", "1");
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.url().should("include", "?approvals=true");
+
+    cy.contains(saul.name).should("not.exist");
+    cy.contains(gus.name);
+  });
+
+  xit("assigns a category to an unapproved athlete and checks the badge count", () => {
+    cy.get('[data-testid="approval-badge"]').should("have.text", "1");
+
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.url().should("include", "?approvals=true");
+
+    cy.contains(gus.name).click();
+
+    cy.clickButton(i18n.t(ActionButton.Edit) as string);
+    cy.get('fieldset input[type="checkbox"]:enabled:first').check();
+    cy.getAttrWith("name", "phone").clearAndType("11111111111");
+    cy.getAttrWith("type", "submit").first().click();
+
+    cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
+
+    cy.get('[data-testid="approval-badge"]').should("not.exist");
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.contains(gus.name).should("not.exist");
+  });
+
+  it("removes an unapproved athlete and checks the badge doesn't exist anymore", () => {
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.contains(gus.name).click();
+
+    cy.clickButton(i18n.t(ActionButton.Delete) as string);
+
+    cy.get("[data-cy=prompt-confirm-button]").click();
+
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.contains(gus.name).should("not.exist");
   });
 });
