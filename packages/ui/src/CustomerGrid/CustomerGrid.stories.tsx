@@ -23,6 +23,14 @@ const customers: CustomerFull[] = Object.values({
     photoURL:
       "https://avatars.akamai.steamstatic.com/3f8169f3268ec0601dc642ab94eb8cbed57ab66e_full.jpg",
   },
+  pablo: {
+    ...c.saul,
+    id: "pablo",
+    name: "Pablo Emilio",
+    surname: "Escobar Gaviria",
+    photoURL:
+      "https://cdn.britannica.com/62/192062-131-96B933EF/mug-shot-Colombia-control-agency-Medellin.jpg",
+  },
 });
 
 export const Default = (): JSX.Element => {
