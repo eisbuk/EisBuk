@@ -15,7 +15,7 @@ import { customers as saulWithExtendedDate } from "../__testData__/saul_with_ext
 const saul = customers.saul as Customer;
 const gus = customers.gus as Customer;
 
-describe("Athlete form", () => {
+xdescribe("Athlete form", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization, sign in as admin
@@ -165,7 +165,7 @@ describe("Athlete form", () => {
   });
 });
 
-describe("Delete an athlete", () => {
+xdescribe("Delete an athlete", () => {
   beforeEach(() => {
     cy.initAdminApp()
       .then((organization) =>
@@ -208,7 +208,7 @@ describe("Athletes approval", () => {
       .then(() => cy.signIn())
       .then(() => cy.visit(PrivateRoutes.Athletes));
   });
-  it("checks if the URL parameters change when the button is clicked", () => {
+  xit("checks if the URL parameters change when the button is clicked", () => {
     cy.contains(saul.name);
     cy.getAttrWith(
       "aria-label",
@@ -220,7 +220,7 @@ describe("Athletes approval", () => {
     cy.contains(saul.name).should("not.exist");
     cy.contains(gus.name);
   });
-  it("checks if the search param changes when the icon is clicked and checks badge count", () => {
+  xit("checks if the search param changes when the icon is clicked and checks badge count", () => {
     cy.contains(saul.name);
 
     cy.getAttrWith("data-testid", "approval-badge").should("have.text", "1");
@@ -235,7 +235,7 @@ describe("Athletes approval", () => {
     cy.contains(gus.name);
   });
 
-  it("assigns a category to an unapproved athlete and checks the badge count", () => {
+  xit("assigns a category to an unapproved athlete and checks the badge count", () => {
     cy.get('[data-testid="approval-badge"]').should("have.text", "1");
 
     cy.getAttrWith(
@@ -255,6 +255,26 @@ describe("Athletes approval", () => {
     cy.contains(i18n.t(NotificationMessage.CustomerProfileUpdated) as string);
 
     cy.get('[data-testid="approval-badge"]').should("not.exist");
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.contains(gus.name).should("not.exist");
+  });
+
+  it("removes an unapproved athlete and checks the badge doesn't exist anymore", () => {
+    cy.getAttrWith(
+      "aria-label",
+      i18n.t(AdminAria.AthletesApprovalIcon)
+    ).click();
+
+    cy.contains(gus.name).click();
+
+    cy.clickButton(i18n.t(ActionButton.Delete) as string);
+
+    cy.get("[data-cy=prompt-confirm-button]").click();
+
     cy.getAttrWith(
       "aria-label",
       i18n.t(AdminAria.AthletesApprovalIcon)

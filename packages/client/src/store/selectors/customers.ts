@@ -102,7 +102,7 @@ export const getCustomersByBirthday =
 export const getCustomerByNoCategories = () => (state: LocalStore) => {
   const customersRecord = Object.values(getCustomersRecord(state) || {});
   const customers = customersRecord.filter(
-    (customer) => !customer.categories.length
+    (customer) => !customer.categories.length && !customer.deleted
   );
   return customers || [];
 };
