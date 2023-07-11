@@ -76,11 +76,6 @@
     "CourseMinors": "corso-ragazzi",
     "Competitive": "agonismo"
   },
-  "DeprecatedCategory": {
-    "Adults": "adulti",
-    "PreCompetitive": "pre-agonismo",
-    "Course": "corso"
-  },
 
   "FormTitle": {
     "NewCustomer": "Nuovo Atleta",

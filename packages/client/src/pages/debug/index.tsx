@@ -124,28 +124,6 @@ const DebugPage: React.FC = () => {
             <DebugPageButton
               onClick={createFunctionCaller(
                 functions,
-                CloudFunction.MigrateCategoriesToExplicitMinors
-              )}
-              color={ButtonColor.Primary}
-            >
-              Migrate categories to explicit minors
-            </DebugPageButton>
-          </div>
-          <div className="p-2">
-            <DebugPageButton
-              onClick={createFunctionCaller(
-                functions,
-                CloudFunction.CustomersToPluralCategories
-              )}
-              color={ButtonColor.Primary}
-            >
-              Migrate categories to array
-            </DebugPageButton>
-          </div>
-          <div className="p-2">
-            <DebugPageButton
-              onClick={createFunctionCaller(
-                functions,
                 CloudFunction.PopulateDefaultEmailTemplates
               )}
               color={ButtonColor.Primary}
@@ -153,6 +131,7 @@ const DebugPage: React.FC = () => {
               Populate Default Email Templates
             </DebugPageButton>
           </div>
+
           <div className="p-2">
             <DebugPageButton
               onClick={createFunctionCaller(

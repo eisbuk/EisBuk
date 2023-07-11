@@ -9,8 +9,6 @@ export * from "./types/utils";
 export * from "./utils";
 export * from "./data/templates";
 
-export * from "./enums/deprecated";
-
 import italianNames from "./assets/italian-names.json";
 import italianSurnames from "./assets/italian-surnames.json";
 

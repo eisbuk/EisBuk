@@ -5,12 +5,7 @@
 import { describe, expect } from "vitest";
 import { httpsCallable, FunctionsError } from "@firebase/functions";
 
-import {
-  HTTPSErrors,
-  sanitizeCustomer,
-  Category,
-  DeprecatedCategory,
-} from "@eisbuk/shared";
+import { HTTPSErrors, sanitizeCustomer } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
 import {
@@ -21,8 +16,6 @@ import {
   unprunedMonth,
 } from "@eisbuk/testing/migrations";
 import * as customers from "@eisbuk/testing/customers";
-import { baseSlot } from "@eisbuk/testing/slots";
-import { saul } from "@eisbuk/testing/customers";
 
 import { functions, adminDb } from "@/__testSetup__/firestoreSetup";
 
@@ -32,7 +25,6 @@ import {
   getBookingsDocPath,
   getBookingsPath,
   getCustomerDocPath,
-  getSlotDocPath,
   getSlotsByDayPath,
 } from "@/utils/firestore";
 
@@ -124,186 +116,6 @@ describe("Migrations", () => {
       const { organization } = await setUpOrganization({ doLogin: false });
       await expect(
         invokeFunction(CloudFunction.DeleteOrphanedBookings)({ organization })
-      ).rejects.toThrow(HTTPSErrors.Unauth);
-    });
-  });
-
-  describe("'migrateSlotsCategoriesToExplicitMinors'", () => {
-    testWithEmulator(
-      'should replace "pre-competitive" and "course" category entries with corresponging "-minor" category entries, while leaving the existing categories as they are',
-      async () => {
-        const { organization } = await setUpOrganization();
-        const courseSlot = {
-          ...baseSlot,
-          categories: [Category.Competitive, DeprecatedCategory.Course],
-          id: "course-slot",
-        };
-        const preCompetitiveSlot = {
-          ...baseSlot,
-          categories: [Category.Competitive, DeprecatedCategory.PreCompetitive],
-          id: "pre-competitive-slot",
-        };
-        // Edge case, if the category already exists, shouldn't be duplicated
-        const courseMinorsSlot = {
-          ...baseSlot,
-          categories: [Category.CourseMinors, DeprecatedCategory.Course],
-          id: "pre-competitive-minors-slot",
-        };
-
-        const courseSlotRef = adminDb.doc(
-          getSlotDocPath(organization, courseSlot.id)
-        );
-        const preCompetitiveSlotRef = adminDb.doc(
-          getSlotDocPath(organization, preCompetitiveSlot.id)
-        );
-        const courseMinorsSlotRef = adminDb.doc(
-          getSlotDocPath(organization, courseMinorsSlot.id)
-        );
-
-        await Promise.all([
-          courseSlotRef.set(courseSlot),
-          preCompetitiveSlotRef.set(preCompetitiveSlot),
-          courseMinorsSlotRef.set(courseMinorsSlot),
-        ]);
-
-        await invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)({
-          organization,
-        });
-
-        const [resCourse, resPreCompetitive, resCourseMinors] =
-          await Promise.all([
-            courseSlotRef.get(),
-            preCompetitiveSlotRef.get(),
-            courseMinorsSlotRef.get(),
-          ]);
-        expect(resCourse.data()).toEqual({
-          ...courseSlot,
-          categories: [Category.Competitive, Category.CourseMinors],
-        });
-        expect(resPreCompetitive.data()).toEqual({
-          ...preCompetitiveSlot,
-          categories: [Category.Competitive, Category.PreCompetitiveMinors],
-        });
-        expect(resCourseMinors.data()).toEqual({
-          ...courseMinorsSlot,
-          categories: [Category.CourseMinors],
-        });
-      }
-    );
-
-    testWithEmulator(
-      'should replace "pre-competitive" and "course" category entries with corresponging "-minor" category entries, in customer documents',
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const courseCustomer = {
-          ...saul,
-          categories: [DeprecatedCategory.Course],
-          id: "course-customer",
-        };
-        const preCompetitiveCustomer = {
-          ...saul,
-          categories: [DeprecatedCategory.PreCompetitive],
-          id: "pre-competitive-customer",
-        };
-
-        const courseCustomerRef = adminDb.doc(
-          getCustomerDocPath(organization, courseCustomer.id)
-        );
-        const preCompetitiveCustomerRef = adminDb.doc(
-          getCustomerDocPath(organization, preCompetitiveCustomer.id)
-        );
-
-        await Promise.all([
-          courseCustomerRef.set(courseCustomer),
-          preCompetitiveCustomerRef.set(preCompetitiveCustomer),
-        ]);
-
-        await invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)({
-          organization,
-        });
-
-        const [resCourse, resPreCompetitive] = await Promise.all([
-          courseCustomerRef.get(),
-          preCompetitiveCustomerRef.get(),
-        ]);
-        expect(resCourse.data()).toEqual({
-          ...courseCustomer,
-          categories: [Category.CourseMinors],
-        });
-        expect(resPreCompetitive.data()).toEqual({
-          ...preCompetitiveCustomer,
-          categories: [Category.PreCompetitiveMinors],
-        });
-      }
-    );
-
-    testWithEmulator("should not allow calls to non-admins", async () => {
-      const { organization } = await setUpOrganization({ doLogin: false });
-      await expect(
-        invokeFunction(CloudFunction.MigrateCategoriesToExplicitMinors)({
-          organization,
-        })
-      ).rejects.toThrow(HTTPSErrors.Unauth);
-    });
-  });
-
-  describe("customersToPluralCategories", () => {
-    testWithEmulator(
-      "should change customer's category field into an array instead of scalar",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const customer = {
-          ...saul,
-          category: saul.categories[0],
-          id: "course-customer",
-        };
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, customer.id)
-        );
-        await customerRef.set(customer);
-
-        await invokeFunction(CloudFunction.CustomersToPluralCategories)({
-          organization,
-        });
-
-        const { category, ...newCustomer } = customer;
-
-        expect((await customerRef.get()).data()).toEqual({
-          ...newCustomer,
-          categories: [category],
-        });
-      }
-    );
-    // Normally when you try to convert an array, firestore throws an INTERNAL error
-    testWithEmulator(
-      "should not throw an error if category is already an array",
-      async () => {
-        const { organization } = await setUpOrganization();
-
-        const customer = {
-          ...saul,
-          id: "course-customer",
-        };
-        const customerRef = adminDb.doc(
-          getCustomerDocPath(organization, customer.id)
-        );
-        await customerRef.set(customer);
-
-        await expect(
-          invokeFunction(CloudFunction.CustomersToPluralCategories)({
-            organization,
-          })
-        ).resolves.not.toThrow();
-      }
-    );
-    testWithEmulator("should not allow calls to non-admins", async () => {
-      const { organization } = await setUpOrganization({ doLogin: false });
-      await expect(
-        invokeFunction(CloudFunction.CustomersToPluralCategories)({
-          organization,
-        })
       ).rejects.toThrow(HTTPSErrors.Unauth);
     });
   });

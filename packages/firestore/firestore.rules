@@ -27,9 +27,6 @@ service cloud.firestore {
     function getCategories() {
       return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive"]
     }
-    function getAllCategories() {
-      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive", "adults"]
-    }
     function getSlotTypes() {
       return ["ice", "off-ice"]
     }
@@ -93,18 +90,12 @@ service cloud.firestore {
         // Only admins can read/delete slots
         allow read, delete: if isAdmin(organization)
         // Validate data integrity for create/update
-        allow update: if isAdmin(organization) &&
+        allow create, update: if isAdmin(organization) &&
           // check date
           checkValidDate(request.resource.data.date) &&
           // check valid type
           request.resource.data.type in getSlotTypes() &&
-          // check valid categories (on update, "adults" is still supported, even though deprecated)
-          request.resource.data.categories.hasOnly(getAllCategories())
-          // @TODO check valid intervals
-        allow create: if isAdmin(organization) &&
-          checkValidDate(request.resource.data.date) &&
-          request.resource.data.type in getSlotTypes() &&
-          // allow slot creation only with currently supported categories
+          // contains only supported categories
           request.resource.data.categories.hasOnly(getCategories())
       }
       // #endregion slot-checks
@@ -165,7 +156,7 @@ service cloud.firestore {
         // Only admins can access customer collection
         allow read, delete: if isAdmin(organization)
         // Check data integrity 
-        allow update: if (
+        allow create, update: if (
           isAdmin(organization) &&
           // Check required fields
           checkRequiredString(request.resource.data.name) &&
@@ -173,30 +164,6 @@ service cloud.firestore {
           // Check optional dates
           checkOptionalValidDate(request.resource.data, "birthday") &&
           checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
-          // Check category (allows updates even if "adults")
-          request.resource.data.categories.hasOnly(getAllCategories()) &&
-          // Check valid email
-          (
-            !("email" in request.resource.data) || 
-            request.resource.data.email == "" || 
-            checkValidEmail(request.resource.data.email)
-          ) &&
-          // Check valid phone number 
-          (
-            !("phone" in request.resource.data) || 
-            request.resource.data.phone == "" || 
-            checkValidPhoneNumber(request.resource.data.phone)
-          )
-        )
-        allow create: if (
-          isAdmin(organization) &&
-          // Check required fields
-          checkRequiredString(request.resource.data.name) &&
-          checkRequiredString(request.resource.data.surname) &&
-          // Check optional dates
-          checkOptionalValidDate(request.resource.data, "birthday") &&
-          checkOptionalValidDate(request.resource.data, "certificateExpiration") &&
-          // Check category (shouldn't allow creation with "adults" category)
           request.resource.data.categories.hasOnly(getCategories()) &&
           // Check valid email
           (

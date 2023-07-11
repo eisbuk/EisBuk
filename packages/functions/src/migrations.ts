@@ -3,12 +3,8 @@ import { FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 
 import {
-  Category,
   Collection,
-  DeprecatedCategory,
   OrgSubCollection,
-  SlotInterface,
-  CategoryUnion,
   defaultEmailTemplates,
   OrganizationData,
   CustomerFull,
@@ -113,119 +109,6 @@ export const deleteOrphanedBookings = functions
     });
 
     await Promise.all(toDelete);
-    return { success: true };
-  });
-
-export const migrateCategoriesToExplicitMinors = functions
-  .region(__functionsZone__)
-  .https.onCall(async ({ organization }, { auth }) => {
-    if (!(await checkUser(organization, auth))) throwUnauth();
-
-    const batch = admin.firestore().batch();
-
-    const orgRef = admin
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(organization);
-    const slotsRef = orgRef.collection(OrgSubCollection.Slots);
-    const customersRef = orgRef.collection(OrgSubCollection.Customers);
-
-    const [allSlots, allCustomers] = await Promise.all([
-      slotsRef.get(),
-      customersRef.get(),
-    ]);
-
-    // Enqueue slot updates
-    allSlots.forEach((slot) => {
-      const updatedCategories: CategoryUnion[] = [];
-
-      const data = slot.data() as SlotInterface;
-      const categories = data.categories as CategoryUnion[];
-
-      // Update slot only if needed: if at least one of the categories needs updating
-      let shouldUpdate = false;
-      categories.forEach((c) => {
-        let category = c;
-        switch (category) {
-          case DeprecatedCategory.Course:
-            category = Category.CourseMinors;
-            shouldUpdate = true;
-            break;
-          case DeprecatedCategory.PreCompetitive:
-            category = Category.PreCompetitiveMinors;
-            shouldUpdate = true;
-            break;
-          default:
-        }
-        // Avoid duplicating of the categories
-        if (!updatedCategories.includes(category)) {
-          updatedCategories.push(category);
-        }
-      });
-
-      if (shouldUpdate) {
-        batch.set(slot.ref, { categories: updatedCategories }, { merge: true });
-      }
-    });
-
-    // Enqueue customer updates
-    allCustomers.forEach((customer) => {
-      const data = customer.data() as CustomerFull;
-      const categories = data.categories as CategoryUnion[];
-
-      categories.forEach((category, i) => {
-        switch (category) {
-          case DeprecatedCategory.Course:
-            categories[i] = Category.CourseMinors;
-            break;
-          case DeprecatedCategory.PreCompetitive:
-            categories[i] = Category.PreCompetitiveMinors;
-            break;
-          default:
-            // No changes needed, no updates batched
-            return;
-        }
-      });
-
-      batch.set(customer.ref, { categories }, { merge: true });
-    });
-
-    await batch.commit();
-
-    return { success: true };
-  });
-
-export const customersToPluralCategories = functions
-  .region(__functionsZone__)
-  .https.onCall(async ({ organization }, { auth }) => {
-    if (!(await checkUser(organization, auth))) throwUnauth();
-
-    const batch = admin.firestore().batch();
-
-    const orgRef = admin
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(organization);
-    const customersRef = orgRef.collection(OrgSubCollection.Customers);
-
-    const allCustomers = await customersRef.get();
-
-    allCustomers.forEach((customer) => {
-      const data = customer.data();
-
-      if (!data.category) return;
-      const { category, ...noCategoryData } = data;
-      if (!Array.isArray(category)) {
-        functions.logger.info(`Converted customer: ${data.id}`);
-
-        batch.set(customer.ref, { ...noCategoryData, categories: [category] });
-      } else {
-        batch.set(customer.ref, { ...noCategoryData, categories: category });
-      }
-    });
-
-    await batch.commit();
-
     return { success: true };
   });
 

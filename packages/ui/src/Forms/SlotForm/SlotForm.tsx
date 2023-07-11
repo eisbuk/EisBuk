@@ -5,7 +5,6 @@ import * as Yup from "yup";
 
 import {
   Category,
-  DeprecatedCategory,
   SlotInterface,
   SlotInterfaceLoose,
   SlotInterval,
@@ -109,17 +108,11 @@ const SlotForm: React.FC<SlotFormProps> = ({
     : t(SlotFormTitle.NewSlot);
   const titleDate = t(DateFormat.DayMonth, { date: DateTime.fromISO(date) });
 
-  type CategoryString = DeprecatedCategory | Category;
-  const deprecatedCategories: CategoryString[] =
-    Object.values(DeprecatedCategory);
-  const availableCategories = (
-    Object.values(Category) as CategoryString[]
-  ).concat(deprecatedCategories);
+  const availableCategories = Object.values(Category);
 
   const categoryOptions = availableCategories.map((category) => ({
     value: category,
     label: t(CategoryLabel[category]),
-    disabled: deprecatedCategories.includes(category),
   }));
 
   const typeOptions = Object.values(SlotType).map((type) => ({
@@ -216,7 +209,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
                     className="col-span-2"
                     key={category.label}
                     component={Checkbox}
-                    disabled={disableCategories || category.disabled}
+                    disabled={disableCategories}
                   />
                 ))}
               </fieldset>
