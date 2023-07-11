@@ -45,7 +45,7 @@ describe("login", () => {
       cy.clearCookies();
       cy.visit(PrivateRoutes.Root);
       // start email auth flow
-      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
     });
 
     it("logs in with existing email", () => {
@@ -131,7 +131,7 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Cancel));
 
       // check mismatched password
-      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Next));
       cy.getAttrWith("type", "password").type("invalid-password");
@@ -166,7 +166,7 @@ describe("login", () => {
       cy.clickButton(t(ActionButton.Cancel));
 
       // check sign in flow
-      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
       cy.getAttrWith("type", "email").type(defaultUser.email);
       cy.clickButton(t(ActionButton.Next));
       // password is required
@@ -415,7 +415,7 @@ describe("login", () => {
       const password = "password";
       cy.addAuthUser({ email: saul.email, password });
       // log in saul, who is not an admin, but exists in customers collection
-      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
       cy.getAttrWith("type", "email").type(saul.email);
       cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.SignIn));
@@ -431,7 +431,7 @@ describe("login", () => {
       const password = "password";
       cy.addAuthUser({ email, password });
       // log in saul, who is not an admin, but exists in customers collection
-      cy.clickButton(t(AuthTitle.SignInWithEmail));
+      cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
       cy.getAttrWith("type", "email").type(email);
       cy.clickButton(t(ActionButton.Next));
       cy.contains(t(AuthTitle.SignIn));

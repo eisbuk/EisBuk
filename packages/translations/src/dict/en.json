@@ -50,7 +50,7 @@
     "Unknown": "Unknown error"
   },
   "AuthTitle": {
-    "SignInWithEmail": "Sign in with email",
+    "SignInWithEmail": "Sign in with email and password",
     "SignInWithEmailLink": "Sign in with email link",
     "SignInWithPhone": "Sign in with phone",
     "SignInWithGoogle": "Sign in with Google",
