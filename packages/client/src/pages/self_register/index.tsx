@@ -54,7 +54,7 @@ const SelfRegisterPage: React.FC = () => {
   // to more correctly control the 'isSubmitting' state
   const submitForm: Parameters<
     typeof CustomerForm.SelfReg
-  >[0]["onSave"] = async (values, { setErrors }) => {
+  >[0]["onSave"] = async (values, { setErrors, setSubmitting }) => {
     const { secretKey, codeOk } = await customerSelfRegister(values)(
       dispatch,
       getState,
@@ -68,6 +68,7 @@ const SelfRegisterPage: React.FC = () => {
       setErrors({
         registrationCode: t(ValidationMessage.InvalidRegistrationCode),
       });
+      setSubmitting(false);
     }
 
     if (secretKey) {
