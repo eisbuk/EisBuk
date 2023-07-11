@@ -12,7 +12,7 @@ import i18n, {
   CustomerNavigationLabel,
 } from "@eisbuk/translations";
 
-import { Routes, __notificationToastId__ } from "../temp";
+import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
@@ -108,7 +108,7 @@ describe("Booking flow", () => {
           force: true,
         });
 
-      cy.getByTestId(__notificationToastId__).contains(
+      cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",
@@ -135,7 +135,7 @@ describe("Booking flow", () => {
         .click({
           force: true,
         });
-      cy.getByTestId(__notificationToastId__).contains(
+      cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: DateTime.fromISO("2022-01-01"),
           interval: "09:00-11:00",
@@ -198,7 +198,7 @@ describe("Booking flow", () => {
         force: true,
       });
 
-      cy.getByTestId(__notificationToastId__).contains(
+      cy.getByTestId("notification-toast").contains(
         i18n.t(NotificationMessage.BookingSuccess, {
           date: testDateLuxon,
           interval: "09:00-11:00",

@@ -17,7 +17,7 @@ import {
 
 import { pasteSlotsDay, pasteSlotsWeek } from "@/store/actions/copyPaste";
 
-import { __pasteButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 interface Props {
   onPaste?: () => void;
@@ -100,7 +100,7 @@ export const PasteButton: React.FC<Props> = ({ onPaste }) => {
     <SlotOperationButton
       onClick={handlePaste}
       disabled={disableButton}
-      data-testid={__pasteButtonId__}
+      data-testid={testId("paste-button")}
       aria-label={ariaLabel}
     >
       <ClipboardList />

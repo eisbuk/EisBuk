@@ -7,7 +7,7 @@ import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { __pasteButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -61,7 +61,7 @@ describe.skip("SlotOperationButtons", () => {
           <PasteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__pasteButtonId__).click();
+      screen.getByTestId(testId("paste-button")).click();
       // test dispatch being called with the result of `newPasteSlotDay` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
         mockPasteDayImplementation(dummyDate)
@@ -87,7 +87,7 @@ describe.skip("SlotOperationButtons", () => {
           <PasteButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__pasteButtonId__).click();
+      screen.getByTestId(testId("paste-button")).click();
       // test dispatch being called with the result of `newPasteSlotWeek` mocked implementation
       expect(mockDispatch).toHaveBeenCalledWith(
         mockPasteWeekImplementation(dummyDate)
@@ -103,7 +103,7 @@ describe.skip("SlotOperationButtons", () => {
           <PasteButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.getByTestId(__pasteButtonId__);
+      const buttonOnScreen = screen.getByTestId(testId("paste-button"));
       expect(buttonOnScreen).toHaveProperty("disabled", true);
     });
   });
@@ -113,7 +113,7 @@ describe.skip("SlotOperationButtons", () => {
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<PasteButton />);
-      const buttonOnScreen = screen.queryByTestId(__pasteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("paste-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
@@ -124,7 +124,7 @@ describe.skip("SlotOperationButtons", () => {
           <PasteButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__pasteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("paste-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(
         __pasteButtonWrongContextError
@@ -137,7 +137,7 @@ describe.skip("SlotOperationButtons", () => {
           <PasteButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__pasteButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("paste-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noDatePaste);
     });

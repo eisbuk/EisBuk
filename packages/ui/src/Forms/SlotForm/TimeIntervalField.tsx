@@ -4,12 +4,7 @@ import { Field, useField } from "formik";
 import { useTranslation, SlotFormAria } from "@eisbuk/translations";
 import { Trash } from "@eisbuk/svg";
 
-import {
-  __deleteIntervalId__,
-  __endTimeInputId__,
-  __startTimeInputId__,
-  __timeIntervalFieldId__,
-} from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import TimePickerField from "./TimePickerField";
 import IconButton from "../../IconButton";
@@ -40,7 +35,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
 
   return (
     <div
-      data-testid={__timeIntervalFieldId__}
+      data-testid={testId("time-interval-field")}
       className={`relative w-full px-4 py-3 flex items-center justify-between gap-x-8 ${colorClass}`}
     >
       <div className="w-full flex flex-col gap-x-8 gap-y-4 sm:flex-row sm:justify-evenly">
@@ -48,7 +43,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
           key="startTime"
           name={`${name}.startTime`}
           label={t("SlotForm.StartTime")}
-          data-testid={__startTimeInputId__}
+          data-testid={testId("start-time-input")}
           aria-label={t(SlotFormAria.IntervalStart)}
           component={TimePickerField}
           error={Boolean(error)}
@@ -57,7 +52,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
           key="endTime"
           name={`${name}.endTime`}
           label={t("SlotForm.EndTime")}
-          data-testid={__endTimeInputId__}
+          data-testid={testId("end-time-input")}
           aria-label={t(SlotFormAria.IntervalEnd)}
           component={TimePickerField}
           error={Boolean(error)}
@@ -65,7 +60,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
       </div>
       <IconButton
         className="!w-14 !h-10 py-1.5 bg-cyan-700 active:bg-cyan-600 text-white"
-        data-testid={__deleteIntervalId__}
+        data-testid={testId("delete-interval-button")}
         aria-label={t(SlotFormAria.DeleteInterval)}
         color="primary"
         onClick={onDelete}

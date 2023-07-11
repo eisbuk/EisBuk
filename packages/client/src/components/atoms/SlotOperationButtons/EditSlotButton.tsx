@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 
 import { Pencil } from "@eisbuk/svg";
 
-import { __editSlotButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -66,7 +66,7 @@ export const EditSlotButton: React.FC = () => {
   return (
     <SlotOperationButton
       onClick={openForm}
-      data-testid={__editSlotButtonId__}
+      data-testid={testId("edit-slot-button")}
       disabled={disabled}
     >
       <Pencil />

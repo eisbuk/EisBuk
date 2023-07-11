@@ -10,7 +10,7 @@ import i18n, {
 import { User, Cake, Mail, Phone } from "@eisbuk/svg";
 import { isValidPhoneNumber } from "@eisbuk/shared";
 
-import { __birthdayInputId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import FormSection from "../FormSection";
 import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";
@@ -62,7 +62,7 @@ const SectionPersonalDetails: React.FC<SectionProps> = ({
         variant={FormFieldVariant.Date}
         width={FormFieldWitdh.MD}
         label={t(CustomerLabel.Birthday)}
-        data-testid={__birthdayInputId__}
+        data-testid={testId("birthday-input")}
         Icon={Cake}
       />
 

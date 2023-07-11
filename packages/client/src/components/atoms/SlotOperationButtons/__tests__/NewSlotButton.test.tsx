@@ -7,7 +7,7 @@ import { describe, vi, expect, test, afterEach } from "vitest";
 import { screen, render, cleanup } from "@testing-library/react";
 import { DateTime } from "luxon";
 
-import { __newSlotButtonId__ } from "@eisbuk/testing/testIds";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { ButtonContextType } from "@/enums/components";
 
@@ -46,7 +46,7 @@ describe("SlotOperationButtons", () => {
           <NewSlotButton />
         </SlotOperationButtons>
       );
-      screen.getByTestId(__newSlotButtonId__).click();
+      screen.getByTestId(testId("new-slot-button")).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual("SlotFormDialog");
       expect(dispatchCallPayload.props).toEqual({
@@ -60,7 +60,7 @@ describe("SlotOperationButtons", () => {
 
     test("should not render the button and should log error to console if not within 'SlotOperationButtons' context", () => {
       render(<NewSlotButton />);
-      const buttonOnScreen = screen.queryByTestId(__newSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("new-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__slotButtonNoContextError);
     });
@@ -71,7 +71,7 @@ describe("SlotOperationButtons", () => {
           <NewSlotButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__newSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("new-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(
         __newSlotButtonWrongContextError
@@ -84,7 +84,7 @@ describe("SlotOperationButtons", () => {
           <NewSlotButton />
         </SlotOperationButtons>
       );
-      const buttonOnScreen = screen.queryByTestId(__newSlotButtonId__);
+      const buttonOnScreen = screen.queryByTestId(testId("new-slot-button"));
       expect(buttonOnScreen).toEqual(null);
       expect(spyConsoleError).toHaveBeenCalledWith(__noDateProvidedError);
     });

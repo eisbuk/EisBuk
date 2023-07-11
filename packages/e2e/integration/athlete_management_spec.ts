@@ -5,7 +5,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 
-import { PrivateRoutes, __addAthleteId__, __birthdayInputId__ } from "../temp";
+import { PrivateRoutes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
@@ -23,7 +23,7 @@ describe("Athlete form", () => {
 
   it("fills in the customer form and submits it", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     cy.fillInCustomerData(saul);
     // The phone number for saul is wrong, so we'll fix it
@@ -40,7 +40,7 @@ describe("Athlete form", () => {
 
   it("allows customer form submission with minimal fields", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     cy.getAttrWith("name", "name").type(saul.name);
     cy.getAttrWith("name", "surname").type(saul.surname);
@@ -56,7 +56,7 @@ describe("Athlete form", () => {
 
   it("doesn't allow invalid date input format", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     cy.fillInCustomerData({
       ...saul,
@@ -71,7 +71,7 @@ describe("Athlete form", () => {
 
   it("doesn't allow invalid phone input format", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     // test phone number for edge cases
     cy.getAttrWith("name", "phone").clearAndType("foo 2222 868");
@@ -100,22 +100,22 @@ describe("Athlete form", () => {
 
   it("replaces different date separators ('.' and '-') with '/'", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     cy.fillInCustomerData(saul);
 
     // dashes
-    cy.getByTestId(__birthdayInputId__).first().clearAndType("12-12-1990");
+    cy.getByTestId("birthday-input").first().clearAndType("12-12-1990");
 
     // dots
     cy.getAttrWith("value", "12/12/1990");
-    cy.getByTestId(__birthdayInputId__).first().clearAndType("12.12.1990");
+    cy.getByTestId("birthday-input").first().clearAndType("12.12.1990");
     cy.getAttrWith("value", "12/12/1990");
   });
 
   it("handles edge (passable) cases of input", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
 
     const archer = {
       ...saul,
@@ -142,7 +142,7 @@ describe("Athlete form", () => {
 
   it("prefills the number field of the first athlete", () => {
     cy.visit(PrivateRoutes.Athletes);
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
     cy.getAttrWith("name", "subscriptionNumber").should("have.value", "1");
   });
 
@@ -158,7 +158,7 @@ describe("Athlete form", () => {
     // button too early we'll get a default value of 1
     cy.contains("Saul"); // I will only speak in the presence of my lawyer!
     cy.contains("Goodman");
-    cy.getByTestId(__addAthleteId__).click();
+    cy.getByTestId("add-athlete").click();
     cy.getAttrWith("name", "subscriptionNumber").should("have.value", "42");
   });
 });
