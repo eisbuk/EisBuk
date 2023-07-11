@@ -54,7 +54,7 @@ describe("auth-related redirects", () => {
 
   describe("authenticated non-admin", () => {
     it("redirects to customer area page from any of the private routes", () => {
-      const { email, name, surname, password } = customers.saul;
+      const { email, password, secretKey } = customers.saul;
 
       // Sign up (or sign in on each subsequent test) as saul.
       // Saul is already registered in the app (in customers collection).
@@ -62,31 +62,31 @@ describe("auth-related redirects", () => {
 
       // Check for /athletes page
       cy.visit(PrivateRoutes.Athletes);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // Check for /athletes/new page
       cy.visit(PrivateRoutes.NewAthlete);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // Check for /athletes/:id page
       cy.visit([PrivateRoutes.Athletes, customers.saul.id].join("/"));
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // Check for attendance ("/") page
       cy.visit(PrivateRoutes.Root);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // Check for slots page
       cy.visit(PrivateRoutes.Slots);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // Check for admin preferences page
       cy.visit(PrivateRoutes.AdminPreferences);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // If landing on 'customer_area' page, should automatically be redirected to their own customer area page (with their secret key)
       cy.visit(Routes.CustomerArea);
-      cy.contains(`${name} ${surname}`);
+      cy.url().should("include", secretKey);
 
       // The following is an edge case, is a bit tricky to implement and we should confirm that is, in fact, the desired behaviour
       //
