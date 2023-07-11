@@ -230,7 +230,8 @@
     "Verify": "Verify",
     "Add": "Add",
     "Edit": "Edit",
-    "Delete": "Delete"
+    "Delete": "Delete",
+    "Loading": "Loading"
   },
 
   "Notification": {

@@ -91,4 +91,39 @@ describe("Athlete self registration", () => {
       t(Alerts.ContactEmail, { email: __emailFrom__ }).replace(/<\/?a.*>/g, "")
     );
   });
+
+  it("checks for a spinner on the submit button while the submit request is processing", () => {
+    cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
+
+    const randomString = uuid().slice(0, 10);
+    const newEmail = `${randomString}@email.com`;
+
+    cy.getAttrWith("type", "email").type(newEmail);
+    cy.clickButton(t(ActionButton.Next));
+    cy.contains(t(AuthTitle.CreateAccount));
+
+    cy.getAttrWith("type", "password").type("non-relevant-password");
+    cy.clickButton(t(ActionButton.Save));
+
+    cy.intercept(
+      {
+        method: "POST",
+        url: "**/customerSelfRegister",
+      },
+      (req) => {
+        req.on("response", (res) => {
+          console.log("waiting");
+          res.setDelay(3000);
+        });
+      }
+    );
+
+    cy.getAttrWith("name", "name").type(saul.name);
+    cy.getAttrWith("name", "surname").type(saul.surname);
+    cy.getAttrWith("name", "birthday").type(saul.birthday);
+
+    cy.getAttrWith("name", "registrationCode").type(__registrationCode__);
+    cy.clickButton(t(ActionButton.Save));
+    cy.contains(t(ActionButton.Loading));
+  });
 });
