@@ -46,7 +46,7 @@ export const shortName = (name: string, surname: string) => {
     .map((word, i, o) =>
       i === o.length - 1
         ? word
-        : surnameParticles.includes(word)
+        : surnameParticles.includes(word.toLowerCase())
         ? word
         : `${word[0]}.`
     )
