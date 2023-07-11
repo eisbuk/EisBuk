@@ -6,10 +6,10 @@ import { useDispatch, useSelector } from "react-redux";
 
 import {
   CalendarNav,
-  Layout,
   TabItem,
   CalendarNavProps,
   Button,
+  LayoutContent,
 } from "@eisbuk/ui";
 import { Calendar, Printer } from "@eisbuk/svg";
 import { OrgSubCollection } from "@eisbuk/shared";
@@ -21,15 +21,11 @@ import { getOrganization } from "@/lib/getters";
 import ByDayView from "./views/ByDay";
 import ByMonthView from "./views/ByMonth";
 
-import { NotificationsContainer } from "@/features/notifications/components";
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import AthletesApproval from "@/controllers/AthletesApproval";
+import Layout from "@/controllers/Layout";
 
 import { getCalendarDay } from "@/store/selectors/app";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
-
-import { adminLinks } from "@/data/navigation";
 
 enum Views {
   ByDay = "ByDayView",
@@ -38,8 +34,18 @@ enum Views {
 
 // Get appropriate view to render
 const viewsLookup = {
-  [Views.ByDay]: ByDayView,
-  [Views.ByMonth]: ByMonthView,
+  [Views.ByDay]: () => (
+    <LayoutContent>
+      <ByDayView />
+    </LayoutContent>
+  ),
+  [Views.ByMonth]: () => (
+    <LayoutContent wide>
+      <MonthWrapper>
+        <ByMonthView />
+      </MonthWrapper>
+    </LayoutContent>
+  ),
 };
 
 // TODO: This is duplicated in `customer_area` local hooks file => lift out
@@ -82,12 +88,6 @@ const AttendancePage: React.FC = () => {
       </Link>
     ) : undefined;
 
-  const additionalAdminContent = (
-    <React.Fragment>
-      <BirthdayMenu />
-      <AthletesApproval />
-    </React.Fragment>
-  );
   const additionalButtons = (
     <>
       <TabItem
@@ -108,25 +108,13 @@ const AttendancePage: React.FC = () => {
   );
 
   return (
-    <Layout
-      isAdmin
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-      additionalButtons={additionalButtons}
-    >
+    <Layout additionalButtons={additionalButtons}>
       <CalendarNav
         {...calendarNavProps}
         jump={calendarJump}
         additionalContent={calendarAdditionalContent}
       />
-      {view === Views.ByDay ? (
-        <AttendanceView />
-      ) : (
-        <MonthWrapper>
-          <AttendanceView />
-        </MonthWrapper>
-      )}
+      <AttendanceView />
     </Layout>
   );
 };

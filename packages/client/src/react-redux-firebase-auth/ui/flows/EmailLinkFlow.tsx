@@ -205,7 +205,9 @@ const fieldsLookup: AuthTextFieldLookup<EmailLinkAuthStep> = Object.values(
       ? {
           ...acc,
           // all auth steps except for `EmailLinkAuthStep.CheckSignInEmail` have the same (email) input field
-          [authStep]: [{ name: "email", label: "Email", type: "email" }],
+          [authStep]: [
+            { name: "email", label: "Email", type: "email", autoFocus: true },
+          ],
         }
       : acc,
   {}

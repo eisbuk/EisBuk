@@ -102,6 +102,7 @@ const getMillisFromMidnight = (time: string) =>
  * @param {string | null} interval - String slot interval
  * Converts a string slot interval to a number e.g:
  * `null => 0`;
+ * `"21:00 - 21:20" => 0.5`;
  * `"16:00 - 17:00" => 1.0`;
  * `"22:00 - 23:30" => 1.5`;
  * `"22:00 - 24:00" => 2`;
@@ -118,11 +119,7 @@ export const calculateIntervalDuration = (interval: string | null) => {
   const diffMillis =
     getMillisFromMidnight(endTime) - getMillisFromMidnight(startTime);
 
-  return diffMillis <= hourInMillis
-    ? 1
-    : diffMillis <= hourInMillis * 1.5
-    ? 1.5
-    : 2;
+  return Math.ceil((diffMillis / hourInMillis) * 2) * 0.5;
 };
 /**
  * interpolate text including <p/>

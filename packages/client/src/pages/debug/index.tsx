@@ -10,22 +10,17 @@ import {
   ButtonColor,
   ButtonProps,
   ButtonSize,
-  Layout,
+  LayoutContent,
 } from "@eisbuk/ui";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
 import { functions } from "@/setup";
 
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import AthletesApproval from "@/controllers/AthletesApproval";
-
-import { NotificationsContainer } from "@/features/notifications/components";
+import Layout from "@/controllers/Layout";
 
 import useTitle from "@/hooks/useTitle";
 
 import { createFunctionCaller } from "@/utils/firebase";
-
-import { adminLinks } from "@/data/navigation";
 
 const auth = getAuth();
 
@@ -35,7 +30,9 @@ const auth = getAuth();
  * @returns
  */
 export const createAdminTestUsers = async (): Promise<void> => {
-  await createFunctionCaller(functions, CloudFunction.CreateOrganization)();
+  await createFunctionCaller(functions, CloudFunction.CreateOrganization, {
+    displayName: "EisBuk Dev",
+  })();
   // Auth emulator is not currently accessible from within the functions
   try {
     await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
@@ -59,125 +56,116 @@ const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
 const DebugPage: React.FC = () => {
   useTitle("Debug");
 
-  const additionalAdminContent = (
-    <React.Fragment>
-      <BirthdayMenu />
-      <AthletesApproval />
-    </React.Fragment>
-  );
   return (
-    <Layout
-      adminLinks={adminLinks}
-      isAdmin
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-    >
-      <div className="content-container py-8">
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createAdminTestUsers}
-            color={ButtonColor.Secondary}
-          >
-            Create admin test users
-          </DebugPageButton>
-        </div>
+    <Layout>
+      <LayoutContent>
+        <div className="py-8">
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createAdminTestUsers}
+              color={ButtonColor.Secondary}
+            >
+              Create admin test users
+            </DebugPageButton>
+          </div>
 
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.CreateTestData,
-              {
-                numUsers: 10,
-              }
-            )}
-            color={ButtonColor.Primary}
-          >
-            Create test users
-          </DebugPageButton>
-        </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.CreateTestData,
+                {
+                  numUsers: 10,
+                }
+              )}
+              color={ButtonColor.Primary}
+            >
+              Create test users
+            </DebugPageButton>
+          </div>
 
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.CreateTestSlots
-            )}
-            color={ButtonColor.Primary}
-          >
-            Create test slots
-          </DebugPageButton>
-        </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.CreateTestSlots
+              )}
+              color={ButtonColor.Primary}
+            >
+              Create test slots
+            </DebugPageButton>
+          </div>
 
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.PruneSlotsByDay
-            )}
-            color={ButtonColor.Primary}
-          >
-            Prune slots by day
-          </DebugPageButton>
-        </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.PruneSlotsByDay
+              )}
+              color={ButtonColor.Primary}
+            >
+              Prune slots by day
+            </DebugPageButton>
+          </div>
 
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.DeleteOrphanedBookings
-            )}
-            color={ButtonColor.Primary}
-          >
-            Delete orphaned bookings
-          </DebugPageButton>
-        </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.DeleteOrphanedBookings
+              )}
+              color={ButtonColor.Primary}
+            >
+              Delete orphaned bookings
+            </DebugPageButton>
+          </div>
 
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.MigrateCategoriesToExplicitMinors
-            )}
-            color={ButtonColor.Primary}
-          >
-            Migrate categories to explicit minors
-          </DebugPageButton>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.MigrateCategoriesToExplicitMinors
+              )}
+              color={ButtonColor.Primary}
+            >
+              Migrate categories to explicit minors
+            </DebugPageButton>
+          </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.CustomersToPluralCategories
+              )}
+              color={ButtonColor.Primary}
+            >
+              Migrate categories to array
+            </DebugPageButton>
+          </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.PopulateDefaultEmailTemplates
+              )}
+              color={ButtonColor.Primary}
+            >
+              Populate Default Email Templates
+            </DebugPageButton>
+          </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.RemoveInvalidCustomerPhones
+              )}
+              color={ButtonColor.Primary}
+            >
+              Remove Invalid Customer Phones
+            </DebugPageButton>
+          </div>
         </div>
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.CustomersToPluralCategories
-            )}
-            color={ButtonColor.Primary}
-          >
-            Migrate categories to array
-          </DebugPageButton>
-        </div>
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.PopulateDefaultEmailTemplates
-            )}
-            color={ButtonColor.Primary}
-          >
-            Populate Default Email Templates
-          </DebugPageButton>
-        </div>
-        <div className="p-2">
-          <DebugPageButton
-            onClick={createFunctionCaller(
-              functions,
-              CloudFunction.RemoveInvalidCustomerPhones
-            )}
-            color={ButtonColor.Primary}
-          >
-            Remove Invalid Customer Phones
-          </DebugPageButton>
-        </div>
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

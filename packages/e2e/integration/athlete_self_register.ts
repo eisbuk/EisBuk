@@ -47,7 +47,7 @@ describe("Athlete self registration", () => {
   });
 
   it("creates a new account with not-yet-registered email and allows for self registration using the form", () => {
-    cy.clickButton(t(AuthTitle.SignInWithEmail));
+    cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
     // since auth service is shared amongst all organizations
     // we're creating a new email each time to ensure the current email
     // is not yet registered (by any previous tests)

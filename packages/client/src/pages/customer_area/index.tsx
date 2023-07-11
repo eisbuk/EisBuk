@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
-import { CalendarNav, Layout, TabItem } from "@eisbuk/ui";
+import { CalendarNav, LayoutContent, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -18,16 +18,11 @@ import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
-import { NotificationsContainer } from "@/features/notifications/components";
 import AddToCalendar from "@/components/atoms/AddToCalendar";
 
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import AthletesApproval from "@/controllers/AthletesApproval";
+import Layout from "@/controllers/Layout";
 
 import { getBookingsCustomer } from "@/store/selectors/bookings";
-import { getIsAdmin } from "@/store/selectors/auth";
-
-import { adminLinks } from "@/data/navigation";
 
 enum Views {
   Book = "BookView",
@@ -48,14 +43,6 @@ const viewsLookup = {
 const CustomerArea: React.FC = () => {
   const secretKey = useSecretKey();
 
-  const isAdmin = useSelector(getIsAdmin);
-
-  const additionalAdminContent = (
-    <React.Fragment>
-      <BirthdayMenu />
-      <AthletesApproval />
-    </React.Fragment>
-  );
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.SlotsByDay },
@@ -101,14 +88,7 @@ const CustomerArea: React.FC = () => {
   );
 
   return (
-    <Layout
-      isAdmin={isAdmin}
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalButtons={additionalButtons}
-      additionalAdminContent={additionalAdminContent}
-      user={userData}
-    >
+    <Layout additionalButtons={additionalButtons} user={userData}>
       {view !== "ProfileView" && (
         <CalendarNav
           {...calendarNavProps}
@@ -116,11 +96,11 @@ const CustomerArea: React.FC = () => {
           jump="month"
         />
       )}
-      <div className="content-container">
+      <LayoutContent>
         <div className="px-[44px] py-4">
           <CustomerView />
         </div>
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

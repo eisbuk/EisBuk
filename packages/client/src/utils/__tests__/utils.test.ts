@@ -38,6 +38,7 @@ describe("Helpers", () => {
     });
 
     test("should convert string to number", () => {
+      const halfStr = "21:00 - 21:20";
       const oneStr = "16:00 - 17:00";
       const oneHalfStr = "22:00 - 23:30";
       const twoStr = "22:00 - 24:00";
@@ -46,9 +47,11 @@ describe("Helpers", () => {
       // const morningResult = convertIntervalToNum(morningStr);
       const oneResult = calculateIntervalDuration(oneStr);
       const oneHalfResult = calculateIntervalDuration(oneHalfStr);
+      const halfResult = calculateIntervalDuration(halfStr);
       const twoResult = calculateIntervalDuration(twoStr);
       const nonStdResult = calculateIntervalDuration(nonStdStr);
 
+      expect(halfResult).toBe(0.5);
       expect(oneResult).toBe(1);
       expect(oneHalfResult).toBe(1.5);
       expect(twoResult).toBe(2);

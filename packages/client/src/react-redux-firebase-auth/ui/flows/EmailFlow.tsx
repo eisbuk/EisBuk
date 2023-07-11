@@ -203,15 +203,15 @@ const titleLookup = {
  */
 const fieldsLookup: AuthTextFieldLookup<EmailAuthStep> = {
   [EmailAuthStep.SignInWithEmail]: [
-    { name: "email", label: "Email", type: "email" },
+    { name: "email", label: "Email", type: "email", autoFocus: true },
   ],
   [EmailAuthStep.SignInWithEmailPassword]: [
     { name: "email", label: "Email", type: "email" },
-    { name: "password", label: "Password", type: "password" },
+    { name: "password", label: "Password", type: "password", autoFocus: true },
   ],
   [EmailAuthStep.CreateAccountEmailPassword]: [
     { name: "email", label: "Email", type: "email" },
-    { name: "password", label: "Password", type: "password" },
+    { name: "password", label: "Password", type: "password", autoFocus: true },
   ],
   [EmailAuthStep.RecoverEmailPassword]: [
     { name: "email", label: "Email", type: "email" },

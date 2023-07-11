@@ -21,6 +21,10 @@ const runCalculateDurationTableTests = (tests: TestParams[]) => {
 describe("IntervalCard", () => {
   describe("calculateDuration util", () => {
     runCalculateDurationTableTests([
+      { startTime: "09:00", endTime: "09:15", want: IntervalDuration["0.5h"] },
+      { startTime: "09:00", endTime: "09:20", want: IntervalDuration["0.5h"] },
+      { startTime: "09:00", endTime: "09:30", want: IntervalDuration["0.5h"] },
+
       { startTime: "09:00", endTime: "09:40", want: IntervalDuration["1h"] },
       { startTime: "09:00", endTime: "09:50", want: IntervalDuration["1h"] },
       { startTime: "09:00", endTime: "10:00", want: IntervalDuration["1h"] },

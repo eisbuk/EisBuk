@@ -11,15 +11,13 @@ const AttendanceByDayView: React.FC = () => {
   const allCustomers = useSelector(getCustomersList(true));
 
   return (
-    <div className="content-container">
-      <div className="max-w-[1024px] py-12 mx-auto">
-        {attendanceCards.map((attendanceCard) => (
-          <AttendanceCard
-            key={attendanceCard.id}
-            {...{ ...attendanceCard, allCustomers }}
-          />
-        ))}
-      </div>
+    <div className="max-w-[1024px] py-12 mx-auto">
+      {attendanceCards.map((attendanceCard) => (
+        <AttendanceCard
+          key={attendanceCard.id}
+          {...{ ...attendanceCard, allCustomers }}
+        />
+      ))}
     </div>
   );
 };

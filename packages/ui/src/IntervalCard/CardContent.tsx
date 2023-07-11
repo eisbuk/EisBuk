@@ -80,6 +80,7 @@ const getTimestringClasses = (
   ].join(" ");
 
 const timestringBookingSizeLookup = {
+  [IntervalDuration["0.5h"]]: ["mb-2", "text-md", "leading-8", "font-semibold"],
   [IntervalDuration["1h"]]: ["mb-2", "text-lg", "leading-8", "font-semibold"],
   [IntervalDuration["1.5h"]]: [
     "mb-2",

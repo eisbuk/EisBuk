@@ -200,6 +200,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       label: "Phone",
       type: "tel",
       inputMode: "tel",
+      autoFocus: true,
     },
   ],
   [PhoneAuthStep.EnterSMSCode]: [
@@ -209,6 +210,7 @@ const fieldsLookup: AuthTextFieldLookup<PhoneAuthStep> = {
       label: "SMS Code",
       type: "text",
       inputMode: "numeric",
+      autoFocus: true,
     },
   ],
 };
