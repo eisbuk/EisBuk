@@ -1,6 +1,5 @@
 import Layout from "./Layout";
-import type { LinkItem } from "./Layout";
 
-export { LinkItem };
+export { type LinkItem, LayoutContent } from "./Layout";
 
 export default Layout;

@@ -21,7 +21,7 @@ const PreviewField: React.FC<PreviewFieldProps> = ({ name, ...props }) => {
     organizationName: "Organization Name",
     name: "Saul",
     surname: "Goodman",
-    bookingsLink: "https://eisbuk.it/saul",
+    bookingsLink: "https://ice.it/saul",
     bookingsMonth: "April",
     extendedBookingsDate: "06/04",
     icsFile: "icsFile.ics",

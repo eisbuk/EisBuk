@@ -1,12 +1,12 @@
 import React from "react";
 
-import { EisbukLogo, SVGComponent } from "@eisbuk/svg";
+import { SVGComponent } from "@eisbuk/svg";
 
 import { UserAvatar, UserAvatarProps } from "../UserAvatar";
 import AdminBar from "./AdminBar";
 
 interface LayoutProps {
-  Logo?: React.FC;
+  logo?: JSX.Element | null;
   user?: UserAvatarProps;
   additionalButtons?: JSX.Element;
   additionalAdminContent?: JSX.Element;
@@ -16,14 +16,13 @@ interface LayoutProps {
   adminLinks?: LinkItem[];
 }
 export interface LinkItem {
-  /** @TODO This should be an SVG component */
   Icon: SVGComponent;
   label: string;
   slug: string;
 }
 
 const Layout: React.FC<LayoutProps> = ({
-  Logo = EisbukLogo,
+  logo = null,
   additionalButtons,
   additionalAdminContent,
   user = {},
@@ -45,7 +44,7 @@ const Layout: React.FC<LayoutProps> = ({
           )}
 
           <div className={getHeaderRowClasses("top")}>
-            <div className="h-5 w-[86px] text-white">{<Logo />}</div>
+            <div>{logo}</div>
             {(user.name || user.surname || user.photoURL) && (
               <UserAvatar {...user} />
             )}
@@ -69,10 +68,19 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      <main className="overflow-y-auto">{children}</main>
+      {children}
     </div>
   );
 };
+
+export const LayoutContent: React.FC<{ wide?: boolean }> = ({
+  children,
+  wide = false,
+}) => (
+  <main className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
+    {children}
+  </main>
+);
 
 /** Get styles for top / botton row of the header */
 const getHeaderRowClasses = (

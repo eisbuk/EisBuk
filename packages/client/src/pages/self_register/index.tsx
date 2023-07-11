@@ -8,7 +8,7 @@ import {
   useTranslation,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { CustomerForm, Layout } from "@eisbuk/ui";
+import { CustomerForm, LayoutContent } from "@eisbuk/ui";
 
 import { functions } from "@/setup";
 
@@ -16,8 +16,8 @@ import { Routes } from "@eisbuk/shared/ui";
 
 import { getOrganization } from "@/lib/getters";
 
+import Layout from "@/controllers/Layout";
 import Loading from "@/components/auth/Loading";
-import { NotificationsContainer } from "@/features/notifications/components";
 
 import {
   getAuthEmail,
@@ -94,25 +94,27 @@ const SelfRegisterPage: React.FC = () => {
   }
 
   return (
-    <Layout Notifications={NotificationsContainer}>
-      <div className="content-container w-full mx-auto">
-        <div className="py-24 px-11">
-          <div className="mb-28">
-            <h1 className="text-3xl text-gray-700 mb-2.5">
-              {t(CustomerLabel.Welcome, {
-                displayName: orgDisplayName || organization,
-              })}
-            </h1>
-            <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>
+    <Layout>
+      <LayoutContent>
+        <div className="w-full mx-auto">
+          <div className="py-24 px-11">
+            <div className="mb-28">
+              <h1 className="text-3xl text-gray-700 mb-2.5">
+                {t(CustomerLabel.Welcome, {
+                  displayName: orgDisplayName || organization,
+                })}
+              </h1>
+              <p className="text-gray-500">{t(CustomerLabel.FillTheForm)}</p>
+            </div>
+            <CustomerForm.SelfReg
+              onCancel={logOut}
+              onSave={submitForm}
+              customer={{ email, phone }}
+              defaultDialCode={defaultCountryCode}
+            />
           </div>
-          <CustomerForm.SelfReg
-            onCancel={logOut}
-            onSave={submitForm}
-            customer={{ email, phone }}
-            defaultDialCode={defaultCountryCode}
-          />
         </div>
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };

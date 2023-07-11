@@ -11,8 +11,8 @@ import {
   Button,
   ButtonColor,
   CalendarNav,
-  Layout,
   SlotsDayContainer,
+  LayoutContent,
 } from "@eisbuk/ui";
 
 import { SlotsAria, useTranslation } from "@eisbuk/translations";
@@ -24,14 +24,13 @@ import { LocalStore, SlotsWeek } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
+import Layout from "@/controllers/Layout";
 import SlotOperationButtons, {
   CopyButton,
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
 import SlotCard from "@/controllers/SlotCard";
-import BirthdayMenu from "@/controllers/BirthdayMenu";
-import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getAdminSlots } from "@/store/selectors/slots";
 import { getCalendarDay } from "@/store/selectors/app";
@@ -47,8 +46,6 @@ import {
 import { changeCalendarDate } from "@/store/actions/appActions";
 
 import { comparePeriods } from "@/utils/sort";
-
-import { adminLinks } from "@/data/navigation";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -70,8 +67,6 @@ const SlotsPage: React.FC = () => {
   const attendance = useSelector(
     (state: LocalStore) => state.firestore.data.attendance || {}
   );
-
-  const additionalAdminContent = <BirthdayMenu />;
 
   const { t } = useTranslation();
 
@@ -130,19 +125,14 @@ const SlotsPage: React.FC = () => {
     };
 
   return (
-    <Layout
-      isAdmin
-      adminLinks={adminLinks}
-      Notifications={NotificationsContainer}
-      additionalAdminContent={additionalAdminContent}
-    >
+    <Layout>
       <CalendarNav
         date={currentDate}
         onChange={(date) => dispatch(changeCalendarDate(date))}
         jump="week"
         additionalContent={extraButtons}
       />
-      <div className="content-container">
+      <LayoutContent>
         {daysToShow.map((dateISO) => {
           const date = DateTime.fromISO(dateISO);
 
@@ -205,7 +195,7 @@ const SlotsPage: React.FC = () => {
             </SlotsDayContainer>
           );
         })}
-      </div>
+      </LayoutContent>
     </Layout>
   );
 };
