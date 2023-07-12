@@ -147,7 +147,18 @@ export const customerSelfRegister = functions
       const orgDoc = await orgRef.get();
       const orgData = orgDoc.data() as OrganizationData;
 
-      if (registrationCode !== orgData.registrationCode) {
+      const sanitizedInput = registrationCode
+        .replace(/[\s,!?-]/g, "")
+        .toLowerCase();
+      const originalOrgCode = orgData.registrationCode;
+      const sanitizedOrgCode =
+        orgData.registrationCode &&
+        orgData.registrationCode.replace(/[\s,!?-]/g, "").toLowerCase();
+
+      if (
+        sanitizedInput !== originalOrgCode &&
+        sanitizedInput !== sanitizedOrgCode
+      ) {
         throw new EisbukHttpsError(
           "unauthenticated",
           HTTPSErrors.SelfRegInvalidCode,

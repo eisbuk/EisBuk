@@ -564,5 +564,78 @@ describe("Cloud functions", () => {
         );
       }
     });
+
+    testWithEmulator(
+      "should tolerate sanitized registration code",
+      async () => {
+        // Test setup
+        const { organization } = await setUpOrganization();
+        await adminDb
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .set({ registrationCode: "RegistrationCode" }, { merge: true });
+
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfRegister
+          )({
+            organization,
+            registrationCode: "registration-code",
+            customer: minimalSaul,
+          })
+        ).resolves.toMatchObject({ data: { ...minimalSaul } });
+      }
+    );
+
+    testWithEmulator(
+      "should tolerate registration codes that differ only by case and special characters",
+      async () => {
+        // Test setup
+        const { organization } = await setUpOrganization();
+        await adminDb
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .set({ registrationCode: "registration-code" }, { merge: true });
+
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfRegister
+          )({
+            organization,
+            registrationCode: "REGISTRATIONCODE",
+            customer: minimalSaul,
+          })
+        ).resolves.toMatchObject({ data: { ...minimalSaul } });
+      }
+    );
+
+    testWithEmulator(
+      "should not tolerate empty registration code",
+      async () => {
+        // Test setup
+        const { organization } = await setUpOrganization();
+        await adminDb
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .set({ registrationCode: "registration-code" }, { merge: true });
+
+        try {
+          await httpsCallable(
+            functions,
+            CloudFunction.CustomerSelfRegister
+          )({
+            organization,
+            registrationCode: "",
+            customer: minimalSaul,
+          });
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            HTTPSErrors.SelfRegInvalidCode
+          );
+        }
+      }
+    );
   });
 });
