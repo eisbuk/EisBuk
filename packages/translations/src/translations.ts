@@ -33,6 +33,9 @@ export enum AuthMessage {
   LoggedInWith = "Authorization.LoggedInWith",
   TryAgain = "Authorization.TryAgain",
 
+  DeletedTitle = "Authorization.DeletedTitle",
+  DeletedSubtitle = "Authorization.DeletedSubtitle",
+
   RecoverEmailPassword = "Authorization.RecoverEmailPassword",
   CheckPasswordRecoverEmail = "Authorization.CheckPasswordRecoverEmail",
 
