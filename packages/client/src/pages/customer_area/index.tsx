@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
+import { Redirect } from "react-router-dom";
 import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
 import { CalendarNav, LayoutContent, TabItem } from "@eisbuk/ui";
@@ -9,6 +10,7 @@ import {
   Collection,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getOrganization } from "@/lib/getters";
@@ -55,7 +57,7 @@ const CustomerArea: React.FC = () => {
 
   const calendarNavProps = useDate();
 
-  // Get customer data necessary for rendering/functoinality
+  // Get customer data necessary for rendering/functionality
   const userData = useSelector(getBookingsCustomer) || {};
 
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
@@ -86,6 +88,10 @@ const CustomerArea: React.FC = () => {
       />
     </>
   );
+
+  if (secretKey && userData.deleted) {
+    return <Redirect to={Routes.Deleted} />;
+  }
 
   return (
     <Layout additionalButtons={additionalButtons} user={userData}>

@@ -218,6 +218,7 @@ export interface Customer extends CustomerBase {
   secretKey: string;
   categories: Category[];
   extendedDate?: string | null;
+  deleted?: boolean;
 }
 /**
  * A full customer structure, including all of the regular properties, plus some administration data available only
