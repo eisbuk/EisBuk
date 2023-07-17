@@ -94,7 +94,7 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
                 {isSubmitting ? (
                   <>
                     <div className="w-4 h-4 border-t-2 border-blue-500 rounded-full animate-spin" />
-                    {t(ActionButton.Loading)}
+                    {t(ActionButton.Saving)}
                   </>
                 ) : (
                   t(ActionButton.Save)

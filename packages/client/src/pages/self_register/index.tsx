@@ -64,10 +64,14 @@ const SelfRegisterPage: React.FC = () => {
         getFunctions: () => functions,
       }
     );
-    if (!codeOk) {
-      setErrors({
-        registrationCode: t(ValidationMessage.InvalidRegistrationCode),
-      });
+    try {
+      if (!codeOk) {
+        setErrors({
+          registrationCode: t(ValidationMessage.InvalidRegistrationCode),
+        });
+        setSubmitting(false);
+      }
+    } finally {
       setSubmitting(false);
     }
 

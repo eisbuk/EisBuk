@@ -92,7 +92,7 @@ describe("Athlete self registration", () => {
     );
   });
 
-  it("checks for a spinner on the submit button while the submit request is processing", () => {
+  it("shows a spinner while the submit request is being processed", () => {
     cy.getAttrWith("aria-label", t(AuthTitle.SignInWithEmail)).click();
 
     const randomString = uuid().slice(0, 10);
@@ -124,6 +124,6 @@ describe("Athlete self registration", () => {
 
     cy.getAttrWith("name", "registrationCode").type(__registrationCode__);
     cy.clickButton(t(ActionButton.Save));
-    cy.contains(t(ActionButton.Loading));
+    cy.contains(t(ActionButton.Saving));
   });
 });
