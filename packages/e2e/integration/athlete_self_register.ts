@@ -7,7 +7,7 @@ import i18n, {
   Alerts,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { CustomerFull, OrganizationData } from "@eisbuk/shared";
+import { OrganizationData } from "@eisbuk/shared";
 
 import { PrivateRoutes } from "../temp";
 
@@ -21,7 +21,7 @@ import {
 import { organization as organizationData } from "../__testData__/organization.json";
 
 // extract saul from test data .json
-const saul = testCustomers.customers.saul as Required<CustomerFull>;
+const saul = testCustomers.customers.saul;
 
 /** A convenience method, to avoid having to write '' each time */
 const t = (input: string, params?: Record<string, any>): string =>
