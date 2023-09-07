@@ -1,4 +1,5 @@
 import { DateTime } from "luxon";
+import { SetOptions } from "@firebase/firestore";
 
 import {
   SlotInterface,
@@ -168,8 +169,8 @@ export const pasteSlotsDay =
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       Object.values(slotsToCopy).forEach(({ id, ...slotData }) => {
-        const newSlotRef = doc(slotsCollRef);
-        batch.set(newSlotRef, { ...slotData, date });
+        const newSlotRef = doc(slotsCollRef, id);
+        batch.set(newSlotRef, { ...slotData, date }, [] as SetOptions);
       });
 
       await batch.commit();
@@ -216,8 +217,8 @@ export const pasteSlotsWeek =
       slots.forEach(({ id, date: oldDate, ...slotData }) => {
         const luxonDate = fromISO(oldDate).plus({ weeks: jump });
         const date = luxon2ISODate(luxonDate);
-        const newSlotRef = doc(slotsCollRef);
-        batch.set(newSlotRef, { ...slotData, date });
+        const newSlotRef = doc(slotsCollRef, id);
+        batch.set(newSlotRef, { ...slotData, date }, [] as SetOptions);
       });
 
       await batch.commit();

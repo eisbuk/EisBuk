@@ -227,15 +227,21 @@ export const writeBatch = (db: FirestoreVariant) =>
   match(db, {
     [FirestoreEnv.Client]: ({ instance }) => {
       const batch = writeBatchClient(instance);
+      const originalSet = batch.set;
+      const originalCommit = batch.commit;
       return {
         ...batch,
-        set: (doc: FirestoreDocVariant, data: DocumentData) => {
+        set: (
+          doc: FirestoreDocVariant,
+          data: DocumentData,
+          options: SetOptions
+        ) => {
           if (!isType(doc, FirestoreDocVariant.client)) {
             throw new BatchMismatch(FirestoreEnv.Client, doc.type);
           }
-          return batch.set(doc.instance, data);
+          return originalSet.call(batch, doc.instance, data, options);
         },
-        commit: batch.commit,
+        commit: () => originalCommit.call(batch),
       };
     },
     [FirestoreEnv.Server]: ({ instance }) => {
