@@ -133,14 +133,13 @@ export const getMonthEmptyForBooking = (state: LocalStore): boolean => {
   return isEmpty(getSlotsForCustomer(state));
 };
 
-type BookingsList = Array<SlotInterface & { interval: SlotInterval }>;
-type BookedAndAttendedList = Array<
-  SlotInterface & { interval: SlotInterval } & { booked: boolean }
->;
+type BookingsEntry = SlotInterface & {
+  interval: SlotInterval;
+  booked: true;
+};
+type BookingsList = Array<BookingsEntry>;
 
-export const getBookingsForCalendar = (
-  state: LocalStore
-): (SlotInterface & { interval: SlotInterval })[] => {
+export const getBookingsForCalendar = (state: LocalStore): BookingsList => {
   // Current month in view is determined by `currentDate` in Redux store
   const monthString = getCalendarDay(state).toISO().substring(0, 7);
   // Get all booked slots
@@ -150,17 +149,21 @@ export const getBookingsForCalendar = (
   const slotsForAMonth = slotsByMonth[monthString] || {};
 
   return Object.entries(bookedSlots)
+    .filter(([, { date }]) => Boolean(slotsForAMonth[date]))
     .reduce(
       (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
         // If this returns undefined, our slot isn't in date range
-        const dayOfBookedSlot = slotsForAMonth[date];
-        if (!dayOfBookedSlot) {
-          return acc;
-        }
-        const bookedSlot = dayOfBookedSlot[slotId];
+        const bookedSlot = slotsForAMonth[date][slotId];
         const interval = bookedSlot.intervals[bookedInterval];
-        const completeBookingEntry = { ...bookedSlot, interval, bookingNotes };
-        return [...acc, completeBookingEntry];
+        return [
+          ...acc,
+          {
+            ...bookedSlot,
+            interval,
+            bookingNotes,
+            booked: true,
+          } as BookingsEntry,
+        ];
       },
       [] as BookingsList
     )
@@ -170,9 +173,15 @@ export const getBookingsForCalendar = (
 export const getHasBookingsForCalendar = (state: LocalStore): boolean =>
   Boolean(getBookingsForCalendar(state).length);
 
+type CalendarSlotEntry = SlotInterface & {
+  interval: SlotInterval;
+  booked: boolean;
+};
+type CalendarSlotList = CalendarSlotEntry[];
+
 export const getBookedAndAttendedSlotsForCalendar = (
   state: LocalStore
-): (SlotInterface & { interval: SlotInterval } & { booked: boolean })[] => {
+): CalendarSlotList => {
   // Current month in view is determined by `currentDate` in Redux store
   const monthString = getCalendarDay(state).toISO().substring(0, 7);
 
@@ -200,7 +209,7 @@ export const getBookedAndAttendedSlotsForCalendar = (
       };
       return [...acc, completeAttendanceEntry];
     },
-    [] as BookedAndAttendedList
+    [] as CalendarSlotList
   );
   const bookedSlotsObj = Object.entries(bookedSlots).reduce(
     (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
@@ -220,9 +229,16 @@ export const getBookedAndAttendedSlotsForCalendar = (
       };
       return [...acc, completeBookingEntry];
     },
-    [] as BookedAndAttendedList
+    [] as CalendarSlotList
   );
-  return [...attendedSlotsObj, ...bookedSlotsObj].sort((a, b) =>
-    a.date < b.date ? -1 : 1
-  );
+  return [...attendedSlotsObj, ...bookedSlotsObj].sort(sortCalendarSlots);
 };
+
+const sortCalendarSlots = (a: CalendarSlotEntry, b: CalendarSlotEntry) =>
+  a.date < b.date
+    ? -1
+    : a.date > b.date
+    ? 1
+    : a.interval.startTime < b.interval.startTime
+    ? -1
+    : 1;

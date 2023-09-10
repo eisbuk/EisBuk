@@ -32,7 +32,11 @@ import {
   slotsByDay,
 } from "../../__testData__/slots";
 import { baseSlot } from "@eisbuk/testing/slots";
-import { getBookingsForCalendar, getMonthEmptyForBooking } from "../slots";
+import {
+  getBookedAndAttendedSlotsForCalendar,
+  getBookingsForCalendar,
+  getMonthEmptyForBooking,
+} from "../slots";
 
 // set date mock to be a consistent date throughout
 const mockDate = DateTime.fromISO("2022-02-05");
@@ -348,6 +352,109 @@ describe("Selectors ->", () => {
           bookingNotes,
         },
       ]);
+    });
+
+    test.only("should sort the slots (by date, and by time intraday)", () => {
+      const monthStr = "2022-01";
+      const date = "2022-01-01";
+      const tomorrow = "2022-01-02";
+
+      const intervals = {
+        "09:00-10:00": {
+          startTime: "09:00",
+          endTime: "10:00",
+        },
+        "10:00-11:00": {
+          startTime: "10:00",
+          endTime: "11:00",
+        },
+        "11:00-12:00": {
+          startTime: "11:00",
+          endTime: "12:00",
+        },
+      };
+
+      const [slot1, slot2, slot3, slot4] = [
+        {
+          ...baseSlot,
+          id: "slot-1",
+          intervals,
+          date,
+          categories: [Category.Competitive],
+        },
+        {
+          ...baseSlot,
+          id: "slot-2",
+          intervals,
+          date,
+          categories: [Category.Competitive],
+        },
+        {
+          ...baseSlot,
+          id: "slot-3",
+          intervals,
+          date,
+          categories: [Category.Competitive],
+        },
+        {
+          ...baseSlot,
+          id: "slot-4",
+          intervals,
+          date: tomorrow,
+          categories: [Category.Competitive],
+        },
+      ];
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        // Any day from the test month would do
+        date: DateTime.fromISO(date),
+        slotsByDay: {
+          [monthStr]: {
+            // We're adding slots in an arbitrary order to intrduce additional entropy before sorting
+            [date]: { [slot3.id]: slot3, [slot2.id]: slot2, [slot1.id]: slot1 },
+            [tomorrow]: { [slot4.id]: slot4 },
+          },
+        },
+      });
+
+      store.dispatch(
+        // We're booking the slots in the same order as they appear in the store,
+        // this should fail the test unless the fix (tested by this) is not in place.
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [slot3.id]: {
+            date: slot3.date,
+            // Last interval (should appear last of all the slots in the day)
+            interval: "11:00-12:00",
+          },
+          [slot1.id]: {
+            date: slot1.date,
+            // First interval (should appear first, regardless of the order it's been added)
+            interval: "09:00-10:00",
+          },
+          [slot4.id]: {
+            date: slot4.date,
+            // Regerdless of this not being the last interval, this slot should appear last as the date sorting takes precenence
+            interval: "09:00-10:00",
+          },
+        })
+      );
+      // Second slot should be attended, not booked to verify that the final result sorts all results, regerdless of the booked state
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.AttendedSlots, {
+          [slot2.id]: {
+            date: slot2.date,
+            // Second interval (we want this slot to appear 2nd - be merged with the booked slots, and then sorted)
+            interval: "10:00-11:00",
+          },
+        })
+      );
+
+      // It's enough to just check that the ids appear in the desired order
+      const ids = getBookedAndAttendedSlotsForCalendar(store.getState()).map(
+        ({ id }) => id
+      );
+      expect(ids).toEqual(["slot-1", "slot-2", "slot-3", "slot-4"]);
     });
   });
 });
