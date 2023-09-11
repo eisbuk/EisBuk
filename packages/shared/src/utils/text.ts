@@ -41,3 +41,13 @@ export const interpolateText = (
 
   return template.trim();
 };
+
+export const checkExpected = (input: string, expected: string) => {
+  /* Compares two strings without taking into account differences
+    in whitespace, punctuation, and capitalization.
+    If the two strings are equal, returns true, otherwise false.
+    */
+  const sanitizedInput = input.replace(/[\s,;:!?'.-]/g, "").toLowerCase();
+  const sanitizedExpected = expected.replace(/[\s,;:!?'.-]/g, "").toLowerCase();
+  return sanitizedInput === sanitizedExpected;
+};
