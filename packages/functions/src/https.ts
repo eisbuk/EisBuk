@@ -147,18 +147,7 @@ export const customerSelfRegister = functions
       const orgDoc = await orgRef.get();
       const orgData = orgDoc.data() as OrganizationData;
 
-      const sanitizedInput = registrationCode
-        .replace(/[\s,!?-]/g, "")
-        .toLowerCase();
-      const originalOrgCode = orgData.registrationCode;
-      const sanitizedOrgCode =
-        orgData.registrationCode &&
-        orgData.registrationCode.replace(/[\s,!?-]/g, "").toLowerCase();
-
-      if (
-        sanitizedInput !== originalOrgCode &&
-        sanitizedInput !== sanitizedOrgCode
-      ) {
+      if (checkExpected(registrationCode, orgData.registrationCode || "")) {
         throw new EisbukHttpsError(
           "unauthenticated",
           HTTPSErrors.SelfRegInvalidCode,
@@ -209,3 +198,13 @@ To verify the athlete, add them to a category/categories on their respective pro
       return fullCustomer;
     }
   );
+
+export const checkExpected = (input: string, expected: string) => {
+  /* Compares two strings without taking into account differences
+    in whitespace, punctuation, and capitalization.
+    If the two strings are equal, returns true, otherwise false.
+    */
+  const sanitizedInput = input.replace(/[\s,!?-]/g, "").toLowerCase();
+  const sanitizedExpected = expected.replace(/[\s,!?-]/g, "").toLowerCase();
+  return sanitizedInput === sanitizedExpected;
+};
