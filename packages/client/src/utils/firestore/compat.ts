@@ -97,10 +97,7 @@ export const doc = (
         // Even though 'doc' (aliased as 'clientDoc' here) works on both firestore and collection references,
         // it doesn't work well on unions because of slightly different type overloads, hence the typecast.
         instance: docPath.length
-          ? clientDoc(
-              instance as ClientCollectionReference,
-              docPath.length ? docPath : undefined
-            )
+          ? clientDoc(instance as ClientCollectionReference, docPath)
           : clientDoc(instance as ClientCollectionReference),
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
