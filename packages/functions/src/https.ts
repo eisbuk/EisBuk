@@ -13,6 +13,7 @@ import {
   CustomerFull,
   sanitizeCustomer,
   DeliveryQueue,
+  checkExpected,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -198,13 +199,3 @@ To verify the athlete, add them to a category/categories on their respective pro
       return fullCustomer;
     }
   );
-
-export const checkExpected = (input: string, expected: string) => {
-  /* Compares two strings without taking into account differences
-    in whitespace, punctuation, and capitalization.
-    If the two strings are equal, returns true, otherwise false.
-    */
-  const sanitizedInput = input.replace(/[\s,!?-]/g, "").toLowerCase();
-  const sanitizedExpected = expected.replace(/[\s,!?-]/g, "").toLowerCase();
-  return sanitizedInput === sanitizedExpected;
-};
