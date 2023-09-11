@@ -27,6 +27,8 @@ jobs:
       - name: Publish to Chromatic
         uses: chromaui/action@v1
         if: steps.has_secret.outputs.HAS_SECRETS
+        # We expect this to fail with `Command failed with ENOENT: pnpm --version`
+        continue-on-error: true
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           projectToken: ${{ secrets.CHROMAUI_PROJECT_TOKEN }}
