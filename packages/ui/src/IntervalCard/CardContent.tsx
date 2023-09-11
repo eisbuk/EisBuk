@@ -89,6 +89,12 @@ const timestringBookingSizeLookup = {
     "font-semibold",
   ],
   [IntervalDuration["2h"]]: ["mb-4", "text-4xl", "leading-10", "font-semibold"],
+  [IntervalDuration["2h+"]]: [
+    "mb-4",
+    "text-4xl",
+    "leading-10",
+    "font-semibold",
+  ],
 };
 
 const timestringSizeLookup = {

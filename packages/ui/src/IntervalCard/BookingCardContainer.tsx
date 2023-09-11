@@ -33,6 +33,7 @@ const containerSizeLookup = {
   [IntervalDuration["1h"]]: ["w-[220px]", "min-h-[110px]", "px-4", "py-2.5"],
   [IntervalDuration["1.5h"]]: ["w-[320px]", "h-[128px]", "px-4", "py-3"],
   [IntervalDuration["2h"]]: ["w-[401px]", "h-[146px]", "px-4", "py-3"],
+  [IntervalDuration["2h+"]]: ["w-[401px]", "h-[146px]", "px-4", "py-3"],
 };
 
 const getOutlineClasses = (type: SlotType, state: IntervalCardState) => {

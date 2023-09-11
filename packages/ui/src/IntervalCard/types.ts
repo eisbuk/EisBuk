@@ -21,6 +21,7 @@ export enum IntervalDuration {
   "1h",
   "1.5h",
   "2h",
+  "2h+",
 }
 
 export type IntervalCardProps = Pick<SlotInterface, "type" | "date" | "notes"> &
