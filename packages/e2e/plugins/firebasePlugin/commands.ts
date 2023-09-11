@@ -9,6 +9,7 @@ import {
   getAuth,
   connectAuthEmulator,
   signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut,
   UserCredential,
 } from "@firebase/auth";
@@ -42,61 +43,68 @@ declare global {
        * - creates a default user (admin of organization)
        * @returns {Chainable<string>} a `PromiseLike` which yielding `string` a name of the current organization
        */
-      initAdminApp: () => Chainable<string>;
+      initAdminApp(): Chainable<string>;
       /**
        * Create a user in firebase auth and (optionally), if admin to firestore organization
        */
-      addAuthUser: (
+      addAuthUser(
         payload: CreateAuthUserPayload
-      ) => Chainable<HttpsCallableResult>;
+      ): Chainable<HttpsCallableResult>;
       /** */
-      updateOrganization: (
+      updateOrganization(
         organization: string,
         documents: OrganizationData
-      ) => Chainable<string>;
+      ): Chainable<string>;
       /** */
-      updateSlots: (
+      updateSlots(
         organization: string,
         documents: Record<string, SlotInterface>
-      ) => Chainable<string>;
+      ): Chainable<string>;
       /** */
-      updateCustomers: (
+      updateCustomers(
         organization: string,
         documents: Record<string, Customer>
-      ) => Chainable<string>;
+      ): Chainable<string>;
       /** */
-      updateBookings: (
+      updateBookings(
         organization: string,
         documents: Record<string, CustomerBookings>
-      ) => Chainable<string>;
+      ): Chainable<string>;
       /** */
-      updateAttendance: (
+      updateAttendance(
         organization: string,
         documents: Record<string, SlotAttendnace>
-      ) => Chainable<string>;
+      ): Chainable<string>;
       /**
        * Retrieve recaptcha code from auth emulator
        * @param {string} phone phone number we're using to register
        * @returns {Chainable<number>} a `PromiseLike` yielding code string on success
        */
-      getRecaptchaCode: (
-        phone: string,
-        projectId?: string
-      ) => Chainable<string>;
+      getRecaptchaCode(phone: string, projectId?: string): Chainable<string>;
       /**
        * Retrieve email sign-in link from auth emulator
-       * @param {string} email we're using to register
+       * @param {string} phone
        * @returns {Chainable<number>} a `PromiseLike` yielding sign-in link string on success
        */
-      getSigninLink: (phone: string, projectId?: string) => Chainable<string>;
+      getSigninLink(phone: string, projectId?: string): Chainable<string>;
       /**
-       * Sign into of firebase with default user
+       * Programatically sign the user up into firebase auth (if the user already exists, merely signs in)
+       * @param email
+       * @param password
        */
-      signIn: () => Chainable<UserCredential>;
+      signUp(email: string, password: string): Chainable<UserCredential>;
+      /**
+       * Sign into firebase with email and password
+       */
+      signIn(email: string, password: string): Chainable<UserCredential>;
+      /**
+       * Sign into firebase with default user
+       */
+      signIn(): Chainable<UserCredential>;
       /**
        * Sign out of firebase
        */
-      signOut: () => Chainable<void>;
+      signOut(): Chainable<void>;
     }
   }
 }
@@ -206,13 +214,24 @@ const addFirebaseCommands = (): void => {
     cy.task("getSigninLink", { email, projectId })
   );
 
-  Cypress.Commands.add("signOut", () => cy.wrap(signOut(getAuth())));
-
-  Cypress.Commands.add("signIn", () =>
+  Cypress.Commands.add("signUp", (email: string, password: string) =>
     cy.wrap(
-      signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password)
+      createUserWithEmailAndPassword(getAuth(), email, password).catch(() =>
+        signInWithEmailAndPassword(getAuth(), email, password)
+      )
     )
   );
+
+  Cypress.Commands.add("signOut", () => cy.wrap(signOut(getAuth())));
+
+  Cypress.Commands.add("signIn", (email?: string, password?: string) => {
+    if (email) {
+      return cy.wrap(signInWithEmailAndPassword(auth, email, password || ""));
+    }
+    return cy.wrap(
+      signInWithEmailAndPassword(auth, defaultUser.email, defaultUser.password)
+    );
+  });
 };
 
 export default addFirebaseCommands;

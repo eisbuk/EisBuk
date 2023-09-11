@@ -4,7 +4,13 @@ import { Link, useHistory } from "react-router-dom";
 
 import { OrgSubCollection, Customer } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
-import { CustomerGrid, SearchBar, LayoutContent, Button, ButtonColor,} from "@eisbuk/ui";
+import {
+  CustomerGrid,
+  SearchBar,
+  LayoutContent,
+  Button,
+  ButtonColor,
+} from "@eisbuk/ui";
 import {
   useTranslation,
   NavigationLabel,
@@ -46,7 +52,6 @@ const AthletesPage: React.FC = () => {
 
   const customers = useSelector(getCustomersList(true));
 
-
   // Search logic
   const [filterString, setFilterString] = React.useState("");
 
@@ -69,24 +74,25 @@ const AthletesPage: React.FC = () => {
         <div className="!pt-16">
           {!isEmpty(customers) && (
             <>
-              <SearchBar
-                value={filterString}
-                onChange={(e) => setFilterString(e.target.value)}
-              />
-              <Button
-                aria-label={t(AdminAria.AthletesApprovalButton)}
-                onClick={toggleApprovals}
-                color={toggled ? ButtonColor.Primary : undefined}
-                className={[
-                  "h-8",
-                  !toggled
-                    ? "!text-black outline outline-gray-300 border-box"
-                    : "",
-                ].join(" ")}
-              >
-                {t(AdminAria.AthletesApprovalButton)}
-              </Button>
-            {/* </div> */}
+              <div className="flex w-full items-center justify-between">
+                <SearchBar
+                  value={filterString}
+                  onChange={(e) => setFilterString(e.target.value)}
+                />
+                <Button
+                  aria-label={t(AdminAria.AthletesApprovalButton)}
+                  onClick={toggleApprovals}
+                  color={toggled ? ButtonColor.Primary : undefined}
+                  className={[
+                    "h-8",
+                    !toggled
+                      ? "!text-black outline outline-gray-300 border-box"
+                      : "",
+                  ].join(" ")}
+                >
+                  {t(AdminAria.AthletesApprovalButton)}
+                </Button>
+              </div>
 
               <CustomerGrid
                 onCustomerClick={openCustomerCard}
