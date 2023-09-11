@@ -62,7 +62,6 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
       initialValues={initialValues}
       onSubmit={(values, formikHelpers) => {
         onSave(values, formikHelpers);
-        formikHelpers.setSubmitting(false);
       }}
     >
       {({ isSubmitting, resetForm }) => (
@@ -92,7 +91,14 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
                 color={FormButtonColor.Green}
                 disabled={isSubmitting}
               >
-                {t(ActionButton.Save)}
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-t-2 border-blue-500 rounded-full animate-spin" />
+                    {t(ActionButton.Saving)}
+                  </>
+                ) : (
+                  t(ActionButton.Save)
+                )}
               </FormButton>
             </div>
           </div>

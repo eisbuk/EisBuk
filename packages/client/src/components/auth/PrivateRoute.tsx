@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 
 import { Routes } from "@eisbuk/shared/ui";
 
-import Unauthorized from "./Unauthorized";
 import Loading from "./Loading";
 
 import {
@@ -34,18 +33,17 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
     case isAdmin:
       return <Route {...props} />;
 
-    // Render login route if no auth loaded
+    // Render login route if no auth after initial load
     case isAuthEmpty:
       return <Redirect to={Routes.Login} />;
 
-    // If auth not empty (auth user exists), and there's no secret key (registration is not completed -> customer is not created in firestore)
-    // redirect to self registration form
-    case !isAuthEmpty && !secretKey:
-      return <Redirect to={Routes.SelfRegister} />;
+    case Boolean(secretKey):
+      return <Redirect to={[Routes.CustomerArea, secretKey].join("/")} />;
 
-    // Render "unauthorized"
+    // The auth exists - user exists in firebase auth, but there's no secret
+    // key - redirect to complte registration
     default:
-      return <Unauthorized />;
+      return <Redirect to={Routes.SelfRegister} />;
   }
 };
 

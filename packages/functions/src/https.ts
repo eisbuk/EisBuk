@@ -13,6 +13,7 @@ import {
   CustomerFull,
   sanitizeCustomer,
   DeliveryQueue,
+  checkExpected,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -147,18 +148,7 @@ export const customerSelfRegister = functions
       const orgDoc = await orgRef.get();
       const orgData = orgDoc.data() as OrganizationData;
 
-      const sanitizedInput = registrationCode
-        .replace(/[\s,!?-]/g, "")
-        .toLowerCase();
-      const originalOrgCode = orgData.registrationCode;
-      const sanitizedOrgCode =
-        orgData.registrationCode &&
-        orgData.registrationCode.replace(/[\s,!?-]/g, "").toLowerCase();
-
-      if (
-        sanitizedInput !== originalOrgCode &&
-        sanitizedInput !== sanitizedOrgCode
-      ) {
+      if (!checkExpected(registrationCode, orgData.registrationCode || "")) {
         throw new EisbukHttpsError(
           "unauthenticated",
           HTTPSErrors.SelfRegInvalidCode,

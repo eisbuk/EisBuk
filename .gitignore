@@ -12,6 +12,8 @@
 **/.env.test.local
 **/.env.production.local
 **/.env.staging.local
+# Firebase service accounts 
+**/*service-account.json
 
 # Misc. .log files
 **/npm-debug.log*

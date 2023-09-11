@@ -245,6 +245,7 @@ export enum ActionButton {
   Add = "ActionButton.Add",
   Edit = "ActionButton.Edit",
   Delete = "ActionButton.Delete",
+  Saving = "ActionButton.Saving",
 }
 // #endregion dialog
 
