@@ -18,7 +18,8 @@ const AdminBar: React.FC<AdminBarProps> = ({
   className = "",
   additionalContent,
 }) => {
-  const { pathname: currentPath } = useLocation();
+  const { pathname } = useLocation();
+  const currentPath = pathname.split("?")[0].replace(/\/$/, "");
 
   const { t } = useTranslation();
   return (
@@ -29,7 +30,7 @@ const AdminBar: React.FC<AdminBarProps> = ({
       <MobileHamburgerMenu adminLinks={adminLinks} />
       <div className={baseClasses.join(" ")}>
         {adminLinks.map(({ Icon, label, slug }, i) => {
-          const isActive = currentPath === slug;
+          const isActive = slug === currentPath;
 
           return (
             <Link key={label + i} className="min-w-36 h-full" to={slug}>
