@@ -348,13 +348,14 @@ describe("Selectors ->", () => {
       expect(getBookingsForCalendar(store.getState())).toEqual([
         {
           ...bookedSlot,
+          booked: true,
           interval: bookedInterval,
           bookingNotes,
         },
       ]);
     });
 
-    test.only("should sort the slots (by date, and by time intraday)", () => {
+    test("should sort the slots (by date, and by time intraday)", () => {
       const monthStr = "2022-01";
       const date = "2022-01-01";
       const tomorrow = "2022-01-02";

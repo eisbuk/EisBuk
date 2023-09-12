@@ -231,10 +231,10 @@ export const getBookedAndAttendedSlotsForCalendar = (
     },
     [] as CalendarSlotList
   );
-  return [...attendedSlotsObj, ...bookedSlotsObj].sort(sortCalendarSlots);
+  return [...attendedSlotsObj, ...bookedSlotsObj].sort(compareCalendarSlots);
 };
 
-const sortCalendarSlots = (a: CalendarSlotEntry, b: CalendarSlotEntry) =>
+const compareCalendarSlots = (a: CalendarSlotEntry, b: CalendarSlotEntry) =>
   a.date < b.date
     ? -1
     : a.date > b.date
