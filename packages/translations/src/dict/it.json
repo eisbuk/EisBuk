@@ -364,7 +364,8 @@
     "NoBookings": "Non hai prenotazioni per il mese di {{ currentDate, MMMM }}",
     "NoAttendance": "Al momento non sono presenti presenze per il mese di {{ currentDate, MMMM }}",
     "NoCategories": "Il tuo account deve ancora essere approvato. Contatta un amministratore se pensi che dovrebbe già esserlo.",
-    "ContactEmail": "Per maggiori informazioni, contattaci: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "ContactEmail": "Per maggiori informazioni, contattaci: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
+    "ErrorBoundary": "Qualcosa è andato storto! Prova a contattare: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Inizio",

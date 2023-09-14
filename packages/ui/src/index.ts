@@ -3,6 +3,7 @@
 import "./main.css";
 
 import EmptySpace from "./EmptySpace";
+import Fallback from "./Fallback";
 import NotificationToast from "./NotificationToast";
 import Button from "./Button";
 import SlotTypeIcon from "./SlotTypeIcon";
@@ -53,6 +54,7 @@ export * from "./AthletesApproval";
 export {
   NotificationToast,
   EmptySpace,
+  Fallback,
   Button,
   Layout,
   TabItem,

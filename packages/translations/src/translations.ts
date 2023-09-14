@@ -390,6 +390,7 @@ export enum Alerts {
   NoAttendance = "Alerts.NoAttendance",
   NoCategories = "Alerts.NoCategories",
   ContactEmail = "Alerts.ContactEmail",
+  ErrorBoundary = "Alerts.ErrorBoundary",
 }
 // #endregion alerts
 

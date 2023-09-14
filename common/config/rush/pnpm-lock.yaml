@@ -142,6 +142,7 @@ importers:
       prop-types: ^15.8.1
       react: ^16.13.1
       react-dom: ^16.13.1
+      react-error-boundary: ~4.0.11
       react-redux: ^7.2.1
       react-router: 5.x
       react-router-dom: 5.x
@@ -198,6 +199,7 @@ importers:
       moment: 2.29.4
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
+      react-error-boundary: 4.0.11_react@16.14.0
       react-redux: 7.2.9_react-dom@16.14.0+react@16.14.0
       react-router: 5.3.4_react@16.14.0
       react-router-dom: 5.3.4_react@16.14.0
@@ -15176,6 +15178,15 @@ packages:
       react-dom: 16.14.0_react@16.14.0
       react-is: 18.1.0
     dev: true
+
+  /react-error-boundary/4.0.11_react@16.14.0:
+    resolution: {integrity: sha512-U13ul67aP5DOSPNSCWQ/eO0AQEYzEFkVljULQIjMV0KlffTAhxuDoBKdO0pb/JZ8mDhMKFZ9NZi0BmLGUiNphw==}
+    peerDependencies:
+      react: '>=16.13.1'
+    dependencies:
+      '@babel/runtime': 7.21.5
+      react: 16.14.0
+    dev: false
 
   /react-fast-compare/2.0.4:
     resolution: {integrity: sha512-suNP+J1VU1MWFKcyt7RtjiSWUjvidmQSlqu+eHslq+342xCbGTYmC0mEhPCOHxlW0CywylOC1u2DFAT+bv4dBw==}
