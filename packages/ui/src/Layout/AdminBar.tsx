@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { AdminAria, useTranslation } from "@eisbuk/translations";
+import { ActionButton, AdminAria, useTranslation } from "@eisbuk/translations";
 import { PowerCircle } from "@eisbuk/svg";
 
 import Button from "../Button";
@@ -57,7 +57,7 @@ const AdminBar: React.FC<AdminBarProps> = ({
           onClick={onLogout}
           className="hidden pl-4 pr-2 py-0.5 items-center whitespace-nowrap rounded-lg text-white gap-x-1 md:flex hover:bg-white/10"
         >
-          Log out
+          {t(ActionButton.LogOut)}
           <span className="h-9 w-9 block">
             <PowerCircle />
           </span>

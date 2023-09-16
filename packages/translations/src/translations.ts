@@ -211,6 +211,7 @@ export enum Prompt {
 
 export enum ActionButton {
   SignIn = "ActionButton.SignIn",
+  LogOut = "ActionButton.LogOut",
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
   CodeNotReceived = "ActionButton.CodeNotReceived",
 

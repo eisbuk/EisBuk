@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
+import { ActionButton, useTranslation } from "@eisbuk/translations";
+
 import { PowerCircle, SVGComponent } from "@eisbuk/svg";
 
 interface Item {
@@ -18,6 +20,8 @@ const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
   onLogout = () => {},
 }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
+
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center justify-between py-8 md:hidden">
@@ -54,7 +58,7 @@ const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
               onClick={onLogout}
               className="flex absolute top-0 right-0 pl-8 pr-6 py-7 items-center whitespace-nowrap rounded-lg text-xl text-gray-600 gap-x-1"
             >
-              Log out
+              {t(ActionButton.LogOut)}
               <span className="h-10 w-10 block">
                 <PowerCircle />
               </span>
