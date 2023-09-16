@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 
-import { SVGComponent } from "@eisbuk/svg";
+import { PowerCircle, SVGComponent } from "@eisbuk/svg";
 
 interface Item {
   Icon: SVGComponent;
@@ -10,10 +10,12 @@ interface Item {
 }
 interface MobileHamburgerMenuProps {
   adminLinks: Item[];
+  onLogout?: () => void;
 }
 
 const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
   adminLinks,
+  onLogout = () => {},
 }) => {
   const [isNavOpen, setIsNavOpen] = useState(false);
 
@@ -32,7 +34,7 @@ const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
 
           <div className={getMenuNavStyles(isNavOpen)}>
             <div
-              className="absolute top-0 right-0 px-8 py-8"
+              className="absolute top-0 left-0 px-8 py-8"
               onClick={() => setIsNavOpen(false)}
             >
               <svg
@@ -48,6 +50,15 @@ const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
                 <line x1="6" y1="6" x2="18" y2="18" />
               </svg>
             </div>
+            <button
+              onClick={onLogout}
+              className="flex absolute top-0 right-0 pl-8 pr-6 py-7 items-center whitespace-nowrap rounded-lg text-xl text-gray-600 gap-x-1"
+            >
+              Log out
+              <span className="h-10 w-10 block">
+                <PowerCircle />
+              </span>
+            </button>
             <ul className="flex flex-col items-center justify-between min-h-[250px]">
               {adminLinks.map(({ label, slug }) => (
                 <li
@@ -74,7 +85,7 @@ const getMenuNavStyles = (isNavOpen: boolean) => {
     "bg-white",
     "top-0",
     "left-0",
-    "z-10",
+    "z-50",
     "flex",
     "flex-col",
     "justify-evenly",
