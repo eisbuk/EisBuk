@@ -278,7 +278,8 @@
     "CustomerUpdated": "Customer Profile Updated: {{ name }} {{ surname }}",
     "CustomerUpdateError": "Error updating customer: {{ name }} {{ surname }}",
     "CustomerDeleted": "{{ name }} {{ surname }} deleted",
-    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}"
+    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}",
+    "CustomerDeleteErrorFutureBookings": "Cannot delete customer: {{ name }} {{ surname }} as they have future bookings."
   },
 
   "BookingCountdownMessage": {

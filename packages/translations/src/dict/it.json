@@ -278,7 +278,8 @@
     "CustomerUpdated": "Profilo cliente aggiornato: {{ name }} {{ surname }}",
     "CustomerUpdateError": "Errore durante l'aggiornamento del profilo cliente: {{ name }} {{ surname }}",
     "CustomerDeleted": "{{ name }} {{ surname }} eliminato",
-    "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}"
+    "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}",
+    "CustomerDeleteErrorFutureBookings": "Cannot delete customer: {{ name }} {{ surname }} as they have future bookings."
   },
 
   "BookingCountdownMessage": {

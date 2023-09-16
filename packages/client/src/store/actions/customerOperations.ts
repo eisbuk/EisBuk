@@ -1,3 +1,5 @@
+import { DateTime } from "luxon";
+
 import { CustomerLoose, Customer } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -16,6 +18,8 @@ import {
   doc,
   setDoc,
   addDoc,
+  getDocs,
+  getBookedSlotsPath,
 } from "@/utils/firestore";
 
 /**
@@ -78,8 +82,35 @@ export const deleteCustomer =
   (customer: Customer): FirestoreThunk =>
   async (dispatch, _, { getFirestore }) => {
     try {
+      const organization = getOrganization();
       const db = getFirestore();
-      const docRef = doc(db, getCustomersPath(getOrganization()), customer.id);
+      const docRef = doc(db, getCustomersPath(organization), customer.id);
+
+      // Check if customer has bookings in the future
+      const allBookings = await getDocs(
+        collection(db, getBookedSlotsPath(organization, customer.secretKey))
+      );
+      const hasFutureBookings = allBookings.docs.some((doc) => {
+        const { date } = doc.data();
+        const cond = date >= DateTime.now().toISODate();
+        return cond;
+      });
+
+      if (hasFutureBookings) {
+        dispatch(
+          enqueueNotification({
+            message: i18n.t(
+              NotificationMessage.CustomerDeleteErrorFutureBookings,
+              {
+                name: customer.name,
+                surname: customer.surname,
+              }
+            ),
+            variant: NotifVariant.Error,
+          })
+        );
+        return;
+      }
 
       await setDoc(docRef, { deleted: true }, { merge: true });
 

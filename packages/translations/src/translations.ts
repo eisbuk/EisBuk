@@ -295,12 +295,14 @@ export enum NotificationMessage {
 
   SelfRegSuccess = "Notification.SelfRegSuccess",
   SelfRegError = "Notification.SelfRegError",
+
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileUpdated",
   CustomerUpdated = "Notification.CustomerUpdated",
   CustomerUpdateError = "Notification.CustomerUpdateError",
   CustomerDeleted = "Notification.CustomerDeleted",
   CustomerDeleteError = "Notification.CustomerDeleteError",
+  CustomerDeleteErrorFutureBookings = "Notification.CustomerDeleteErrorFutureBookings",
 }
 
 export enum BookingCountdownMessage {
