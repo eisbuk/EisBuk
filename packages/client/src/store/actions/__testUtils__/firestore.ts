@@ -8,9 +8,9 @@ import {
   CustomerBookings,
   Customer,
   BookingSubCollection,
-  CustomerLoose,
   sanitizeCustomer,
   SlotAttendnace,
+  CustomerFull,
 } from "@eisbuk/shared";
 
 import { TestEnvFirestore } from "@/__testSetup__/firestore";
@@ -151,7 +151,7 @@ export const setupTestBookings: AdminSetupFunction<{
  * Set up `customers` data entry in emulated store in redux store
  */
 export const setupTestCustomer: AdminSetupFunction<{
-  customer: CustomerLoose;
+  customer: Partial<CustomerFull>;
   organization: string;
 }> = async ({ customer, db, store, organization }) => {
   // id customer id or secretKey not provided, generate locally

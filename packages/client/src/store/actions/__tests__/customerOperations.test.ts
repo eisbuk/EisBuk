@@ -152,14 +152,14 @@ describe("customerOperations", () => {
 
   describe("deleteCustomer", () => {
     testWithEmulator(
-      "when customer is deleted, should mark them as deleted and clear out their categories",
+      "when customer is deleted, should mark them as deleted and clear out their categories and card number",
       async () => {
         // setup test state
         const store = getNewStore();
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
             setupTestCustomer({
-              customer: saul,
+              customer: { ...saul, subscriptionNumber: "123" },
               store,
               db,
               organization,
@@ -180,6 +180,7 @@ describe("customerOperations", () => {
           ...saul,
           deleted: true,
           categories: [],
+          subscriptionNumber: "",
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
