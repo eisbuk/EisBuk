@@ -112,7 +112,7 @@ export const deleteCustomer =
         return;
       }
 
-      await setDoc(docRef, { deleted: true }, { merge: true });
+      await setDoc(docRef, { deleted: true, categories: [] }, { merge: true });
 
       dispatch(
         enqueueNotification({

@@ -152,7 +152,7 @@ describe("customerOperations", () => {
 
   describe("deleteCustomer", () => {
     testWithEmulator(
-      "should delete existing customer in database",
+      "when customer is deleted, should mark them as deleted and clear out their categories",
       async () => {
         // setup test state
         const store = getNewStore();
@@ -179,6 +179,7 @@ describe("customerOperations", () => {
         expect(deletedSaul).toEqual({
           ...saul,
           deleted: true,
+          categories: [],
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
