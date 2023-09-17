@@ -120,21 +120,44 @@
 
   "OrganizationLabel": {
     "SettingsTitle": "{{ organization }} Impostazioni",
-    "EmailNameFrom": "Nome Email Da",
-    "EmailFrom": "Email Da",
-    "EmailTemplate": "Modello Di Emails",
-    "SmsFrom": "SMS Da",
-    "SmsTemplate": "Modello Di SMS",
-    "DisplayName": "Nome Dell'Organizzazione",
-    "Location": "Posizione",
-    "CountryCode": "Prefisso internazionale di default",
+
+    "General": "Generale",
+
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
+
+    "DisplayName": "Nome Dell'Organizzazione",
+    "DisplayNameHelpText": "The name of your organization which will be displayed in the app and in communication with the customers.",
+
+    "Location": "Posizione",
+    "LocationHelpText": "The address of your organization.",
+
+    "RegistrationCode": "Codice di registrazione",
+    "RegistrationCodeHelpText": "The code sent to new customers in order to register with your organization (customers will be required to provide this code when self-registering).",
+
+    "CountryCode": "Prefisso internazionale di default",
+    "CountryCodeHelpText": "The country code for phone numbers (e.g. +39 for Italy). This is used as a default value when customers register their phone number.",
+
     "Email": "Email",
+
+    "EmailNameFrom": "Nome Email Da",
+    "EmailNameFromHelpText": "This name will be used as sender name in emails sent to customers.",
+
+    "EmailFrom": "Email Da",
+    "EmailFromHelpText": "This address will be used as sender address in emails sent to customers.",
+
+    "BCC": "BCC Email Address",
+    "BCCHelpText": "This email address will be used to send copies of all emails sent to customers (this address is not shown to the customers).",
+
+    "EmailTemplate": "Modello Di Emails",
+
     "SMS": "SMS",
-    "General": "Generale",
-    "BCC": "BCC",
-    "RegistrationCode": "Codice di registrazione"
+
+    "SmsFrom": "SMS Da",
+    "SmsFromHelpText": "This name will be used as sender name in SMS sent to customers.",
+
+    "SmsTemplate": "Modello Di SMS",
+    "SmsTemplateHelpText": "This is a template for SMS sent to customers."
   },
 
   "EmailTemplateLabel": {

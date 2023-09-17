@@ -10,6 +10,7 @@ export interface DropdownProps
   options: DropdownOption[];
   label?: string;
   disabled?: boolean;
+  StartAdornment?: JSX.Element;
 }
 
 export const Dropdown: React.FC<DropdownProps> = ({
@@ -18,6 +19,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   className,
   name,
   label,
+  StartAdornment = null,
   ...props
 }) => {
   const hasLabel = Boolean(label);
@@ -41,29 +43,39 @@ export const Dropdown: React.FC<DropdownProps> = ({
       >
         {label || name}
       </label>
-      <select
-        id={name}
-        name={name}
-        autoComplete={name}
-        disabled={disabled}
-        className={[
-          ...dropdownClasses,
-          ...(!hasLabel ? ["h-full", className] : ["h-8"]),
-        ].join(" ")}
-        {...props}
-      >
-        {options.map((opt) => {
-          // If string, value is the same as label
-          if (typeof opt === "string") return <option key={opt}>{opt}</option>;
+      <div className="relative">
+        {StartAdornment && (
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-5 h-5">
+            {StartAdornment}
+          </div>
+        )}
+        <select
+          id={name}
+          name={name}
+          autoComplete={name}
+          disabled={disabled}
+          className={[
+            ...dropdownClasses,
+            StartAdornment ? "pl-7" : "pl-3",
+            ...(!hasLabel ? ["h-full", className] : ["h-8"]),
+          ].join(" ")}
+          {...props}
+        >
+          {options.map((opt) => {
+            // If string, value is the same as label
+            if (typeof opt === "string") {
+              return <option key={opt}>{opt}</option>;
+            }
 
-          // If label/value object, render accordingly
-          return (
-            <option value={opt.value} key={opt.label}>
-              {opt.label}
-            </option>
-          );
-        })}
-      </select>
+            // If label/value object, render accordingly
+            return (
+              <option value={opt.value} key={opt.label}>
+                {opt.label}
+              </option>
+            );
+          })}
+        </select>
+      </div>
     </ConditionalWrapper>
   );
 };
@@ -81,7 +93,6 @@ const dropdownClasses = [
   "focus:ring-2",
   "focus:border-none",
   "py-0",
-  "pl-3",
   "px-8",
   "text-center",
   "border-gray-300",
