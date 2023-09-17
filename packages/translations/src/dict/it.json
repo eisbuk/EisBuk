@@ -279,7 +279,7 @@
     "CustomerUpdateError": "Errore durante l'aggiornamento del profilo cliente: {{ name }} {{ surname }}",
     "CustomerDeleted": "{{ name }} {{ surname }} eliminato",
     "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}",
-    "CustomerDeleteErrorFutureBookings": "Cannot delete customer: {{ name }} {{ surname }} as they have future bookings."
+    "CustomerDeleteErrorFutureBookings": "L'atleta {{ name }} {{ surname }} non può essere rimosso: ha prenotazioni nel futuro."
   },
 
   "BookingCountdownMessage": {
