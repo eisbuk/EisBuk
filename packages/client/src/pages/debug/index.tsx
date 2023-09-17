@@ -143,6 +143,18 @@ const DebugPage: React.FC = () => {
               Remove Invalid Customer Phones
             </DebugPageButton>
           </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.ClearDeletedCustomersRegistrationAndCategories
+              )}
+              color={ButtonColor.Primary}
+            >
+              Clear Deleted Customers Registration And Categories
+            </DebugPageButton>
+          </div>
         </div>
       </LayoutContent>
     </Layout>

@@ -20,4 +20,5 @@ export enum CloudFunction {
   DeleteOrphanedBookings = "deleteOrphanedBookings",
   PopulateDefaultEmailTemplates = "populateDefaultEmailTemplates",
   RemoveInvalidCustomerPhones = "removeInvalidCustomerPhones",
+  ClearDeletedCustomersRegistrationAndCategories = "clearDeletedCustomersRegistrationAndCategories",
 }
