@@ -127,27 +127,27 @@
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
 
     "DisplayName": "Nome Dell'Organizzazione",
-    "DisplayNameHelpText": "The name of your organization which will be displayed in the app and in communication with the customers.",
+    "DisplayNameHelpText": "Il nome dell'organizzazione che sarà mostrato nella app e nelle comunicazioni con i clienti.",
 
     "Location": "Posizione",
-    "LocationHelpText": "The address of your organization.",
+    "LocationHelpText": "L'indirizzo dell'organizzazione.",
 
     "RegistrationCode": "Codice di registrazione",
-    "RegistrationCodeHelpText": "The code sent to new customers in order to register with your organization (customers will be required to provide this code when self-registering).",
+    "RegistrationCodeHelpText": "Il codice necessario per registrarsi sul sito.",
 
     "CountryCode": "Prefisso internazionale di default",
-    "CountryCodeHelpText": "The country code for phone numbers (e.g. +39 for Italy). This is used as a default value when customers register their phone number.",
+    "CountryCodeHelpText": "Il prefisso internazionale di defaut (e.g. +39 for Italy). Verrà compilato automaticamente per gli utenti che si registrano.",
 
     "Email": "Email",
 
     "EmailNameFrom": "Nome Email Da",
-    "EmailNameFromHelpText": "This name will be used as sender name in emails sent to customers.",
+    "EmailNameFromHelpText": "Questo nome verrà utilizzato per le email inviate agli utenti.",
 
     "EmailFrom": "Email Da",
-    "EmailFromHelpText": "This address will be used as sender address in emails sent to customers.",
+    "EmailFromHelpText": "Indirisso email da usare come mittente nelle comunicazioni agli utenti.",
 
-    "BCC": "BCC Email Address",
-    "BCCHelpText": "This email address will be used to send copies of all emails sent to customers (this address is not shown to the customers).",
+    "BCC": "Email copia BCC",
+    "BCCHelpText": "Tutte le email inviate agli utenti verranno anche mandate in copia a questo indirizzo. Gli utenti non vedranno questo indirizzo.",
 
     "EmailTemplate": "Modello Di Emails",
 
