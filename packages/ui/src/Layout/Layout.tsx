@@ -75,7 +75,7 @@ const Layout: React.FC<LayoutProps> = ({
 
 export const LayoutContent: React.FC<{
   wide?: boolean;
-  actionButtons: JSX.Element;
+  actionButtons?: JSX.Element;
 }> = ({ children, wide = false, actionButtons = null }) => (
   <main className="flex flex-col overflow-hidden">
     <div className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
