@@ -9,13 +9,25 @@ export default {
   component: HoverText,
 } as ComponentMeta<typeof HoverText>;
 
-export const Interactive = () => (
+export const Defualt = () => (
   <HoverText
     id="hover-1"
     text="You should see this text when hovering over the button"
   >
     <Button color={ButtonColor.Primary}>Hover me</Button>
   </HoverText>
+);
+
+export const Multiline = () => (
+  <div className="py-8">
+    <HoverText
+      id="hover-1"
+      text="You should see this text when hovering over the button"
+      multiline="sm"
+    >
+      <Button color={ButtonColor.Primary}>Hover me</Button>
+    </HoverText>
+  </div>
 );
 
 export const Hovered = () => (

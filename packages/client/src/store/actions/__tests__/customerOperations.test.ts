@@ -4,7 +4,7 @@
 
 import { describe, vi, expect, afterEach } from "vitest";
 
-import { Customer, Category } from "@eisbuk/shared";
+import { Customer, Category, CustomerFull } from "@eisbuk/shared";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
 import { saul } from "@eisbuk/testing/customers";
@@ -31,12 +31,15 @@ import {
   collection,
   doc,
   getDoc,
+  setDoc,
+  getBookedSlotDocPath,
 } from "@/utils/firestore";
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { stripIdAndSecretKey } from "@/__testUtils__/customers";
 import { setupTestCustomer } from "../__testUtils__/firestore";
 import { runThunk } from "@/__testUtils__/helpers";
+import { DateTime } from "luxon";
 
 const mockDispatch = vi.fn();
 
@@ -149,14 +152,14 @@ describe("customerOperations", () => {
 
   describe("deleteCustomer", () => {
     testWithEmulator(
-      "should delete existing customer in database",
+      "when customer is deleted, should mark them as deleted and clear out their categories and card number",
       async () => {
         // setup test state
         const store = getNewStore();
         const { db, organization } = await getTestEnv({
           setup: (db, { organization }) =>
             setupTestCustomer({
-              customer: saul,
+              customer: { ...saul, subscriptionNumber: "123" },
               store,
               db,
               organization,
@@ -176,7 +179,118 @@ describe("customerOperations", () => {
         expect(deletedSaul).toEqual({
           ...saul,
           deleted: true,
+          categories: [],
+          subscriptionNumber: "",
         });
+        // check for success notification
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.CustomerDeleted, {
+              name: saul.name,
+              surname: saul.surname,
+            }),
+            variant: NotifVariant.Success,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should not delete customer if the customer has bookings for a future date",
+      async () => {
+        // setup test state
+        const store = getNewStore();
+        const { db, organization } = await getTestEnv({
+          setup: async (db, { organization }) => {
+            await setupTestCustomer({
+              customer: saul,
+              store,
+              db,
+              organization,
+            });
+            await setDoc(
+              doc(
+                db,
+                getBookedSlotDocPath(organization, saul.secretKey, "slot-1")
+              ),
+              {
+                // Set up a date sometime in the future
+                date: DateTime.now().plus({ days: 2 }).toISODate(),
+                // Interval is completely irrelevant
+                interval: "09:00-10:00",
+              }
+            );
+          },
+        });
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
+        // make sure that the db used by the thunk is test db
+        const getFirestore = () => db;
+        // attempt delete
+        const testThunk = deleteCustomer(saul);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
+        // customer shouldn't be deleted
+        const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
+        const updatedSaul = (await getDoc(saulDocRef)).data() as CustomerFull;
+        expect(Boolean(updatedSaul.deleted)).toEqual(false);
+        // should have shown an error letting the user know the reason for failuer
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(
+              NotificationMessage.CustomerDeleteErrorFutureBookings,
+              {
+                name: saul.name,
+                surname: saul.surname,
+              }
+            ),
+            variant: NotifVariant.Error,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "existing bookings shouldn't prevent customer from being deleted if all bookings dates are in the past",
+      async () => {
+        // setup test state
+        const store = getNewStore();
+        const { db, organization } = await getTestEnv({
+          setup: async (db, { organization }) => {
+            await setupTestCustomer({
+              customer: saul,
+              store,
+              db,
+              organization,
+            });
+            await setDoc(
+              doc(
+                db,
+                getBookedSlotDocPath(organization, saul.secretKey, "slot-1")
+              ),
+              {
+                // Set up a date sometime in the past
+                date: DateTime.now().minus({ days: 2 }).toISODate(),
+                // Interval is completely irrelevant
+                interval: "09:00-10:00",
+              }
+            );
+          },
+        });
+        // make sure tests are ran against test generated organization
+        getOrganizationSpy.mockReturnValueOnce(organization);
+        // make sure that the db used by the thunk is test db
+        const getFirestore = () => db;
+        // attempt delete
+        const testThunk = deleteCustomer(saul);
+        await runThunk(testThunk, mockDispatch, store.getState, {
+          getFirestore,
+        });
+        // customer should be deleted
+        const saulDocRef = doc(db, getCustomersPath(organization), saul.id);
+        const updatedSaul = (await getDoc(saulDocRef)).data() as CustomerFull;
+        expect(Boolean(updatedSaul.deleted)).toEqual(true);
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({

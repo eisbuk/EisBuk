@@ -179,3 +179,35 @@ export const removeInvalidCustomerPhones = functions
       return { success: true };
     }
   );
+
+export const clearDeletedCustomersRegistrationAndCategories = functions
+  .region(__functionsZone__)
+  .https.onCall(async ({ organization }, { auth }) => {
+    if (!(await checkUser(organization, auth))) throwUnauth();
+
+    const allCustomers = await admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Customers)
+      .get();
+
+    const deletedCustomers = allCustomers.docs.filter(
+      (doc) => doc.data().deleted
+    );
+
+    // Clear registrationCode and customers for all deleted customers
+    const batch = admin.firestore().batch();
+    deletedCustomers.forEach((doc) => {
+      batch.set(
+        doc.ref,
+        {
+          registrationCode: "",
+          categories: [],
+        },
+        { merge: true }
+      );
+    });
+
+    await batch.commit();
+  });

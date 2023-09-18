@@ -3,12 +3,14 @@ import React from "react";
 interface HoverTextProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   text: string;
+  multiline?: "sm" | "md" | "lg" | false;
 }
 
 const HoverText: React.FC<HoverTextProps> = ({
   className,
   children,
   text,
+  multiline = false,
   ...props
 }) => {
   const inputClasses = className?.split(" ") || [];
@@ -21,9 +23,17 @@ const HoverText: React.FC<HoverTextProps> = ({
     <div className={[finalClasses, "hover-container"].join(" ")} {...props}>
       {children}
 
-      <span className={[...hoverTextClasses, "hover-element"].join(" ")}>
-        {text}
-      </span>
+      <div
+        className={`absolute z-40 left-1/2 bottom-1/2 overflow-hidden hover-element ${
+          multiline ? multilineWidthLookup[multiline] : "whitespace-nowrap"
+        }`}
+      >
+        <div className="inline-block bg-gray-200 border-gray-300 max-w-full">
+          <span className="py-0.5 px-1 inline-block text-xs text-gray-900 border select-none cursor-normal">
+            {text}
+          </span>
+        </div>
+      </div>
     </div>
   );
 };
@@ -54,21 +64,10 @@ const applyRelativePositioning = (inputClasses: string[]): string[] => {
     : noStaticClasses.concat("relative");
 };
 
-const hoverTextClasses = [
-  "absolute",
-  "z-40",
-  "left-1/2",
-  "bottom-1/2",
-  "py-0.5",
-  "px-1",
-  "bg-gray-200",
-  "text-xs",
-  "text-gray-900",
-  "whitespace-nowrap",
-  "border",
-  "border-gray-300",
-  "select-none",
-  "cursor-normal",
-];
+const multilineWidthLookup = {
+  sm: "w-[300px]",
+  md: "w-[400px]",
+  lg: "w-[500px]",
+};
 
 export default HoverText;

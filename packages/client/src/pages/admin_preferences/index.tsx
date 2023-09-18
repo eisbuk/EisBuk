@@ -101,14 +101,36 @@ const OrganizationSettings: React.FC = () => {
 
   return (
     <Layout additionalButtons={additionalButtons}>
-      <LayoutContent>
-        <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-          <Formik
-            {...{ initialValues }}
-            onSubmit={(values, actions) => handleSubmit(values, actions)}
-            validationSchema={OrganizationValidation}
+      <Formik
+        {...{ initialValues }}
+        onSubmit={(values, actions) => handleSubmit(values, actions)}
+        validationSchema={OrganizationValidation}
+      >
+        {({ isSubmitting, isValidating, handleReset }) => (
+          <LayoutContent
+            actionButtons={
+              <div className="py-2 flex justify-end items-center gap-2">
+                <Button
+                  onClick={handleReset}
+                  disabled={isSubmitting || isValidating}
+                  className="!text-cyan-500"
+                  size={ButtonSize.MD}
+                >
+                  {t(ActionButton.Reset)}
+                </Button>
+                <Button
+                  disabled={isSubmitting || isValidating}
+                  color={ButtonColor.Primary}
+                  size={ButtonSize.MD}
+                  aria-label={"save"}
+                  type="submit"
+                >
+                  {t(ActionButton.Save)}
+                </Button>
+              </div>
+            }
           >
-            {({ isSubmitting, isValidating, handleReset }) => (
+            <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
               <div className="md:px-11">
                 {view === Views.GeneralSettings && (
                   <AdminsField currentUser={currentUser} />
@@ -120,32 +142,12 @@ const OrganizationSettings: React.FC = () => {
                   ) : (
                     <GeneralSettings />
                   )}
-
-                  <div className="py-4 flex justify-end items-center gap-2">
-                    <Button
-                      onClick={handleReset}
-                      disabled={isSubmitting || isValidating}
-                      className="!text-cyan-500"
-                      size={ButtonSize.MD}
-                    >
-                      {t(ActionButton.Reset)}
-                    </Button>
-                    <Button
-                      disabled={isSubmitting || isValidating}
-                      color={ButtonColor.Primary}
-                      size={ButtonSize.MD}
-                      aria-label={"save"}
-                      type="submit"
-                    >
-                      {t(ActionButton.Save)}
-                    </Button>
-                  </div>
                 </Form>
               </div>
-            )}
-          </Formik>
-        </div>
-      </LayoutContent>
+            </div>
+          </LayoutContent>
+        )}
+      </Formik>
     </Layout>
   );
 };

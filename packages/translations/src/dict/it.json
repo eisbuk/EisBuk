@@ -120,21 +120,44 @@
 
   "OrganizationLabel": {
     "SettingsTitle": "{{ organization }} Impostazioni",
-    "EmailNameFrom": "Nome Email Da",
-    "EmailFrom": "Email Da",
-    "EmailTemplate": "Modello Di Emails",
-    "SmsFrom": "SMS Da",
-    "SmsTemplate": "Modello Di SMS",
-    "DisplayName": "Nome Dell'Organizzazione",
-    "Location": "Posizione",
-    "CountryCode": "Prefisso internazionale di default",
+
+    "General": "Generale",
+
     "Admins": "Amministrat(rici/ori)",
     "AddNewAdmin": "Aggiungi Nuovo Amministratore",
+
+    "DisplayName": "Nome Dell'Organizzazione",
+    "DisplayNameHelpText": "Il nome dell'organizzazione che sarà mostrato nella app e nelle comunicazioni con i clienti.",
+
+    "Location": "Posizione",
+    "LocationHelpText": "L'indirizzo dell'organizzazione.",
+
+    "RegistrationCode": "Codice di registrazione",
+    "RegistrationCodeHelpText": "Il codice necessario per registrarsi sul sito.",
+
+    "CountryCode": "Prefisso internazionale di default",
+    "CountryCodeHelpText": "Il prefisso internazionale di defaut (e.g. +39 for Italy). Verrà compilato automaticamente per gli utenti che si registrano.",
+
     "Email": "Email",
+
+    "EmailNameFrom": "Nome Email Da",
+    "EmailNameFromHelpText": "Questo nome verrà utilizzato per le email inviate agli utenti.",
+
+    "EmailFrom": "Email Da",
+    "EmailFromHelpText": "Indirisso email da usare come mittente nelle comunicazioni agli utenti.",
+
+    "BCC": "Email copia BCC",
+    "BCCHelpText": "Tutte le email inviate agli utenti verranno anche mandate in copia a questo indirizzo. Gli utenti non vedranno questo indirizzo.",
+
+    "EmailTemplate": "Modello Di Emails",
+
     "SMS": "SMS",
-    "General": "Generale",
-    "BCC": "BCC",
-    "RegistrationCode": "Codice di registrazione"
+
+    "SmsFrom": "SMS Da",
+    "SmsFromHelpText": "This name will be used as sender name in SMS sent to customers.",
+
+    "SmsTemplate": "Modello Di SMS",
+    "SmsTemplateHelpText": "This is a template for SMS sent to customers."
   },
 
   "EmailTemplateLabel": {
@@ -278,7 +301,8 @@
     "CustomerUpdated": "Profilo cliente aggiornato: {{ name }} {{ surname }}",
     "CustomerUpdateError": "Errore durante l'aggiornamento del profilo cliente: {{ name }} {{ surname }}",
     "CustomerDeleted": "{{ name }} {{ surname }} eliminato",
-    "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}"
+    "CustomerDeleteError": "Errore durante la rimozione di {{ name }} {{ surname }}",
+    "CustomerDeleteErrorFutureBookings": "L'atleta {{ name }} {{ surname }} non può essere rimosso: ha prenotazioni nel futuro."
   },
 
   "BookingCountdownMessage": {

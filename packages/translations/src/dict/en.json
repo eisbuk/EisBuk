@@ -121,22 +121,44 @@
 
   "OrganizationLabel": {
     "SettingsTitle": "{{ organization }} Settings",
-    "EmailNameFrom": "Email Name From",
-    "EmailFrom": "Email From",
-    "EmailTemplates": "Email Templates",
-    "SmsFrom": "SMS From",
-    "SmsTemplate": "SMS Template",
-    "DisplayName": "Organization Name",
-    "Location": "Location",
-    "CountryCode": "Country code",
+
+    "General": "General",
+
     "Admins": "Admins",
     "AddNewAdmin": "Add New Admin",
+
+    "DisplayName": "Organization Name",
+    "DisplayNameHelpText": "The name of your organization which will be displayed in the app and in communication with the customers.",
+
+    "Location": "Location",
+    "LocationHelpText": "The address of your organization.",
+
+    "RegistrationCode": "Registration code",
+    "RegistrationCodeHelpText": "The code sent to new customers in order to register with your organization (customers will be required to provide this code when self-registering).",
+
+    "CountryCode": "Country code",
+    "CountryCodeHelpText": "The country code for phone numbers (e.g. +39 for Italy). This is used as a default value when customers register their phone number.",
+
     "Email": "Email",
+
+    "EmailNameFrom": "Organization Email Name",
+    "EmailNameFromHelpText": "This name will be used as sender name in emails sent to customers.",
+
+    "EmailFrom": "Organization Email Address",
+    "EmailFromHelpText": "This address will be used as sender address in emails sent to customers.",
+
+    "BCC": "BCC Email Address",
+    "BCCHelpText": "This email address will be used to send copies of all emails sent to customers (this address is not shown to the customers).",
+
     "SMS": "SMS",
-    "General": "General",
-    "BCC": "BCC",
-    "RegistrationCode": "Registration code"
+
+    "SmsFrom": "Organization SMS Sender Name",
+    "SmsFromHelpText": "This name will be used as sender name in SMS sent to customers.",
+
+    "SmsTemplate": "SMS Template",
+    "SmsTemplateHelpText": "This is a template for SMS sent to customers."
   },
+
   "EmailTemplateLabel": {
     "SubjectPreview": "Subject Preview",
     "HTMLPreview": "Body Preview",
@@ -278,7 +300,8 @@
     "CustomerUpdated": "Customer Profile Updated: {{ name }} {{ surname }}",
     "CustomerUpdateError": "Error updating customer: {{ name }} {{ surname }}",
     "CustomerDeleted": "{{ name }} {{ surname }} deleted",
-    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}"
+    "CustomerDeleteError": "Error deleting customer: {{ name }} {{ surname }}",
+    "CustomerDeleteErrorFutureBookings": "Cannot delete customer: {{ name }} {{ surname }} as they have future bookings."
   },
 
   "BookingCountdownMessage": {
