@@ -227,23 +227,23 @@ const SlotForm: React.FC<SlotFormProps> = ({
                 multiline
                 label={"Notes"}
               />
+            </div>
 
-              <div className="flex items-center justify-end">
-                <Button
-                  onClick={onClose}
-                  className="text-cyan-700"
-                  size={ButtonSize.LG}
-                >
-                  {t(ActionButton.Cancel)}
-                </Button>
-                <Button
-                  type="submit"
-                  className="bg-cyan-700"
-                  size={ButtonSize.LG}
-                >
-                  {t(ActionButton.Save)}
-                </Button>
-              </div>
+            <div className="flex px-6 py-3 border-t items-center justify-end">
+              <Button
+                onClick={onClose}
+                className="text-cyan-700"
+                size={ButtonSize.LG}
+              >
+                {t(ActionButton.Cancel)}
+              </Button>
+              <Button
+                type="submit"
+                className="bg-cyan-700"
+                size={ButtonSize.LG}
+              >
+                {t(ActionButton.Save)}
+              </Button>
             </div>
           </Form>
         );

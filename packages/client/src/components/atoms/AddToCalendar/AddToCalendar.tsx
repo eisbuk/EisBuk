@@ -10,6 +10,8 @@ import {
   IconButtonShape,
   IconButtonSize,
 } from "@eisbuk/ui";
+import { testId } from "@eisbuk/testing/testIds";
+
 import { Calendar } from "@eisbuk/svg";
 
 import {
@@ -42,6 +44,7 @@ const AddToCalendar: React.FC = () => {
 
       <IconButton
         aria-label={t(ActionButton.AddToCalendar)}
+        data-testid={testId("add-to-calendar")}
         className="fixed right-6 bottom-8 z-40 bg-cyan-700 text-white shadow-xl md:hidden"
         size={IconButtonSize.XL}
         contentSize={IconButtonContentSize.Loose}
