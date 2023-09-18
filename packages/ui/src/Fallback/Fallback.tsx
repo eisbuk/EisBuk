@@ -40,7 +40,7 @@ const Fallback: React.FC<FallbackProps> = ({
 };
 
 const baseClasses = [
-  "mt-2",
+  "m-2",
   "py-8",
   "border-2",
   "border-red-400",

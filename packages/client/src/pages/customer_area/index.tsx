@@ -19,6 +19,7 @@ import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
 import AddToCalendar from "@/components/atoms/AddToCalendar";
+import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
 import Layout from "@/controllers/Layout";
 
@@ -97,9 +98,11 @@ const CustomerArea: React.FC = () => {
         />
       )}
       <LayoutContent>
-        <div className="px-[44px] py-4">
-          <CustomerView />
-        </div>
+        <ErrorBoundary resetKeys={[calendarNavProps]}>
+          <div className="px-[44px] py-4">
+            <CustomerView />
+          </div>
+        </ErrorBoundary>
       </LayoutContent>
     </Layout>
   );

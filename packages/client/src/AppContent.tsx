@@ -61,11 +61,6 @@ const AppContent: React.FC = () => {
       />
       <PrivateRoute
         exact
-        path={Routes.ErrorBoundary}
-        component={ErrorBoundaryPage}
-      />
-      <PrivateRoute
-        exact
         path={PrivateRoutes.Athletes}
         component={AthletesPage}
       />
@@ -103,6 +98,7 @@ const AppContent: React.FC = () => {
         path={`${Routes.CustomerArea}/:secretKey`}
         component={CustomerAreaPage}
       />
+      <Route exact path={Routes.ErrorBoundary} component={ErrorBoundaryPage} />
       <Route path={Routes.SelfRegister} component={SelfRegister} exact />
       <Route path={Routes.Debug} component={DebugPage} />
     </Switch>
