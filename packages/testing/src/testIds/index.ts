@@ -62,6 +62,7 @@ type TestIDList = [
 
   // #region BookingCard
   "booking-interval-card",
+  "book-button",
   // #endregion BookingCard
 
   // #region CustomerList
@@ -85,6 +86,7 @@ type TestIDList = [
 
   // #region ActionButton
   "add-athlete",
+  "add-to-calendar",
   // #endregion ActionButton
 
   // #region AthleteForm
