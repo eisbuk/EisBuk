@@ -62,7 +62,7 @@
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest dataTriggers\")'",
     "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest firestoreRules\")'",
     "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest integrations\")'",
-    "test:emulators:ci": "export CI=true && export VITEST_JUNIT_SUITE_NAME=\"Client tests\" && bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --reporter=html --outputFile.junit=junit.xml/\")'",
+    "test:emulators:ci": "CI=true VITEST_JUNIT_SUITE_NAME=\"Client tests\" bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --reporter=html --outputFile.junit=junit.xml/\")' || true # We always exit with code 0: a subsequent CI step will fail if a test fails.",
     "test:quicktest": "echo Running tests with no emulators support && vitest --ui",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators:ui",
     "storybook": "storybook dev -p 6006",
