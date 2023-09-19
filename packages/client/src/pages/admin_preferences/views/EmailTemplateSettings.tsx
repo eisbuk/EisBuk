@@ -1,61 +1,44 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { useTranslation, EmailTemplateLabel } from "@eisbuk/translations";
-import { FormSection } from "@eisbuk/ui";
-import { EmailTypeButtons, EmailType } from "@eisbuk/shared";
+import { EmailType } from "@eisbuk/shared";
 
 import { getOrganizationSettings } from "@/store/selectors/app";
 
-import EmailTemplate from "../EmailTemplate";
-import PreviewField from "../PreviewField";
-import Buttons from "../Buttons";
+import TemplateBlock from "../TemplateBlock";
+import { EmailTemplateLabel } from "@eisbuk/translations";
 
 const EmailTemplateSettings: React.FC = () => {
-  // Keep a ref of the input element
-  const input = React.useRef<HTMLInputElement | null>(null);
-
   const organization = useSelector(getOrganizationSettings);
 
-  const { t } = useTranslation();
-
-  const buttons: EmailTypeButtons = {
-    [EmailType.SendBookingsLink]: {
-      bookingsLink: "bookingsLink",
-      name: "name",
-      surname: "surname",
-    },
-    [EmailType.SendCalendarFile]: {
-      name: "name",
-      surname: "surname",
-      calendarFile: "calendarFile",
-    },
-    [EmailType.SendExtendedBookingsDate]: {
-      bookingsMonth: "bookingsMonth",
-      extendedBookingsDate: "extendedBookingsDate",
-      name: "name",
-      surname: "surname",
-    },
+  const buttons = {
+    [EmailType.SendBookingsLink]: [
+      { label: EmailTemplateLabel.BookingsLink, value: "bookingsLink" },
+      { label: EmailTemplateLabel.Name, value: "name" },
+      { label: EmailTemplateLabel.Surname, value: "surname" },
+    ],
+    [EmailType.SendCalendarFile]: [
+      { label: EmailTemplateLabel.Name, value: "name" },
+      { label: EmailTemplateLabel.Surname, value: "surname" },
+      { label: EmailTemplateLabel.CalendarFile, value: "calendarFile" },
+    ],
+    [EmailType.SendExtendedBookingsDate]: [
+      { label: EmailTemplateLabel.BookingsMonth, value: "bookingsMonth" },
+      {
+        label: EmailTemplateLabel.ExtendedBookingsDate,
+        value: "extendedBookingsDate",
+      },
+      { label: EmailTemplateLabel.Name, value: "name" },
+      { label: EmailTemplateLabel.Surname, value: "surname" },
+    ],
   };
+
   return (
     <div>
       {organization.emailTemplates &&
-        Object.entries(organization.emailTemplates).map(([name, temp]) => {
-          return (
-            <FormSection key={name} title={t(EmailTemplateLabel[name])}>
-              <div className="flex-row">
-                <Buttons
-                  buttons={buttons}
-                  emailType={name as EmailType}
-                  input={input}
-                />
-
-                <EmailTemplate input={input} label={name} />
-                <PreviewField name={name} template={temp} />
-              </div>
-            </FormSection>
-          );
-        })}
+        Object.keys(organization.emailTemplates).map((name) => (
+          <TemplateBlock name={name} buttons={buttons[name]} />
+        ))}
     </div>
   );
 };

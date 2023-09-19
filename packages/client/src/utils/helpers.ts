@@ -131,23 +131,3 @@ export const replaceHTMLTags = (template: string) => {
   const regex = new RegExp(/( |<([^>]+)>)/gi);
   return template.replaceAll(regex, "");
 };
-/**
- * Format string of field value of email template by either surroduning it with {{ }} or an <a/> tag
- * @param value - value that needs to be formatted to be inserted into the email template
- * @returns formatted string
- * */
-export const formatTemplateString = (value: string, message = "") => {
-  switch (value) {
-    case "icsFile":
-      return `<a href="{{ ${value} }}"> ${
-        message ||
-        "Clicca qui per aggiungere le tue prenotazioni al tuo calendario"
-      } </a>`;
-    case "bookingsLink":
-      return `<a href="{{ ${value} }}"> ${
-        message || "Clicca qui per prenotare e gestire le tue lezioni"
-      }</a>`;
-    default:
-      return `{{ ${value} }}`;
-  }
-};

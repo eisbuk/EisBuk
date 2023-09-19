@@ -86,7 +86,7 @@ export const LayoutContent: React.FC<{
     </div>
     {actionButtons && (
       <div className="border-t flex-grow-0 flex-shrink-0 py-2">
-        <div className={wide ? "" : "content-container"}>{actionButtons}</div>
+        <div className="content-container">{actionButtons}</div>
       </div>
     )}
   </main>

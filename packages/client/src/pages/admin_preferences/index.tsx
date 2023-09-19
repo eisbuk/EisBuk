@@ -130,21 +130,20 @@ const OrganizationSettings: React.FC = () => {
               </div>
             }
           >
-            <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-              <div className="md:px-11">
-                {view === Views.GeneralSettings && (
-                  <AdminsField currentUser={currentUser} />
-                )}
-
-                <Form>
-                  {view === Views.EmailTemplates ? (
-                    <EmailTemplateSettings />
-                  ) : (
+            {view === Views.GeneralSettings ? (
+              <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+                <div className="md:px-11">
+                  <Form>
+                    <AdminsField currentUser={currentUser} />
                     <GeneralSettings />
-                  )}
-                </Form>
+                  </Form>
+                </div>
               </div>
-            </div>
+            ) : (
+              <Form>
+                <EmailTemplateSettings />
+              </Form>
+            )}
           </LayoutContent>
         )}
       </Formik>
