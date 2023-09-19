@@ -1,7 +1,8 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 
-import { AdminAria, useTranslation } from "@eisbuk/translations";
+import { ActionButton, AdminAria, useTranslation } from "@eisbuk/translations";
+import { PowerCircle } from "@eisbuk/svg";
 
 import Button from "../Button";
 import { LinkItem } from "./Layout";
@@ -11,22 +12,21 @@ interface AdminBarProps {
   adminLinks: LinkItem[];
   className?: string;
   additionalContent?: JSX.Element;
+  onLogout?: () => void;
 }
 
 const AdminBar: React.FC<AdminBarProps> = ({
   adminLinks,
   className = "",
   additionalContent,
+  onLogout = () => {},
 }) => {
   const { pathname: currentPath } = useLocation();
 
   const { t } = useTranslation();
   return (
-    <div
-      aria-label={t(AdminAria.PageNav)}
-      className={[className, "md:justify-end"].join(" ")}
-    >
-      <MobileHamburgerMenu adminLinks={adminLinks} />
+    <div aria-label={t(AdminAria.PageNav)} className={className}>
+      <MobileHamburgerMenu adminLinks={adminLinks} onLogout={onLogout} />
       <div className={baseClasses.join(" ")}>
         {adminLinks.map(({ Icon, label, slug }, i) => {
           const isActive = currentPath === slug;
@@ -49,8 +49,19 @@ const AdminBar: React.FC<AdminBarProps> = ({
           );
         })}
       </div>
-      <div key="additional-content" className="flex align-center pr-2">
-        {additionalContent}
+      <div className="flex items-center">
+        <div key="additional-content" className="flex align-center">
+          {additionalContent}
+        </div>
+        <button
+          onClick={onLogout}
+          className="hidden pl-4 pr-2 py-0.5 items-center whitespace-nowrap rounded-lg text-white gap-x-1 md:flex hover:bg-white/10"
+        >
+          {t(ActionButton.LogOut)}
+          <span className="h-9 w-9 block">
+            <PowerCircle />
+          </span>
+        </button>
       </div>
     </div>
   );

@@ -1,5 +1,8 @@
 import { type Customer } from "@eisbuk/shared";
-import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
+import i18n, {
+  ActionButton,
+  AttendanceNavigationLabel,
+} from "@eisbuk/translations";
 
 import { PrivateRoutes, Routes } from "../temp";
 
@@ -150,6 +153,18 @@ describe("auth-related redirects", () => {
       // From there, the admin can navigate to any customer's '/customer_area' page (with appropriate secret key)
       cy.visit(Routes.CustomerArea);
       cy.url().should("include", PrivateRoutes.Athletes);
+    });
+
+    it("logs out and redirects to the login page on 'Log out' button click", () => {
+      // Sign in with default user (admin)
+      cy.signIn();
+      cy.visit("/");
+
+      // Click the logout button
+      cy.clickButton(i18n.t(ActionButton.LogOut) as string);
+
+      // Check that we're redirected to login page
+      cy.url().should("include", Routes.Login);
     });
   });
 });

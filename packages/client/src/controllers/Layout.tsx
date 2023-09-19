@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { LinkItem, Layout, UserAvatarProps } from "@eisbuk/ui";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
@@ -9,6 +9,8 @@ import { ClipboardList, Users, DocumentDuplicate, Cog } from "@eisbuk/svg";
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 import AthletesApproval from "@/controllers/AthletesApproval";
 import { NotificationsContainer } from "@/features/notifications/components/index";
+
+import { signOut } from "@/store/actions/authOperations";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getOrgDisplayName } from "@/store/selectors/orgInfo";
@@ -20,6 +22,8 @@ interface Props {
 }
 
 const LayoutController: React.FC<Props> = (params) => {
+  const dispatch = useDispatch();
+
   const isAdmin = useSelector(getIsAdmin);
 
   const displayName = useSelector(getOrgDisplayName);
@@ -44,6 +48,7 @@ const LayoutController: React.FC<Props> = (params) => {
       adminLinks={adminLinks}
       Notifications={NotificationsContainer}
       additionalAdminContent={additionalAdminContent}
+      onLogout={() => dispatch(signOut())}
     />
   );
 };
