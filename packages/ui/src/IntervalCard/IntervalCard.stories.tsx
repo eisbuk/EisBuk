@@ -38,6 +38,11 @@ const twoHourInterval = {
   endTime: "11:00",
 };
 
+const longInterval = {
+  startTime: "09:00",
+  endTime: "11:10",
+};
+
 export const Sizes = (): JSX.Element => (
   <>
     <StorybookGrid cols={2}>
@@ -62,6 +67,14 @@ export const Sizes = (): JSX.Element => (
           variant={IntervalCardVariant.Booking}
           state={IntervalCardState.Active}
           interval={twoHourInterval}
+        />
+      </StorybookItem>
+      <StorybookItem height={240} label="Duration: 2h+">
+        <IntervalCard
+          {...baseSlot}
+          variant={IntervalCardVariant.Booking}
+          state={IntervalCardState.Active}
+          interval={longInterval}
         />
       </StorybookItem>
     </StorybookGrid>

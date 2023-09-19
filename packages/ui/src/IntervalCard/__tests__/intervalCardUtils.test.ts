@@ -36,6 +36,10 @@ describe("IntervalCard", () => {
       { startTime: "09:00", endTime: "10:40", want: IntervalDuration["2h"] },
       { startTime: "09:00", endTime: "10:50", want: IntervalDuration["2h"] },
       { startTime: "09:00", endTime: "11:00", want: IntervalDuration["2h"] },
+
+      { startTime: "09:00", endTime: "11:01", want: IntervalDuration["2h+"] },
+      { startTime: "09:00", endTime: "18:50", want: IntervalDuration["2h+"] },
+      { startTime: "09:00", endTime: "23:00", want: IntervalDuration["2h+"] },
     ]);
   });
 });

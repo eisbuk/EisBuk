@@ -35,8 +35,8 @@ export const sortIntervals = (a: string, b: string) => {
 };
 
 export const shortName = (name: string, surname: string) => {
-  const nameWords = name.split(" ");
-  const surnameWords = surname.split(" ");
+  const nameWords = name.trim().split(" ");
+  const surnameWords = surname.trim().split(" ");
 
   const n = nameWords
     .map((word, i) => (i === 0 ? word : `${word[0]}.`))
