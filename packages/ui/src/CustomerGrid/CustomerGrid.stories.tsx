@@ -47,3 +47,22 @@ export const Default = (): JSX.Element => {
     </>
   );
 };
+
+export const ApprovalsOnly = (): JSX.Element => {
+  const [filterString, setFilterString] = React.useState("");
+
+  return (
+    <>
+      <SearchBar
+        value={filterString}
+        onChange={(e) => setFilterString(e.target.value)}
+      />
+
+      <CustomerGrid
+        customers={customers}
+        filterString={filterString}
+        approvalsOnly
+      />
+    </>
+  );
+};

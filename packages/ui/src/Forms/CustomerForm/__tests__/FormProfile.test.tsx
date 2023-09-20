@@ -104,5 +104,36 @@ describe("CustomerForm", () => {
         );
       });
     });
+
+    test("should trim string fields when calling onSave", async () => {
+      const mockSave = vi.fn();
+      render(<CustomerForm.Profile customer={saul} onSave={mockSave} />);
+      userEvent.click(screen.getByText(i18n.t(ActionButton.Edit) as string));
+
+      const nameField = screen.getByLabelText(
+        i18n.t(CustomerLabel.Name) as string
+      ) as HTMLInputElement;
+      userEvent.clear(nameField);
+      userEvent.type(nameField, "Jimmy ");
+
+      const surnameField = screen.getByLabelText(
+        i18n.t(CustomerLabel.Surname) as string
+      ) as HTMLInputElement;
+      userEvent.clear(surnameField);
+      userEvent.type(surnameField, " McGill");
+
+      // Save the form
+      userEvent.click(screen.getByText(i18n.t(ActionButton.Save) as string));
+      await waitFor(() => {
+        expect(mockSave).toHaveBeenCalledWith(
+          {
+            ...saul,
+            name: "Jimmy",
+            surname: "McGill",
+          },
+          expect.objectContaining({})
+        );
+      });
+    });
   });
 });
