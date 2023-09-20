@@ -386,7 +386,8 @@
     "NoBookings": "You have no active bookings for the month of {{ currentDate, MMMM }}",
     "NoAttendance": "No attendance data for the month of {{ currentDate, MMMM }}",
     "NoCategories": "You haven't been assigned a category yet. The admins will review your registration shortly and assign one to you.",
-    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
+    "ContactEmail": "For more info, contact us at: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>",
+    "ErrorBoundary": "Something went wrong! Try contacting: <a href=\"mailto:{{ email }}\"><strong>{{ email }}</strong></a>"
   },
   "PrintableAttendance": {
     "Start": "Start",

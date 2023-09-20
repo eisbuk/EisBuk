@@ -4,6 +4,7 @@ export enum Routes {
   Unauthorized = "/unautorized",
   SelfRegister = "/self_register",
   CustomerArea = "/customer_area",
+  ErrorBoundary = "/do_trigger_an_error",
   AttendancePrintable = "/attendance_printable",
   Debug = "/debug",
 }

@@ -18,6 +18,7 @@ import LoginRoute from "@/components/auth/LoginRoute";
 import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
 import AthleteProfilePage from "@/pages/athlete_profile";
+import ErrorBoundaryPage from "@/pages/error_boundary";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
@@ -97,6 +98,7 @@ const AppContent: React.FC = () => {
         path={`${Routes.CustomerArea}/:secretKey`}
         component={CustomerAreaPage}
       />
+      <Route exact path={Routes.ErrorBoundary} component={ErrorBoundaryPage} />
       <Route path={Routes.SelfRegister} component={SelfRegister} exact />
       <Route path={Routes.Debug} component={DebugPage} />
     </Switch>
