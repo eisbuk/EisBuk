@@ -19,6 +19,7 @@ import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
 import AthleteProfilePage from "@/pages/athlete_profile";
 import ErrorBoundaryPage from "@/pages/error_boundary";
+import ErrorBoundaryPageAlt from "@/pages/error_boundary/alt";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
@@ -28,6 +29,7 @@ import AdminPreferencesPage from "@/pages/admin_preferences";
 import SelfRegister from "@/pages/self_register";
 
 import { getIsAdmin } from "@/store/selectors/auth";
+import ErrorBoundary from "./components/atoms/ErrorBoundary";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -53,54 +55,66 @@ const AppContent: React.FC = () => {
 
   return (
     <Switch>
-      <LoginRoute path={Routes.Login} component={LoginPage} />
-      <PrivateRoute
-        exact
-        path={PrivateRoutes.Root}
-        component={AttendancePage}
-      />
-      <PrivateRoute
-        exact
-        path={PrivateRoutes.Athletes}
-        component={AthletesPage}
-      />
-      <PrivateRoute
-        exact
-        path={PrivateRoutes.NewAthlete}
-        component={AthleteProfilePage}
-      />
-      <PrivateRoute
-        path={`${PrivateRoutes.Athletes}/:athlete`}
-        component={AthleteProfilePage}
-      />
-      <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
-      <PrivateRoute
-        path={Routes.AttendancePrintable}
-        component={AttendancePrintable}
-      />
-      <PrivateRoute
-        path={PrivateRoutes.AdminPreferences}
-        component={AdminPreferencesPage}
-      />
+      <ErrorBoundary resetKeys={[]}>
+        <LoginRoute path={Routes.Login} component={LoginPage} />
 
-      <PrivateRoute
-        // Private route is a hack here...if visiting '/customer_area' without a secret key,
-        // if will handle all cases of auth/non-auth/auth-but-not-registered appropriately.
-        //
-        // For admin, however, after they pass the PrivateRoute checks, they will be redirected to
-        // '/athletes' page (from where they can redirect to the correct customer area - for a given customer)
-        path={Routes.CustomerArea}
-        exact={true}
-      >
-        <Redirect to={PrivateRoutes.Athletes} />
-      </PrivateRoute>
-      <Route
-        path={`${Routes.CustomerArea}/:secretKey`}
-        component={CustomerAreaPage}
-      />
-      <Route exact path={Routes.ErrorBoundary} component={ErrorBoundaryPage} />
-      <Route path={Routes.SelfRegister} component={SelfRegister} exact />
-      <Route path={Routes.Debug} component={DebugPage} />
+        <PrivateRoute
+          exact
+          path={PrivateRoutes.Root}
+          component={AttendancePage}
+        />
+        <PrivateRoute
+          exact
+          path={PrivateRoutes.Athletes}
+          component={AthletesPage}
+        />
+        <PrivateRoute
+          exact
+          path={PrivateRoutes.NewAthlete}
+          component={AthleteProfilePage}
+        />
+        <PrivateRoute
+          path={`${PrivateRoutes.Athletes}/:athlete`}
+          component={AthleteProfilePage}
+        />
+        <PrivateRoute path={PrivateRoutes.Slots} component={SlotsPage} />
+        <PrivateRoute
+          path={Routes.AttendancePrintable}
+          component={AttendancePrintable}
+        />
+        <PrivateRoute
+          path={PrivateRoutes.AdminPreferences}
+          component={AdminPreferencesPage}
+        />
+
+        <PrivateRoute
+          // Private route is a hack here...if visiting '/customer_area' without a secret key,
+          // if will handle all cases of auth/non-auth/auth-but-not-registered appropriately.
+          //
+          // For admin, however, after they pass the PrivateRoute checks, they will be redirected to
+          // '/athletes' page (from where they can redirect to the correct customer area - for a given customer)
+          path={Routes.CustomerArea}
+          exact={true}
+        >
+          <Redirect to={PrivateRoutes.Athletes} />
+        </PrivateRoute>
+        <Route
+          path={`${Routes.CustomerArea}/:secretKey`}
+          component={CustomerAreaPage}
+        />
+        <Route
+          exact
+          path={Routes.ErrorBoundary}
+          component={ErrorBoundaryPage}
+        />
+        <Route
+          exact
+          path={Routes.ErrorBoundaryAlt}
+          component={ErrorBoundaryPageAlt}
+        />
+        <Route path={Routes.SelfRegister} component={SelfRegister} exact />
+        <Route path={Routes.Debug} component={DebugPage} />
+      </ErrorBoundary>
     </Switch>
   );
 };
