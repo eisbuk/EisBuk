@@ -30,7 +30,7 @@
     "TryAgain": "Esci e riprova con un altro utente.",
 
     "DeletedTitle": "Il tuo account è stato rimosso",
-    "DeletedSubtitle": "Se ritieni che si tratti di un errore, invia un'email a {{ adminEmail }}",
+    "DeletedSubtitle": "Se ritieni che si tratti di un errore, invia un'email a <a href=\"mailto:{{ adminEmail }}\"><strong>{{ adminEmail }}</strong></a>",
 
     "RecoverEmailPassword": "Ricevi su questa email istruzioni per recuperare la tua password.",
     "CheckPasswordRecoverEmail": "Segui le istruzioni sulla mail a {{ email }} per recuperare la tua password.",
