@@ -60,9 +60,12 @@ const Deleted: React.FC<Props> = ({ backgroundIndex }: Props) => {
       <h1 className="mt-4 mb-2 text-2xl text-gray-500 select-none">
         {t(AuthMessage.DeletedTitle)}
       </h1>
-      <h2 className="text-gray-500 text-lg mb-4 select-none">
-        <b> {t(AuthMessage.DeletedSubtitle, { adminEmail })}</b>
-      </h2>
+      <h2
+        dangerouslySetInnerHTML={{
+          __html: t(AuthMessage.DeletedSubtitle, { adminEmail }),
+        }}
+        className="text-gray-500 text-lg mb-4 select-none"
+      ></h2>
     </div>
   );
 };
