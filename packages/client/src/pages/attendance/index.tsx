@@ -40,7 +40,7 @@ const viewsLookup = {
     (
       <LayoutContent>
         <ErrorBoundary resetKeys={[resetKeys]}>
-          <ByDayView />
+          {() => <ByDayView />}
         </ErrorBoundary>
       </LayoutContent>
     ),
@@ -48,9 +48,11 @@ const viewsLookup = {
     (
       <LayoutContent wide>
         <ErrorBoundary resetKeys={[resetKeys]}>
-          <MonthWrapper>
-            <ByMonthView />
-          </MonthWrapper>
+          {() => (
+            <MonthWrapper>
+              <ByMonthView />
+            </MonthWrapper>
+          )}
         </ErrorBoundary>
       </LayoutContent>
     ),

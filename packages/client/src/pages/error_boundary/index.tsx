@@ -14,7 +14,7 @@ const ErrorBoundaryPage: React.FC = () => {
     <Layout>
       <LayoutContent>
         <ErrorBoundary resetKeys={[]}>
-          <ComponentThatThrows />
+          {() => <ComponentThatThrows />}
         </ErrorBoundary>
       </LayoutContent>
     </Layout>

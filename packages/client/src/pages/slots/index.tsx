@@ -135,69 +135,71 @@ const SlotsPage: React.FC = () => {
       />
       <LayoutContent>
         <ErrorBoundary resetKeys={daysToShow}>
-          {daysToShow.map((dateISO) => {
-            const date = DateTime.fromISO(dateISO);
+          {() =>
+            daysToShow.map((dateISO) => {
+              const date = DateTime.fromISO(dateISO);
 
-            const additionalButtons = (
-              <SlotOperationButtons
-                contextType={ButtonContextType.Day}
-                slotsToCopy={{
-                  day: Boolean(dayToPaste),
-                }}
-                disabled={slotButtonsDisabled}
-                {...{ date }}
-              >
-                <NewSlotButton />
-                <CopyButton />
-                <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
-              </SlotOperationButtons>
-            );
+              const additionalButtons = (
+                <SlotOperationButtons
+                  contextType={ButtonContextType.Day}
+                  slotsToCopy={{
+                    day: Boolean(dayToPaste),
+                  }}
+                  disabled={slotButtonsDisabled}
+                  {...{ date }}
+                >
+                  <NewSlotButton />
+                  <CopyButton />
+                  <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+                </SlotOperationButtons>
+              );
 
-            const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
-              (a, b) => {
-                const aTimeString = getSlotTimespan(a.intervals);
-                const bTimeString = getSlotTimespan(b.intervals);
-                return comparePeriods(aTimeString, bTimeString);
-              }
-            );
+              const slotsForDay = Object.values(slotsToShow[dateISO]).sort(
+                (a, b) => {
+                  const aTimeString = getSlotTimespan(a.intervals);
+                  const bTimeString = getSlotTimespan(b.intervals);
+                  return comparePeriods(aTimeString, bTimeString);
+                }
+              );
 
-            return (
-              <SlotsDayContainer
-                key={dateISO}
-                date={dateISO}
-                additionalContent={canEdit ? additionalButtons : undefined}
-              >
-                <div className="grid gap-4 grid-cols-2">
-                  {slotsForDay.map((slot) => {
-                    const selected = checkSelected(slot.id, weekToPaste);
+              return (
+                <SlotsDayContainer
+                  key={dateISO}
+                  date={dateISO}
+                  additionalContent={canEdit ? additionalButtons : undefined}
+                >
+                  <div className="grid gap-4 grid-cols-2">
+                    {slotsForDay.map((slot) => {
+                      const selected = checkSelected(slot.id, weekToPaste);
 
-                    // Disable deletion of slots which have already been booked by someone
-                    const slotAttendance =
-                      attendance[slot.id]?.attendances || {};
-                    const hasBookings = Boolean(
-                      Object.values(slotAttendance).length
-                    );
+                      // Disable deletion of slots which have already been booked by someone
+                      const slotAttendance =
+                        attendance[slot.id]?.attendances || {};
+                      const hasBookings = Boolean(
+                        Object.values(slotAttendance).length
+                      );
 
-                    return (
-                      <div key={slot.id} className="col-span-2 xl:col-span-1">
-                        <SlotCard
-                          className="w-full"
-                          {...{ ...slot, selected }}
-                          disableDelete={hasBookings}
-                          onClick={
-                            canClick
-                              ? handleSlotClick({ slot, selected })
-                              : undefined
-                          }
-                          enableEdit={canEdit}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              </SlotsDayContainer>
-            );
-          })}
+                      return (
+                        <div key={slot.id} className="col-span-2 xl:col-span-1">
+                          <SlotCard
+                            className="w-full"
+                            {...{ ...slot, selected }}
+                            disableDelete={hasBookings}
+                            onClick={
+                              canClick
+                                ? handleSlotClick({ slot, selected })
+                                : undefined
+                            }
+                            enableEdit={canEdit}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                </SlotsDayContainer>
+              );
+            })
+          }
         </ErrorBoundary>
       </LayoutContent>
     </Layout>

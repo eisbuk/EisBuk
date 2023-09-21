@@ -102,9 +102,11 @@ const CustomerArea: React.FC = () => {
       )}
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
-          <div className="px-[44px] py-4">
-            <CustomerView />
-          </div>
+          {() => (
+            <div className="px-[44px] py-4">
+              <CustomerView />
+            </div>
+          )}
         </ErrorBoundary>
       </LayoutContent>
     </Layout>

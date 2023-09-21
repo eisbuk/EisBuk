@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import { useSelector } from "react-redux";
 import { ErrorBoundary as ReactErrorBoundary } from "react-error-boundary";
 import { captureException } from "@sentry/react";
@@ -8,10 +8,13 @@ import { Alerts, useTranslation } from "@eisbuk/translations";
 
 import { getOrgEmail } from "@/store/selectors/orgInfo";
 
-const ErrorBoundary: React.FC<{
-  children: React.ReactNode;
-  resetKeys: any[] | undefined;
-}> = (props) => {
+interface Props {
+  children: () => null | ReactElement | ReactElement[];
+  resetKeys: any[];
+}
+const ErrorBoundary: React.FC<Props> = ({ children, resetKeys }) => {
+  const RenderChildren = () => <>{children()}</>;
+
   const { t } = useTranslation();
   const orgEmail = useSelector(getOrgEmail);
 
@@ -21,13 +24,13 @@ const ErrorBoundary: React.FC<{
 
   return (
     <ReactErrorBoundary
-      resetKeys={props.resetKeys}
+      resetKeys={resetKeys}
       onError={onErrorHandler}
       fallbackRender={() => (
         <Fallback>{t(Alerts.ErrorBoundary, { email: orgEmail })}</Fallback>
       )}
     >
-      {props.children}
+      <RenderChildren />
     </ReactErrorBoundary>
   );
 };
