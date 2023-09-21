@@ -20,7 +20,8 @@ import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
-import AddToCalendar from "@/components/atoms/AddToCalendar";
+import ErrorBoundary from "@/components/atoms/ErrorBoundary";
+// import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import Layout from "@/controllers/Layout";
 
@@ -98,14 +99,19 @@ const CustomerArea: React.FC = () => {
       {view !== "ProfileView" && (
         <CalendarNav
           {...calendarNavProps}
-          additionalContent={<AddToCalendar />}
+          // TODO: Reinstate this when the ability to add multiple events is fixed
+          // See: https://github.com/eisbuk/EisBuk/issues/827
+          //
+          // additionalContent={<AddToCalendar />}
           jump="month"
         />
       )}
       <LayoutContent>
-        <div className="px-[44px] py-4">
-          <CustomerView />
-        </div>
+        <ErrorBoundary resetKeys={[calendarNavProps]}>
+          <div className="px-[44px] py-4">
+            <CustomerView />
+          </div>
+        </ErrorBoundary>
       </LayoutContent>
     </Layout>
   );

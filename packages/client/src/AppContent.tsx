@@ -1,5 +1,5 @@
 import React from "react";
-import { Route, Switch } from "react-router-dom";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
@@ -13,13 +13,13 @@ import {
 import { getOrganization } from "@/lib/getters";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
-import Unauthorized from "@/components/auth/Unauthorized";
 import Deleted from "@/components/auth/Deleted";
 import LoginRoute from "@/components/auth/LoginRoute";
 
 import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
 import AthleteProfilePage from "@/pages/athlete_profile";
+import ErrorBoundaryPage from "@/pages/error_boundary";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
@@ -84,11 +84,22 @@ const AppContent: React.FC = () => {
         component={AdminPreferencesPage}
       />
 
+      <PrivateRoute
+        // Private route is a hack here...if visiting '/customer_area' without a secret key,
+        // if will handle all cases of auth/non-auth/auth-but-not-registered appropriately.
+        //
+        // For admin, however, after they pass the PrivateRoute checks, they will be redirected to
+        // '/athletes' page (from where they can redirect to the correct customer area - for a given customer)
+        path={Routes.CustomerArea}
+        exact={true}
+      >
+        <Redirect to={PrivateRoutes.Athletes} />
+      </PrivateRoute>
       <Route
         path={`${Routes.CustomerArea}/:secretKey`}
         component={CustomerAreaPage}
       />
-      <Route path={Routes.Unauthorized} component={Unauthorized} exact />
+      <Route exact path={Routes.ErrorBoundary} component={ErrorBoundaryPage} />
       <Route path={Routes.SelfRegister} component={SelfRegister} exact />
       <Route path={Routes.Debug} component={DebugPage} />
       <Route path={Routes.Deleted} component={Deleted} />

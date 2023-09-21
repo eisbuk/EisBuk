@@ -16,6 +16,8 @@ import SectionMedicalDetails, {
 } from "./SectionMedicalDetails";
 import FormButton, { FormButtonColor } from "../FormButton";
 
+import { trimStringValues } from "./utils";
+
 type FormProfileValues = PersonalDetailsFields & MedicalDetailsFields;
 
 export interface FormProfile {
@@ -54,7 +56,7 @@ const FormProfile: React.FC<FormProfile> = ({
       validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={(values, formikHelpers) => {
-        onSave(values, formikHelpers);
+        onSave(trimStringValues(values), formikHelpers);
         formikHelpers.setSubmitting(false);
         toggleEdit();
       }}

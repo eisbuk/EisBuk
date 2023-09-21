@@ -22,6 +22,8 @@ import SectionRegistrationCode, {
 } from "./SectionRegistrationCode";
 import FormButton, { FormButtonColor } from "../FormButton";
 
+import { trimStringValues } from "./utils";
+
 type FormSelfRegValues = PersonalDetailsFields &
   MedicalDetailsFields &
   RegistrationCodeFields;
@@ -61,8 +63,7 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
       validationSchema={validationSchema}
       initialValues={initialValues}
       onSubmit={(values, formikHelpers) => {
-        onSave(values, formikHelpers);
-        formikHelpers.setSubmitting(false);
+        onSave(trimStringValues(values), formikHelpers);
       }}
     >
       {({ isSubmitting, resetForm }) => (
@@ -92,7 +93,14 @@ const FormSelfReg: React.FC<FormSelfRegProps> = ({
                 color={FormButtonColor.Green}
                 disabled={isSubmitting}
               >
-                {t(ActionButton.Save)}
+                {isSubmitting ? (
+                  <>
+                    <div className="w-4 h-4 border-t-2 border-blue-500 rounded-full animate-spin" />
+                    {t(ActionButton.Saving)}
+                  </>
+                ) : (
+                  t(ActionButton.Save)
+                )}
               </FormButton>
             </div>
           </div>

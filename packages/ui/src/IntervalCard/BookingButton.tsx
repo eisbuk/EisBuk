@@ -15,6 +15,7 @@ import {
   BookingAria,
   useTranslation,
 } from "@eisbuk/translations";
+import { testId } from "@eisbuk/testing/testIds";
 
 const BookingButton: React.FC<
   BookingButtonProps & React.HTMLAttributes<HTMLButtonElement>
@@ -43,6 +44,7 @@ const BookingButton: React.FC<
       {...{ color, disabled: isDisabled, className }}
       endAdornment={durationBadge}
       aria-label={t(BookingAria.BookButton)}
+      data-testid={testId("book-button")}
     >
       {label}
     </Button>

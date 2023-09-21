@@ -108,7 +108,7 @@ describe("CustomerForm", () => {
       ).toHaveProperty("disabled", true);
     });
 
-    test.only("should call onSave on save click", async () => {
+    test("should call onSave on save click", async () => {
       const mockSave = vi.fn();
       render(
         <CustomerForm.SelfReg
@@ -129,6 +129,43 @@ describe("CustomerForm", () => {
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.RegistrationCode) as string),
         "CODE111"
+      );
+
+      // Save the form
+      userEvent.click(screen.getByText(i18n.t(ActionButton.Save) as string));
+      await waitFor(() => {
+        expect(mockSave).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Saul",
+            surname: "Goodman",
+            email: saul.email,
+          }),
+          expect.objectContaining({})
+        );
+      });
+    });
+
+    test("should trim string values when calling onSave", async () => {
+      const mockSave = vi.fn();
+      render(
+        <CustomerForm.SelfReg
+          customer={{ email: saul.email }}
+          onSave={mockSave}
+        />
+      );
+
+      // Fill out the minimal fields
+      userEvent.type(
+        screen.getByLabelText(i18n.t(CustomerLabel.Name) as string),
+        "Saul "
+      );
+      userEvent.type(
+        screen.getByLabelText(i18n.t(CustomerLabel.Surname) as string),
+        "Goodman "
+      );
+      userEvent.type(
+        screen.getByLabelText(i18n.t(CustomerLabel.RegistrationCode) as string),
+        " CODE111"
       );
 
       // Save the form

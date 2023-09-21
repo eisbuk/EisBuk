@@ -21,11 +21,14 @@ const baseProps = {
 interface TestParams {
   variant: IntervalCardVariant;
   state: IntervalCardState;
+}
+
+interface BookingTestParams extends TestParams {
   onBook: boolean;
   onCancel: boolean;
 }
 
-const runBookingTableTests = (tests: TestParams[]) => {
+const runBookingTableTests = (tests: BookingTestParams[]) => {
   afterEach(() => {
     vi.clearAllMocks();
     cleanup();
@@ -53,8 +56,24 @@ const runBookingTableTests = (tests: TestParams[]) => {
   );
 };
 
+const runLongIntervalTableTests = (tests: TestParams[]) =>
+  tests.forEach(({ variant, state }) =>
+    test(`variant: "${variant}", state: "${state}", should not break if interval is longer than two hours`, () => {
+      render(
+        <IntervalCard
+          {...{
+            ...baseProps,
+            interval: { startTime: "09:00", endTime: "12:00" },
+            variant,
+            state,
+          }}
+        />
+      );
+    })
+  );
+
 describe("IntervalCard", () => {
-  describe("Table tests", () => {
+  describe("Booking table tests", () => {
     runBookingTableTests([
       // Variant: "Booking"
       {
@@ -94,6 +113,38 @@ describe("IntervalCard", () => {
         state: IntervalCardState.Disabled,
         onBook: false,
         onCancel: false,
+      },
+    ]);
+  });
+
+  describe("Long interval tests", () => {
+    runLongIntervalTableTests([
+      // Variant: "Booking"
+      {
+        variant: IntervalCardVariant.Booking,
+        state: IntervalCardState.Default,
+      },
+      {
+        variant: IntervalCardVariant.Booking,
+        state: IntervalCardState.Active,
+      },
+      {
+        variant: IntervalCardVariant.Booking,
+        state: IntervalCardState.Disabled,
+      },
+
+      // Variant: "Calendar"
+      {
+        variant: IntervalCardVariant.Calendar,
+        state: IntervalCardState.Default,
+      },
+      {
+        variant: IntervalCardVariant.Calendar,
+        state: IntervalCardState.Active,
+      },
+      {
+        variant: IntervalCardVariant.Calendar,
+        state: IntervalCardState.Disabled,
       },
     ]);
   });

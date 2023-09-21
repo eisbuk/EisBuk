@@ -16,6 +16,8 @@ import { OrgSubCollection } from "@eisbuk/shared";
 import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
+import ErrorBoundary from "@/components/atoms/ErrorBoundary";
+
 import { getOrganization } from "@/lib/getters";
 
 import ByDayView from "./views/ByDay";
@@ -34,18 +36,24 @@ enum Views {
 
 // Get appropriate view to render
 const viewsLookup = {
-  [Views.ByDay]: () => (
-    <LayoutContent>
-      <ByDayView />
-    </LayoutContent>
-  ),
-  [Views.ByMonth]: () => (
-    <LayoutContent wide>
-      <MonthWrapper>
-        <ByMonthView />
-      </MonthWrapper>
-    </LayoutContent>
-  ),
+  [Views.ByDay]: (resetKeys: Array<any>) => () =>
+    (
+      <LayoutContent>
+        <ErrorBoundary resetKeys={[resetKeys]}>
+          <ByDayView />
+        </ErrorBoundary>
+      </LayoutContent>
+    ),
+  [Views.ByMonth]: (resetKeys: Array<any>) => () =>
+    (
+      <LayoutContent wide>
+        <ErrorBoundary resetKeys={[resetKeys]}>
+          <MonthWrapper>
+            <ByMonthView />
+          </MonthWrapper>
+        </ErrorBoundary>
+      </LayoutContent>
+    ),
 };
 
 // TODO: This is duplicated in `customer_area` local hooks file => lift out
@@ -74,10 +82,10 @@ const AttendancePage: React.FC = () => {
     { collection: OrgSubCollection.SlotsByDay },
   ]);
 
-  const [view, setView] = useState<keyof typeof viewsLookup>(Views.ByDay);
-  const AttendanceView = viewsLookup[view];
-
   const calendarNavProps = useDate();
+  const [view, setView] = useState<keyof typeof viewsLookup>(Views.ByDay);
+  const AttendanceView = viewsLookup[view]([calendarNavProps]);
+
   const calendarJump = view === Views.ByDay ? "day" : "month";
   const calendarAdditionalContent =
     view === Views.ByDay ? (

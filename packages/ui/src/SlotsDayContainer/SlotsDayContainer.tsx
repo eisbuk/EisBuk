@@ -29,7 +29,7 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
 
   return (
     <div className={[...containerClasses, className].join(" ")}>
-      <div className="sticky top-0 z-50 bg-white pt-6 pb-8">
+      <div className="sticky top-0 z-40 bg-white pt-6 pb-8">
         <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
           {dateString}
         </h1>

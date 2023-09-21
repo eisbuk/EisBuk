@@ -42,7 +42,8 @@
     "uuid": "^8.3.2",
     "yup": "0.32.9",
     "variant": "~2.1.0",
-    "firebase": "~9.22.0"
+    "firebase": "~9.22.0",
+    "react-error-boundary": "~4.0.11"
   },
   "scripts": {
     "build": "echo \"Skipping @eisbuk/client build as part of rush's bulk 'build' script. To build the app for production run: 'rushx build:prod'\"",
@@ -62,7 +63,7 @@
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest dataTriggers\")'",
     "test:rules": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest firestoreRules\")'",
     "test:integrations": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest integrations\")'",
-    "test:emulators:ci": "export CI=true && export VITEST_JUNIT_SUITE_NAME=\"Client tests\" && bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --reporter=html --outputFile.junit=junit.xml/\")'",
+    "test:emulators:ci": "CI=true VITEST_JUNIT_SUITE_NAME=\"Client tests\" bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest run --coverage --reporter=junit --reporter=html --outputFile.junit=junit.xml/\")' || true # We always exit with code 0: a subsequent CI step will fail if a test fails.",
     "test:quicktest": "echo Running tests with no emulators support && vitest --ui",
     "test": "echo 'Running all tests; using emulators.' && rushx test:emulators:ui",
     "storybook": "storybook dev -p 6006",

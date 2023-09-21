@@ -94,12 +94,11 @@ export const doc = (
   return match(node, {
     [FirestoreEnv.Client]: ({ instance }) =>
       FirestoreDocVariant.client({
-        // Even though 'doc' (aliased as 'clientDoc' here) works on both firestore and collection instanceerences,
+        // Even though 'doc' (aliased as 'clientDoc' here) works on both firestore and collection references,
         // it doesn't work well on unions because of slightly different type overloads, hence the typecast.
-        instance: clientDoc(
-          instance as ClientFirestore,
-          pathSegments.join("/")
-        ),
+        instance: docPath.length
+          ? clientDoc(instance as ClientCollectionReference, docPath)
+          : clientDoc(instance as ClientCollectionReference),
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
       FirestoreDocVariant.server({
@@ -235,7 +234,7 @@ export const writeBatch = (db: FirestoreVariant) =>
           }
           return batch.set(doc.instance, data);
         },
-        commit: batch.commit,
+        commit: batch.commit.bind(batch),
       };
     },
     [FirestoreEnv.Server]: ({ instance }) => {
@@ -248,7 +247,7 @@ export const writeBatch = (db: FirestoreVariant) =>
           }
           return batch.set(doc.instance, data);
         },
-        commit: batch.commit,
+        commit: batch.commit.bind(batch),
       };
     },
   });

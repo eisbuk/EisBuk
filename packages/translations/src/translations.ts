@@ -145,22 +145,44 @@ export enum ValidationMessage {
 }
 export enum OrganizationLabel {
   SettingsTitle = "OrganizationLabel.SettingsTitle",
-  EmailNameFrom = "OrganizationLabel.EmailNameFrom",
-  EmailFrom = "OrganizationLabel.EmailFrom",
-  EmailTemplate = "OrganizationLabel.EmailTemplate",
-  SmsFrom = "OrganizationLabel.SmsFrom",
-  SmsTemplate = "OrganizationLabel.SmsTemplate",
-  DisplayName = "OrganizationLabel.DisplayName",
-  Location = "OrganizationLabel.Location",
-  CountryCode = "OrganizationLabel.CountryCode",
+
+  General = "OrganizationLabel.General",
+
   Admins = "OrganizationLabel.Admins",
   AddNewAdmin = "OrganizationLabel.AddNewAdmin",
-  Email = "OrganizationLabel.Email",
-  SMS = "OrganizationLabel.SMS",
-  General = "OrganizationLabel.General",
-  BCC = "OrganizationLabel.BCC",
+
+  DisplayName = "OrganizationLabel.DisplayName",
+  DisplayNameHelpText = "OrganizationLabel.DisplayNameHelpText",
+
+  Location = "OrganizationLabel.Location",
+  LocationHelpText = "OrganizationLabel.LocationHelpText",
+
   RegistrationCode = "OrganizationLabel.RegistrationCode",
+  RegistrationCodeHelpText = "OrganizationLabel.RegistrationCodeHelpText",
+
+  CountryCode = "OrganizationLabel.CountryCode",
+  CountryCodeHelpText = "OrganizationLabel.CountryCodeHelpText",
+
+  Email = "OrganizationLabel.Email",
+
+  EmailNameFrom = "OrganizationLabel.EmailNameFrom",
+  EmailNameFromHelpText = "OrganizationLabel.EmailNameFromHelpText",
+
+  EmailFrom = "OrganizationLabel.EmailFrom",
+  EmailFromHelpText = "OrganizationLabel.EmailFromHelpText",
+
+  BCC = "OrganizationLabel.BCC",
+  BCCHelpText = "OrganizationLabel.BCCHelpText",
+
+  SMS = "OrganizationLabel.SMS",
+
+  SmsFrom = "OrganizationLabel.SmsFrom",
+  SmsFromHelpText = "OrganizationLabel.SmsFromHelpText",
+
+  SmsTemplate = "OrganizationLabel.SmsTemplate",
+  SmsTemplateHelpText = "OrganizationLabel.SmsTemplateHelpText",
 }
+
 export enum EmailTemplateLabel {
   SubjectPreview = "EmailTemplateLabel.SubjectPreview",
   HTMLPreview = "EmailTemplateLabel.HTMLPreview",
@@ -214,6 +236,7 @@ export enum Prompt {
 
 export enum ActionButton {
   SignIn = "ActionButton.SignIn",
+  LogOut = "ActionButton.LogOut",
   TroubleSigningIn = "ActionButton.TroubleSigningIn",
   CodeNotReceived = "ActionButton.CodeNotReceived",
 
@@ -248,6 +271,7 @@ export enum ActionButton {
   Add = "ActionButton.Add",
   Edit = "ActionButton.Edit",
   Delete = "ActionButton.Delete",
+  Saving = "ActionButton.Saving",
 }
 // #endregion dialog
 
@@ -297,12 +321,14 @@ export enum NotificationMessage {
 
   SelfRegSuccess = "Notification.SelfRegSuccess",
   SelfRegError = "Notification.SelfRegError",
+
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileUpdated",
   CustomerUpdated = "Notification.CustomerUpdated",
   CustomerUpdateError = "Notification.CustomerUpdateError",
   CustomerDeleted = "Notification.CustomerDeleted",
   CustomerDeleteError = "Notification.CustomerDeleteError",
+  CustomerDeleteErrorFutureBookings = "Notification.CustomerDeleteErrorFutureBookings",
 }
 
 export enum BookingCountdownMessage {
@@ -392,6 +418,7 @@ export enum Alerts {
   NoAttendance = "Alerts.NoAttendance",
   NoCategories = "Alerts.NoCategories",
   ContactEmail = "Alerts.ContactEmail",
+  ErrorBoundary = "Alerts.ErrorBoundary",
 }
 // #endregion alerts
 

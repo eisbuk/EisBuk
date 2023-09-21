@@ -1,4 +1,4 @@
-import { interpolateText } from "../text";
+import { interpolateText, checkExpected } from "../text";
 
 describe("Text utils", () => {
   describe("interpolateText", () => {
@@ -34,6 +34,42 @@ describe("Text utils", () => {
       const template = "Ciao {{ name }}";
       const interpolatedHtml = interpolateText(template, {});
       expect(interpolatedHtml).toBe("Ciao");
+    });
+
+    test.only("Should ignore whitespace differences in registration code", async () => {
+      const cases = [
+        ["A string", "A string!"],
+        ["Look, ma, some spaces!", "LOOKMASOMESPACES"],
+        ["Let's try with apostrophes", "Let s try with apostrophes."],
+        ["On the others side", "On the other's side"],
+        [
+          "Nobody: use punctuation; You: expect it",
+          "Nobody? USE punctuation! You, expect it!",
+        ],
+      ];
+      for (const [input, expected] of cases) {
+        const result = checkExpected(input, expected);
+        if (!result) {
+          console.log("input", input);
+          console.log("expected", expected);
+        }
+        expect(result).toEqual(true);
+      }
+    });
+
+    test.only("Should fail when strings are different", async () => {
+      const cases = [
+        ["A string", "A string! You see?"],
+        ["Look, ma, some spaces!", "LOOKMANOSPACES"],
+      ];
+      for (const [input, expected] of cases) {
+        const result = checkExpected(input, expected);
+        if (result) {
+          console.log("input", input);
+          console.log("expected", expected);
+        }
+        expect(result).toEqual(false);
+      }
     });
   });
 });

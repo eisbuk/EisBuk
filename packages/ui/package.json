@@ -86,7 +86,8 @@
     "typescript": "~5.0.4",
     "uuid": "^8.3.2",
     "vite": "~4.3.1",
-    "vitest": "~0.31.3"
+    "vitest": "~0.31.3",
+    "jsdom": "~22.1.0"
   },
   "dependencies": {
     "@tailwindcss/forms": "^0.5.2",

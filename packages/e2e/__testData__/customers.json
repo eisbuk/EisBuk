@@ -10,7 +10,8 @@
       "birthday": "2001-03-01",
       "categories": ["competitive"],
       "secretKey": "123445",
-      "subscriptionNumber": ""
+      "subscriptionNumber": "",
+      "password": "sauls_pass_123"
     },
 
     "walt": {

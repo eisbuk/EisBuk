@@ -35,20 +35,23 @@ const AthletesPage: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
 
+  useTitle(t(NavigationLabel.Athletes));
+
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.Customers },
   ]);
 
-  const [toggled, setToggle] = useState(true);
+  // Approvals only display logic
+  const [approvalsOnly, setApprovalsOnly] = useState(true);
 
   useEffect(() => {
-    setToggle(
-      history.location.search !== "" &&
-        history.location.search === "?approvals=true"
-    );
+    setApprovalsOnly(history.location.search === "?approvals=true");
   }, [history.location.search]);
 
-  useTitle(t(NavigationLabel.Athletes));
+  const toggleApprovals = () =>
+    history.location.search === "?approvals=true"
+      ? history.push(`${PrivateRoutes.Athletes}`)
+      : history.push(`${PrivateRoutes.Athletes}/?approvals=true`);
 
   const customers = useSelector(getCustomersList(true));
 
@@ -57,14 +60,6 @@ const AthletesPage: React.FC = () => {
 
   const openCustomerCard = ({ id }: Customer) => {
     history.push(`${PrivateRoutes.Athletes}/${id}`);
-  };
-
-  const toggleApprovals = () => {
-    const toggled =
-      history.location.search && history.location.search === "?approvals=true";
-    toggled
-      ? history.push(`${PrivateRoutes.Athletes}`)
-      : history.push(`${PrivateRoutes.Athletes}/?approvals=true`);
   };
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
@@ -82,10 +77,10 @@ const AthletesPage: React.FC = () => {
                 <Button
                   aria-label={t(AdminAria.AthletesApprovalButton)}
                   onClick={toggleApprovals}
-                  color={toggled ? ButtonColor.Primary : undefined}
+                  color={approvalsOnly ? ButtonColor.Primary : undefined}
                   className={[
                     "h-8",
-                    !toggled
+                    !approvalsOnly
                       ? "!text-black outline outline-gray-300 border-box"
                       : "",
                   ].join(" ")}
@@ -97,7 +92,7 @@ const AthletesPage: React.FC = () => {
               <CustomerGrid
                 onCustomerClick={openCustomerCard}
                 filterString={filterString}
-                {...{ customers }}
+                {...{ customers, approvalsOnly }}
               />
             </>
           )}

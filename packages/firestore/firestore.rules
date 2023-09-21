@@ -37,7 +37,7 @@ service cloud.firestore {
       return (
         input is string &&
         input.size() > 0
-      ) 
+      )
     }
     function checkOptionalBoolean(data, property) {
       return (
@@ -122,13 +122,13 @@ service cloud.firestore {
             // Check date integrity
             bookingData.date == bookedSlot.data.date &&
             // Check interval integrity
-            bookingData.interval in bookedSlot.data.intervals     
+            bookingData.interval in bookedSlot.data.intervals
           );
         }
         function checkBookedSlotCategory(slotId) {
           let customer = get(/databases/$(database)/documents/organizations/$(organization)/bookings/$(secretKey));
           let bookedSlot = get(/databases/$(database)/documents/organizations/$(organization)/slots/$(slotId));
-          
+
           return customer.data.categories.hasAny(bookedSlot.data.categories)
         }
         match /bookedSlots/{slotId} {
@@ -137,25 +137,25 @@ service cloud.firestore {
           // Check data integrity for create/update
           allow create, update: if (
             checkBookingSlot(slotId, request.resource.data) &&
-            checkBookedSlotCategory(slotId)  
+            checkBookedSlotCategory(slotId)
           )
         }
         match /attendedSlots/{slotId} {
           allow read: if true;
         }
         match /calendar/{date} {
-          // Anybody with secret key should be able to read and write 
+          // Anybody with secret key should be able to read and write
           allow read, write: if true;
-          
+
         }
       }
       // #endregion bookings-checks
-      
+
       // #region customer-checks
       match /customers/{customerId} {
         // Only admins can access customer collection
         allow read, delete: if isAdmin(organization)
-        // Check data integrity 
+        // Check data integrity
         allow create, update: if (
           isAdmin(organization) &&
           // Check required fields
@@ -167,18 +167,18 @@ service cloud.firestore {
           request.resource.data.categories.hasOnly(getCategories()) &&
           // Check valid email
           (
-            !("email" in request.resource.data) || 
-            request.resource.data.email == "" || 
+            !("email" in request.resource.data) ||
+            request.resource.data.email == "" ||
             checkValidEmail(request.resource.data.email)
           ) &&
-          // Check valid phone number 
+          // Check valid phone number
           (
-            !("phone" in request.resource.data) || 
-            request.resource.data.phone == "" || 
+            !("phone" in request.resource.data) ||
+            request.resource.data.phone == "" ||
             checkValidPhoneNumber(request.resource.data.phone)
-          ) 
+          )
         )
-      } 
+      }
       // #region customer-checks
 
       // #region attendance-checks
