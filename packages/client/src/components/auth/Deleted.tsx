@@ -39,10 +39,10 @@ interface Props {
 
 /**
  * Displays "Deleted" message and logout button
- * @param param0 {backgroundIndex: index of the background to show, if not provided, picks at random}
+ * @param props {backgroundIndex: index of the background to show, if not provided, picks at random}
  * @returns
  */
-const Deleted: React.FC<Props> = ({ backgroundIndex }) => {
+const Deleted: React.FC<Props> = ({ backgroundIndex }: Props) => {
   const adminEmail = useSelector(getOrgEmail)!;
 
   const background = _.isNil(backgroundIndex)
@@ -57,11 +57,10 @@ const Deleted: React.FC<Props> = ({ backgroundIndex }) => {
 
   return (
     <div className="content-container" style={style}>
-      <h1 className="mt-4 mb-2 text-2xl text-gray-600">
+      <h1 className="mt-4 mb-2 text-2xl text-gray-500 select-none">
         {t(AuthMessage.DeletedTitle)}
       </h1>
-      {/* <h2 className="text-gray-500">{t(AuthMessage.AdminsOnly)}</h2> */}
-      <h2 className="text-gray-500 text-lg mb-4">
+      <h2 className="text-gray-500 text-lg mb-4 select-none">
         <b> {t(AuthMessage.DeletedSubtitle, { adminEmail })}</b>
       </h2>
     </div>
