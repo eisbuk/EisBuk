@@ -413,6 +413,42 @@ describe("CustomerForm", () => {
       });
     });
 
+    test("should trim string fields when calling 'onSave'", async () => {
+      const mockSave = vi.fn();
+      const mockClose = vi.fn();
+      render(<CustomerForm.Admin onSave={mockSave} onClose={mockClose} />);
+
+      // Fill out the mimimal fields
+      const nameField = screen.getByLabelText(
+        t(CustomerLabel.Name)
+      ) as HTMLInputElement;
+      userEvent.type(nameField, "Saul ");
+      const surnameField = screen.getByLabelText(
+        t(CustomerLabel.Surname)
+      ) as HTMLInputElement;
+      userEvent.type(surnameField, "Goodman ");
+      const subscriptionNumberField = screen.getByLabelText(
+        t(CustomerLabel.CardNumber)
+      ) as HTMLInputElement;
+      userEvent.type(subscriptionNumberField, " 12345");
+      const competitiveCategoryField = screen.getByLabelText(
+        t(Category.Competitive)
+      ) as HTMLInputElement;
+      userEvent.click(competitiveCategoryField);
+
+      userEvent.click(screen.getAllByText(t(ActionButton.Save))[0]);
+      await waitFor(() => {
+        expect(mockSave).toHaveBeenCalledWith(
+          expect.objectContaining({
+            name: "Saul",
+            surname: "Goodman",
+            subscriptionNumber: "12345",
+          }),
+          expect.any(Object)
+        );
+      });
+    });
+
     test("should not render additional actions (as customer doesn't exist", () => {
       render(<CustomerForm.Admin />);
       expect(

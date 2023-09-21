@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import React from "react";
 
 import { Customer, CustomerFull } from "@eisbuk/shared";
 
@@ -11,32 +10,23 @@ interface CustomerGridProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
   customers?: CustomerFull[];
   filterString?: string;
+  approvalsOnly?: boolean;
   onCustomerClick?: (customer: Customer) => void;
 }
 
 const CustomerGrid: React.FC<CustomerGridProps> = ({
   customers,
   filterString = "",
+  approvalsOnly = false,
   onCustomerClick = () => {},
   ...props
 }) => {
   const filterRegex = new RegExp(filterString, "i");
 
-  const history = useHistory();
-
-  const [toggled, setToggle] = useState(true);
-
-  useEffect(() => {
-    setToggle(
-      history.location.search !== "" &&
-        history.location.search === "?approvals=true"
-    );
-  }, [history.location.search]);
-
   const customerMap = (customer: CustomerFull) =>
     (filterRegex.test(customer.name) || filterRegex.test(customer.surname)) &&
     !customer.deleted &&
-    (toggled ? customer.categories.length === 0 : true);
+    (!approvalsOnly || !customer.categories.length);
 
   return (
     <div {...props}>

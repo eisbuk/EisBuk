@@ -5,6 +5,7 @@ import { LocalStore } from "@/types/store";
 import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
 import { compareCustomerBookings } from "@/utils/sort";
+import { getSlotsByMonth } from "../slots";
 
 /**
  * Attendance card selector returns slots with customer attendance, used to create attendance cards.
@@ -16,10 +17,11 @@ import { compareCustomerBookings } from "@/utils/sort";
 export const getSlotsWithAttendance = (
   state: LocalStore
 ): Omit<AttendanceCardProps, "allCustomers">[] => {
+  const slotsByDay = getSlotsByMonth(state);
   const {
     app: { calendarDay },
     firestore: {
-      data: { customers: allCustomers, slotsByDay, attendance },
+      data: { customers: allCustomers, attendance },
     },
   } = state;
 

@@ -28,6 +28,8 @@ import SectionAdminOnly, {
   AdminOnlyValidations,
 } from "./SectionAdminOnly";
 
+import { trimStringValues } from "./utils";
+
 type FormAdminValues = Omit<CustomerFull, "id" | "secretKey">;
 
 export interface FormAdminProps {
@@ -127,7 +129,7 @@ const CustomerCard: React.FC<FormAdminProps> = ({
           validationSchema={validationSchema}
           initialValues={initialValues}
           onSubmit={async (values, formikHelpers) => {
-            const res = onSave(values, formikHelpers);
+            const res = onSave(trimStringValues(values), formikHelpers);
             if (res instanceof Promise) {
               await res;
             }

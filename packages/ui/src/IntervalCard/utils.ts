@@ -17,6 +17,8 @@ export const calculateDuration = (startTime: string, endTime: string) => {
   const diffMillis =
     getMillisFromMidnight(endTime) - getMillisFromMidnight(startTime);
 
-  const duration = `${Math.ceil((diffMillis / hourInMillis) * 2) * 0.5}h`;
+  const durationHours = Math.ceil((diffMillis / hourInMillis) * 2) * 0.5;
+  const duration = durationHours > 2 ? "2h+" : `${durationHours}h`;
+
   return IntervalDuration[duration];
 };

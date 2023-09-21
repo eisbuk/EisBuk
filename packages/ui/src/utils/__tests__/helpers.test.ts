@@ -43,6 +43,11 @@ describe("Test helpers", () => {
       expect(shortName(name, surname)).toEqual(["John", "Doe"]);
     });
 
+    test("should not be thrown off it name has additional prepended, appended spaces", () => {
+      expect(shortName("John ", "Doe ")).toEqual(["John", "Doe"]);
+      expect(shortName(" John", " Doe")).toEqual(["John", "Doe"]);
+    });
+
     test("should shorten the name and surname and return a string containing full first name and last name with all other names shortened", () => {
       const name = "John Ronald Reuel";
       const surname = "Tolkien";

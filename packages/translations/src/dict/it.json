@@ -220,6 +220,7 @@
   },
   "ActionButton": {
     "SignIn": "Accedi",
+    "Log out": "Esci",
     "TroubleSigningIn": "Problemi con l'accesso?",
     "CodeNotReceived": "Non hai ricevuto il codice?",
 

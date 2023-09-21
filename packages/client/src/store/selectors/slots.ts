@@ -2,16 +2,42 @@ import { SlotsByDay, luxon2ISODate } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
+const sortSlotCategories = (
+  slotsByMonth: Record<string, SlotsByDay>
+): Record<string, SlotsByDay> =>
+  Object.fromEntries(
+    Object.entries(slotsByMonth).map(([month, slotsByDay]) => [
+      month,
+      Object.fromEntries(
+        Object.entries(slotsByDay).map(([day, slots]) => [
+          day,
+          Object.fromEntries(
+            Object.entries(slots).map(([slotId, slot]) => [
+              slotId,
+              {
+                ...slot,
+                categories: slot.categories.sort((a, b) => (a < b ? -1 : 1)),
+              },
+            ])
+          ),
+        ])
+      ),
+    ])
+  );
+
+export const getSlotsByMonth = (
+  state: LocalStore
+): LocalStore["firestore"]["data"]["slotsByDay"] =>
+  sortSlotCategories(state.firestore.data.slotsByDay ?? {});
+
 /**
  * Get slots for admin view, with respect to current date
  * @param state Local store state
  * @returns record of days filled with slots
  */
 export const getAdminSlots = (state: LocalStore): SlotsByDay => {
+  const allSlotsInStore = getSlotsByMonth(state);
   const {
-    firestore: {
-      data: { slotsByDay: allSlotsInStore },
-    },
     app: { calendarDay },
   } = state;
 
