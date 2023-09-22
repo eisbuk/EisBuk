@@ -3,11 +3,9 @@ import { JSONSchemaType } from "ajv";
 import {
   EmailAttachment,
   EmailPayload,
-  ClientEmailPayload,
-  EmailType,
-  SendCalendarFileCustomer,
-  SendBookingsLinkCustomer,
-  SendExtendedBookingLinkCustomer,
+  ClientMessagePayload,
+  ClientMessageType,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 
 import { SMTPPreferences } from "./types";
@@ -57,76 +55,7 @@ const EmailAttachmentSchema: JSONSchemaType<EmailAttachment> = {
 };
 
 /**
- * A validation schema for customer field in bookingsLink email payload
- */
-const SendBookingsLinkCustomerSchema: JSONSchemaType<SendBookingsLinkCustomer> =
-  {
-    type: "object",
-    required: ["name", "surname", "email"],
-    properties: {
-      name: {
-        type: "string",
-      },
-      surname: {
-        type: "string",
-      },
-      email: {
-        type: "string",
-        pattern: emailPattern,
-        errorMessage: __invalidEmailError,
-      },
-    },
-  };
-
-/**
- * A validation schema for customer field in bookingsLink email payload
- */
-const SendExtendedBookingLinkCustomerSchema: JSONSchemaType<SendExtendedBookingLinkCustomer> =
-  {
-    type: "object",
-    required: ["name", "surname", "email"],
-    properties: {
-      name: {
-        type: "string",
-      },
-      surname: {
-        type: "string",
-      },
-      email: {
-        type: "string",
-        pattern: emailPattern,
-        errorMessage: __invalidEmailError,
-      },
-    },
-  };
-
-/**
- * A validation schema for customer field in bookingsLink email payload
- */
-const SendCalendarFileCustomerSchema: JSONSchemaType<SendCalendarFileCustomer> =
-  {
-    type: "object",
-    required: ["name", "surname", "secretKey", "email"],
-    properties: {
-      name: {
-        type: "string",
-      },
-      surname: {
-        type: "string",
-      },
-      email: {
-        type: "string",
-        pattern: emailPattern,
-        errorMessage: __invalidEmailError,
-      },
-      secretKey: {
-        type: "string",
-      },
-    },
-  };
-
-/**
- * Validation schema for a fully constructed email (to be send over SMTP),
+ * Validation schema for a fully constructed email (to be sent over SMTP),
  * including `to`, `from`, `bcc` and `html`
  */
 export const EmailPayloadSchema: JSONSchemaType<EmailPayload> = {
@@ -162,10 +91,21 @@ export const EmailPayloadSchema: JSONSchemaType<EmailPayload> = {
  * Validation schema for a ics email payload
  */
 export const SendICSEmailSchema: JSONSchemaType<
-  ClientEmailPayload[EmailType.SendCalendarFile]
+  ClientMessagePayload<
+    ClientMessageMethod.Email,
+    ClientMessageType.SendCalendarFile
+  >
 > = {
   type: "object",
-  required: ["type", "organization", "customer", "attachments"],
+  required: [
+    "type",
+    "organization",
+    "name",
+    "surname",
+    "email",
+    "secretKey",
+    "attachments",
+  ],
   properties: {
     type: {
       type: "string",
@@ -175,7 +115,22 @@ export const SendICSEmailSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing organization",
     },
-    customer: SendCalendarFileCustomerSchema,
+    name: {
+      type: "string",
+      errorMessage: "Missing customer name",
+    },
+    surname: {
+      type: "string",
+      errorMessage: "Missing customer surname",
+    },
+    email: {
+      type: "string",
+      errorMessage: "Missing customer email",
+    },
+    secretKey: {
+      type: "string",
+      errorMessage: "Missing secretKey",
+    },
     attachments: EmailAttachmentSchema,
   },
 };
@@ -183,15 +138,19 @@ export const SendICSEmailSchema: JSONSchemaType<
 /**
  * Validation schema for an ExtendDate email payload
  */
-
 export const SendExtendDateEmailSchema: JSONSchemaType<
-  ClientEmailPayload[EmailType.SendExtendedBookingsDate]
+  ClientMessagePayload<
+    ClientMessageMethod.Email,
+    ClientMessageType.SendExtendedBookingsDate
+  >
 > = {
   type: "object",
   required: [
     "type",
     "organization",
-    "customer",
+    "name",
+    "surname",
+    "email",
     "bookingsMonth",
     "extendedBookingsDate",
   ],
@@ -204,6 +163,18 @@ export const SendExtendDateEmailSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing organization",
     },
+    name: {
+      type: "string",
+      errorMessage: "Missing customer name",
+    },
+    surname: {
+      type: "string",
+      errorMessage: "Missing customer surname",
+    },
+    email: {
+      type: "string",
+      errorMessage: "Missing customer email",
+    },
     bookingsMonth: {
       type: "string",
       errorMessage: "Missing bookingsMonth",
@@ -212,7 +183,6 @@ export const SendExtendDateEmailSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing extendedBookingsDate",
     },
-    customer: SendExtendedBookingLinkCustomerSchema,
   },
 };
 
@@ -220,10 +190,20 @@ export const SendExtendDateEmailSchema: JSONSchemaType<
  * Validation schema for a bookingsLink email payload
  */
 export const SendBookingsLinkEmailSchema: JSONSchemaType<
-  ClientEmailPayload[EmailType.SendBookingsLink]
+  ClientMessagePayload<
+    ClientMessageMethod.Email,
+    ClientMessageType.SendBookingsLink
+  >
 > = {
   type: "object",
-  required: ["type", "organization", "customer", "bookingsLink"],
+  required: [
+    "type",
+    "organization",
+    "name",
+    "surname",
+    "email",
+    "bookingsLink",
+  ],
   properties: {
     type: {
       type: "string",
@@ -233,12 +213,22 @@ export const SendBookingsLinkEmailSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing organization",
     },
+    name: {
+      type: "string",
+      errorMessage: "Missing customer name",
+    },
+    surname: {
+      type: "string",
+      errorMessage: "Missing customer surname",
+    },
+    email: {
+      type: "string",
+      errorMessage: "Missing customer email",
+    },
     bookingsLink: {
       type: "string",
       errorMessage: "Missing bookingsLink",
     },
-
-    customer: SendBookingsLinkCustomerSchema,
   },
 };
 

@@ -3,11 +3,15 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
 
-import { defaultEmailTemplates, OrganizationData } from "@eisbuk/shared";
+import {
+  defaultEmailTemplates as emailTemplates,
+  OrganizationData,
+} from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   ValidationMessage,
   useTranslation,
+  SettingsNavigationLabel,
 } from "@eisbuk/translations";
 import {
   Button,
@@ -40,18 +44,18 @@ const OrganizationValidation = Yup.object().shape({
 // #endregion validations
 
 const OrganizationSettings: React.FC = () => {
-  enum Views {
-    EmailTemplates = "EmailTemplatesSection",
+  enum View {
     GeneralSettings = "GeneralSettings",
+    EmailTemplates = "EmailTemplates",
   }
 
   // Get appropriate view to render
   const viewsLookup = {
-    [Views.EmailTemplates]: EmailTemplateSettings,
-    [Views.GeneralSettings]: GeneralSettings,
+    [View.GeneralSettings]: GeneralSettings,
+    [View.EmailTemplates]: EmailTemplateSettings,
   };
   const [view, setView] = useState<keyof typeof viewsLookup>(
-    Views.GeneralSettings
+    View.GeneralSettings
   );
 
   const dispatch = useDispatch();
@@ -85,16 +89,16 @@ const OrganizationSettings: React.FC = () => {
       <TabItem
         key="general-settings-view-button"
         Icon={Cog as any}
-        label={i18n.t("SettingsNavigationLabel.GeneralSettings")}
-        onClick={() => setView(Views.GeneralSettings)}
-        active={view === Views.GeneralSettings}
+        label={i18n.t(SettingsNavigationLabel.GeneralSettings)}
+        onClick={() => setView(View.GeneralSettings)}
+        active={view === View.GeneralSettings}
       />
       <TabItem
         key="email-templates-view-button"
         Icon={Mail as any}
-        label={i18n.t("SettingsNavigationLabel.EmailTemplates")}
-        onClick={() => setView(Views.EmailTemplates)}
-        active={view === Views.EmailTemplates}
+        label={i18n.t(SettingsNavigationLabel.EmailTemplates)}
+        onClick={() => setView(View.EmailTemplates)}
+        active={view === View.EmailTemplates}
       />
     </>
   );
@@ -130,7 +134,7 @@ const OrganizationSettings: React.FC = () => {
               </div>
             }
           >
-            {view === Views.GeneralSettings ? (
+            {view === View.GeneralSettings ? (
               <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
                 <div className="md:px-11">
                   <Form>
@@ -156,7 +160,7 @@ const emptyValues = {
   displayName: "",
   emailFrom: "",
   emailNameFrom: "",
-  emailTemplates: defaultEmailTemplates,
+  emailTemplates,
   existingSecrets: [],
   location: "",
   defaultCountryCode: "",

@@ -2,12 +2,13 @@ import { JSONSchemaType } from "ajv";
 
 import {
   EmailTemplate,
-  EmailType,
-  ClientEmailPayload,
+  ClientMessageType,
+  ClientMessagePayload,
   interpolateText,
   MergeUnion,
   HTTPSErrors,
   EmailInterpolationValues,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 
 import { EisbukHttpsError, validateJSON } from "../utils";
@@ -20,11 +21,14 @@ import {
 /**
  * Validate client email payload accepts an email payload and applies the correct validation for an email type.
  */
-export const validateClientEmailPayload = <T extends EmailType>(
-  payload: ClientEmailPayload[T]
+export const validateClientEmailPayload = <T extends ClientMessageType>(
+  payload: ClientMessagePayload<ClientMessageMethod.Email, T>
 ) => {
   // Check that the type has been provided and is a supported email type
-  if (!payload.type || !Object.values(EmailType).includes(payload.type)) {
+  if (
+    !payload.type ||
+    !Object.values(ClientMessageType).includes(payload.type)
+  ) {
     throw new EisbukHttpsError(
       "invalid-argument",
       HTTPSErrors.EmailInvalidType
@@ -32,12 +36,14 @@ export const validateClientEmailPayload = <T extends EmailType>(
   }
 
   type ValidationSchemaLookup = {
-    [key in EmailType]: JSONSchemaType<ClientEmailPayload[key]>;
+    [key in ClientMessageType]: JSONSchemaType<
+      ClientMessagePayload<ClientMessageMethod.Email, key>
+    >;
   };
   const validationSchemaLookup: ValidationSchemaLookup = {
-    [EmailType.SendBookingsLink]: SendBookingsLinkEmailSchema,
-    [EmailType.SendCalendarFile]: SendICSEmailSchema,
-    [EmailType.SendExtendedBookingsDate]: SendExtendDateEmailSchema,
+    [ClientMessageType.SendBookingsLink]: SendBookingsLinkEmailSchema,
+    [ClientMessageType.SendCalendarFile]: SendICSEmailSchema,
+    [ClientMessageType.SendExtendedBookingsDate]: SendExtendDateEmailSchema,
   };
 
   const [res, errors] = validateJSON(
@@ -50,7 +56,7 @@ export const validateClientEmailPayload = <T extends EmailType>(
     throw new EisbukHttpsError("invalid-argument", errors.join(" "));
   }
 
-  return res as MergeUnion<ClientEmailPayload[T]>;
+  return res as MergeUnion<ClientMessagePayload<ClientMessageMethod.Email, T>>;
 };
 
 /**

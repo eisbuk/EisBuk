@@ -1,7 +1,11 @@
 import { describe, vi, expect, test, afterEach } from "vitest";
 import { getFirestore as getClientFirestore } from "@firebase/firestore";
 
-import { EmailType, OrgSubCollection, SMSMessage } from "@eisbuk/shared";
+import {
+  ClientMessageType,
+  OrgSubCollection,
+  SMSMessage,
+} from "@eisbuk/shared";
 import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
 import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
@@ -136,12 +140,10 @@ describe("Send bookings link dialog utils", () => {
         expect(mockSendMail).toHaveBeenCalledTimes(1);
         expect(mockSendMail).toHaveBeenCalledWith({
           bookingsLink,
-          customer: {
-            email: saul.email,
-            name: saul.name,
-            surname: saul.surname,
-          },
-          type: EmailType.SendBookingsLink,
+          email: saul.email,
+          name: saul.name,
+          surname: saul.surname,
+          type: ClientMessageType.SendBookingsLink,
         });
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(

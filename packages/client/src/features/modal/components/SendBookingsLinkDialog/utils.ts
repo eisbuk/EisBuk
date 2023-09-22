@@ -1,8 +1,9 @@
 import {
-  ClientEmailPayload,
+  ClientMessagePayload,
   Customer,
-  EmailType,
+  ClientMessageType,
   SMSMessage,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -92,15 +93,16 @@ export const sendBookingsLink: SendBookingsLink =
       ${bookingsLink}`;
 
       const emailPayload: Omit<
-        ClientEmailPayload[EmailType.SendBookingsLink],
+        ClientMessagePayload<
+          ClientMessageMethod.Email,
+          ClientMessageType.SendBookingsLink
+        >,
         "organization"
       > = {
-        customer: {
-          name,
-          surname,
-          email: email!,
-        },
-        type: EmailType.SendBookingsLink,
+        name,
+        surname,
+        email: email!,
+        type: ClientMessageType.SendBookingsLink,
         bookingsLink,
       };
 

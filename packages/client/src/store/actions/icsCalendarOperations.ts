@@ -5,9 +5,10 @@ import i18n, { NotificationMessage } from "@eisbuk/translations";
 import {
   BookingSubCollection,
   CalendarEvents,
-  ClientEmailPayload,
+  ClientMessageMethod,
+  ClientMessagePayload,
+  ClientMessageType,
   Customer,
-  EmailType,
 } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
@@ -182,18 +183,22 @@ const sendICSFile =
     try {
       const handler = CloudFunction.SendEmail;
       const payload = {
-        type: EmailType.SendCalendarFile,
-        customer: {
-          name,
-          surname,
-          secretKey,
-          email,
-        },
+        type: ClientMessageType.SendCalendarFile,
+        name,
+        surname,
+        secretKey,
+        email,
         attachments: {
           filename: "bookedSlots.ics",
           content: icsFile,
         },
-      } as Omit<ClientEmailPayload[EmailType.SendCalendarFile], "organization">;
+      } as Omit<
+        ClientMessagePayload<
+          ClientMessageMethod.Email,
+          ClientMessageType.SendCalendarFile
+        >,
+        "organization"
+      >;
 
       await createFunctionCaller(getFunctions(), handler, payload)();
 

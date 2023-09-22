@@ -1,7 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 
-import { EmailType } from "@eisbuk/shared";
+import { ClientMessageType } from "@eisbuk/shared";
 
 import { getOrganizationSettings } from "@/store/selectors/app";
 
@@ -12,17 +12,17 @@ const EmailTemplateSettings: React.FC = () => {
   const organization = useSelector(getOrganizationSettings);
 
   const buttons = {
-    [EmailType.SendBookingsLink]: [
+    [ClientMessageType.SendBookingsLink]: [
       { label: EmailTemplateLabel.BookingsLink, value: "bookingsLink" },
       { label: EmailTemplateLabel.Name, value: "name" },
       { label: EmailTemplateLabel.Surname, value: "surname" },
     ],
-    [EmailType.SendCalendarFile]: [
+    [ClientMessageType.SendCalendarFile]: [
       { label: EmailTemplateLabel.Name, value: "name" },
       { label: EmailTemplateLabel.Surname, value: "surname" },
       { label: EmailTemplateLabel.CalendarFile, value: "calendarFile" },
     ],
-    [EmailType.SendExtendedBookingsDate]: [
+    [ClientMessageType.SendExtendedBookingsDate]: [
       { label: EmailTemplateLabel.BookingsMonth, value: "bookingsMonth" },
       {
         label: EmailTemplateLabel.ExtendedBookingsDate,

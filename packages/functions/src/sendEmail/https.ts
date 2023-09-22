@@ -4,10 +4,11 @@ import admin from "firebase-admin";
 import {
   Collection,
   DeliveryQueue,
-  ClientEmailPayload,
-  EmailType,
+  ClientMessagePayload,
+  ClientMessageType,
   OrganizationData,
   HTTPSErrors,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 
 import { interpolateEmail, validateClientEmailPayload } from "./utils";
@@ -27,7 +28,7 @@ export const sendEmail = functions
   .region(__functionsZone__)
   .https.onCall(
     async (
-      payload: ClientEmailPayload[EmailType],
+      payload: ClientMessagePayload<ClientMessageMethod.Email>,
       { auth }: functions.https.CallableContext
     ) => {
       const { organization } = payload;
@@ -35,10 +36,10 @@ export const sendEmail = functions
       if (
         !(await checkUser(organization, auth)) &&
         !(
-          payload.type === EmailType.SendCalendarFile &&
+          payload.type === ClientMessageType.SendCalendarFile &&
           (await checkSecretKey({
             organization: organization,
-            secretKey: payload.customer.secretKey,
+            secretKey: payload.secretKey,
           }))
         )
       ) {
@@ -74,8 +75,8 @@ export const sendEmail = functions
       const emailTemplate = emailTemplates[payload.type];
       const { subject, html } = interpolateEmail(emailTemplate, {
         organizationName: displayName,
-        name: validatedPayload.customer.name,
-        surname: validatedPayload.customer.surname,
+        name: validatedPayload.name,
+        surname: validatedPayload.surname,
         bookingsLink: validatedPayload.bookingsLink,
         bookingsMonth: validatedPayload.bookingsMonth,
         extendedBookingsDate: validatedPayload.extendedBookingsDate,
@@ -85,7 +86,7 @@ export const sendEmail = functions
       // Construct an email for process delivery
       const email = {
         from: emailFrom,
-        to: validatedPayload.customer.email,
+        to: validatedPayload.email,
         bcc: emailBcc || emailFrom,
         subject,
         html,

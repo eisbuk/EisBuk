@@ -2,11 +2,12 @@ import { describe, expect, test } from "vitest";
 import { httpsCallable } from "@firebase/functions";
 
 import {
-  ClientEmailPayload,
-  EmailType,
+  ClientMessagePayload,
+  ClientMessageType,
   interpolateText,
-  defaultEmailTemplates,
+  defaultEmailTemplates as emailTemplates,
   EmailInterpolationValues,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
@@ -17,23 +18,32 @@ import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
 
 type SendEmailTest =
   | {
-      type: EmailType.SendBookingsLink;
+      type: ClientMessageType.SendBookingsLink;
       payload: Pick<
-        ClientEmailPayload[EmailType.SendBookingsLink],
+        ClientMessagePayload<
+          ClientMessageMethod.Email,
+          ClientMessageType.SendBookingsLink
+        >,
         "bookingsLink"
       >;
     }
   | {
-      type: EmailType.SendCalendarFile;
+      type: ClientMessageType.SendCalendarFile;
       payload: Pick<
-        ClientEmailPayload[EmailType.SendCalendarFile],
+        ClientMessagePayload<
+          ClientMessageMethod.Email,
+          ClientMessageType.SendCalendarFile
+        >,
         "attachments"
       >;
     }
   | {
-      type: EmailType.SendExtendedBookingsDate;
+      type: ClientMessageType.SendExtendedBookingsDate;
       payload: Pick<
-        ClientEmailPayload[EmailType.SendExtendedBookingsDate],
+        ClientMessagePayload<
+          ClientMessageMethod,
+          ClientMessageType.SendExtendedBookingsDate
+        >,
         "extendedBookingsDate" | "bookingsMonth"
       >;
     };
@@ -69,7 +79,7 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
       >(
         functions,
         CloudFunction.SendEmail
-      )({ type, ...payload, organization, customer: saul });
+      )({ type, ...payload, organization, ...saul });
 
       expect(success).toEqual(true);
 
@@ -85,17 +95,17 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
       };
 
       // In case of send bookings link, add bookings link specific interpolation values
-      if (type === EmailType.SendBookingsLink) {
+      if (type === ClientMessageType.SendBookingsLink) {
         interpolationValues.bookingsLink = payload.bookingsLink;
       }
 
       // In case of send calendar file, add calendar file specific interpolation values
-      if (type === EmailType.SendCalendarFile) {
+      if (type === ClientMessageType.SendCalendarFile) {
         interpolationValues.calendarFile = payload.attachments.filename;
       }
 
       // In case of send extended bookings date, add extended bookings date specific interpolation values
-      if (type === EmailType.SendExtendedBookingsDate) {
+      if (type === ClientMessageType.SendExtendedBookingsDate) {
         interpolationValues.bookingsMonth = payload.bookingsMonth;
         interpolationValues.extendedBookingsDate = payload.extendedBookingsDate;
       }
@@ -111,11 +121,11 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
             // We're using default templates for each email type and checking against interpolation values
             // provided in the test payload
             subject: interpolateText(
-              defaultEmailTemplates[type].subject,
+              emailTemplates[type].subject,
               interpolationValues
             ),
             html: interpolateText(
-              defaultEmailTemplates[type].html,
+              emailTemplates[type].html,
               interpolationValues
             ),
           }),
@@ -128,13 +138,13 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
 describe("SendEmail", () =>
   runSendEmailTableTests([
     {
-      type: EmailType.SendBookingsLink,
+      type: ClientMessageType.SendBookingsLink,
       payload: {
         bookingsLink: "https://eisbuk.com/bookings",
       },
     },
     {
-      type: EmailType.SendCalendarFile,
+      type: ClientMessageType.SendCalendarFile,
       payload: {
         attachments: {
           filename: "calendar.ics",
@@ -143,7 +153,7 @@ describe("SendEmail", () =>
       },
     },
     {
-      type: EmailType.SendExtendedBookingsDate,
+      type: ClientMessageType.SendExtendedBookingsDate,
       payload: {
         bookingsMonth: "2021-01",
         extendedBookingsDate: "2021-01-31",

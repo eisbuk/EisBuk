@@ -8,13 +8,14 @@ import { describe, expect } from "vitest";
 import {
   HTTPSErrors,
   BookingsErrors,
-  ClientEmailPayload,
-  EmailType,
+  ClientMessagePayload,
+  ClientMessageType,
   sanitizeCustomer,
   CustomerBase,
   Collection,
   Customer,
   DeliveryQueue,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
@@ -53,7 +54,7 @@ describe("Cloud functions", () => {
       async () => {
         const { organization } = await setUpOrganization({ doLogin: false });
         const payload = {
-          type: EmailType.SendBookingsLink,
+          type: ClientMessageType.SendBookingsLink,
           organization,
           displayName: "displayName",
           bookingsLink: "bookingsLink",
@@ -81,14 +82,12 @@ describe("Cloud functions", () => {
           },
         });
         const payload = {
-          type: EmailType.SendBookingsLink,
+          type: ClientMessageType.SendBookingsLink,
           organization,
           bookingsLink: "bookingsLink",
-          customer: {
-            name: saul.name,
-            surname: saul.surname,
-            email: saul.email,
-          },
+          name: saul.name,
+          surname: saul.surname,
+          email: saul.email,
         };
         await expect(
           httpsCallable(functions, CloudFunction.SendEmail)(payload)
@@ -135,19 +134,20 @@ describe("Cloud functions", () => {
           expect(Boolean(bookingsSnap.data())).toEqual(true);
         });
 
-        const payload: ClientEmailPayload[EmailType.SendCalendarFile] = {
-          type: EmailType.SendCalendarFile,
+        const payload: ClientMessagePayload<
+          ClientMessageMethod.Email,
+          ClientMessageType.SendCalendarFile
+        > = {
+          type: ClientMessageType.SendCalendarFile,
           organization,
           attachments: {
             filename: "icsFile.ics",
             content: "content",
           },
-          customer: {
-            name: saul.name,
-            surname: saul.surname,
-            email: saul.email || "email@gmail.com",
-            secretKey: saul.secretKey,
-          },
+          name: saul.name,
+          surname: saul.surname,
+          email: saul.email || "email@gmail.com",
+          secretKey: saul.secretKey,
         };
         await expect(
           httpsCallable(functions, CloudFunction.SendEmail)(payload)
@@ -163,7 +163,7 @@ describe("Cloud functions", () => {
       "should reject if no value for organziation provided",
       async () => {
         const payload = {
-          type: EmailType.SendBookingsLink,
+          type: ClientMessageType.SendBookingsLink,
           displayName: "displayName",
           bookingsLink: "string",
           customer: {
@@ -181,7 +181,7 @@ describe("Cloud functions", () => {
     testWithEmulator("should reject if no recipient provided", async () => {
       const { organization } = await setUpOrganization();
       const payload = {
-        type: EmailType.SendBookingsLink,
+        type: ClientMessageType.SendBookingsLink,
         organization,
         bookingsLink: "string",
         customer: {
