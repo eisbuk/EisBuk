@@ -1,25 +1,37 @@
 import { ClientMessageType } from "@eisbuk/shared";
-
-import { EmailTemplateLabel } from "@eisbuk/translations";
+import { MessageTemplateLabel } from "@eisbuk/translations";
 
 export const buttons = {
   [ClientMessageType.SendBookingsLink]: [
-    { label: EmailTemplateLabel.BookingsLink, value: "bookingsLink" },
-    { label: EmailTemplateLabel.Name, value: "name" },
-    { label: EmailTemplateLabel.Surname, value: "surname" },
+    { label: MessageTemplateLabel.Name, value: "name" },
+    { label: MessageTemplateLabel.Surname, value: "surname" },
+    { label: MessageTemplateLabel.BookingsLink, value: "bookingsLink" },
+    { label: MessageTemplateLabel.OrganizationName, value: "organizationName" },
   ],
   [ClientMessageType.SendCalendarFile]: [
-    { label: EmailTemplateLabel.Name, value: "name" },
-    { label: EmailTemplateLabel.Surname, value: "surname" },
-    { label: EmailTemplateLabel.CalendarFile, value: "calendarFile" },
+    { label: MessageTemplateLabel.Name, value: "name" },
+    { label: MessageTemplateLabel.Surname, value: "surname" },
+    { label: MessageTemplateLabel.CalendarFile, value: "calendarFile" },
+    { label: MessageTemplateLabel.OrganizationName, value: "organizationName" },
   ],
   [ClientMessageType.SendExtendedBookingsDate]: [
-    { label: EmailTemplateLabel.BookingsMonth, value: "bookingsMonth" },
+    { label: MessageTemplateLabel.Name, value: "name" },
+    { label: MessageTemplateLabel.Surname, value: "surname" },
+    { label: MessageTemplateLabel.BookingsMonth, value: "bookingsMonth" },
     {
-      label: EmailTemplateLabel.ExtendedBookingsDate,
+      label: MessageTemplateLabel.ExtendedBookingsDate,
       value: "extendedBookingsDate",
     },
-    { label: EmailTemplateLabel.Name, value: "name" },
-    { label: EmailTemplateLabel.Surname, value: "surname" },
+    { label: MessageTemplateLabel.OrganizationName, value: "organizationName" },
   ],
+};
+
+export const previewValues = {
+  organizationName: "Organization Name",
+  name: "Saul",
+  surname: "Goodman",
+  bookingsLink: "https://ice.it/saul",
+  bookingsMonth: "April",
+  extendedBookingsDate: "06/04",
+  icsFile: "icsFile.ics",
 };

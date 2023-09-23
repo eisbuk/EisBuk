@@ -18,8 +18,9 @@
   },
 
   "SettingsNavigationLabel": {
+    "GeneralSettings": "Impostazioni Generali",
     "EmailTemplates": "Modelli di Emails",
-    "GeneralSettings": "Impostazioni Generali"
+    "SMSTemplates": "Modelli di SMSs"
   },
 
   "Authorization": {
@@ -163,21 +164,23 @@
     "SmsTemplateHelpText": "This is a template for SMS sent to customers."
   },
 
-  "EmailTemplateLabel": {
-    "SubjectPreview": "Anteprima Del Soggetto",
-    "HTMLPreview": "Anteprima Del Corpo",
+  "MessageTemplateLabel": {
+    "Preview": "Anteprima",
+
+    "Subject": "Argomento",
+    "Body": "Corpo",
+
     "SendBookingsLink": "Invia Collegamento Per Le Prenotazioni",
     "SendCalendarFile": "Invia File Calendario",
     "SendExtendedBookingsDate": "Invia Data Di Prenotazione Estesa",
-    "OrganizationName": "Nome Dell'Organizzazione",
+
     "BookingsLink": "Link prenotazioni",
     "Name": "Nome",
     "Surname": "Cognome",
     "IcsFile": "Collegamento Al File Del Calendario",
     "BookingsMonth": "Mese Delle Prenotazioni",
     "ExtendedBookingsDate": "Data Di Prenotazione Estesa",
-    "Subject": "Argomento",
-    "HTML": "Corpo"
+    "OrganizationName": "Nome Dell'Organizzazione"
   },
 
   "Validations": {

@@ -5,6 +5,7 @@ import { Formik, Form, FormikHelpers } from "formik";
 
 import {
   defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
   OrganizationData,
 } from "@eisbuk/shared";
 import i18n, {
@@ -33,6 +34,7 @@ import { isEmpty } from "@/utils/helpers";
 
 import EmailTemplateSettings from "./views/EmailTemplateSettings";
 import GeneralSettings from "./views/GeneralSettings";
+import SMSTemplateSettings from "./views/SMSTemplateSettings";
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -47,12 +49,14 @@ const OrganizationSettings: React.FC = () => {
   enum View {
     GeneralSettings = "GeneralSettings",
     EmailTemplates = "EmailTemplates",
+    SMSTemplates = "SMSTemplates",
   }
 
   // Get appropriate view to render
   const viewsLookup = {
     [View.GeneralSettings]: GeneralSettings,
     [View.EmailTemplates]: EmailTemplateSettings,
+    [View.SMSTemplates]: SMSTemplateSettings,
   };
   const [view, setView] = useState<keyof typeof viewsLookup>(
     View.GeneralSettings
@@ -100,6 +104,13 @@ const OrganizationSettings: React.FC = () => {
         onClick={() => setView(View.EmailTemplates)}
         active={view === View.EmailTemplates}
       />
+      <TabItem
+        key="sms-templates-view-button"
+        Icon={Mail as any}
+        label={i18n.t(SettingsNavigationLabel.SMSTemplates)}
+        onClick={() => setView(View.SMSTemplates)}
+        active={view === View.SMSTemplates}
+      />
     </>
   );
 
@@ -111,44 +122,46 @@ const OrganizationSettings: React.FC = () => {
         validationSchema={OrganizationValidation}
       >
         {({ isSubmitting, isValidating, handleReset }) => (
-          <LayoutContent
-            actionButtons={
-              <div className="py-2 flex justify-end items-center gap-2">
-                <Button
-                  onClick={handleReset}
-                  disabled={isSubmitting || isValidating}
-                  className="!text-cyan-500"
-                  size={ButtonSize.MD}
-                >
-                  {t(ActionButton.Reset)}
-                </Button>
-                <Button
-                  disabled={isSubmitting || isValidating}
-                  color={ButtonColor.Primary}
-                  size={ButtonSize.MD}
-                  aria-label={"save"}
-                  type="submit"
-                >
-                  {t(ActionButton.Save)}
-                </Button>
-              </div>
-            }
-          >
-            {view === View.GeneralSettings ? (
-              <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-                <div className="md:px-11">
-                  <Form>
+          <Form className="flex flex-col overflow-hidden">
+            <LayoutContent
+              actionButtons={
+                <div className="py-2 flex justify-end items-center gap-2">
+                  <Button
+                    onClick={handleReset}
+                    disabled={isSubmitting || isValidating}
+                    className="!text-cyan-500"
+                    size={ButtonSize.MD}
+                  >
+                    {t(ActionButton.Reset)}
+                  </Button>
+                  <Button
+                    disabled={isSubmitting || isValidating}
+                    color={ButtonColor.Primary}
+                    size={ButtonSize.MD}
+                    aria-label={"save"}
+                    type="submit"
+                  >
+                    {t(ActionButton.Save)}
+                  </Button>
+                </div>
+              }
+            >
+              {view === View.GeneralSettings ? (
+                <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+                  <div className="md:px-11">
                     <AdminsField currentUser={currentUser} />
                     <GeneralSettings />
-                  </Form>
+                  </div>
                 </div>
-              </div>
-            ) : (
-              <Form>
+              ) : view === View.EmailTemplates ? (
                 <EmailTemplateSettings />
-              </Form>
-            )}
-          </LayoutContent>
+              ) : (
+                <div>
+                  <SMSTemplateSettings />
+                </div>
+              )}
+            </LayoutContent>
+          </Form>
         )}
       </Formik>
     </Layout>
@@ -165,7 +178,7 @@ const emptyValues = {
   location: "",
   defaultCountryCode: "",
   smsFrom: "",
-  smsTemplate: "",
+  smsTemplates,
   emailBcc: "",
 };
 

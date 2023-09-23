@@ -20,8 +20,9 @@ export enum AttendanceNavigationLabel {
 }
 
 export enum SettingsNavigationLabel {
-  EmailTemplates = "SettingsNavigationLabel.EmailTemplates",
   GeneralSettings = "SettingsNavigationLabel.GeneralSettings",
+  EmailTemplates = "SettingsNavigationLabel.EmailTemplates",
+  SMSTemplates = "SettingsNavigationLabel.SMSTemplates",
 }
 // #endregion navigation
 
@@ -183,21 +184,23 @@ export enum OrganizationLabel {
   SmsTemplateHelpText = "OrganizationLabel.SmsTemplateHelpText",
 }
 
-export enum EmailTemplateLabel {
-  SubjectPreview = "EmailTemplateLabel.SubjectPreview",
-  HTMLPreview = "EmailTemplateLabel.HTMLPreview",
-  "send-bookings-link" = "EmailTemplateLabel.SendBookingsLink",
-  "send-calendar-file" = "EmailTemplateLabel.SendCalendarFile",
-  "send-extended-bookings-date" = "EmailTemplateLabel.SendExtendedBookingsDate",
-  OrganizationName = "EmailTemplateLabel.OrganizationName",
-  BookingsLink = "EmailTemplateLabel.BookingsLink",
-  Name = "EmailTemplateLabel.Name",
-  Surname = "EmailTemplateLabel.Surname",
-  CalendarFile = "EmailTemplateLabel.IcsFile",
-  BookingsMonth = "EmailTemplateLabel.BookingsMonth",
-  ExtendedBookingsDate = "EmailTemplateLabel.ExtendedBookingsDate",
-  Subject = "EmailTemplateLabel.Subject",
-  HTML = "EmailTemplateLabel.HTML",
+export enum MessageTemplateLabel {
+  Preview = "MessageTemplateLabel.Preview",
+
+  Subject = "MessageTemplateLabel.Subject",
+  Body = "MessageTemplateLabel.Body",
+
+  "send-bookings-link" = "MessageTemplateLabel.SendBookingsLink",
+  "send-calendar-file" = "MessageTemplateLabel.SendCalendarFile",
+  "send-extended-bookings-date" = "MessageTemplateLabel.SendExtendedBookingsDate",
+
+  BookingsLink = "MessageTemplateLabel.BookingsLink",
+  Name = "MessageTemplateLabel.Name",
+  Surname = "MessageTemplateLabel.Surname",
+  CalendarFile = "MessageTemplateLabel.IcsFile",
+  BookingsMonth = "MessageTemplateLabel.BookingsMonth",
+  ExtendedBookingsDate = "MessageTemplateLabel.ExtendedBookingsDate",
+  OrganizationName = "MessageTemplateLabel.OrganizationName",
 }
 
 export enum BookingNotesForm {
