@@ -59,11 +59,21 @@ const PreviewFields: PreviewFieldsInterface = ({ name }) => {
   return (
     <p
       dangerouslySetInnerHTML={{
-        __html: interpolateText(template, previewValues),
+        __html: formatPreview(interpolateText(template, previewValues)),
       }}
-      className="outline-gray-300 outline-1"
+      className="outline-gray-300 outline-1 whitespace-pre"
     />
   );
 };
+
+/**
+ * Since SMS can't be formatted using HTML, here we're formatting the plain text
+ * into HTML and wrapping links with anchor tag (and painting them to blue) for preview purposes
+ */
+const formatPreview = (text: string) =>
+  text.replaceAll(
+    /http[^ ]* /g,
+    (s) => `<a style="color: blue" href="${s}">${s}</a>`
+  );
 
 export default EmailTemplateSettings;

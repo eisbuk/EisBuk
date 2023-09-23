@@ -58,7 +58,9 @@ const TemplateBlock: React.FC<Props> = ({
 
     input.current.focus();
     // Set selection to the end of the inserted value, after the field has been focused (hence the timeout)
-    const setSelection = () => input.current?.setSelectionRange(start, start);
+    const cursorPosition = start + inputValue.length;
+    const setSelection = () =>
+      input.current?.setSelectionRange(cursorPosition, cursorPosition);
     setTimeout(setSelection, 5);
   };
 

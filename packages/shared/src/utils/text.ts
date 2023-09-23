@@ -39,7 +39,7 @@ export const interpolateText = (
     );
   });
 
-  return template.trim().replaceAll("\n", "\n</br>\n");
+  return template.trim();
 };
 
 export const checkExpected = (input: string, expected: string) => {

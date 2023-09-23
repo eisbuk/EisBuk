@@ -74,7 +74,7 @@ const PreviewFields: PreviewFieldsInterface = ({ name }) => {
         <h4 className="text-black font-bold">Subject:</h4>
         <span
           dangerouslySetInnerHTML={{
-            __html: applyStylingToLinks(
+            __html: formatPreview(
               interpolateText(template.subject, previewValues)
             ),
           }}
@@ -85,7 +85,7 @@ const PreviewFields: PreviewFieldsInterface = ({ name }) => {
         <h4 className="text-black font-bold">Text:</h4>
         <p
           dangerouslySetInnerHTML={{
-            __html: applyStylingToLinks(
+            __html: formatPreview(
               interpolateText(template.html, previewValues)
             ),
           }}
@@ -97,7 +97,7 @@ const PreviewFields: PreviewFieldsInterface = ({ name }) => {
 };
 
 /** A simple function used to "override" the tailwind reset styles - explicitly display links as blue text */
-const applyStylingToLinks = (html: string) =>
+const formatPreview = (html: string) =>
   html.replaceAll(/<a/g, (s) => `${s} style="color: blue"`);
 
 export default EmailTemplateSettings;

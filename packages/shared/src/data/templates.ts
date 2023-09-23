@@ -4,7 +4,7 @@ export const defaultEmailTemplates = {
   [ClientMessageType.SendBookingsLink]: {
     subject: "prenotazioni lezioni di {{ organizationName }}",
     html: `<p>Ciao {{ name }},</p>
-    Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:
+    <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:</p>
     <a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>`,
   },
   [ClientMessageType.SendCalendarFile]: {
