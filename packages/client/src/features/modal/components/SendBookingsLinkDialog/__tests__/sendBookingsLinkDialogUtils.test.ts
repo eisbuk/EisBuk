@@ -4,7 +4,7 @@ import { getFirestore as getClientFirestore } from "@firebase/firestore";
 import {
   ClientMessageType,
   OrgSubCollection,
-  SMSMessage,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -12,7 +12,6 @@ import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 
 import { getNewStore } from "@/store/createStore";
 
-import { SendBookingLinkMethod } from "@/enums/other";
 import { NotifVariant } from "@/enums/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
@@ -73,7 +72,7 @@ describe("Send bookings link dialog utils", () => {
     runGetDialogTableTests([
       {
         name: "should display 'email' prompt for method = \"email\" when 'email' defined",
-        method: SendBookingLinkMethod.Email,
+        method: ClientMessageMethod.Email,
         email: testEmail,
         want: {
           title: i18n.t(Prompt.SendEmailTitle),
@@ -83,7 +82,7 @@ describe("Send bookings link dialog utils", () => {
       },
       {
         name: "should display 'sms' prompt for method = \"sms\" when 'phone' defined",
-        method: SendBookingLinkMethod.SMS,
+        method: ClientMessageMethod.SMS,
         phone: testPhone,
         want: {
           title: i18n.t(Prompt.SendSMSTitle),
@@ -93,7 +92,7 @@ describe("Send bookings link dialog utils", () => {
       },
       {
         name: "should display 'no-email' prompt and disable confirmation for method = \"email\" when 'email' undefined",
-        method: SendBookingLinkMethod.Email,
+        method: ClientMessageMethod.Email,
         want: {
           title: i18n.t(Prompt.NoEmailTitle),
           body: i18n.t(Prompt.NoEmailMessage),
@@ -102,7 +101,7 @@ describe("Send bookings link dialog utils", () => {
       },
       {
         name: "should display 'no-sms' prompt and disable confirmation for method = \"sms\" when 'phone' undefined",
-        method: SendBookingLinkMethod.SMS,
+        method: ClientMessageMethod.SMS,
         want: {
           title: i18n.t(Prompt.NoPhoneTitle),
           body: i18n.t(Prompt.NoPhoneMessage),
@@ -132,7 +131,7 @@ describe("Send bookings link dialog utils", () => {
       async () => {
         const testThunk = sendBookingsLink({
           ...saul,
-          method: SendBookingLinkMethod.Email,
+          method: ClientMessageMethod.Email,
           bookingsLink,
         });
         await runThunk(testThunk, mockDispatch, getState, { getFirestore });
@@ -160,7 +159,7 @@ describe("Send bookings link dialog utils", () => {
       async () => {
         const testThunk = sendBookingsLink({
           ...saul,
-          method: SendBookingLinkMethod.SMS,
+          method: ClientMessageMethod.SMS,
           bookingsLink,
         });
         await runThunk(testThunk, mockDispatch, getState, {
@@ -168,15 +167,13 @@ describe("Send bookings link dialog utils", () => {
         });
         // check results
         expect(mockSendSMS).toHaveBeenCalledTimes(1);
-        const sentSMS = mockSendSMS.mock.calls[0][0] as SMSMessage;
-
-        expect(sentSMS.to).toEqual(saul.phone);
-        // we're not matching the complete html of message
-        // but are asserting that it contains important parts
-        expect(sentSMS.message.includes(bookingsLink)).toBeTruthy();
-        expect(sentSMS.message.includes(saul.name)).toBeTruthy();
-        // the sms should be clean, without markup
-        expect(sentSMS.message.includes("p>")).toBeFalsy();
+        expect(mockSendSMS).toHaveBeenCalledWith({
+          bookingsLink,
+          phone: saul.phone,
+          name: saul.name,
+          surname: saul.surname,
+          type: ClientMessageType.SendBookingsLink,
+        });
 
         // check for success notification
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -198,7 +195,7 @@ describe("Send bookings link dialog utils", () => {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const testThunk = sendBookingsLink({
           ...saul,
-          method: SendBookingLinkMethod.Email,
+          method: ClientMessageMethod.Email,
           bookingsLink,
         });
         await runThunk(testThunk, mockDispatch, getState, { getFirestore });

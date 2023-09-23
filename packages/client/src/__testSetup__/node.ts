@@ -5,6 +5,7 @@ import {
   Collection,
   OrganizationData,
   defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
 } from "@eisbuk/shared";
 
 import { adminDb, auth } from "./firestoreSetup";
@@ -48,6 +49,7 @@ export const setUpOrganization: SetUpOrganization = async ({
     admins: [email],
     emailFrom,
     emailTemplates,
+    smsTemplates,
     ...additionalSetup,
   };
 

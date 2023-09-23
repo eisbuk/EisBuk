@@ -46,9 +46,11 @@ export interface OrganizationData {
    */
   smsFrom?: string;
   /**
-   * Template for reminder SMSs
+   * Templates for SMS messages (bookings link, extending date, etc.)
    */
-  smsTemplate?: string;
+  smsTemplates: {
+    [name: string]: string;
+  };
   /**
    * A default country code (e.g. "IT") used to get the default dial code prefix
    * for phone inputs (e.g. "+39")
@@ -77,6 +79,7 @@ export type EmailTemplate = {
   subject: string;
   html: string;
 };
+
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,

@@ -8,13 +8,16 @@ import {
   FormButtonColor,
   LayoutContent,
 } from "@eisbuk/ui";
-import { Customer, CustomerLoose, OrgSubCollection } from "@eisbuk/shared";
+import {
+  ClientMessageMethod,
+  Customer,
+  CustomerLoose,
+  OrgSubCollection,
+} from "@eisbuk/shared";
 import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 import { Phone, Calendar, Mail } from "@eisbuk/svg";
 import { ActionButton, useTranslation } from "@eisbuk/translations";
-
-import { SendBookingLinkMethod } from "@/enums/other";
 
 import Layout from "@/controllers/Layout";
 
@@ -99,7 +102,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
 
   const hasPhone = Boolean(customer.phone);
   const hasEmail = Boolean(customer.email);
-  const sendBookingsLink = (method: SendBookingLinkMethod) => () => {
+  const sendBookingsLink = (method: ClientMessageMethod) => () => {
     openBookingsLinkDialog({
       ...customer,
       method,
@@ -114,7 +117,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
         </FormButton>
       </Link>
       <FormButton
-        onClick={sendBookingsLink(SendBookingLinkMethod.Email)}
+        onClick={sendBookingsLink(ClientMessageMethod.Email)}
         disabled={!hasEmail}
         color={FormButtonColor.Cyan}
         startAdornment={<Mail />}
@@ -122,7 +125,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
         {t(ActionButton.SendBookingsEmail)}
       </FormButton>
       <FormButton
-        onClick={sendBookingsLink(SendBookingLinkMethod.SMS)}
+        onClick={sendBookingsLink(ClientMessageMethod.SMS)}
         disabled={!hasPhone}
         color={FormButtonColor.Cyan}
         startAdornment={<Phone />}

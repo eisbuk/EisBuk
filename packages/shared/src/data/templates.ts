@@ -19,3 +19,12 @@ export const defaultEmailTemplates = {
     <p><a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a></p>`,
   },
 };
+
+export const defaultSMSTemplates = {
+  [ClientMessageType.SendBookingsLink]: `Ciao {{ name }},
+    Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:
+    {{ bookingsLink }}`,
+
+  [ClientMessageType.SendExtendedBookingsDate]: `Ti inviamo un link per prenotare le tue prossime lezioni con {{ organizationName }}:
+    {{ bookingsLink }}`,
+};

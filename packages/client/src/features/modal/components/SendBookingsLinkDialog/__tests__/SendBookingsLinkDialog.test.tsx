@@ -7,8 +7,7 @@ import React from "react";
 import { screen, render } from "@testing-library/react";
 
 import i18n, { ActionButton } from "@eisbuk/translations";
-
-import { SendBookingLinkMethod } from "@/enums/other";
+import { ClientMessageMethod } from "@eisbuk/shared";
 
 import SendBookingsLinkDialog from "../SendBookingsLinkDialog";
 import * as utils from "../utils";
@@ -47,7 +46,7 @@ describe("SendBookingsLinkDialog", () => {
       <SendBookingsLinkDialog
         onCloseAll={() => {}}
         {...saul}
-        method={SendBookingLinkMethod.Email}
+        method={ClientMessageMethod.Email}
         onClose={mockOnClose}
       />
     );
@@ -60,7 +59,7 @@ describe("SendBookingsLinkDialog", () => {
       <SendBookingsLinkDialog
         onCloseAll={() => {}}
         {...saul}
-        method={SendBookingLinkMethod.Email}
+        method={ClientMessageMethod.Email}
         onClose={mockOnClose}
       />
     );
@@ -73,7 +72,7 @@ describe("SendBookingsLinkDialog", () => {
       <SendBookingsLinkDialog
         onCloseAll={() => {}}
         {...saul}
-        method={SendBookingLinkMethod.Email}
+        method={ClientMessageMethod.Email}
         onClose={mockOnClose}
       />
     );
@@ -82,7 +81,7 @@ describe("SendBookingsLinkDialog", () => {
     expect(mockDispatch).toHaveBeenCalledWith(
       mockSendBookingsLink({
         ...saul,
-        method: SendBookingLinkMethod.Email,
+        method: ClientMessageMethod.Email,
         bookingsLink: testBookingsLink,
       })
     );
@@ -93,7 +92,7 @@ describe("SendBookingsLinkDialog", () => {
       <SendBookingsLinkDialog
         onCloseAll={() => {}}
         {...saul}
-        method={SendBookingLinkMethod.SMS}
+        method={ClientMessageMethod.SMS}
         onClose={mockOnClose}
       />
     );
@@ -102,7 +101,7 @@ describe("SendBookingsLinkDialog", () => {
     expect(mockDispatch).toHaveBeenCalledWith(
       mockSendBookingsLink({
         ...saul,
-        method: SendBookingLinkMethod.SMS,
+        method: ClientMessageMethod.SMS,
         bookingsLink: testBookingsLink,
       })
     );

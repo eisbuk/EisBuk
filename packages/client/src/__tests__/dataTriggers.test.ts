@@ -12,7 +12,8 @@ import {
   SlotType,
   OrganizationData,
   sanitizeCustomer,
-  defaultEmailTemplates,
+  defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
 } from "@eisbuk/shared";
 
 import { saul, walt } from "@eisbuk/testing/customers";
@@ -398,10 +399,10 @@ describe("Cloud functions -> Data triggers ->", () => {
           location: "Albuquerque",
           admins: ["Gus Fring"],
           emailFrom: "gus@lospollos.hermanos",
-          emailTemplates: defaultEmailTemplates,
+          emailTemplates,
           emailNameFrom: "Gus",
           smsFrom: "Gus",
-          smsTemplate: "SMS Temp here",
+          smsTemplates,
           existingSecrets: ["authToken", "exampleSecret"],
           emailBcc: "gus@lospollos.hermanos",
         };
