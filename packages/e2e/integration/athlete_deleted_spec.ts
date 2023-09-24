@@ -1,6 +1,5 @@
 import { Customer } from "@eisbuk/shared";
-
-import { Routes } from "../temp";
+import { Routes } from "@eisbuk/shared/ui";
 
 import { customers } from "../__testData__/customers.json";
 
