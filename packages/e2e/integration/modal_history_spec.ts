@@ -3,8 +3,7 @@ import i18n, {
   CustomerFormTitle,
   NavigationLabel,
 } from "@eisbuk/translations";
-
-import { PrivateRoutes } from "../temp";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 describe("Test subscription between browser history (location) and the modal", () => {
   beforeEach(() => {

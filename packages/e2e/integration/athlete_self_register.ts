@@ -8,8 +8,7 @@ import i18n, {
   ValidationMessage,
 } from "@eisbuk/translations";
 import { OrganizationData } from "@eisbuk/shared";
-
-import { PrivateRoutes } from "../temp";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import testCustomers from "../__testData__/customers.json";
 import {

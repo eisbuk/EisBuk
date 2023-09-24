@@ -1,7 +1,12 @@
 import { Customer } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
-import { TestID, testId, TestIDMetaLookup, TestIDWithMeta } from "../temp";
+import {
+  TestID,
+  testId,
+  TestIDMetaLookup,
+  TestIDWithMeta,
+} from "@eisbuk/testing/testIds";
 
 /**
  * As painful as the node resolution is nowadays, it was easier to simply extract the type

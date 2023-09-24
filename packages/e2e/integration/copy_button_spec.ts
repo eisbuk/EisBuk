@@ -1,9 +1,8 @@
 import { DateTime } from "luxon";
 
 import { SlotInterface } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
-
-import { PrivateRoutes } from "../temp";
 
 import { slots } from "../__testData__/slots.json";
 

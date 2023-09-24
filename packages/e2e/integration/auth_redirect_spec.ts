@@ -1,10 +1,9 @@
 import { type Customer } from "@eisbuk/shared";
+import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   AttendanceNavigationLabel,
 } from "@eisbuk/translations";
-
-import { PrivateRoutes, Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 

@@ -1,4 +1,7 @@
+import { DateTime } from "luxon";
+
 import { Customer, SlotInterface } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   AdminAria,
@@ -6,8 +9,6 @@ import i18n, {
   CustomerFormTitle,
   OrganizationLabel,
 } from "@eisbuk/translations";
-import { DateTime } from "luxon";
-import { PrivateRoutes } from "temp";
 
 import { customers } from "../__testData__/customers.json";
 import { slots } from "../__testData__/slots.json";

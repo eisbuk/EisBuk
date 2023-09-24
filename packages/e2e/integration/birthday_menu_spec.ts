@@ -1,10 +1,9 @@
 import { DateTime } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import { __testDate__ } from "../constants";
-
-import { PrivateRoutes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 

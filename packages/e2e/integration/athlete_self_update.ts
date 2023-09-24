@@ -1,12 +1,11 @@
 import { Customer } from "@eisbuk/shared";
+import { Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   CustomerNavigationLabel,
   NotificationMessage,
   ValidationMessage,
 } from "@eisbuk/translations";
-
-import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 

@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
+import { Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   AdminAria,
@@ -8,8 +9,6 @@ import i18n, {
   createDateTitle,
   NotificationMessage,
 } from "@eisbuk/translations";
-
-import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { slots } from "../__testData__/slots.json";
