@@ -13,7 +13,7 @@ interface Props {
   resetKeys: any[];
 }
 const ErrorBoundary: React.FC<Props> = ({ children, resetKeys }) => {
-  const RenderChildren = () => <>{children()}</>;
+  const RenderChildren = React.useCallback(() => <>{children()}</>, resetKeys);
 
   const { t } = useTranslation();
   const orgEmail = useSelector(getOrgEmail);
