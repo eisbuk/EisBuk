@@ -4,6 +4,7 @@ import {
   ClientMessageType,
   OrganizationData,
   SlotAttendnace,
+  defaultSMSTemplates as smsTemplates,
 } from "@eisbuk/shared";
 
 import { testDate } from "./date";
@@ -78,6 +79,6 @@ export const organization: OrganizationData = {
   },
   emailNameFrom: "Gus",
   smsFrom: "Gus",
-  smsTemplate: "SMS Temp here",
+  smsTemplates,
   existingSecrets: ["authToken", "exampleSecret"],
 };

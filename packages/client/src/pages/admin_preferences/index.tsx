@@ -123,7 +123,7 @@ const OrganizationSettings: React.FC = () => {
       >
         {({ isSubmitting, isValidating, handleReset }) => (
           <LayoutContent
-            component={Form}
+            Component={Form as any}
             actionButtons={
               <div className="py-2 flex justify-end items-center gap-2">
                 <Button
