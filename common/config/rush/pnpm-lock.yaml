@@ -305,7 +305,7 @@ importers:
       '@types/uuid': ^8.3.2
       '@typescript-eslint/eslint-plugin': ~5.59.0
       '@typescript-eslint/parser': ~5.59.0
-      cypress: ^10.2.0
+      cypress: ~13.2.0
       cypress-mochawesome-reporter: ^2.3.0
       eslint: ^8.13.0
       eslint-config-google: ^0.14.0
@@ -328,7 +328,7 @@ importers:
       '@firebase/firestore': 3.12.1_@firebase+app@0.9.11
       '@firebase/functions': 0.9.4_@firebase+app@0.9.11
     devDependencies:
-      '@cypress/code-coverage': 3.10.6_cypress@10.11.0
+      '@cypress/code-coverage': 3.10.6_cypress@13.2.0
       '@eisbuk/shared': link:../shared
       '@eisbuk/testing': link:../testing
       '@eisbuk/translations': link:../translations
@@ -339,8 +339,8 @@ importers:
       '@types/uuid': 8.3.4
       '@typescript-eslint/eslint-plugin': 5.59.7_e0202b5b6b61dbedaf32f10c958aa62a
       '@typescript-eslint/parser': 5.59.7_eslint@8.41.0+typescript@5.0.4
-      cypress: 10.11.0
-      cypress-mochawesome-reporter: 2.4.0_cypress@10.11.0+mocha@8.4.0
+      cypress: 13.2.0
+      cypress-mochawesome-reporter: 2.4.0_cypress@13.2.0+mocha@8.4.0
       eslint: 8.41.0
       eslint-config-google: 0.14.0_eslint@8.41.0
       eslint-import-resolver-typescript: 3.5.5_0d8aa37dd2a8664c8d523a69f5c21ce4
@@ -2478,14 +2478,14 @@ packages:
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
 
-  /@cypress/code-coverage/3.10.6_cypress@10.11.0:
+  /@cypress/code-coverage/3.10.6_cypress@13.2.0:
     resolution: {integrity: sha512-ewsNEqEFmirSGeWraOrrn/S64/jCsoA1tVwQ6ySFO+gUhOsaWveoPy8oeX5jzKS2HpqAihuuO3kXSEvVQoPTkw==}
     peerDependencies:
       cypress: '*'
     dependencies:
       '@cypress/webpack-preprocessor': 5.17.1
       chalk: 4.1.2
-      cypress: 10.11.0
+      cypress: 13.2.0
       dayjs: 1.10.7
       debug: 4.3.4
       execa: 4.1.0
@@ -2523,8 +2523,8 @@ packages:
       - webpack
     dev: true
 
-  /@cypress/request/2.88.11:
-    resolution: {integrity: sha512-M83/wfQ1EkspjkE2lNWNV5ui2Cv7UCv1swW1DqljahbzLVWltcsexQh8jYtuS/vzFXP+HySntGM83ZXA9fn17w==}
+  /@cypress/request/3.0.1:
+    resolution: {integrity: sha512-TWivJlJi8ZDx2wGOw1dbLuHJKUYX7bWySw377nlnGOW3hP9/MUKIsEdXT/YngWxVdgNCHRBmFlBipE+5/2ZZlQ==}
     engines: {node: '>= 6'}
     dependencies:
       aws-sign2: 0.7.0
@@ -2542,7 +2542,7 @@ packages:
       performance-now: 2.1.0
       qs: 6.10.4
       safe-buffer: 5.2.1
-      tough-cookie: 2.5.0
+      tough-cookie: 4.1.3
       tunnel-agent: 0.6.0
       uuid: 8.3.2
     dev: true
@@ -5767,16 +5767,16 @@ packages:
       form-data: 3.0.1
     dev: true
 
-  /@types/node/14.18.48:
-    resolution: {integrity: sha512-iL0PIMwejpmuVHgfibHpfDwOdsbmB50wr21X71VnF5d7SsBF7WK+ZvP/SCcFm7Iwb9iiYSap9rlrdhToNAWdxg==}
-    dev: true
-
   /@types/node/16.18.33:
     resolution: {integrity: sha512-WjW7iYRVtePnSeLxVfE1e+g1yStJrfR9Anuv4y6JZVgOqYyFcW7GhPBk2/J1d0rC4ZNLrI13lS4e32NUuuRmHA==}
     dev: true
 
   /@types/node/18.16.15:
     resolution: {integrity: sha512-fv9H0101Lom0m76x5UekmudO0Vu611ElbTCLOeSbyX5WM6sme3gJ10PHP83pA1/eXbZpnDoTkeY40jykH38ptQ==}
+
+  /@types/node/18.17.19:
+    resolution: {integrity: sha512-+pMhShR3Or5GR0/sp4Da7FnhVmTalWm81M6MkEldbwjETSaPalw138Z4KdpQaistvqQxLB7Cy4xwYdxpbSOs9Q==}
+    dev: true
 
   /@types/nodemailer/6.4.8:
     resolution: {integrity: sha512-oVsJSCkqViCn8/pEu2hfjwVO+Gb3e+eTWjg3PcjeFKRItfKpKwHphQqbYmPQrlMk+op7pNNWPbsJIEthpFN/OQ==}
@@ -5950,7 +5950,7 @@ packages:
     resolution: {integrity: sha512-Cn6WYCm0tXv8p6k+A8PvbDG763EDpBoTzHdA+Q/MF6H3sapGjCm9NzoaJncJS9tUKSuCoDs9XHxYYsQDgxR6kw==}
     requiresBuild: true
     dependencies:
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
     dev: true
     optional: true
 
@@ -7783,11 +7783,6 @@ packages:
     resolution: {integrity: sha512-NOKm8xhkzAjzFx8B2v5OAHT+u5pRQc2UCa2Vq9jYL/31o2wi9mxBA7LIFs3sV5VSC49z6pEhfbMULvShKj26WA==}
     engines: {node: '>= 6'}
 
-  /commander/5.1.0:
-    resolution: {integrity: sha512-P0CysNDQ7rtVw4QIQtm+MRxV66vKFSvlsQvGYXZWR3qFU0jlMKHZZZgw8e+8DSah4UDKMqnknRDQz+xuQXQ/Zg==}
-    engines: {node: '>= 6'}
-    dev: true
-
   /commander/6.2.1:
     resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
@@ -8100,13 +8095,13 @@ packages:
   /csv-parse/5.4.0:
     resolution: {integrity: sha512-JiQosUWiOFgp4hQn0an+SBoV9IKdqzhROM0iiN4LB7UpfJBlsSJlWl9nq4zGgxgMAzHJ6V4t29VAVD+3+2NJAg==}
 
-  /cypress-mochawesome-reporter/2.4.0_cypress@10.11.0+mocha@8.4.0:
+  /cypress-mochawesome-reporter/2.4.0_cypress@13.2.0+mocha@8.4.0:
     resolution: {integrity: sha512-hp1shdb4ld897WwYTgJviSjJFVpllMNesflL9FXOa0kOz4GM7UaLESrX8pnkUHBvYyO05iDMsgWhJ0x6BABukA==}
     engines: {node: '>=10'}
     peerDependencies:
       cypress: '>=6.2.0'
     dependencies:
-      cypress: 10.11.0
+      cypress: 13.2.0
       fs-extra: 9.1.0
       mochawesome: 6.3.1_mocha@8.4.0
       mochawesome-merge: 4.3.0
@@ -8129,15 +8124,15 @@ packages:
       - mocha
     dev: true
 
-  /cypress/10.11.0:
-    resolution: {integrity: sha512-lsaE7dprw5DoXM00skni6W5ElVVLGAdRUUdZjX2dYsGjbY/QnpzWZ95Zom1mkGg0hAaO/QVTZoFVS7Jgr/GUPA==}
-    engines: {node: '>=12.0.0'}
+  /cypress/13.2.0:
+    resolution: {integrity: sha512-AvDQxBydE771GTq0TR4ZUBvv9m9ffXuB/ueEtpDF/6gOcvFR96amgwSJP16Yhqw6VhmwqspT5nAGzoxxB+D89g==}
+    engines: {node: ^16.0.0 || ^18.0.0 || >=20.0.0}
     hasBin: true
     requiresBuild: true
     dependencies:
-      '@cypress/request': 2.88.11
+      '@cypress/request': 3.0.1
       '@cypress/xvfb': 1.2.4
-      '@types/node': 14.18.48
+      '@types/node': 18.17.19
       '@types/sinonjs__fake-timers': 8.1.1
       '@types/sizzle': 2.3.3
       arch: 2.2.0
@@ -8149,7 +8144,7 @@ packages:
       check-more-types: 2.24.0
       cli-cursor: 3.1.0
       cli-table3: 0.6.3
-      commander: 5.1.0
+      commander: 6.2.1
       common-tags: 1.8.2
       dayjs: 1.11.7
       debug: 4.3.4_supports-color@8.1.1
@@ -8170,9 +8165,10 @@ packages:
       minimist: 1.2.8
       ospath: 1.2.2
       pretty-bytes: 5.6.0
+      process: 0.11.10
       proxy-from-env: 1.0.0
       request-progress: 3.0.0
-      semver: 7.5.1
+      semver: 7.5.4
       supports-color: 8.1.1
       tmp: 0.2.1
       untildify: 4.0.0
@@ -15947,6 +15943,14 @@ packages:
     dependencies:
       lru-cache: 6.0.0
 
+  /semver/7.5.4:
+    resolution: {integrity: sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      lru-cache: 6.0.0
+    dev: true
+
   /send/0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}
     engines: {node: '>= 0.8.0'}
@@ -16954,6 +16958,16 @@ packages:
 
   /tough-cookie/4.1.2:
     resolution: {integrity: sha512-G9fqXWoYFZgTc2z8Q5zaHy/vJMjm+WV0AkAeHxVCQiEB1b+dGvWzFW6QV07cY5jQ5gRkeid2qIkzkxUnmoQZUQ==}
+    engines: {node: '>=6'}
+    dependencies:
+      psl: 1.9.0
+      punycode: 2.3.0
+      universalify: 0.2.0
+      url-parse: 1.5.10
+    dev: true
+
+  /tough-cookie/4.1.3:
+    resolution: {integrity: sha512-aX/y5pVRkfRnfmuX+OdbSdXvPe6ieKX/G2s7e98f4poJHnqH3281gDPm/metm6E/WRamfx7WC4HUqkWHfQHprw==}
     engines: {node: '>=6'}
     dependencies:
       psl: 1.9.0

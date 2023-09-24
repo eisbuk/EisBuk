@@ -1,13 +1,13 @@
+import { DateTime } from "luxon";
+
 import { Category, SlotType } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, {
   SlotsAria,
   SlotFormAria,
   ActionButton,
   ValidationMessage,
 } from "@eisbuk/translations";
-import { DateTime } from "luxon";
-
-import { PrivateRoutes } from "../temp";
 
 import { __testDate__ } from "../constants";
 

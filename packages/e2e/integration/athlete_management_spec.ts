@@ -1,12 +1,11 @@
 import { Customer } from "@eisbuk/shared";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   NotificationMessage,
   ValidationMessage,
   AdminAria,
 } from "@eisbuk/translations";
-
-import { PrivateRoutes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
