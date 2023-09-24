@@ -4,6 +4,7 @@
     "baseUrl": ".",
     "target": "es5",
     "lib": ["es5", "es2015", "dom"],
+    "moduleResolution": "nodenext",
 
     "typeRoots": ["node_modules/@types", "@types"],
     "types": ["cypress", "node"],
