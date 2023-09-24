@@ -14,7 +14,7 @@ import { customers as saulWithExtendedDate } from "../__testData__/saul_with_ext
 const saul = customers.saul as Customer;
 const gus = customers.gus as Customer;
 
-xdescribe("Athlete form", () => {
+describe("Athlete form", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     // create default organization, sign in as admin
@@ -164,7 +164,7 @@ xdescribe("Athlete form", () => {
   });
 });
 
-xdescribe("Delete an athlete", () => {
+describe("Delete an athlete", () => {
   beforeEach(() => {
     cy.initAdminApp()
       .then((organization) =>
@@ -207,7 +207,7 @@ describe("Athletes approval", () => {
       .then(() => cy.signIn())
       .then(() => cy.visit(PrivateRoutes.Athletes));
   });
-  xit("checks if the URL parameters change when the button is clicked", () => {
+  it("checks if the URL parameters change when the button is clicked", () => {
     cy.contains(saul.name);
     cy.getAttrWith(
       "aria-label",
@@ -219,7 +219,7 @@ describe("Athletes approval", () => {
     cy.contains(saul.name).should("not.exist");
     cy.contains(gus.name);
   });
-  xit("checks if the search param changes when the icon is clicked and checks badge count", () => {
+  it("checks if the search param changes when the icon is clicked and checks badge count", () => {
     cy.contains(saul.name);
 
     cy.getAttrWith("data-testid", "approval-badge").should("have.text", "1");
@@ -234,7 +234,7 @@ describe("Athletes approval", () => {
     cy.contains(gus.name);
   });
 
-  xit("assigns a category to an unapproved athlete and checks the badge count", () => {
+  it("assigns a category to an unapproved athlete and checks the badge count", () => {
     cy.get('[data-testid="approval-badge"]').should("have.text", "1");
 
     cy.getAttrWith(

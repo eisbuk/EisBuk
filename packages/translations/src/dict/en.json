@@ -29,6 +29,9 @@
     "LoggedInWith": "You are logged in with:",
     "TryAgain": "Log out and try again with a different user",
 
+    "DeletedTitle": "Your account has been removed",
+    "DeletedSubtitle": "If you believe this was a mistake please email <a href=\"mailto:{{ adminEmail }}\"><strong>{{ adminEmail }}</strong></a>",
+
     "RecoverEmailPassword": "Get instructions sent to this email that explain how to reset your password.",
     "CheckPasswordRecoverEmail": "Follow the instructions sent to {{ email }} to recover your password.",
     "CheckSignInEmail": "Follow the link sent to {{ email }} to complete the authentication.",

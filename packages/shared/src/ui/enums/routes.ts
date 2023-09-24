@@ -7,6 +7,7 @@ export enum Routes {
   ErrorBoundary = "/do_trigger_an_error",
   AttendancePrintable = "/attendance_printable",
   Debug = "/debug",
+  Deleted = "/deleted",
 }
 
 /** */
