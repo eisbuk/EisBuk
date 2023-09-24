@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
+import { Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   AdminAria,
@@ -11,8 +12,6 @@ import i18n, {
   BookingAria,
   CustomerNavigationLabel,
 } from "@eisbuk/translations";
-
-import { Routes } from "../temp";
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";

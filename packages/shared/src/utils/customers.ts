@@ -14,6 +14,7 @@ export const sanitizeCustomer = ({
   extendedDate,
   birthday,
   photoURL,
+  deleted,
   ...restCustomer
 }: Omit<Customer, "categories"> &
   Pick<Partial<Customer>, "categories">): Customer => {
@@ -26,6 +27,7 @@ export const sanitizeCustomer = ({
   if (birthday) customer.birthday = birthday;
   if (extendedDate) customer.extendedDate = extendedDate;
   if (photoURL) customer.photoURL = photoURL;
+  if (deleted) customer.deleted = deleted;
 
   return customer;
 };
