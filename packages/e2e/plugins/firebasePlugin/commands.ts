@@ -28,8 +28,8 @@ import {
   SlotAttendnace,
   SlotInterface,
 } from "@eisbuk/shared";
-
-import { CloudFunction, defaultUser } from "../../temp";
+import { CloudFunction } from "@eisbuk/shared/ui";
+import { defaultUser } from "@eisbuk/testing/envData";
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {

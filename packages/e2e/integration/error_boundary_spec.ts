@@ -1,4 +1,4 @@
-import { Routes } from "../temp";
+import { Routes } from "@eisbuk/shared/ui";
 
 Cypress.on("uncaught:exception", () => {
   // Handles the error manually, return false to prevent failing the test

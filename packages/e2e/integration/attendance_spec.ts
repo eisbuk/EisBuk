@@ -2,8 +2,7 @@ import i18n, { ActionButton, AttendanceAria } from "@eisbuk/translations";
 import { DateTime } from "luxon";
 
 import { Customer, SlotInterface } from "@eisbuk/shared";
-
-import { PrivateRoutes } from "../temp";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import { customers } from "../__testData__/customers.json";
 import { attendance } from "../__testData__/attendance.json";

@@ -11,8 +11,8 @@ import i18n, {
   CustomerLabel,
 } from "@eisbuk/translations";
 import { Customer } from "@eisbuk/shared";
-
-import { PrivateRoutes, defaultUser } from "../temp";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
+import { defaultUser } from "@eisbuk/testing/envData";
 
 import { customers } from "../__testData__/customers.json";
 

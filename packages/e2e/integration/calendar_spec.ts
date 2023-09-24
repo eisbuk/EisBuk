@@ -1,13 +1,12 @@
 import { DateTime, DateTimeUnit } from "luxon";
 
 import { Customer, CustomerBookings, SlotInterface } from "@eisbuk/shared";
+import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   createDateTitle,
   NotificationMessage,
 } from "@eisbuk/translations";
-
-import { PrivateRoutes, Routes } from "../temp";
 
 import { slots } from "../__testData__/slots.json";
 import { customers } from "../__testData__/customers.json";
