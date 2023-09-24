@@ -122,46 +122,45 @@ const OrganizationSettings: React.FC = () => {
         validationSchema={OrganizationValidation}
       >
         {({ isSubmitting, isValidating, handleReset }) => (
-          <Form className="flex flex-col overflow-hidden">
-            <LayoutContent
-              actionButtons={
-                <div className="py-2 flex justify-end items-center gap-2">
-                  <Button
-                    onClick={handleReset}
-                    disabled={isSubmitting || isValidating}
-                    className="!text-cyan-500"
-                    size={ButtonSize.MD}
-                  >
-                    {t(ActionButton.Reset)}
-                  </Button>
-                  <Button
-                    disabled={isSubmitting || isValidating}
-                    color={ButtonColor.Primary}
-                    size={ButtonSize.MD}
-                    aria-label={"save"}
-                    type="submit"
-                  >
-                    {t(ActionButton.Save)}
-                  </Button>
+          <LayoutContent
+            component={Form}
+            actionButtons={
+              <div className="py-2 flex justify-end items-center gap-2">
+                <Button
+                  onClick={handleReset}
+                  disabled={isSubmitting || isValidating}
+                  className="!text-cyan-500"
+                  size={ButtonSize.MD}
+                >
+                  {t(ActionButton.Reset)}
+                </Button>
+                <Button
+                  disabled={isSubmitting || isValidating}
+                  color={ButtonColor.Primary}
+                  size={ButtonSize.MD}
+                  aria-label={"save"}
+                  type="submit"
+                >
+                  {t(ActionButton.Save)}
+                </Button>
+              </div>
+            }
+          >
+            {view === View.GeneralSettings ? (
+              <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+                <div className="md:px-11">
+                  <AdminsField currentUser={currentUser} />
+                  <GeneralSettings />
                 </div>
-              }
-            >
-              {view === View.GeneralSettings ? (
-                <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-                  <div className="md:px-11">
-                    <AdminsField currentUser={currentUser} />
-                    <GeneralSettings />
-                  </div>
-                </div>
-              ) : view === View.EmailTemplates ? (
-                <EmailTemplateSettings />
-              ) : (
-                <div>
-                  <SMSTemplateSettings />
-                </div>
-              )}
-            </LayoutContent>
-          </Form>
+              </div>
+            ) : view === View.EmailTemplates ? (
+              <EmailTemplateSettings />
+            ) : (
+              <div>
+                <SMSTemplateSettings />
+              </div>
+            )}
+          </LayoutContent>
         )}
       </Formik>
     </Layout>

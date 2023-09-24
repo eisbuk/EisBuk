@@ -71,7 +71,7 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      {children}
+      <main className="overflow-hidden flex flex-col">{children}</main>
     </div>
   );
 };
@@ -79,8 +79,16 @@ const Layout: React.FC<LayoutProps> = ({
 export const LayoutContent: React.FC<{
   wide?: boolean;
   actionButtons?: JSX.Element;
-}> = ({ children, wide = false, actionButtons = null }) => (
-  <main className="flex flex-col overflow-hidden">
+  Component?: React.FC<{ className: string }>;
+}> = ({
+  children,
+  wide = false,
+  actionButtons = null,
+  Component = ({ children, className }) => (
+    <div className={className}>{children}</div>
+  ),
+}) => (
+  <Component className="flex flex-col overflow-hidden">
     <div className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
       {children}
     </div>
@@ -89,7 +97,7 @@ export const LayoutContent: React.FC<{
         <div className="content-container">{actionButtons}</div>
       </div>
     )}
-  </main>
+  </Component>
 );
 
 /** Get styles for top / botton row of the header */
