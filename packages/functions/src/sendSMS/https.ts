@@ -62,15 +62,20 @@ export const sendSMS = functions
       const smsPayload = { to: payload.phone, message };
 
       // Add SMS to delivery queue, thus starting the delivery process
-      await admin
+      const deliveryDoc = admin
         .firestore()
         .collection(
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}`
         )
-        .doc()
-        .set({ payload: smsPayload });
+        .doc();
+      await deliveryDoc.set({ payload: smsPayload });
 
-      return { sms: smsPayload, organization, success: true };
+      return {
+        sms: smsPayload,
+        organization,
+        success: true,
+        deliveryDocumentPath: deliveryDoc.path,
+      };
     }
   );
 
