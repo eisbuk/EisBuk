@@ -30,7 +30,7 @@ import SlotOperationButtons, {
   PasteButton,
   NewSlotButton,
 } from "@/components/atoms/SlotOperationButtons";
-import ErrorBoundary from "@/components/atoms/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 import SlotCard from "@/controllers/SlotCard";
 
 import { getAdminSlots } from "@/store/selectors/slots";

@@ -18,7 +18,7 @@ import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
 
-import ErrorBoundary from "@/components/atoms/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 // import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import Layout from "@/controllers/Layout";

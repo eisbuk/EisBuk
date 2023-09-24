@@ -16,7 +16,7 @@ import { OrgSubCollection } from "@eisbuk/shared";
 import i18n, { AttendanceNavigationLabel } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
-import ErrorBoundary from "@/components/atoms/ErrorBoundary";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 import { getOrganization } from "@/lib/getters";
 
