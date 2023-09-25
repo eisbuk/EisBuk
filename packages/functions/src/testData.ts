@@ -12,6 +12,7 @@ import {
   OrgSubCollection,
   CreateAuthUserPayload,
   defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
   CustomerFull,
 } from "@eisbuk/shared";
 
@@ -75,6 +76,7 @@ export const createOrganization = functions
         displayName,
         admins: ["test@eisbuk.it", "+3912345678"],
         emailTemplates,
+        smsTemplates,
       });
     }
   );
@@ -120,6 +122,7 @@ const createUserInAuth = async ({
         admins: adminsEntry,
         displayName: organization,
         emailTemplates,
+        smsTemplates,
       },
       { merge: true }
     );

@@ -5,9 +5,10 @@ import {
   ClientMessagePayload,
   ClientMessageType,
   interpolateText,
-  defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
   EmailInterpolationValues,
   ClientMessageMethod,
+  OrganizationData,
 } from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 
@@ -16,32 +17,22 @@ import { saul } from "@eisbuk/testing/customers";
 import { setUpOrganization } from "@/__testSetup__/node";
 import { adminDb, functions } from "@/__testSetup__/firestoreSetup";
 
-type SendEmailTest =
+type SendSMSTest =
   | {
       type: ClientMessageType.SendBookingsLink;
       payload: Pick<
         ClientMessagePayload<
-          ClientMessageMethod.Email,
+          ClientMessageMethod.SMS,
           ClientMessageType.SendBookingsLink
         >,
         "bookingsLink"
       >;
     }
   | {
-      type: ClientMessageType.SendCalendarFile;
-      payload: Pick<
-        ClientMessagePayload<
-          ClientMessageMethod.Email,
-          ClientMessageType.SendCalendarFile
-        >,
-        "attachments"
-      >;
-    }
-  | {
       type: ClientMessageType.SendExtendedBookingsDate;
       payload: Pick<
         ClientMessagePayload<
-          ClientMessageMethod,
+          ClientMessageMethod.SMS,
           ClientMessageType.SendExtendedBookingsDate
         >,
         "extendedBookingsDate" | "bookingsMonth"
@@ -54,14 +45,13 @@ type SendEmailTest =
  * handled internally, by constructing the interpolation values and checking
  * against the default templates.
  */
-const runSendEmailTableTests = (tests: SendEmailTest[]) => {
+const runSendEmailTableTests = (tests: SendSMSTest[]) => {
   const setup = {
     doLogin: true,
     setSecrets: true,
     additionalSetup: {
-      emailFrom: "eisbuk@email.com",
-      emailBcc: "bcc@gmail.com",
-    },
+      smsFrom: "Eisbuk",
+    } as OrganizationData,
   };
 
   tests.forEach(({ type, payload }) => {
@@ -78,7 +68,7 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
         }
       >(
         functions,
-        CloudFunction.SendEmail
+        CloudFunction.SendSMS
       )({ type, ...payload, organization, ...saul });
 
       expect(success).toEqual(true);
@@ -99,11 +89,6 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
         interpolationValues.bookingsLink = payload.bookingsLink;
       }
 
-      // In case of send calendar file, add calendar file specific interpolation values
-      if (type === ClientMessageType.SendCalendarFile) {
-        interpolationValues.calendarFile = payload.attachments.filename;
-      }
-
       // In case of send extended bookings date, add extended bookings date specific interpolation values
       if (type === ClientMessageType.SendExtendedBookingsDate) {
         interpolationValues.bookingsMonth = payload.bookingsMonth;
@@ -113,21 +98,8 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
       expect(deliveryDocData).toEqual(
         expect.objectContaining({
           payload: expect.objectContaining({
-            // To, form and bcc should be the same (created in test setup)
-            from: setup.additionalSetup.emailFrom,
-            to: saul.email,
-            bcc: setup.additionalSetup.emailBcc,
-
-            // We're using default templates for each email type and checking against interpolation values
-            // provided in the test payload
-            subject: interpolateText(
-              emailTemplates[type].subject,
-              interpolationValues
-            ),
-            html: interpolateText(
-              emailTemplates[type].html,
-              interpolationValues
-            ),
+            to: saul.phone!,
+            message: interpolateText(smsTemplates[type], interpolationValues),
           }),
         })
       );
@@ -135,21 +107,12 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
   });
 };
 
-describe("SendEmail", () =>
+describe("SendSMS", () =>
   runSendEmailTableTests([
     {
       type: ClientMessageType.SendBookingsLink,
       payload: {
         bookingsLink: "https://eisbuk.com/bookings",
-      },
-    },
-    {
-      type: ClientMessageType.SendCalendarFile,
-      payload: {
-        attachments: {
-          filename: "calendar.ics",
-          content: "calendar content",
-        },
       },
     },
     {

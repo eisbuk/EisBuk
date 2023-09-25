@@ -21,7 +21,7 @@
       "certificateExpiration": "2001-01-01",
       "categories": ["competitive"],
       "email": "walt@im_the_one_who.knocks",
-      "phone": "123456777",
+      "phone": "+123456777",
       "birthday": "2002-03-01",
       "secretKey": "000001",
       "subscriptionNumber": ""
@@ -34,7 +34,7 @@
       "certificateExpiration": "2001-01-01",
       "categories": ["course-minors"],
       "email": "gus@lospollos.me",
-      "phone": "123456777",
+      "phone": "+123456777",
       "birthday": "2001-03-02",
       "secretKey": "000002",
       "subscriptionNumber": ""
@@ -47,7 +47,7 @@
       "certificateExpiration": "2001-01-01",
       "categories": ["pre-competitive-minors"],
       "email": "mike@lospollos.me",
-      "phone": "123456777",
+      "phone": "+123456777",
       "birthday": "2021-01-01",
       "secretKey": "000002",
       "subscriptionNumber": ""

@@ -1,13 +1,23 @@
 import functions from "firebase-functions";
 import admin from "firebase-admin";
 
-import { SendSMSPayload, Collection, DeliveryQueue } from "@eisbuk/shared";
+import {
+  Collection,
+  DeliveryQueue,
+  ClientMessagePayload,
+  ClientMessageMethod,
+  OrganizationData,
+  interpolateText,
+  ClientMessageType,
+} from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
 
 import { SMSStatusPayload } from "./types";
 
-import { checkUser, checkRequiredFields, throwUnauth } from "../utils";
+import { checkUser, throwUnauth } from "../utils";
+
+import { validateSMSPayload } from "./utils";
 
 /**
  * Sends SMS message using template data from organizations firestore entry and provided params
@@ -15,22 +25,57 @@ import { checkUser, checkRequiredFields, throwUnauth } from "../utils";
 export const sendSMS = functions
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization, ...payload }: SendSMSPayload, { auth }) => {
+    async (
+      payload: ClientMessagePayload<
+        ClientMessageMethod.SMS,
+        Exclude<ClientMessageType, ClientMessageType.SendCalendarFile>
+      >,
+      { auth }
+    ) => {
+      const { organization } = payload;
+
       if (!(await checkUser(organization, auth))) throwUnauth();
 
       // check payload
-      checkRequiredFields(payload, ["message", "to"]);
+      const validatedPayload = validateSMSPayload(payload);
+
+      // Get the template and the organization name from organizaion preferences
+      const orgDoc = await admin
+        .firestore()
+        .collection("organizations")
+        .doc(payload.organization)
+        .get();
+      const { smsTemplates, displayName = organization } =
+        orgDoc.data() as OrganizationData;
+
+      // Interpolate the email with the payload and the organization name
+      const smsTemplate = smsTemplates[payload.type];
+      const message = interpolateText(smsTemplate, {
+        organizationName: displayName,
+        name: validatedPayload.name,
+        surname: validatedPayload.surname,
+        bookingsLink: validatedPayload.bookingsLink,
+        bookingsMonth: validatedPayload.bookingsMonth,
+        extendedBookingsDate: validatedPayload.extendedBookingsDate,
+      });
+
+      const smsPayload = { to: payload.phone, message };
 
       // Add SMS to delivery queue, thus starting the delivery process
-      await admin
+      const deliveryDoc = admin
         .firestore()
         .collection(
           `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}`
         )
-        .doc()
-        .set({ payload });
+        .doc();
+      await deliveryDoc.set({ payload: smsPayload });
 
-      return { sms: payload, organization, success: true };
+      return {
+        sms: smsPayload,
+        organization,
+        success: true,
+        deliveryDocumentPath: deliveryDoc.path,
+      };
     }
   );
 

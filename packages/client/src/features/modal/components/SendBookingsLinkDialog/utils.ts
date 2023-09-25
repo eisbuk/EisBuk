@@ -1,8 +1,8 @@
 import {
-  ClientEmailPayload,
+  ClientMessagePayload,
   Customer,
-  EmailType,
-  SMSMessage,
+  ClientMessageType,
+  ClientMessageMethod,
 } from "@eisbuk/shared";
 import { CloudFunction, Routes } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
@@ -11,18 +11,13 @@ import { createFunctionCaller } from "@/utils/firebase";
 
 import { FirestoreThunk } from "@/types/store";
 
-import { SendBookingLinkMethod } from "@/enums/other";
 import { NotifVariant } from "@/enums/store";
 
 import { enqueueNotification } from "@/features/notifications/actions";
-import { getOrganization } from "@/lib/getters";
 
 interface GetDialogPrompt {
   (
-    payload: { method: SendBookingLinkMethod } & Pick<
-      Customer,
-      "email" | "phone"
-    >
+    payload: { method: ClientMessageMethod } & Pick<Customer, "email" | "phone">
   ): {
     title: string;
     body: string;
@@ -36,7 +31,7 @@ interface GetDialogPrompt {
 // eslint-disable-next-line consistent-return
 export const getDialogPrompt: GetDialogPrompt = (props) => {
   switch (props.method) {
-    case SendBookingLinkMethod.Email:
+    case ClientMessageMethod.Email:
       const { email } = props;
       if (!email) {
         return {
@@ -51,7 +46,7 @@ export const getDialogPrompt: GetDialogPrompt = (props) => {
         disabled: false,
       };
 
-    case SendBookingLinkMethod.SMS:
+    case ClientMessageMethod.SMS:
       const { phone } = props;
       if (!phone) {
         return {
@@ -71,7 +66,7 @@ export const getDialogPrompt: GetDialogPrompt = (props) => {
 interface SendBookingsLink {
   (
     payload: {
-      method: SendBookingLinkMethod;
+      method: ClientMessageMethod;
       bookingsLink: string;
     } & Customer
   ): FirestoreThunk;
@@ -87,32 +82,40 @@ export const sendBookingsLink: SendBookingsLink =
         throw new Error();
       }
 
-      const sms = `Ciao ${name},
-      Ti inviamo un link per prenotare le tue prossime lezioni con ${getOrganization()}:
-      ${bookingsLink}`;
-
-      const emailPayload: Omit<
-        ClientEmailPayload[EmailType.SendBookingsLink],
-        "organization"
+      const payloadBase: Omit<
+        ClientMessagePayload<
+          ClientMessageMethod,
+          ClientMessageType.SendBookingsLink
+        >,
+        "organization" | "email" | "phone"
       > = {
-        customer: {
-          name,
-          surname,
-          email: email!,
-        },
-        type: EmailType.SendBookingsLink,
+        type: ClientMessageType.SendBookingsLink,
+        name,
+        surname,
         bookingsLink,
       };
 
       const config = {
-        [SendBookingLinkMethod.Email]: {
+        [ClientMessageMethod.Email]: {
           handler: CloudFunction.SendEmail,
-          payload: emailPayload,
+          payload: { ...payloadBase, email } as Omit<
+            ClientMessagePayload<
+              ClientMessageMethod.Email,
+              ClientMessageType.SendBookingsLink
+            >,
+            "organization"
+          >,
           successMessage: i18n.t(NotificationMessage.EmailSent),
         },
-        [SendBookingLinkMethod.SMS]: {
+        [ClientMessageMethod.SMS]: {
           handler: CloudFunction.SendSMS,
-          payload: { to: phone, message: sms } as SMSMessage,
+          payload: { ...payloadBase, phone } as Omit<
+            ClientMessagePayload<
+              ClientMessageMethod.SMS,
+              ClientMessageType.SendBookingsLink
+            >,
+            "organization"
+          >,
           successMessage: i18n.t(NotificationMessage.SMSSent),
         },
       };

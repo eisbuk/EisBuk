@@ -18,8 +18,9 @@
   },
 
   "SettingsNavigationLabel": {
+    "GeneralSettings": "General Settings",
     "EmailTemplates": "Email Templates",
-    "GeneralSettings": "General Settings"
+    "SMSTemplates": "SMS Templates"
   },
 
   "Authorization": {
@@ -162,21 +163,23 @@
     "SmsTemplateHelpText": "This is a template for SMS sent to customers."
   },
 
-  "EmailTemplateLabel": {
-    "SubjectPreview": "Subject Preview",
-    "HTMLPreview": "Body Preview",
+  "MessageTemplateLabel": {
+    "Preview": "Preview",
+
+    "Subject": "Subject",
+    "Body": "Text",
+
     "SendBookingsLink": "Send Bookings Link",
     "SendCalendarFile": "Send Calendar File",
     "SendExtendedBookingsDate": "Send Extended Bookings Date",
-    "OrganizationName": "Organization Name",
+
     "BookingsLink": "Bookings Link",
     "Name": "Name",
     "Surname": "Surname",
     "IcsFile": "Calendar File Link",
     "BookingsMonth": "Bookings Month",
     "ExtendedBookingsDate": "Extended Bookings Date",
-    "Subject": "Subject",
-    "HTML": "Body"
+    "OrganizationName": "Organization Name"
   },
 
   "Validations": {

@@ -71,25 +71,38 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      {children}
+      <main className="overflow-hidden flex flex-col">{children}</main>
     </div>
   );
 };
 
+type LayoutContentWrapper = React.FC<{ className: string }>;
 export const LayoutContent: React.FC<{
   wide?: boolean;
   actionButtons?: JSX.Element;
-}> = ({ children, wide = false, actionButtons = null }) => (
-  <main className="flex flex-col overflow-hidden">
-    <div className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
-      {children}
-    </div>
-    {actionButtons && (
-      <div className="border-t flex-grow-0 flex-shrink-0 py-2">
-        <div className={wide ? "" : "content-container"}>{actionButtons}</div>
+  Component?: LayoutContentWrapper;
+}> = ({ children, wide = false, actionButtons = null, Component }) => {
+  const Wrapper = React.useMemo<LayoutContentWrapper>(
+    () => Component || FallbackWrapper,
+    [Component]
+  );
+
+  return (
+    <Wrapper className="flex flex-col overflow-hidden">
+      <div className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
+        {children}
       </div>
-    )}
-  </main>
+      {actionButtons && (
+        <div className="border-t flex-grow-0 flex-shrink-0 py-2">
+          <div className="content-container">{actionButtons}</div>
+        </div>
+      )}
+    </Wrapper>
+  );
+};
+
+const FallbackWrapper: LayoutContentWrapper = ({ children, className }) => (
+  <div className={className}>{children}</div>
 );
 
 /** Get styles for top / botton row of the header */

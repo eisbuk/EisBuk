@@ -1,18 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 
-import { Customer } from "@eisbuk/shared";
+import { Customer, ClientMessageMethod } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
 import { BaseModalProps } from "../../types";
 
-import { SendBookingLinkMethod } from "@/enums/other";
-
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
 
 type SendBookingsLinkProps = BaseModalProps &
-  Customer & { method: SendBookingLinkMethod };
+  Customer & { method: ClientMessageMethod };
 
 const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   onClose,

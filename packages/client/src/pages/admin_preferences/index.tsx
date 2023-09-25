@@ -3,11 +3,16 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
 
-import { defaultEmailTemplates, OrganizationData } from "@eisbuk/shared";
+import {
+  defaultEmailTemplates as emailTemplates,
+  defaultSMSTemplates as smsTemplates,
+  OrganizationData,
+} from "@eisbuk/shared";
 import i18n, {
   ActionButton,
   ValidationMessage,
   useTranslation,
+  SettingsNavigationLabel,
 } from "@eisbuk/translations";
 import {
   Button,
@@ -29,6 +34,7 @@ import { isEmpty } from "@/utils/helpers";
 
 import EmailTemplateSettings from "./views/EmailTemplateSettings";
 import GeneralSettings from "./views/GeneralSettings";
+import SMSTemplateSettings from "./views/SMSTemplateSettings";
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -40,18 +46,20 @@ const OrganizationValidation = Yup.object().shape({
 // #endregion validations
 
 const OrganizationSettings: React.FC = () => {
-  enum Views {
-    EmailTemplates = "EmailTemplatesSection",
+  enum View {
     GeneralSettings = "GeneralSettings",
+    EmailTemplates = "EmailTemplates",
+    SMSTemplates = "SMSTemplates",
   }
 
   // Get appropriate view to render
   const viewsLookup = {
-    [Views.EmailTemplates]: EmailTemplateSettings,
-    [Views.GeneralSettings]: GeneralSettings,
+    [View.GeneralSettings]: GeneralSettings,
+    [View.EmailTemplates]: EmailTemplateSettings,
+    [View.SMSTemplates]: SMSTemplateSettings,
   };
   const [view, setView] = useState<keyof typeof viewsLookup>(
-    Views.GeneralSettings
+    View.GeneralSettings
   );
 
   const dispatch = useDispatch();
@@ -85,16 +93,23 @@ const OrganizationSettings: React.FC = () => {
       <TabItem
         key="general-settings-view-button"
         Icon={Cog as any}
-        label={i18n.t("SettingsNavigationLabel.GeneralSettings")}
-        onClick={() => setView(Views.GeneralSettings)}
-        active={view === Views.GeneralSettings}
+        label={i18n.t(SettingsNavigationLabel.GeneralSettings)}
+        onClick={() => setView(View.GeneralSettings)}
+        active={view === View.GeneralSettings}
       />
       <TabItem
         key="email-templates-view-button"
         Icon={Mail as any}
-        label={i18n.t("SettingsNavigationLabel.EmailTemplates")}
-        onClick={() => setView(Views.EmailTemplates)}
-        active={view === Views.EmailTemplates}
+        label={i18n.t(SettingsNavigationLabel.EmailTemplates)}
+        onClick={() => setView(View.EmailTemplates)}
+        active={view === View.EmailTemplates}
+      />
+      <TabItem
+        key="sms-templates-view-button"
+        Icon={Mail as any}
+        label={i18n.t(SettingsNavigationLabel.SMSTemplates)}
+        onClick={() => setView(View.SMSTemplates)}
+        active={view === View.SMSTemplates}
       />
     </>
   );
@@ -108,6 +123,7 @@ const OrganizationSettings: React.FC = () => {
       >
         {({ isSubmitting, isValidating, handleReset }) => (
           <LayoutContent
+            Component={Form as any}
             actionButtons={
               <div className="py-2 flex justify-end items-center gap-2">
                 <Button
@@ -130,21 +146,20 @@ const OrganizationSettings: React.FC = () => {
               </div>
             }
           >
-            <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
-              <div className="md:px-11">
-                {view === Views.GeneralSettings && (
+            {view === View.GeneralSettings ? (
+              <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
+                <div className="md:px-11">
                   <AdminsField currentUser={currentUser} />
-                )}
-
-                <Form>
-                  {view === Views.EmailTemplates ? (
-                    <EmailTemplateSettings />
-                  ) : (
-                    <GeneralSettings />
-                  )}
-                </Form>
+                  <GeneralSettings />
+                </div>
               </div>
-            </div>
+            ) : view === View.EmailTemplates ? (
+              <EmailTemplateSettings />
+            ) : (
+              <div>
+                <SMSTemplateSettings />
+              </div>
+            )}
           </LayoutContent>
         )}
       </Formik>
@@ -157,12 +172,12 @@ const emptyValues = {
   displayName: "",
   emailFrom: "",
   emailNameFrom: "",
-  emailTemplates: defaultEmailTemplates,
+  emailTemplates,
   existingSecrets: [],
   location: "",
   defaultCountryCode: "",
   smsFrom: "",
-  smsTemplate: "",
+  smsTemplates,
   emailBcc: "",
 };
 

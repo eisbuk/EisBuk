@@ -1,3 +1,10 @@
+import { ClientMessageType } from "@eisbuk/shared";
+
+export type SMSMessageType = Exclude<
+  ClientMessageType,
+  ClientMessageType.SendCalendarFile
+>;
+
 export interface SMSRecipient {
   msisdn: string;
 }

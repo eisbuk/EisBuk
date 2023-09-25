@@ -2,7 +2,12 @@ import { describe, expect, beforeEach, afterAll } from "vitest";
 import { httpsCallable } from "@firebase/functions";
 import { createJestSMTPServer } from "jest-smtp";
 
-import { ClientEmailPayload, CustomerFull, EmailType } from "@eisbuk/shared";
+import {
+  ClientMessageMethod,
+  ClientMessagePayload,
+  ClientMessageType,
+  CustomerFull,
+} from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 import { DeliveryStatus } from "@eisbuk/firestore-process-delivery";
 
@@ -52,10 +57,13 @@ describe.skip("Email sending and delivery", () => {
         done();
       };
 
-      const payload: ClientEmailPayload[EmailType.SendBookingsLink] = {
-        type: EmailType.SendBookingsLink,
+      const payload: ClientMessagePayload<
+        ClientMessageMethod.Email,
+        ClientMessageType.SendBookingsLink
+      > = {
+        type: ClientMessageType.SendBookingsLink,
         organization,
-        customer: saul as Required<CustomerFull>,
+        ...(saul as Required<CustomerFull>),
         bookingsLink: "https://eisbuk.it/saul",
       };
 

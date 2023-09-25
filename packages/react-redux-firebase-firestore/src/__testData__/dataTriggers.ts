@@ -1,9 +1,10 @@
 import {
   CustomerAttendance,
   CustomerBookingEntry,
-  EmailType,
+  ClientMessageType,
   OrganizationData,
   SlotAttendnace,
+  defaultSMSTemplates as smsTemplates,
 } from "@eisbuk/shared";
 
 import { testDate } from "./date";
@@ -69,7 +70,7 @@ export const organization: OrganizationData = {
   admins: ["Gus Fring"],
   emailFrom: "gus@lospollos.hermanos",
   emailTemplates: {
-    [EmailType.SendBookingsLink]: {
+    [ClientMessageType.SendBookingsLink]: {
       subject: "prenotazioni lezioni di {{ displayName }}",
       html: `<p>Ciao {{ name }},</p>
           <p>Ti inviamo un link per prenotare le tue prossime lezioni con {{ displayName }}:</p>
@@ -78,6 +79,6 @@ export const organization: OrganizationData = {
   },
   emailNameFrom: "Gus",
   smsFrom: "Gus",
-  smsTemplate: "SMS Temp here",
+  smsTemplates,
   existingSecrets: ["authToken", "exampleSecret"],
 };
