@@ -1,88 +1,68 @@
 import { DateTime } from "luxon";
 
-import { HoursType } from "./AttendanceVarianceTable";
+import { map, _reduce } from "@eisbuk/shared";
 
-export type HoursTuple = [booked: number, attended: number];
+import {
+  AthleteAttendanceMonth,
+  AttendanceByDate,
+  AttendanceDurations,
+  HoursType,
+  RowItem,
+} from "./types";
 
-type HoursWithDeltaTuple = [
-  booked: number,
-  attended: number,
-  delta: number | null
-];
-
-type HourTotalsTuple = [booked: number, attended: number, delta: number];
-
-interface Hours {
-  [dateStr: string]: HoursTuple;
-}
-
-interface AttendanceWithDeltaData {
-  [dateStr: string]: HoursWithDeltaTuple;
-}
-
-interface HoursByType {
-  [HoursType.Booked]: {
-    [dateStr: string]: number;
-  };
-  [HoursType.Attended]: {
-    [dateStr: string]: number;
-  };
-  [HoursType.Delta]: {
-    [dateStr: string]: number | null;
-  };
-}
-
-export const padEmptyDates = (dates: string[], athleteHours: Hours) => {
-  return dates.reduce<Hours>((acc, curDate) => {
-    acc[curDate] = athleteHours[curDate] || [0, 0];
-    return acc;
-  }, {});
-};
-
-export const calculateDeltas = (data: Hours) => {
-  return Object.entries(data).reduce<AttendanceWithDeltaData>((acc, cur) => {
-    const [date, data] = cur;
-    const [booked, attended] = data;
-
-    const isNull = !booked && !attended;
-    const delta = isNull ? null : attended - booked;
-
-    acc[date] = [booked, attended, delta];
-    return acc;
-  }, {});
-};
-
-export const calculateTotals = (data: AttendanceWithDeltaData) => {
-  return Object.values(data).reduce<HourTotalsTuple>(
-    (acc, cur) => {
-      let [totalBooked, totalAttended, totalDelta] = acc;
-      const [booked, attended, delta] = cur;
-
-      return [
-        (totalBooked += booked || 0),
-        (totalAttended += attended || 0),
-        (totalDelta += delta || 0),
-      ];
-    },
-    [0, 0, 0]
-  );
-};
-
-export const collectDatesByHoursType = (data: AttendanceWithDeltaData) => {
-  return Object.entries(data).reduce<HoursByType>(
-    (acc, [date, data]) => {
-      const [booked, attended, delta] = data;
-
-      acc[HoursType.Booked][date] = booked;
-      acc[HoursType.Attended][date] = attended;
-      acc[HoursType.Delta][date] = delta;
-      return acc;
-    },
-    { [HoursType.Booked]: {}, [HoursType.Attended]: {}, [HoursType.Delta]: {} }
-  );
+export const calculateDelta = (params: {
+  booked: number | null;
+  attended: number | null;
+}) => {
+  const { booked, attended } = params;
+  // If there's no data for booking nor attendance, there's no delta (this will result in "-" in the table column)
+  if (!booked && !attended) return null;
+  // If one of the values is missing (no booking or attendance), we're comparing the other value with 0
+  return (attended || 0) - (booked || 0);
 };
 
 export const isWeekend = (dateStr: string) => {
   const dayOfWeek = DateTime.fromISO(dateStr).weekday;
   return dayOfWeek === 6 || dayOfWeek === 7;
 };
+
+type AttendanceDurationsToData = (hours: AttendanceDurations) => number | null;
+
+/**
+ * Creates a interable with the row data ({ date => value} pairs).
+ * Used to generate the table data for a particular metric: booked, attended, delta...
+ */
+const createRowData = (
+  dates: Iterable<string>,
+  hours: AttendanceByDate,
+  transform: AttendanceDurationsToData
+) => {
+  const hoursLookup = new Map(
+    map(hours, ([date, hours]) => [date, transform(hours)])
+  );
+
+  return map(dates, (date) => [date, hoursLookup.get(date) ?? null] as const);
+};
+
+/**
+ * Takes in a list of dates and
+ * returns a function to generate a row for a particular athlete for a particluar metric (booked, attended, delta).
+ */
+export const createRowGenerator =
+  (dates: Iterable<string>) =>
+  (
+    type: HoursType,
+    attendance: AthleteAttendanceMonth,
+    transform: (hours: AttendanceDurations) => number | null
+  ): RowItem => {
+    const [athlete, hours] = attendance;
+
+    const dataIter = createRowData(dates, hours, transform);
+    const dataObject = Object.fromEntries(dataIter);
+
+    console.log({ athlete, type, dataObject });
+
+    const total = _reduce(dataIter, (acc, [, value]) => acc + (value || 0), 0);
+
+    return { type, athlete, ...dataObject, total };
+  };
