@@ -26,8 +26,10 @@ describe("athlete profile", () => {
     cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
     cy.clickButton(i18n.t(CustomerNavigationLabel.Profile) as string);
     // Toggle edit mode
-    cy.clickButton(i18n.t(ActionButton.Edit) as string);
     // Wait for edit mode to be enabled before making furter assertions
+    // below is a workaround because cypress can't click the correct element
+    cy.clickButton(i18n.t(ActionButton.Edit) as string);
+    cy.clickButton(i18n.t(ActionButton.Edit) as string);
     cy.get("input").first().should("be.enabled");
   });
 
