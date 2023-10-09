@@ -1,3 +1,5 @@
+import { SlotType } from "@eisbuk/shared";
+
 export type AthleteNamePair<T> = [fullName: string, data: T];
 export type DateAttendancePair<T> = [date: string, data: T];
 
@@ -8,8 +10,12 @@ export type AttendanceDurations = {
 };
 
 export type AttendanceByDate = Iterable<
-  DateAttendancePair<AttendanceDurations>
+  DateAttendancePair<AttendanceBySlotType>
 >;
+
+export type AttendanceBySlotType = {
+  [T in SlotType]: AttendanceDurations;
+};
 
 export type AthleteAttendanceMonth = AthleteNamePair<AttendanceByDate>;
 
@@ -18,4 +24,5 @@ export interface RowItem {
   [dateStr: string]: string | number | null;
   total: number;
   type: HoursType;
+  slotType: SlotType;
 }

@@ -6,12 +6,13 @@ import {
   DateFormat,
   AttendanceVarianceHeaders,
 } from "@eisbuk/translations";
-import { wrapIter } from "@eisbuk/shared";
+import { SlotType, wrapIter } from "@eisbuk/shared";
 
 import { AthleteAttendanceMonth } from "./types";
 
 import Table, { TableCell, CellType, CellTextAlign } from "../Table";
 import VarianceBadge from "./VarianceBadge";
+import SlotTypeIcon from "../SlotTypeIcon";
 
 import { isWeekend, calculateDelta, createRowGenerator } from "./utils";
 
@@ -24,6 +25,7 @@ interface RowContent {
   cellItem: string | number | boolean | null;
   date: string;
   itemIx: number;
+  slotType: SlotType;
   classes?: string;
 }
 
@@ -74,9 +76,16 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                 </tr>
               )}
               renderRow={(rowItem, rowIx, itemArr) => {
-                const { type: rowType, ...data } = rowItem;
+                const { type: rowType, slotType, ...data } = rowItem;
 
-                const rowClasses = rowIx % 2 === 0 ? undefined : "bg-white";
+                const rowClasses =
+                  slotType === SlotType.Ice
+                    ? rowIx % 2 === 0
+                      ? "bg-cyan-200/30"
+                      : "bg-cyan-100/30"
+                    : rowIx % 2 === 0
+                    ? "bg-yellow-200/30"
+                    : "bg-yellow-100/30";
                 const cellClasses =
                   rowIx === itemArr.length - 1 ? undefined : "border-b-2";
 
@@ -89,6 +98,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                           cellItem={cellItem}
                           itemIx={itemIx}
                           date={date}
+                          slotType={slotType}
                         />
                       ) : (
                         <DeltaRowCells
@@ -97,6 +107,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                           itemIx={itemIx}
                           date={date}
                           classes={cellClasses}
+                          slotType={slotType}
                         />
                       )
                     )}
@@ -123,8 +134,30 @@ const generateTableRows = (
   // to end up with a flat array of rows
   return wrapIter(data)
     .flatMap((data) => [
-      generateRow("booked", data, ({ booked }) => booked),
-      generateRow("delta", data, calculateDelta),
+      generateRow(
+        "booked",
+        SlotType.Ice,
+        data,
+        ({ [SlotType.Ice]: { booked } }) => booked
+      ),
+      generateRow(
+        "delta",
+        SlotType.Ice,
+        data,
+        calculateDelta((data) => data[SlotType.Ice])
+      ),
+      generateRow(
+        "booked",
+        SlotType.OffIce,
+        data,
+        ({ [SlotType.OffIce]: { booked } }) => booked
+      ),
+      generateRow(
+        "delta",
+        SlotType.OffIce,
+        data,
+        calculateDelta((data) => data[SlotType.OffIce])
+      ),
     ])
     ._array();
 };
@@ -148,12 +181,14 @@ const DeltaRowCells: React.FC<RowContent> = ({
   itemIx,
   date,
   classes,
+  slotType,
 }) =>
   itemIx === 0 ? (
     <TableCell
       type={CellType.Title}
       className={`${classes} ${stickyCellClasses.join(" ")}`}
     >
+      <SlotTypeIcon type={slotType} />
       <p className="sr-only">{`${cellItem} delta`}</p>
     </TableCell>
   ) : (

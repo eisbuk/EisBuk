@@ -1,0 +1,740 @@
+{
+  "dates": [
+    "2022-04-01",
+    "2022-04-02",
+    "2022-04-03",
+    "2022-04-04",
+    "2022-04-05",
+    "2022-04-06",
+    "2022-04-07",
+    "2022-04-08",
+    "2022-04-09",
+    "2022-04-10",
+    "2022-04-11",
+    "2022-04-12",
+    "2022-04-13",
+    "2022-04-14",
+    "2022-04-15",
+    "2022-04-16",
+    "2022-04-17",
+    "2022-04-18",
+    "2022-04-19",
+    "2022-04-20",
+    "2022-04-21",
+    "2022-04-22",
+    "2022-04-23",
+    "2022-04-24",
+    "2022-04-25",
+    "2022-04-26",
+    "2022-04-27",
+    "2022-04-28",
+    "2022-04-29",
+    "2022-04-30"
+  ],
+  "data": [
+    [
+      "John Longname Doe",
+      [
+        [
+          "2022-04-01",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-02",
+          {
+            "ice": {
+              "booked": null,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-04",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-05",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-07",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-08",
+          {
+            "ice": {
+              "booked": null,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-09",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-10",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-11",
+          {
+            "ice": {
+              "booked": null,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-12",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-13",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-15",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-16",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-17",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-20",
+          {
+            "ice": {
+              "booked": null,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-23",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-24",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-25",
+          {
+            "ice": {
+              "booked": null,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-26",
+          {
+            "ice": {
+              "booked": null,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-28",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-30",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2
+            }
+          }
+        ]
+      ]
+    ],
+    [
+      "Willy Brandt",
+      [
+        [
+          "2022-04-04",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-06",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-07",
+          {
+            "ice": {
+              "booked": null,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-08",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-11",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-12",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-15",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-16",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-20",
+          {
+            "ice": {
+              "booked": null,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-21",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-22",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-24",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-25",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-26",
+          {
+            "ice": {
+              "booked": null,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-27",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-28",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": null,
+              "attended": null
+            }
+          }
+        ],
+        [
+          "2022-04-30",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ]
+      ]
+    ],
+    [
+      "Kevin Cosner",
+      [
+        [
+          "2022-04-01",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 1
+            }
+          }
+        ],
+        [
+          "2022-04-03",
+          {
+            "ice": {
+              "booked": 1.5,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-05",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-08",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-09",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-11",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-14",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 0.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-16",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": 2.5
+            }
+          }
+        ],
+        [
+          "2022-04-19",
+          {
+            "ice": {
+              "booked": 2,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 1.5
+            }
+          }
+        ],
+        [
+          "2022-04-20",
+          {
+            "ice": {
+              "booked": 0.5,
+              "attended": 2.5
+            },
+            "off-ice": {
+              "booked": 1.5,
+              "attended": 0.5
+            }
+          }
+        ],
+        [
+          "2022-04-21",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-22",
+          {
+            "ice": {
+              "booked": 2.5,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 0.5,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-24",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": null
+            },
+            "off-ice": {
+              "booked": 2,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-25",
+          {
+            "ice": {
+              "booked": null,
+              "attended": 2
+            },
+            "off-ice": {
+              "booked": 1,
+              "attended": 2
+            }
+          }
+        ],
+        [
+          "2022-04-27",
+          {
+            "ice": {
+              "booked": 1,
+              "attended": 1.5
+            },
+            "off-ice": {
+              "booked": 2.5,
+              "attended": null
+            }
+          }
+        ]
+      ]
+    ]
+  ]
+}

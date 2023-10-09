@@ -18,7 +18,7 @@ const TableCell: React.FC<CellProps> = ({
   const scope =
     type === CellType.Header ? "col" : type === CellType.Title ? "row" : null;
 
-  const accentClasses = isWaypoint ? ["bg-gray-100"] : [];
+  const accentClasses = isWaypoint ? ["bg-gray-300/20"] : [];
 
   const className = [
     ...cellBaseClasses,

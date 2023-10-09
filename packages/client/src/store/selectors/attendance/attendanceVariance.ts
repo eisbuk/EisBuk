@@ -8,9 +8,14 @@ import {
   ID,
   _reduce,
   CustomerAttendance,
+  SlotInterface,
+  SlotType,
+  flatMap,
 } from "@eisbuk/shared";
 import {
   AthleteAttendanceMonth,
+  AttendanceByDate,
+  AttendanceBySlotType,
   AttendanceDurations,
   DateAttendancePair,
 } from "@eisbuk/ui";
@@ -21,21 +26,27 @@ import { getMonthStr, calculateIntervalDuration } from "@/utils/helpers";
 
 type CustomerNameTuple = [name: string, surname: string];
 
+type AttendanceDurationsWithType = AttendanceDurations & { slotType: SlotType };
+
 type Attendance = NonNullable<LocalStore["firestore"]["data"]["attendance"]>;
 type Customers = NonNullable<LocalStore["firestore"]["data"]["customers"]>;
+type Slots = Record<string, SlotInterface>;
 
 export const processAttendances = (
   attendance: Attendance,
+  slots: Slots,
   customers: Customers,
   month: string
 ) => {
-  const final = wrapIter(Object.values(attendance))
+  const final = wrapIter(Object.entries(attendance))
     // Get only current month's attendance
-    .filter(filterAttendanceByMonth(month))
+    .filter(([, attendance]) => filterAttendanceByMonth(month)(attendance))
     // Flatten the slot attendances so that we end up with iterable of { customerId => attendanceIntervalsWithSlotMeta } pairs
-    .flatMap(({ date, attendances }) =>
+    .flatMap(([slotId, { date, attendances }]) =>
       // { customerId => attendanceIntervals } pairs
-      Object.entries(attendances).map(valueMapper(mergeMapper({ date })))
+      Object.entries(attendances).map(
+        valueMapper(mergeMapper({ date, slotType: slots[slotId].type }))
+      )
     )
     // { customerId => attendanceDurations } pairs
     .map(valueMapper(convertIntervalsToDurations))
@@ -45,6 +56,7 @@ export const processAttendances = (
     ._group(ID)
     // Aggragate each customer's attendances by date
     .map(valueMapper(aggregateAttendanceByDate))
+    .map((a) => a)
     // Replace customer ids with customer name/surname (before sorting) -> { [name, surname] => Iterable<attendance> } pairs
     .map(keyMapper(replaceCustomerIdWithName(customers)))
     ._array()
@@ -60,11 +72,17 @@ export const getMonthAttendanceVariance = (
 ): AthleteAttendanceMonth[] => {
   const { app, firestore } = state;
   const { calendarDay } = app;
-  const { attendance = {}, customers = {} } = firestore.data;
+  const { attendance = {}, customers = {}, slotsByDay = {} } = firestore.data;
 
   const currentMonth = getMonthStr(calendarDay, 0);
+  const slots = Object.fromEntries(
+    flatMap(
+      Object.values(slotsByDay ? slotsByDay[currentMonth] : {}),
+      (slots) => Object.entries(slots)
+    )
+  );
 
-  return processAttendances(attendance, customers, currentMonth);
+  return processAttendances(attendance, slots, customers, currentMonth);
 };
 
 /**
@@ -109,20 +127,27 @@ const datePairFromAttendance = <A extends { date: string }>({
 }: A): DateAttendancePair<Omit<A, "date">> => [date, rest];
 
 const aggregateAttendance = (
-  acc: AttendanceDurations,
-  curr: AttendanceDurations
+  acc: AttendanceBySlotType,
+  { slotType, booked, attended }: AttendanceDurationsWithType
 ) => ({
-  booked: acc.booked + curr.booked,
-  attended: acc.attended + curr.attended,
+  ...acc,
+  [slotType]: {
+    booked: acc[slotType].booked + booked,
+    attended: acc[slotType].attended + attended,
+  },
 });
 
 const aggregateAttendanceEntries = (
-  attendances: Iterable<AttendanceDurations>
-) => _reduce(attendances, aggregateAttendance, { booked: 0, attended: 0 });
+  attendances: Iterable<AttendanceDurationsWithType>
+): AttendanceBySlotType =>
+  _reduce(attendances, aggregateAttendance, {
+    [SlotType.Ice]: { booked: 0, attended: 0 },
+    [SlotType.OffIce]: { booked: 0, attended: 0 },
+  });
 
 const aggregateAttendanceByDate = (
-  attendances: Iterable<DateAttendancePair<AttendanceDurations>>
-): Iterable<DateAttendancePair<AttendanceDurations>> =>
+  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>
+): AttendanceByDate =>
   wrapIter(attendances)
     // Group each pair by date:
     // { date => attendanceDurations } -> { date => Iterable<attendanceDurations> } pairs

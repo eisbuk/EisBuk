@@ -1,32 +1,32 @@
 import { DateTime } from "luxon";
 
-import { map, _reduce } from "@eisbuk/shared";
+import { map, _reduce, SlotType } from "@eisbuk/shared";
 
 import {
   AthleteAttendanceMonth,
   AttendanceByDate,
+  AttendanceBySlotType,
   AttendanceDurations,
   HoursType,
   RowItem,
 } from "./types";
 
-export const calculateDelta = (params: {
-  booked: number | null;
-  attended: number | null;
-}) => {
-  const { booked, attended } = params;
-  // If there's no data for booking nor attendance, there's no delta (this will result in "-" in the table column)
-  if (!booked && !attended) return null;
-  // If one of the values is missing (no booking or attendance), we're comparing the other value with 0
-  return (attended || 0) - (booked || 0);
-};
+export const calculateDelta =
+  <T>(selector: (data: T) => AttendanceDurations) =>
+  (params: T) => {
+    const { booked, attended } = selector(params);
+    // If there's no data for booking nor attendance, there's no delta (this will result in "-" in the table column)
+    if (!booked && !attended) return null;
+    // If one of the values is missing (no booking or attendance), we're comparing the other value with 0
+    return (attended || 0) - (booked || 0);
+  };
 
 export const isWeekend = (dateStr: string) => {
   const dayOfWeek = DateTime.fromISO(dateStr).weekday;
   return dayOfWeek === 6 || dayOfWeek === 7;
 };
 
-type AttendanceDurationsToData = (hours: AttendanceDurations) => number | null;
+type AttendanceDurationsToData = (hours: AttendanceBySlotType) => number | null;
 
 /**
  * Creates a interable with the row data ({ date => value} pairs).
@@ -52,8 +52,9 @@ export const createRowGenerator =
   (dates: Iterable<string>) =>
   (
     type: HoursType,
+    slotType: SlotType,
     attendance: AthleteAttendanceMonth,
-    transform: (hours: AttendanceDurations) => number | null
+    transform: AttendanceDurationsToData
   ): RowItem => {
     const [athlete, hours] = attendance;
 
@@ -64,5 +65,5 @@ export const createRowGenerator =
 
     const total = _reduce(dataIter, (acc, [, value]) => acc + (value || 0), 0);
 
-    return { type, athlete, ...dataObject, total };
+    return { type, slotType, athlete, ...dataObject, total };
   };
