@@ -27,6 +27,8 @@ jobs:
       -  #@ rush_add_path()
       -  #@ rush_update()
       -  #@ rush_build()
+      - name: Generate name for sentry release
+        run: echo "SENTRY_RELEASE=$(date +%Y-%m-%d)-${{ github.sha }}" >> $GITHUB_ENV
       - name: Build app
         run: |
           cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:prod | tee build.output
@@ -45,7 +47,7 @@ jobs:
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
           REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
           REACT_APP_SENTRY_ENVIRONMENT: staging
-          REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
+          REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
       -  #@ check_secrets()
@@ -60,6 +62,8 @@ jobs:
         with:
           environment: staging
           sourcemaps: ./packages/client/dist/assets
+          version: ${{ env.SENTRY_RELEASE }}
+          set_commits: skip
       - name: Deploy preview channel
         id: deploy
         if: steps.has_secret.outputs.HAS_SECRETS
