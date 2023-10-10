@@ -26,8 +26,10 @@ jobs:
       -  #@ rush_add_path()
       -  #@ rush_update()
       -  #@ rush_build()
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
       - name: Generate name for sentry release
-        run: echo "SENTRY_RELEASE=$(date +%Y-%m-%d)-${{ github.sha }}" >> $GITHUB_ENV
+        run: echo "SENTRY_RELEASE=$(date +%Y-%m-%d)-${{ env.GITHUB_SHA_SHORT }}" >> $GITHUB_ENV
       - name: Build app
         run: cd packages/client && rushx build:prod
         env:
