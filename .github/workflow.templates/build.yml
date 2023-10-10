@@ -47,7 +47,7 @@ jobs:
           REACT_APP_SENTRY_ENVIRONMENT: staging
           REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
       - name: Inject slug/short variables
-        uses: rlespinasse/github-slug-action@v3.x
+        uses: rlespinasse/github-slug-action@v4
       -  #@ check_secrets()
       - name: Create Sentry release
         uses: getsentry/action-release@v1
