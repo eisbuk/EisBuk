@@ -26,6 +26,10 @@ jobs:
       -  #@ rush_add_path()
       -  #@ rush_update()
       -  #@ rush_build()
+      - name: Inject slug/short variables
+        uses: rlespinasse/github-slug-action@v4
+      - name: Generate name for sentry release
+        run: echo "SENTRY_RELEASE=$(date +%Y-%m-%d)-${{ env.GITHUB_SHA_SHORT }}" >> $GITHUB_ENV
       - name: Build app
         run: cd packages/client && rushx build:prod
         env:
@@ -38,11 +42,7 @@ jobs:
           REACT_APP_FIREBASE_MEASUREMENT_ID: ${{ secrets.FIREBASE_MEASUREMENT_ID }}
           REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
           REACT_APP_SENTRY_ENVIRONMENT: production
-          REACT_APP_SENTRY_RELEASE: ${{ github.sha }}
-      - name: Deploy to firebase
-        run: rush deploy:production
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+          REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
@@ -53,3 +53,8 @@ jobs:
         with:
           environment: production
           sourcemaps: "./packages/client/dist/assets"
+          version: ${{ env.SENTRY_RELEASE }}
+      - name: Deploy to firebase
+        run: rush deploy:production
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
