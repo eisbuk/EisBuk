@@ -33,8 +33,8 @@ import {
 export const EditSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
   const slotAttendances = useSelector((state: LocalStore) =>
-    state.firestore.data.attendance && slot?.id
-      ? state.firestore.data.attendance[slot.id].attendances
+    state.firestore.data.attendance && buttonGroupContext?.slot?.id
+      ? state.firestore.data.attendance[buttonGroupContext.slot.id].attendances
       : {}
   );
 
