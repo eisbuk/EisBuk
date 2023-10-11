@@ -71,5 +71,15 @@ describe("SlotForm,", () => {
       screen.getByTestId(testId("increment-button")).click();
       await waitFor(() => expect(mockSetValue).toHaveBeenCalledWith("09:00"));
     });
+
+    test("should be disabled if field props contain disabled", async () => {
+      renderWithFormik(
+        <Field component={TimePickerField} name="time" disabled={true} />
+      );
+      screen.getByTestId(testId("increment-button")).click();
+      await waitFor(() => expect(mockSetValue).not.toHaveBeenCalled());
+      screen.getByTestId(testId("decrement-button")).click();
+      await waitFor(() => expect(mockSetValue).not.toHaveBeenCalled());
+    });
   });
 });

@@ -61,13 +61,20 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
 
     setValue(newTime);
   };
+  const color = props.disabled
+    ? "bg-gray-200"
+    : "bg-cyan-700 hover:bg-cyan-700 active:bg-cyan-600";
 
   return (
     <div className="relative flex items-center">
       <IconButton
-        className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
+        className={[
+          "w-8 h-6 rounded-md !px-1.5 !py-1 flex-shrink-0 text-white",
+          color,
+        ].join(" ")}
         onClick={handleClick(-1)}
         data-testid={testId("decrement-button")}
+        disabled={props.disabled}
       >
         <Minus />
       </IconButton>
@@ -78,9 +85,13 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
         error={Boolean(error || props.error)}
       />
       <IconButton
-        className="w-8 h-6 rounded-md bg-cyan-700 text-white !px-1.5 !py-1 flex-shrink-0 hover:bg-cyan-700 active:bg-cyan-600"
+        className={[
+          "w-8 h-6 rounded-md !px-1.5 !py-1 flex-shrink-0",
+          color,
+        ].join()}
         onClick={handleClick(1)}
         data-testid={testId("increment-button")}
+        disabled={props.disabled}
       >
         <Plus />
       </IconButton>

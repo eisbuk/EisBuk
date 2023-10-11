@@ -63,6 +63,17 @@ export const baseSlot: SlotInterface = {
   notes: "",
 };
 
+export const slotAttendances = {
+  "customer-id-1": {
+    attendedInterval: "13:00-13:50",
+    bookedInterval: "13:00-13:50",
+  },
+  "customer-id-2": {
+    attendedInterval: "13:00-13:50",
+    bookedInterval: "14:00-14:50",
+  },
+};
+
 export const collectionOfSlots = Array(4)
   .fill(null)
   .map((_, i) => ({
