@@ -50,7 +50,6 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
         bookedIntervals[`${interval.startTime}-${interval.endTime}`]
     );
   };
-  console.log({ bookedIntervals });
   return (
     <>
       <label
@@ -59,19 +58,15 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
       >
         {t(SlotFormLabel.Intervals)}
       </label>
-
-      {intervals?.map((interval, i) => {
-        console.log("checkInterval", checkInterval(interval, bookedIntervals));
-        return (
-          <TimeIntervalField
-            key={i}
-            name={`intervals[${i}]`}
-            onDelete={() => deleteInterval(i)}
-            dark={i % 2 === 1}
-            disableUpdate={checkInterval(interval, bookedIntervals)}
-          />
-        );
-      })}
+      {intervals?.map((interval, i) => (
+        <TimeIntervalField
+          key={i}
+          name={`intervals[${i}]`}
+          onDelete={() => deleteInterval(i)}
+          dark={i % 2 === 1}
+          disableUpdate={checkInterval(interval, bookedIntervals)}
+        />
+      ))}
       <div className="flex justify-center items-center">
         <Button
           onClick={addInterval}
