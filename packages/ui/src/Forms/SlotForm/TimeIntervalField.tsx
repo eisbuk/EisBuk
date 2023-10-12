@@ -1,7 +1,11 @@
 import React from "react";
 import { Field, useField } from "formik";
 
-import { useTranslation, SlotFormAria } from "@eisbuk/translations";
+import {
+  useTranslation,
+  SlotFormAria,
+  SlotFormLabel,
+} from "@eisbuk/translations";
 import { Trash } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
@@ -9,6 +13,7 @@ import { testId } from "@eisbuk/testing/testIds";
 import TimePickerField from "./TimePickerField";
 import IconButton from "../../IconButton";
 import FormError from "../FormError";
+import HoverText from "../../HoverText";
 
 interface Props {
   /**
@@ -40,8 +45,9 @@ const TimeIntervalField: React.FC<Props> = ({
 
   const colorClass = dark ? "bg-gray-50" : "";
   const iconButtonColor = disableUpdate
-    ? "bg-gray-300 active:bg-gray-500"
+    ? "bg-gray-200"
     : "bg-cyan-700 active:bg-cyan-600";
+  const cursor = disableUpdate ? "cursor-default" : "cursor-pointer";
 
   const [, { error }] = useField<string>(name);
 
@@ -74,8 +80,9 @@ const TimeIntervalField: React.FC<Props> = ({
       </div>
       <IconButton
         className={[
-          "!w-14 !h-10 py-1.5 text-white cursor-pointer",
+          "!w-14 !h-10 py-1.5 text-white",
           iconButtonColor,
+          cursor,
         ].join(" ")}
         data-testid={testId("delete-interval-button")}
         aria-label={t(SlotFormAria.DeleteInterval)}
@@ -84,7 +91,17 @@ const TimeIntervalField: React.FC<Props> = ({
         disableHover
         disabled={disableUpdate}
       >
-        <Trash />
+        {disableUpdate ? (
+          <HoverText
+            className="contents bg-gray-200 font-medium border-r-2"
+            multiline="sm"
+            text={t(SlotFormLabel.DeleteIntervalDisabled)}
+          >
+            <Trash className="bg-gray-200 text-white" />
+          </HoverText>
+        ) : (
+          <Trash />
+        )}
       </IconButton>
 
       <FormError className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">
