@@ -38,6 +38,9 @@ export const EditSlotButton: React.FC = () => {
       : {}
   );
 
+  const { openWithProps: openDeleteIntervalDisabledDialog } =
+    useDeleteIntervalDisabledModal();
+
   const { openWithProps: openSlotForm } = useSlotFormModal();
 
   // prevent component from rendering and log error to console (but don't throw)
@@ -62,6 +65,7 @@ export const EditSlotButton: React.FC = () => {
       date: slot.date,
       slotToEdit: slot,
       slotAttendances,
+      openDeleteIntervalDisabledDialog,
     });
   };
 
@@ -84,5 +88,8 @@ export const EditSlotButton: React.FC = () => {
 };
 
 const useSlotFormModal = createModal("SlotFormDialog");
+const useDeleteIntervalDisabledModal = createModal(
+  "DeleteIntervalDisabledDialog"
+);
 
 export default EditSlotButton;

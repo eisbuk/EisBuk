@@ -87,6 +87,10 @@ export interface SlotFormProps {
    * Attendances of this slot
    */
   slotAttendances?: SlotAttendnace["attendances"];
+  /**
+   * function that opens dialog for deleting a disabled interval
+   */
+  openDeleteIntervalDisabledDialog: () => void;
 }
 
 const SlotForm: React.FC<SlotFormProps> = ({
@@ -96,6 +100,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
   onSubmit = () => {},
   onClose = () => {},
   slotAttendances,
+  openDeleteIntervalDisabledDialog,
 }) => {
   const { t } = useTranslation();
 
@@ -225,7 +230,12 @@ const SlotForm: React.FC<SlotFormProps> = ({
                   t(errors.categories)}
               </p>
 
-              <SlotIntervals slotAttendances={slotAttendances} />
+              <SlotIntervals
+                slotAttendances={slotAttendances}
+                openDeleteIntervalDisabledDialog={
+                  openDeleteIntervalDisabledDialog
+                }
+              />
 
               <FormField
                 name="notes"

@@ -15,8 +15,12 @@ import { defaultInterval } from "./data";
 
 interface SlotIntervalProps {
   slotAttendances?: SlotAttendnace["attendances"];
+  openDeleteIntervalDisabledDialog: (interval: SlotInterval) => void;
 }
-const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
+const SlotIntervals: React.FC<SlotIntervalProps> = ({
+  slotAttendances,
+  openDeleteIntervalDisabledDialog,
+}) => {
   const { t } = useTranslation();
 
   const [{ value: intervals }, , { setValue }] =
@@ -27,7 +31,16 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
     const newIntervals = [...intervals, defaultInterval];
     setValue(newIntervals);
   };
-  const deleteInterval = (index: number) => {
+
+  const deleteInterval = (
+    index: number,
+    disableUpdate: boolean,
+    interval: SlotInterval
+  ) => {
+    if (disableUpdate) {
+      openDeleteIntervalDisabledDialog(interval);
+      return;
+    }
     const filteredIntervals = intervals.filter((_, i) => i !== index);
     setValue(filteredIntervals);
   };
@@ -58,15 +71,20 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
       >
         {t(SlotFormLabel.Intervals)}
       </label>
-      {intervals?.map((interval, i) => (
-        <TimeIntervalField
-          key={i}
-          name={`intervals[${i}]`}
-          onDelete={() => deleteInterval(i)}
-          dark={i % 2 === 1}
-          disableUpdate={checkInterval(interval, bookedIntervals)}
-        />
-      ))}
+
+      {intervals?.map((interval, i) => {
+        const disableUpdate = checkInterval(interval, bookedIntervals);
+        return (
+          <TimeIntervalField
+            key={i}
+            name={`intervals[${i}]`}
+            onDelete={() => deleteInterval(i, disableUpdate, interval)}
+            dark={i % 2 === 1}
+            disableUpdate={disableUpdate}
+          />
+        );
+      })}
+
       <div className="flex justify-center items-center">
         <Button
           onClick={addInterval}

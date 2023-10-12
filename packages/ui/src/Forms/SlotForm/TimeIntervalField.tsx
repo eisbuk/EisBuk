@@ -82,11 +82,9 @@ const TimeIntervalField: React.FC<Props> = ({
         color="primary"
         onClick={onDelete}
         disableHover
-        disabled={disableUpdate}
       >
         <Trash />
       </IconButton>
-
       <FormError className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">
         {error}
       </FormError>

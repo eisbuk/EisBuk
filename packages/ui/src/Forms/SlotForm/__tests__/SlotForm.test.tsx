@@ -39,6 +39,9 @@ const baseProps = {
   onClose: () => {},
   onSubmit: () => {},
 };
+const openDeleteIntervalDisabledDialogMock = vi
+  .fn()
+  .mockImplementation(() => {});
 
 describe("SlotForm", () => {
   afterEach(() => {
@@ -48,7 +51,14 @@ describe("SlotForm", () => {
 
   describe("Smoke test", () => {
     beforeEach(() => {
-      render(<SlotForm {...baseProps} />);
+      render(
+        <SlotForm
+          {...baseProps}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />
+      );
     });
 
     test("should render \"New Slot\" title if no 'slotToEdit' passed in", () => {
@@ -85,6 +95,9 @@ describe("SlotForm", () => {
         <SlotForm
           {...baseProps}
           slotToEdit={{ ...baseSlot, date: differentDate }}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
         />
       );
       screen.getByText(i18n.t(SlotFormTitle.EditSlot) as string);
@@ -98,7 +111,14 @@ describe("SlotForm", () => {
 
   describe("Test interval fields", () => {
     beforeEach(() => {
-      render(<SlotForm {...baseProps} />);
+      render(
+        <SlotForm
+          {...baseProps}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />
+      );
     });
 
     test("should render one field for empty form", () => {
@@ -132,6 +152,9 @@ describe("SlotForm", () => {
           {...baseProps}
           slotToEdit={{ ...baseSlot, intervals: createIntervals(13) }}
           slotAttendances={slotAttendances}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
         />
       );
       const intervalFields = screen.queryAllByTestId(
@@ -153,6 +176,9 @@ describe("SlotForm", () => {
           {...baseProps}
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
         />
       );
 
@@ -207,7 +233,15 @@ describe("SlotForm", () => {
     });
 
     test("should call 'onClose' on cancel button click", () => {
-      render(<SlotForm {...baseProps} onClose={mockOnClose} />);
+      render(
+        <SlotForm
+          {...baseProps}
+          onClose={mockOnClose}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />
+      );
       screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
       expect(mockOnClose).toHaveBeenCalled();
     });
@@ -219,6 +253,9 @@ describe("SlotForm", () => {
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
           slotToEdit={baseSlot}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
         />
       );
       // trigger submit
@@ -248,6 +285,9 @@ describe("SlotForm", () => {
           onClose={mockOnClose}
           onSubmit={mockOnSubmit}
           slotToEdit={{ ...baseSlot, intervals }}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
         />
       );
       // delete first interval
@@ -265,7 +305,14 @@ describe("SlotForm", () => {
 
   describe("Test validation errors", () => {
     beforeEach(() => {
-      render(<SlotForm {...baseProps} />);
+      render(
+        <SlotForm
+          {...baseProps}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />
+      );
     });
 
     test("should show error if no categories are selected", async () => {

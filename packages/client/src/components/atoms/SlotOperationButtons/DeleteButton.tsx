@@ -41,7 +41,7 @@ export const DeleteButton: React.FC = () => {
 
   const { openWithProps: openDeleteSlotDialog } = useDeleteSlotModal();
   const { openWithProps: openDeleteSlotDisabledDialog } =
-    useDeleteSlotDieabledModal();
+    useDeleteSlotDisabledModal();
 
   // prevent component from rendering and log error to console (but don't throw)
   // if not rendered within the `SlotOperationButtons` context
@@ -111,6 +111,6 @@ export const DeleteButton: React.FC = () => {
 };
 
 const useDeleteSlotModal = createModal("DeleteSlotDialog");
-const useDeleteSlotDieabledModal = createModal("DeleteSlotDisabledDialog");
+const useDeleteSlotDisabledModal = createModal("DeleteSlotDisabledDialog");
 
 export default DeleteButton;

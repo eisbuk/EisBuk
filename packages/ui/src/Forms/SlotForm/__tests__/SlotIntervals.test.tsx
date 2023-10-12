@@ -22,18 +22,36 @@ describe("SlotForm", () => {
     const interval3 = "13:00-13:50";
     const interval4 = "14:00-14:50";
     const initialValues = { intervals: [interval1, interval2] };
+    const openDeleteIntervalDisabledDialogMock = vi
+      .fn()
+      .mockImplementation(() => {});
 
     test("should render intervals from initial values", () => {
-      renderWithFormik(<SlotIntervals />, { initialValues });
+      renderWithFormik(
+        <SlotIntervals
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />,
+        { initialValues }
+      );
       const intervalFields = screen.queryAllByTestId(
         testId("time-interval-field")
       );
       expect(intervalFields.length).toEqual(2);
     });
     test("should render disabled intervals if they match attendance bookedIntervals", () => {
-      renderWithFormik(<SlotIntervals slotAttendances={slotAttendances} />, {
-        initialValues: { intervals: [interval3, interval4] },
-      });
+      renderWithFormik(
+        <SlotIntervals
+          slotAttendances={slotAttendances}
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />,
+        {
+          initialValues: { intervals: [interval3, interval4] },
+        }
+      );
       const startIntervalFields = screen.queryAllByTestId(
         testId("start-time-input")
       );
@@ -42,7 +60,13 @@ describe("SlotForm", () => {
     });
 
     test("should not explode if no intervals are present in initial value", () => {
-      renderWithFormik(<SlotIntervals />);
+      renderWithFormik(
+        <SlotIntervals
+          openDeleteIntervalDisabledDialog={
+            openDeleteIntervalDisabledDialogMock
+          }
+        />
+      );
     });
   });
 });

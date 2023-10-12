@@ -202,6 +202,8 @@
     "DeleteSlot": "Are you sure you want to delete the slot:",
     "DeleteSlotDisabledTitle": "Unable to delete",
     "DeleteSlotDisabled": "Unable to delete the slot, as it has already been booked by one or more athletes",
+    "DeleteIntervalDisabledTitle": "Unable to delete",
+    "DeleteIntervalDisabled": "Unable to delete the interval, as it has already been booked by one or more athletes",
 
     "NonReversible": "This action is non-reversible",
 

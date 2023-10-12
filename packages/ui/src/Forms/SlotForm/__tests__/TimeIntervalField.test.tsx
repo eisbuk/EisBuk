@@ -46,7 +46,9 @@ describe("'SlotForm',", () => {
       screen.getByTestId(testId("delete-interval-button")).click();
       expect(mockDelete).toHaveBeenCalled();
     });
-    test("should disable deleting or updating intervals", () => {
+
+    /** @TODO might be a pointless test */
+    test("should fire delete function when disabled but only the dialog would show up", () => {
       const mockDelete = vi.fn();
       renderWithFormik(
         <TimeIntervalField
@@ -56,7 +58,7 @@ describe("'SlotForm',", () => {
         />
       );
       screen.getByTestId(testId("delete-interval-button")).click();
-      expect(mockDelete).not.toHaveBeenCalled();
+      expect(mockDelete).toHaveBeenCalled();
     });
   });
 });

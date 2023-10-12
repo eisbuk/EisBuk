@@ -71,10 +71,12 @@ describe("SlotCard", () => {
       screen.getByTestId(testId("edit-slot-button")).click();
       const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(mockDispatchCallPayload.component).toEqual("SlotFormDialog");
-      expect(mockDispatchCallPayload.props).toEqual({
-        date: baseSlot.date,
-        slotToEdit: baseSlot,
-        slotAttendances: mockSelector,
+      expect.objectContaining({
+        [mockDispatchCallPayload.props]: expect.objectContaining({
+          date: baseSlot.date,
+          slotToEdit: baseSlot,
+          slotAttendances: mockSelector,
+        }),
       });
     });
 

@@ -9,6 +9,7 @@ import DeleteCustomerDialog from "./DeleteCustomerDialog";
 import ExtendBookingDateDialog from "./ExtendBookingDateDialog";
 import DeleteSlotDialog from "./DeleteSlotDialog";
 import DeleteSlotDisabledDialog from "./DeleteSlotDisabledDialog";
+import DeleteIntervalDisabledDialog from "./DeleteIntervalDisabledDialog";
 import AddAttendedCustomersDialog from "./AddAttendedCustomersDialog";
 import SlotFormDialog from "./SlotFormDialog";
 import SendICSDialog from "./SendICSDialog";
@@ -24,6 +25,7 @@ export const componentWhitelist = {
   ExtendBookingDateDialog,
   DeleteSlotDialog,
   DeleteSlotDisabledDialog,
+  DeleteIntervalDisabledDialog,
   AddAttendedCustomersDialog,
   BirthdayDialog,
   SlotFormDialog,

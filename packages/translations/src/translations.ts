@@ -215,6 +215,8 @@ export enum Prompt {
   DeleteSlot = "Prompt.DeleteSlot",
   DeleteSlotDisabledTitle = "Prompt.DeleteSlotDisabledTitle",
   DeleteSlotDisabled = "Prompt.DeleteSlotDisabled",
+  DeleteIntervalDisabledTitle = "Prompt.DeleteIntervalDisabledTitle",
+  DeleteIntervalDisabled = "Prompt.DeleteIntervalDisabled",
 
   NonReversible = "Prompt.NonReversible",
 

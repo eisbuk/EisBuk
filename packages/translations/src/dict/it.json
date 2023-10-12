@@ -203,6 +203,8 @@
     "DeleteSlot": "Sei sicuro di voler rimuovere lo slot:",
     "DeleteSlotDisabledTitle": "Impossibile rimuovere",
     "DeleteSlotDisabled": "Impossibile rimuovere lo slot: esistono prenotazioni per questo slot",
+    "DeleteIntervalDisabledTitle": "Impossibile rimuovere",
+    "DeleteIntervalDisabled": "Impossibile eliminare questo intervallo perché è già stato prenotato da uno o più atleti",
 
     "NonReversible": "Questa azione non è reversibile",
 
