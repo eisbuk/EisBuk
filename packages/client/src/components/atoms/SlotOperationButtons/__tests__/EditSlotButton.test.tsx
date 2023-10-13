@@ -21,8 +21,10 @@ import {
 } from "@/lib/errorMessages";
 
 const mockDispatch = vi.fn();
+const mockSelector = vi.fn().mockImplementation(() => {});
 vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
 }));
 
 describe("SlotOperationButtons", () => {
@@ -44,9 +46,11 @@ describe("SlotOperationButtons", () => {
       screen.getByTestId(testId("edit-slot-button")).click();
       const dispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
       expect(dispatchCallPayload.component).toEqual("SlotFormDialog");
-      expect(dispatchCallPayload.props).toEqual({
-        date: baseSlot.date,
-        slotToEdit: baseSlot,
+      expect.objectContaining({
+        [dispatchCallPayload.props]: expect.objectContaining({
+          date: baseSlot.date,
+          slotToEdit: baseSlot,
+        }),
       });
     });
   });

@@ -94,7 +94,8 @@
     "Intervals": "Intervals",
     "AddInterval": "Add Interval",
     "StartTime": "Start Time",
-    "EndTime": "End Time"
+    "EndTime": "End Time",
+    "DeleteIntervalDisabled": "Interval has already been booked by one or more athletes"
   },
   "BookingNotesForm": {
     "Placeholder": "Personal notes...",

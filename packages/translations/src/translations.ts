@@ -105,6 +105,7 @@ export enum SlotFormLabel {
   AddInterval = "SlotForm.AddInterval",
   StartTime = "SlotForm.StartTime",
   EndTime = "SlotForm.EndTime",
+  DeleteIntervalDisabled = "SlotForm.DeleteIntervalDisabled",
 }
 export enum CustomerLabel {
   Welcome = "CustomerLabel.Welcome",

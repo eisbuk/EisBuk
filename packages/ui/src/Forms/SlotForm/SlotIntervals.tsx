@@ -1,7 +1,7 @@
 import React from "react";
 import { useField } from "formik";
 
-import { SlotInterval } from "@eisbuk/shared";
+import { SlotAttendnace, SlotInterval } from "@eisbuk/shared";
 import {
   useTranslation,
   SlotFormLabel,
@@ -13,7 +13,10 @@ import TimeIntervalField from "./TimeIntervalField";
 
 import { defaultInterval } from "./data";
 
-const SlotIntervals: React.FC = () => {
+interface SlotIntervalProps {
+  slotAttendances?: SlotAttendnace["attendances"];
+}
+const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
   const { t } = useTranslation();
 
   const [{ value: intervals }, , { setValue }] =
@@ -29,6 +32,24 @@ const SlotIntervals: React.FC = () => {
     setValue(filteredIntervals);
   };
 
+  const bookedIntervals =
+    slotAttendances &&
+    Object.values(slotAttendances).reduce(
+      (acc, { bookedInterval }) => ({
+        ...acc,
+        [bookedInterval || ""]: bookedInterval,
+      }),
+      {}
+    );
+  const checkInterval = (
+    interval: SlotInterval,
+    bookedIntervals: Record<string, string> | undefined
+  ): boolean => {
+    return Boolean(
+      bookedIntervals &&
+        bookedIntervals[`${interval.startTime}-${interval.endTime}`]
+    );
+  };
   return (
     <>
       <label
@@ -37,13 +58,13 @@ const SlotIntervals: React.FC = () => {
       >
         {t(SlotFormLabel.Intervals)}
       </label>
-
-      {intervals?.map((_, i) => (
+      {intervals?.map((interval, i) => (
         <TimeIntervalField
           key={i}
           name={`intervals[${i}]`}
           onDelete={() => deleteInterval(i)}
           dark={i % 2 === 1}
+          disableUpdate={checkInterval(interval, bookedIntervals)}
         />
       ))}
       <div className="flex justify-center items-center">

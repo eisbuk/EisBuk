@@ -12,10 +12,12 @@ import { testId } from "@eisbuk/testing/testIds";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
+const mockSelector = vi.fn().mockImplementation(() => {});
 
 vi.mock("react-redux", () => ({
   ...vi.importActual("react-redux"),
   useDispatch: () => mockDispatch,
+  useSelector: () => mockSelector,
 }));
 
 vi.mock("react-router-dom", () => ({
@@ -72,6 +74,7 @@ describe("SlotCard", () => {
       expect(mockDispatchCallPayload.props).toEqual({
         date: baseSlot.date,
         slotToEdit: baseSlot,
+        slotAttendances: mockSelector,
       });
     });
 

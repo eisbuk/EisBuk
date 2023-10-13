@@ -46,5 +46,17 @@ describe("'SlotForm',", () => {
       screen.getByTestId(testId("delete-interval-button")).click();
       expect(mockDelete).toHaveBeenCalled();
     });
+    test("should disable deleting or updating intervals", () => {
+      const mockDelete = vi.fn();
+      renderWithFormik(
+        <TimeIntervalField
+          {...baseProps}
+          onDelete={mockDelete}
+          disableUpdate={true}
+        />
+      );
+      screen.getByTestId(testId("delete-interval-button")).click();
+      expect(mockDelete).not.toHaveBeenCalled();
+    });
   });
 });

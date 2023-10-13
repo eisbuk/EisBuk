@@ -1,7 +1,11 @@
 import React from "react";
 import { Field, useField } from "formik";
 
-import { useTranslation, SlotFormAria } from "@eisbuk/translations";
+import {
+  useTranslation,
+  SlotFormAria,
+  SlotFormLabel,
+} from "@eisbuk/translations";
 import { Trash } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
@@ -9,6 +13,7 @@ import { testId } from "@eisbuk/testing/testIds";
 import TimePickerField from "./TimePickerField";
 import IconButton from "../../IconButton";
 import FormError from "../FormError";
+import HoverText from "../../HoverText";
 
 interface Props {
   /**
@@ -24,12 +29,25 @@ interface Props {
    * Input field name (used for Formik context: updating value etc.)
    */
   name: string;
+  /**
+   * Disable updating or deleting if booked
+   */
+  disableUpdate?: boolean;
 }
 
-const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
+const TimeIntervalField: React.FC<Props> = ({
+  onDelete,
+  dark,
+  name,
+  disableUpdate,
+}) => {
   const { t } = useTranslation();
 
   const colorClass = dark ? "bg-gray-50" : "";
+  const iconButtonColor = disableUpdate
+    ? "bg-gray-200"
+    : "bg-cyan-700 active:bg-cyan-600";
+  const cursor = disableUpdate ? "cursor-default" : "cursor-pointer";
 
   const [, { error }] = useField<string>(name);
 
@@ -47,6 +65,7 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
           aria-label={t(SlotFormAria.IntervalStart)}
           component={TimePickerField}
           error={Boolean(error)}
+          disabled={disableUpdate}
         />
         <Field
           key="endTime"
@@ -56,17 +75,33 @@ const TimeIntervalField: React.FC<Props> = ({ onDelete, dark, name }) => {
           aria-label={t(SlotFormAria.IntervalEnd)}
           component={TimePickerField}
           error={Boolean(error)}
+          disabled={disableUpdate}
         />
       </div>
       <IconButton
-        className="!w-14 !h-10 py-1.5 bg-cyan-700 active:bg-cyan-600 text-white"
+        className={[
+          "!w-14 !h-10 py-1.5 text-white",
+          iconButtonColor,
+          cursor,
+        ].join(" ")}
         data-testid={testId("delete-interval-button")}
         aria-label={t(SlotFormAria.DeleteInterval)}
         color="primary"
         onClick={onDelete}
         disableHover
+        disabled={disableUpdate}
       >
-        <Trash />
+        {disableUpdate ? (
+          <HoverText
+            className="contents bg-gray-200 font-medium border-r-2"
+            multiline="sm"
+            text={t(SlotFormLabel.DeleteIntervalDisabled)}
+          >
+            <Trash className="bg-gray-200 text-white" />
+          </HoverText>
+        ) : (
+          <Trash />
+        )}
       </IconButton>
 
       <FormError className="absolute bottom-2 left-1/2 -translate-x-1/2 whitespace-nowrap">

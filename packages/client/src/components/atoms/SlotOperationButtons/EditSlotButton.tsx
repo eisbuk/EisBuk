@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { useSelector } from "react-redux";
 
 import { Pencil } from "@eisbuk/svg";
 
@@ -11,6 +12,8 @@ import SlotOperationButton from "./SlotOperationButton";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import { createModal } from "@/features/modal/useModal";
+
+import { LocalStore } from "@/types/store";
 
 import {
   __editSlotButtonWrongContextError,
@@ -29,6 +32,11 @@ import {
  */
 export const EditSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
+  const slotAttendances = useSelector((state: LocalStore) =>
+    state.firestore.data.attendance && buttonGroupContext?.slot?.id
+      ? state.firestore.data.attendance[buttonGroupContext.slot.id].attendances
+      : {}
+  );
 
   const { openWithProps: openSlotForm } = useSlotFormModal();
 
@@ -53,6 +61,7 @@ export const EditSlotButton: React.FC = () => {
     openSlotForm({
       date: slot.date,
       slotToEdit: slot,
+      slotAttendances,
     });
   };
 

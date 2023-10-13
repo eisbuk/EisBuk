@@ -9,6 +9,7 @@ import {
   SlotInterfaceLoose,
   SlotInterval,
   SlotType,
+  SlotAttendnace,
 } from "@eisbuk/shared";
 import {
   useTranslation,
@@ -82,6 +83,10 @@ export interface SlotFormProps {
    * Propagate the submission and handle the logic outside the component.
    */
   onSubmit: (values: SlotInterfaceLoose) => void;
+  /**
+   * Attendances of this slot
+   */
+  slotAttendances?: SlotAttendnace["attendances"];
 }
 
 const SlotForm: React.FC<SlotFormProps> = ({
@@ -90,6 +95,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
   slotToEdit,
   onSubmit = () => {},
   onClose = () => {},
+  slotAttendances,
 }) => {
   const { t } = useTranslation();
 
@@ -219,7 +225,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
                   t(errors.categories)}
               </p>
 
-              <SlotIntervals />
+              <SlotIntervals slotAttendances={slotAttendances} />
 
               <FormField
                 name="notes"

@@ -28,7 +28,11 @@ import { defaultInterval, defaultSlotFormValues } from "../data";
 import SlotForm from "../SlotForm";
 
 import { testDate, testDateLuxon } from "@eisbuk/testing/date";
-import { baseSlot } from "@eisbuk/testing/slots";
+import {
+  baseSlot,
+  createIntervals,
+  slotAttendances,
+} from "@eisbuk/testing/slots";
 
 const baseProps = {
   date: testDate,
@@ -121,6 +125,23 @@ describe("SlotForm", () => {
     });
   });
 
+  describe("Test delete-disabled intervals", () => {
+    test("should not delete intervals if booked", () => {
+      render(
+        <SlotForm
+          {...baseProps}
+          slotToEdit={{ ...baseSlot, intervals: createIntervals(13) }}
+          slotAttendances={slotAttendances}
+        />
+      );
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
+      expect(intervalFields.length).toEqual(2);
+      screen.getByTestId(testId("delete-interval-button")).click();
+      expect(intervalFields.length).toEqual(2);
+    });
+  });
   describe("Test dialog button actions", () => {
     const mockOnClose = vi.fn();
     const mockOnSubmit = vi.fn();
