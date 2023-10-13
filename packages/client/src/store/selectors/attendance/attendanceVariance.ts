@@ -37,8 +37,8 @@ export const processAttendances = (
   slots: Slots,
   customers: Customers,
   month: string
-) => {
-  const final = wrapIter(Object.entries(attendance))
+) =>
+  wrapIter(Object.entries(attendance))
     // Get only current month's attendance
     .filter(([, attendance]) => filterAttendanceByMonth(month)(attendance))
     // Flatten the slot attendances so that we end up with iterable of { customerId => attendanceIntervalsWithSlotMeta } pairs
@@ -63,9 +63,6 @@ export const processAttendances = (
     .sort(compareCustomerNames)
     // After sorting, we can join customer name tuple into a string -> { name => Iterable<attendance> } pairs
     .map(keyMapper(joinCustomerName));
-
-  return final;
-};
 
 export const getMonthAttendanceVariance = (
   state: LocalStore
