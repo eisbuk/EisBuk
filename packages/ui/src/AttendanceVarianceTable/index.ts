@@ -1,4 +1,2 @@
-export {
-  default as AttendanceVarianceTable,
-  type DayAttendanceHours,
-} from "./AttendanceVarianceTable";
+export { default as AttendanceVarianceTable } from "./AttendanceVarianceTable";
+export * from "./types";

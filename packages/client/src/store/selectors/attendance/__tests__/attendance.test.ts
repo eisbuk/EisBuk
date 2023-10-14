@@ -1,13 +1,15 @@
 import { describe, expect, test } from "vitest";
-import { getNewStore } from "@/store/createStore";
+
+import { SlotType, SlotsById } from "@eisbuk/shared";
+
+import { testDateLuxon } from "@eisbuk/testing/date";
+import { jian, saul, gus } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
 
 import { getSlotsWithAttendance } from "../slotAttendance";
-import {
-  collectAttendanceByCustomer,
-  filterAttendanceByMonth,
-  flattenAndConvertAttendanceIntervals,
-  formatToTableData,
-} from "../attendanceVariance";
+import { processAttendances } from "../attendanceVariance";
+
+import { getNewStore } from "@/store/createStore";
 
 import {
   attendance,
@@ -15,8 +17,9 @@ import {
   attendanceSlotsByDay,
   expectedStruct,
 } from "../../__testData__/attendance";
-import { testDate, testDateLuxon } from "@eisbuk/testing/date";
-import { walt, jian, saul } from "@eisbuk/testing/customers";
+import { LocalStore } from "@/types/store";
+
+type Attendance = NonNullable<LocalStore["firestore"]["data"]["attendance"]>;
 
 describe("Selectors ->", () => {
   describe("Test 'getSlotsWithAttendance'", () => {
@@ -39,85 +42,160 @@ describe("Selectors ->", () => {
     });
   });
 
-  describe("Test 'getMonthAttendanceVariance'", () => {
-    const attendanceArr = Object.values(attendance!);
+  test("Test 'getMonthAttendanceVariance'", () => {
+    const slots = {
+      "slot-2": {
+        ...baseSlot,
+        date: "2022-03-01",
+        type: SlotType.Ice,
+      },
+      "slot-3": {
+        ...baseSlot,
+        date: "2022-03-01",
+        type: SlotType.Ice,
+        intervals: {
+          "18:00-20:00": {
+            startTime: "18:00",
+            endTime: "20:00",
+          },
+        },
+      },
+      "slot-4": {
+        ...baseSlot,
+        date: "2022-03-02",
+        type: SlotType.OffIce,
+      },
+      "slot-5": {
+        ...baseSlot,
+        date: "2022-03-02",
+        type: SlotType.Ice,
+      },
+    } as SlotsById;
 
-    test("should filter attendance collection by date", () => {
-      const currentMonthStr = testDateLuxon.toISODate().substring(0, 7);
-      const nextMonthStr = testDateLuxon
-        .plus({ month: 1 })
-        .toISODate()
-        .substring(0, 7);
+    const attendances: Attendance = {
+      // Previous month: should not end up in the final result
+      "slot-1": {
+        date: "2022-02-01",
+        attendances: {
+          [jian.id]: {
+            bookedInterval: "09:00-11:00",
+            attendedInterval: null,
+          },
+          [saul.id]: {
+            bookedInterval: "09:00-11:00",
+            attendedInterval: "09:00-11:00",
+          },
+        },
+      },
 
-      const currentMonthFilter = filterAttendanceByMonth(currentMonthStr);
-      const nextMonthFilter = filterAttendanceByMonth(nextMonthStr);
+      // Ice
+      "slot-2": {
+        date: "2022-03-01",
+        attendances: {
+          [saul.id]: {
+            bookedInterval: null,
+            attendedInterval: "09:00-11:00",
+          },
+        },
+      },
 
-      const currentMonth = attendanceArr.filter(currentMonthFilter);
-      const nextMonth = attendanceArr.filter(nextMonthFilter);
+      // Current month: should end up in the final result
+      // Belongs to the same day as slot-2, saul's attendance should be aggregated here
+      //
+      // Ice
+      "slot-3": {
+        date: "2022-03-01",
+        attendances: {
+          [jian.id]: {
+            bookedInterval: "18:00-20:00",
+            attendedInterval: null,
+          },
+          [saul.id]: {
+            bookedInterval: "18:00-20:00",
+            attendedInterval: "18:00-20:00",
+          },
+        },
+      },
 
-      // __testsData__/attendance => line 70 tests attendance records
-      expect(currentMonth.length).toBe(7);
-      expect(nextMonth.length).toBe(0);
-    });
+      // Off Ice
+      "slot-4": {
+        date: "2022-03-02",
+        attendances: {
+          [gus.id]: {
+            bookedInterval: "09:00-11:00",
+            attendedInterval: "09:00-11:00",
+          },
+          [saul.id]: {
+            bookedInterval: "09:00-11:00",
+            attendedInterval: "09:00-11:00",
+          },
+        },
+      },
 
-    test("should flatten SlotAttendance docs & convert interval stringss to numbers", () => {
-      const [singleSlotAttendanceDoc] = attendanceArr;
+      // Ice
+      "slot-5": {
+        date: "2022-03-02",
+        attendances: {
+          // The attendance shouldn't get accumulated for gus for the day as one slot is ice, whereas other is off-ice
+          [gus.id]: {
+            bookedInterval: "09:00-11:00",
+            attendedInterval: "09:00-11:00",
+          },
+        },
+      },
+    };
 
-      const [result] = [singleSlotAttendanceDoc].reduce(
-        flattenAndConvertAttendanceIntervals,
-        []
-      );
+    const customers = { jian, saul, gus };
+    const currentMonth = "2022-03";
 
-      expect(result).toHaveProperty("date");
-      expect(result).toHaveProperty("customerId");
-      expect(typeof result.attendedInterval).toBe("number");
-      expect(typeof result.bookedInterval).toBe("number");
-    });
+    const res = processAttendances(attendances, slots, customers, currentMonth);
 
-    test("should collect attendance by customer", () => {
-      // * Working only with "slot-0", and "slot-1" of /__testsData__/attendance => line 70 tests attendance records
-      const [attendanceDoc1, attendanceDoc2] = attendanceArr;
+    // Three customers
+    expect(res.length).toEqual(3);
 
-      const flatAttendanceRecords = [attendanceDoc1, attendanceDoc2].reduce(
-        flattenAndConvertAttendanceIntervals,
-        []
-      );
+    // Ordered by customer surname (alphabetically)
+    //
+    // Fring
+    expect(res[0][0]).toEqual(`${gus.name} ${gus.surname}`);
+    expect([...res[0][1]]).toEqual([
+      [
+        "2022-03-02",
+        {
+          [SlotType.Ice]: { booked: 2, attended: 2 },
+          [SlotType.OffIce]: { booked: 2, attended: 2 },
+        },
+      ],
+    ]);
 
-      const result = flatAttendanceRecords.reduce(
-        collectAttendanceByCustomer,
-        {}
-      );
+    // Goodman
+    expect(res[1][0]).toEqual(`${saul.name} ${saul.surname}`);
+    expect([...res[1][1]]).toEqual([
+      [
+        "2022-03-01",
+        {
+          [SlotType.Ice]: { booked: 2, attended: 4 },
+          [SlotType.OffIce]: { booked: 0, attended: 0 },
+        },
+      ],
+      [
+        "2022-03-02",
+        {
+          [SlotType.Ice]: { booked: 0, attended: 0 },
+          [SlotType.OffIce]: { booked: 2, attended: 2 },
+        },
+      ],
+    ]);
 
-      expect(result).toHaveProperty(walt.id);
-      expect(result).toHaveProperty(jian.id);
-      expect(result).toHaveProperty(saul.id);
-
-      const jiansAttendanceRecords = result[jian.id];
-      expect(jiansAttendanceRecords.length).toBe(2);
-    });
-
-    test("should format CustomerAttendanceRecords to TableData entries", () => {
-      // * Working only with "slot-0", and "slot-1" of /__testsData__/attendance => line 70 tests attendance records
-      const [attendanceDoc1, attendanceDoc2] = attendanceArr;
-
-      const customerAttendance = [attendanceDoc1, attendanceDoc2]
-        .reduce(flattenAndConvertAttendanceIntervals, [])
-        .reduce(collectAttendanceByCustomer, {});
-
-      const result = Object.entries(customerAttendance).map(
-        formatToTableData(attendanceCustomers)
-      );
-
-      const [firstEntry, secondEntry, thirdEntry] = result;
-
-      expect(result.length).toBe(3);
-      expect(firstEntry).toHaveProperty("athlete");
-      expect(firstEntry.hours).toHaveProperty(testDate);
-
-      // testDate attendance hours should now be collected as tuple: [booked, attended]
-      expect(firstEntry.hours[testDate]).toHaveLength(2);
-      expect(secondEntry.hours[testDate]).toHaveLength(2);
-      expect(thirdEntry.hours[testDate]).toHaveLength(2);
-    });
+    // Yang
+    expect(res[2][0]).toEqual(`${jian.name} ${jian.surname}`);
+    expect([...res[2][1]]).toEqual([
+      [
+        "2022-03-01",
+        {
+          [SlotType.Ice]: { booked: 2, attended: 0 },
+          [SlotType.OffIce]: { booked: 0, attended: 0 },
+        },
+      ],
+    ]);
   });
 });

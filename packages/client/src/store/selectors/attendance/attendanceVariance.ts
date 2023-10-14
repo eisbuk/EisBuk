@@ -1,63 +1,85 @@
-import { SlotAttendnace, Customer } from "@eisbuk/shared";
+/* eslint-disable @typescript-eslint/ban-types */
+import {
+  type SlotAttendnace,
+  wrapIter,
+  keyMapper,
+  valueMapper,
+  mergeMapper,
+  ID,
+  _reduce,
+  CustomerAttendance,
+  SlotInterface,
+  SlotType,
+  flatMap,
+} from "@eisbuk/shared";
+import {
+  AthleteAttendanceMonth,
+  AttendanceByDate,
+  AttendanceBySlotType,
+  AttendanceDurations,
+  DateAttendancePair,
+} from "@eisbuk/ui";
 
 import { LocalStore } from "@/types/store";
+
 import { getMonthStr, calculateIntervalDuration } from "@/utils/helpers";
-import { type DayAttendanceHours } from "@eisbuk/ui";
 
-interface AttendanceRecord extends CustomerAttendanceRecord {
-  customerId: string;
-}
+type CustomerNameTuple = [name: string, surname: string];
 
-interface CustomerAttendanceMap {
-  [customerId: string]: CustomerAttendanceRecord[];
-}
+type AttendanceDurationsWithType = AttendanceDurations & { slotType: SlotType };
 
-interface CustomerAttendanceRecord {
-  date: string;
-  attendedInterval: number;
-  bookedInterval: number;
-}
+type Attendance = NonNullable<LocalStore["firestore"]["data"]["attendance"]>;
+type Customers = NonNullable<LocalStore["firestore"]["data"]["customers"]>;
+type Slots = Record<string, SlotInterface>;
 
-interface CustomerAttendanceRow {
-  athleteSurname: string;
-  athlete: string;
-  hours: DayAttendanceHours;
-}
+export const processAttendances = (
+  attendance: Attendance,
+  slots: Slots,
+  customers: Customers,
+  month: string
+) =>
+  wrapIter(Object.entries(attendance))
+    // Get only current month's attendance
+    .filter(([, attendance]) => filterAttendanceByMonth(month)(attendance))
+    // Flatten the slot attendances so that we end up with iterable of { customerId => attendanceIntervalsWithSlotMeta } pairs
+    .flatMap(([slotId, { date, attendances }]) =>
+      // { customerId => attendanceIntervals } pairs
+      Object.entries(attendances).map(
+        valueMapper(mergeMapper({ date, slotType: slots[slotId].type }))
+      )
+    )
+    // { customerId => attendanceDurations } pairs
+    .map(valueMapper(convertIntervalsToDurations))
+    // { customerId => { date => attendanceDurations } } pairs
+    .map(valueMapper(datePairFromAttendance))
+    // Group by customer id -> { customerId => Iterable<attendanceDurations> } pairs
+    ._group(ID)
+    // Aggragate each customer's attendances by date
+    .map(valueMapper(aggregateAttendanceByDate))
+    .map((a) => a)
+    // Replace customer ids with customer name/surname (before sorting) -> { [name, surname] => Iterable<attendance> } pairs
+    .map(keyMapper(replaceCustomerIdWithName(customers)))
+    ._array()
+    .sort(compareCustomerNames)
+    // After sorting, we can join customer name tuple into a string -> { name => Iterable<attendance> } pairs
+    .map(keyMapper(joinCustomerName));
 
-export const getMonthAttendanceVariance = (state: LocalStore) => {
-  const {
-    app: { calendarDay },
-    firestore: {
-      data: { attendance = [], customers = {} },
-    },
-  } = state;
+export const getMonthAttendanceVariance = (
+  state: LocalStore
+): AthleteAttendanceMonth[] => {
+  const { app, firestore } = state;
+  const { calendarDay } = app;
+  const { attendance = {}, customers = {}, slotsByDay = {} } = firestore.data;
 
   const currentMonth = getMonthStr(calendarDay, 0);
-
-  const customerAttendance = Object.values(attendance)
-    .filter(filterAttendanceByMonth(currentMonth))
-    .reduce(flattenAndConvertAttendanceIntervals, [])
-    .reduce(collectAttendanceByCustomer, {});
-
-  const attendanceTableData = Object.entries(customerAttendance).map(
-    formatToTableData(customers)
+  const slots = Object.fromEntries(
+    flatMap(
+      Object.values(slotsByDay ? slotsByDay[currentMonth] : {}),
+      (slots) => Object.entries(slots)
+    )
   );
-  attendanceTableData.sort(compareTableLines);
 
-  return attendanceTableData;
-};
-
-const compareTableLines = (
-  first: CustomerAttendanceRow,
-  second: CustomerAttendanceRow
-) => {
-  if (first.athleteSurname > second.athleteSurname) {
-    return -1;
-  }
-  if (first.athleteSurname < second.athleteSurname) {
-    return 1;
-  }
-  return 0;
+  return processAttendances(attendance, slots, customers, currentMonth);
 };
 
 /**
@@ -69,80 +91,64 @@ export const filterAttendanceByMonth =
   (month: string) => (slotAttendance: SlotAttendnace) =>
     slotAttendance.date.substring(0, 7) === month;
 
-/**
- * Flattens nested `SlotAttendance.attendances`
- * and converts attendance interval strings | null to numbers
- * e.g:
- * `customerAttendance.reduce(flattenAndConvertAttendanceIntervals, [])`
- */
-export const flattenAndConvertAttendanceIntervals = (
-  acc: AttendanceRecord[],
-  { attendances, date }: SlotAttendnace
-) => {
-  const flatAttendanceIntervals = Object.entries(attendances).map(
-    ([customerId, { attendedInterval, bookedInterval }]) => ({
-      date,
-      customerId,
-      attendedInterval: calculateIntervalDuration(attendedInterval),
-      bookedInterval: calculateIntervalDuration(bookedInterval),
-    })
-  );
-  return [...acc, ...flatAttendanceIntervals];
-};
+export const replaceCustomerIdWithName =
+  (customerLookup: Customers) =>
+  (id: string): CustomerNameTuple =>
+    [customerLookup[id].name, customerLookup[id].surname];
+
+const compareCustomerNames = (
+  [[, a]]: [CustomerNameTuple, any],
+  [[, b]]: [CustomerNameTuple, any]
+) => (a > b ? 1 : -1);
+
+const joinCustomerName = (customer: CustomerNameTuple) => customer.join(" ");
 
 /**
- * Collect attendance records in a map by Customer ID
- *  e.g:
- * `customerAttendance.reduce(collectAttendanceByCustomer, {})`
+ * Converts customer attendance (record with `bookedInterval` and `attendedInterval` as string intervals, e.g. `"10:00-11:00"`)
+ * to attendance durations (record with `booked` and `attended` as hour durations)
  */
-export const collectAttendanceByCustomer = (
-  acc: CustomerAttendanceMap,
-  { customerId, ...attendanceRecord }: AttendanceRecord
-) => {
-  acc[customerId]
-    ? acc[customerId].push(attendanceRecord)
-    : (acc[customerId] = [attendanceRecord]);
+const convertIntervalsToDurations = <A extends CustomerAttendance>({
+  attendedInterval,
+  bookedInterval,
+  ...rest
+}: A): Omit<A, "bookedInterval" | "attendedInterval"> &
+  AttendanceDurations => ({
+  ...rest,
+  booked: calculateIntervalDuration(bookedInterval),
+  attended: calculateIntervalDuration(attendedInterval),
+});
 
-  return acc;
-};
+const datePairFromAttendance = <A extends { date: string }>({
+  date,
+  ...rest
+}: A): DateAttendancePair<Omit<A, "date">> => [date, rest];
 
-/**
- * Formats CustomerAttendance records as AttendanceVariance TableData entries by:
- * - mapping customerId to customer name
- * - reducing daily attendance to a single number
- * e.g:
- * `customerAttendance.map(formatToTableData(customers))`
- */
-export const formatToTableData =
-  (customers: Record<string, Customer>) =>
-  ([customerId, customerRecords]: [
-    customerId: string,
-    customerRecords: CustomerAttendanceRecord[]
-  ]): CustomerAttendanceRow => {
-    const athlete = `${customers[customerId]?.name} ${customers[customerId]?.surname}`;
-    const hours = customerRecords.reduce(collectCustomerDailyAttendance, {});
-    const athleteSurname = customers[customerId]?.surname;
+const aggregateAttendance = (
+  acc: AttendanceBySlotType,
+  { slotType, booked, attended }: AttendanceDurationsWithType
+) => ({
+  ...acc,
+  [slotType]: {
+    booked: acc[slotType].booked + booked,
+    attended: acc[slotType].attended + attended,
+  },
+});
 
-    return { athlete, hours, athleteSurname };
-  };
+const aggregateAttendanceEntries = (
+  attendances: Iterable<AttendanceDurationsWithType>
+): AttendanceBySlotType =>
+  _reduce(attendances, aggregateAttendance, {
+    [SlotType.Ice]: { booked: 0, attended: 0 },
+    [SlotType.OffIce]: { booked: 0, attended: 0 },
+  });
 
-/**
- * Reduce multiple customer attendance records for a day to a single number,
- * and collect by date in an object, e.g:
- * `customerAttendance.reduce(collectAttendanceByCustomer, {})`
- */
-const collectCustomerDailyAttendance = (
-  acc: DayAttendanceHours,
-  { date, bookedInterval, attendedInterval }: CustomerAttendanceRecord
-) => {
-  const dateEntry = acc[date];
-
-  if (dateEntry) {
-    const [booked, attended] = dateEntry;
-    acc[date] = [booked + bookedInterval, attended + attendedInterval];
-  } else {
-    acc[date] = [bookedInterval, attendedInterval];
-  }
-
-  return acc;
-};
+const aggregateAttendanceByDate = (
+  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>
+): AttendanceByDate =>
+  wrapIter(attendances)
+    // Group each pair by date:
+    // { date => attendanceDurations } -> { date => Iterable<attendanceDurations> } pairs
+    ._group(ID)
+    // Aggregate attendance data for each date:
+    // { date => Iterable<attendanceDurations> } -> { date => attendanceDurations } pairs (in this case, attendanceDurations are aggregated)
+    .map(valueMapper(aggregateAttendanceEntries));
