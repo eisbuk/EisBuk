@@ -40,7 +40,3 @@ export const defaultCustomerFormValues: Omit<CustomerFull, "secretKey" | "id"> =
   };
 
 // #endregion CustomerForm
-
-// #region PrivacyPolicy
-export const privacyPolicyLink = "Click here to check out our privacy policy.";
-// #endregion PrivacyPolicy

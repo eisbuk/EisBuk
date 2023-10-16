@@ -29,6 +29,7 @@ import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
 import SelfRegister from "@/pages/self_register";
+import PrivacyPolicy from "@/pages/privacy_policy";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 
@@ -118,6 +119,7 @@ const AppContent: React.FC = () => {
         <Route path={Routes.SelfRegister} component={SelfRegister} exact />
         <Route path={Routes.Debug} component={DebugPage} />
         <Route path={Routes.Deleted} component={Deleted} />
+        <Route path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
       </Switch>
 
       <div className="fixed z-50 bottom-1 left-1/2 -translate-x-1/2 content-container text-center">

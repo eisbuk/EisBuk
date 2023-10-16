@@ -80,6 +80,10 @@ export interface OrganizationData {
    * A short (and weak) secret used by new athletes for self registration
    */
   registrationCode?: string;
+  /**
+   * Data used for privacy policy compliance prompt (and the policy text iteslf)
+   */
+  privacyPolicy?: PrivacyPolicyParams;
 }
 
 export type EmailTemplate = {
