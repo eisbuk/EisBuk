@@ -246,6 +246,8 @@
 
     "CustomInterval": "Intervallo ad hoc",
 
+    "LearnMore": "Scopri di più",
+
     "Save": "Salva",
     "Back": "Indietro",
     "Next": "Seguente",
@@ -262,7 +264,8 @@
     "Edit": "Modifica",
     "Add": "Aggiungi",
     "Delete": "Elimina",
-    "Saving": "Salvataggio"
+    "Saving": "Salvataggio",
+    "Accept": "Accetta"
   },
 
   "Notification": {

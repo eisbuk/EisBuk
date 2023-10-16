@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 
 import { Collection, OrgSubCollection } from "@eisbuk/shared";
 import { Routes, PrivateRoutes } from "@eisbuk/shared/ui";
+import { DevWarning } from "@eisbuk/ui";
 import {
   CollectionSubscription,
   usePaginateFirestore,
@@ -15,6 +16,7 @@ import { getOrganization } from "@/lib/getters";
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Deleted from "@/components/auth/Deleted";
 import LoginRoute from "@/components/auth/LoginRoute";
+import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 
 import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
@@ -29,7 +31,6 @@ import AdminPreferencesPage from "@/pages/admin_preferences";
 import SelfRegister from "@/pages/self_register";
 
 import { getIsAdmin } from "@/store/selectors/auth";
-import { DevWarning } from "@eisbuk/ui";
 
 /**
  * All of the App content (including routes) wrapper.
@@ -120,6 +121,7 @@ const AppContent: React.FC = () => {
       </Switch>
 
       <div className="fixed z-50 bottom-1 left-1/2 -translate-x-1/2 content-container text-center">
+        <PrivacyPolicyToast />
         <DevWarning open={isDev} />
       </div>
     </>

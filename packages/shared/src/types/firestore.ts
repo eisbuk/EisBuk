@@ -8,6 +8,13 @@ import {
   DeliveryQueue,
 } from "../enums/firestore";
 
+export interface PrivacyPolicyParams {
+  prompt: string;
+  learnMoreLabel: string;
+  acceptLabel: string;
+  policy: string;
+}
+
 /**
  * Organization data record included in each organization (other than nested collections)
  */

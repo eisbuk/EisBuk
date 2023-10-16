@@ -2,31 +2,33 @@
 // in order to generate a PostCSS built css file next to the bundle
 import "./main.css";
 
-import EmptySpace from "./EmptySpace";
-import Fallback from "./Fallback";
-import NotificationToast from "./NotificationToast";
-import Button from "./Button";
-import SlotTypeIcon from "./SlotTypeIcon";
-import TabItem from "./TabItem";
-import CalendarNav from "./CalendarNav";
-import Layout from "./Layout";
-import IntervalCard from "./IntervalCard";
-import ActionDialog from "./ActionDialog";
-import IntervalCardGroup from "./IntervalCardGroup";
-import SlotsDayContainer from "./SlotsDayContainer";
-import BookingsCountdown from "./BookingsCountdown";
-import TextInput from "./TextInput";
-import DateInput from "./DateInput";
-import Checkbox from "./Checkbox";
-import HoverText from "./HoverText";
-import IconButton from "./IconButton";
-import TextareaEditable from "./TextareaEditable";
-import Table from "./Table";
-import PhoneInput from "./PhoneInput";
-import Dropdown, { DropdownFormik } from "./Dropdown";
-import CountryCodesDropdown, {
+export { default as EmptySpace } from "./EmptySpace";
+export { default as Fallback } from "./Fallback";
+export { default as NotificationToast } from "./NotificationToast";
+export { default as Button } from "./Button";
+export { default as SlotTypeIcon } from "./SlotTypeIcon";
+export { default as TabItem } from "./TabItem";
+export { default as CalendarNav } from "./CalendarNav";
+export { default as Layout } from "./Layout";
+export { default as IntervalCard } from "./IntervalCard";
+export { default as ActionDialog } from "./ActionDialog";
+export { default as IntervalCardGroup } from "./IntervalCardGroup";
+export { default as SlotsDayContainer } from "./SlotsDayContainer";
+export { default as BookingsCountdown } from "./BookingsCountdown";
+export { default as TextInput } from "./TextInput";
+export { default as DateInput } from "./DateInput";
+export { default as Checkbox } from "./Checkbox";
+export { default as HoverText } from "./HoverText";
+export { default as IconButton } from "./IconButton";
+export { default as TextareaEditable } from "./TextareaEditable";
+export { default as Table } from "./Table";
+export { default as PhoneInput } from "./PhoneInput";
+export { default as Dropdown, DropdownFormik } from "./Dropdown";
+export {
+  default as CountryCodesDropdown,
   CountryCodesDropdownFormik,
 } from "./CountryCodesDropdown";
+export { default as PrivacyPolicyToast } from "./PrivacyPolicyToast";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";
@@ -50,31 +52,3 @@ export * from "./SlotCard";
 export * from "./Forms/SlotForm";
 export * from "./AttendanceSheet";
 export * from "./AthletesApproval";
-
-export {
-  NotificationToast,
-  EmptySpace,
-  Fallback,
-  Button,
-  Layout,
-  TabItem,
-  CalendarNav,
-  SlotTypeIcon,
-  IntervalCard,
-  ActionDialog,
-  IntervalCardGroup,
-  SlotsDayContainer,
-  BookingsCountdown,
-  TextInput,
-  DateInput,
-  Checkbox,
-  HoverText,
-  IconButton,
-  TextareaEditable,
-  Table,
-  PhoneInput,
-  Dropdown,
-  DropdownFormik,
-  CountryCodesDropdown,
-  CountryCodesDropdownFormik,
-};
