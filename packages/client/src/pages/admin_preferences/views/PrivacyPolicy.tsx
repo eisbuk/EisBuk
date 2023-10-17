@@ -1,5 +1,8 @@
 import React from "react";
 import { useFormikContext } from "formik";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import ReactMarkdown from "react-markdown";
 
 import {

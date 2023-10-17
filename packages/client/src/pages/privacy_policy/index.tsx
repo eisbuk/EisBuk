@@ -1,7 +1,10 @@
 import React from "react";
-import ReactMarkdown from "react-markdown";
 import { useHistory } from "react-router-dom";
 import { useSelector } from "react-redux";
+
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import ReactMarkdown from "react-markdown";
 
 import { LayoutContent } from "@eisbuk/ui";
 import { defaultPrivacyPolicy } from "@eisbuk/shared/ui";
