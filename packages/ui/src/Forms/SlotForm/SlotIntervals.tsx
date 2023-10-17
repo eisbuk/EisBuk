@@ -1,7 +1,7 @@
 import React from "react";
 import { useField } from "formik";
 
-import { SlotAttendnace, SlotInterval } from "@eisbuk/shared";
+import { SlotInterval } from "@eisbuk/shared";
 import {
   useTranslation,
   SlotFormLabel,
@@ -14,9 +14,14 @@ import TimeIntervalField from "./TimeIntervalField";
 import { defaultInterval } from "./data";
 
 interface SlotIntervalProps {
-  slotAttendances?: SlotAttendnace["attendances"];
+  /**
+   * customers who booked intervals in this slot
+   */
+  bookedIntervalsCustomers?: { [interval: string]: string[] };
 }
-const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
+const SlotIntervals: React.FC<SlotIntervalProps> = ({
+  bookedIntervalsCustomers = {},
+}) => {
   const { t } = useTranslation();
 
   const [{ value: intervals }, , { setValue }] =
@@ -32,22 +37,23 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
     setValue(filteredIntervals);
   };
 
-  const bookedIntervals =
-    slotAttendances &&
-    Object.values(slotAttendances).reduce(
-      (acc, { bookedInterval }) => ({
-        ...acc,
-        [bookedInterval || ""]: bookedInterval,
-      }),
-      {}
-    );
   const checkInterval = (
     interval: SlotInterval,
-    bookedIntervals: Record<string, string> | undefined
+    bookedIntervalsCustomers: { [interval: string]: string[] }
   ): boolean => {
     return Boolean(
-      bookedIntervals &&
-        bookedIntervals[`${interval.startTime}-${interval.endTime}`]
+      bookedIntervalsCustomers &&
+        bookedIntervalsCustomers[`${interval.startTime}-${interval.endTime}`]
+    );
+  };
+
+  const getCustomersWhoBooked = (
+    interval: SlotInterval,
+    bookedIntervalsCustomers: { [interval: string]: string[] }
+  ) => {
+    return (
+      bookedIntervalsCustomers[`${interval.startTime}-${interval.endTime}`] ||
+      []
     );
   };
   return (
@@ -64,7 +70,11 @@ const SlotIntervals: React.FC<SlotIntervalProps> = ({ slotAttendances }) => {
           name={`intervals[${i}]`}
           onDelete={() => deleteInterval(i)}
           dark={i % 2 === 1}
-          disableUpdate={checkInterval(interval, bookedIntervals)}
+          disableUpdate={checkInterval(interval, bookedIntervalsCustomers)}
+          customersWhoBooked={getCustomersWhoBooked(
+            interval,
+            bookedIntervalsCustomers
+          )}
         />
       ))}
       <div className="flex justify-center items-center">

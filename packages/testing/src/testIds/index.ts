@@ -22,6 +22,7 @@ type TestIDList = [
   "select-type-field",
   "select-categories-field",
   "time-interval-field",
+  "hover-text",
   // #endregion SlotForm
 
   // #region ConfirmDialog

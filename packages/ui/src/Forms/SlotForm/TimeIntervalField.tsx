@@ -33,6 +33,10 @@ interface Props {
    * Disable updating or deleting if booked
    */
   disableUpdate?: boolean;
+  /**
+   * A list of customer who have booked to show on hover text
+   */
+  customersWhoBooked?: string[];
 }
 
 const TimeIntervalField: React.FC<Props> = ({
@@ -40,6 +44,7 @@ const TimeIntervalField: React.FC<Props> = ({
   dark,
   name,
   disableUpdate,
+  customersWhoBooked,
 }) => {
   const { t } = useTranslation();
 
@@ -95,7 +100,9 @@ const TimeIntervalField: React.FC<Props> = ({
           <HoverText
             className="contents bg-gray-200 font-medium border-r-2"
             multiline="sm"
-            text={t(SlotFormLabel.DeleteIntervalDisabled)}
+            text={` ${t(
+              SlotFormLabel.DeleteIntervalDisabled
+            )}: ${customersWhoBooked?.join(", ")}`}
           >
             <Trash className="bg-gray-200 text-white" />
           </HoverText>
