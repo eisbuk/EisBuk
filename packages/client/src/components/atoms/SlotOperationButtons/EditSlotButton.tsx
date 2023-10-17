@@ -5,7 +5,7 @@ import { Pencil } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
 
-import { getBookedIntervalsCustomers } from "@/store/selectors/bookings/slots";
+import { getBookedIntervalsCustomers } from "@/store/selectors/attendance";
 
 import { ButtonContextType } from "@/enums/components";
 

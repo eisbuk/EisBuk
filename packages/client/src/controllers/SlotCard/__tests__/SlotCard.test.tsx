@@ -12,7 +12,10 @@ import { testId } from "@eisbuk/testing/testIds";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 const mockDispatch = vi.fn();
-const mockSelector = vi.fn().mockImplementation(() => {});
+const mockSelector = vi.fn().mockImplementation(() => ({
+  "13:00-13:50": ["customer-id-1"],
+  "14:00-14:50": ["customer-id-2"],
+}));
 
 vi.mock("react-redux", () => ({
   ...vi.importActual("react-redux"),
@@ -74,7 +77,7 @@ describe("SlotCard", () => {
       expect(mockDispatchCallPayload.props).toEqual({
         date: baseSlot.date,
         slotToEdit: baseSlot,
-        slotAttendances: mockSelector,
+        bookedIntervalsCustomers: mockSelector,
       });
     });
 
