@@ -94,7 +94,11 @@ export type EmailTemplate = {
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,
-  "displayName" | "location" | "emailFrom" | "defaultCountryCode"
+  | "displayName"
+  | "location"
+  | "emailFrom"
+  | "defaultCountryCode"
+  | "privacyPolicy"
 >;
 
 // #endregion organizations

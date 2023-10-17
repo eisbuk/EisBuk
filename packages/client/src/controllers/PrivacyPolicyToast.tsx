@@ -6,6 +6,7 @@ import { Routes } from "@eisbuk/shared/ui";
 import { PrivacyPolicyToast as Toast } from "@eisbuk/ui";
 
 import { getIsAdmin } from "@/store/selectors/auth";
+import { getPrivacyPolicy } from "@/store/selectors/orgInfo";
 
 const PrivacyPolicyToast: React.FC = () => {
   const history = useHistory();
@@ -17,10 +18,12 @@ const PrivacyPolicyToast: React.FC = () => {
     [location.pathname]
   );
   const isAdmin = useSelector(getIsAdmin);
+  const policyParams = useSelector(getPrivacyPolicy);
 
   return (
     <Toast
       show={!accepted && !isAdmin && !isPrivacyPolicyRoute}
+      policyParams={policyParams}
       onLearnMore={() => history.push(Routes.PrivacyPolicy)}
       onAccept={() => setAccepted(true)}
     />

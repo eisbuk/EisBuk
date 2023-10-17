@@ -405,12 +405,19 @@ describe("Cloud functions -> Data triggers ->", () => {
           smsTemplates,
           existingSecrets: ["authToken", "exampleSecret"],
           emailBcc: "gus@lospollos.hermanos",
+          privacyPolicy: {
+            prompt: "Do you accept",
+            learnMoreLabel: "Take the blue pill",
+            acceptLabel: "Take the red pill",
+            policy: "Wake up Neo, the Matrix has you!",
+          },
         };
 
         // use random string for organization to ensure test is ran in pristine environment each time
         // but avoid `setUpOrganization()` as we want to set up organization ourselves
         const organization = uuid();
-        const { displayName, location, emailFrom } = organizationData;
+        const { displayName, location, emailFrom, privacyPolicy } =
+          organizationData;
 
         const publicOrgPath = `${Collection.PublicOrgInfo}/${organization}`;
         const orgPath = `${Collection.Organizations}/${organization}`;
@@ -426,7 +433,12 @@ describe("Cloud functions -> Data triggers ->", () => {
         // check for publicOrgInfo
         await waitFor(async () => {
           const snap = await adminDb.doc(publicOrgPath).get();
-          expect(snap.data()).toEqual({ displayName, location, emailFrom });
+          expect(snap.data()).toEqual({
+            displayName,
+            location,
+            emailFrom,
+            privacyPolicy,
+          });
         });
 
         // test non existence of publicOrgInfo after organization is deleted

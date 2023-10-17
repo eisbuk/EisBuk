@@ -1,11 +1,14 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
 import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 import { LayoutContent } from "@eisbuk/ui";
 import { defaultPrivacyPolicy } from "@eisbuk/shared/ui";
 import { ChevronLeft } from "@eisbuk/svg";
 import { ActionButton, useTranslation } from "@eisbuk/translations";
+
+import { getPrivacyPolicy } from "@/store/selectors/orgInfo";
 
 import Layout from "@/controllers/Layout";
 
@@ -15,6 +18,10 @@ import Layout from "@/controllers/Layout";
 const CustomerArea: React.FC = () => {
   const { t } = useTranslation();
   const history = useHistory();
+
+  const { policy } = useSelector(getPrivacyPolicy) || {
+    policy: defaultPrivacyPolicy,
+  };
 
   const back = () => history.goBack();
 
@@ -32,9 +39,7 @@ const CustomerArea: React.FC = () => {
             <span className="align-middle">{t(ActionButton.Back)}</span>
           </button>
 
-          <ReactMarkdown className="privacy-policy-md">
-            {defaultPrivacyPolicy}
-          </ReactMarkdown>
+          <ReactMarkdown className="privacy-policy-md">{policy}</ReactMarkdown>
         </div>
       </LayoutContent>
     </Layout>
