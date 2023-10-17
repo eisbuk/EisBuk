@@ -6,49 +6,26 @@ import {
   DateFormat,
   AttendanceVarianceHeaders,
 } from "@eisbuk/translations";
+import { SlotType, wrapIter } from "@eisbuk/shared";
+
+import { AthleteAttendanceMonth } from "./types";
 
 import Table, { TableCell, CellType, CellTextAlign } from "../Table";
 import VarianceBadge from "./VarianceBadge";
-import {
-  padEmptyDates,
-  calculateDeltas,
-  calculateTotals,
-  collectDatesByHoursType,
-  isWeekend,
-  type HoursTuple,
-} from "./utils";
+import SlotTypeIcon from "../SlotTypeIcon";
 
-export enum HoursType {
-  Booked = "booked",
-  Attended = "attended",
-  Delta = "delta",
-}
-
-export interface DayAttendanceHours {
-  [dateStr: string]: HoursTuple;
-}
-
-export interface TableData {
-  athlete: string;
-  hours: DayAttendanceHours;
-}
+import { isWeekend, calculateDelta, createRowGenerator } from "./utils";
 
 interface TableProps {
   dates: string[];
-  data: TableData[];
-}
-
-interface RowItem {
-  athlete: string;
-  [dateStr: string]: string | number | null;
-  total: number;
-  type: HoursType;
+  data: Iterable<AthleteAttendanceMonth>;
 }
 
 interface RowContent {
   cellItem: string | number | boolean | null;
   date: string;
   itemIx: number;
+  slotType: SlotType;
   classes?: string;
 }
 
@@ -70,7 +47,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     total: t(AttendanceVarianceHeaders.Total),
   };
 
-  const items = getTableItems(dates, data);
+  const items = generateTableRows(dates, data);
 
   return (
     <div className="flex flex-col">
@@ -99,21 +76,29 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                 </tr>
               )}
               renderRow={(rowItem, rowIx, itemArr) => {
-                const { type: rowType, ...data } = rowItem;
+                const { type: rowType, slotType, ...data } = rowItem;
 
-                const rowClasses = rowIx % 2 === 0 ? undefined : "bg-white";
+                const rowClasses =
+                  slotType === SlotType.Ice
+                    ? rowIx % 2 === 0
+                      ? "bg-cyan-200/30"
+                      : "bg-cyan-100/30"
+                    : rowIx % 2 === 0
+                    ? "bg-yellow-200/30"
+                    : "bg-yellow-100/30";
                 const cellClasses =
                   rowIx === itemArr.length - 1 ? undefined : "border-b-2";
 
                 return (
                   <tr key={rowIx} className={rowClasses}>
                     {Object.entries(data).map(([date, cellItem], itemIx) =>
-                      rowType === HoursType.Booked ? (
+                      rowType === "booked" ? (
                         <BookedRowCells
                           key={`${date}-${cellItem}`}
                           cellItem={cellItem}
                           itemIx={itemIx}
                           date={date}
+                          slotType={slotType}
                         />
                       ) : (
                         <DeltaRowCells
@@ -122,6 +107,7 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                           itemIx={itemIx}
                           date={date}
                           classes={cellClasses}
+                          slotType={slotType}
                         />
                       )
                     )}
@@ -138,30 +124,42 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
 
 export default AttendanceReportTable;
 
-const getTableItems = (dates: string[], data: TableData[]) => {
-  return data.reduce<RowItem[]>((acc, { athlete, hours: _hours }) => {
-    const hours = padEmptyDates(dates, _hours);
-    const hoursWithDeltas = calculateDeltas(hours);
+const generateTableRows = (
+  dates: Iterable<string>,
+  data: Iterable<AthleteAttendanceMonth>
+) => {
+  const generateRow = createRowGenerator(dates);
 
-    const [totalBooked, , totalDelta] = calculateTotals(hoursWithDeltas);
-    const { booked, delta } = collectDatesByHoursType(hoursWithDeltas);
-
-    const athleteBooked: RowItem = {
-      type: HoursType.Booked,
-      athlete,
-      ...booked,
-      total: totalBooked,
-    };
-    const athleteDelta: RowItem = {
-      type: HoursType.Delta,
-      athlete,
-      ...delta,
-      total: totalDelta,
-    };
-
-    // Note: Returns alternating Booked-Delta rows for each athlete
-    return [athleteBooked, athleteDelta, ...acc];
-  }, []);
+  // We're genrating a couple rows for each athlete and then flattening them
+  // to end up with a flat array of rows
+  return wrapIter(data)
+    .flatMap((data) => [
+      generateRow(
+        "booked",
+        SlotType.Ice,
+        data,
+        ({ [SlotType.Ice]: { booked } }) => booked
+      ),
+      generateRow(
+        "delta",
+        SlotType.Ice,
+        data,
+        calculateDelta((data) => data[SlotType.Ice])
+      ),
+      generateRow(
+        "booked",
+        SlotType.OffIce,
+        data,
+        ({ [SlotType.OffIce]: { booked } }) => booked
+      ),
+      generateRow(
+        "delta",
+        SlotType.OffIce,
+        data,
+        calculateDelta((data) => data[SlotType.OffIce])
+      ),
+    ])
+    ._array();
 };
 
 const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
@@ -169,12 +167,12 @@ const BookedRowCells: React.FC<RowContent> = ({ cellItem, itemIx, date }) =>
     <TableCell type={CellType.Title} className={stickyCellClasses.join(" ")}>
       <p className="inline-block w-32 truncate ...">
         {cellItem}
-        <span className="sr-only">{HoursType.Booked}</span>
+        <span className="sr-only">booked</span>
       </p>
     </TableCell>
   ) : (
     <TableCell textAlign={CellTextAlign.Center} isWaypoint={isWeekend(date)}>
-      <p className="leading-6">{cellItem === 0 ? "-" : `${cellItem}h`}</p>
+      <p className="leading-6">{cellItem === null ? "-" : `${cellItem}h`}</p>
     </TableCell>
   );
 
@@ -183,13 +181,15 @@ const DeltaRowCells: React.FC<RowContent> = ({
   itemIx,
   date,
   classes,
+  slotType,
 }) =>
   itemIx === 0 ? (
     <TableCell
       type={CellType.Title}
       className={`${classes} ${stickyCellClasses.join(" ")}`}
     >
-      <p className="sr-only">{`${cellItem} ${HoursType.Delta}`}</p>
+      <SlotTypeIcon type={slotType} />
+      <p className="sr-only">{`${cellItem} delta`}</p>
     </TableCell>
   ) : (
     <TableCell
