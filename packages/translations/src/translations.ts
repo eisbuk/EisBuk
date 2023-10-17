@@ -329,6 +329,8 @@ export enum NotificationMessage {
   SelfRegSuccess = "Notification.SelfRegSuccess",
   SelfRegError = "Notification.SelfRegError",
 
+  SelectionSaved = "Notification.SelectionSaved",
+
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileUpdated",
   CustomerUpdated = "Notification.CustomerUpdated",

@@ -306,6 +306,9 @@
 
     "SelfRegSuccess": "Registration successful",
     "SelfRegError": "Error registering",
+
+    "SelectionSaved": "Selection saved",
+
     "CustomerProfileUpdated": "Profile Updated",
     "CustomerProfileError": "Error updating profile",
     "CustomerUpdated": "Customer Profile Updated: {{ name }} {{ surname }}",

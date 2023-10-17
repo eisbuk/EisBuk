@@ -16,7 +16,6 @@ import { getOrganization } from "@/lib/getters";
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import Deleted from "@/components/auth/Deleted";
 import LoginRoute from "@/components/auth/LoginRoute";
-import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 
 import AttendancePage from "@/pages/attendance";
 import AthletesPage from "@/pages/customers";
@@ -123,7 +122,6 @@ const AppContent: React.FC = () => {
       </Switch>
 
       <div className="fixed z-50 bottom-1 left-1/2 -translate-x-1/2 content-container text-center">
-        <PrivacyPolicyToast />
         <DevWarning open={isDev} />
       </div>
     </>

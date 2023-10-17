@@ -227,6 +227,9 @@ export interface CustomerBase {
   birthday?: string;
   certificateExpiration?: string;
   photoURL?: string;
+  privacyPolicyAccepted?: {
+    timestamp: string;
+  };
 }
 /**
  * A standard customer entry available to both the customer themself as well as to the admin's full profile view
