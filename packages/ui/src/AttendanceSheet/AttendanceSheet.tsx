@@ -1,11 +1,6 @@
 import React from "react";
-import { DateTime } from "luxon";
 
-import i18n, {
-  useTranslation,
-  DateFormat,
-  PrintableAttendance,
-} from "@eisbuk/translations";
+import i18n, { PrintableAttendance } from "@eisbuk/translations";
 import { CustomerWithAttendance, SlotType } from "@eisbuk/shared";
 
 import Table from "../Table";
@@ -20,7 +15,7 @@ interface RowItem {
   note: string;
   trainer: string;
   athlete: string;
-  signature: string;
+  athleteSurname: string;
   personalNote: string;
 }
 
@@ -32,7 +27,6 @@ const headers = {
   note: i18n.t(PrintableAttendance.Note),
   trainer: i18n.t(PrintableAttendance.Trainer),
   athlete: i18n.t(PrintableAttendance.Athlete),
-  signature: i18n.t(PrintableAttendance.Signature),
   personalNote: i18n.t(PrintableAttendance.Note),
 };
 
@@ -43,28 +37,12 @@ interface TableDataEntry {
 }
 
 export interface AttendanceSheetProps {
-  date: DateTime;
-  organizationName?: string;
   data: TableDataEntry[];
 }
 
-const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
-  date,
-  data,
-  organizationName = "",
-}) => {
-  const { t } = useTranslation();
-
+const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
   return (
     <div className="w-full">
-      <h2 className="flex justify-center items-center print:m-0">
-        {organizationName}
-      </h2>
-
-      <div className="py-2 bg-gray-800 font-semibold text-center text-white">
-        {`${t(DateFormat.Date)}: ${t(DateFormat.FullWithWeekday, { date })}`}
-      </div>
-
       <Table
         headers={headers}
         items={processTableData(data)}
@@ -75,36 +53,66 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
               .map((label) => (
-                <th className="p-1 border border-gray-200 min-w-[3rem]">
+                <th className="p-1 border border-l- border-gray-200 min-w-[3rem]">
                   {label}
                 </th>
               ))}
           </tr>
         )}
         renderRow={(rowData, rowIx) => (
-          <tr
-            key={rowIx}
-            className={`p-0 max-w-full border border-gray-200 text-center`}
-          >
-            {Object.entries(rowData).map(([key, data]) => (
-              <td
-                style={{ printColorAdjust: "exact" }}
-                className="min-w-[3rem] max-w-[7rem] p-1 bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
-              >
-                {key === "type" ? (
-                  <span
-                    className={`px-2 py-0.5 ${
-                      data === SlotType.Ice ? "bg-cyan-100" : "bg-yellow-100"
-                    } rounded-lg print:font-normal print:bg-none`}
-                  >
-                    {data}
-                  </span>
-                ) : (
-                  data
-                )}
-              </td>
-            ))}
-          </tr>
+          <>
+            <tr
+              key={rowIx}
+              className={`p-0 max-w-full border border-gray-200 text-center`}
+            >
+              {/* Skip the athleteSurname column */}
+              {Object.entries(rowData).map(
+                ([key, data]) =>
+                  key !== "athleteSurname" && (
+                    <td
+                      style={{ printColorAdjust: "exact" }}
+                      className="min-w-[3rem] max-w-[7rem] p-1 bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
+                    >
+                      {key === "type" ? (
+                        <span
+                          className={`px-2 py-0.5 ${
+                            data === SlotType.Ice
+                              ? "bg-cyan-100"
+                              : "bg-yellow-100"
+                          } rounded-lg print:font-normal print:bg-none`}
+                        >
+                          {data}
+                        </span>
+                      ) : key === "athlete" ? (
+                        <tr>
+                          <td className="min-w-[4.25rem] max-w-0 truncate print:text-black">
+                            {data}
+                          </td>
+                          <td className="max-w-0 print:text-black font-bold">
+                            {rowData["athleteSurname"]}
+                          </td>
+                        </tr>
+                      ) : (
+                        data
+                      )}
+                    </td>
+                  )
+              )}
+            </tr>
+            <tr className={`p-0 max-w-full border border-gray-200`}>
+              {Object.keys(rowData).map(
+                (key) =>
+                  key !== "athleteSurname" && (
+                    <td
+                      style={{ printColorAdjust: "exact" }}
+                      className="p-1 bg-inherit truncate"
+                    >
+                      &nbsp;
+                    </td>
+                  )
+              )}
+            </tr>
+          </>
         )}
       />
     </div>
@@ -127,9 +135,9 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           totalHours,
           note: notes,
           trainer: "",
-          athlete: `${name} ${surname}`,
+          athlete: name,
+          athleteSurname: surname,
           personalNote: "",
-          signature: "",
         } as RowItem;
       });
     return [...acc, ...newRows];
