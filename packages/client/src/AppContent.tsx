@@ -11,6 +11,8 @@ import {
   useFirestoreSubscribe,
 } from "@eisbuk/react-redux-firebase-firestore";
 
+import { __isDevStrict__ } from "@/lib/constants";
+
 import { getOrganization } from "@/lib/getters";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
@@ -60,7 +62,10 @@ const AppContent: React.FC = () => {
     document.querySelector("p.firebase-emulator-warning")?.remove();
   }, []);
 
-  const isDev = process.env.NODE_ENV === "development";
+  // We're showing the emulators warning strictly in "development" mode,
+  // not in test mode (which can loosely be considered dev mode) so as to not obscure the
+  // parts of the UI in cypress tests.
+  const showEmulatorsWarining = __isDevStrict__;
 
   return (
     <>
@@ -122,7 +127,7 @@ const AppContent: React.FC = () => {
       </Switch>
 
       <div className="fixed z-50 bottom-1 left-1/2 -translate-x-1/2 content-container text-center">
-        <DevWarning open={isDev} />
+        <DevWarning open={showEmulatorsWarining} />
       </div>
     </>
   );

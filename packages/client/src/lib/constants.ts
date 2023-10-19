@@ -17,6 +17,8 @@ export const __isStorybook__ = Boolean(process.env.STORYBOOK_IS_STORYBOOK);
 
 // env info variable (production, test, etc)
 export const __isDev__ = __buildEnv__ !== "production";
+// check for explicit "development" environment (excluding test, which, in looser definition, is also a development environment)
+export const __isDevStrict__ = __buildEnv__ === "development";
 // check for explicit "test" environment
 export const __isTest__ = __buildEnv__ === "test";
 
