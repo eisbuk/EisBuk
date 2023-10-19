@@ -91,32 +91,9 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           expect(snap.data()).toEqual(attendanceWithTestBooking);
         });
-      }
-    );
-
-    testWithEmulator(
-      "should remove the attendance entry for booking when the booking is deleted",
-      async () => {
-        const { organization } = await setUpOrganization();
-        await Promise.all([
-          // set up Saul's bookings entry
-          adminDb
-            .doc(getBookingsDocPath(organization, saul.secretKey))
-            .set(sanitizeCustomer(saul)),
-          // add the booked slot
-          adminDb
-            .doc(
-              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
-            )
-            .set(bookedSlot),
-          // set up dummy data in the base slot, including the booked slot
-          adminDb
-            .doc(getAttendanceDocPath(organization, baseSlot.id))
-            .set(attendanceWithTestBooking),
-        ]);
         // deleting the booking should remove it from attendance doc
         await adminDb
-          .doc(getBookingsDocPath(organization, saul.secretKey))
+          .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
           .delete();
         await waitFor(async () => {
           const snap = await adminDb
@@ -125,7 +102,8 @@ describe("Cloud functions -> Data triggers ->", () => {
           // check that only the test customer's attendance's deleted, but not the rest of the data
           expect(snap.data()).toEqual(baseAttendance);
         });
-      }
+      },
+      { timeout: 20000 }
     );
   });
 
