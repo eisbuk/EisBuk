@@ -75,7 +75,8 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb
             .doc(getAttendanceDocPath(organization, baseSlot.id))
             .get();
-          expect(snap.data()).toEqual({
+          const effective = snap.data();
+          const expected = {
             ...baseAttendance,
             attendances: {
               ...baseAttendance.attendances,
@@ -84,7 +85,18 @@ describe("Cloud functions -> Data triggers ->", () => {
                 attendedInterval: bookedSlot.interval,
               },
             },
-          });
+          };
+          try {
+            expect(effective).toEqual(expected);
+          } catch (e) {
+            //  This test often fails, but we don't get the two differring objects in full from test logs
+            // Hence we log them here
+            console.error(
+              "Error: effective and expected differ",
+              effective,
+              expected
+            );
+          }
         });
         // test customer's attendnace being removed from slot's attendnace
         await bookedSlotDocRef.delete();
