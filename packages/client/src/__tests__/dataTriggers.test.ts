@@ -40,54 +40,84 @@ const testMonth = testDate.substring(0, 7);
 
 describe("Cloud functions -> Data triggers ->", () => {
   describe("createAttendanceForBooking", () => {
+    const baseAttendance = {
+      date: baseSlot.date,
+      attendances: {
+        ["dummy-customer"]: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[1],
+        },
+      },
+    };
+
+    const bookedSlot = {
+      data: baseSlot.date,
+      interval: Object.keys(baseSlot.intervals)[0],
+    };
+
+    const attendanceWithTestBooking = {
+      ...baseAttendance,
+      attendances: {
+        ...baseAttendance.attendances,
+        [saul.id]: {
+          bookedInterval: bookedSlot.interval,
+          attendedInterval: bookedSlot.interval,
+        },
+      },
+    };
+
     testWithEmulator(
       "should create attendance entry for booking and not overwrite existing data in slot",
       async () => {
         const { organization } = await setUpOrganization();
-        // set up Saul's bookings entry
-        await adminDb
-          .doc(getBookingsDocPath(organization, saul.secretKey))
-          .set(sanitizeCustomer(saul));
-        // set up dummy data in the base slot, not to be overwritten by Saul's attendance
-        const baseAttendance = {
-          date: baseSlot.date,
-          attendances: {
-            ["dummy-customer"]: {
-              bookedInterval: Object.keys(baseSlot.intervals)[0],
-              attendedInterval: Object.keys(baseSlot.intervals)[1],
-            },
-          },
-        };
-        await adminDb
-          .doc(getAttendanceDocPath(organization, baseSlot.id))
-          .set(baseAttendance);
+        await Promise.all([
+          // set up Saul's bookings entry
+          adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .set(sanitizeCustomer(saul)),
+          // set up dummy data in the base slot, not to be overwritten by Saul's attendance
+          adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .set(baseAttendance),
+        ]);
         // add new booking trying to trigger attendance entry
-        const bookedSlotDocRef = adminDb.doc(
-          getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
-        );
-        const bookedSlot = {
-          data: baseSlot.date,
-          interval: Object.keys(baseSlot.intervals)[0],
-        };
-        await bookedSlotDocRef.set(bookedSlot);
+        await adminDb
+          .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+          .set(bookedSlot);
         // check proper updates triggerd by write to bookings
         await waitFor(async () => {
           const snap = await adminDb
             .doc(getAttendanceDocPath(organization, baseSlot.id))
             .get();
-          expect(snap.data()).toEqual({
-            ...baseAttendance,
-            attendances: {
-              ...baseAttendance.attendances,
-              [saul.id]: {
-                bookedInterval: bookedSlot.interval,
-                attendedInterval: bookedSlot.interval,
-              },
-            },
-          });
+          expect(snap.data()).toEqual(attendanceWithTestBooking);
         });
-        // test customer's attendnace being removed from slot's attendnace
-        await bookedSlotDocRef.delete();
+      }
+    );
+
+    testWithEmulator(
+      "should remove the attendance entry for booking when the booking is deleted",
+      async () => {
+        const { organization } = await setUpOrganization();
+        await Promise.all([
+          // set up Saul's bookings entry
+          adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .set(sanitizeCustomer(saul)),
+          // add the booked slot
+          adminDb
+            .doc(
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            )
+            .set(bookedSlot),
+          // set up dummy data in the base slot, including the booked slot
+          adminDb
+            .doc(getAttendanceDocPath(organization, baseSlot.id))
+            .set(attendanceWithTestBooking),
+        ]);
+        // deleting the booking should remove it from attendance doc
+        await adminDb
+          .doc(getBookingsDocPath(organization, saul.secretKey))
+          .delete();
         await waitFor(async () => {
           const snap = await adminDb
             .doc(getAttendanceDocPath(organization, baseSlot.id))
