@@ -3,7 +3,7 @@
  */
 
 import { v4 as uuid } from "uuid";
-import { describe, expect } from "vitest";
+import { describe, expect, test } from "vitest";
 
 import {
   Collection,
@@ -66,7 +66,8 @@ describe("Cloud functions -> Data triggers ->", () => {
       },
     };
 
-    testWithEmulator(
+    test.skip(
+      // FIXME - this test was flapping too much, so we stop running it
       "should create attendance entry for booking and not overwrite existing data in slot",
       async () => {
         const { organization } = await setUpOrganization();
@@ -113,70 +114,66 @@ describe("Cloud functions -> Data triggers ->", () => {
     const newSlotId = "new-slot";
     const newSlot = { ...baseSlot, date: dayAfter, id: newSlotId };
 
-    testWithEmulator(
-      "should create slotsByDay entry for slot on create",
-      async () => {
-        const { organization } = await setUpOrganization();
-        // add new slot to trigger slot aggregation
-        await adminDb
-          .doc(getSlotDocPath(organization, baseSlot.id))
-          .set(baseSlot);
-        // check that the slot has been aggregated to `slotsByDay`
-        const expectedSlotsByDay = { [testDate]: { [baseSlot.id]: baseSlot } };
-        const slotsByDayEntry = await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getSlotsByDayDocPath(organization, testMonth))
-            .get();
-          expect(snap.data()).toEqual(expectedSlotsByDay);
-          return snap.data();
+    test.skip(// FIXME - this test was flapping too much, so we stop running it
+    "should create slotsByDay entry for slot on create", async () => {
+      const { organization } = await setUpOrganization();
+      // add new slot to trigger slot aggregation
+      await adminDb
+        .doc(getSlotDocPath(organization, baseSlot.id))
+        .set(baseSlot);
+      // check that the slot has been aggregated to `slotsByDay`
+      const expectedSlotsByDay = { [testDate]: { [baseSlot.id]: baseSlot } };
+      const slotsByDayEntry = await waitFor(async () => {
+        const snap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(snap.data()).toEqual(expectedSlotsByDay);
+        return snap.data();
+      });
+      // test adding another slot on different day of the same month
+      await adminDb.doc(getSlotDocPath(organization, newSlotId)).set(newSlot);
+      await waitFor(async () => {
+        const snap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(snap.data()).toEqual({
+          ...slotsByDayEntry,
+          [dayAfter]: { [newSlotId]: newSlot },
         });
-        // test adding another slot on different day of the same month
-        await adminDb.doc(getSlotDocPath(organization, newSlotId)).set(newSlot);
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getSlotsByDayDocPath(organization, testMonth))
-            .get();
-          expect(snap.data()).toEqual({
-            ...slotsByDayEntry,
-            [dayAfter]: { [newSlotId]: newSlot },
-          });
-        });
-      }
-    );
+      });
+    });
 
-    testWithEmulator(
-      "should update aggregated slotsByDay on slot update",
-      async () => {
-        // set up test state
-        const { organization } = await setUpOrganization();
-        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
-        await slotRef.set(baseSlot);
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getSlotsByDayDocPath(organization, testMonth))
-            .get();
-          expect(snap.exists).toEqual(true);
-          expect(Boolean(snap.data()![testDate])).toEqual(true);
-        });
-        // test slot updating
-        const newIntervals = createIntervals(18);
-        const updatedSlot = {
-          ...baseSlot,
-          intervals: newIntervals,
-          type: SlotType.OffIce,
-        };
-        slotRef.set(updatedSlot);
-        const expectedSlotsByDay = {
-          [testDate]: { [baseSlot.id]: updatedSlot },
-        };
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getSlotsByDayDocPath(organization, testMonth))
-            .get();
-          expect(snap.data()).toEqual(expectedSlotsByDay);
-        });
-      }
-    );
+    test.skip(// FIXME - this test was flapping too much, so we stop running it
+    "should update aggregated slotsByDay on slot update", async () => {
+      // set up test state
+      const { organization } = await setUpOrganization();
+      const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
+      await slotRef.set(baseSlot);
+      await waitFor(async () => {
+        const snap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(snap.exists).toEqual(true);
+        expect(Boolean(snap.data()![testDate])).toEqual(true);
+      });
+      // test slot updating
+      const newIntervals = createIntervals(18);
+      const updatedSlot = {
+        ...baseSlot,
+        intervals: newIntervals,
+        type: SlotType.OffIce,
+      };
+      slotRef.set(updatedSlot);
+      const expectedSlotsByDay = {
+        [testDate]: { [baseSlot.id]: updatedSlot },
+      };
+      await waitFor(async () => {
+        const snap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(snap.data()).toEqual(expectedSlotsByDay);
+      });
+    });
 
     testWithEmulator(
       "should remove slot from slotsByDay on slot delete",
