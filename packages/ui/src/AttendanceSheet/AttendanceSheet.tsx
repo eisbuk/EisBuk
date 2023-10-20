@@ -17,7 +17,6 @@ interface RowItem {
   start: string;
   end: string;
   totalHours: string;
-  trainer: string;
   athlete: string;
   athleteSurname: string;
 }
@@ -27,7 +26,6 @@ const headers = {
   start: i18n.t(PrintableAttendance.Start),
   end: i18n.t(PrintableAttendance.End),
   totalHours: i18n.t(PrintableAttendance.TotalHours),
-  trainer: i18n.t(PrintableAttendance.Trainer),
   athlete: i18n.t(PrintableAttendance.Athlete),
 };
 
@@ -146,7 +144,6 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           start,
           end,
           totalHours,
-          trainer: "",
           athlete: name,
           athleteSurname: surname,
         } as RowItem;
