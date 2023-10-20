@@ -259,6 +259,8 @@ export enum ActionButton {
 
   CustomInterval = "ActionButton.CustomInterval",
 
+  LearnMore = "ActionButton.LearnMore",
+
   Save = "ActionButton.Save",
   Back = "ActionButton.Back",
   Next = "ActionButton.Next",
@@ -276,6 +278,7 @@ export enum ActionButton {
   Edit = "ActionButton.Edit",
   Delete = "ActionButton.Delete",
   Saving = "ActionButton.Saving",
+  Accept = "ActionButton.Accept",
 }
 // #endregion dialog
 
@@ -325,6 +328,8 @@ export enum NotificationMessage {
 
   SelfRegSuccess = "Notification.SelfRegSuccess",
   SelfRegError = "Notification.SelfRegError",
+
+  SelectionSaved = "Notification.SelectionSaved",
 
   CustomerProfileUpdated = "Notification.CustomerProfileUpdated",
   CustomerProfileError = "Notification.CustomerProfileUpdated",

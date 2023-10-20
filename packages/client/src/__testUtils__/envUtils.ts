@@ -1,6 +1,4 @@
-import { test, TestFunction } from "vitest";
-
-type TestClosure = (name: string, fn?: TestFunction, timeout?: number) => void;
+import { test, TestAPI } from "vitest";
 
 /**
  * A boolean flag set to `true` if the emulators exist in current environment
@@ -13,7 +11,7 @@ export const __withEmulators__ = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
  * Skips test provided (runs `xtest`) if no firestore emulator found
  * @param testArgs paramaters of `test` function
  */
-export const testWithEmulator: TestClosure = (...args) => {
+export const testWithEmulator = (...args: Parameters<TestAPI>) => {
   if (__withEmulators__) {
     test(...args);
   } else {

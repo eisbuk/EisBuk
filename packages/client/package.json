@@ -43,7 +43,8 @@
     "yup": "0.32.9",
     "variant": "~2.1.0",
     "firebase": "~9.22.0",
-    "react-error-boundary": "~4.0.11"
+    "react-error-boundary": "~4.0.11",
+    "react-markdown": "~9.0.0"
   },
   "scripts": {
     "build": "echo \"Skipping @eisbuk/client build as part of rush's bulk 'build' script. To build the app for production run: 'rushx build:prod'\"",

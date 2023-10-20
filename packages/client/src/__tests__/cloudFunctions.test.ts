@@ -32,6 +32,7 @@ import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { waitFor } from "@/__testUtils__/helpers";
 
 import { saul } from "@eisbuk/testing/customers";
+import { DateTime } from "luxon";
 
 describe("Cloud functions", () => {
   describe("ping", () => {
@@ -287,6 +288,109 @@ describe("Cloud functions", () => {
             organization,
             id: saul.id,
             secretKey: saul.secretKey,
+          })
+        ).rejects.toThrow(BookingsErrors.CustomerNotFound);
+      }
+    );
+  });
+
+  describe("acceptPrivacyPolicy", () => {
+    testWithEmulator(
+      "should store the timestamp of confirmation to the customer's structure in the db",
+      async () => {
+        // set up test state
+        const { organization } = await setUpOrganization();
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+        // wait for bookings to get created (through data trigger)
+        await waitFor(() =>
+          adminDb.doc(getBookingsDocPath(organization, saul.secretKey)).get()
+        );
+        // Timestamp used for the test, the actual time doesn't matter,
+        // only that it's stord in the db after the function is ran.
+        const timestamp = DateTime.now().toISO();
+        // run the function
+        await httpsCallable(
+          functions,
+          CloudFunction.AcceptPrivacyPolicy
+        )({
+          id: saul.id,
+          organization,
+          secretKey: saul.secretKey,
+          timestamp,
+        });
+        const customerSnap = await saulRef.get();
+        expect(customerSnap.data()?.privacyPolicyAccepted).toEqual({
+          timestamp,
+        });
+        // wait for the bookings data to update
+        await waitFor(async () => {
+          const bookingsSnap = await adminDb
+            .doc(getBookingsDocPath(organization, saul.secretKey))
+            .get();
+          // The privacy policy confirmation timestamp should be stored in the db
+          expect(bookingsSnap.data()?.privacyPolicyAccepted).toEqual({
+            timestamp,
+          });
+        });
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no payload provided",
+      async () => {
+        await expect(
+          httpsCallable(functions, CloudFunction.AcceptPrivacyPolicy)()
+        ).rejects.toThrow(HTTPSErrors.NoPayload);
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if no organziation, id, secretKey or timestamp provided",
+      async () => {
+        try {
+          await httpsCallable(functions, CloudFunction.AcceptPrivacyPolicy)({});
+        } catch (error) {
+          expect((error as FunctionsError).message).toEqual(
+            `${HTTPSErrors.MissingParameter}: id, organization, secretKey, timestamp`
+          );
+        }
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if customer id and secretKey mismatch",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.AcceptPrivacyPolicy
+          )({
+            organization,
+            id: saul.id,
+            secretKey: "wrong-key",
+            timestamp: DateTime.now().toISO(),
+          })
+        ).rejects.toThrow(BookingsErrors.SecretKeyMismatch);
+      }
+    );
+
+    testWithEmulator(
+      "should return an error if customer not found",
+      async () => {
+        const { organization } = await setUpOrganization();
+        await expect(
+          httpsCallable(
+            functions,
+            CloudFunction.AcceptPrivacyPolicy
+          )({
+            organization,
+            id: saul.id,
+            secretKey: saul.secretKey,
+            timestamp: DateTime.now().toISO(),
           })
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
       }

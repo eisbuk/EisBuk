@@ -229,3 +229,45 @@ export const customerSelfRegister: {
       return { id: "", secretKey: "", codeOk: false };
     }
   };
+
+/**
+ * Updates `privacyPolicyAccepted` field in customer document (as well as in bookings copy)
+ * @param payload.customer {Customer} - cutomer type
+ * @returns FirestoreThunk
+ */
+export const acceptPrivacyPolicy: {
+  (paylod: Customer): FirestoreThunk;
+} =
+  (customer) =>
+  async (dispatch, _, { getFunctions }) => {
+    try {
+      const organization = getOrganization();
+
+      const { id, secretKey } = customer;
+      const handler = CloudFunction.AcceptPrivacyPolicy;
+      const timestamp = DateTime.now().toISO();
+      const payload = {
+        organization,
+        id,
+        secretKey,
+        timestamp,
+      };
+
+      await createFunctionCaller(getFunctions(), handler, payload)();
+
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Success,
+          message: i18n.t(NotificationMessage.SelectionSaved),
+        })
+      );
+    } catch (err) {
+      dispatch(
+        enqueueNotification({
+          variant: NotifVariant.Error,
+          message: i18n.t(NotificationMessage.Error),
+          error: err as Error,
+        })
+      );
+    }
+  };

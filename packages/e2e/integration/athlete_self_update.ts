@@ -10,7 +10,13 @@ import i18n, {
 import { customers } from "../__testData__/customers.json";
 
 // extract saul from test data .json
-const saul = customers.saul as Customer;
+const saul = {
+  ...customers.saul,
+  // The exact timestamp is irrelevant (it's only important it's there).
+  // We're setting this here so as to not show publicy policy toast (obstructing the test runner's view)
+  privacyPolicyAccepted: { timestamp: "2022-01-01" },
+} as Customer;
+
 // Remove the "dial code" from saul's phone
 const saulsDialCode = "IT (+39)";
 const saulsPhone = saul.phone!.substring(3);
@@ -19,7 +25,7 @@ describe("athlete profile", () => {
   beforeEach(() => {
     // Initialize app, create default user,
     cy.initAdminApp().then((organization) =>
-      cy.updateCustomers(organization, customers as Record<string, Customer>)
+      cy.updateCustomers(organization, { saul } as Record<string, Customer>)
     );
     cy.signOut();
 

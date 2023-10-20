@@ -199,3 +199,61 @@ To verify the athlete, add them to a category/categories on their respective pro
       return fullCustomer;
     }
   );
+
+/**
+ * This should be triggered (by https request) when the customer clicks 'accept' (or an equivalent) on
+ * the privacy policy prompt.
+ */
+export const acceptPrivacyPolicy = functions
+  .region("europe-west6")
+  .https.onCall(async (payload) => {
+    checkRequiredFields(payload, [
+      "id",
+      "organization",
+      "secretKey",
+      // The timestamp is passed in by the caller to ensure the user's time is used, not the server
+      // time, which can be in a different timezone
+      "timestamp",
+    ]);
+
+    const { id, organization, secretKey, timestamp } =
+      (payload as {
+        id: string;
+        organization: string;
+        secretKey: string;
+        timestamp: string;
+      }) || {};
+
+    // we check "auth" by matching secretKey with customerId
+    const customerRef = admin
+      .firestore()
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Customers)
+      .doc(id);
+
+    const customerInStore = await customerRef.get();
+
+    if (!customerInStore.exists) {
+      throw new functions.https.HttpsError(
+        "not-found",
+        BookingsErrors.CustomerNotFound
+      );
+    }
+
+    const { secretKey: existingSecretKey } =
+      customerInStore.data() as CustomerFull;
+
+    if (secretKey !== existingSecretKey) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        BookingsErrors.SecretKeyMismatch
+      );
+    }
+
+    // Store the accepted privacy policy timestamp to the customer structure
+    await customerRef.set(
+      { privacyPolicyAccepted: { timestamp } },
+      { merge: true }
+    );
+  });

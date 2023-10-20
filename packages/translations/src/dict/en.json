@@ -245,6 +245,8 @@
 
     "CustomInterval": "Custom Interval",
 
+    "LearnMore": "Learn more",
+
     "Save": "Save",
     "Back": "Back",
     "Next": "Next",
@@ -261,7 +263,8 @@
     "Add": "Add",
     "Edit": "Edit",
     "Delete": "Delete",
-    "Saving": "Saving"
+    "Saving": "Saving",
+    "Accept": "Accept"
   },
 
   "Notification": {
@@ -303,6 +306,9 @@
 
     "SelfRegSuccess": "Registration successful",
     "SelfRegError": "Error registering",
+
+    "SelectionSaved": "Selection saved",
+
     "CustomerProfileUpdated": "Profile Updated",
     "CustomerProfileError": "Error updating profile",
     "CustomerUpdated": "Customer Profile Updated: {{ name }} {{ surname }}",
