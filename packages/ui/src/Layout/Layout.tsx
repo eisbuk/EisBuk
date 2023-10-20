@@ -120,6 +120,7 @@ const getHeaderRowClasses = (
     "min-h-[70px]",
     "justify-between",
     "items-center",
+    "print:hidden",
   ];
 
   // Additional classes per row

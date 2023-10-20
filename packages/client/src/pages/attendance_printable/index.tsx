@@ -22,6 +22,7 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { getSlotsWithAttendance } from "@/store/selectors/attendance";
 
 import { changeCalendarDate } from "@/store/actions/appActions";
+import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
 const DashboardPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -34,6 +35,7 @@ const DashboardPage: React.FC = () => {
   ]);
 
   const date = useSelector(getCalendarDay);
+  const organizationName = useSelector(getOrgDisplayName);
 
   const attendanceSlots = useSelector(getSlotsWithAttendance);
 
@@ -67,7 +69,11 @@ const DashboardPage: React.FC = () => {
         additionalContent={printButton}
       />
       <LayoutContent>
-        <AttendanceSheet data={attendanceSlots} />
+        <AttendanceSheet
+          data={attendanceSlots}
+          date={date}
+          organizationName={organizationName}
+        />
       </LayoutContent>
     </Layout>
   );

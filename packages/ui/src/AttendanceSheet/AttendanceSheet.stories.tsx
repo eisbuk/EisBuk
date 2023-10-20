@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SlotType } from "@eisbuk/shared";
+import { SlotType, fromISO } from "@eisbuk/shared";
 
 import { intervalStrings as intervals } from "@eisbuk/testing/attendance";
 import { saul, walt, gus, jane } from "@eisbuk/testing/customers";
@@ -46,5 +46,12 @@ const slots = [
   },
   { ...baseSlot, customers: customers2 },
 ];
+const date = fromISO(baseSlot.date);
 
-export const Default = (): JSX.Element => <AttendanceSheet data={slots} />;
+export const Default = (): JSX.Element => (
+  <AttendanceSheet
+    organizationName="Organization name"
+    date={date}
+    data={slots}
+  />
+);

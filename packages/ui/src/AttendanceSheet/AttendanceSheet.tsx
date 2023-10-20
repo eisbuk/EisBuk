@@ -1,10 +1,15 @@
 import React from "react";
 
-import i18n, { PrintableAttendance } from "@eisbuk/translations";
+import i18n, {
+  PrintableAttendance,
+  useTranslation,
+  DateFormat,
+} from "@eisbuk/translations";
 import { CustomerWithAttendance, SlotType } from "@eisbuk/shared";
 
 import Table from "../Table";
 import { calculateIntervalDuration } from "./utils";
+import { DateTime } from "luxon";
 
 interface RowItem {
   [key: string]: string | number | boolean | null;
@@ -12,11 +17,9 @@ interface RowItem {
   start: string;
   end: string;
   totalHours: string;
-  note: string;
   trainer: string;
   athlete: string;
   athleteSurname: string;
-  personalNote: string;
 }
 
 const headers = {
@@ -24,10 +27,8 @@ const headers = {
   start: i18n.t(PrintableAttendance.Start),
   end: i18n.t(PrintableAttendance.End),
   totalHours: i18n.t(PrintableAttendance.TotalHours),
-  note: i18n.t(PrintableAttendance.Note),
   trainer: i18n.t(PrintableAttendance.Trainer),
   athlete: i18n.t(PrintableAttendance.Athlete),
-  personalNote: i18n.t(PrintableAttendance.Note),
 };
 
 interface TableDataEntry {
@@ -38,24 +39,36 @@ interface TableDataEntry {
 
 export interface AttendanceSheetProps {
   data: TableDataEntry[];
+  date: DateTime;
+  organizationName?: string;
 }
 
-const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
+const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
+  data,
+  organizationName,
+  date,
+}) => {
+  const { t } = useTranslation();
   return (
     <div className="w-full">
+      <div className="py-2 bg-gray-800 font-semibold text-center text-white">
+        <h2 className="font-fredoka hidden print:flex print:justify-center print:items-center print:m-0">
+          {organizationName}
+        </h2>
+        {`${t(DateFormat.Date)}: ${t(DateFormat.FullWithWeekday, { date })}`}
+      </div>
+
       <Table
         headers={headers}
         items={processTableData(data)}
         renderHeaders={(headers) => (
-          <tr className="border border-gray-800">
+          <tr className=" border border-gray-800">
             {Object.values(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
               .map((label) => (
-                <th className="p-1 border border-l- border-gray-200 min-w-[3rem]">
-                  {label}
-                </th>
+                <th className="p-1 border border-gray-200">{label}</th>
               ))}
           </tr>
         )}
@@ -71,7 +84,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className="min-w-[3rem] max-w-[7rem] p-1 bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
+                      className="p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
                     >
                       {key === "type" ? (
                         <span
@@ -84,11 +97,11 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
                           {data}
                         </span>
                       ) : key === "athlete" ? (
-                        <tr>
-                          <td className="min-w-[4.25rem] max-w-0 truncate print:text-black">
+                        <tr className="flex min-w-full ">
+                          <td className="min-w-[5rem] max-w-[5rem] truncate print:text-black">
                             {data}
                           </td>
-                          <td className="max-w-0 print:text-black font-bold">
+                          <td className="text-left truncate print:text-black font-bold">
                             {rowData["athleteSurname"]}
                           </td>
                         </tr>
@@ -99,7 +112,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
                   )
               )}
             </tr>
-            <tr className={`p-0 max-w-full border border-gray-200`}>
+            <tr className={`p-0 border border-gray-200`}>
               {Object.keys(rowData).map(
                 (key) =>
                   key !== "athleteSurname" && (
@@ -120,7 +133,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({ data }) => {
 };
 
 const processTableData = (entries: TableDataEntry[]): RowItem[] =>
-  entries.reduce((acc, { type, notes, customers }) => {
+  entries.reduce((acc, { type, customers }) => {
     const newRows = customers
       // We're not displaying customers that have no booked interval.
       .filter(({ bookedInterval }) => Boolean(bookedInterval))
@@ -133,11 +146,9 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           start,
           end,
           totalHours,
-          note: notes,
           trainer: "",
           athlete: name,
           athleteSurname: surname,
-          personalNote: "",
         } as RowItem;
       });
     return [...acc, ...newRows];
