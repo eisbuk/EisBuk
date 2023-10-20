@@ -8,6 +8,13 @@ import {
   DeliveryQueue,
 } from "../enums/firestore";
 
+export interface PrivacyPolicyParams {
+  prompt: string;
+  learnMoreLabel: string;
+  acceptLabel: string;
+  policy: string;
+}
+
 /**
  * Organization data record included in each organization (other than nested collections)
  */
@@ -73,6 +80,10 @@ export interface OrganizationData {
    * A short (and weak) secret used by new athletes for self registration
    */
   registrationCode?: string;
+  /**
+   * Data used for privacy policy compliance prompt (and the policy text iteslf)
+   */
+  privacyPolicy?: PrivacyPolicyParams;
 }
 
 export type EmailTemplate = {
@@ -83,7 +94,11 @@ export type EmailTemplate = {
 /** Organization data copied over to a new collection shared publicly */
 export type PublicOrganizationData = Pick<
   OrganizationData,
-  "displayName" | "location" | "emailFrom" | "defaultCountryCode"
+  | "displayName"
+  | "location"
+  | "emailFrom"
+  | "defaultCountryCode"
+  | "privacyPolicy"
 >;
 
 // #endregion organizations
@@ -212,6 +227,9 @@ export interface CustomerBase {
   birthday?: string;
   certificateExpiration?: string;
   photoURL?: string;
+  privacyPolicyAccepted?: {
+    timestamp: string;
+  };
 }
 /**
  * A standard customer entry available to both the customer themself as well as to the admin's full profile view

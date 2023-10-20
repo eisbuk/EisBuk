@@ -3,7 +3,6 @@ import { describe, afterEach, vi, test, expect } from "vitest";
 import { cleanup, screen } from "@testing-library/react";
 
 import { testId } from "@eisbuk/testing/testIds";
-import { slotAttendances } from "@eisbuk/testing/slots";
 
 import SlotIntervals from "../SlotIntervals";
 
@@ -31,7 +30,7 @@ describe("SlotForm", () => {
       expect(intervalFields.length).toEqual(2);
     });
     test("should render disabled intervals if they match attendance bookedIntervals", () => {
-      renderWithFormik(<SlotIntervals slotAttendances={slotAttendances} />, {
+      renderWithFormik(<SlotIntervals />, {
         initialValues: { intervals: [interval3, interval4] },
       });
       const startIntervalFields = screen.queryAllByTestId(

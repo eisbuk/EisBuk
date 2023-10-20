@@ -6,7 +6,10 @@ import { testDateLuxon } from "@eisbuk/testing/date";
 import { jian, saul, gus } from "@eisbuk/testing/customers";
 import { baseSlot } from "@eisbuk/testing/slots";
 
-import { getSlotsWithAttendance } from "../slotAttendance";
+import {
+  getSlotsWithAttendance,
+  getBookedIntervalsCustomers,
+} from "../slotAttendance";
 import { processAttendances } from "../attendanceVariance";
 
 import { getNewStore } from "@/store/createStore";
@@ -197,5 +200,28 @@ describe("Selectors ->", () => {
         },
       ],
     ]);
+  });
+
+  describe("Test 'getBookedIntervalsCustomers'", () => {
+    const testStore = getNewStore({
+      firestore: {
+        data: {
+          attendance,
+          customers: attendanceCustomers,
+          slotsByDay: attendanceSlotsByDay,
+        },
+      },
+      app: {
+        calendarDay: testDateLuxon,
+      },
+    });
+
+    test("should return list of intervals as keys with customer names as value", () => {
+      const res = getBookedIntervalsCustomers("slot-0")(testStore.getState());
+      expect(res).toEqual({
+        "09:00-10:00": ["Jian Yang"],
+        "10:00-11:00": ["Saul Goodman"],
+      });
+    });
   });
 });

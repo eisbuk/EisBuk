@@ -1,5 +1,6 @@
-import { getOrganization } from "@/lib/getters";
 import { LocalStore } from "@/types/store";
+
+import { getOrganization } from "@/lib/getters";
 
 const getPublicOrgInfo = (state: LocalStore) =>
   state.firestore.data.publicOrgInfo
@@ -14,3 +15,6 @@ export const getOrgEmail = (state: LocalStore) =>
 
 export const getDefaultCountryCode = (state: LocalStore) =>
   getPublicOrgInfo(state)?.defaultCountryCode;
+
+export const getPrivacyPolicy = (state: LocalStore) =>
+  getPublicOrgInfo(state)?.privacyPolicy;

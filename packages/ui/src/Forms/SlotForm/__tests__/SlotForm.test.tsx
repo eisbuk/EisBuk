@@ -28,11 +28,7 @@ import { defaultInterval, defaultSlotFormValues } from "../data";
 import SlotForm from "../SlotForm";
 
 import { testDate, testDateLuxon } from "@eisbuk/testing/date";
-import {
-  baseSlot,
-  createIntervals,
-  slotAttendances,
-} from "@eisbuk/testing/slots";
+import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 
 const baseProps = {
   date: testDate,
@@ -131,7 +127,10 @@ describe("SlotForm", () => {
         <SlotForm
           {...baseProps}
           slotToEdit={{ ...baseSlot, intervals: createIntervals(13) }}
-          slotAttendances={slotAttendances}
+          bookedIntervalsCustomers={{
+            "13:00-13:50": ["customer-id-1"],
+            "14:00-14:50": ["customer-id-2"],
+          }}
         />
       );
       const intervalFields = screen.queryAllByTestId(

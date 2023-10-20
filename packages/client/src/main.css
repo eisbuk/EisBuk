@@ -16,3 +16,36 @@
 .center-absolute {
   @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2;
 }
+
+.privacy-policy-md h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply font-bold;
+}
+.privacy-policy-md h1 {
+  @apply my-12 text-3xl;
+}
+.privacy-policy-md h2 {
+  @apply mt-10 mb-6 text-2xl;
+}
+.privacy-policy-md h3 {
+  @apply mt-8 mb-6 text-xl;
+}
+
+.privacy-policy-md p {
+  @apply my-4;
+}
+
+.privacy-policy-md ul,
+ol {
+  @apply ml-12;
+}
+.privacy-policy-md ul {
+  @apply list-disc;
+}
+.privacy-policy-md ol {
+  @apply list-decimal;
+}

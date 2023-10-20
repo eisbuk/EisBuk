@@ -62,7 +62,7 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
     setValue(newTime);
   };
   const color = props.disabled
-    ? "bg-gray-200"
+    ? "bg-gray-200 hover:bg-gray-200 active:bg-gray-200"
     : "bg-cyan-700 hover:bg-cyan-700 active:bg-cyan-600";
 
   return (
@@ -86,9 +86,9 @@ const TimePickerField: React.FC<TextInputFieldProps> = ({ ...props }) => {
       />
       <IconButton
         className={[
-          "w-8 h-6 rounded-md !px-1.5 !py-1 flex-shrink-0",
+          "w-8 h-6 rounded-md !px-1.5 !py-1 flex-shrink-0 text-white",
           color,
-        ].join()}
+        ].join(" ")}
         onClick={handleClick(1)}
         data-testid={testId("increment-button")}
         disabled={props.disabled}
