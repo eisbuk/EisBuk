@@ -44,7 +44,7 @@ export const getCustomerBySecretKey =
   };
 
 /**
- * Gets a customer from a list of customers by 'secretKey'
+ * Gets a customer from a list of customers by 'id'
  * @param id a customers secret string
  * @returns a customer
  */
