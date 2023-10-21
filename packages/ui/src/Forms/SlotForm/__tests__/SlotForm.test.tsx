@@ -141,6 +141,19 @@ describe("SlotForm", () => {
       screen.getByTestId(testId("delete-interval-button")).click();
       expect(intervalFields.length).toEqual(2);
     });
+    test("should not explode if no slotAttendances provided", () => {
+      render(
+        <SlotForm
+          {...baseProps}
+          slotToEdit={{ ...baseSlot, intervals: createIntervals(13) }}
+          slotAttendances={undefined}
+        />
+      );
+      const intervalFields = screen.queryAllByTestId(
+        testId("time-interval-field")
+      );
+      expect(intervalFields.length).toEqual(2);
+    });
   });
   describe("Test dialog button actions", () => {
     const mockOnClose = vi.fn();

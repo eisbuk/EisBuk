@@ -13,7 +13,7 @@ import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import { createModal } from "@/features/modal/useModal";
 
-import { LocalStore } from "@/types/store";
+import { getSlotAttendance } from "@/store/selectors/attendance/slotAttendance";
 
 import {
   __editSlotButtonWrongContextError,
@@ -32,10 +32,8 @@ import {
  */
 export const EditSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
-  const slotAttendances = useSelector((state: LocalStore) =>
-    state.firestore.data.attendance && buttonGroupContext?.slot?.id
-      ? state.firestore.data.attendance[buttonGroupContext.slot.id].attendances
-      : {}
+  const slotAttendances = useSelector(
+    getSlotAttendance(buttonGroupContext?.slot?.id || "")
   );
 
   const { openWithProps: openSlotForm } = useSlotFormModal();

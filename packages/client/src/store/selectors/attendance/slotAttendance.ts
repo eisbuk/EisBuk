@@ -1,4 +1,8 @@
-import { luxon2ISODate, getSlotTimespan } from "@eisbuk/shared";
+import {
+  luxon2ISODate,
+  getSlotTimespan,
+  CustomerAttendance,
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -65,4 +69,17 @@ export const getSlotsWithAttendance = (
   });
 };
 
+export const getSlotAttendance =
+  (slotId: string) =>
+  (state: LocalStore): Record<string, CustomerAttendance> => {
+    const {
+      firestore: {
+        data: { attendance },
+      },
+    } = state;
+
+    return attendance && attendance[slotId]
+      ? attendance[slotId].attendances
+      : {};
+  };
 export {};
