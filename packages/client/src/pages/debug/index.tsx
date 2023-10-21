@@ -155,6 +155,20 @@ const DebugPage: React.FC = () => {
               Clear Deleted Customers Registration And Categories
             </DebugPageButton>
           </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBSanityCheck
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              Sanity Check
+            </DebugPageButton>
+          </div>
         </div>
       </LayoutContent>
     </Layout>

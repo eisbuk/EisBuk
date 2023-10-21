@@ -8,6 +8,7 @@ export * from "./testData";
 export * from "./testSlots";
 export * from "./https";
 export * from "./auth";
+export * from "./checks/https";
 
 export * from "./sendEmail";
 export * from "./sendSMS";
