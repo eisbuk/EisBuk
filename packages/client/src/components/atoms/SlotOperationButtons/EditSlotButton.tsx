@@ -5,6 +5,8 @@ import { Pencil } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
 
+import { getBookedIntervalsCustomers } from "@/store/selectors/attendance";
+
 import { ButtonContextType } from "@/enums/components";
 
 import SlotOperationButton from "./SlotOperationButton";
@@ -12,8 +14,6 @@ import SlotOperationButton from "./SlotOperationButton";
 import { ButtonGroupContext } from "./SlotOperationButtons";
 
 import { createModal } from "@/features/modal/useModal";
-
-import { getSlotAttendance } from "@/store/selectors/attendance/slotAttendance";
 
 import {
   __editSlotButtonWrongContextError,
@@ -32,8 +32,9 @@ import {
  */
 export const EditSlotButton: React.FC = () => {
   const buttonGroupContext = useContext(ButtonGroupContext);
-  const slotAttendances = useSelector(
-    getSlotAttendance(buttonGroupContext?.slot?.id || "")
+
+  const bookedIntervalsCustomers = useSelector(
+    getBookedIntervalsCustomers(buttonGroupContext?.slot?.id || "")
   );
 
   const { openWithProps: openSlotForm } = useSlotFormModal();
@@ -59,7 +60,7 @@ export const EditSlotButton: React.FC = () => {
     openSlotForm({
       date: slot.date,
       slotToEdit: slot,
-      slotAttendances,
+      bookedIntervalsCustomers,
     });
   };
 

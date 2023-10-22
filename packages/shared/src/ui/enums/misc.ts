@@ -6,6 +6,7 @@ export enum CloudFunction {
   QueryAuthStatus = "queryAuthStatus",
 
   FinalizeBookings = "finalizeBookings",
+  AcceptPrivacyPolicy = "acceptPrivacyPolicy",
   CustomerSelfRegister = "customerSelfRegister",
   CustomerSelfUpdate = "customerSelfUpdate",
 

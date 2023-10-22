@@ -19,9 +19,9 @@ import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
+import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
-// import AddToCalendar from "@/components/atoms/AddToCalendar";
 
 import Layout from "@/controllers/Layout";
 
@@ -113,6 +113,10 @@ const CustomerArea: React.FC = () => {
           </div>
         </ErrorBoundary>
       </LayoutContent>
+
+      <div className="fixed z-50 bottom-4 left-1/2 -translate-x-1/2 content-container text-center">
+        <PrivacyPolicyToast />
+      </div>
     </Layout>
   );
 };

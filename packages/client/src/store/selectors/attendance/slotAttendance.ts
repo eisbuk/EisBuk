@@ -10,6 +10,7 @@ import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
 import { compareCustomerBookings } from "@/utils/sort";
 import { getSlotsByMonth } from "../slots";
+import { getCustomerById } from "../customers";
 
 /**
  * Attendance card selector returns slots with customer attendance, used to create attendance cards.
@@ -69,6 +70,11 @@ export const getSlotsWithAttendance = (
   });
 };
 
+/**
+ * Selector that returns for a slot's attendance, only for local use so far but could be useful down the line
+ * @param slotId
+ * @returns { "customerId": {"bookedInterval": "09:00-10:00",  "attendedInterval": "09:00-10:00"} }
+ */
 export const getSlotAttendance =
   (slotId: string) =>
   (state: LocalStore): Record<string, CustomerAttendance> => {
@@ -82,4 +88,34 @@ export const getSlotAttendance =
       ? attendance[slotId].attendances
       : {};
   };
+
+/**
+ * Selector that returns for a slot a list of booked intervals with customers who booked it
+ * @param slotId
+ * @returns { "8-9": ["saul goodman", "walter white"], "9-10": ["saul goodman"] }
+ */
+export const getBookedIntervalsCustomers =
+  (slotId: string) =>
+  (state: LocalStore): { [interval: string]: string[] } => {
+    const slotAttendances = getSlotAttendance(slotId)(state);
+
+    const customersWhoBooked = Object.entries(slotAttendances).reduce(
+      (acc, [customerId, { bookedInterval }]) => {
+        if (!bookedInterval) return acc;
+
+        const customer = getCustomerById(customerId)(state);
+
+        return {
+          ...acc,
+          [bookedInterval]: [
+            ...(acc[bookedInterval] || []),
+            `${customer?.name} ${customer?.surname}`,
+          ],
+        };
+      },
+      {}
+    );
+    return customersWhoBooked;
+  };
+
 export {};
