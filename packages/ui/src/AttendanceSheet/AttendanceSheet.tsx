@@ -50,7 +50,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
   return (
     <div className="w-full">
       <div className="py-2 bg-gray-800 font-semibold text-center text-white">
-        <h2 className="font-fredoka hidden print:flex print:justify-center print:items-center print:m-0">
+        <h2 className="font-fredoka hidden print:flex print:justify-center print:items-center">
           {organizationName}
         </h2>
         {`${t(DateFormat.Date)}: ${t(DateFormat.FullWithWeekday, { date })}`}
@@ -60,29 +60,28 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
         headers={headers}
         items={processTableData(data)}
         renderHeaders={(headers) => (
-          <tr className=" border border-gray-800">
+          <tr className=" border-2 border-gray-800">
             {Object.values(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
               .map((label) => (
-                <th className="p-1 border border-gray-200">{label}</th>
+                <th className="p-1 border-2 border-gray-200">{label}</th>
               ))}
           </tr>
         )}
         renderRow={(rowData, rowIx) => (
           <>
-            <tr
-              key={rowIx}
-              className={`p-0 max-w-full border border-gray-200 text-center`}
-            >
+            <tr key={rowIx} className={`border-2 border-gray-200 text-center`}>
               {/* Skip the athleteSurname column */}
               {Object.entries(rowData).map(
                 ([key, data]) =>
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className="p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
+                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border-2 border-gray-200 truncate print:text-black ${
+                        key === "athlete" && "text-left"
+                      }`}
                     >
                       {key === "type" ? (
                         <span
@@ -95,14 +94,10 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                           {data}
                         </span>
                       ) : key === "athlete" ? (
-                        <tr className="flex min-w-full ">
-                          <td className="min-w-[5rem] max-w-[5rem] truncate print:text-black">
-                            {data}
-                          </td>
-                          <td className="text-left truncate print:text-black font-bold">
-                            {rowData["athleteSurname"]}
-                          </td>
-                        </tr>
+                        <>
+                          <b>{rowData["athleteSurname"]} </b>
+                          {data}
+                        </>
                       ) : (
                         data
                       )}
@@ -110,14 +105,11 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                   )
               )}
             </tr>
-            <tr className={`p-0 border border-gray-200`}>
-              {Object.keys(rowData).map(
+            <tr className={`border-2 border-gray-200`}>
+              {[...Object.keys(rowData)].map(
                 (key) =>
                   key !== "athleteSurname" && (
-                    <td
-                      style={{ printColorAdjust: "exact" }}
-                      className="p-1 bg-inherit truncate"
-                    >
+                    <td style={{ printColorAdjust: "exact" }} className="">
                       &nbsp;
                     </td>
                   )
