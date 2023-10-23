@@ -1,4 +1,5 @@
 import React from "react";
+import { testId } from "@eisbuk/testing/testIds";
 
 interface HoverTextProps extends React.HTMLAttributes<HTMLDivElement> {
   className?: string;
@@ -24,6 +25,7 @@ const HoverText: React.FC<HoverTextProps> = ({
       {children}
 
       <div
+        data-testid={testId("hover-text")}
         className={`absolute z-40 left-1/2 bottom-1/2 overflow-hidden hover-element ${
           multiline ? multilineWidthLookup[multiline] : "whitespace-nowrap"
         }`}

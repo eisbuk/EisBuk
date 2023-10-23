@@ -61,8 +61,6 @@ export const createRowGenerator =
     const dataIter = createRowData(dates, hours, transform);
     const dataObject = Object.fromEntries(dataIter);
 
-    console.log({ athlete, type, dataObject });
-
     const total = _reduce(dataIter, (acc, [, value]) => acc + (value || 0), 0);
 
     return { type, slotType, athlete, ...dataObject, total };

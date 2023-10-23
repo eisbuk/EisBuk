@@ -29,6 +29,7 @@ import {
   updateBookingNotes,
   customerSelfUpdate,
   customerSelfRegister,
+  acceptPrivacyPolicy,
 } from "../bookingOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -521,6 +522,73 @@ describe("Booking operations", () => {
         expect(mockDispatch).toHaveBeenCalledWith(
           enqueueNotification({
             message: i18n.t(NotificationMessage.SelfRegError),
+            variant: NotifVariant.Error,
+            error: testError,
+          })
+        );
+      }
+    );
+  });
+
+  describe("'acceptPrivacyPolicy'", () => {
+    testWithEmulator(
+      "should store timestamp of policy acceptance",
+      async () => {
+        // set up initial state
+        const store = getNewStore();
+        const { organization, db } = await getTestEnv({
+          auth: false,
+          setup: (db, { organization }) =>
+            setupTestCustomer({
+              db,
+              customer: saul,
+              organization,
+              store,
+            }),
+        });
+        const mockDispatch = vi.fn();
+        // make sure tested thunk uses test generated organization
+        getOrganizationSpy.mockReturnValue(organization);
+        // create a thunk curried with test input values
+        const testThunk = acceptPrivacyPolicy(saul);
+        const timestampDate = DateTime.now().toISO().slice(0, 10);
+        // test updating of the db using created thunk and middleware args from stores' setup
+        await runThunk(testThunk, mockDispatch, store.getState);
+        // Check updates
+        await waitFor(async () => {
+          const bookingsSnap = await getDoc(
+            doc(db, getBookingsDocPath(organization, saul.secretKey))
+          );
+          expect(bookingsSnap.data()?.privacyPolicyAccepted).toEqual({
+            timestamp: expect.stringContaining(timestampDate),
+          });
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.SelectionSaved),
+            variant: NotifVariant.Success,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "should enqueue error notification if operation failed",
+      async () => {
+        // intentionally cause an error
+        const testError = new Error("test");
+        const getFunctions = () => {
+          throw testError;
+        };
+        // run the thunk
+        const testThunk = acceptPrivacyPolicy(saul);
+        const mockDispatch = vi.fn();
+        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.Error),
             variant: NotifVariant.Error,
             error: testError,
           })

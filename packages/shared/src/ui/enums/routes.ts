@@ -8,6 +8,7 @@ export enum Routes {
   AttendancePrintable = "/attendance_printable",
   Debug = "/debug",
   Deleted = "/deleted",
+  PrivacyPolicy = "/privacy_policy",
 }
 
 /** */

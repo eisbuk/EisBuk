@@ -21,6 +21,10 @@ import {
   TabItem,
   LayoutContent,
 } from "@eisbuk/ui";
+import {
+  defaultPrivacyPolicyParams,
+  defaultPrivacyPolicy,
+} from "@eisbuk/shared/ui";
 import { Cog, Mail } from "@eisbuk/svg";
 
 import Layout from "@/controllers/Layout";
@@ -35,6 +39,7 @@ import { isEmpty } from "@/utils/helpers";
 import EmailTemplateSettings from "./views/EmailTemplateSettings";
 import GeneralSettings from "./views/GeneralSettings";
 import SMSTemplateSettings from "./views/SMSTemplateSettings";
+import PrivacyPolicy from "./views/PrivacyPolicy";
 
 // #region validations
 const OrganizationValidation = Yup.object().shape({
@@ -50,6 +55,7 @@ const OrganizationSettings: React.FC = () => {
     GeneralSettings = "GeneralSettings",
     EmailTemplates = "EmailTemplates",
     SMSTemplates = "SMSTemplates",
+    PrivacyPolicy = "PrivacyPolicy",
   }
 
   // Get appropriate view to render
@@ -57,6 +63,7 @@ const OrganizationSettings: React.FC = () => {
     [View.GeneralSettings]: GeneralSettings,
     [View.EmailTemplates]: EmailTemplateSettings,
     [View.SMSTemplates]: SMSTemplateSettings,
+    [View.PrivacyPolicy]: PrivacyPolicy,
   };
   const [view, setView] = useState<keyof typeof viewsLookup>(
     View.GeneralSettings
@@ -111,6 +118,13 @@ const OrganizationSettings: React.FC = () => {
         onClick={() => setView(View.SMSTemplates)}
         active={view === View.SMSTemplates}
       />
+      <TabItem
+        key="privacy-policy-view-button"
+        Icon={Mail as any}
+        label="Privacy policy"
+        onClick={() => setView(View.PrivacyPolicy)}
+        active={view === View.PrivacyPolicy}
+      />
     </>
   );
 
@@ -155,9 +169,13 @@ const OrganizationSettings: React.FC = () => {
               </div>
             ) : view === View.EmailTemplates ? (
               <EmailTemplateSettings />
-            ) : (
+            ) : view === View.SMSTemplates ? (
               <div>
                 <SMSTemplateSettings />
+              </div>
+            ) : (
+              <div>
+                <PrivacyPolicy />
               </div>
             )}
           </LayoutContent>
@@ -179,6 +197,10 @@ const emptyValues = {
   smsFrom: "",
   smsTemplates,
   emailBcc: "",
+  privacyPolicy: {
+    ...defaultPrivacyPolicyParams,
+    policy: defaultPrivacyPolicy,
+  },
 };
 
 export default OrganizationSettings;
