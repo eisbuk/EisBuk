@@ -7,9 +7,11 @@ import { jian, saul, gus } from "@eisbuk/testing/customers";
 import { baseSlot } from "@eisbuk/testing/slots";
 
 import {
+  getSlotAttendance,
   getSlotsWithAttendance,
   getBookedIntervalsCustomers,
 } from "../slotAttendance";
+
 import { processAttendances } from "../attendanceVariance";
 
 import { getNewStore } from "@/store/createStore";
@@ -42,6 +44,36 @@ describe("Selectors ->", () => {
     test("should get slots for current day (read from store) with customers attendance (sorted by booked interval) data for each slot", () => {
       const res = getSlotsWithAttendance(testStore.getState());
       expect(res).toEqual(expectedStruct);
+    });
+  });
+
+  describe("Test 'getSlotAttendance'", () => {
+    const testStore = getNewStore({
+      firestore: {
+        data: {
+          attendance,
+        },
+      },
+    });
+
+    test("should handle missing 'slotId' in attendance", () => {
+      const res = getSlotAttendance("slot-non-existent")(testStore.getState());
+      expect(res).toEqual({});
+    });
+    test("should return attendance for 'slotId'", () => {
+      const res = getSlotAttendance("slot-0")(testStore.getState());
+      const sattendanceForSlots = {
+        walt: { bookedInterval: null, attendedInterval: "09:00-10:00" },
+        jian: {
+          bookedInterval: "09:00-10:00",
+          attendedInterval: "09:00-10:00",
+        },
+        saul: {
+          bookedInterval: "10:00-11:00",
+          attendedInterval: "09:00-10:00",
+        },
+      };
+      expect(res).toEqual(sattendanceForSlots);
     });
   });
 
@@ -208,11 +240,7 @@ describe("Selectors ->", () => {
         data: {
           attendance,
           customers: attendanceCustomers,
-          slotsByDay: attendanceSlotsByDay,
         },
-      },
-      app: {
-        calendarDay: testDateLuxon,
       },
     });
 

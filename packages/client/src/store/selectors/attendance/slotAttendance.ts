@@ -1,4 +1,8 @@
-import { luxon2ISODate, getSlotTimespan } from "@eisbuk/shared";
+import {
+  luxon2ISODate,
+  getSlotTimespan,
+  CustomerAttendance,
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
@@ -67,18 +71,33 @@ export const getSlotsWithAttendance = (
 };
 
 /**
+ * Selector that returns for a slot's attendance, only for local use so far but could be useful down the line
+ * @param slotId
+ * @returns { "customerId": {"bookedInterval": "09:00-10:00",  "attendedInterval": "09:00-10:00"} }
+ */
+export const getSlotAttendance =
+  (slotId: string) =>
+  (state: LocalStore): Record<string, CustomerAttendance> => {
+    const {
+      firestore: {
+        data: { attendance },
+      },
+    } = state;
+
+    return attendance && attendance[slotId]
+      ? attendance[slotId].attendances
+      : {};
+  };
+
+/**
  * Selector that returns for a slot a list of booked intervals with customers who booked it
  * @param slotId
  * @returns { "8-9": ["saul goodman", "walter white"], "9-10": ["saul goodman"] }
  */
-
 export const getBookedIntervalsCustomers =
   (slotId: string) =>
   (state: LocalStore): { [interval: string]: string[] } => {
-    const slotAttendances =
-      state.firestore.data.attendance && state.firestore.data.attendance[slotId]
-        ? state.firestore.data.attendance[slotId].attendances
-        : {};
+    const slotAttendances = getSlotAttendance(slotId)(state);
 
     const customersWhoBooked = Object.entries(slotAttendances).reduce(
       (acc, [customerId, { bookedInterval }]) => {
