@@ -9,7 +9,7 @@ const DevWarning: React.FC<{ open?: boolean }> = ({ open = false }) => {
   const close = () => () => setIsOpen(false);
 
   return isOpen ? (
-    <p className="relative text-gray-700 font-semibold bg-red-100 border-2 text-center border-red-500 rounded-lg py-1 px-8">
+    <div className="relative text-gray-700 font-semibold bg-red-100 border-2 text-center border-red-500 rounded-lg py-1 px-8">
       <span>
         Warning: using firestore emulators in dev mode: do not use with
         production credentials
@@ -20,7 +20,7 @@ const DevWarning: React.FC<{ open?: boolean }> = ({ open = false }) => {
       >
         <Close />
       </div>
-    </p>
+    </div>
   ) : null;
 };
 
