@@ -4,7 +4,8 @@ import admin from "firebase-admin";
 import { __functionsZone__ } from "../constants";
 
 import { checkUser, throwUnauth } from "../utils";
-import { findSlotAttendanceMismatches } from "./utils";
+
+import { findSlotAttendanceMismatches } from "./slotRelatedDocs";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -18,8 +19,6 @@ export const dbSanityCheck = functions
 
       const db = admin.firestore();
 
-      const res = await findSlotAttendanceMismatches(db, organization);
-
-      return res;
+      return findSlotAttendanceMismatches(db, organization);
     }
   );
