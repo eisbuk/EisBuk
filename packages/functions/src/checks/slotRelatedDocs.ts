@@ -131,3 +131,59 @@ const dateMismatchReducer = (
         ) as DateMismatchDoc,
       };
 };
+
+export const attendanceSlotMismatchAutofix = async (
+  db: Firestore,
+  organization: string,
+  mismatches: SlotSanityCheckReport
+) => {
+  const batch = db.batch();
+
+  const { unpairedEntries, dateMismatches } = mismatches;
+
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  const slots = orgRef.collection(OrgSubCollection.Slots);
+  const attendance = orgRef.collection(OrgSubCollection.Attendance);
+
+  const attendanceFromSlot = ({ date }: SlotInterface): SlotAttendnace => ({
+    date,
+    attendances: {},
+  });
+
+  // Create attendance entry for every slot entry without one
+  await Promise.all(
+    Object.entries(unpairedEntries).map(async ([id, { existing, missing }]) => {
+      // At this point there can only be two mismatch variants:
+      // - slot and no attendance
+      // - attendance and no slot
+      //
+      // TODO: update this when the check situation changes
+      switch (true) {
+        case existing.includes(OrgSubCollection.Slots) &&
+          missing.includes(OrgSubCollection.Attendance):
+          const slotRef = await slots.doc(id).get();
+          const slotData = slotRef.data() as SlotInterface;
+          const attendanceDoc = attendanceFromSlot(slotData);
+          batch.set(attendance.doc(id), attendanceDoc, { merge: true });
+          break;
+
+        case existing.includes(OrgSubCollection.Attendance) &&
+          missing.includes(OrgSubCollection.Slots):
+          batch.delete(attendance.doc(id));
+          break;
+
+        default:
+          throw new Error(
+            "Found part of code that should be unreachable: slot attendance mismatches"
+          );
+      }
+    })
+  );
+
+  // Update mismatched dates so that attendance has the same date as the corresponding slot
+  Object.entries(dateMismatches).forEach(([id, { slots: date }]) =>
+    batch.set(attendance.doc(id), { date }, { merge: true })
+  );
+
+  return batch.commit();
+};
