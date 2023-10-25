@@ -224,6 +224,26 @@
     },
 
     /**
+     * Firestore backup/restore commands
+     */
+    {
+      "commandKind": "global",
+      "safeForSimultaneousRushProcesses": true,
+      "name": "seed-firestore:igorice",
+      "summary": "Backs up the production firestore data and seeds the dev emulated firestore with said data (for 'igorice' oranization)",
+      "description": "Used for debugging purposes on production data: backs up the data from production firestore, using the script in 'packages/backup-restore', stores it in a temp '<repo-root>/firestore-backup' and seeds the local firestore so that we can run debugging sessions without jeopardizing the production data.",
+      "shellCommand": "mkdir -p firestore-backup && cd firestore-backup && ../packages/backup-restore/dist/cli.js backup --project eisbuk igorice.web.app && ../packages/backup-restore/dist/cli.js restore --project eisbuk --emulators igorice.web.app.json"
+    },
+    {
+      "commandKind": "global",
+      "safeForSimultaneousRushProcesses": true,
+      "name": "seed-firestore:eisbuk",
+      "summary": "Backs up the production firestore data and seeds the dev emulated firestore with said data (for 'eisbuk' oranization)",
+      "description": "Used for debugging purposes on production data: backs up the data from production firestore, using the script in 'packages/backup-restore', stores it in a temp '<repo-root>/firestore-backup' and seeds the local firestore so that we can run debugging sessions without jeopardizing the production data.",
+      "shellCommand": "mkdir -p firestore-backup && cd firestore-backup && ../packages/backup-restore/dist/cli.js backup --project eisbuk eisbuk.web.app && ../packages/backup-restore/dist/cli.js restore --project eisbuk --emulators eisbuk.web.app.json"
+    },
+
+    /**
      * Pre-commit commands
      */
     {
