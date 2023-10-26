@@ -14,6 +14,8 @@ import {
   CustomerLoose,
   OrgSubCollection,
 } from "@eisbuk/shared";
+import { getDefaultCountryCode } from "@/store/selectors/orgInfo";
+
 import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 import { Phone, Calendar, Mail } from "@eisbuk/svg";
@@ -36,6 +38,8 @@ const AthleteProfilePage: React.FC = () => {
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.Customers },
   ]);
+  const defaultCountryCode = useSelector(getDefaultCountryCode);
+
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -66,6 +70,7 @@ const AthleteProfilePage: React.FC = () => {
       <LayoutContent>
         <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
           <CustomerForm.Admin
+            defaultDialCode={defaultCountryCode}
             onSave={handleSave}
             onClose={() => history.goBack()}
             onDelete={() => {

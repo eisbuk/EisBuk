@@ -76,6 +76,7 @@ const AuthDialog: React.FC = () => {
                     className="cursor-pointer m-1"
                     onClick={() => setAuthFlow(authFlow)}
                     aria-label={t(label)}
+                    key={label}
                   >
                     <HoverText text={t(label)}>
                       <IconButton size={IconButtonSize.XS} className="">
