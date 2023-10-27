@@ -242,6 +242,15 @@
       "description": "Used for debugging purposes on production data: backs up the data from production firestore, using the script in 'packages/backup-restore', stores it in a temp '<repo-root>/firestore-backup' and seeds the local firestore so that we can run debugging sessions without jeopardizing the production data.",
       "shellCommand": "mkdir -p firestore-backup && cd firestore-backup && ../packages/backup-restore/dist/cli.js backup --project eisbuk eisbuk.web.app && ../packages/backup-restore/dist/cli.js restore --project eisbuk --emulators eisbuk.web.app.json"
     },
+    /** TODO: This is a very raw implementation of the command, refactor when convenient */
+    {
+      "commandKind": "global",
+      "safeForSimultaneousRushProcesses": true,
+      "name": "save-fixture:igorice",
+      "summary": "Saves the latest firestore backup for 'igorice' to '/packages/integrations/fixtures/igorice-<timestamp>.json'",
+      "description": "Used for integration tests against production data snapshots: saves the snapshot of latest production data backup to be used for integration tests testing various checks and regressions on produciton db.",
+      "shellCommand": "./common/scripts/save-fixture igorice"
+    },
 
     /**
      * Pre-commit commands

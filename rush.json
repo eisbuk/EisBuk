@@ -430,6 +430,10 @@
     {
       "packageName": "jest-smtp",
       "projectFolder": "packages/jest-smtp"
+    },
+    {
+      "packageName": "@eisbuk/integrations",
+      "projectFolder": "packages/integrations"
     }
   ]
 }

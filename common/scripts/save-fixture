@@ -1,0 +1,11 @@
+#!/bin/bash
+
+ORGANIZATION=$1
+
+BACKUP_JSON="./firestore-backup/$ORGANIZATION.web.app.json"
+if [[ ! -f $BACKUP_JSON ]]; then 
+  echo "ERROR: Backup file not found: $BACKUP_JSON"
+  exit 1
+fi
+
+cp $BACKUP_JSON "./packages/integrations/fixtures/$ORGANIZATION-$(date +"%Y-%m-%dT%H:%M:%S%z").json"
