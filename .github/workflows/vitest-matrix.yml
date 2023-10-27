@@ -43,7 +43,7 @@ jobs:
           common/temp
           **/node_modules
           ~/.cache/firebase/emulators
-        key: ${{ runner.os }}-modules-emulators-node18-v1-${{ hashFiles('**/pnpm-lock.yaml') }}
+        key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
     - name: Install and build packages
