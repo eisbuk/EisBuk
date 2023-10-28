@@ -1,10 +1,18 @@
 import { DateTime } from "luxon";
 
-import { CustomerFull, CustomersByBirthday } from "@eisbuk/shared";
+import {
+  CustomerBookings,
+  CustomerFull,
+  CustomersByBirthday,
+  SlotType,
+  luxon2ISODate,
+  wrapIter,
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
 import { compareCustomerNames } from "@/utils/sort";
+import { calculateIntervalDuration, getMonthStr } from "@/utils/helpers";
 
 /**
  * Get a record of all the customers for current organization from firebase store
@@ -105,4 +113,78 @@ export const getCustomerByNoCategories = () => (state: LocalStore) => {
     (customer) => !customer.categories.length && !customer.deleted
   );
   return customers || [];
+};
+
+export const getCustomersWithStats = (state: LocalStore) => {
+  const { app, firestore } = state;
+  const { calendarDay } = app;
+  const {
+    data: { bookings = {}, slotsByDay = {} },
+  } = firestore;
+
+  if (!slotsByDay) return bookings;
+  const thisMonth = getMonthStr(calendarDay, 0);
+  const nextMonth = getMonthStr(calendarDay, 1);
+  const dateISO = luxon2ISODate(calendarDay);
+
+  const slotsThisMonth = slotsByDay[thisMonth] || [];
+  const slotsNextMonth = slotsByDay[nextMonth] || [];
+
+  return [
+    ...wrapIter(
+      Object.values(bookings as { [secretKey: string]: CustomerBookings })
+    )
+      // map all bookings/customers into [secretKey]: {...customer, thisice , thisoff, nextice, nextoff}
+      .map((booking) => {
+        const { bookedSlots, deleted } = booking;
+        // if user is deleted or no bookedSlots return
+        if (!bookedSlots || deleted) return booking;
+
+        // foreach entry inside bookedSlots check if it exists in slots this month or next
+
+        const bookingStats = wrapIter(Object.entries(bookedSlots))._reduce(
+          (bookedSlotAcc, [bookedSlotId, { interval }]) => {
+            const slotsInDayThisMonth = slotsThisMonth[dateISO] || [];
+            const slotsInDayNextMonth = slotsNextMonth[dateISO] || [];
+
+            let thisBookingIceDuration = 0;
+            let thisBookingOffIceDuration = 0;
+            let nextBookingIceDuration = 0;
+            let nextBookingOffIceDuration = 0;
+
+            // (if it doesn't exist that means it doesn't belong to this month)
+            if (slotsInDayThisMonth[bookedSlotId]) {
+              const dur = calculateIntervalDuration(interval);
+              // check its type and date/key and add it to appropriate counter/acc
+              slotsInDayThisMonth[bookedSlotId].type === SlotType.Ice
+                ? (thisBookingIceDuration = Number(dur))
+                : (thisBookingOffIceDuration = Number(dur));
+            } else if (slotsInDayNextMonth[bookedSlotId]) {
+              const dur = calculateIntervalDuration(interval);
+              slotsInDayNextMonth[bookedSlotId].type === SlotType.Ice
+                ? (nextBookingIceDuration = Number(dur))
+                : (nextBookingOffIceDuration = Number(dur));
+            }
+
+            return {
+              ...bookedSlotAcc,
+              thisMonthIce: bookedSlotAcc.thisMonthIce + thisBookingIceDuration,
+              thisMonthOffIce:
+                bookedSlotAcc.thisMonthOffIce + thisBookingOffIceDuration,
+              nextMonthOffIce:
+                bookedSlotAcc.nextMonthOffIce + nextBookingOffIceDuration,
+              nextMonthIce: bookedSlotAcc.nextMonthIce + nextBookingIceDuration,
+            };
+          },
+          {
+            thisMonthIce: 0,
+            thisMonthOffIce: 0,
+            nextMonthIce: 0,
+            nextMonthOffIce: 0,
+          }
+        );
+
+        return { ...booking, bookingStats };
+      }),
+  ];
 };
