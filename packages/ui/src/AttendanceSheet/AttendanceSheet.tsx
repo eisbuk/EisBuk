@@ -64,26 +64,31 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
         headers={headers}
         items={processTableData(data)}
         renderHeaders={(headers) => (
-          <tr className=" border-2 border-gray-800">
+          <tr className=" border border-gray-800">
             {Object.values(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
               .map((label) => (
-                <th className="p-1 border-2 border-gray-300">{label}</th>
+                <th className="p-1 border border-gray-200 print:border-black">
+                  {label}
+                </th>
               ))}
           </tr>
         )}
         renderRow={(rowData, rowIx) => (
           <>
-            <tr key={rowIx} className={`border-2 border-gray-300 text-center`}>
+            <tr
+              key={rowIx}
+              className={`border border-gray-200 text-center print:border-black`}
+            >
               {/* Skip the athleteSurname column */}
               {Object.entries(rowData).map(
                 ([key, data]) =>
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border-2 border-gray-300 truncate print:text-black ${
+                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black ${
                         key === "athlete" && "text-left"
                       }`}
                     >
