@@ -19,6 +19,8 @@ interface RowItem {
   totalHours: string;
   athlete: string;
   athleteSurname: string;
+  trainer: string;
+  notes: string;
 }
 
 const headers = {
@@ -27,6 +29,8 @@ const headers = {
   end: i18n.t(PrintableAttendance.End),
   totalHours: i18n.t(PrintableAttendance.TotalHours),
   athlete: i18n.t(PrintableAttendance.Athlete),
+  trainer: i18n.t(PrintableAttendance.Trainer),
+  notes: i18n.t(PrintableAttendance.Note),
 };
 
 interface TableDataEntry {
@@ -66,20 +70,20 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
               .map((label) => (
-                <th className="p-1 border-2 border-gray-200">{label}</th>
+                <th className="p-1 border-2 border-gray-300">{label}</th>
               ))}
           </tr>
         )}
         renderRow={(rowData, rowIx) => (
           <>
-            <tr key={rowIx} className={`border-2 border-gray-200 text-center`}>
+            <tr key={rowIx} className={`border-2 border-gray-300 text-center`}>
               {/* Skip the athleteSurname column */}
               {Object.entries(rowData).map(
                 ([key, data]) =>
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border-2 border-gray-200 truncate print:text-black ${
+                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border-2 border-gray-300 truncate print:text-black ${
                         key === "athlete" && "text-left"
                       }`}
                     >
@@ -101,16 +105,6 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                       ) : (
                         data
                       )}
-                    </td>
-                  )
-              )}
-            </tr>
-            <tr className={`border-2 border-gray-200`}>
-              {[...Object.keys(rowData)].map(
-                (key) =>
-                  key !== "athleteSurname" && (
-                    <td style={{ printColorAdjust: "exact" }} className="">
-                      &nbsp;
                     </td>
                   )
               )}
@@ -138,6 +132,8 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           totalHours,
           athlete: name,
           athleteSurname: surname,
+          trainer: "",
+          notes: "",
         } as RowItem;
       });
     return [...acc, ...newRows];
