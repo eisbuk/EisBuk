@@ -6,6 +6,7 @@ import {
   OrgSubCollection,
   Collection,
   DeliveryQueue,
+  SanityCheckKind,
 } from "../enums/firestore";
 
 export interface PrivacyPolicyParams {
@@ -408,6 +409,8 @@ export interface SlotSanityCheckReport {
   unpairedEntries: Record<string, UnpairedDoc>;
   /** A record of docs for which the date is mismatched across collections (keyed by slot id) */
   dateMismatches: Record<string, DateMismatchDoc>;
+  /** A timestamp of autofix function having been ran */
+  fixedAt: string | null;
 }
 // #endregion sanityChecks
 
@@ -446,6 +449,11 @@ export interface FirestoreSchema {
   };
   [Collection.Secrets]: {
     [organization: string]: OrganizationSecrets;
+  };
+  [Collection.SanityChecks]: {
+    [organization: string]: {
+      [SanityCheckKind.SlotAttendance]: SlotSanityCheckReport;
+    };
   };
 }
 
