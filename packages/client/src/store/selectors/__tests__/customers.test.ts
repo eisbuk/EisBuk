@@ -1,6 +1,11 @@
 import { describe, expect, test } from "vitest";
 import { DateTime } from "luxon";
 
+import { Customer } from "@eisbuk/shared";
+
+import { saul, walt, jian, mike, jane, gus } from "@eisbuk/testing/customers";
+import { baseSlot } from "@eisbuk/testing/slots";
+
 import { LocalStore } from "@/types/store";
 
 import { getNewStore } from "@/store/createStore";
@@ -8,9 +13,12 @@ import { getNewStore } from "@/store/createStore";
 import {
   getCustomerByNoCategories,
   getCustomersByBirthday,
+  getCustomersWithStats,
 } from "../customers";
 
-import { saul, walt, jian, mike, jane, gus } from "@eisbuk/testing/customers";
+import { slotsByDay } from "../__testData__/slots";
+
+const intervals = Object.keys(baseSlot.intervals);
 
 const customers: LocalStore["firestore"]["data"]["customers"] = {
   [saul.id]: {
@@ -100,6 +108,56 @@ describe("Customer Selectors", () => {
       const selector = getCustomerByNoCategories();
       const res = selector(store.getState());
       expect(res).toEqual([{ ...gus }]);
+    });
+  });
+
+  describe("Customer stats", () => {
+    /** @TODO Set the date to be the first of the two months of the slots dates */
+    /** @TODO text if there are no slotsByDay */
+    /** @TODO text if there are no slotsByDay this month */
+    /** @TODO text if there are no slotsByDay next month */
+    test("getCustomerWithStats should get customers data with booked stats", async () => {
+      // const testDate = DateTime.fromISO(baseSlot.date);
+
+      // date: "2021-03-01"
+      const bookedSlots = {
+        ["test-slot-1"]: {
+          date: baseSlot.date,
+          interval: intervals[0],
+        },
+        ["test-slot-2"]: {
+          date: baseSlot.date,
+          interval: intervals[0],
+        },
+      };
+
+      const store = getNewStore({
+        firestore: {
+          data: {
+            customers,
+            slotsByDay,
+            bookedSlots,
+            bookings: {
+              [saul.secretKey]: { ...saul, bookedSlots } as Customer,
+            },
+          },
+        },
+      });
+
+      const res = getCustomersWithStats(store.getState());
+
+      expect(res).toEqual([
+        {
+          ...saul,
+          bookedSlots,
+          bookingStats: {
+            nextMonthIce: 0,
+            nextMonthOffIce: 0,
+            thisMonthIce: 0,
+            thisMonthOffIce: 0,
+          },
+        },
+      ]);
     });
   });
 });
