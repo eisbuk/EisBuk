@@ -1,11 +1,13 @@
 import admin from "firebase-admin";
 
 import {
+  AttendanceAutofixReport,
   Collection,
   DateMismatchDoc,
   FirestoreSchema,
   OrgSubCollection,
   SanityCheckKind,
+  SlotAttendanceUpdate,
   SlotAttendnace,
   SlotInterface,
   SlotSanityCheckReport,
@@ -92,7 +94,7 @@ export const findSlotAttendanceMismatches = async (
   const unpairedEntries = normalisedEntries._reduce(collectUnpairedDocs, {});
   const dateMismatches = normalisedEntries._reduce(dateMismatchReducer, {});
 
-  return { id: timestamp, unpairedEntries, dateMismatches, fixedAt: null };
+  return { id: timestamp, unpairedEntries, dateMismatches };
 };
 
 const collectUnpairedDocs = (
@@ -141,7 +143,7 @@ export const attendanceSlotMismatchAutofix = async (
   db: Firestore,
   organization: string,
   mismatches: SlotSanityCheckReport
-) => {
+): Promise<AttendanceAutofixReport> => {
   const batch = db.batch();
 
   const { unpairedEntries, dateMismatches } = mismatches;
@@ -154,6 +156,10 @@ export const attendanceSlotMismatchAutofix = async (
     date,
     attendances: {},
   });
+
+  const created = {} as Record<string, SlotAttendnace>;
+  const deleted = {} as Record<string, SlotAttendnace>;
+  const updated = {} as Record<string, SlotAttendanceUpdate>;
 
   // Create attendance entry for every slot entry without one
   await Promise.all(
@@ -170,11 +176,21 @@ export const attendanceSlotMismatchAutofix = async (
           const slotData = slotRef.data() as SlotInterface;
           const attendanceDoc = attendanceFromSlot(slotData);
           batch.set(attendance.doc(id), attendanceDoc, { merge: true });
+
+          // Save the created data for report
+          created[id] = attendanceDoc;
           break;
 
         case existing.includes(OrgSubCollection.Attendance) &&
           missing.includes(OrgSubCollection.Slots):
-          batch.delete(attendance.doc(id));
+          const toDelete = attendance.doc(id);
+
+          batch.delete(toDelete);
+
+          // Save the existing data before deletion (before batch.commit) and store for report
+          deleted[id] = await toDelete
+            .get()
+            .then((snap) => snap.data() as SlotAttendnace);
           break;
 
         default:
@@ -186,11 +202,30 @@ export const attendanceSlotMismatchAutofix = async (
   );
 
   // Update mismatched dates so that attendance has the same date as the corresponding slot
-  Object.entries(dateMismatches).forEach(([id, { slots: date }]) =>
-    batch.set(attendance.doc(id), { date }, { merge: true })
+  await Promise.all(
+    Object.entries(dateMismatches).map(async ([id, { slots: date }]) => {
+      const toUpdate = attendance.doc(id);
+      batch.set(attendance.doc(id), { date }, { merge: true });
+
+      // Save the update for report
+      const before = await toUpdate
+        .get()
+        .then((snap) => snap.data() as SlotAttendnace)
+        .then(({ date }) => date);
+      updated[id] = {
+        date: { before, after: date },
+      };
+    })
   );
 
-  return batch.commit();
+  await batch.commit();
+
+  return {
+    timestamp: DateTime.now().toISO(),
+    created,
+    deleted,
+    updated,
+  };
 };
 
 const getSanityChecksRef = (

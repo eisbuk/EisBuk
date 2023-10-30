@@ -44,19 +44,17 @@ export const dbSlotAttendanceAutofix = functions
       );
 
       const latestReport = await checker.getLatestReport();
-      const report = latestReport.fixedAt
+      const report = latestReport.attendanceFixes
         ? await checker.checkAndWrite()
         : latestReport;
 
-      try {
-        await attendanceSlotMismatchAutofix(db, organization, report);
-        await checker.writeReport({
-          ...report,
-          fixedAt: new Date().toISOString(),
-        });
-        return { success: true };
-      } catch (error) {
-        return { success: false, error };
-      }
+      const attendanceFixes = await attendanceSlotMismatchAutofix(
+        db,
+        organization,
+        report
+      );
+      checker.writeReport({ ...report, attendanceFixes });
+
+      return attendanceFixes;
     }
   );
