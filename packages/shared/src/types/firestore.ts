@@ -388,8 +388,30 @@ export interface SMSMessage {
 }
 // #endregion cloudSentMessages
 
-// #region firestoreSchema
+// #region sanityChecks
+export interface UnpairedDoc {
+  existing: OrgSubCollection[];
+  missing: OrgSubCollection[];
+}
 
+/**
+ * A record for a document with mismatched dates.
+ */
+export type DateMismatchDoc = {
+  [key in OrgSubCollection]: string;
+};
+
+export interface SlotSanityCheckReport {
+  /** ISO timestamp of the sanity check run */
+  id: string;
+  /** A record of "unpaired" docs - slot related docs missing an entry in one or more related collection (keyed by slot id) */
+  unpairedEntries: Record<string, UnpairedDoc>;
+  /** A record of docs for which the date is mismatched across collections (keyed by slot id) */
+  dateMismatches: Record<string, DateMismatchDoc>;
+}
+// #endregion sanityChecks
+
+// #region firestoreSchema
 /**
  * Full firestore database schema as inferred from test data
  */

@@ -24,4 +24,5 @@ export enum CloudFunction {
   ClearDeletedCustomersRegistrationAndCategories = "clearDeletedCustomersRegistrationAndCategories",
 
   DBSanityCheck = "dbSanityCheck",
+  DBSlotAttendanceAutofix = "dbSlotAttendanceAutofix",
 }

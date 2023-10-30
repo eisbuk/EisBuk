@@ -4,7 +4,11 @@ import admin from "firebase-admin";
 import { __functionsZone__ } from "../constants";
 
 import { checkUser, throwUnauth } from "../utils";
-import { findSlotAttendanceMismatches } from "./utils";
+
+import {
+  attendanceSlotMismatchAutofix,
+  findSlotAttendanceMismatches,
+} from "./slotRelatedDocs";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -18,8 +22,26 @@ export const dbSanityCheck = functions
 
       const db = admin.firestore();
 
-      const res = await findSlotAttendanceMismatches(db, organization);
+      return findSlotAttendanceMismatches(db, organization);
+    }
+  );
 
-      return res;
+export const dbSlotAttendanceAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+
+      // TODO: This should be read from the repord document
+      const mismatches = await findSlotAttendanceMismatches(db, organization);
+
+      try {
+        attendanceSlotMismatchAutofix(db, organization, mismatches);
+        return { success: true };
+      } catch (error) {
+        return { success: false, error };
+      }
     }
   );
