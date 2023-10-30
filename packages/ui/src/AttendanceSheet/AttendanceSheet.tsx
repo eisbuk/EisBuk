@@ -1,4 +1,5 @@
 import React from "react";
+import { DateTime } from "luxon";
 
 import i18n, {
   PrintableAttendance,
@@ -7,9 +8,8 @@ import i18n, {
 } from "@eisbuk/translations";
 import { CustomerWithAttendance, SlotType } from "@eisbuk/shared";
 
-import Table from "../Table";
 import { calculateIntervalDuration } from "./utils";
-import { DateTime } from "luxon";
+import Table from "../Table";
 
 interface RowItem {
   [key: string]: string | number | boolean | null;
@@ -27,7 +27,7 @@ const headers = {
   type: i18n.t("Type") /** @TODO update */,
   start: i18n.t(PrintableAttendance.Start),
   end: i18n.t(PrintableAttendance.End),
-  totalHours: i18n.t(PrintableAttendance.TotalHours),
+  totalHours: "ss",
   athlete: i18n.t(PrintableAttendance.Athlete),
   trainer: i18n.t(PrintableAttendance.Trainer),
   notes: i18n.t(PrintableAttendance.Note),
@@ -65,13 +65,13 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
         items={processTableData(data)}
         renderHeaders={(headers) => (
           <tr className=" border border-gray-800">
-            {Object.values(headers)
+            {Object.entries(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
-              .map((label) => (
+              .map(([key, label]) => (
                 <th className="p-1 border border-gray-200 print:border-black">
-                  {label}
+                  {key === "totalHours" ? "\uD83D\uDD51" : label}
                 </th>
               ))}
           </tr>
@@ -88,9 +88,11 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className={`p-1 min-w-[3rem] max-w-[7rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black ${
-                        key === "athlete" && "text-left"
-                      }`}
+                      className={`p-1 max-w-[3rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black 
+                      ${key === "athlete" && "text-left max-w-[7rem]"}
+                 
+                      
+                      `}
                     >
                       {key === "type" ? (
                         <span
