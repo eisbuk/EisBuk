@@ -2,14 +2,14 @@ import React from "react";
 import { DateTime } from "luxon";
 
 import i18n, {
+  PrintableAttendance,
   useTranslation,
   DateFormat,
-  PrintableAttendance,
 } from "@eisbuk/translations";
 import { CustomerWithAttendance, SlotType } from "@eisbuk/shared";
 
-import Table from "../Table";
 import { calculateIntervalDuration } from "./utils";
+import Table from "../Table";
 
 interface RowItem {
   [key: string]: string | number | boolean | null;
@@ -17,23 +17,20 @@ interface RowItem {
   start: string;
   end: string;
   totalHours: string;
-  note: string;
-  trainer: string;
   athlete: string;
-  signature: string;
-  personalNote: string;
+  athleteSurname: string;
+  trainer: string;
+  notes: string;
 }
 
 const headers = {
   type: i18n.t("Type") /** @TODO update */,
   start: i18n.t(PrintableAttendance.Start),
   end: i18n.t(PrintableAttendance.End),
-  totalHours: i18n.t(PrintableAttendance.TotalHours),
-  note: i18n.t(PrintableAttendance.Note),
-  trainer: i18n.t(PrintableAttendance.Trainer),
+  totalHours: "ss",
   athlete: i18n.t(PrintableAttendance.Athlete),
-  signature: i18n.t(PrintableAttendance.Signature),
-  personalNote: i18n.t(PrintableAttendance.Note),
+  trainer: i18n.t(PrintableAttendance.Trainer),
+  notes: i18n.t(PrintableAttendance.Note),
 };
 
 interface TableDataEntry {
@@ -43,25 +40,23 @@ interface TableDataEntry {
 }
 
 export interface AttendanceSheetProps {
+  data: TableDataEntry[];
   date: DateTime;
   organizationName?: string;
-  data: TableDataEntry[];
 }
 
 const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
-  date,
   data,
-  organizationName = "",
+  organizationName,
+  date,
 }) => {
   const { t } = useTranslation();
-
   return (
     <div className="w-full">
-      <h2 className="flex justify-center items-center print:m-0">
-        {organizationName}
-      </h2>
-
       <div className="py-2 bg-gray-800 font-semibold text-center text-white">
+        <h2 className="font-fredoka hidden print:flex print:justify-center print:items-center">
+          {organizationName}
+        </h2>
         {`${t(DateFormat.Date)}: ${t(DateFormat.FullWithWeekday, { date })}`}
       </div>
 
@@ -69,42 +64,59 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
         headers={headers}
         items={processTableData(data)}
         renderHeaders={(headers) => (
-          <tr className="border border-gray-800">
-            {Object.values(headers)
+          <tr className=" border border-gray-800">
+            {Object.entries(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
-              .map((label) => (
-                <th className="p-1 border border-gray-200 min-w-[3rem]">
-                  {label}
+              .map(([key, label]) => (
+                <th className="p-1 border border-gray-200 print:border-black">
+                  {key === "totalHours" ? "\uD83D\uDD51" : label}
                 </th>
               ))}
           </tr>
         )}
         renderRow={(rowData, rowIx) => (
-          <tr
-            key={rowIx}
-            className={`p-0 max-w-full border border-gray-200 text-center`}
-          >
-            {Object.entries(rowData).map(([key, data]) => (
-              <td
-                style={{ printColorAdjust: "exact" }}
-                className="min-w-[3rem] max-w-[7rem] p-1 bg-inherit text-gray-500 border border-gray-200 truncate print:text-black"
-              >
-                {key === "type" ? (
-                  <span
-                    className={`px-2 py-0.5 ${
-                      data === SlotType.Ice ? "bg-cyan-100" : "bg-yellow-100"
-                    } rounded-lg print:font-normal print:bg-none`}
-                  >
-                    {data}
-                  </span>
-                ) : (
-                  data
-                )}
-              </td>
-            ))}
-          </tr>
+          <>
+            <tr
+              key={rowIx}
+              className={`border border-gray-200 text-center print:border-black`}
+            >
+              {/* Skip the athleteSurname column */}
+              {Object.entries(rowData).map(
+                ([key, data]) =>
+                  key !== "athleteSurname" && (
+                    <td
+                      style={{ printColorAdjust: "exact" }}
+                      className={`p-1 max-w-[3rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black 
+                      ${key === "athlete" && "text-left max-w-[7rem]"}
+                 
+                      
+                      `}
+                    >
+                      {key === "type" ? (
+                        <span
+                          className={`px-2 py-0.5 ${
+                            data === SlotType.Ice
+                              ? "bg-cyan-100"
+                              : "bg-yellow-100"
+                          } rounded-lg print:font-normal print:bg-none`}
+                        >
+                          {data}
+                        </span>
+                      ) : key === "athlete" ? (
+                        <>
+                          <b>{rowData["athleteSurname"]} </b>
+                          {data}
+                        </>
+                      ) : (
+                        data
+                      )}
+                    </td>
+                  )
+              )}
+            </tr>
+          </>
         )}
       />
     </div>
@@ -112,7 +124,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
 };
 
 const processTableData = (entries: TableDataEntry[]): RowItem[] =>
-  entries.reduce((acc, { type, notes, customers }) => {
+  entries.reduce((acc, { type, customers }) => {
     const newRows = customers
       // We're not displaying customers that have no booked interval.
       .filter(({ bookedInterval }) => Boolean(bookedInterval))
@@ -125,11 +137,10 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           start,
           end,
           totalHours,
-          note: notes,
+          athlete: name,
+          athleteSurname: surname,
           trainer: "",
-          athlete: `${name} ${surname}`,
-          personalNote: "",
-          signature: "",
+          notes: "",
         } as RowItem;
       });
     return [...acc, ...newRows];

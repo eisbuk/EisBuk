@@ -28,7 +28,7 @@ const LayoutController: React.FC<Props> = (params) => {
 
   const displayName = useSelector(getOrgDisplayName);
   const logo = displayName ? (
-    <h1 className="font-fredoka font-semibold text-3xl text-white">
+    <h1 className="font-fredoka font-semibold text-3xl text-white print:hidden">
       {displayName}
     </h1>
   ) : null;

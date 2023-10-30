@@ -34,7 +34,7 @@ const Layout: React.FC<LayoutProps> = ({
   onLogout = () => {},
 }) => {
   return (
-    <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col overflow-hidden">
+    <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col">
       <header className="bg-gray-800">
         <div className="content-container">
           {isAdmin && adminLinks && (
@@ -71,7 +71,9 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      <main className="overflow-hidden flex flex-col">{children}</main>
+      <main className="overflow-hidden flex flex-col print:overflow-visible">
+        {children}
+      </main>
     </div>
   );
 };
@@ -88,7 +90,7 @@ export const LayoutContent: React.FC<{
   );
 
   return (
-    <Wrapper className="flex flex-col overflow-hidden">
+    <Wrapper className="flex flex-col overflow-hidden print:overflow-visible">
       <div className={`overflow-y-auto ${wide ? "" : "content-container"}`}>
         {children}
       </div>
@@ -120,6 +122,7 @@ const getHeaderRowClasses = (
     "min-h-[70px]",
     "justify-between",
     "items-center",
+    "print:hidden",
   ];
 
   // Additional classes per row

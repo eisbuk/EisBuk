@@ -1,6 +1,6 @@
 import React from "react";
 
-import { fromISO, SlotType } from "@eisbuk/shared";
+import { SlotType, fromISO } from "@eisbuk/shared";
 
 import { intervalStrings as intervals } from "@eisbuk/testing/attendance";
 import { saul, walt, gus, jane } from "@eisbuk/testing/customers";
