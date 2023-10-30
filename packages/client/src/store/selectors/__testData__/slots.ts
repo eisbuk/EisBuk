@@ -52,6 +52,36 @@ const prevoiusWeek = {
 };
 
 /**
+ * This is the week prior to `currentWeek` (2021-08-23 - 2021-08-29) and should alway get filtered out.
+ */
+const prevoiusWeekDateIds = {
+  "2021-08-23": {
+    ["2021-08-23-9"]: {
+      ...baseSlot,
+      categories: [Category.Competitive],
+      id: "slot-0",
+      type: SlotType.Ice,
+    },
+  },
+  "2021-08-24": {
+    ["2021-08-23-9"]: {
+      ...baseSlot,
+      categories: [Category.PreCompetitiveAdults],
+      id: "slot-1",
+      type: SlotType.OffIce,
+    },
+  },
+  "2021-08-25-9": {
+    ["slot-2"]: {
+      ...baseSlot,
+      categories: [Category.CourseMinors],
+      id: "slot-2",
+      type: SlotType.OffIce,
+    },
+  },
+};
+
+/**
  * Start of `currentWeek` (2021-08-30 - 2021-09-05) belonging to the `prevMonth` (2021-08)
  */
 export const currentWeekPrevMonth = {
@@ -65,7 +95,22 @@ export const currentWeekPrevMonth = {
   },
 };
 
+export const currentWeekPrevMonthDateId = {
+  "2021-08-31": {
+    ["2021-08-31-9"]: {
+      ...baseSlot,
+      id: "slot-3",
+      categories: [Category.Competitive, Category.CourseMinors],
+      type: SlotType.Ice,
+    },
+  },
+};
+
 const fullPrevoiusMonth = { ...prevoiusWeek, ...currentWeekPrevMonth };
+const fullPrevoiusMonthDateIds = {
+  ...prevoiusWeekDateIds,
+  ...currentWeekPrevMonthDateId,
+};
 // #region previousMonth
 
 // #region currentMonth
@@ -89,6 +134,24 @@ const currentWeekThisMonthCompetitive = {
   },
   "2021-09-03": {
     ["slot-5"]: {
+      ...baseSlot,
+      id: "slot-5",
+      categories: [Category.Competitive],
+      type: SlotType.OffIce,
+    },
+  },
+};
+const currentWeekThisMonthCompetitiveDateIds = {
+  "2021-09-01": {
+    ["2021-09-01-9"]: {
+      ...baseSlot,
+      id: "slot-4",
+      categories: [Category.Competitive, Category.PreCompetitiveMinors],
+      type: SlotType.Ice,
+    },
+  },
+  "2021-09-03": {
+    ["2021-09-01-9"]: {
       ...baseSlot,
       id: "slot-5",
       categories: [Category.Competitive],
@@ -156,11 +219,47 @@ const nextWeekCompetitive = {
     },
   },
 };
+const nextWeekCompetitiveDateIds = {
+  "2021-09-06": {
+    ["2021-09-06-9"]: {
+      ...baseSlot,
+      id: "slot-8",
+      categories: [Category.Competitive, Category.PreCompetitiveMinors],
+      type: SlotType.Ice,
+    },
+  },
+  "2021-09-07": {
+    ["2021-09-06-9"]: {
+      ...baseSlot,
+      id: "slot-9",
+      categories: [Category.Competitive],
+      type: SlotType.OffIce,
+    },
+  },
+};
 /**
  * Slots of `nextWeek` (2021-09-06 - 2021-09-12) belonging not belonging to `Category.Competitive`.
  * Should get filtered out in tests anyhow.
  */
 const nextWeekNonCompetitive = {
+  "2021-09-06": {
+    ["slot-10"]: {
+      ...baseSlot,
+      id: "slot-10",
+      categories: [Category.PreCompetitiveAdults],
+      type: SlotType.Ice,
+    },
+  },
+  "2021-09-07": {
+    ["slot-11"]: {
+      ...baseSlot,
+      id: "slot-11",
+      categories: [Category.PreCompetitiveAdults],
+      type: SlotType.OffIce,
+    },
+  },
+};
+const nextWeekNonCompetitiveDateIds = {
   "2021-09-06": {
     ["slot-10"]: {
       ...baseSlot,
@@ -191,6 +290,16 @@ const fullNextWeek = Object.keys(nextWeekCompetitive).reduce(
   }),
   {} as SlotsByDay
 );
+const fullNextWeekDateIds = Object.keys(nextWeekCompetitive).reduce(
+  (acc, isoDate) => ({
+    ...acc,
+    [isoDate]: {
+      ...nextWeekCompetitiveDateIds[isoDate],
+      ...nextWeekNonCompetitiveDateIds[isoDate],
+    },
+  }),
+  {} as SlotsByDay
+);
 /**
  * Current month slots with `Category.Competitive`
  */
@@ -202,6 +311,10 @@ const currentMonthCompetitive = {
  * Full current month for test store
  */
 const fullCurrentMonth = { ...currentWeekThisMonth, ...fullNextWeek };
+const fullCurrentMonthDateId = {
+  ...currentWeekThisMonthCompetitiveDateIds,
+  ...fullNextWeekDateIds,
+};
 // #endregion currentMonth
 
 // #region testData
@@ -251,5 +364,11 @@ export const slotsByDay: NonNullable<
 > = {
   ["2021-08"]: fullPrevoiusMonth,
   ["2021-09"]: fullCurrentMonth,
+};
+export const slotsByDayDateIds: NonNullable<
+  LocalStore["firestore"]["data"]["slotsByDay"]
+> = {
+  ["2021-08"]: fullPrevoiusMonthDateIds,
+  ["2021-09"]: fullCurrentMonthDateId,
 };
 // #endregion testData

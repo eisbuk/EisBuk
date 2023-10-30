@@ -16,7 +16,7 @@ import {
   getCustomersWithStats,
 } from "../customers";
 
-import { slotsByDay } from "../__testData__/slots";
+import { slotsByDay, currentWeekStartDate } from "../__testData__/slots";
 
 const intervals = Object.keys(baseSlot.intervals);
 
@@ -111,12 +111,12 @@ describe("Customer Selectors", () => {
     });
   });
 
-  describe("Customer stats", () => {
+  describe("getCustomerWithStats", () => {
     /** @TODO Set the date to be the first of the two months of the slots dates */
     /** @TODO text if there are no slotsByDay */
     /** @TODO text if there are no slotsByDay this month */
     /** @TODO text if there are no slotsByDay next month */
-    test("getCustomerWithStats should get customers data with booked stats", async () => {
+    test("should get zero hour booking stats if no slots have been booked this or next month", async () => {
       // const testDate = DateTime.fromISO(baseSlot.date);
 
       // date: "2021-03-01"
@@ -132,6 +132,51 @@ describe("Customer Selectors", () => {
       };
 
       const store = getNewStore({
+        firestore: {
+          data: {
+            customers,
+            slotsByDay,
+            bookedSlots,
+            bookings: {
+              [saul.secretKey]: { ...saul, bookedSlots } as Customer,
+            },
+          },
+        },
+      });
+
+      const res = getCustomersWithStats(store.getState());
+
+      expect(res).toEqual([
+        {
+          ...saul,
+          bookedSlots,
+          bookingStats: {
+            nextMonthIce: 0,
+            nextMonthOffIce: 0,
+            thisMonthIce: 0,
+            thisMonthOffIce: 0,
+          },
+        },
+      ]);
+    });
+    test("should get booking stats if slots have been booked this and next month", async () => {
+      const testDate = DateTime.fromISO(currentWeekStartDate);
+
+      const bookedSlots = {
+        ["test-slot-1"]: {
+          date: testDate.toISODate(),
+          interval: intervals[0],
+        },
+        ["test-slot-2"]: {
+          date: testDate.plus({ months: 1 }).toISODate(),
+          interval: intervals[0],
+        },
+      };
+
+      const store = getNewStore({
+        app: {
+          calendarDay: testDate,
+        },
         firestore: {
           data: {
             customers,
