@@ -43,10 +43,10 @@ export const dbSlotAttendanceAutofix = functions
         SanityCheckKind.SlotAttendance
       );
 
-      const latestReport = await checker.getLatestReport();
-      const report = latestReport.attendanceFixes
-        ? await checker.checkAndWrite()
-        : latestReport;
+      const report = await checker
+        .getLatestReport()
+        // If report doesn't exist, or the latest report had already been fixed, get the new report
+        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
 
       const attendanceFixes = await attendanceSlotMismatchAutofix(
         db,

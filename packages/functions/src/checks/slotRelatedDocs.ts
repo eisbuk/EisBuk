@@ -238,13 +238,16 @@ const getLatestSanityCheck = async <K extends SanityCheckKind>(
   db: Firestore,
   organization: string,
   kind: K
-): Promise<SanityCheckReport<K>> => {
-  return getSanityChecksRef(db, organization, kind)
+): Promise<SanityCheckReport<K> | undefined> =>
+  getSanityChecksRef(db, organization, kind)
     .orderBy("id", "asc")
     .limitToLast(1)
     .get()
-    .then((snap) => snap.docs[0].data() as SanityCheckReport<K>);
-};
+    .then((snap) =>
+      !snap.docs.length
+        ? undefined
+        : (snap.docs[0].data() as SanityCheckReport<K>)
+    );
 
 const writeSanityCheckReport = async <K extends SanityCheckKind>(
   db: Firestore,
@@ -260,7 +263,7 @@ interface SanityCheckerInterface<K extends SanityCheckKind> {
   check(): Promise<SanityCheckReport<K>>;
   writeReport: (report: SanityCheckReport<K>) => Promise<SanityCheckReport<K>>;
   checkAndWrite: () => Promise<SanityCheckReport<K>>;
-  getLatestReport: () => Promise<SanityCheckReport<K>>;
+  getLatestReport: () => Promise<SanityCheckReport<K> | undefined>;
 }
 
 export const newSanityChecker = <K extends SanityCheckKind>(
