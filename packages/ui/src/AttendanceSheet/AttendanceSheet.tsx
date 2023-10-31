@@ -17,9 +17,9 @@ interface RowItem {
   start: string;
   end: string;
   totalHours: string;
+  trainer: string;
   athlete: string;
   athleteSurname: string;
-  trainer: string;
   notes: string;
 }
 
@@ -27,9 +27,9 @@ const headers = {
   type: i18n.t("Type") /** @TODO update */,
   start: i18n.t(PrintableAttendance.Start),
   end: i18n.t(PrintableAttendance.End),
-  totalHours: "ss",
-  athlete: i18n.t(PrintableAttendance.Athlete),
+  totalHours: "\uD83D\uDD51",
   trainer: i18n.t(PrintableAttendance.Trainer),
+  athlete: i18n.t(PrintableAttendance.Athlete),
   notes: i18n.t(PrintableAttendance.Note),
 };
 
@@ -52,7 +52,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
 }) => {
   const { t } = useTranslation();
   return (
-    <div className="w-full">
+    <div>
       <div className="py-2 bg-gray-800 font-semibold text-center text-white">
         <h2 className="font-fredoka hidden print:flex print:justify-center print:items-center">
           {organizationName}
@@ -64,14 +64,14 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
         headers={headers}
         items={processTableData(data)}
         renderHeaders={(headers) => (
-          <tr className=" border border-gray-800">
-            {Object.entries(headers)
+          <tr className="border border-gray-800">
+            {Object.values(headers)
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
-              .map(([key, label]) => (
-                <th className="p-1 border border-gray-200 print:border-black">
-                  {key === "totalHours" ? "\uD83D\uDD51" : label}
+              .map((label) => (
+                <th className="border border-gray-200 print:border-black">
+                  {label}
                 </th>
               ))}
           </tr>
@@ -88,15 +88,15 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
                   key !== "athleteSurname" && (
                     <td
                       style={{ printColorAdjust: "exact" }}
-                      className={`p-1 max-w-[3rem] bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black 
-                      ${key === "athlete" && "text-left max-w-[7rem]"}
+                      className={`bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black 
+                      ${key === "athlete" && "text-left"}
                  
                       
                       `}
                     >
                       {key === "type" ? (
                         <span
-                          className={`px-2 py-0.5 ${
+                          className={`py-0.5 ${
                             data === SlotType.Ice
                               ? "bg-cyan-100"
                               : "bg-yellow-100"
@@ -137,9 +137,9 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
           start,
           end,
           totalHours,
+          trainer: "",
           athlete: name,
           athleteSurname: surname,
-          trainer: "",
           notes: "",
         } as RowItem;
       });
