@@ -69,7 +69,7 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
               // Type is a necessary property per row basis, but is not a cell in itself.
               // Therefore, it doesn't have a label and we can filter it out by absence of label.
               .filter(Boolean)
-              .map(([label]) => (
+              .map((label) => (
                 <th className="border border-gray-200 print:border-black">
                   {label}
                 </th>
