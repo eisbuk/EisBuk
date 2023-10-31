@@ -7,22 +7,26 @@ import { checkUser, throwUnauth } from "../utils";
 
 import {
   attendanceSlotMismatchAutofix,
-  findSlotAttendanceMismatches,
+  newSanityChecker,
 } from "./slotRelatedDocs";
+import { SanityCheckKind } from "@eisbuk/shared";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
  * If all days are empty, deletes the entry (for a month) altogether.
  */
-export const dbSanityCheck = functions
+export const dbSlotAttendanceCheck = functions
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
       if (!(await checkUser(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
-
-      return findSlotAttendanceMismatches(db, organization);
+      return newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotAttendance
+      ).checkAndWrite();
     }
   );
 
@@ -33,15 +37,24 @@ export const dbSlotAttendanceAutofix = functions
       if (!(await checkUser(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotAttendance
+      );
 
-      // TODO: This should be read from the repord document
-      const mismatches = await findSlotAttendanceMismatches(db, organization);
+      const report = await checker
+        .getLatestReport()
+        // If report doesn't exist, or the latest report had already been fixed, get the new report
+        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
 
-      try {
-        attendanceSlotMismatchAutofix(db, organization, mismatches);
-        return { success: true };
-      } catch (error) {
-        return { success: false, error };
-      }
+      const attendanceFixes = await attendanceSlotMismatchAutofix(
+        db,
+        organization,
+        report
+      );
+      checker.writeReport({ ...report, attendanceFixes });
+
+      return attendanceFixes;
     }
   );

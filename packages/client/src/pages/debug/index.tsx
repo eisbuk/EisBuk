@@ -161,12 +161,12 @@ const DebugPage: React.FC = () => {
               onClick={() =>
                 createFunctionCaller(
                   functions,
-                  CloudFunction.DBSanityCheck
+                  CloudFunction.DBSlotAttendanceCheck
                 )().then(console.log)
               }
               color={ButtonColor.Primary}
             >
-              DB Sanity Check
+              DB Slot / Attendance Check
             </DebugPageButton>
           </div>
 

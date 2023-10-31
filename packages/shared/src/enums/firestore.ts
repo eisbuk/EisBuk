@@ -17,6 +17,10 @@ export enum Collection {
    * All process delivery queues (such as email, SMS) are stored here, on per-organization basis
    */
   DeliveryQueues = "deliveryQueues",
+  /**
+   * Reports of sanity db sanity check runs.
+   */
+  SanityChecks = "sanityChecks",
 }
 
 export enum OrgSubCollection {
@@ -37,6 +41,11 @@ export enum DeliveryQueue {
   EmailQueue = "emailQueue",
   SMSQueue = "SMSQueue",
 }
+
+export enum SanityCheckKind {
+  SlotAttendance = "slotAttendance",
+}
+
 // endregion
 
 // region slots
@@ -54,5 +63,4 @@ export enum Category {
   /** @TODO Soon to be deprecated */
   // Adults = "adults",
 }
-
 // endregion

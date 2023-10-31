@@ -1,9 +1,13 @@
 import admin from "firebase-admin";
 
 import {
+  AttendanceAutofixReport,
   Collection,
   DateMismatchDoc,
+  FirestoreSchema,
   OrgSubCollection,
+  SanityCheckKind,
+  SlotAttendanceUpdate,
   SlotAttendnace,
   SlotInterface,
   SlotSanityCheckReport,
@@ -41,6 +45,9 @@ interface DateCheckPayload {
   entries: EntryDatePayload[];
 }
 
+/**
+ * A util used by slot related check cloud function used to find mismatch between slot and attendance entries.
+ */
 export const findSlotAttendanceMismatches = async (
   db: Firestore,
   organization: string
@@ -136,7 +143,7 @@ export const attendanceSlotMismatchAutofix = async (
   db: Firestore,
   organization: string,
   mismatches: SlotSanityCheckReport
-) => {
+): Promise<AttendanceAutofixReport> => {
   const batch = db.batch();
 
   const { unpairedEntries, dateMismatches } = mismatches;
@@ -149,6 +156,10 @@ export const attendanceSlotMismatchAutofix = async (
     date,
     attendances: {},
   });
+
+  const created = {} as Record<string, SlotAttendnace>;
+  const deleted = {} as Record<string, SlotAttendnace>;
+  const updated = {} as Record<string, SlotAttendanceUpdate>;
 
   // Create attendance entry for every slot entry without one
   await Promise.all(
@@ -165,11 +176,21 @@ export const attendanceSlotMismatchAutofix = async (
           const slotData = slotRef.data() as SlotInterface;
           const attendanceDoc = attendanceFromSlot(slotData);
           batch.set(attendance.doc(id), attendanceDoc, { merge: true });
+
+          // Save the created data for report
+          created[id] = attendanceDoc;
           break;
 
         case existing.includes(OrgSubCollection.Attendance) &&
           missing.includes(OrgSubCollection.Slots):
-          batch.delete(attendance.doc(id));
+          const toDelete = attendance.doc(id);
+
+          batch.delete(toDelete);
+
+          // Save the existing data before deletion (before batch.commit) and store for report
+          deleted[id] = await toDelete
+            .get()
+            .then((snap) => snap.data() as SlotAttendnace);
           break;
 
         default:
@@ -181,9 +202,91 @@ export const attendanceSlotMismatchAutofix = async (
   );
 
   // Update mismatched dates so that attendance has the same date as the corresponding slot
-  Object.entries(dateMismatches).forEach(([id, { slots: date }]) =>
-    batch.set(attendance.doc(id), { date }, { merge: true })
+  await Promise.all(
+    Object.entries(dateMismatches).map(async ([id, { slots: date }]) => {
+      const toUpdate = attendance.doc(id);
+      batch.set(attendance.doc(id), { date }, { merge: true });
+
+      // Save the update for report
+      const before = await toUpdate
+        .get()
+        .then((snap) => snap.data() as SlotAttendnace)
+        .then(({ date }) => date);
+      updated[id] = {
+        date: { before, after: date },
+      };
+    })
   );
 
-  return batch.commit();
+  await batch.commit();
+
+  return {
+    timestamp: DateTime.now().toISO(),
+    created,
+    deleted,
+    updated,
+  };
 };
+
+const getSanityChecksRef = (
+  db: Firestore,
+  organization: string,
+  kind: SanityCheckKind
+) => db.collection(Collection.SanityChecks).doc(organization).collection(kind);
+
+const getLatestSanityCheck = async <K extends SanityCheckKind>(
+  db: Firestore,
+  organization: string,
+  kind: K
+): Promise<SanityCheckReport<K> | undefined> =>
+  getSanityChecksRef(db, organization, kind)
+    .orderBy("id", "asc")
+    .limitToLast(1)
+    .get()
+    .then((snap) =>
+      !snap.docs.length
+        ? undefined
+        : (snap.docs[0].data() as SanityCheckReport<K>)
+    );
+
+const writeSanityCheckReport = async <K extends SanityCheckKind>(
+  db: Firestore,
+  organization: string,
+  kind: K,
+  report: SanityCheckReport<K>
+): Promise<SanityCheckReport<K>> => {
+  await getSanityChecksRef(db, organization, kind).doc(report.id).set(report);
+  return report;
+};
+
+interface SanityCheckerInterface<K extends SanityCheckKind> {
+  check(): Promise<SanityCheckReport<K>>;
+  writeReport: (report: SanityCheckReport<K>) => Promise<SanityCheckReport<K>>;
+  checkAndWrite: () => Promise<SanityCheckReport<K>>;
+  getLatestReport: () => Promise<SanityCheckReport<K> | undefined>;
+}
+
+export const newSanityChecker = <K extends SanityCheckKind>(
+  db: Firestore,
+  organization: string,
+  kind: K
+): SanityCheckerInterface<K> => {
+  const getLatestReport = () => getLatestSanityCheck<K>(db, organization, kind);
+  const writeReport = (report: SanityCheckReport<K>) =>
+    writeSanityCheckReport(db, organization, kind, report);
+
+  const check = (): Promise<SanityCheckReport<K>> =>
+    ({
+      [SanityCheckKind.SlotAttendance]: findSlotAttendanceMismatches(
+        db,
+        organization
+      ),
+    }[kind]);
+
+  const checkAndWrite = () => check().then(writeReport);
+
+  return { getLatestReport, writeReport, check, checkAndWrite };
+};
+
+type SanityCheckReport<K extends SanityCheckKind> =
+  FirestoreSchema["sanityChecks"][string][K];
