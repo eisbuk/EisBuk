@@ -23,6 +23,7 @@ export default defineConfig({
     // but there's no toll for tests that don't need it.
     testTimeout: __isCI__ ? 15000 : 10000,
     setupFiles: ["./vitest.setup.ts"],
+    maxConcurrency: 3,
   },
   resolve: {
     alias: {
