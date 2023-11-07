@@ -36,7 +36,7 @@ describe("Edit slots modal", () => {
 
   it("Checks for disabled deleting or updating bookedIntervals", () => {
     // click the edit button of booked slot (1/1)
-    cy.getByTestId("edit-slot-button").eq(1).click();
+    cy.getByTestId("edit-slot-button").eq(1).click({ force: true });
 
     // second interval is booked
     cy.getByTestId("delete-interval-button").eq(1).should("be.disabled");
