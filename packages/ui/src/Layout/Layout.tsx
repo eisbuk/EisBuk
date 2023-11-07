@@ -71,7 +71,9 @@ const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      <main className="flex flex-col print:overflow-visible">{children}</main>
+      <main className="flex flex-col overflow-hidden print:overflow-visible">
+        {children}
+      </main>
     </div>
   );
 };
@@ -88,7 +90,7 @@ export const LayoutContent: React.FC<{
   );
 
   return (
-    <Wrapper className="flex flex-col print:overflow-visible">
+    <Wrapper className="flex flex-col overflow-hidden print:overflow-visible">
       <div className={`${wide ? "" : "content-container"}`}>{children}</div>
       {actionButtons && (
         <div className="border-t flex-grow-0 flex-shrink-0 py-2">
