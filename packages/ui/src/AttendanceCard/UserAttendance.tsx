@@ -124,7 +124,7 @@ const UserAttendance: React.FC<Props> = ({
 
   // Avatar/name setup
   const customerString = [
-    `${customer.name} ${customer.surname}`,
+    `${customer.surname} ${customer.name}`,
     customer.deleted ? `(${t("Flags.Deleted")})` : "",
   ]
     .join(" ")

@@ -94,11 +94,11 @@ export const filterAttendanceByMonth =
 export const replaceCustomerIdWithName =
   (customerLookup: Customers) =>
   (id: string): CustomerNameTuple =>
-    [customerLookup[id].name, customerLookup[id].surname];
+    [customerLookup[id].surname, customerLookup[id].name];
 
 const compareCustomerNames = (
-  [[, a]]: [CustomerNameTuple, any],
-  [[, b]]: [CustomerNameTuple, any]
+  [[a]]: [CustomerNameTuple, any],
+  [[b]]: [CustomerNameTuple, any]
 ) => (a > b ? 1 : -1);
 
 const joinCustomerName = (customer: CustomerNameTuple) => customer.join(" ");

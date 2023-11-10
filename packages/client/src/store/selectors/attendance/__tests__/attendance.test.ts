@@ -191,7 +191,7 @@ describe("Selectors ->", () => {
     // Ordered by customer surname (alphabetically)
     //
     // Fring
-    expect(res[0][0]).toEqual(`${gus.name} ${gus.surname}`);
+    expect(res[0][0]).toEqual(`${gus.surname} ${gus.name}`);
     expect([...res[0][1]]).toEqual([
       [
         "2022-03-02",
@@ -203,7 +203,7 @@ describe("Selectors ->", () => {
     ]);
 
     // Goodman
-    expect(res[1][0]).toEqual(`${saul.name} ${saul.surname}`);
+    expect(res[1][0]).toEqual(`${saul.surname} ${saul.name}`);
     expect([...res[1][1]]).toEqual([
       [
         "2022-03-01",
@@ -222,7 +222,7 @@ describe("Selectors ->", () => {
     ]);
 
     // Yang
-    expect(res[2][0]).toEqual(`${jian.name} ${jian.surname}`);
+    expect(res[2][0]).toEqual(`${jian.surname} ${jian.name}`);
     expect([...res[2][1]]).toEqual([
       [
         "2022-03-01",
