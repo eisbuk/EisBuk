@@ -35,6 +35,7 @@ import {
 
 import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
+import { DateTime } from "luxon";
 
 const testMonth = testDate.substring(0, 7);
 
@@ -670,6 +671,151 @@ describe("Cloud functions -> Data triggers ->", () => {
             )
             .get();
           expect(snap.exists).toEqual(false);
+        });
+      }
+    );
+  });
+  describe("createCustomerStats", () => {
+    testWithEmulator(
+      "should update the customer doc with bookingStats with respect to customer's bookedSlots",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const dateThisMonth = DateTime.now().toISODate();
+        const dateNextMonth = DateTime.now().plus({ month: 1 }).toISODate();
+        const slotThisMonthIce = {
+          ...baseSlot,
+          date: dateThisMonth,
+          type: SlotType.Ice,
+        };
+        const slotNextMonthIce = {
+          ...baseSlot,
+          date: dateNextMonth,
+          type: SlotType.Ice,
+        };
+        const slotThisMonthOffIce = {
+          ...baseSlot,
+          date: dateThisMonth,
+          type: SlotType.OffIce,
+        };
+        const slotNextMonthOffIce = {
+          ...baseSlot,
+          date: dateNextMonth,
+          type: SlotType.OffIce,
+        };
+        // Create customer and slot
+        await Promise.all([
+          adminDb
+            .doc(getSlotDocPath(organization, `${dateThisMonth}-9`))
+            .set(slotThisMonthIce),
+          adminDb
+            .doc(getSlotDocPath(organization, `${dateNextMonth}-9`))
+            .set(slotNextMonthIce),
+          adminDb
+            .doc(getSlotDocPath(organization, `${dateThisMonth}-10`))
+            .set(slotThisMonthOffIce),
+          adminDb
+            .doc(getSlotDocPath(organization, `${dateNextMonth}-10`))
+            .set(slotNextMonthOffIce),
+          adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
+        ]);
+
+        await Promise.all([
+          await waitFor(async () => {
+            const snap = await adminDb
+              .doc(getCustomerDocPath(organization, saul.id))
+              .get();
+            expect(snap.exists);
+          }),
+        ]);
+
+        const bookedSlotThisMonthIce = {
+          date: slotThisMonthIce.date,
+          interval: Object.keys(slotThisMonthIce.intervals)[0],
+        };
+        const bookedSlotNextMonthIce = {
+          date: slotNextMonthIce.date,
+          interval: Object.keys(slotNextMonthIce.intervals)[0],
+        };
+        // 10?
+        const bookedSlotThisMonthOffIce = {
+          date: slotThisMonthOffIce.date,
+          interval: Object.keys(slotThisMonthOffIce.intervals)[0],
+        };
+        const bookedSlotNextMonthOffIce = {
+          date: slotNextMonthOffIce.date,
+          interval: Object.keys(slotNextMonthOffIce.intervals)[0],
+        };
+
+        // book slots
+        await Promise.all([
+          await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${bookedSlotThisMonthIce.date}-9`
+              )
+            )
+            .set(bookedSlotThisMonthIce),
+          await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${bookedSlotNextMonthIce.date}-9`
+              )
+            )
+            .set(bookedSlotNextMonthIce),
+          await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${bookedSlotThisMonthOffIce.date}-10`
+              )
+            )
+            .set(bookedSlotThisMonthOffIce),
+          await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${bookedSlotNextMonthOffIce.date}-10`
+              )
+            )
+            .set(bookedSlotNextMonthOffIce),
+        ]);
+
+        // The booked slot should be created in customer's bookings
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${bookedSlotThisMonthIce.date}-9`
+              )
+            )
+            .get();
+
+          expect(snap.data()).toEqual(bookedSlotThisMonthIce);
+        });
+
+        // The customer should include bookingsStats
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getCustomerDocPath(organization, saul.id))
+            .get();
+
+          expect(snap.data()).toMatchObject({
+            ...saul,
+            bookingStats: {
+              thisMonthIce: 1,
+              thisMonthOffIce: 1,
+              nextMonthIce: 1,
+              nextMonthOffIce: 1,
+            },
+          });
         });
       }
     );

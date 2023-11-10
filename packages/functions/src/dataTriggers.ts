@@ -1,8 +1,9 @@
 /* eslint-disable no-case-declarations */
 import * as functions from "firebase-functions";
+import { DocumentData } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-
+import { DateTime } from "luxon";
 import {
   BookingSubCollection,
   Collection,
@@ -15,8 +16,12 @@ import {
   sanitizeCustomer,
   OrganizationData,
   Customer,
+  CustomerBookings,
+  SlotsByDay,
+  SlotType,
 } from "@eisbuk/shared";
 
+import { calculateIntervalDuration } from "./utils";
 import { __functionsZone__ } from "./constants";
 
 /**
@@ -460,4 +465,117 @@ export const createAttendedSlotOnAttendance = functions
     );
 
     await batch.commit();
+  });
+
+export const createCustomerStats = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+  )
+  .onWrite(async (_, context) => {
+    const { organization, secretKey } = context.params as Record<
+      string,
+      string
+    >;
+
+    const db = admin.firestore();
+
+    const bookingRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Bookings)
+      .doc(secretKey);
+
+    // Fetch the booking document
+    const bookingDoc = await bookingRef.get();
+    const { id: customerId } = bookingDoc.data() as CustomerBookings;
+
+    // Fetch documents from a subcollection of the booking
+    const bookedSlotsRef = bookingRef.collection("bookedSlots");
+    const bookedSlotsSnapshot = await bookedSlotsRef.get();
+
+    const bookedSlots: DocumentData = {};
+    bookedSlotsSnapshot.forEach((doc) => {
+      Object.assign(bookedSlots, { [doc.id]: doc.data() });
+    });
+
+    if (!Object.keys(bookedSlots).length) return;
+
+    // Get calendar day
+    const currentMonthStr = DateTime.now().toISODate().substring(0, 7);
+    const nextMonthStr = DateTime.now()
+      .plus({ month: 1 })
+      .toISODate()
+      .substring(0, 7);
+
+    const currentMonthSlots = (
+      await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(currentMonthStr)
+        .get()
+    ).data() as SlotsByDay;
+
+    const nextMonthSlots = (
+      await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(nextMonthStr)
+        .get()
+    ).data() as SlotsByDay;
+
+    const stats = Object.entries(bookedSlots).reduce(
+      (acc, [key, bookedSlot]) => {
+        // Some non-conformity exists in slot ids where the id could either be the date-intervalStart or a uuid
+        const dayStr = bookedSlot.date;
+        const isThisMonth =
+          bookedSlot.date.substring(0, 7) === currentMonthStr &&
+          Object.keys(currentMonthSlots).length &&
+          currentMonthSlots[dayStr];
+        const isNextMonth =
+          bookedSlot.date.substring(0, 7) === nextMonthStr &&
+          Object.keys(nextMonthSlots).length &&
+          nextMonthSlots[dayStr];
+
+        if (!isThisMonth && !isNextMonth) return acc;
+        const daySlots = isThisMonth
+          ? currentMonthSlots[dayStr]
+          : nextMonthSlots[dayStr];
+
+        const duration = calculateIntervalDuration(bookedSlot.interval);
+
+        // Check type and accumulate durations accordingly
+        if (isThisMonth) {
+          if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
+            acc.thisMonthIce += duration;
+          } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
+            acc.thisMonthOffIce += duration;
+          }
+        } else if (isNextMonth) {
+          if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
+            acc.nextMonthIce += duration;
+          } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
+            acc.nextMonthOffIce += duration;
+          }
+        }
+
+        return acc;
+      },
+      {
+        thisMonthIce: 0,
+        thisMonthOffIce: 0,
+        nextMonthIce: 0,
+        nextMonthOffIce: 0,
+      }
+    );
+
+    // Set stats into customers doc
+    await db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Customers)
+      .doc(customerId)
+      .set({ bookingStats: stats }, { merge: true });
   });
