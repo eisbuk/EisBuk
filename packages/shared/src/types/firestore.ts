@@ -249,6 +249,12 @@ export interface Customer extends CustomerBase {
 export interface CustomerFull extends Customer {
   subscriptionNumber: string;
   deleted?: boolean;
+  bookingStats?: {
+    thisMonthIce: number;
+    thisMonthOffIce: number;
+    nextMonthIce: number;
+    nextMonthOffIce: number;
+  };
 }
 
 /**

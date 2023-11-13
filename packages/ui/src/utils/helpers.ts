@@ -55,6 +55,25 @@ export const shortName = (name: string, surname: string) => {
   return [n, sn];
 };
 
+/**
+ * Returns string passed as prop with capitalized first letter.
+ * If separated by "-" symbol, returns every word capitalized.
+ * @param str
+ * @returns
+ */
+export const capitalizeFirst = (str: string): string => {
+  const words = str.split("-");
+
+  // if last recursive node, return processed string
+  if (words.length === 1) {
+    const word = words[0];
+    return `${word.charAt(0).toUpperCase()}${word.slice(1)}`;
+  }
+
+  // if multi word, process all of the words
+  return words.map((word) => capitalizeFirst(word)).join("-");
+};
+
 const surnameParticles = [
   "de",
   "di",

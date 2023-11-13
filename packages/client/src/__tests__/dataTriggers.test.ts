@@ -724,7 +724,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             const snap = await adminDb
               .doc(getCustomerDocPath(organization, saul.id))
               .get();
-            expect(snap.exists);
+            expect(snap.data()).toEqual(saul);
           }),
         ]);
 
@@ -736,7 +736,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           date: slotNextMonthIce.date,
           interval: Object.keys(slotNextMonthIce.intervals)[0],
         };
-        // 10?
+
         const bookedSlotThisMonthOffIce = {
           date: slotThisMonthOffIce.date,
           interval: Object.keys(slotThisMonthOffIce.intervals)[0],
@@ -811,6 +811,34 @@ describe("Cloud functions -> Data triggers ->", () => {
             ...saul,
             bookingStats: {
               thisMonthIce: 1,
+              thisMonthOffIce: 1,
+              nextMonthIce: 1,
+              nextMonthOffIce: 1,
+            },
+          });
+        });
+
+        // cancel a slot
+        await adminDb
+          .doc(
+            getBookedSlotDocPath(
+              organization,
+              saul.secretKey,
+              `${bookedSlotThisMonthIce.date}-9`
+            )
+          )
+          .delete();
+
+        // The customer should include bookingsStats
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getCustomerDocPath(organization, saul.id))
+            .get();
+
+          expect(snap.data()).toMatchObject({
+            ...saul,
+            bookingStats: {
+              thisMonthIce: 0,
               thisMonthOffIce: 1,
               nextMonthIce: 1,
               nextMonthOffIce: 1,
