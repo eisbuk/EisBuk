@@ -54,16 +54,25 @@ export const findSlotAttendanceMismatches = async (
 ): Promise<SlotSanityCheckReport> => {
   const timestamp = DateTime.now().toISO();
 
-  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  // We're only checking for slots/attendances in the last 3 months
+  // This will actually be between 3 and 4 months to start from the beginning of the T-3 month and include the partial final month (up until today)
+  const startDate = DateTime.now()
+    .minus({ months: 3 })
+    .startOf("month")
+    .toISODate();
 
-  const slots = await orgRef
-    .collection(OrgSubCollection.Slots)
-    .get()
-    .then((snap) => snap.docs);
-  const attendances = await orgRef
-    .collection(OrgSubCollection.Attendance)
-    .get()
-    .then((snap) => snap.docs);
+  const [slots, attendances] = await Promise.all(
+    [OrgSubCollection.Slots, OrgSubCollection.Attendance].map((collName) =>
+      db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(collName)
+        .where("date", ">", startDate)
+        .orderBy("date", "asc")
+        .get()
+        .then((snap) => snap.docs)
+    )
+  );
 
   const collections = {
     [OrgSubCollection.Slots]: new Map<string, SlotInterface>(
@@ -74,6 +83,8 @@ export const findSlotAttendanceMismatches = async (
     ),
   };
 
+  // Create a set of all available ids (in both collections)
+  // set = witout duplicates
   const ids = new Set([
     ...slots.map((doc) => doc.id),
     ...attendances.map((doc) => doc.id),
