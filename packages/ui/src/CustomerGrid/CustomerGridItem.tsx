@@ -48,11 +48,18 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         )}
         :
         <p className="text-gray-500 text-center truncate bg-teal-100 p-1 rounded-lg mx-1">
-          {customer.bookingStats ? customer.bookingStats.thisMonthIce : 0} hrs
+          {customer.bookingStats && customer.bookingStats.thisMonthIce
+            ? `${customer.bookingStats.thisMonthIce} hr${
+                customer.bookingStats.thisMonthIce > 1 ? "s" : ""
+              }`
+            : `-`}
         </p>
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
-          {customer.bookingStats ? customer.bookingStats.thisMonthOffIce : 0}{" "}
-          hrs
+          {customer.bookingStats && customer.bookingStats.thisMonthOffIce
+            ? `${customer.bookingStats.thisMonthOffIce} hr${
+                customer.bookingStats.thisMonthOffIce > 1 ? "s" : ""
+              }`
+            : `-`}
         </p>
       </p>
 
@@ -64,11 +71,18 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         )}
         :
         <p className="text-gray-500 text-center truncate bg-teal-100 mx-1 p-1 rounded-lg">
-          {customer.bookingStats ? customer.bookingStats.nextMonthIce : 0} hrs
+          {customer.bookingStats && customer.bookingStats.nextMonthIce
+            ? `${customer.bookingStats.nextMonthIce} hr${
+                customer.bookingStats.nextMonthIce > 1 ? "s" : ""
+              }`
+            : `-`}
         </p>
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
-          {customer.bookingStats ? customer.bookingStats.nextMonthOffIce : 0}{" "}
-          hrs
+          {customer.bookingStats && customer.bookingStats.nextMonthOffIce
+            ? `${customer.bookingStats.nextMonthOffIce} hr${
+                customer.bookingStats.nextMonthOffIce > 1 ? "s" : ""
+              }`
+            : `-`}
         </p>
       </p>
     </div>

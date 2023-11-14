@@ -7,9 +7,17 @@ import https from "https";
 import { StringDecoder } from "string_decoder";
 import Ajv, { ErrorObject, JSONSchemaType } from "ajv";
 import customizeErrors from "ajv-errors";
+import { DateTime } from "luxon";
 
 import { DeliverResultTuple } from "@eisbuk/firestore-process-delivery";
-import { Collection, HTTPSErrors, OrgSubCollection } from "@eisbuk/shared";
+import {
+  Collection,
+  CustomerBookingEntry,
+  HTTPSErrors,
+  OrgSubCollection,
+  SlotType,
+  SlotsByDay,
+} from "@eisbuk/shared";
 
 type Auth = CallableContext["auth"];
 
@@ -368,3 +376,69 @@ const getMillisFromMidnight = (time: string) =>
     .reduce((acc, curr, i) => acc + parseInt(curr) * 1000 * 60 ** (2 - i), 0);
 
 // #endregion CalculateInterval
+
+/**
+ * Calculates the total duration of booked slots for a customer, categorized by month and slot type.
+ *
+ * @param bookedSlots - An object containing the booked slots for a customer, keyed by slot ID.
+ * @param currentMonthSlots - An object representing the slots available in the current month, keyed by date.
+ * @param nextMonthSlots - An object representing the slots available in the next month, keyed by date.
+ * @returns An object containing the aggregated duration of ice and off-ice slots for the current and next month.
+ */
+export const getCustomerStats = (
+  bookedSlots: { [slotId: string]: CustomerBookingEntry },
+  currentMonthSlots: SlotsByDay,
+  nextMonthSlots: SlotsByDay
+) => {
+  // Get calendar day
+  const currentMonthStr = DateTime.now().toISODate().substring(0, 7);
+  const nextMonthStr = DateTime.now()
+    .plus({ month: 1 })
+    .toISODate()
+    .substring(0, 7);
+
+  return Object.entries(bookedSlots).reduce(
+    (acc, [key, bookedSlot]) => {
+      // Some non-conformity exists in slot ids where the id could either be the date-intervalStart or a uuid
+      const dayStr = bookedSlot.date;
+      const isThisMonth =
+        bookedSlot.date.substring(0, 7) === currentMonthStr &&
+        Object.keys(currentMonthSlots).length &&
+        currentMonthSlots[dayStr];
+      const isNextMonth =
+        bookedSlot.date.substring(0, 7) === nextMonthStr &&
+        Object.keys(nextMonthSlots).length &&
+        nextMonthSlots[dayStr];
+
+      if (!isThisMonth && !isNextMonth) return acc;
+      const daySlots = isThisMonth
+        ? currentMonthSlots[dayStr]
+        : nextMonthSlots[dayStr];
+
+      const duration = calculateIntervalDuration(bookedSlot.interval);
+
+      // Check type and accumulate durations accordingly
+      if (isThisMonth) {
+        if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
+          acc.thisMonthIce += duration;
+        } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
+          acc.thisMonthOffIce += duration;
+        }
+      } else if (isNextMonth) {
+        if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
+          acc.nextMonthIce += duration;
+        } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
+          acc.nextMonthOffIce += duration;
+        }
+      }
+
+      return acc;
+    },
+    {
+      thisMonthIce: 0,
+      thisMonthOffIce: 0,
+      nextMonthIce: 0,
+      nextMonthOffIce: 0,
+    }
+  );
+};

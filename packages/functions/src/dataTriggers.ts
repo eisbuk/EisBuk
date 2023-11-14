@@ -1,6 +1,5 @@
 /* eslint-disable no-case-declarations */
 import * as functions from "firebase-functions";
-import { DocumentData } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
 import { DateTime } from "luxon";
@@ -18,10 +17,9 @@ import {
   Customer,
   CustomerBookings,
   SlotsByDay,
-  SlotType,
 } from "@eisbuk/shared";
 
-import { calculateIntervalDuration } from "./utils";
+import { getCustomerStats } from "./utils";
 import { __functionsZone__ } from "./constants";
 
 /**
@@ -487,14 +485,16 @@ export const createCustomerStats = functions
       .doc(secretKey);
 
     // Fetch the booking document
-    const bookingDoc = await bookingRef.get();
-    const { id: customerId } = bookingDoc.data() as CustomerBookings;
+    const { id: customerId } = (
+      await bookingRef.get()
+    ).data() as CustomerBookings;
 
     // Fetch documents from a subcollection of the booking
-    const bookedSlotsRef = bookingRef.collection("bookedSlots");
-    const bookedSlotsSnapshot = await bookedSlotsRef.get();
+    const bookedSlotsSnapshot = await bookingRef
+      .collection("bookedSlots")
+      .get();
 
-    const bookedSlots: DocumentData = {};
+    const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
     bookedSlotsSnapshot.forEach((doc) => {
       Object.assign(bookedSlots, { [doc.id]: doc.data() });
     });
@@ -526,51 +526,11 @@ export const createCustomerStats = functions
         .get()
     ).data() as SlotsByDay;
 
-    const stats = Object.entries(bookedSlots).reduce(
-      (acc, [key, bookedSlot]) => {
-        // Some non-conformity exists in slot ids where the id could either be the date-intervalStart or a uuid
-        const dayStr = bookedSlot.date;
-        const isThisMonth =
-          bookedSlot.date.substring(0, 7) === currentMonthStr &&
-          Object.keys(currentMonthSlots).length &&
-          currentMonthSlots[dayStr];
-        const isNextMonth =
-          bookedSlot.date.substring(0, 7) === nextMonthStr &&
-          Object.keys(nextMonthSlots).length &&
-          nextMonthSlots[dayStr];
-
-        if (!isThisMonth && !isNextMonth) return acc;
-        const daySlots = isThisMonth
-          ? currentMonthSlots[dayStr]
-          : nextMonthSlots[dayStr];
-
-        const duration = calculateIntervalDuration(bookedSlot.interval);
-
-        // Check type and accumulate durations accordingly
-        if (isThisMonth) {
-          if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
-            acc.thisMonthIce += duration;
-          } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
-            acc.thisMonthOffIce += duration;
-          }
-        } else if (isNextMonth) {
-          if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
-            acc.nextMonthIce += duration;
-          } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
-            acc.nextMonthOffIce += duration;
-          }
-        }
-
-        return acc;
-      },
-      {
-        thisMonthIce: 0,
-        thisMonthOffIce: 0,
-        nextMonthIce: 0,
-        nextMonthOffIce: 0,
-      }
+    const stats = getCustomerStats(
+      bookedSlots,
+      currentMonthSlots,
+      nextMonthSlots
     );
-
     // Set stats into customers doc
     await db
       .collection(Collection.Organizations)
