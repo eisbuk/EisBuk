@@ -496,7 +496,7 @@ export const createCustomerStats = functions
 
     const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
     bookedSlotsSnapshot.forEach((doc) => {
-      Object.assign(bookedSlots, { [doc.id]: doc.data() });
+      bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
     });
 
     if (!Object.keys(bookedSlots).length) return;
