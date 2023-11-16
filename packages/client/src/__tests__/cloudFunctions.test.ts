@@ -517,7 +517,8 @@ describe("Cloud functions", () => {
     const minimalSaul: CustomerBase = {
       name: saul.name,
       surname: saul.surname,
-      email: saul.email,
+      // non-normalized email
+      email: " SAUl@Gmail.cOm ",
       certificateExpiration: saul.certificateExpiration,
     };
     testWithEmulator(
@@ -557,6 +558,7 @@ describe("Cloud functions", () => {
           expect(Boolean(id)).toEqual(true);
           expect(customerData).toEqual({
             ...minimalSaul,
+            email: saul.email,
             secretKey,
             id,
             // Should set up empty categories
@@ -574,6 +576,8 @@ describe("Cloud functions", () => {
           expect(bookingsSnap.data()).toEqual(
             sanitizeCustomer({
               ...minimalSaul,
+              email: saul.email,
+
               secretKey,
               id,
             } as Customer)

@@ -22,6 +22,7 @@ export enum CloudFunction {
   PopulateDefaultEmailTemplates = "populateDefaultEmailTemplates",
   RemoveInvalidCustomerPhones = "removeInvalidCustomerPhones",
   ClearDeletedCustomersRegistrationAndCategories = "clearDeletedCustomersRegistrationAndCategories",
+  NormalizeExistingEmails = "normalizeExistingEmails",
 
   DBSlotAttendanceCheck = "dbSlotAttendanceCheck",
   DBSlotAttendanceAutofix = "dbSlotAttendanceAutofix",

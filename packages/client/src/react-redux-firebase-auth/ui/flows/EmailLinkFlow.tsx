@@ -18,6 +18,7 @@ import {
   AuthTitle,
   ValidationMessage,
 } from "@eisbuk/translations";
+import { normalizeEmail } from "@eisbuk/shared";
 
 import { __isDev__ } from "@/lib/constants";
 
@@ -97,6 +98,7 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   // #region continueHandlers
   const submitHandlers = {} as Record<EmailLinkAuthStep, SubmitHandler>;
   submitHandlers[EmailLinkAuthStep.SendSignInLink] = async ({ email }) => {
+    const normalizedEmail = normalizeEmail(email);
     const auth = getAuth();
     const { host } = window.location;
     const proto = __isDev__ ? "http" : "https";
@@ -104,15 +106,15 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
       handleCodeInApp: true,
       url: `${proto}://${host}/login`,
     };
-    await sendSignInLinkToEmail(auth, email, actionCodeSettings);
-    setEmailForSignIn(email);
+    await sendSignInLinkToEmail(auth, normalizedEmail, actionCodeSettings);
+    setEmailForSignIn(normalizedEmail);
     setAuthStep(EmailLinkAuthStep.CheckSignInEmail);
   };
 
   submitHandlers[EmailLinkAuthStep.CheckSignInEmail] = async () => {};
 
   submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail] = ({ email }) =>
-    handleSignInWithEmailLink(email);
+    handleSignInWithEmailLink(normalizeEmail(email));
 
   submitHandlers[EmailLinkAuthStep.DifferentSignInEmail] =
     submitHandlers[EmailLinkAuthStep.ConfirmSignInEmail];

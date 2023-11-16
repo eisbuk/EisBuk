@@ -14,6 +14,7 @@ import {
   sanitizeCustomer,
   DeliveryQueue,
   checkExpected,
+  normalizeEmail,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
@@ -148,6 +149,7 @@ export const customerSelfRegister = functions
       const orgDoc = await orgRef.get();
       const orgData = orgDoc.data() as OrganizationData;
 
+      functions.logger.log({ orgData });
       if (!checkExpected(registrationCode, orgData.registrationCode || "")) {
         throw new EisbukHttpsError(
           "unauthenticated",
@@ -179,7 +181,7 @@ export const customerSelfRegister = functions
           html: `New athlete has registered and is awaiting approval:
 name: ${fullCustomer.name}
 surname: ${fullCustomer.surname}
-email: ${fullCustomer.email || "N/A"}
+email: ${normalizeEmail(fullCustomer.email) || "N/A"}
 phone: ${fullCustomer.phone || "N/A"}
 
 To verify the athlete, add them to a category/categories on their respective profile in '/customers' view of the admin panel.

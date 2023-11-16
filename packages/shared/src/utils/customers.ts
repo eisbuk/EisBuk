@@ -1,4 +1,5 @@
 import { Customer } from "../types/firestore";
+import { normalizeEmail } from "./text";
 
 /**
  * A helper function used to strip admin-only customer data as well as
@@ -22,7 +23,7 @@ export const sanitizeCustomer = ({
 
   // Add optional values only if defined
   if (categories) customer.categories = categories;
-  if (email) customer.email = email;
+  if (email) customer.email = normalizeEmail(email);
   if (phone) customer.phone = phone;
   if (birthday) customer.birthday = birthday;
   if (extendedDate) customer.extendedDate = extendedDate;
