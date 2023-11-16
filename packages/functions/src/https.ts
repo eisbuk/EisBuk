@@ -181,7 +181,7 @@ export const customerSelfRegister = functions
           html: `New athlete has registered and is awaiting approval:
 name: ${fullCustomer.name}
 surname: ${fullCustomer.surname}
-email: ${normalizeEmail(fullCustomer.email) || "N/A"}
+email:  ${fullCustomer.email ? normalizeEmail(fullCustomer.email) : "N/A"}
 phone: ${fullCustomer.phone || "N/A"}
 
 To verify the athlete, add them to a category/categories on their respective profile in '/customers' view of the admin panel.
