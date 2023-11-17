@@ -1,4 +1,4 @@
-import { calculateIntervalDuration } from "@eisbuk/shared";
+import { calculateIntervalDurationInMinutes } from "@eisbuk/shared";
 
 enum BookingDuration {
   "0.5h" = "½h",
@@ -9,10 +9,19 @@ enum BookingDuration {
 }
 
 export const getIntervalString = (interval: string): BookingDuration => {
-  const duration = calculateIntervalDuration(interval);
+  const durationInMinutes = calculateIntervalDurationInMinutes(interval);
 
   // exit early with catch all if duration greater than expected
-  if (duration > 2) return BookingDuration["2+h"];
+  if (durationInMinutes > 120) return BookingDuration["2+h"];
 
-  return BookingDuration[`${duration}h`];
+  if (durationInMinutes < 40) {
+    return BookingDuration["0.5h"];
+  }
+  if (durationInMinutes < 70) {
+    return BookingDuration["1h"];
+  }
+  if (durationInMinutes < 90) {
+    return BookingDuration["1.5h"];
+  }
+  return BookingDuration["2h"];
 };

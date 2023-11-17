@@ -30,9 +30,22 @@ export const getSlotTimespan = (
 };
 
 // #region CalculateInterval
+export const calculateIntervalDurationInMinutes = (interval: string | null) => {
+  if (interval === null) {
+    return 0;
+  }
+
+  const [startTime, endTime] = interval.split("-");
+  const minuteInMillis = 60000;
+
+  return (
+    (getMillisFromMidnight(endTime) - getMillisFromMidnight(startTime)) /
+    minuteInMillis
+  );
+};
 
 /**
- * @param {string | null} interval - String slot interval
+ * @param {string | null} interval - String slot interval in blocks of half hours
  * Converts a string slot interval to a number e.g:
  * `null => 0`;
  * `"21:00 - 21:20" => 0.5`;
@@ -41,18 +54,11 @@ export const getSlotTimespan = (
  * `"22:00 - 24:00" => 2`;
  * `"22:20 - 24:00" => 2`;
  */
+
 export const calculateIntervalDuration = (interval: string | null) => {
-  if (interval === null) {
-    return 0;
-  }
+  const timeInHours = calculateIntervalDurationInMinutes(interval) / 60;
 
-  const [startTime, endTime] = interval.split("-");
-  const hourInMillis = 3600000;
-
-  const diffMillis =
-    getMillisFromMidnight(endTime) - getMillisFromMidnight(startTime);
-
-  return Math.ceil((diffMillis / hourInMillis) * 2) * 0.5;
+  return Math.ceil((timeInHours / 60) * 2) * 0.5;
 };
 
 /**
