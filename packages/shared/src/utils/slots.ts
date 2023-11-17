@@ -58,7 +58,7 @@ export const calculateIntervalDurationInMinutes = (interval: string | null) => {
 export const calculateIntervalDuration = (interval: string | null) => {
   const timeInHours = calculateIntervalDurationInMinutes(interval) / 60;
 
-  return Math.ceil((timeInHours / 60) * 2) * 0.5;
+  return Math.ceil(timeInHours * 2) * 0.5;
 };
 
 /**
