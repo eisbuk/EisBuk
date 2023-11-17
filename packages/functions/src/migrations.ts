@@ -223,24 +223,21 @@ export const normalizeExistingEmails = functions
 
       const batch = db.batch();
 
-      const customres = await db
+      const customers = await db
         .collection(Collection.Organizations)
         .doc(organization)
         .collection(OrgSubCollection.Customers)
         .get();
 
-      customres.forEach((customer) => {
+      customers.forEach((customer) => {
         const data = customer.data() as CustomerFull;
         if (!data.email) return;
 
         const { email } = data;
-        functions.logger.log({ email });
-
-        batch.set(
-          customer.ref,
-          { email: normalizeEmail(email) },
-          { merge: true }
-        );
+        const emailNormalized = normalizeEmail(data || "");
+        if (email !== emailNormalized) {
+          batch.set(customer.ref, { email: emailNormalized }, { merge: true });
+        }
       });
 
       await batch.commit();

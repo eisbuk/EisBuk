@@ -518,7 +518,10 @@ describe("Cloud functions", () => {
       name: saul.name,
       surname: saul.surname,
       // non-normalized email
-      email: " SAUl@Gmail.cOm ",
+      email:
+        " " +
+        saul.email!.replace(/.*@|o|g/g, (match) => match.toUpperCase()) +
+        " ",
       certificateExpiration: saul.certificateExpiration,
     };
     testWithEmulator(
