@@ -234,7 +234,7 @@ export const normalizeExistingEmails = functions
         if (!data.email) return;
 
         const { email } = data;
-        const emailNormalized = normalizeEmail(data || "");
+        const emailNormalized = normalizeEmail(email || "");
         if (email !== emailNormalized) {
           batch.set(customer.ref, { email: emailNormalized }, { merge: true });
         }
