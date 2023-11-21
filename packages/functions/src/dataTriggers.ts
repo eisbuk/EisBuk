@@ -491,7 +491,7 @@ export const createCustomerStats = functions
 
     // Fetch documents from a subcollection of the booking
     const bookedSlotsSnapshot = await bookingRef
-      .collection("bookedSlots")
+      .collection(BookingSubCollection.BookedSlots)
       .get();
 
     const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
@@ -501,7 +501,6 @@ export const createCustomerStats = functions
 
     if (!Object.keys(bookedSlots).length) return;
 
-    // Get calendar day
     const currentMonthStr = DateTime.now().toISODate().substring(0, 7);
     const nextMonthStr = DateTime.now()
       .plus({ month: 1 })
