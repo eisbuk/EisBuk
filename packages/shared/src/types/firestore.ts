@@ -425,6 +425,47 @@ export interface SlotAttendanceSanityCheckReport {
   dateMismatches: Record<string, DateMismatchDoc>;
   attendanceFixes?: AttendanceAutofixReport;
 }
+
+/** `<month>/<date>` string used for `slotsByDay` sanity checks */
+export type DateNamespace = `${string}/${string}`;
+export type SlotWithDateNamespace = SlotInterface & {
+  dateNamespace: DateNamespace;
+};
+
+/** A report for mismatched 'slots' and 'slotsByDay' entries */
+export interface SlotsByDayMismatchedDoc {
+  /** Slot in 'slots' collection */
+  slots: SlotInterface;
+  /** Slot in 'slotsByDay' collection */
+  slotsByDay: SlotWithDateNamespace;
+}
+
+export type SlotsByDayUpdate = {
+  [K in keyof SlotInterface]?: {
+    before: SlotInterface[K];
+    after: SlotInterface[K];
+  };
+};
+
+/** Slot id prepended with data namespace */
+export type DatedSlotId = `${DateNamespace}/${string}`;
+export interface SlotsByDayAutofixReport {
+  timestamp: string;
+  created: DatedSlotId[];
+  deleted: DatedSlotId[];
+  updated: Record<DatedSlotId, SlotsByDayUpdate>;
+  addedIds: string[];
+}
+
+export interface SlotSlotsByDaySanityCheckReport {
+  /** ISO timestamp of the sanity check run */
+  id: string;
+  straySlotsByDayEntries: Record<string, SlotWithDateNamespace[]>;
+  missingSlotsByDayEntries: Record<string, SlotInterface>;
+  mismatchedEntries: Record<string, SlotsByDayMismatchedDoc>;
+  slotsByDayFixes?: SlotsByDayAutofixReport;
+}
+
 // #endregion sanityChecks
 
 // #region firestoreSchema
@@ -466,6 +507,7 @@ export interface FirestoreSchema {
   [Collection.SanityChecks]: {
     [organization: string]: {
       [SanityCheckKind.SlotAttendance]: SlotAttendanceSanityCheckReport;
+      [SanityCheckKind.SlotSlotsByDay]: SlotSlotsByDaySanityCheckReport;
     };
   };
 }
