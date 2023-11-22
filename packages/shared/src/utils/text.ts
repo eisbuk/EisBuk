@@ -51,3 +51,11 @@ export const checkExpected = (input: string, expected: string) => {
   const sanitizedExpected = expected.replace(/[\s,;:!?'.-]/g, "").toLowerCase();
   return sanitizedInput === sanitizedExpected;
 };
+
+/**
+ * A helper function that removes uppercase and trailing spaces from emails
+ * ie: anExampleEmail@eXAMPLE.coM into anexampleemail@example.com
+ */
+export const normalizeEmail = (email: string) => {
+  return email.toLowerCase().trim();
+};

@@ -183,6 +183,18 @@ const DebugPage: React.FC = () => {
               DB Slot / Attendance Autofix
             </DebugPageButton>
           </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.NormalizeExistingEmails
+              )}
+              color={ButtonColor.Primary}
+            >
+              Normalize Existing Emails
+            </DebugPageButton>
+          </div>
         </div>
       </LayoutContent>
     </Layout>
