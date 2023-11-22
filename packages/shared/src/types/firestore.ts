@@ -416,7 +416,7 @@ export interface AttendanceAutofixReport {
   updated: Record<string, SlotAttendanceUpdate>;
 }
 
-export interface SlotSanityCheckReport {
+export interface SlotAttendanceSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
   /** A record of "unpaired" docs - slot related docs missing an entry in one or more related collection (keyed by slot id) */
@@ -465,7 +465,7 @@ export interface FirestoreSchema {
   };
   [Collection.SanityChecks]: {
     [organization: string]: {
-      [SanityCheckKind.SlotAttendance]: SlotSanityCheckReport;
+      [SanityCheckKind.SlotAttendance]: SlotAttendanceSanityCheckReport;
     };
   };
 }

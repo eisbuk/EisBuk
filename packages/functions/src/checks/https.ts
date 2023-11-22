@@ -1,15 +1,15 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 
+import { SanityCheckKind } from "@eisbuk/shared";
+
 import { __functionsZone__ } from "../constants";
 
 import { checkUser, throwUnauth } from "../utils";
 
-import {
-  attendanceSlotMismatchAutofix,
-  newSanityChecker,
-} from "./slotRelatedDocs";
-import { SanityCheckKind } from "@eisbuk/shared";
+import { newSanityChecker } from "./api";
+
+import { attendanceSlotMismatchAutofix } from "./slotAttendance";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
