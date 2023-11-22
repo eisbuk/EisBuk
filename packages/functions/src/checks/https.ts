@@ -58,3 +58,18 @@ export const dbSlotAttendanceAutofix = functions
       return attendanceFixes;
     }
   );
+
+export const dbSlotBookingsCheck = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      return newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotBookings
+      ).checkAndWrite();
+    }
+  );

@@ -1,8 +1,12 @@
 import admin from "firebase-admin";
+import functions from "firebase-functions";
 
 import {
   AttendanceAutofixReport,
+  BookingSubCollection,
   Collection,
+  CustomerBookingEntry,
+  CustomerBookings,
   DateMismatchDoc,
   FirestoreSchema,
   OrgSubCollection,
@@ -22,6 +26,12 @@ type Firestore = admin.firestore.Firestore;
 const relevantCollections = [
   OrgSubCollection.Attendance,
   OrgSubCollection.Slots,
+] as const;
+
+const bookingsRelevantCollections = [
+  // OrgSubCollection.Bookings,
+  OrgSubCollection.Slots,
+  BookingSubCollection.BookedSlots,
 ] as const;
 
 type RelevantCollection = (typeof relevantCollections)[number];
@@ -95,6 +105,168 @@ export const findSlotAttendanceMismatches = async (
   const dateMismatches = normalisedEntries._reduce(dateMismatchReducer, {});
 
   return { id: timestamp, unpairedEntries, dateMismatches };
+};
+
+/**
+ * A util used by slot related check cloud function used to find mismatch between slot and booking entries.
+ */
+export const findSlotBookingsMismatches = async (
+  db: Firestore,
+  organization: string
+): Promise<SlotSanityCheckReport> => {
+  const timestamp = DateTime.now().toISO();
+
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+
+  const slots = await orgRef
+    .collection(OrgSubCollection.Slots)
+    .get()
+    .then((snap) => snap.docs);
+  const bookings = await orgRef
+    .collection(OrgSubCollection.Bookings)
+    .get()
+    .then((snap) => snap.docs);
+
+  const collections = {
+    [OrgSubCollection.Slots]: new Map<string, SlotInterface>(
+      map(slots, (doc) => [doc.id, doc.data() as SlotInterface])
+    ),
+
+    // bookings data to get all the secretKeys
+    [OrgSubCollection.Bookings]: new Map<string, CustomerBookings>(
+      map(bookings, (doc) => [doc.id, doc.data() as CustomerBookings])
+    ),
+  };
+
+  const bookedSlotsRefs = map(bookings, (doc) =>
+    db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Bookings)
+      .doc(doc.id)
+      .collection(BookingSubCollection.BookedSlots)
+      .get()
+  );
+
+  const bookedSlotsSnapshots = await Promise.all(bookedSlotsRefs);
+
+  const bookedSlots = (await Promise.all(bookedSlotsSnapshots)).reduce(
+    (acc, bookedSlotsSnapshot) => {
+      if (!bookedSlotsSnapshot.docs.length) return acc;
+
+      const bookedSlotsInBooking: { [slotId: string]: CustomerBookingEntry } =
+        {};
+
+      bookedSlotsSnapshot.forEach((doc) => {
+        bookedSlotsInBooking[doc.id] = {
+          ...(doc.data() as CustomerBookingEntry),
+        };
+      });
+
+      return { ...acc, ...bookedSlotsInBooking };
+    },
+    {}
+  );
+
+  const ids = new Set([...Object.keys(bookedSlots)]);
+
+  const normalisedEntries = [...ids].map((id) => ({
+    id,
+    entries: bookingsRelevantCollections.map((collection) => {
+      const entry =
+        collection === OrgSubCollection.Slots
+          ? collections[collection].get(id)
+          : bookedSlots[id];
+      return {
+        collection,
+        exists: Boolean(entry),
+        date: entry?.date,
+        intervals:
+          collection === OrgSubCollection.Slots
+            ? entry?.intervals
+            : entry?.interval,
+      };
+    }),
+  }));
+
+  const missingSlots = normalisedEntries.map((entry) =>
+    collectMissingSlot(entry)
+  );
+  const invalidDateBookings = normalisedEntries.map((entry) =>
+    collectInvalidDateBookings(entry)
+  );
+  const invalidIntervalBookings = normalisedEntries.map((entry) =>
+    collectInvalidIntervalBookings(entry)
+  );
+  functions.logger.log("missingSlots: ", { missingSlots });
+  functions.logger.log("InvalidDateBookings: ", { invalidDateBookings });
+  functions.logger.log("invalidIntervalBookings: ", {
+    invalidIntervalBookings,
+  });
+
+  return { id: timestamp };
+};
+declare interface normalisedEntry {
+  id: string;
+  entries: entry[];
+}
+
+declare interface entry {
+  collection: OrgSubCollection.Slots | OrgSubCollection.Attendance;
+  exists: boolean;
+  date: any;
+  intervals: any;
+}
+
+// returns bookedSlots with a non-existent slot
+const collectMissingSlot = (entry: normalisedEntry): Record<string, entry> => {
+  const missingSlots = entry.entries.reduce((acc, innerEntry, i) => {
+    // return the bookedslot entry
+    if (
+      innerEntry.collection === OrgSubCollection.Slots &&
+      !innerEntry.exists &&
+      entry.entries[i + 1]
+    ) {
+      return { ...acc, [entry.id]: entry.entries[i + 1] };
+    }
+    return acc;
+  }, {});
+
+  return missingSlots;
+};
+// returns bookings with mismatching dates from their slots
+const collectInvalidDateBookings = (
+  entry: normalisedEntry
+): Record<string, entry> => {
+  // array length should never be not 2
+  // first element is the slot
+  if (
+    entry.entries.length !== 2 ||
+    entry.entries.some((entry) => !entry.exists) ||
+    entry.entries[0].date === entry.entries[1].date
+  )
+    return {};
+
+  return { [entry.id]: entry.entries[1] };
+};
+
+// returns bookings with nonexistent intervals in their respective slots
+const collectInvalidIntervalBookings = (
+  entry: normalisedEntry
+): Record<string, entry> => {
+  if (entry.entries.some((entry) => !entry.exists)) return {};
+  const missingIntervalBookings = entry.entries.reduce((acc, innerEntry, i) => {
+    if (
+      entry.entries.length < i + 1 ||
+      (typeof innerEntry.intervals !== "string" &&
+        entry.entries[i + 1] &&
+        !innerEntry.intervals[entry.entries[i + 1].intervals])
+    ) {
+      return { ...acc, [entry.id]: entry.entries[i + 1] };
+    }
+    return acc;
+  }, {});
+  return missingIntervalBookings;
 };
 
 const collectUnpairedDocs = (
@@ -278,6 +450,10 @@ export const newSanityChecker = <K extends SanityCheckKind>(
   const check = (): Promise<SanityCheckReport<K>> =>
     ({
       [SanityCheckKind.SlotAttendance]: findSlotAttendanceMismatches(
+        db,
+        organization
+      ),
+      [SanityCheckKind.SlotBookings]: findSlotBookingsMismatches(
         db,
         organization
       ),
