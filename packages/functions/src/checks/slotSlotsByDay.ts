@@ -5,12 +5,16 @@ import _ from "lodash";
 import {
   Collection,
   DateNamespace,
+  DatedSlotId,
   ID,
   OrgSubCollection,
   PickRequired,
   SlotInterface,
   SlotSlotsByDaySanityCheckReport,
   SlotWithDateNamespace,
+  SlotsByDayAutofixReport,
+  SlotsByDayMismatchedDoc,
+  SlotsByDayUpdate,
   SlotsById,
   map,
   valueMapper,
@@ -214,6 +218,113 @@ export const findSlotSlotsByDayMismatches = async (
   };
 };
 
+export const slotsSlotsByDayAutofix = async (
+  db: Firestore,
+  organization: string,
+  mismatches: SlotSlotsByDaySanityCheckReport
+): Promise<SlotsByDayAutofixReport> => {
+  const {
+    missingSlotsByDayEntries,
+    straySlotsByDayEntries,
+    mismatchedEntries,
+  } = mismatches;
+
+  // We're writing the updates in-memory before committing them to the db (this will result in max 4 writes to the db)
+  const updates: {
+    [month: string]: {
+      [date: string]: {
+        [id: string]: SlotInterface | admin.firestore.FieldValue;
+      };
+    };
+  } = {};
+
+  const upsertSlotsByDay = ({
+    id,
+    date,
+    month,
+    ...entry
+  }: SlotInterface & { month: string }) => {
+    _.set(updates, `${month}.${date}.${id}`, { id, date, ...entry });
+  };
+  const deleteSlotsByDay = ({
+    id,
+    date,
+    month,
+  }: SlotInterface & { month: string }) => {
+    _.set(
+      updates,
+      `${month}.${date}.${id}`,
+      admin.firestore.FieldValue.delete()
+    );
+  };
+
+  // Prepare the update actions for each action type
+  const toCreate = Object.entries(missingSlotsByDayEntries).map(
+    ([id, slot]) => ({ ...slot, month: slot.date.substring(0, 7), id })
+  );
+  const toDelete = Object.entries(straySlotsByDayEntries).flatMap(
+    ([id, slots]) =>
+      slots.map((slot) => ({ ...slot, month: slot.date.substring(0, 7), id }))
+  );
+  const toUpdate = Object.entries(mismatchedEntries).map(([id, { slots }]) => ({
+    ...slots,
+    month: slots.date.substring(0, 7),
+    id,
+  }));
+
+  // Apply updates to buffered in-memory 'slotsByDay'
+  toCreate.forEach(upsertSlotsByDay);
+  toUpdate.forEach(upsertSlotsByDay);
+  toDelete.forEach(deleteSlotsByDay);
+
+  // Collect 'slotsByDay' updates for the report
+  const created = toCreate.map(
+    ({ id, date }): DatedSlotId => `${date.substring(0, 7)}/${date}/${id}`
+  );
+  const deleted = toDelete.map(
+    ({ id, date }): DatedSlotId => `${date.substring(0, 7)}/${date}/${id}`
+  );
+  const updated = Object.fromEntries(
+    toUpdate.map(({ id, date }): [DatedSlotId, SlotsByDayUpdate] => [
+      `${date.substring(0, 7)}/${date}/${id}`,
+      calcUpdateDiff(mismatchedEntries[id]),
+    ])
+  );
+
+  // Collect updates for 'slots' collection (this will only happen in case a 'slots' entry is missing an id)
+  const slotsMissingIds = wrapIter(Object.entries(mismatchedEntries))
+    .filter(([, { slots }]) => !slots.id)
+    .map(([id]) => id)
+    ._array();
+
+  // Write updates to the db
+  const batch = db.batch();
+
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  const slotsByDayCollRef = orgRef.collection(OrgSubCollection.SlotsByDay);
+  const slotsCollRef = orgRef.collection(OrgSubCollection.Slots);
+
+  // Slots by day db updates
+  Object.entries(updates).forEach(([month, data]) =>
+    batch.set(slotsByDayCollRef.doc(month), data, { merge: true })
+  );
+
+  // Slots db updates
+  slotsMissingIds.forEach((id) =>
+    batch.set(slotsCollRef.doc(id), { id }, { merge: true })
+  );
+
+  await batch.commit();
+
+  return {
+    timestamp: DateTime.now().toISO(),
+    created,
+    deleted,
+    updated,
+    addedIds: slotsMissingIds,
+  };
+};
+
 // #region utils
 const matchSlot = (
   slots: SlotInterface | undefined,
@@ -245,4 +356,18 @@ const matchDateNamespace = (
     nDate === date
   );
 };
+
+const calcUpdateDiff = ({
+  slots,
+  slotsByDay,
+}: SlotsByDayMismatchedDoc): SlotsByDayUpdate =>
+  Object.fromEntries(
+    Object.keys({ ...slots, ..._.omit(slotsByDay, "dateNamespace") })
+      // Filter out 'id' as it's often added to the 'slots' entry, not 'slotsByDay' entry
+      .filter((k) => k !== "id")
+      .map(
+        (key) => [key, { before: slotsByDay[key], after: slots[key] }] as const
+      )
+      .filter(([, { before, after }]) => !_.isEqual(before, after))
+  );
 // #endregion utils

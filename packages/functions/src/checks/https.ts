@@ -10,6 +10,7 @@ import { checkUser, throwUnauth } from "../utils";
 import { newSanityChecker } from "./api";
 
 import { attendanceSlotMismatchAutofix } from "./slotAttendance";
+import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -75,5 +76,34 @@ export const dbSlotAttendanceAutofix = functions
       checker.writeReport({ ...report, attendanceFixes });
 
       return attendanceFixes;
+    }
+  );
+
+export const dbSlotSlotsByDayAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotSlotsByDay
+      );
+
+      const report = await checker
+        .getLatestReport()
+        // If report doesn't exist, or the latest report had already been fixed, get the new report
+        .then((r) => (!r || r.slotsByDayFixes ? checker.checkAndWrite() : r));
+
+      const slotsByDayFixes = await slotsSlotsByDayAutofix(
+        db,
+        organization,
+        report
+      );
+      checker.writeReport({ ...report, slotsByDayFixes });
+
+      return slotsByDayFixes;
     }
   );
