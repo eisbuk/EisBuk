@@ -8,7 +8,7 @@ import i18n, {
 } from "@eisbuk/translations";
 import { CustomerWithAttendance, SlotType } from "@eisbuk/shared";
 
-import { getIntervalString } from "./utils";
+import { getIntervalLabel } from "./utils";
 import Table from "../Table";
 
 interface RowItem {
@@ -130,7 +130,7 @@ const processTableData = (entries: TableDataEntry[]): RowItem[] =>
       .filter(({ bookedInterval }) => Boolean(bookedInterval))
       .map(({ name, surname, bookedInterval }) => {
         const [start, end] = bookedInterval!.split("-");
-        const totalHours = getIntervalString(bookedInterval!);
+        const totalHours = getIntervalLabel(bookedInterval!);
 
         return {
           type,

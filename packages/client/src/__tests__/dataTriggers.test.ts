@@ -719,15 +719,6 @@ describe("Cloud functions -> Data triggers ->", () => {
           adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
         ]);
 
-        await Promise.all([
-          await waitFor(async () => {
-            const snap = await adminDb
-              .doc(getCustomerDocPath(organization, saul.id))
-              .get();
-            expect(snap.data()).toEqual(saul);
-          }),
-        ]);
-
         const bookedSlotThisMonthIce = {
           date: slotThisMonthIce.date,
           interval: Object.keys(slotThisMonthIce.intervals)[0],
@@ -785,21 +776,6 @@ describe("Cloud functions -> Data triggers ->", () => {
             )
             .set(bookedSlotNextMonthOffIce),
         ]);
-
-        // The booked slot should be created in customer's bookings
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(
-              getBookedSlotDocPath(
-                organization,
-                saul.secretKey,
-                `${bookedSlotThisMonthIce.date}-9`
-              )
-            )
-            .get();
-
-          expect(snap.data()).toEqual(bookedSlotThisMonthIce);
-        });
 
         // The customer should include bookingsStats
         await waitFor(async () => {

@@ -8,7 +8,7 @@ enum BookingDuration {
   "2+h" = "2H+",
 }
 
-export const getIntervalString = (interval: string): BookingDuration => {
+export const getIntervalLabel = (interval: string): BookingDuration => {
   const durationInMinutes = calculateIntervalDurationInMinutes(interval);
 
   // exit early with catch all if duration greater than expected
