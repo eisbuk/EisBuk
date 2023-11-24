@@ -1,5 +1,4 @@
 import admin from "firebase-admin";
-import functions from "firebase-functions";
 
 import {
   AttendanceAutofixReport,
@@ -18,6 +17,9 @@ import {
   UnpairedDoc,
   map,
   wrapIter,
+  BookingsSanityCheckReport,
+  bookingsRelevantCollections,
+  BookingsUnpairedCheckPayload,
 } from "@eisbuk/shared";
 import { DateTime } from "luxon";
 
@@ -26,12 +28,6 @@ type Firestore = admin.firestore.Firestore;
 const relevantCollections = [
   OrgSubCollection.Attendance,
   OrgSubCollection.Slots,
-] as const;
-
-const bookingsRelevantCollections = [
-  // OrgSubCollection.Bookings,
-  OrgSubCollection.Slots,
-  BookingSubCollection.BookedSlots,
 ] as const;
 
 type RelevantCollection = (typeof relevantCollections)[number];
@@ -49,7 +45,6 @@ interface UnpairedCheckPayload {
 interface EntryDatePayload extends EntryExistsPayload {
   date: string | undefined;
 }
-
 interface DateCheckPayload {
   id: string;
   entries: EntryDatePayload[];
@@ -113,7 +108,7 @@ export const findSlotAttendanceMismatches = async (
 export const findSlotBookingsMismatches = async (
   db: Firestore,
   organization: string
-): Promise<SlotSanityCheckReport> => {
+): Promise<BookingsSanityCheckReport> => {
   const timestamp = DateTime.now().toISO();
 
   const orgRef = db.collection(Collection.Organizations).doc(organization);
@@ -168,9 +163,9 @@ export const findSlotBookingsMismatches = async (
     {}
   );
 
-  const ids = new Set([...Object.keys(bookedSlots)]);
+  const ids = new Set(Object.keys(bookedSlots));
 
-  const normalisedEntries = [...ids].map((id) => ({
+  const normalisedEntries = wrapIter(ids).map((id) => ({
     id,
     entries: bookingsRelevantCollections.map((collection) => {
       const entry =
@@ -188,85 +183,81 @@ export const findSlotBookingsMismatches = async (
       };
     }),
   }));
+  const missingSlots = normalisedEntries._reduce(collectMissingSlot, {});
+  const invalidDateBookings = normalisedEntries._reduce(
+    collectInvalidDateBookings,
+    {}
+  );
+  const invalidIntervalBookings = normalisedEntries._reduce(
+    collectInvalidIntervalBookings,
+    {}
+  );
 
-  const missingSlots = normalisedEntries.map((entry) =>
-    collectMissingSlot(entry)
-  );
-  const invalidDateBookings = normalisedEntries.map((entry) =>
-    collectInvalidDateBookings(entry)
-  );
-  const invalidIntervalBookings = normalisedEntries.map((entry) =>
-    collectInvalidIntervalBookings(entry)
-  );
-  functions.logger.log("missingSlots: ", { missingSlots });
-  functions.logger.log("InvalidDateBookings: ", { invalidDateBookings });
-  functions.logger.log("invalidIntervalBookings: ", {
+  return {
+    id: timestamp,
+    missingSlots,
+    invalidDateBookings,
     invalidIntervalBookings,
-  });
-
-  return { id: timestamp };
+  };
 };
-declare interface normalisedEntry {
-  id: string;
-  entries: entry[];
-}
-
-declare interface entry {
-  collection: OrgSubCollection.Slots | OrgSubCollection.Attendance;
-  exists: boolean;
-  date: any;
-  intervals: any;
-}
 
 // returns bookedSlots with a non-existent slot
-const collectMissingSlot = (entry: normalisedEntry): Record<string, entry> => {
-  const missingSlots = entry.entries.reduce((acc, innerEntry, i) => {
+const collectMissingSlot = (
+  rec: Record<string, BookingsUnpairedCheckPayload>,
+
+  { id, entries }: BookingsUnpairedCheckPayload
+): Record<string, BookingsUnpairedCheckPayload> => {
+  const missingSlot = entries.reduce((acc, innerEntry, i) => {
     // return the bookedslot entry
     if (
       innerEntry.collection === OrgSubCollection.Slots &&
       !innerEntry.exists &&
-      entry.entries[i + 1]
+      entries[i + 1]
     ) {
-      return { ...acc, [entry.id]: entry.entries[i + 1] };
+      return { ...acc, ...entries[i + 1] };
     }
     return acc;
-  }, {});
-
-  return missingSlots;
+  }, {} as BookingsUnpairedCheckPayload);
+  return { ...rec, [id]: missingSlot };
 };
 // returns bookings with mismatching dates from their slots
 const collectInvalidDateBookings = (
-  entry: normalisedEntry
-): Record<string, entry> => {
+  rec: Record<string, BookingsUnpairedCheckPayload>,
+
+  { id, entries }: BookingsUnpairedCheckPayload
+): Record<string, BookingsUnpairedCheckPayload> => {
+  if (entries.some((entry) => !entry.exists)) return rec;
+
   // array length should never be not 2
   // first element is the slot
-  if (
-    entry.entries.length !== 2 ||
-    entry.entries.some((entry) => !entry.exists) ||
-    entry.entries[0].date === entry.entries[1].date
-  )
-    return {};
+  if (entries.length !== 2 || entries[0].date === entries[1].date) {
+    return rec;
+  }
 
-  return { [entry.id]: entry.entries[1] };
+  /** @TODO fix typing */
+  return { ...rec, [id]: entries[1] };
 };
 
 // returns bookings with nonexistent intervals in their respective slots
 const collectInvalidIntervalBookings = (
-  entry: normalisedEntry
-): Record<string, entry> => {
-  if (entry.entries.some((entry) => !entry.exists)) return {};
-  const missingIntervalBookings = entry.entries.reduce((acc, innerEntry, i) => {
+  rec: Record<string, BookingsUnpairedCheckPayload>,
+
+  { id, entries }: BookingsUnpairedCheckPayload
+): Record<string, BookingsUnpairedCheckPayload> => {
+  if (entries.some((entry) => !entry.exists)) return rec;
+  const missingIntervalBookings = entries.reduce((acc, innerEntry, i) => {
     if (
-      entry.entries.length < i + 1 ||
-      (typeof innerEntry.intervals !== "string" &&
-        entry.entries[i + 1] &&
-        !innerEntry.intervals[entry.entries[i + 1].intervals])
+      entries.length < i + 1 ||
+      (entries[i + 1] &&
+        typeof innerEntry.intervals !== "string" &&
+        !innerEntry.intervals[entries[i + 1].intervals as string])
     ) {
-      return { ...acc, [entry.id]: entry.entries[i + 1] };
+      return { ...acc, [id]: entries[i + 1] };
     }
     return acc;
   }, {});
-  return missingIntervalBookings;
+
+  return { ...rec, [id]: missingIntervalBookings };
 };
 
 const collectUnpairedDocs = (
