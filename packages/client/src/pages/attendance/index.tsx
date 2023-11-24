@@ -134,7 +134,7 @@ export default AttendancePage;
 // A better fix means an overhaul of parent or table cell css:
 //* overflow does not play well with position:sticky
 const MonthWrapper: React.FC = ({ children }) => (
-  <div className="overflow-x-auto h-4/5 pb-32 scrollbar-hide">
+  <div className="overflow-x-auto h-full pb-10 scrollbar-hide">
     <div className="px-[44px] py-4">{children}</div>
   </div>
 );

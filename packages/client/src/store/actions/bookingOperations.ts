@@ -1,6 +1,11 @@
 import { DateTime } from "luxon";
 
-import { Customer, SlotInterface, CustomerBase } from "@eisbuk/shared";
+import {
+  Customer,
+  SlotInterface,
+  CustomerBase,
+  normalizeEmail,
+} from "@eisbuk/shared";
 import { CloudFunction } from "@eisbuk/shared/ui";
 import i18n, { NotificationMessage } from "@eisbuk/translations";
 
@@ -192,6 +197,10 @@ export const customerSelfRegister: {
   async (dispatch, _, { getFunctions }) => {
     try {
       const organization = getOrganization();
+
+      if (customer.email) {
+        customer.email = normalizeEmail(customer.email);
+      }
 
       const handler = CloudFunction.CustomerSelfRegister;
       const payload = {

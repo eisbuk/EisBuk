@@ -13,6 +13,7 @@ import {
   CustomerBookingEntry,
   BookingSubCollection,
   SlotsByDay,
+  normalizeEmail,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
@@ -157,13 +158,13 @@ export const removeInvalidCustomerPhones = functions
 
       const batch = db.batch();
 
-      const custoemrs = await db
+      const customres = await db
         .collection(Collection.Organizations)
         .doc(organization)
         .collection(OrgSubCollection.Customers)
         .get();
 
-      custoemrs.forEach((customer) => {
+      customres.forEach((customer) => {
         const data = customer.data() as CustomerFull;
         if (!data.phone) return;
 
@@ -298,3 +299,35 @@ export const calculateBookingStats = functions
       return { success: false };
     }
   });
+export const normalizeExistingEmails = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+
+      const batch = db.batch();
+
+      const customers = await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Customers)
+        .get();
+
+      customers.forEach((customer) => {
+        const data = customer.data() as CustomerFull;
+        if (!data.email) return;
+
+        const { email } = data;
+        const emailNormalized = normalizeEmail(email || "");
+        if (email !== emailNormalized) {
+          batch.set(customer.ref, { email: emailNormalized }, { merge: true });
+        }
+      });
+
+      await batch.commit();
+
+      return { success: true };
+    }
+  );
