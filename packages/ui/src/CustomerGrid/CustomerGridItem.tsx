@@ -21,7 +21,9 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
   const [sName, sSurname] = shortName(customer.name, customer.surname);
 
   const thisMonth = DateTime.now();
+  const thisMonthStr = thisMonth.toISODate().substring(0, 7);
   const nextMonth = DateTime.now().plus({ month: 1 });
+  const nextMonthStr = nextMonth.toISODate().substring(0, 7);
 
   const { t } = useTranslation();
 
@@ -48,16 +50,20 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         )}
         :
         <p className="text-gray-500 text-center truncate bg-teal-100 p-1 rounded-lg mx-1">
-          {customer.bookingStats && customer.bookingStats.thisMonthIce
-            ? `${customer.bookingStats.thisMonthIce} hr${
-                customer.bookingStats.thisMonthIce > 1 ? "s" : ""
+          {customer.bookingStats &&
+          customer.bookingStats[thisMonthStr] &&
+          customer.bookingStats[thisMonthStr].ice
+            ? `${customer.bookingStats[thisMonthStr].ice} hr${
+                customer.bookingStats[thisMonthStr].ice > 1 ? "s" : ""
               }`
             : `-`}
         </p>
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
-          {customer.bookingStats && customer.bookingStats.thisMonthOffIce
-            ? `${customer.bookingStats.thisMonthOffIce} hr${
-                customer.bookingStats.thisMonthOffIce > 1 ? "s" : ""
+          {customer.bookingStats &&
+          customer.bookingStats[thisMonthStr] &&
+          customer.bookingStats[thisMonthStr].offIce
+            ? `${customer.bookingStats[thisMonthStr].offIce} hr${
+                customer.bookingStats[thisMonthStr].offIce > 1 ? "s" : ""
               }`
             : `-`}
         </p>
@@ -71,16 +77,20 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         )}
         :
         <p className="text-gray-500 text-center truncate bg-teal-100 mx-1 p-1 rounded-lg">
-          {customer.bookingStats && customer.bookingStats.nextMonthIce
-            ? `${customer.bookingStats.nextMonthIce} hr${
-                customer.bookingStats.nextMonthIce > 1 ? "s" : ""
+          {customer.bookingStats &&
+          customer.bookingStats[nextMonthStr] &&
+          customer.bookingStats[nextMonthStr].ice
+            ? `${customer.bookingStats[nextMonthStr].ice} hr${
+                customer.bookingStats[nextMonthStr].ice > 1 ? "s" : ""
               }`
             : `-`}
         </p>
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
-          {customer.bookingStats && customer.bookingStats.nextMonthOffIce
-            ? `${customer.bookingStats.nextMonthOffIce} hr${
-                customer.bookingStats.nextMonthOffIce > 1 ? "s" : ""
+          {customer.bookingStats &&
+          customer.bookingStats[nextMonthStr] &&
+          customer.bookingStats[nextMonthStr].offIce
+            ? `${customer.bookingStats[nextMonthStr].offIce} hr${
+                customer.bookingStats[nextMonthStr].offIce > 1 ? "s" : ""
               }`
             : `-`}
         </p>

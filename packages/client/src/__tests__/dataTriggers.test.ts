@@ -708,6 +708,9 @@ describe("Cloud functions -> Data triggers ->", () => {
             .doc(getSlotDocPath(organization, `${dateThisMonth}-9`))
             .set(slotThisMonthIce),
           adminDb
+            .doc(getSlotDocPath(organization, `${dateThisMonth}-11`))
+            .set(slotThisMonthIce),
+          adminDb
             .doc(getSlotDocPath(organization, `${dateNextMonth}-9`))
             .set(slotNextMonthIce),
           adminDb
@@ -721,7 +724,11 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         const bookedSlotThisMonthIce = {
           date: slotThisMonthIce.date,
-          interval: Object.keys(slotThisMonthIce.intervals)[0],
+          interval: "09:00-12:00",
+        };
+        const secondBookedSlotThisMonthIce = {
+          date: slotThisMonthIce.date,
+          interval: "11:00-13:00",
         };
         const bookedSlotNextMonthIce = {
           date: slotNextMonthIce.date,
@@ -739,12 +746,22 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         // book slots
         await Promise.all([
+          // two slots this month ice
           await adminDb
             .doc(
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
                 `${bookedSlotThisMonthIce.date}-9`
+              )
+            )
+            .set(bookedSlotThisMonthIce),
+          await adminDb
+            .doc(
+              getBookedSlotDocPath(
+                organization,
+                saul.secretKey,
+                `${secondBookedSlotThisMonthIce.date}-11`
               )
             )
             .set(bookedSlotThisMonthIce),
@@ -786,10 +803,14 @@ describe("Cloud functions -> Data triggers ->", () => {
           expect(snap.data()).toMatchObject({
             ...saul,
             bookingStats: {
-              thisMonthIce: 1,
-              thisMonthOffIce: 1,
-              nextMonthIce: 1,
-              nextMonthOffIce: 1,
+              "2023-11": {
+                ice: 6,
+                offIce: 1,
+              },
+              "2023-12": {
+                ice: 1,
+                offIce: 1,
+              },
             },
           });
         });
@@ -814,10 +835,14 @@ describe("Cloud functions -> Data triggers ->", () => {
           expect(snap.data()).toMatchObject({
             ...saul,
             bookingStats: {
-              thisMonthIce: 0,
-              thisMonthOffIce: 1,
-              nextMonthIce: 1,
-              nextMonthOffIce: 1,
+              "2023-11": {
+                ice: 3,
+                offIce: 1,
+              },
+              "2023-12": {
+                ice: 1,
+                offIce: 1,
+              },
             },
           });
         });

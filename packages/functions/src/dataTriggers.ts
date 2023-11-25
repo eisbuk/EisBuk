@@ -2,7 +2,6 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-import { DateTime } from "luxon";
 import {
   BookingSubCollection,
   Collection,
@@ -470,11 +469,13 @@ export const createCustomerStats = functions
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
-  .onWrite(async (_, context) => {
+  .onWrite(async (change, context) => {
     const { organization, secretKey } = context.params as Record<
       string,
       string
     >;
+    const { date } =
+      change.after.data() || (change.before.data() as CustomerBookingEntry);
 
     const db = admin.firestore();
 
@@ -501,35 +502,18 @@ export const createCustomerStats = functions
 
     if (!Object.keys(bookedSlots).length) return;
 
-    const currentMonthStr = DateTime.now().toISODate().substring(0, 7);
-    const nextMonthStr = DateTime.now()
-      .plus({ month: 1 })
-      .toISODate()
-      .substring(0, 7);
+    const monthStr = date.substring(0, 7);
 
-    const currentMonthSlots = (
+    const monthSlots = (
       await db
         .collection(Collection.Organizations)
         .doc(organization)
         .collection(OrgSubCollection.SlotsByDay)
-        .doc(currentMonthStr)
+        .doc(monthStr)
         .get()
     ).data() as SlotsByDay;
 
-    const nextMonthSlots = (
-      await db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.SlotsByDay)
-        .doc(nextMonthStr)
-        .get()
-    ).data() as SlotsByDay;
-
-    const stats = getCustomerStats(
-      bookedSlots,
-      currentMonthSlots,
-      nextMonthSlots
-    );
+    const stats = getCustomerStats(bookedSlots, monthSlots, monthStr);
     // Set stats into customers doc
     await db
       .collection(Collection.Organizations)
