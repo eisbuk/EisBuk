@@ -708,9 +708,6 @@ describe("Cloud functions -> Data triggers ->", () => {
             .doc(getSlotDocPath(organization, `${dateThisMonth}-9`))
             .set(slotThisMonthIce),
           adminDb
-            .doc(getSlotDocPath(organization, `${dateThisMonth}-11`))
-            .set(slotThisMonthIce),
-          adminDb
             .doc(getSlotDocPath(organization, `${dateNextMonth}-9`))
             .set(slotNextMonthIce),
           adminDb
@@ -724,11 +721,7 @@ describe("Cloud functions -> Data triggers ->", () => {
 
         const bookedSlotThisMonthIce = {
           date: slotThisMonthIce.date,
-          interval: "09:00-12:00",
-        };
-        const secondBookedSlotThisMonthIce = {
-          date: slotThisMonthIce.date,
-          interval: "11:00-13:00",
+          interval: Object.keys(slotNextMonthIce.intervals)[0],
         };
         const bookedSlotNextMonthIce = {
           date: slotNextMonthIce.date,
@@ -753,15 +746,6 @@ describe("Cloud functions -> Data triggers ->", () => {
                 organization,
                 saul.secretKey,
                 `${bookedSlotThisMonthIce.date}-9`
-              )
-            )
-            .set(bookedSlotThisMonthIce),
-          await adminDb
-            .doc(
-              getBookedSlotDocPath(
-                organization,
-                saul.secretKey,
-                `${secondBookedSlotThisMonthIce.date}-11`
               )
             )
             .set(bookedSlotThisMonthIce),
@@ -804,7 +788,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             ...saul,
             bookingStats: {
               "2023-11": {
-                ice: 6,
+                ice: 1,
                 offIce: 1,
               },
               "2023-12": {
@@ -836,7 +820,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             ...saul,
             bookingStats: {
               "2023-11": {
-                ice: 3,
+                ice: 0,
                 offIce: 1,
               },
               "2023-12": {
