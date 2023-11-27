@@ -438,7 +438,7 @@ export const newSanityChecker = <K extends SanityCheckKind>(
         db,
         organization
       ),
-    }[kind]);
+    }[kind] as Promise<SanityCheckReport<K>>);
 
   const checkAndWrite = () => check().then(writeReport);
 
