@@ -12,6 +12,7 @@ import { useHistory } from "react-router-dom";
 import * as yup from "yup";
 
 import { PrivateRoutes } from "@eisbuk/shared/ui";
+import { normalizeEmail } from "@eisbuk/shared";
 import {
   useTranslation,
   ActionButton as ActionButtonLabel,
@@ -82,7 +83,11 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
   // #region continueHandlers
   const submitHandlers = {} as Record<EmailAuthStep, SubmitHandler>;
   submitHandlers[EmailAuthStep.SignInWithEmail] = async ({ email }) => {
-    const signInMethods = await fetchSignInMethodsForEmail(getAuth(), email);
+    const normalizedEmail = normalizeEmail(email);
+    const signInMethods = await fetchSignInMethodsForEmail(
+      getAuth(),
+      normalizedEmail
+    );
     if (signInMethods.includes("password")) {
       setAuthStep(EmailAuthStep.SignInWithEmailPassword);
     } else {
@@ -93,7 +98,13 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     email,
     password,
   }) => {
-    const res = await signInWithEmailAndPassword(getAuth(), email, password);
+    const normalizedEmail = normalizeEmail(email);
+
+    const res = await signInWithEmailAndPassword(
+      getAuth(),
+      normalizedEmail,
+      password
+    );
     if (res.user.refreshToken) {
       history.push(PrivateRoutes.Root);
     }
@@ -102,10 +113,14 @@ const EmailFlow: React.FC<Props> = ({ onCancel = () => {} }) => {
     email,
     password,
   }) => {
-    await createUserWithEmailAndPassword(getAuth(), email, password);
+    const normalizedEmail = normalizeEmail(email);
+
+    await createUserWithEmailAndPassword(getAuth(), normalizedEmail, password);
   };
   submitHandlers[EmailAuthStep.RecoverEmailPassword] = async ({ email }) => {
-    await sendPasswordResetEmail(getAuth(), email);
+    const normalizedEmail = normalizeEmail(email);
+
+    await sendPasswordResetEmail(getAuth(), normalizedEmail);
     setAuthStep(EmailAuthStep.CheckPasswordRecoverEmail);
   };
   // add an empty function for 'check email' step as there is no `onSubmit` for this step
