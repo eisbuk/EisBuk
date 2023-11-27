@@ -495,6 +495,7 @@ export interface FirestoreSchema {
   [Collection.SanityChecks]: {
     [organization: string]: {
       [SanityCheckKind.SlotAttendance]: SlotSanityCheckReport;
+      [SanityCheckKind.SlotBookings]: BookingsSanityCheckReport;
     };
   };
 }
