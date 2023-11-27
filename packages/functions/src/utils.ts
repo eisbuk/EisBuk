@@ -353,7 +353,8 @@ export const getCustomerStats = (
   bookedSlots: { [slotId: string]: CustomerBookingEntry },
   monthSlots: SlotsByDay,
   monthStr: string
-) => {
+): Record<string, { ice: number; offIce: number }> => {
+  if (!bookedSlots || !monthSlots) return { [monthStr]: { ice: 0, offIce: 0 } };
   return Object.entries(bookedSlots).reduce(
     (acc, [key, bookedSlot]) => {
       // Some non-conformity exists in slot ids where the id could either be the date-intervalStart or a uuid

@@ -500,10 +500,8 @@ export const createCustomerStats = functions
       bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
     });
 
-    if (!Object.keys(bookedSlots).length) return;
-
+    if (!bookedSlots) return;
     const monthStr = date.substring(0, 7);
-
     const monthSlots = (
       await db
         .collection(Collection.Organizations)
@@ -513,6 +511,7 @@ export const createCustomerStats = functions
         .get()
     ).data() as SlotsByDay;
 
+    if (!monthSlots) return;
     const stats = getCustomerStats(bookedSlots, monthSlots, monthStr);
     // Set stats into customers doc
     await db
