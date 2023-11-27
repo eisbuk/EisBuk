@@ -20,6 +20,7 @@ import {
   BookingsSanityCheckReport,
   bookingsRelevantCollections,
   BookingsUnpairedCheckPayload,
+  BookingsEntryExistsPayload,
 } from "@eisbuk/shared";
 import { DateTime } from "luxon";
 
@@ -134,18 +135,12 @@ export const findSlotBookingsMismatches = async (
   };
 
   const bookedSlotsRefs = map(bookings, (doc) =>
-    db
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Bookings)
-      .doc(doc.id)
-      .collection(BookingSubCollection.BookedSlots)
-      .get()
+    doc.ref.collection(BookingSubCollection.BookedSlots).get()
   );
 
   const bookedSlotsSnapshots = await Promise.all(bookedSlotsRefs);
 
-  const bookedSlots = (await Promise.all(bookedSlotsSnapshots)).reduce(
+  const bookedSlots = bookedSlotsSnapshots.reduce(
     (acc, bookedSlotsSnapshot) => {
       if (!bookedSlotsSnapshot.docs.length) return acc;
 
@@ -183,11 +178,8 @@ export const findSlotBookingsMismatches = async (
       };
     }),
   }));
-  const missingSlots = normalisedEntries._reduce(collectMissingSlot, {});
-  const invalidDateBookings = normalisedEntries._reduce(
-    collectInvalidDateBookings,
-    {}
-  );
+  const strayBookings = normalisedEntries._reduce(collectStrayBookings, {});
+  const dateMismatches = normalisedEntries._reduce(collectDateMismatches, {});
   const invalidIntervalBookings = normalisedEntries._reduce(
     collectInvalidIntervalBookings,
     {}
@@ -195,19 +187,18 @@ export const findSlotBookingsMismatches = async (
 
   return {
     id: timestamp,
-    missingSlots,
-    invalidDateBookings,
+    strayBookings,
+    dateMismatches,
     invalidIntervalBookings,
   };
 };
 
 // returns bookedSlots with a non-existent slot
-const collectMissingSlot = (
-  rec: Record<string, BookingsUnpairedCheckPayload>,
-
+const collectStrayBookings = (
+  rec: Record<string, BookingsEntryExistsPayload>,
   { id, entries }: BookingsUnpairedCheckPayload
-): Record<string, BookingsUnpairedCheckPayload> => {
-  const missingSlot = entries.reduce((acc, innerEntry, i) => {
+): Record<string, BookingsEntryExistsPayload> => {
+  const strayBookings = entries.reduce((acc, innerEntry, i) => {
     // return the bookedslot entry
     if (
       innerEntry.collection === OrgSubCollection.Slots &&
@@ -217,20 +208,20 @@ const collectMissingSlot = (
       return { ...acc, ...entries[i + 1] };
     }
     return acc;
-  }, {} as BookingsUnpairedCheckPayload);
-  return { ...rec, [id]: missingSlot };
+  }, {} as BookingsEntryExistsPayload);
+  return { ...rec, [id]: strayBookings };
 };
 // returns bookings with mismatching dates from their slots
-const collectInvalidDateBookings = (
-  rec: Record<string, BookingsUnpairedCheckPayload>,
+const collectDateMismatches = (
+  rec: Record<string, BookingsEntryExistsPayload>,
 
   { id, entries }: BookingsUnpairedCheckPayload
-): Record<string, BookingsUnpairedCheckPayload> => {
+): Record<string, BookingsEntryExistsPayload> => {
   if (entries.some((entry) => !entry.exists)) return rec;
 
   // array length should never be not 2
   // first element is the slot
-  if (entries.length !== 2 || entries[0].date === entries[1].date) {
+  if (entries[0].date === entries[1].date) {
     return rec;
   }
 
@@ -240,10 +231,9 @@ const collectInvalidDateBookings = (
 
 // returns bookings with nonexistent intervals in their respective slots
 const collectInvalidIntervalBookings = (
-  rec: Record<string, BookingsUnpairedCheckPayload>,
-
+  rec: Record<string, BookingsEntryExistsPayload>,
   { id, entries }: BookingsUnpairedCheckPayload
-): Record<string, BookingsUnpairedCheckPayload> => {
+): Record<string, BookingsEntryExistsPayload> => {
   if (entries.some((entry) => !entry.exists)) return rec;
   const missingIntervalBookings = entries.reduce((acc, innerEntry, i) => {
     if (
@@ -255,7 +245,7 @@ const collectInvalidIntervalBookings = (
       return { ...acc, [id]: entries[i + 1] };
     }
     return acc;
-  }, {});
+  }, {} as BookingsEntryExistsPayload);
 
   return { ...rec, [id]: missingIntervalBookings };
 };

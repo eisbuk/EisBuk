@@ -448,11 +448,11 @@ export interface BookingsSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
   /** A record of "unpaired" bookedSlots which have no equivalent slot with the same id (keyed by slot id)*/
-  missingSlots: Record<string, BookingsUnpairedCheckPayload>;
+  strayBookings: Record<string, BookingsEntryExistsPayload>;
   /** A record of bookedSlots for which the date is mismatched across collections (keyed by slot id) */
-  invalidDateBookings: Record<string, BookingsUnpairedCheckPayload>;
+  dateMismatches: Record<string, BookingsEntryExistsPayload>;
   /** A record of bookedSlots for which the interval doesn't exist in respective slot (keyed by slot id) */
-  invalidIntervalBookings: Record<string, BookingsUnpairedCheckPayload>;
+  invalidIntervalBookings: Record<string, BookingsEntryExistsPayload>;
 }
 // #endregion sanityChecks
 
