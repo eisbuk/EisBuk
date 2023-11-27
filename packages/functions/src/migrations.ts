@@ -217,7 +217,7 @@ export const clearDeletedCustomersRegistrationAndCategories = functions
     await batch.commit();
   });
 
-export const calculateBookingStats = functions
+export const calculateBookingStatsThisAndNextMonths = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }, { auth }) => {
     if (!(await checkUser(organization, auth))) throwUnauth();
@@ -255,7 +255,7 @@ export const calculateBookingStats = functions
       ).data() as SlotsByDay;
       const batch = admin.firestore().batch();
 
-      const bookedSlots = allBookings.map(async (booking) => {
+      const statsBatch = allBookings.map(async (booking) => {
         const customerRef = orgRef
           .collection(OrgSubCollection.Customers)
           .doc(booking.data().id);
@@ -271,10 +271,15 @@ export const calculateBookingStats = functions
           bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
         });
 
-        const stats = getCustomerStats(
+        const thisMonthStats = getCustomerStats(
           bookedSlots,
           currentMonthSlots,
-          nextMonthSlots
+          currentMonthStr
+        );
+        const nextMonthStats = getCustomerStats(
+          bookedSlots,
+          nextMonthSlots,
+          nextMonthStr
         );
 
         functions.logger.info(
@@ -282,16 +287,13 @@ export const calculateBookingStats = functions
         );
 
         // Set stats into customers doc
-        batch.set(
+        return batch.set(
           customerRef,
-          {
-            bookingStats: stats,
-          },
+          { bookingStats: { ...thisMonthStats, ...nextMonthStats } },
           { merge: true }
         );
-        return batch.set(customerRef, { bookingStats: stats }, { merge: true });
       });
-      await Promise.all(bookedSlots);
+      await Promise.all(statsBatch);
       await batch.commit();
 
       return { success: true };

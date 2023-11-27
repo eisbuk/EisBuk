@@ -188,12 +188,12 @@ const DebugPage: React.FC = () => {
               onClick={() =>
                 createFunctionCaller(
                   functions,
-                  CloudFunction.CalculateBookingStats
+                  CloudFunction.CalculateBookingStatsThisAndNextMonths
                 )().then(console.log)
               }
               color={ButtonColor.Primary}
             >
-              Calculate booking stats
+              Calculate Booking Stats This And Next Months
             </DebugPageButton>
           </div>
           <div className="p-2">
