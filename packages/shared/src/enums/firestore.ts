@@ -44,6 +44,7 @@ export enum DeliveryQueue {
 
 export enum SanityCheckKind {
   SlotAttendance = "slotAttendance",
+  SlotSlotsByDay = "slotSlotsByDay",
 }
 
 // endregion
