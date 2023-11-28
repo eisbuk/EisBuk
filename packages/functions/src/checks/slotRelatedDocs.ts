@@ -178,12 +178,13 @@ export const findSlotBookingsMismatches = async (
       };
     }),
   }));
-  const strayBookings = normalisedEntries._reduce(collectStrayBookings, {});
+  const strayBookings = normalisedEntries
+    .filter((entry) => Boolean(Object.values(entry).length))
+    ._reduce(collectStrayBookings, {});
   const dateMismatches = normalisedEntries._reduce(collectDateMismatches, {});
-  const invalidIntervalBookings = normalisedEntries._reduce(
-    collectInvalidIntervalBookings,
-    {}
-  );
+  const invalidIntervalBookings = normalisedEntries
+    .filter((entry) => Boolean(Object.values(entry).length))
+    ._reduce(collectInvalidIntervalBookings, {});
 
   return {
     id: timestamp,
@@ -209,7 +210,12 @@ const collectStrayBookings = (
     }
     return acc;
   }, {} as BookingsEntryExistsPayload);
-  return { ...rec, [id]: strayBookings };
+
+  // Only add strayBookings to the record if it's not empty
+  if (Object.keys(strayBookings).length > 0) {
+    return { ...rec, [id]: strayBookings };
+  }
+  return rec;
 };
 // returns bookings with mismatching dates from their slots
 const collectDateMismatches = (
@@ -225,7 +231,6 @@ const collectDateMismatches = (
     return rec;
   }
 
-  /** @TODO fix typing */
   return { ...rec, [id]: entries[1] };
 };
 
@@ -247,7 +252,11 @@ const collectInvalidIntervalBookings = (
     return acc;
   }, {} as BookingsEntryExistsPayload);
 
-  return { ...rec, [id]: missingIntervalBookings };
+  // Only add missingIntervalBookings to the record if it's not empty
+  if (Object.keys(missingIntervalBookings).length > 0) {
+    return { ...rec, [id]: missingIntervalBookings };
+  }
+  return rec;
 };
 
 const collectUnpairedDocs = (
