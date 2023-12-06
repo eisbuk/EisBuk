@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import admin from "firebase-admin";
 
 import {
@@ -6,23 +7,20 @@ import {
   Collection,
   CustomerBookingEntry,
   CustomerBookings,
-  DateMismatchDoc,
-  FirestoreSchema,
   OrgSubCollection,
-  SanityCheckKind,
   SlotAttendanceUpdate,
   SlotAttendnace,
   SlotInterface,
-  SlotSanityCheckReport,
-  UnpairedDoc,
+  SlotAttendanceSanityCheckReport,
   map,
+  DateMismatchDoc,
+  UnpairedDoc,
   wrapIter,
   BookingsSanityCheckReport,
   bookingsRelevantCollections,
   BookingsUnpairedCheckPayload,
   BookingsEntryExistsPayload,
 } from "@eisbuk/shared";
-import { DateTime } from "luxon";
 
 type Firestore = admin.firestore.Firestore;
 
@@ -57,19 +55,28 @@ interface DateCheckPayload {
 export const findSlotAttendanceMismatches = async (
   db: Firestore,
   organization: string
-): Promise<SlotSanityCheckReport> => {
+): Promise<SlotAttendanceSanityCheckReport> => {
   const timestamp = DateTime.now().toISO();
 
-  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  // We're only checking for slots/attendances in the last 3 months
+  // This will actually be between 3 and 4 months to start from the beginning of the T-3 month and include the partial final month (up until today)
+  const startDate = DateTime.now()
+    .minus({ months: 3 })
+    .startOf("month")
+    .toISODate();
 
-  const slots = await orgRef
-    .collection(OrgSubCollection.Slots)
-    .get()
-    .then((snap) => snap.docs);
-  const attendances = await orgRef
-    .collection(OrgSubCollection.Attendance)
-    .get()
-    .then((snap) => snap.docs);
+  const [slots, attendances] = await Promise.all(
+    [OrgSubCollection.Slots, OrgSubCollection.Attendance].map((collName) =>
+      db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(collName)
+        .where("date", ">", startDate)
+        .orderBy("date", "asc")
+        .get()
+        .then((snap) => snap.docs)
+    )
+  );
 
   const collections = {
     [OrgSubCollection.Slots]: new Map<string, SlotInterface>(
@@ -80,6 +87,8 @@ export const findSlotAttendanceMismatches = async (
     ),
   };
 
+  // Create a set of all available ids (in both collections)
+  // set = witout duplicates
   const ids = new Set([
     ...slots.map((doc) => doc.id),
     ...attendances.map((doc) => doc.id),
@@ -259,52 +268,10 @@ const collectInvalidIntervalBookings = (
   return rec;
 };
 
-const collectUnpairedDocs = (
-  rec: Record<string, UnpairedDoc>,
-  { id, entries }: UnpairedCheckPayload
-): Record<string, UnpairedDoc> => {
-  // If all entries exist, skip the doc
-  if (entries.every(({ exists }) => exists)) return rec;
-
-  const unpairedDoc = wrapIter(entries)
-    .map(({ collection, exists }) => ({
-      collection,
-      list: exists ? "existing" : "missing",
-    }))
-    ._reduce(
-      (acc, { collection, list }) => ({
-        ...acc,
-        [list]: [...acc[list], collection],
-      }),
-      { existing: [], missing: [] }
-    );
-
-  return { ...rec, [id]: unpairedDoc };
-};
-
-const dateMismatchReducer = (
-  rec: Record<string, DateMismatchDoc>,
-  { id, entries: e }: DateCheckPayload
-): Record<string, DateMismatchDoc> => {
-  const entries = e.filter(({ exists }) => exists);
-  // Keep the first date as reference point
-  const dateRef = entries[0].date;
-  // If dates for all existing entries are the same, skip the doc
-  return entries.every(({ date }) => date === dateRef)
-    ? rec
-    : // If there's a date mismatch, create a [collection]: date record for the doc
-      {
-        ...rec,
-        [id]: Object.fromEntries(
-          entries.map(({ collection, date }) => [collection, date] as const)
-        ) as DateMismatchDoc,
-      };
-};
-
 export const attendanceSlotMismatchAutofix = async (
   db: Firestore,
   organization: string,
-  mismatches: SlotSanityCheckReport
+  mismatches: SlotAttendanceSanityCheckReport
 ): Promise<AttendanceAutofixReport> => {
   const batch = db.batch();
 
@@ -390,69 +357,65 @@ export const attendanceSlotMismatchAutofix = async (
   };
 };
 
-const getSanityChecksRef = (
-  db: Firestore,
-  organization: string,
-  kind: SanityCheckKind
-) => db.collection(Collection.SanityChecks).doc(organization).collection(kind);
-
-const getLatestSanityCheck = async <K extends SanityCheckKind>(
-  db: Firestore,
-  organization: string,
-  kind: K
-): Promise<SanityCheckReport<K> | undefined> =>
-  getSanityChecksRef(db, organization, kind)
-    .orderBy("id", "asc")
-    .limitToLast(1)
-    .get()
-    .then((snap) =>
-      !snap.docs.length
-        ? undefined
-        : (snap.docs[0].data() as SanityCheckReport<K>)
-    );
-
-const writeSanityCheckReport = async <K extends SanityCheckKind>(
-  db: Firestore,
-  organization: string,
-  kind: K,
-  report: SanityCheckReport<K>
-): Promise<SanityCheckReport<K>> => {
-  await getSanityChecksRef(db, organization, kind).doc(report.id).set(report);
-  return report;
-};
-
-interface SanityCheckerInterface<K extends SanityCheckKind> {
-  check(): Promise<SanityCheckReport<K>>;
-  writeReport: (report: SanityCheckReport<K>) => Promise<SanityCheckReport<K>>;
-  checkAndWrite: () => Promise<SanityCheckReport<K>>;
-  getLatestReport: () => Promise<SanityCheckReport<K> | undefined>;
+// #region utils
+interface EntryExistsPayload {
+  collection: OrgSubCollection;
+  exists: boolean;
 }
 
-export const newSanityChecker = <K extends SanityCheckKind>(
-  db: Firestore,
-  organization: string,
-  kind: K
-): SanityCheckerInterface<K> => {
-  const getLatestReport = () => getLatestSanityCheck<K>(db, organization, kind);
-  const writeReport = (report: SanityCheckReport<K>) =>
-    writeSanityCheckReport(db, organization, kind, report);
+interface UnpairedCheckPayload {
+  id: string;
+  entries: EntryExistsPayload[];
+}
 
-  const check = (): Promise<SanityCheckReport<K>> =>
-    ({
-      [SanityCheckKind.SlotAttendance]: findSlotAttendanceMismatches(
-        db,
-        organization
-      ),
-      [SanityCheckKind.SlotBookings]: findSlotBookingsMismatches(
-        db,
-        organization
-      ),
-    }[kind] as Promise<SanityCheckReport<K>>);
+interface EntryDatePayload extends EntryExistsPayload {
+  date: string | undefined;
+}
 
-  const checkAndWrite = () => check().then(writeReport);
+interface DateCheckPayload {
+  id: string;
+  entries: EntryDatePayload[];
+}
 
-  return { getLatestReport, writeReport, check, checkAndWrite };
+const collectUnpairedDocs = (
+  rec: Record<string, UnpairedDoc>,
+  { id, entries }: UnpairedCheckPayload
+): Record<string, UnpairedDoc> => {
+  // If all entries exist, skip the doc
+  if (entries.every(({ exists }) => exists)) return rec;
+
+  const unpairedDoc = wrapIter(entries)
+    .map(({ collection, exists }) => ({
+      collection,
+      list: exists ? "existing" : "missing",
+    }))
+    ._reduce(
+      (acc, { collection, list }) => ({
+        ...acc,
+        [list]: [...acc[list], collection],
+      }),
+      { existing: [], missing: [] }
+    );
+
+  return { ...rec, [id]: unpairedDoc };
 };
 
-type SanityCheckReport<K extends SanityCheckKind> =
-  FirestoreSchema["sanityChecks"][string][K];
+const dateMismatchReducer = (
+  rec: Record<string, DateMismatchDoc>,
+  { id, entries: e }: DateCheckPayload
+): Record<string, DateMismatchDoc> => {
+  const entries = e.filter(({ exists }) => exists);
+  // Keep the first date as reference point
+  const dateRef = entries[0].date;
+  // If dates for all existing entries are the same, skip the doc
+  return entries.every(({ date }) => date === dateRef)
+    ? rec
+    : // If there's a date mismatch, create a [collection]: date record for the doc
+      {
+        ...rec,
+        [id]: Object.fromEntries(
+          entries.map(({ collection, date }) => [collection, date] as const)
+        ) as DateMismatchDoc,
+      };
+};
+// #endregion utils

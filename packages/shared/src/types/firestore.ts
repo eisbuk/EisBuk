@@ -435,7 +435,7 @@ export interface AttendanceAutofixReport {
   updated: Record<string, SlotAttendanceUpdate>;
 }
 
-export interface SlotSanityCheckReport {
+export interface SlotAttendanceSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
   /** A record of "unpaired" docs - slot related docs missing an entry in one or more related collection (keyed by slot id) */
@@ -454,6 +454,47 @@ export interface BookingsSanityCheckReport {
   /** A record of bookedSlots for which the interval doesn't exist in respective slot (keyed by slot id) */
   invalidIntervalBookings: Record<string, BookingsEntryExistsPayload>;
 }
+
+/** `<month>/<date>` string used for `slotsByDay` sanity checks */
+export type DateNamespace = `${string}/${string}`;
+export type SlotWithDateNamespace = SlotInterface & {
+  dateNamespace: DateNamespace;
+};
+
+/** A report for mismatched 'slots' and 'slotsByDay' entries */
+export interface SlotsByDayMismatchedDoc {
+  /** Slot in 'slots' collection */
+  slots: SlotInterface;
+  /** Slot in 'slotsByDay' collection */
+  slotsByDay: SlotWithDateNamespace;
+}
+
+export type SlotsByDayUpdate = {
+  [K in keyof SlotInterface]?: {
+    before: SlotInterface[K];
+    after: SlotInterface[K];
+  };
+};
+
+/** Slot id prepended with data namespace */
+export type DatedSlotId = `${DateNamespace}/${string}`;
+export interface SlotsByDayAutofixReport {
+  timestamp: string;
+  created: DatedSlotId[];
+  deleted: DatedSlotId[];
+  updated: Record<DatedSlotId, SlotsByDayUpdate>;
+  addedIds: string[];
+}
+
+export interface SlotSlotsByDaySanityCheckReport {
+  /** ISO timestamp of the sanity check run */
+  id: string;
+  straySlotsByDayEntries: Record<string, SlotWithDateNamespace[]>;
+  missingSlotsByDayEntries: Record<string, SlotInterface>;
+  mismatchedEntries: Record<string, SlotsByDayMismatchedDoc>;
+  slotsByDayFixes?: SlotsByDayAutofixReport;
+}
+
 // #endregion sanityChecks
 
 // #region firestoreSchema
@@ -494,8 +535,9 @@ export interface FirestoreSchema {
   };
   [Collection.SanityChecks]: {
     [organization: string]: {
-      [SanityCheckKind.SlotAttendance]: SlotSanityCheckReport;
       [SanityCheckKind.SlotBookings]: BookingsSanityCheckReport;
+      [SanityCheckKind.SlotAttendance]: SlotAttendanceSanityCheckReport;
+      [SanityCheckKind.SlotSlotsByDay]: SlotSlotsByDaySanityCheckReport;
     };
   };
 }

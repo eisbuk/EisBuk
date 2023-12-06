@@ -27,4 +27,6 @@ export enum CloudFunction {
   DBSlotAttendanceCheck = "dbSlotAttendanceCheck",
   DBSlotBookingsCheck = "dbSlotBookingsCheck",
   DBSlotAttendanceAutofix = "dbSlotAttendanceAutofix",
+  DBSlotSlotsByDayCheck = "dbSlotSlotsByDayCheck",
+  DBSlotSlotsByDayAutofix = "dbSlotSlotsByDayAutofix",
 }

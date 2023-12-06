@@ -6,13 +6,22 @@
  */
 
 /**
- * Similar to `Partial<T>`, but only `PickPartial<T, K>` makes only the K keys
+ * Similar to `Partial<T>`, but `PickPartial<T, K>` makes only the K keys
  * optional, leaving the rest as in the original T.
  */
 export type PickPartial<
   R extends Record<string, any>,
   K extends keyof R
 > = Partial<Pick<R, K>> & Omit<R, K>;
+
+/**
+ * Similar to `Required<T>`, but `PickRequired<T, K>` makes only the K keys
+ * required, leaving the rest as in the original T.
+ */
+export type PickRequired<
+  R extends Record<string, any>,
+  K extends keyof R
+> = Required<Pick<R, K>> & Omit<R, K>;
 
 // #region
 type AllKeys<T> = T extends any ? keyof T : never;

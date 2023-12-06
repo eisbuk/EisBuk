@@ -158,6 +158,18 @@ const DebugPage: React.FC = () => {
 
           <div className="p-2">
             <DebugPageButton
+              onClick={createFunctionCaller(
+                functions,
+                CloudFunction.NormalizeExistingEmails
+              )}
+              color={ButtonColor.Primary}
+            >
+              Normalize Existing Emails
+            </DebugPageButton>
+          </div>
+
+          <div className="p-2">
+            <DebugPageButton
               onClick={() =>
                 createFunctionCaller(
                   functions,
@@ -197,16 +209,31 @@ const DebugPage: React.FC = () => {
               DB Slot / Bookings Check
             </DebugPageButton>
           </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBSlotSlotsByDayCheck
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              DB Slot / SlotsByDay Check
+            </DebugPageButton>
+          </div>
 
           <div className="p-2">
             <DebugPageButton
-              onClick={createFunctionCaller(
-                functions,
-                CloudFunction.NormalizeExistingEmails
-              )}
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBSlotSlotsByDayAutofix
+                )().then(console.log)
+              }
               color={ButtonColor.Primary}
             >
-              Normalize Existing Emails
+              DB Slot / SlotsByDay Autofix
             </DebugPageButton>
           </div>
         </div>
