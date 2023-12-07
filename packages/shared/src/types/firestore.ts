@@ -246,15 +246,11 @@ export interface Customer extends CustomerBase {
  * A full customer structure, including all of the regular properties, plus some administration data available only
  * to admins
  */
+type BookingStats = Record<SlotType, number>;
 export interface CustomerFull extends Customer {
   subscriptionNumber: string;
   deleted?: boolean;
-  bookingStats?: {
-    thisMonthIce: number;
-    thisMonthOffIce: number;
-    nextMonthIce: number;
-    nextMonthOffIce: number;
-  };
+  bookingStats?: Record<string, BookingStats>;
 }
 
 /**

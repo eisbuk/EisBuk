@@ -61,9 +61,9 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
           {customer.bookingStats &&
           customer.bookingStats[thisMonthStr] &&
-          customer.bookingStats[thisMonthStr].offIce
-            ? `${customer.bookingStats[thisMonthStr].offIce} hr${
-                customer.bookingStats[thisMonthStr].offIce > 1 ? "s" : ""
+          customer.bookingStats[thisMonthStr]["off-ice"]
+            ? `${customer.bookingStats[thisMonthStr]["off-ice"]} hr${
+                customer.bookingStats[thisMonthStr]["off-ice"] > 1 ? "s" : ""
               }`
             : `-`}
         </p>
@@ -88,9 +88,9 @@ const CustomerGridItem: React.FC<GridItemProps> = ({
         <p className="text-gray-500 text-center truncate bg-yellow-100 p-1 rounded-lg">
           {customer.bookingStats &&
           customer.bookingStats[nextMonthStr] &&
-          customer.bookingStats[nextMonthStr].offIce
-            ? `${customer.bookingStats[nextMonthStr].offIce} hr${
-                customer.bookingStats[nextMonthStr].offIce > 1 ? "s" : ""
+          customer.bookingStats[nextMonthStr]["off-ice"]
+            ? `${customer.bookingStats[nextMonthStr]["off-ice"]} hr${
+                customer.bookingStats[nextMonthStr]["off-ice"] > 1 ? "s" : ""
               }`
             : `-`}
         </p>

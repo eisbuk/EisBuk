@@ -193,7 +193,7 @@ const DebugPage: React.FC = () => {
               }
               color={ButtonColor.Primary}
             >
-              Calculate Booking Stats This And Next Months
+              Calculate Booking Stats for Current and the Following Month
             </DebugPageButton>
           </div>
           <div className="p-2">

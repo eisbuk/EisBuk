@@ -500,7 +500,6 @@ export const createCustomerStats = functions
       bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
     });
 
-    if (!bookedSlots) return;
     const monthStr = date.substring(0, 7);
     const monthSlots = (
       await db

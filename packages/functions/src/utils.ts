@@ -14,7 +14,6 @@ import {
   CustomerBookingEntry,
   HTTPSErrors,
   OrgSubCollection,
-  SlotType,
   SlotsByDay,
   calculateIntervalDuration,
 } from "@eisbuk/shared";
@@ -353,32 +352,26 @@ export const getCustomerStats = (
   bookedSlots: { [slotId: string]: CustomerBookingEntry },
   monthSlots: SlotsByDay,
   monthStr: string
-): Record<string, { ice: number; offIce: number }> => {
-  if (!bookedSlots || !monthSlots) return { [monthStr]: { ice: 0, offIce: 0 } };
+): Record<string, { ice: number; "off-ice": number }> => {
+  if (!Object.keys(bookedSlots).length || !monthSlots)
+    return { [monthStr]: { ice: 0, "off-ice": 0 } };
   return Object.entries(bookedSlots).reduce(
-    (acc, [key, bookedSlot]) => {
-      // Some non-conformity exists in slot ids where the id could either be the date-intervalStart or a uuid
-      const dayStr = bookedSlot.date;
-      const isInMonth =
-        bookedSlot.date.substring(0, 7) === monthStr &&
-        Object.keys(monthSlots).length &&
-        monthSlots[dayStr];
+    (acc, [id, bookedSlot]) => {
+      const { date } = bookedSlot;
 
-      if (!isInMonth) return acc;
-      const daySlots = monthSlots[dayStr];
+      if (!monthSlots[date]) return acc;
+
+      const slot = monthSlots[date][id];
+      if (!slot) return acc;
 
       const duration = calculateIntervalDuration(bookedSlot.interval);
 
-      // Check type and accumulate durations accordingly
-      if (daySlots[key] && daySlots[key].type === SlotType.Ice) {
-        acc[monthStr].ice += duration;
-      } else if (daySlots[key] && daySlots[key].type === SlotType.OffIce) {
-        acc[monthStr].offIce += duration;
-      }
+      acc[monthStr][slot.type] += duration;
+
       return acc;
     },
     {
-      [monthStr]: { ice: 0, offIce: 0 },
+      [monthStr]: { ice: 0, "off-ice": 0 },
     }
   );
 };

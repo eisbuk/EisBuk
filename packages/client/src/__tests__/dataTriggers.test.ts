@@ -777,6 +777,8 @@ describe("Cloud functions -> Data triggers ->", () => {
             )
             .set(bookedSlotNextMonthOffIce),
         ]);
+        const thisMonthStr = dateThisMonth.substring(0, 7);
+        const nextMonthStr = dateNextMonth.substring(0, 7);
 
         // The customer should include bookingsStats
         await waitFor(async () => {
@@ -787,13 +789,13 @@ describe("Cloud functions -> Data triggers ->", () => {
           expect(snap.data()).toMatchObject({
             ...saul,
             bookingStats: {
-              "2023-11": {
+              [thisMonthStr]: {
                 ice: 1,
-                offIce: 1,
+                "off-ice": 1,
               },
-              "2023-12": {
+              [nextMonthStr]: {
                 ice: 1,
-                offIce: 1,
+                "off-ice": 1,
               },
             },
           });
@@ -819,13 +821,13 @@ describe("Cloud functions -> Data triggers ->", () => {
           expect(snap.data()).toMatchObject({
             ...saul,
             bookingStats: {
-              "2023-11": {
+              [thisMonthStr]: {
                 ice: 0,
-                offIce: 1,
+                "off-ice": 1,
               },
-              "2023-12": {
+              [nextMonthStr]: {
                 ice: 1,
-                offIce: 1,
+                "off-ice": 1,
               },
             },
           });
