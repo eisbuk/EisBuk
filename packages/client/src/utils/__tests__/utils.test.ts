@@ -5,14 +5,9 @@ import { describe, expect, test } from "vitest";
 
 import { DateTime } from "luxon";
 
-import { luxon2ISODate } from "@eisbuk/shared";
+import { luxon2ISODate, calculateIntervalDuration } from "@eisbuk/shared";
 
-import {
-  capitalizeFirst,
-  getOrgFromLocation,
-  isEmpty,
-  calculateIntervalDuration,
-} from "../helpers";
+import { capitalizeFirst, getOrgFromLocation, isEmpty } from "../helpers";
 import { isISODay, generateDatesInRange } from "../date";
 
 describe("Helpers", () => {

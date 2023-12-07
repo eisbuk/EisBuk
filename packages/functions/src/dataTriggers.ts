@@ -2,7 +2,6 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-
 import {
   BookingSubCollection,
   Collection,
@@ -15,8 +14,11 @@ import {
   sanitizeCustomer,
   OrganizationData,
   Customer,
+  CustomerBookings,
+  SlotsByDay,
 } from "@eisbuk/shared";
 
+import { getCustomerStats } from "./utils";
 import { __functionsZone__ } from "./constants";
 
 /**
@@ -460,4 +462,61 @@ export const createAttendedSlotOnAttendance = functions
     );
 
     await batch.commit();
+  });
+
+export const createCustomerStats = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, secretKey } = context.params as Record<
+      string,
+      string
+    >;
+    const { date } =
+      change.after.data() || (change.before.data() as CustomerBookingEntry);
+
+    const db = admin.firestore();
+
+    const bookingRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Bookings)
+      .doc(secretKey);
+
+    // Fetch the booking document
+    const { id: customerId } = (
+      await bookingRef.get()
+    ).data() as CustomerBookings;
+
+    // Fetch documents from a subcollection of the booking
+    const bookedSlotsSnapshot = await bookingRef
+      .collection(BookingSubCollection.BookedSlots)
+      .get();
+
+    const bookedSlots: { [slotId: string]: CustomerBookingEntry } = {};
+    bookedSlotsSnapshot.forEach((doc) => {
+      bookedSlots[doc.id] = doc.data() as CustomerBookingEntry;
+    });
+
+    const monthStr = date.substring(0, 7);
+    const monthSlots = (
+      await db
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(monthStr)
+        .get()
+    ).data() as SlotsByDay;
+
+    if (!monthSlots) return;
+    const stats = getCustomerStats(bookedSlots, monthSlots, monthStr);
+    // Set stats into customers doc
+    await db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.Customers)
+      .doc(customerId)
+      .set({ bookingStats: stats }, { merge: true });
   });

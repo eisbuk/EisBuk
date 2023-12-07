@@ -9,7 +9,14 @@ import Ajv, { ErrorObject, JSONSchemaType } from "ajv";
 import customizeErrors from "ajv-errors";
 
 import { DeliverResultTuple } from "@eisbuk/firestore-process-delivery";
-import { Collection, HTTPSErrors, OrgSubCollection } from "@eisbuk/shared";
+import {
+  Collection,
+  CustomerBookingEntry,
+  HTTPSErrors,
+  OrgSubCollection,
+  SlotsByDay,
+  calculateIntervalDuration,
+} from "@eisbuk/shared";
 
 type Auth = CallableContext["auth"];
 
@@ -332,3 +339,40 @@ export const validateJSON = <T extends Record<string, any>>(
   return [null, constructValidationErrors(validate.errors || [], prefix), {}];
 };
 // #endregion JSONValidation
+
+/**
+ * Calculates the total duration of booked slots for a customer, categorized by month and slot type.
+ *
+ * @param bookedSlots - An object containing the booked slots for a customer, keyed by slot ID.
+ * @param monthSlots - An object representing the slots available in the month which they booked, keyed by date.
+ * @param monthStr - A string representing the month which they booked.
+ * @returns An object containing the aggregated duration of ice and off-ice slots for the booked month.
+ */
+export const getCustomerStats = (
+  bookedSlots: { [slotId: string]: CustomerBookingEntry },
+  monthSlots: SlotsByDay,
+  monthStr: string
+): Record<string, { ice: number; "off-ice": number }> => {
+  if (!Object.keys(bookedSlots).length || !monthSlots) {
+    return { [monthStr]: { ice: 0, "off-ice": 0 } };
+  }
+  return Object.entries(bookedSlots).reduce(
+    (acc, [id, bookedSlot]) => {
+      const { date } = bookedSlot;
+
+      if (!monthSlots[date]) return acc;
+
+      const slot = monthSlots[date][id];
+      if (!slot) return acc;
+
+      const duration = calculateIntervalDuration(bookedSlot.interval);
+
+      acc[monthStr][slot.type] += duration;
+
+      return acc;
+    },
+    {
+      [monthStr]: { ice: 0, "off-ice": 0 },
+    }
+  );
+};

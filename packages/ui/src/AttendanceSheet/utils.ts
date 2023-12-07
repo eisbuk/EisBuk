@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { calculateIntervalDurationInMinutes } from "@eisbuk/shared";
 
 enum BookingDuration {
   "0.5h" = "½h",
@@ -8,24 +8,19 @@ enum BookingDuration {
   "2+h" = "2H+",
 }
 
-export const calculateIntervalDuration = (
-  startTime: string,
-  endTime: string
-): BookingDuration => {
-  const luxonStart = DateTime.fromISO(startTime);
-  const luxonEnd = DateTime.fromISO(endTime);
-  const { minutes } = luxonEnd.diff(luxonStart, ["minutes"]);
+export const getIntervalLabel = (interval: string): BookingDuration => {
+  const durationInMinutes = calculateIntervalDurationInMinutes(interval);
 
   // exit early with catch all if duration greater than expected
-  if (minutes > 120) return BookingDuration["2+h"];
+  if (durationInMinutes > 120) return BookingDuration["2+h"];
 
-  if (minutes < 40) {
+  if (durationInMinutes < 40) {
     return BookingDuration["0.5h"];
   }
-  if (minutes < 70) {
+  if (durationInMinutes < 70) {
     return BookingDuration["1h"];
   }
-  if (minutes < 90) {
+  if (durationInMinutes < 90) {
     return BookingDuration["1.5h"];
   }
   return BookingDuration["2h"];

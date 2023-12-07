@@ -11,6 +11,7 @@ import {
   SlotInterface,
   SlotType,
   flatMap,
+  calculateIntervalDuration,
 } from "@eisbuk/shared";
 import {
   AthleteAttendanceMonth,
@@ -22,7 +23,7 @@ import {
 
 import { LocalStore } from "@/types/store";
 
-import { getMonthStr, calculateIntervalDuration } from "@/utils/helpers";
+import { getMonthStr } from "@/utils/helpers";
 
 type CustomerNameTuple = [name: string, surname: string];
 

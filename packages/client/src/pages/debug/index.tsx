@@ -195,7 +195,19 @@ const DebugPage: React.FC = () => {
               DB Slot / Attendance Autofix
             </DebugPageButton>
           </div>
-
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.CalculateBookingStatsThisAndNextMonths
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              Calculate Booking Stats for Current and the Following Month
+            </DebugPageButton>
+          </div>
           <div className="p-2">
             <DebugPageButton
               onClick={() =>
