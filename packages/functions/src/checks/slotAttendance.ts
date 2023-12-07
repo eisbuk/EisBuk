@@ -29,26 +29,6 @@ const relevantCollections = [
   OrgSubCollection.Slots,
 ] as const;
 
-type RelevantCollection = (typeof relevantCollections)[number];
-
-interface EntryExistsPayload {
-  collection: RelevantCollection;
-  exists: boolean;
-}
-
-interface UnpairedCheckPayload {
-  id: string;
-  entries: EntryExistsPayload[];
-}
-
-interface EntryDatePayload extends EntryExistsPayload {
-  date: string | undefined;
-}
-interface DateCheckPayload {
-  id: string;
-  entries: EntryDatePayload[];
-}
-
 /**
  * A util used by slot related check cloud function used to find mismatch between slot and attendance entries.
  */
