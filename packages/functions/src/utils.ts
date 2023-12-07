@@ -353,8 +353,9 @@ export const getCustomerStats = (
   monthSlots: SlotsByDay,
   monthStr: string
 ): Record<string, { ice: number; "off-ice": number }> => {
-  if (!Object.keys(bookedSlots).length || !monthSlots)
+  if (!Object.keys(bookedSlots).length || !monthSlots) {
     return { [monthStr]: { ice: 0, "off-ice": 0 } };
+  }
   return Object.entries(bookedSlots).reduce(
     (acc, [id, bookedSlot]) => {
       const { date } = bookedSlot;
