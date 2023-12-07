@@ -1,9 +1,4 @@
 import React from "react";
-import {
-  getAuth,
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-} from "@firebase/auth";
 
 import {
   Button,
@@ -21,25 +16,6 @@ import Layout from "@/controllers/Layout";
 import useTitle from "@/hooks/useTitle";
 
 import { createFunctionCaller } from "@/utils/firebase";
-
-const auth = getAuth();
-
-/**
- * Creates a new (dummy) organization in firestore
- * and populates it with two dummy (admin) users
- * @returns
- */
-export const createAdminTestUsers = async (): Promise<void> => {
-  await createFunctionCaller(functions, CloudFunction.CreateOrganization, {
-    displayName: "EisBuk Dev",
-  })();
-  // Auth emulator is not currently accessible from within the functions
-  try {
-    await createUserWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
-  } catch (e) {
-    await signInWithEmailAndPassword(auth, "test@eisbuk.it", "test00");
-  }
-};
 
 const DebugPageButton: React.FC<Pick<ButtonProps, "color" | "onClick">> = ({
   color = ButtonColor.Primary,
@@ -60,15 +36,6 @@ const DebugPage: React.FC = () => {
     <Layout>
       <LayoutContent>
         <div className="py-8">
-          <div className="p-2">
-            <DebugPageButton
-              onClick={createAdminTestUsers}
-              color={ButtonColor.Secondary}
-            >
-              Create admin test users
-            </DebugPageButton>
-          </div>
-
           <div className="p-2">
             <DebugPageButton
               onClick={createFunctionCaller(

@@ -121,7 +121,7 @@ const AppContent: React.FC = () => {
           component={ErrorBoundaryPage}
         />
         <Route path={Routes.SelfRegister} component={SelfRegister} exact />
-        <Route path={Routes.Debug} component={DebugPage} />
+        <PrivateRoute path={Routes.Debug} component={DebugPage} />
         <Route path={Routes.Deleted} component={Deleted} />
         <Route path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
       </Switch>
