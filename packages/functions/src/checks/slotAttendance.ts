@@ -167,13 +167,12 @@ export const findSlotBookingsMismatches = async (
       };
     }),
   }));
-  const strayBookings = normalisedEntries
-    .filter((entry) => Boolean(Object.values(entry).length))
-    ._reduce(collectStrayBookings, {});
+  const strayBookings = normalisedEntries._reduce(collectStrayBookings, {});
   const dateMismatches = normalisedEntries._reduce(collectDateMismatches, {});
-  const invalidIntervalBookings = normalisedEntries
-    .filter((entry) => Boolean(Object.values(entry).length))
-    ._reduce(collectInvalidIntervalBookings, {});
+  const invalidIntervalBookings = normalisedEntries._reduce(
+    collectInvalidIntervalBookings,
+    {}
+  );
 
   return {
     id: timestamp,
