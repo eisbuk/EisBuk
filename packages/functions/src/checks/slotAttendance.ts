@@ -123,21 +123,29 @@ export const findSlotBookingsMismatches = async (
     ),
   };
 
-  const bookedSlotsRefs = map(bookings, (doc) =>
-    doc.ref.collection(BookingSubCollection.BookedSlots).get()
+  // associate bookedSlots with their booking ids
+  const bookedSlotsRefs = bookings.map((doc) => ({
+    bookingId: doc.id,
+    bookedSlotsPromise: doc.ref
+      .collection(BookingSubCollection.BookedSlots)
+      .get(),
+  }));
+
+  // promise.all should preserve the order of promises
+  const bookedSlotsSnapshots = await Promise.all(
+    [...bookedSlotsRefs].map((ref) => ref.bookedSlotsPromise)
   );
 
-  const bookedSlotsSnapshots = await Promise.all(bookedSlotsRefs);
-
   const bookedSlots = bookedSlotsSnapshots.reduce(
-    (acc, bookedSlotsSnapshot) => {
+    (acc, bookedSlotsSnapshot, index) => {
       if (!bookedSlotsSnapshot.docs.length) return acc;
+      const bookingId = bookedSlotsRefs[index].bookingId;
 
       const bookedSlotsInBooking: { [slotId: string]: CustomerBookingEntry } =
         {};
 
       bookedSlotsSnapshot.forEach((doc) => {
-        bookedSlotsInBooking[doc.id] = {
+        bookedSlotsInBooking[`${doc.id}--${bookingId}`] = {
           ...(doc.data() as CustomerBookingEntry),
         };
       });
@@ -147,14 +155,16 @@ export const findSlotBookingsMismatches = async (
     {}
   );
 
+  // id: [slotid--bookingid]
   const ids = new Set(Object.keys(bookedSlots));
 
   const normalisedEntries = wrapIter(ids).map((id) => ({
     id,
+    secretKey: id.split("--")[1],
     entries: bookingsRelevantCollections.map((collection) => {
       const entry =
         collection === OrgSubCollection.Slots
-          ? collections[collection].get(id)
+          ? collections[collection].get(id.split("--")[0])
           : bookedSlots[id];
       return {
         collection,
@@ -228,22 +238,17 @@ const collectInvalidIntervalBookings = (
   { id, entries }: BookingsUnpairedCheckPayload
 ): Record<string, BookingsEntryExistsPayload> => {
   if (entries.some((entry) => !entry.exists)) return rec;
-  const missingIntervalBookings = entries.reduce((acc, innerEntry, i) => {
-    if (
-      entries.length < i + 1 ||
-      (entries[i + 1] &&
-        typeof innerEntry.intervals !== "string" &&
-        !innerEntry.intervals[entries[i + 1].intervals as string])
-    ) {
-      return { ...acc, [id]: entries[i + 1] };
-    }
-    return acc;
-  }, {} as BookingsEntryExistsPayload);
 
-  // Only add missingIntervalBookings to the record if it's not empty
-  if (Object.keys(missingIntervalBookings).length > 0) {
-    return { ...rec, [id]: missingIntervalBookings };
-  }
+  entries.forEach((innerEntry, i) => {
+    if (
+      i < entries.length - 1 &&
+      typeof innerEntry.intervals !== "string" &&
+      !innerEntry.intervals[entries[i + 1].intervals as string]
+    ) {
+      rec[id] = { ...entries[i + 1] };
+    }
+  });
+
   return rec;
 };
 
