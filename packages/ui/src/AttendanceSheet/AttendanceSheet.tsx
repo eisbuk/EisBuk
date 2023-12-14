@@ -80,18 +80,19 @@ const AttendanceSheet: React.FC<AttendanceSheetProps> = ({
           <>
             <tr
               key={rowIx}
-              className={`border border-gray-200 text-center print:border-black`}
+              className={`max-w-full border border-gray-200 text-center print:border-black`}
             >
               {/* Skip the athleteSurname column */}
               {Object.entries(rowData).map(
                 ([key, data]) =>
                   key !== "athleteSurname" && (
                     <td
+                      contentEditable={
+                        (key === "trainer" || key === "notes") && "true"
+                      }
                       style={{ printColorAdjust: "exact" }}
-                      className={`bg-inherit text-gray-500 border border-gray-200 truncate print:text-black print:border-black 
+                      className={`bg-inherit text-gray-500 border border-gray-200 break-all print:text-black print:border-black 
                       ${key === "athlete" && "text-left"}
-                 
-                      
                       `}
                     >
                       {key === "type" ? (

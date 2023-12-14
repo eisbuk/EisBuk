@@ -30,7 +30,7 @@ const Table = <T extends TableItem>({
   renderHeaders = defaultRenderHeaders,
 }: React.PropsWithChildren<TableProps<T>>) => (
   <table
-    className="min-w-full divide-y divide-gray-300 table-auto border-separate"
+    className="min-w-full max-w-full w-full divide-y divide-gray-300 table-auto border-separate"
     style={{ borderSpacing: 0 }}
   >
     <thead className="bg-white">{renderHeaders(headers)}</thead>
