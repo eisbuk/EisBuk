@@ -2,7 +2,10 @@ import admin from "firebase-admin";
 
 import { Collection, FirestoreSchema, SanityCheckKind } from "@eisbuk/shared";
 
-import { findSlotAttendanceMismatches } from "./slotAttendance";
+import {
+  findSlotAttendanceMismatches,
+  findSlotBookingsMismatches,
+} from "./slotAttendance";
 import { findSlotSlotsByDayMismatches } from "./slotSlotsByDay";
 
 type Firestore = admin.firestore.Firestore;
@@ -62,6 +65,8 @@ export const newSanityChecker = <K extends SanityCheckKind>(
         findSlotAttendanceMismatches(db, organization),
       [SanityCheckKind.SlotSlotsByDay]: () =>
         findSlotSlotsByDayMismatches(db, organization),
+      [SanityCheckKind.SlotBookings]: () =>
+        findSlotBookingsMismatches(db, organization),
     };
 
     return lookup[kind]();

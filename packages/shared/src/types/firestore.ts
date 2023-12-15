@@ -7,6 +7,7 @@ import {
   Collection,
   DeliveryQueue,
   SanityCheckKind,
+  BookingSubCollection,
 } from "../enums/firestore";
 
 export interface PrivacyPolicyParams {
@@ -397,6 +398,24 @@ export interface UnpairedDoc {
   missing: OrgSubCollection[];
 }
 
+export const bookingsRelevantCollections = [
+  OrgSubCollection.Slots,
+  BookingSubCollection.BookedSlots,
+] as const;
+
+type BookingsRelevantCollection = (typeof bookingsRelevantCollections)[number];
+
+export interface BookingsEntryExistsPayload {
+  collection: BookingsRelevantCollection;
+  exists: boolean;
+  date: string | undefined;
+  intervals: string | Pick<SlotInterface, "intervals">;
+}
+export interface BookingsUnpairedCheckPayload {
+  id: string;
+  entries: BookingsEntryExistsPayload[];
+}
+
 /**
  * A record for a document with mismatched dates.
  */
@@ -426,6 +445,16 @@ export interface SlotAttendanceSanityCheckReport {
   /** A record of docs for which the date is mismatched across collections (keyed by slot id) */
   dateMismatches: Record<string, DateMismatchDoc>;
   attendanceFixes?: AttendanceAutofixReport;
+}
+export interface BookingsSanityCheckReport {
+  /** ISO timestamp of the sanity check run */
+  id: string;
+  /** A record of "unpaired" bookedSlots which have no equivalent slot with the same id (keyed by slot id)*/
+  strayBookings: Record<string, BookingsEntryExistsPayload>;
+  /** A record of bookedSlots for which the date is mismatched across collections (keyed by slot id) */
+  dateMismatches: Record<string, BookingsEntryExistsPayload>;
+  /** A record of bookedSlots for which the interval doesn't exist in respective slot (keyed by slot id) */
+  invalidIntervalBookings: Record<string, BookingsEntryExistsPayload>;
 }
 
 /** `<month>/<date>` string used for `slotsByDay` sanity checks */
@@ -508,6 +537,7 @@ export interface FirestoreSchema {
   };
   [Collection.SanityChecks]: {
     [organization: string]: {
+      [SanityCheckKind.SlotBookings]: BookingsSanityCheckReport;
       [SanityCheckKind.SlotAttendance]: SlotAttendanceSanityCheckReport;
       [SanityCheckKind.SlotSlotsByDay]: SlotSlotsByDaySanityCheckReport;
     };
