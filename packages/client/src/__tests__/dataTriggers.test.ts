@@ -321,8 +321,8 @@ describe("Cloud functions -> Data triggers ->", () => {
       const orgRef = adminDb
         .collection(Collection.Organizations)
         .doc(organization);
-      const slotsByDayDocRef = orgRef
-        .collection(OrgSubCollection.SlotsByDay)
+      const bookingCountsDocRef = orgRef
+        .collection(OrgSubCollection.SlotBookingsCounts)
         .doc(slotDate.substring(0, 7));
       const saulBookings = orgRef
         .collection(OrgSubCollection.Bookings)
@@ -340,9 +340,6 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       // Wait for the data triggers to run
       await Promise.all([
-        waitFor(async () =>
-          expect((await slotsByDayDocRef.get()).exists).toEqual(true)
-        ),
         waitFor(async () =>
           expect((await saulBookings.get()).exists).toEqual(true)
         ),
@@ -362,8 +359,8 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       // Should account for the booking
       await waitFor(async () => {
-        const snap = await slotsByDayDocRef.get();
-        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+        const snap = await bookingCountsDocRef.get();
+        expect(snap.data()![slot.id]).toEqual(1);
       });
 
       // Book the slot for Gus
@@ -377,8 +374,8 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       // Should account for the booking
       await waitFor(async () => {
-        const snap = await slotsByDayDocRef.get();
-        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(2);
+        const snap = await bookingCountsDocRef.get();
+        expect(snap.data()![slot.id]).toEqual(2);
       });
 
       // Unbook the slot for Saul
@@ -389,8 +386,8 @@ describe("Cloud functions -> Data triggers ->", () => {
 
       // The total shuld reflect the deletion
       await waitFor(async () => {
-        const snap = await slotsByDayDocRef.get();
-        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+        const snap = await bookingCountsDocRef.get();
+        expect(snap.data()![slot.id]).toEqual(1);
       });
     });
   });

@@ -200,11 +200,6 @@ export interface SlotInterface {
    *  - 1 for private lessons
    */
   capacity?: number;
-  /**
-   * The number of bookings made for the slot: This will be undefined in 'slots' collection entries,
-   * whereas in 'slotsByDay' entries it will be defined as long as there is at least one booking having been made.
-   */
-  numBookings?: number;
 }
 
 /** Slot interface with optional id */
@@ -223,6 +218,10 @@ export interface SlotsById {
  */
 export interface SlotsByDay {
   [dayStr: string]: SlotsById;
+}
+
+export interface SlotBookingsCounts {
+  [slotId: string]: number;
 }
 // #endregion slots
 
@@ -522,6 +521,13 @@ export interface FirestoreSchema {
       [OrgSubCollection.Slots]: { [slotId: string]: SlotInterface };
       [OrgSubCollection.SlotsByDay]: {
         [monthStr: string]: SlotsByDay;
+      };
+      /**
+       * Records of slot capacitites per month. Holds key-value pairs of { slot => capacity record }.
+       * Each document is identified by a month and holds data for all slots in the given month.
+       */
+      [OrgSubCollection.SlotBookingsCounts]: {
+        [monthStr: string]: SlotBookingsCounts;
       };
       [OrgSubCollection.Customers]: {
         [customerId: string]: CustomerFull;

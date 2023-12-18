@@ -15,6 +15,7 @@ import {
   Customer,
   CustomerBookings,
   SlotsByDay,
+  SlotBookingsCounts,
 } from "@eisbuk/shared";
 
 import { getCustomerStats } from "./utils";
@@ -254,20 +255,19 @@ export const countSlotsBookings = functions
     const date = change.before.data()?.date || change.after.data()!.date;
     const delta = change.after.exists ? 1 : -1;
 
-    const slotsByDayRef = db
+    const bookingCountsDocRef = db
       .collection(Collection.Organizations)
       .doc(organization)
-      .collection(OrgSubCollection.SlotsByDay)
+      .collection(OrgSubCollection.SlotBookingsCounts)
       .doc(date.substring(0, 7));
 
-    const doc = await slotsByDayRef.get();
-    const data = doc.data() as SlotsByDay;
+    const doc = await bookingCountsDocRef.get();
+    const data = doc.data() || ({} as SlotBookingsCounts);
 
-    const numBooked = (data[date][bookingId].numBookings || 0) + delta;
+    const slotsBookings = data[bookingId] || 0;
+    data[bookingId] = slotsBookings + delta;
 
-    data[date][bookingId].numBookings = numBooked;
-
-    await slotsByDayRef.set(data, { merge: true });
+    await bookingCountsDocRef.set(data, { merge: true });
   });
 
 /**

@@ -26,6 +26,8 @@ export enum Collection {
 export enum OrgSubCollection {
   Slots = "slots",
   SlotsByDay = "slotsByDay",
+  SlotBookingsCounts = "slotBookingsCounts",
+
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
