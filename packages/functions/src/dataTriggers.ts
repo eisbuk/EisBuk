@@ -233,6 +233,43 @@ export const aggregateSlots = functions
     return change.after;
   });
 
+export const countSlotsBookings = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, bookingId } = context.params as Record<
+      string,
+      string
+    >;
+
+    // If the booking was merely updated, we don't need to do increment/decrement the counter
+    if (change.before.exists && change.after.exists) {
+      return;
+    }
+
+    const db = admin.firestore();
+
+    const date = change.before.data()?.date || change.after.data()!.date;
+    const delta = change.after.exists ? 1 : -1;
+
+    const slotsByDayRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.SlotsByDay)
+      .doc(date.substring(0, 7));
+
+    const doc = await slotsByDayRef.get();
+    const data = doc.data() as SlotsByDay;
+
+    const numBooked = (data[date][bookingId].numBookings || 0) + delta;
+
+    data[date][bookingId].numBookings = numBooked;
+
+    await slotsByDayRef.set(data, { merge: true });
+  });
+
 /**
  * Data trigger used to update attendance entries for slot whenever customer books a certain slot + interval.
  *

@@ -16,9 +16,12 @@ import {
   defaultSMSTemplates as smsTemplates,
   CustomerBookingEntry,
   CustomerAttendance,
+  OrgSubCollection,
+  SlotInterval,
+  BookingSubCollection,
 } from "@eisbuk/shared";
 
-import { saul, walt } from "@eisbuk/testing/customers";
+import { gus, saul, walt } from "@eisbuk/testing/customers";
 import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 import { testDate, testDateLuxon } from "@eisbuk/testing/date";
 
@@ -296,140 +299,100 @@ describe("Cloud functions -> Data triggers ->", () => {
         wantAttendance: null,
       },
     ]);
+  });
 
-    // test.skip("create booking: interval with notes", async () => {
-    //   const { organization } = await setUpOrganization();
-    //   await Promise.all([
-    //     // set up Saul's bookings entry
-    //     adminDb
-    //       .doc(getBookingsDocPath(organization, saul.secretKey))
-    //       .set(sanitizeCustomer(saul)),
-    //     // set up base data in the attendance document
-    //     adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .set(baseAttendance),
-    //   ]);
+  describe("countSlotsBookings", () => {
+    test("should increment/decrement numBookings field in slotsByDay for the given slot", async () => {
+      const { organization } = await setUpOrganization();
 
-    //   // add new booking trying to trigger attendance entry
-    //   const bookedSlot: CustomerBookingEntry = {
-    //     date: baseSlot.date,
-    //     interval: Object.keys(baseSlot.intervals)[0],
-    //     bookingNotes: "This is a booking note",
-    //   };
-    //   await adminDb
-    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-    //     .set(bookedSlot);
+      const slotDate = "2022-01-01";
+      const slot = {
+        ...baseSlot,
+        id: "slot-1",
+        date: slotDate,
+        intervals: {
+          "08:00-09:00": {
+            startTime: "08:00",
+            endTime: "09:00",
+          } as SlotInterval,
+        },
+      };
 
-    //   // check proper updates triggerd by write to bookings
-    //   const wantAttendance = _.cloneDeep(baseAttendance);
-    //   wantAttendance.attendances[saul.id] = {
-    //     bookedInterval: bookedSlot.interval,
-    //     attendedInterval: bookedSlot.interval,
-    //   };
-    //   await waitFor(async () => {
-    //     const snap = await adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .get();
-    //     expect(snap.data()).toEqual(wantAttendance);
-    //   });
-    // });
+      const orgRef = adminDb
+        .collection(Collection.Organizations)
+        .doc(organization);
+      const slotsByDayDocRef = orgRef
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(slotDate.substring(0, 7));
+      const saulBookings = orgRef
+        .collection(OrgSubCollection.Bookings)
+        .doc(saul.secretKey);
+      const gusBookings = orgRef
+        .collection(OrgSubCollection.Bookings)
+        .doc(gus.secretKey);
 
-    // test.skip("update booking: interval only", async () => {
-    //   const { organization } = await setUpOrganization();
+      // Add a slot and customers to work with
+      await Promise.all([
+        orgRef.collection(OrgSubCollection.Slots).doc(slot.id).set(slot),
+        orgRef.collection(OrgSubCollection.Customers).doc(saul.id).set(saul),
+        orgRef.collection(OrgSubCollection.Customers).doc(gus.id).set(gus),
+      ]);
 
-    //   const initialBooking: CustomerBookingEntry = {
-    //     date: baseSlot.date,
-    //     interval: Object.keys(baseSlot.intervals)[0],
-    //   };
+      // Wait for the data triggers to run
+      await Promise.all([
+        waitFor(async () =>
+          expect((await slotsByDayDocRef.get()).exists).toEqual(true)
+        ),
+        waitFor(async () =>
+          expect((await saulBookings.get()).exists).toEqual(true)
+        ),
+        waitFor(async () =>
+          expect((await gusBookings.get()).exists).toEqual(true)
+        ),
+      ]);
 
-    //   const initialAttendanceDoc = _.cloneDeep(baseAttendance);
-    //   initialAttendanceDoc.attendances[saul.id] = {
-    //     bookedInterval: initialBooking.interval,
-    //     attendedInterval: initialBooking.interval,
-    //   };
-    //   await Promise.all([
-    //     // set up Saul's bookings entry
-    //     adminDb
-    //       .doc(getBookingsDocPath(organization, saul.secretKey))
-    //       .set(sanitizeCustomer(saul)),
-    //     // set up base data in the attendance document
-    //     adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .set(initialAttendanceDoc),
-    //   ]);
+      // Book the slot for Saul
+      await saulBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .set({
+          date: slotDate,
+          interval: "08:00-09:00",
+        });
 
-    //   // update the booking interval
-    //   const updatedBooking: CustomerBookingEntry = {
-    //     date: baseSlot.date,
-    //     interval: Object.keys(baseSlot.intervals)[1],
-    //   };
-    //   await adminDb
-    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-    //     .set(updatedBooking);
+      // Should account for the booking
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+      });
 
-    //   // check proper updates triggerd by write to bookings
-    //   const wantAttendance = _.cloneDeep(baseAttendance);
-    //   wantAttendance.attendances[saul.id] = {
-    //     bookedInterval: updatedBooking.interval,
-    //     attendedInterval: updatedBooking.interval,
-    //   };
-    //   await waitFor(async () => {
-    //     const snap = await adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .get();
-    //     expect(snap.data()).toEqual(wantAttendance);
-    //   });
-    // });
+      // Book the slot for Gus
+      await gusBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .set({
+          date: slotDate,
+          interval: "08:00-09:00",
+        });
 
-    // test.skip("should remove customer's attendance when the booking is removed", async () => {
-    //   const { organization } = await setUpOrganization();
-    //   await Promise.all([
-    //     // set up Saul's bookings entry
-    //     adminDb
-    //       .doc(getBookingsDocPath(organization, saul.secretKey))
-    //       .set(sanitizeCustomer(saul)),
-    //     // set up dummy data in the base slot, not to be overwritten by Saul's attendance
-    //     adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .set(attendanceWithTestBooking),
-    //   ]);
-    //   // deleting the booking should remove it from attendance doc
-    //   await adminDb
-    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-    //     .delete();
-    //   await waitFor(async () => {
-    //     const snap = await adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .get();
-    //     // check that only the test customer's attendance's deleted, but not the rest of the data
-    //     expect(snap.data()).toEqual(baseAttendance);
-    //   });
-    // });
+      // Should account for the booking
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(2);
+      });
 
-    // test.skip("should create bookingNotes in attendance entry for booking", async () => {
-    //   const { organization } = await setUpOrganization();
-    //   await Promise.all([
-    //     // set up Saul's bookings entry
-    //     adminDb
-    //       .doc(getBookingsDocPath(organization, saul.secretKey))
-    //       .set(sanitizeCustomer(saul)),
-    //     // set up dummy data in the base slot, not to be overwritten by Saul's attendance
-    //     adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .set(saulAttendance),
-    //   ]);
-    //   // add new bookingNotes to trigger attendance entry
-    //   await adminDb
-    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-    //     .set({ bookingNotes: "notes" });
-    //   // check proper updates triggerd by write to bookings
-    //   await waitFor(async () => {
-    //     const snap = await adminDb
-    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
-    //       .get();
-    //     expect(snap.data()).toEqual(saulAttendanceWithBookingNotes);
-    //   });
-    // });
+      // Unbook the slot for Saul
+      await saulBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .delete();
+
+      // The total shuld reflect the deletion
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+      });
+    });
   });
 
   describe("aggreagateSlots", () => {
