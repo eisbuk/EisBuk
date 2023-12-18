@@ -14,9 +14,12 @@ import {
   sanitizeCustomer,
   defaultEmailTemplates as emailTemplates,
   defaultSMSTemplates as smsTemplates,
+  OrgSubCollection,
+  SlotInterval,
+  BookingSubCollection,
 } from "@eisbuk/shared";
 
-import { saul, walt } from "@eisbuk/testing/customers";
+import { gus, saul, walt } from "@eisbuk/testing/customers";
 import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 import { testDate, testDateLuxon } from "@eisbuk/testing/date";
 
@@ -107,6 +110,100 @@ describe("Cloud functions -> Data triggers ->", () => {
       },
       { timeout: 20000 }
     );
+  });
+
+  describe("countSlotsBookings", () => {
+    test("should increment/decrement numBookings field in slotsByDay for the given slot", async () => {
+      const { organization } = await setUpOrganization();
+
+      const slotDate = "2022-01-01";
+      const slot = {
+        ...baseSlot,
+        id: "slot-1",
+        date: slotDate,
+        intervals: {
+          "08:00-09:00": {
+            startTime: "08:00",
+            endTime: "09:00",
+          } as SlotInterval,
+        },
+      };
+
+      const orgRef = adminDb
+        .collection(Collection.Organizations)
+        .doc(organization);
+      const slotsByDayDocRef = orgRef
+        .collection(OrgSubCollection.SlotsByDay)
+        .doc(slotDate.substring(0, 7));
+      const saulBookings = orgRef
+        .collection(OrgSubCollection.Bookings)
+        .doc(saul.secretKey);
+      const gusBookings = orgRef
+        .collection(OrgSubCollection.Bookings)
+        .doc(gus.secretKey);
+
+      // Add a slot and customers to work with
+      await Promise.all([
+        orgRef.collection(OrgSubCollection.Slots).doc(slot.id).set(slot),
+        orgRef.collection(OrgSubCollection.Customers).doc(saul.id).set(saul),
+        orgRef.collection(OrgSubCollection.Customers).doc(gus.id).set(gus),
+      ]);
+
+      // Wait for the data triggers to run
+      await Promise.all([
+        waitFor(async () =>
+          expect((await slotsByDayDocRef.get()).exists).toEqual(true)
+        ),
+        waitFor(async () =>
+          expect((await saulBookings.get()).exists).toEqual(true)
+        ),
+        waitFor(async () =>
+          expect((await gusBookings.get()).exists).toEqual(true)
+        ),
+      ]);
+
+      // Book the slot for Saul
+      await saulBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .set({
+          date: slotDate,
+          interval: "08:00-09:00",
+        });
+
+      // Should account for the booking
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+      });
+
+      // Book the slot for Gus
+      await gusBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .set({
+          date: slotDate,
+          interval: "08:00-09:00",
+        });
+
+      // Should account for the booking
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(2);
+      });
+
+      // Unbook the slot for Saul
+      await saulBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .delete();
+
+      // The total shuld reflect the deletion
+      await waitFor(async () => {
+        const snap = await slotsByDayDocRef.get();
+        expect(snap.data()![slotDate][slot.id].numBookings).toEqual(1);
+      });
+    });
   });
 
   describe("aggreagateSlots", () => {
