@@ -25,7 +25,7 @@ service cloud.firestore {
 
     // #region enums
     function getCategories() {
-      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive"]
+      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive", "private-lessons"]
     }
     function getSlotTypes() {
       return ["ice", "off-ice"]
