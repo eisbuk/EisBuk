@@ -93,7 +93,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
 
   // Filter slots from each day with respect to category
   //
-  // Start: Interable of [date, SlotsById (record of slots keyed by slotId)] tuples
+  // Start: Iterable of [date, SlotsById (record of slots keyed by slotId)] tuples
   const processedSlots = wrapIter(Object.entries(slotsForAMonth))
     // Map: [date, SlotsById] -> [date, [slotId, SlotInterface][]]
     .map(valueMapper((slots) => Object.entries(slots)))
