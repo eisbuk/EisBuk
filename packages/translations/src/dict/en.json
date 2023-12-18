@@ -79,7 +79,8 @@
     "PreCompetitiveMinors": "pre-competitive-minors",
     "CourseAdults": "course-adults",
     "CourseMinors": "course-minors",
-    "Competitive": "competitive"
+    "Competitive": "competitive",
+    "PrivateLessons": "private-lessons"
   },
 
   "FormTitle": {
@@ -95,7 +96,9 @@
     "AddInterval": "Add Interval",
     "StartTime": "Start Time",
     "EndTime": "End Time",
-    "DeleteIntervalDisabled": "Interval has already been booked by one or more athletes"
+    "DeleteIntervalDisabled": "Interval has already been booked by one or more athletes",
+    "Capacity": "Capacity",
+    "CapacityDescription": "Maximum number of athletes that can book this slot. If not specified, the capacity is unlimited. Slots with capacity 1 are considered private lessons."
   },
   "BookingNotesForm": {
     "Placeholder": "Personal notes...",

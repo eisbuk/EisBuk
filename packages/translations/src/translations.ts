@@ -86,6 +86,7 @@ export const CategoryLabel = {
   [Category.CourseAdults]: "Category.CourseAdults",
   [Category.CourseMinors]: "Category.CourseMinors",
   [Category.Competitive]: "Category.Competitive",
+  [Category.PrivateLessons]: "Category.PrivateLessons",
 };
 // #endregion dataEntries
 
@@ -106,6 +107,8 @@ export enum SlotFormLabel {
   StartTime = "SlotForm.StartTime",
   EndTime = "SlotForm.EndTime",
   DeleteIntervalDisabled = "SlotForm.DeleteIntervalDisabled",
+  Capacity = "SlotForm.Capacity",
+  CapacityDescription = "SlotForm.CapacityDescription",
 }
 export enum CustomerLabel {
   Welcome = "CustomerLabel.Welcome",

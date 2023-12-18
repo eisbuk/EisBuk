@@ -78,7 +78,8 @@
     "PreCompetitiveMinors": "pre-agonismo-ragazzi",
     "CourseAdults": "corso-adulti",
     "CourseMinors": "corso-ragazzi",
-    "Competitive": "agonismo"
+    "Competitive": "agonismo",
+    "PrivateLessons": "private-lessons"
   },
 
   "FormTitle": {
@@ -94,7 +95,9 @@
     "AddInterval": "Aggiungi Intervallo",
     "StartTime": "Ora di inizio",
     "EndTime": "Ora di fine",
-    "DeleteIntervalDisabled": "L'intervallo è già stato prenotato da uno o più atleti"
+    "DeleteIntervalDisabled": "L'intervallo è già stato prenotato da uno o più atleti",
+    "Capacity": "Capacity",
+    "CapacityDescription": "Maximum number of athletes that can book this slot. If not specified, the capacity is unlimited. Slots with capacity 1 are considered private lessons."
   },
   "BookingNotesForm": {
     "Placeholder": "Ricordarsi di...",

@@ -177,27 +177,38 @@ const SlotForm: React.FC<SlotFormProps> = ({
             </h2>
 
             <div className="px-6 pt-4 pb-8 h-full space-y-4 overflow-auto">
-              <label
-                htmlFor="type"
-                className="block mb-4 text-sm font-medium text-gray-700"
-              >
-                {t(SlotFormLabel.Type)}
-              </label>
-              <fieldset className="px-4 space-y-2">
-                {typeOptions.map((type) => (
-                  <Field
-                    {...type}
-                    name="type"
-                    type="radio"
-                    className="col-span-2"
-                    key={type.label}
-                    component={Checkbox}
-                  />
-                ))}
-              </fieldset>
-              <p className="mt-2 text-sm min-h-[20px] text-red-600">
-                {errors.type && touched.type && t(errors.type)}
-              </p>
+              <div className="w-full grid grid-cols-12">
+                <div className="col-span-6">
+                  <label
+                    htmlFor="type"
+                    className="block mb-4 text-sm font-medium text-gray-700"
+                  >
+                    {t(SlotFormLabel.Type)}
+                  </label>
+                  <fieldset className="px-4 space-y-2">
+                    {typeOptions.map((type) => (
+                      <Field
+                        {...type}
+                        name="type"
+                        type="radio"
+                        className="col-span-2"
+                        key={type.label}
+                        component={Checkbox}
+                      />
+                    ))}
+                  </fieldset>
+                  <p className="mt-2 text-sm min-h-[20px] text-red-600">
+                    {errors.type && touched.type && t(errors.type)}
+                  </p>
+                </div>
+
+                <FormField
+                  name="capacity"
+                  variant={FormFieldVariant.Number}
+                  label={t(SlotFormLabel.Capacity)}
+                  helpText={t(SlotFormLabel.CapacityDescription)}
+                />
+              </div>
 
               <label
                 htmlFor="categories"
