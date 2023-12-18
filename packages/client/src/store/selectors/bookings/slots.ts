@@ -1,11 +1,11 @@
 import {
-  Category,
-  SlotsById,
   SlotInterface,
   CustomerBookingEntry,
   SlotsByDay,
   SlotInterval,
   getSlotTimespan,
+  valueMapper,
+  wrapIter,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
@@ -34,32 +34,6 @@ export const getAttendedSlots = (
   state: LocalStore
 ): Record<string, Omit<CustomerBookingEntry, "bookingNotes">> =>
   state.firestore.data?.attendedSlots || {};
-
-/**
- * A helper function we're using to filter out slots not within provided category.
- * @param slotsRecord record of slots keyed by slotId
- * @param category customer's category we're checking against
- * @returns a tuple of filtered slots record and boolean (true if filtered record is empty)
- */
-const filterSlotsByCategory = (
-  slotsRecord: SlotsById,
-  category: Category[]
-): [SlotsById, boolean] => {
-  let isEmptyWhenFiltered = true;
-
-  const filteredRecord = Object.keys(slotsRecord).reduce((acc, slotId) => {
-    const slot = slotsRecord[slotId];
-    const categories = slot.categories;
-
-    if (categories.some((slotCat) => category.includes(slotCat))) {
-      isEmptyWhenFiltered = false;
-      return { ...acc, [slotId]: slot };
-    }
-    return acc;
-  }, {} as SlotsById);
-
-  return [filteredRecord, isEmptyWhenFiltered];
-};
 
 type SlotsForBooking = {
   date: string;
@@ -97,7 +71,7 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
 
 /**
  * Get `slotsByDay` entry, from store, for current month filtered according to customer's category.
- * Both the `category` and `date` are read directly from store.
+ * Both the `category` and `date` are read directly from store. Slots booked at full capacity are filtered out.
  */
 export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const date = getCalendarDay(state);
@@ -118,15 +92,31 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const slotsForAMonth = allSlotsInStore[monthString] || {};
 
   // Filter slots from each day with respect to category
-  return Object.keys(slotsForAMonth).reduce((acc, date) => {
-    const [filteredSlotsDay, isFilteredDayEmpty] = filterSlotsByCategory(
-      slotsForAMonth[date],
-      categories
-    );
+  //
+  // Start: Interable of [date, SlotsById (record of slots keyed by slotId)] tuples
+  const processedSlots = wrapIter(Object.entries(slotsForAMonth))
+    // Map: [date, SlotsById] -> [date, [slotId, SlotInterface][]]
+    .map(valueMapper((slots) => Object.entries(slots)))
+    // FlatMap: [date, [slotId, SlotInterface][]] -> [date, slotId, SlotInterface]
+    .flatMap(([date, slots]) =>
+      slots.map(([id, slot]) => [date, id, slot] as const)
+    )
+    // Filter out slots not matching customer's category
+    .filter(([, , slot]) => categories.some((c) => slot.categories.includes(c)))
+    // Filter out slots booked at full capacity (or without any capacity set)
+    .filter(
+      ([, , slot]) =>
+        !slot.capacity || !slot.numBookings || slot.capacity > slot.numBookings
+    )
+    // GroupEntries by date: [date, [slotId, SlotInterface][]]
+    ._group(
+      ([date, id, slot]) =>
+        [date, [id, slot]] as [string, [string, SlotInterface]]
+    )
+    // Map the value: [date, [slotId, SlotInterface][]] -> [date, SlotsById]
+    .map(valueMapper((slots) => Object.fromEntries(slots)));
 
-    // Add date to the acc object only if date not empty
-    return !isFilteredDayEmpty ? { ...acc, [date]: filteredSlotsDay } : acc;
-  }, {} as SlotsByDay);
+  return Object.fromEntries(processedSlots);
 };
 
 export const getMonthEmptyForBooking = (state: LocalStore): boolean => {

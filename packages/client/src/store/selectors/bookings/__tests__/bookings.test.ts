@@ -83,6 +83,26 @@ describe("Selectors ->", () => {
       const res = getSlotsForCustomer(store.getState());
       expect(res).toEqual(expectedMonthCustomer);
     });
+
+    test("should filter out slots booked at full capacity", () => {
+      const date = DateTime.fromISO(currentMonthStartDate);
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        slotsByDay: {
+          ...slotsByDay,
+          ["2021-09"]: {
+            ...slotsByDay["2021-09"],
+            ["2021-09-01"]: {
+              ...slotsByDay["2021-09"]["2021-09-01"],
+              ["full-slot"]: { ...baseSlot, capacity: 2, numBookings: 2 },
+            },
+          },
+        },
+        date,
+      });
+      const res = getSlotsForCustomer(store.getState());
+      expect(res).toEqual(expectedMonthCustomer);
+    });
   });
 
   describe("Test 'getCanBook' selector", () => {
