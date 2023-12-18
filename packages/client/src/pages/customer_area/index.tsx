@@ -49,6 +49,7 @@ const CustomerArea: React.FC = () => {
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.SlotsByDay },
+    { collection: OrgSubCollection.SlotBookingsCounts },
     { collection: Collection.PublicOrgInfo },
     { collection: OrgSubCollection.Bookings, meta: { secretKey } },
     { collection: BookingSubCollection.BookedSlots, meta: { secretKey } },

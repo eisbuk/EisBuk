@@ -83,6 +83,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   }
 
   const allSlotsInStore = state.firestore.data?.slotsByDay;
+  const bookingsCounts = state.firestore.data?.slotBookingsCounts || {};
 
   // Return early if no slots in store
   if (!allSlotsInStore) return {};
@@ -90,6 +91,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   // Get slots for current month
   const monthString = date.startOf("month").toISO().substring(0, 7);
   const slotsForAMonth = allSlotsInStore[monthString] || {};
+  const bookingCountsForAMonth = bookingsCounts[monthString] || {};
 
   // Filter slots from each day with respect to category
   //
@@ -105,8 +107,14 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
     .filter(([, , slot]) => categories.some((c) => slot.categories.includes(c)))
     // Filter out slots booked at full capacity (or without any capacity set)
     .filter(
-      ([, , slot]) =>
-        !slot.capacity || !slot.numBookings || slot.capacity > slot.numBookings
+      ([, slotId, slot]) =>
+        // If booking count is not available, this is a no-op:
+        // - this makes it safe for tests (no need for additional setup)
+        // - with current production requirements, this is right - we filter the slots only if the capacity is set
+        //  and the booking count is availabe (if not, the slot is not yet booked)
+        !bookingCountsForAMonth[slotId] ||
+        !slot.capacity ||
+        slot.capacity > bookingCountsForAMonth[slotId]
     )
     // GroupEntries by date: [date, [slotId, SlotInterface][]]
     ._group(

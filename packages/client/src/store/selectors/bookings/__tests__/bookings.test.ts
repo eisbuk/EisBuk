@@ -46,10 +46,14 @@ const setupBookingsTest = ({
   category,
   date,
   slotsByDay,
+  slotBookingsCounts = {},
 }: {
   category: Category;
   date: DateTime;
   slotsByDay: NonNullable<LocalStore["firestore"]["data"]["slotsByDay"]>;
+  slotBookingsCounts?: NonNullable<
+    LocalStore["firestore"]["data"]["slotBookingsCounts"]
+  >;
 }): ReturnType<typeof getNewStore> => {
   const store = getNewStore({
     firestore: {
@@ -61,6 +65,7 @@ const setupBookingsTest = ({
           },
         },
         slotsByDay,
+        slotBookingsCounts,
       },
     },
     app: {
@@ -88,14 +93,20 @@ describe("Selectors ->", () => {
       const date = DateTime.fromISO(currentMonthStartDate);
       const store = setupBookingsTest({
         category: Category.Competitive,
+        // Add a fully booked slot - should get filtered out
         slotsByDay: {
           ...slotsByDay,
           ["2021-09"]: {
             ...slotsByDay["2021-09"],
             ["2021-09-01"]: {
               ...slotsByDay["2021-09"]["2021-09-01"],
-              ["full-slot"]: { ...baseSlot, capacity: 2, numBookings: 2 },
+              ["full-slot"]: { ...baseSlot, capacity: 2 },
             },
+          },
+        },
+        slotBookingsCounts: {
+          ["2021-09"]: {
+            ["full-slot"]: 2,
           },
         },
         date,

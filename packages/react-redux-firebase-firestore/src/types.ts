@@ -14,6 +14,7 @@ import {
   SlotAttendnace,
   OrganizationData,
   PublicOrganizationData,
+  SlotBookingsCounts,
 } from "@eisbuk/shared";
 
 import { FirestoreAction } from "./enums";
@@ -63,11 +64,15 @@ export interface FirestoreData {
   };
   [BookingSubCollection.Calendar]: CalendarEvents;
   [OrgSubCollection.SlotsByDay]: { [monthStr: string]: SlotsByDay } | null;
+  [OrgSubCollection.SlotBookingsCounts]: {
+    [monthStr: string]: SlotBookingsCounts;
+  };
   [OrgSubCollection.Attendance]: { [slotId: string]: SlotAttendnace };
   [Collection.PublicOrgInfo]: {
     [organization: string]: PublicOrganizationData;
   };
 }
+
 /**
  * Entry for a particular listener in `firestore` portion of local store
  */
@@ -101,7 +106,7 @@ export interface FirestoreListener {
    */
   meta: SubscriptionMeta;
   /**
-   * Document id's we're subscribing to (i.e. `slostByDay` month entries)
+   * Document ids we're subscribing to (i.e. `slostByDay` month entries)
    * @example
    * ```
    * ["2021-01", "2021-02"]
@@ -119,6 +124,7 @@ export type SubscriptionWhitelist =
   | Collection.Organizations
   | Collection.PublicOrgInfo
   | OrgSubCollection.SlotsByDay
+  | OrgSubCollection.SlotBookingsCounts
   | OrgSubCollection.Customers
   | OrgSubCollection.Bookings
   | OrgSubCollection.Attendance
