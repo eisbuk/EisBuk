@@ -21,7 +21,7 @@ import {
   CategoryLabel,
 } from "@eisbuk/translations";
 
-import FormField, { FormFieldVariant } from "../FormField";
+import FormField, { FormFieldVariant, FormFieldWitdh } from "../FormField";
 import Checkbox from "../../Checkbox";
 import Button, { ButtonSize } from "../../Button";
 import SlotIntervals from "./SlotIntervals";
@@ -207,6 +207,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
                   variant={FormFieldVariant.Number}
                   label={t(SlotFormLabel.Capacity)}
                   helpText={t(SlotFormLabel.CapacityDescription)}
+                  width={FormFieldWitdh.Full}
                 />
               </div>
 
