@@ -250,11 +250,9 @@ export const createAttendanceForBooking = functions
       string,
       string
     >;
-
     const db = admin.firestore();
 
     const isUpdate = Boolean(change.after.exists);
-
     const { id: customerId } = (
       await db
         .collection(Collection.Organizations)
@@ -269,10 +267,12 @@ export const createAttendanceForBooking = functions
     const updatedEntry = {
       attendances: {
         [customerId]: isUpdate
-          ? ({
-              bookedInterval: afterData!.interval,
-              attendedInterval: afterData!.interval,
-            } as CustomerAttendance)
+          ? ((afterData && afterData.bookingNotes
+              ? { bookingNotes: afterData!.bookingNotes }
+              : {
+                  bookedInterval: afterData!.interval,
+                  attendedInterval: afterData!.interval,
+                }) as CustomerAttendance)
           : admin.firestore.FieldValue.delete(),
       },
     };
@@ -477,6 +477,7 @@ export const createCustomerStats = functions
     const { date } =
       change.after.data() || (change.before.data() as CustomerBookingEntry);
 
+    if (!date) return;
     const db = admin.firestore();
 
     const bookingRef = db

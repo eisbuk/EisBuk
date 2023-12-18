@@ -401,6 +401,7 @@ export enum AttendanceAria {
   MarkAbsent = "AttendanceAria.MarkAbsent",
   AddCustomInterval = "AttendanceAria.AddCustomInterval",
   CancelCustomInterval = "AttendanceAria.CancelCustomInterval",
+  TrainerNotes = "AttendanceAria.TrainerNotes",
 }
 
 export enum SlotFormAria {

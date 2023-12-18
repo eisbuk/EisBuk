@@ -98,7 +98,7 @@
   },
   "BookingNotesForm": {
     "Placeholder": "Ricordarsi di...",
-    "HelpText": "Annotazioni personali (visibili solo a te)"
+    "HelpText": "Annotazioni per l'Insegnante"
   },
 
   "CustomerLabel": {
@@ -374,7 +374,8 @@
     "MarkPresent": "Segna come presente",
     "MarkAbsent": "Segna come assente",
     "AddCustomInterval": "Aggiungi intervallo ad hoc",
-    "CancelCustomInterval": "Elimina intervallo ad hoc"
+    "CancelCustomInterval": "Elimina intervallo ad hoc",
+    "TrainerNotes": "Annotazioni per l'Insegnante"
   },
 
   "SlotFormAria": {

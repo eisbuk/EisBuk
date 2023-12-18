@@ -54,8 +54,18 @@ describe("Cloud functions -> Data triggers ->", () => {
     const bookedSlot = {
       data: baseSlot.date,
       interval: Object.keys(baseSlot.intervals)[0],
+      bookingNotes: "notes",
     };
 
+    const saulAttendance = {
+      date: baseSlot.date,
+      attendances: {
+        [saul.id]: {
+          bookedInterval: bookedSlot.interval,
+          attendedInterval: bookedSlot.interval,
+        },
+      },
+    };
     const attendanceWithTestBooking = {
       ...baseAttendance,
       attendances: {
@@ -66,7 +76,41 @@ describe("Cloud functions -> Data triggers ->", () => {
         },
       },
     };
+    const saulAttendanceWithBookingNotes = {
+      date: baseSlot.date,
+      attendances: {
+        [saul.id]: {
+          bookedInterval: bookedSlot.interval,
+          attendedInterval: bookedSlot.interval,
+          bookingNotes: "notes",
+        },
+      },
+    };
 
+    test("should create bookingNotes in attendance entry for booking", async () => {
+      const { organization } = await setUpOrganization();
+      await Promise.all([
+        // set up Saul's bookings entry
+        adminDb
+          .doc(getBookingsDocPath(organization, saul.secretKey))
+          .set(sanitizeCustomer(saul)),
+        // set up dummy data in the base slot, not to be overwritten by Saul's attendance
+        adminDb
+          .doc(getAttendanceDocPath(organization, baseSlot.id))
+          .set(saulAttendance),
+      ]);
+      // add new bookingNotes to trigger attendance entry
+      await adminDb
+        .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+        .set({ bookingNotes: "notes" });
+      // check proper updates triggerd by write to bookings
+      await waitFor(async () => {
+        const snap = await adminDb
+          .doc(getAttendanceDocPath(organization, baseSlot.id))
+          .get();
+        expect(snap.data()).toEqual(saulAttendanceWithBookingNotes);
+      });
+    });
     test.skip(
       // FIXME - this test was flapping too much, so we stop running it
       "should create attendance entry for booking and not overwrite existing data in slot",

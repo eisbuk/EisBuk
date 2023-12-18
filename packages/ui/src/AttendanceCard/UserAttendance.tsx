@@ -37,6 +37,7 @@ interface Props extends CustomerWithAttendance {
 const UserAttendance: React.FC<Props> = ({
   bookedInterval,
   attendedInterval,
+  bookingNotes,
   intervals,
   markAttendance = () => {},
   markAbsence = () => {},
@@ -131,50 +132,61 @@ const UserAttendance: React.FC<Props> = ({
     .trim();
 
   return (
-    <li
-      className={`relative w-full px-4 py-8 gap-y-8 sm:py-0 flex flex-wrap items-center sm:flex-nowrap ${backgroundColor} ${
-        customer.deleted ? "opacity-50" : ""
-      }`}
-    >
-      <div className="w-[80%] sm:w-full sm:order-1 flex justify-start items-center whitespace-nowrap">
-        <CustomerAvatar
-          className="w-12 h-12 mr-4"
-          badgeSize={BadgeSize.MD}
-          customer={customer}
-        />
-        <span>{customerString}</span>
-      </div>
-
-      <div className="text-left sm:order-3">
-        {bookedInterval ? (
-          <AttendanceButton
-            checked={localAttended}
-            onClick={handleAttendanceButtonClick}
-            disabled={disableButton}
-          />
-        ) : (
-          <RemoveButton
-            onClick={handleAttendanceButtonClick}
-            disabled={disableButton}
-          />
-        )}
-      </div>
-
-      <div
-        className={`flex w-full sm:my-0 sm:order-2 m-2 justify-center ${backgroundColor}`}
+    <div className="flex-col">
+      <li
+        className={`relative w-full px-4 py-8 gap-y-8 sm:py-0 flex flex-wrap items-center sm:flex-nowrap ${backgroundColor} ${
+          customer.deleted ? "opacity-50" : ""
+        }`}
       >
-        <IntervalPicker
-          // Through text (css 'color') property, we're making the interval picker arrows the same color as the background
-          className={`mx-4 ${isAbsent ? "text-gray-100" : "text-white"}`}
-          disabled={!localAttended}
-          intervals={intervals}
-          attendedInterval={selectedInterval}
-          bookedInterval={bookedInterval}
-          onChange={handleIntervalChange}
-          onCustomInterval={onCustomInterval}
-        />
-      </div>
-    </li>
+        <div className="w-[80%] sm:w-full sm:order-1 flex justify-left items-center whitespace-nowrap">
+          <CustomerAvatar
+            className="w-12 h-12 mr-4"
+            badgeSize={BadgeSize.MD}
+            customer={customer}
+          />
+          <span>{customerString}</span>
+        </div>
+
+        <div className="text-left sm:order-3">
+          {bookedInterval ? (
+            <AttendanceButton
+              checked={localAttended}
+              onClick={handleAttendanceButtonClick}
+              disabled={disableButton}
+            />
+          ) : (
+            <RemoveButton
+              onClick={handleAttendanceButtonClick}
+              disabled={disableButton}
+            />
+          )}
+        </div>
+
+        <div
+          className={`flex w-full sm:my-0 sm:order-2 m-2 justify-center ${backgroundColor}`}
+        >
+          <IntervalPicker
+            // Through text (css 'color') property, we're making the interval picker arrows the same color as the background
+            className={`mx-4 ${isAbsent ? "text-gray-100" : "text-white"}`}
+            disabled={!localAttended}
+            intervals={intervals}
+            attendedInterval={selectedInterval}
+            bookedInterval={bookedInterval}
+            onChange={handleIntervalChange}
+            onCustomInterval={onCustomInterval}
+          />
+        </div>
+      </li>
+      {bookingNotes && (
+        <div className="bg-gray-50">
+          <div className="w-full h-[1px] bg-gray-300" />
+          <p className="w-fit text-gray-600 text-xs mt-2 ml-4 border-b-[1px] border-gray-400">
+            {t(AttendanceAria.TrainerNotes)}
+          </p>
+          <p className="text-gray-600 text-xs px-2 pt-1 pb-2">{bookingNotes}</p>
+        </div>
+      )}
+    </div>
   );
 };
 
