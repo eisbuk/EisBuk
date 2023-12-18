@@ -62,7 +62,6 @@ export enum Category {
   CourseAdults = "course-adults",
   CourseMinors = "course-minors",
   Competitive = "competitive",
-  /** @TODO Soon to be deprecated */
-  // Adults = "adults",
+  PrivateLessons = "private-lessons",
 }
 // endregion

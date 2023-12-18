@@ -194,6 +194,17 @@ export interface SlotInterface {
    * Notes on the slot
    */
   notes?: string;
+  /**
+   * (Optional) maximum number of athletes that can book this slot:
+   *  - if not provided, there is no limit
+   *  - 1 for private lessons
+   */
+  capacity?: number;
+  /**
+   * The number of bookings made for the slot: This will be undefined in 'slots' collection entries,
+   * whereas in 'slotsByDay' entries it will be defined as long as there is at least one booking having been made.
+   */
+  numBookings?: number;
 }
 
 /** Slot interface with optional id */
