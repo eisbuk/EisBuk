@@ -47,6 +47,7 @@ const setupBookingsTest = ({
   date,
   slotsByDay,
   slotBookingsCounts = {},
+  bookedSlots = {},
 }: {
   category: Category;
   date: DateTime;
@@ -54,6 +55,7 @@ const setupBookingsTest = ({
   slotBookingsCounts?: NonNullable<
     LocalStore["firestore"]["data"]["slotBookingsCounts"]
   >;
+  bookedSlots?: NonNullable<LocalStore["firestore"]["data"]["bookedSlots"]>;
 }): ReturnType<typeof getNewStore> => {
   const store = getNewStore({
     firestore: {
@@ -66,6 +68,7 @@ const setupBookingsTest = ({
         },
         slotsByDay,
         slotBookingsCounts,
+        bookedSlots,
       },
     },
     app: {
@@ -90,29 +93,96 @@ describe("Selectors ->", () => {
     });
 
     test("should filter out slots booked at full capacity", () => {
-      const date = DateTime.fromISO(currentMonthStartDate);
+      const date = DateTime.fromISO("2021-01-01");
+      const category = Category.Competitive;
+
+      // For this test case, each slot will have the same category, date and capacity
+      const testSlot = {
+        ...baseSlot,
+        categories: [category],
+        date: "2021-01-01",
+        capacity: 2,
+      };
+
+      // Add a non-full slot to slotsByDay
+      const slot1 = { ...testSlot, id: "slot-1" };
+      const slot2 = { ...testSlot, id: "slot-2" };
+      const slotsByDay = {
+        "2021-01": {
+          "2021-01-01": { "slot-1": slot1, "slot-2": slot2 },
+        },
+      };
+
+      // Create slot bookings counts
+      const slotBookingsCounts = {
+        "2021-01": {
+          // Slot 1 still has vacancy
+          "slot-1": 1,
+          // Slot 2 is fully booked
+          "slot-2": 2,
+        },
+      };
+
       const store = setupBookingsTest({
         category: Category.Competitive,
-        // Add a fully booked slot - should get filtered out
-        slotsByDay: {
-          ...slotsByDay,
-          ["2021-09"]: {
-            ...slotsByDay["2021-09"],
-            ["2021-09-01"]: {
-              ...slotsByDay["2021-09"]["2021-09-01"],
-              ["full-slot"]: { ...baseSlot, capacity: 2 },
-            },
-          },
-        },
-        slotBookingsCounts: {
-          ["2021-09"]: {
-            ["full-slot"]: 2,
-          },
-        },
+        slotsByDay,
+        slotBookingsCounts,
         date,
       });
       const res = getSlotsForCustomer(store.getState());
-      expect(res).toEqual(expectedMonthCustomer);
+      // Slot 1 should be returned, slot 2 should be filtered out (fully booked)
+      expect(res).toEqual({ "2021-01-01": { "slot-1": slot1 } });
+    });
+
+    test("should filter out slots booked at full capacity", () => {
+      const date = DateTime.fromISO("2021-01-01");
+      const category = Category.Competitive;
+
+      // For this test case, each slot will have the same category, date and capacity
+      const testSlot = {
+        ...baseSlot,
+        categories: [category],
+        date: "2021-01-01",
+        capacity: 2,
+      };
+
+      // Add a non-full slot to slotsByDay
+      const slot1 = { ...testSlot, id: "slot-1" };
+      const slot2 = { ...testSlot, id: "slot-2" };
+      const slotsByDay = {
+        "2021-01": {
+          "2021-01-01": { "slot-1": slot1, "slot-2": slot2 },
+        },
+      };
+
+      // Create slot bookings counts
+      const slotBookingsCounts = {
+        "2021-01": {
+          // Slot 1 still has vacancy
+          "slot-1": 1,
+          // Slot 2 is fully booked
+          "slot-2": 2,
+        },
+      };
+
+      // Book slot-2 for the customer
+      const bookedSlots = {
+        "slot-2": {
+          date: "2021-01-01",
+          interval: "09:00-10:00",
+        },
+      };
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        slotsByDay,
+        slotBookingsCounts,
+        bookedSlots,
+        date,
+      });
+      const res = getSlotsForCustomer(store.getState());
+      // Since slot 2 is booked by the customer, it should be returned (even if at full capacity)
+      expect(res).toEqual(slotsByDay["2021-01"]);
     });
   });
 

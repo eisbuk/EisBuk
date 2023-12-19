@@ -92,6 +92,7 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
   const monthString = date.startOf("month").toISO().substring(0, 7);
   const slotsForAMonth = allSlotsInStore[monthString] || {};
   const bookingCountsForAMonth = bookingsCounts[monthString] || {};
+  const bookedSlots = getBookedSlots(state);
 
   // Filter slots from each day with respect to category
   //
@@ -114,7 +115,8 @@ export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
         //  and the booking count is availabe (if not, the slot is not yet booked)
         !bookingCountsForAMonth[slotId] ||
         !slot.capacity ||
-        slot.capacity > bookingCountsForAMonth[slotId]
+        slot.capacity > bookingCountsForAMonth[slotId] ||
+        Boolean(bookedSlots[slotId])
     )
     // GroupEntries by date: [date, [slotId, SlotInterface][]]
     ._group(
