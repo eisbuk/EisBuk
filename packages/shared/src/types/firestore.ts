@@ -343,6 +343,7 @@ export interface CalendarEvents {
 export interface CustomerAttendance {
   bookedInterval: string | null;
   attendedInterval: string | null;
+  bookingNotes?: string;
 }
 
 /**
