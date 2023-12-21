@@ -97,15 +97,29 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                             {cellItem}
                           </p>
                         </TableCell>
-                      ) : itemIx === Object.keys(data).length - 1 ? (
+                      ) : itemIx === Object.keys(data).length - 1 &&
+                        cellItem !== null &&
+                        typeof cellItem !== "string" &&
+                        cellItem.booked !== undefined &&
+                        cellItem.delta !== undefined ? (
                         <TableCell
                           key={`${date}-${cellItem}`}
                           textAlign={CellTextAlign.Center}
                           isWaypoint={isWeekend(date)}
+                          className={
+                            cellItem.delta === 0
+                              ? "bg-green-100 text-green-800"
+                              : cellItem.delta > 0
+                              ? "bg-red-100 text-red-800"
+                              : "bg-yellow-100 text-yellow-800"
+                          }
                         >
-                          <p className="leading-6">
-                            {!cellItem ? "-" : `${cellItem}h`}
-                          </p>
+                          <HoverText text={cellItem.delta.toString() || ""}>
+                            <span>
+                              {" "}
+                              {!cellItem.booked ? "-" : `${cellItem.booked}h`}
+                            </span>
+                          </HoverText>
                         </TableCell>
                       ) : (
                         <TableCell
@@ -117,7 +131,6 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                             `${
                               cellItem !== null &&
                               typeof cellItem !== "string" &&
-                              typeof cellItem !== "number" &&
                               cellItem.booked !== undefined &&
                               cellItem.delta !== undefined &&
                               (cellItem.delta === 0

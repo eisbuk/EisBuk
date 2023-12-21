@@ -79,12 +79,21 @@ export const createRowGenerator =
     const total = _reduce(
       dataIter,
       (acc, [, value]) => {
-        return acc + (value && value.booked ? value.booked : 0);
+        return {
+          booked: acc.booked + (value && value.booked ? value.booked : 0),
+          delta:
+            acc.delta + (value && value.delta !== undefined ? value.delta : 0),
+        };
       },
-      0
+      { booked: 0, delta: 0 }
     );
 
-    if (total === 0 && slotType === "off-ice") return undefined;
+    if (total.booked === 0 && slotType === "off-ice") return undefined;
 
-    return { slotType, athlete, ...dataObject, total };
+    return {
+      slotType,
+      athlete,
+      ...dataObject,
+      total: { booked: total.booked, delta: total.delta },
+    };
   };
