@@ -7,7 +7,6 @@ import {
   AttendanceByDate,
   AttendanceBySlotType,
   AttendanceDurations,
-  HoursType,
   RowItem,
 } from "./types";
 
@@ -26,8 +25,24 @@ export const isWeekend = (dateStr: string) => {
   return dayOfWeek === 6 || dayOfWeek === 7;
 };
 
-type AttendanceDurationsToData = (hours: AttendanceBySlotType) => number | null;
+type AttendanceDurationsToData = (
+  hours: AttendanceBySlotType
+) => TransformedData | null;
+type TransformedData = {
+  booked: number;
+  delta: number;
+};
 
+export const transformAttendanceData =
+  <T>(selector: (data: T) => AttendanceDurations) =>
+  (params: T) => {
+    const { booked, attended } = selector(params);
+    // If there's no data for booking nor attendance, there's no delta (this will result in "-" in the table column)
+    if (!booked && !attended) return null;
+    // If one of the values is missing (no booking or attendance), we're comparing the other value with 0
+    const delta = (attended || 0) - (booked || 0);
+    return { booked, delta };
+  };
 /**
  * Creates a interable with the row data ({ date => value} pairs).
  * Used to generate the table data for a particular metric: booked, attended, delta...
@@ -51,17 +66,25 @@ const createRowData = (
 export const createRowGenerator =
   (dates: Iterable<string>) =>
   (
-    type: HoursType,
     slotType: SlotType,
     attendance: AthleteAttendanceMonth,
     transform: AttendanceDurationsToData
-  ): RowItem => {
+  ): RowItem | undefined => {
     const [athlete, hours] = attendance;
 
     const dataIter = createRowData(dates, hours, transform);
+
     const dataObject = Object.fromEntries(dataIter);
 
-    const total = _reduce(dataIter, (acc, [, value]) => acc + (value || 0), 0);
+    const total = _reduce(
+      dataIter,
+      (acc, [, value]) => {
+        return acc + (value && value.booked ? value.booked : 0);
+      },
+      0
+    );
 
-    return { type, slotType, athlete, ...dataObject, total };
+    if (total === 0 && slotType === "off-ice") return undefined;
+
+    return { slotType, athlete, ...dataObject, total };
   };
