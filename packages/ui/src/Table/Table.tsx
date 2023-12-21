@@ -2,7 +2,10 @@ import React from "react";
 
 import TableCell, { CellType } from "./TableCell";
 
-type TableItem = Record<string, string | number | boolean | null>;
+type TableItem = Record<
+  string,
+  string | number | boolean | null | { booked: number; delta: number }
+>;
 type TableHeaders<T> = Record<keyof T, string>;
 
 interface RenderRow<T extends TableItem = TableItem> {
@@ -37,6 +40,8 @@ const Table = <T extends TableItem>({
     <tbody className="bg-gray-50">{items.map(renderRow)}</tbody>
   </table>
 );
+// item :tableItem
+// itemArr :tableItem[]
 
 const defaultRenderRow: RenderRow = (item, rowIx, itemArr) => {
   const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
