@@ -40,8 +40,6 @@ const Table = <T extends TableItem>({
     <tbody className="bg-gray-50">{items.map(renderRow)}</tbody>
   </table>
 );
-// item :tableItem
-// itemArr :tableItem[]
 
 const defaultRenderRow: RenderRow = (item, rowIx, itemArr) => {
   const bgClasses = rowIx % 2 === 0 ? undefined : "bg-gray-50";
