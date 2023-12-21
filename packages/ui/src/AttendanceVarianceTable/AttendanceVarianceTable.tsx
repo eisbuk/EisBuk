@@ -11,7 +11,6 @@ import { SlotType, wrapIter } from "@eisbuk/shared";
 import { AthleteAttendanceMonth, RowItem } from "./types";
 
 import Table, { TableCell, CellType, CellTextAlign } from "../Table";
-import VarianceBadge from "./VarianceBadge";
 
 import {
   isWeekend,
@@ -113,20 +112,34 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                           key={`${date}-${cellItem}`}
                           textAlign={CellTextAlign.Center}
                           isWaypoint={isWeekend(date)}
-                          className={cellClasses}
+                          className={[
+                            cellClasses,
+                            `${
+                              cellItem !== null &&
+                              typeof cellItem !== "string" &&
+                              typeof cellItem !== "number" &&
+                              cellItem.booked !== undefined &&
+                              cellItem.delta !== undefined &&
+                              (cellItem.delta === 0
+                                ? "bg-green-100 text-green-800"
+                                : cellItem.delta > 0
+                                ? "bg-red-100 text-red-800"
+                                : "bg-yellow-100 text-yellow-800")
+                            }`,
+                          ].join(" ")}
                         >
                           {cellItem === null
                             ? "-"
                             : cellItem &&
                               typeof cellItem !== "string" &&
                               typeof cellItem !== "number" &&
-                              cellItem.booked &&
-                              cellItem.delta && (
+                              cellItem.booked !== undefined &&
+                              cellItem.delta !== undefined && (
                                 <>
                                   <HoverText
-                                    text={cellItem.booked.toString() || ""}
+                                    text={cellItem.delta.toString() || ""}
                                   >
-                                    <VarianceBadge delta={cellItem.delta} />
+                                    <span>{cellItem.booked}</span>
                                   </HoverText>
                                 </>
                               )}
