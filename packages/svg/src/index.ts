@@ -36,6 +36,7 @@ export { default as Minus } from "./assets/minus.svg";
 export { default as Google } from "./assets/google.svg";
 export { default as Key } from "./assets/key.svg";
 export { default as PowerCircle } from "./assets/power-circle.svg";
+export { default as UserGroup } from "./assets/user-group.svg";
 
 // Export a standard type for SVG component, to be used throughout the app
 import type { SVGComponent } from "./types";
