@@ -208,6 +208,7 @@ const SlotForm: React.FC<SlotFormProps> = ({
                   label={t(SlotFormLabel.Capacity)}
                   helpText={t(SlotFormLabel.CapacityDescription)}
                   width={FormFieldWitdh.Full}
+                  min={1}
                 />
               </div>
 
