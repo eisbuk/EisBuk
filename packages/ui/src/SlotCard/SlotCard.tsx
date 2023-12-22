@@ -2,6 +2,7 @@ import React from "react";
 
 import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
 import i18n, { CategoryLabel } from "@eisbuk/translations";
+import { UserGroup } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
 
@@ -35,6 +36,7 @@ const SlotCard: React.FC<SlotCardProps> = ({
   intervals,
   notes,
   onClick,
+  capacity,
 }) => {
   const canClick = Boolean(onClick);
 
@@ -100,11 +102,25 @@ const SlotCard: React.FC<SlotCardProps> = ({
       </div>
 
       <div className="flex items-center">
-        <SlotTypeIcon
-          key="slot-type-icon"
-          className="h-full bg-inherit py-1"
-          type={type}
-        />
+        <div className="flex items-center gap-4">
+          <SlotTypeIcon
+            key="slot-type-icon"
+            className="h-full bg-inherit py-1"
+            type={type}
+          />
+          {capacity && (
+            <div
+              className={`px-2 py-0.5 rounded inline-flex items-center gap-2 text-white ${
+                type === SlotType.Ice ? "bg-cyan-500" : "bg-yellow-600"
+              }`}
+            >
+              <div className="h-4">
+                <UserGroup />
+              </div>
+              <p className="text-sm">{capacity}</p>
+            </div>
+          )}
+        </div>
 
         {additionalActions}
       </div>
