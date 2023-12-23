@@ -19,10 +19,14 @@ export type AttendanceBySlotType = {
 
 export type AthleteAttendanceMonth = AthleteNamePair<AttendanceByDate>;
 
-export interface RowItem {
+interface RowDataFixedProperties {
   athlete: string;
-  [dateStr: string]: string | number | null;
-  total: number;
-  type: HoursType;
+  total: { booked: number; delta: number };
   slotType: SlotType;
 }
+
+interface RowData {
+  [dateStr: string]: { booked: number; delta: number } | string | null;
+}
+
+export type RowItem = RowData & RowDataFixedProperties;

@@ -2,7 +2,10 @@ import React from "react";
 
 import TableCell, { CellType } from "./TableCell";
 
-type TableItem = Record<string, string | number | boolean | null>;
+type TableItem = Record<
+  string,
+  string | number | boolean | null | { booked: number; delta: number }
+>;
 type TableHeaders<T> = Record<keyof T, string>;
 
 interface RenderRow<T extends TableItem = TableItem> {
