@@ -98,8 +98,8 @@
     "DeleteIntervalDisabled": "Interval has already been booked by one or more athletes"
   },
   "BookingNotesForm": {
-    "Placeholder": "Personal notes...",
-    "HelpText": "Make some personal notes..."
+    "Placeholder": "Notes...",
+    "HelpText": "Make some notes for the trainer..."
   },
 
   "CustomerLabel": {
@@ -372,7 +372,8 @@
     "MarkPresent": "Mark as present",
     "MarkAbsent": "Mark as absent",
     "AddCustomInterval": "Add custom interval",
-    "CancelCustomInterval": "Cancel adding custom interval"
+    "CancelCustomInterval": "Cancel adding custom interval",
+    "TrainerNotes": "Trainer Notes"
   },
 
   "SlotFormAria": {

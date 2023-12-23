@@ -260,6 +260,7 @@ export interface CustomerFull extends Customer {
 export interface CustomerWithAttendance extends CustomerFull {
   bookedInterval: string | null;
   attendedInterval: string | null;
+  bookingNotes?: string;
 }
 
 /**
@@ -343,6 +344,7 @@ export interface CalendarEvents {
 export interface CustomerAttendance {
   bookedInterval: string | null;
   attendedInterval: string | null;
+  bookingNotes?: string;
 }
 
 /**

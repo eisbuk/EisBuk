@@ -5,7 +5,6 @@ import { v4 as uuid } from "uuid";
 import {
   BookingSubCollection,
   Collection,
-  CustomerAttendance,
   CustomerBookingEntry,
   OrgSubCollection,
   SlotAttendnace,
@@ -250,7 +249,6 @@ export const createAttendanceForBooking = functions
       string,
       string
     >;
-
     const db = admin.firestore();
 
     const isUpdate = Boolean(change.after.exists);
@@ -269,10 +267,16 @@ export const createAttendanceForBooking = functions
     const updatedEntry = {
       attendances: {
         [customerId]: isUpdate
-          ? ({
-              bookedInterval: afterData!.interval,
-              attendedInterval: afterData!.interval,
-            } as CustomerAttendance)
+          ? afterData && afterData?.bookingNotes
+            ? {
+                bookedInterval: afterData!.interval,
+                attendedInterval: afterData!.interval,
+                bookingNotes: afterData!.bookingNotes,
+              }
+            : {
+                bookedInterval: afterData!.interval,
+                attendedInterval: afterData!.interval,
+              }
           : admin.firestore.FieldValue.delete(),
       },
     };
@@ -283,7 +287,9 @@ export const createAttendanceForBooking = functions
       .collection(OrgSubCollection.Attendance)
       .doc(bookingId);
 
-    await attendanceRef.set(updatedEntry, { merge: true });
+    await attendanceRef.set(updatedEntry, {
+      mergeFields: [`attendances.${customerId}`],
+    });
   });
 
 /**
@@ -477,6 +483,7 @@ export const createCustomerStats = functions
     const { date } =
       change.after.data() || (change.before.data() as CustomerBookingEntry);
 
+    if (!date) return;
     const db = admin.firestore();
 
     const bookingRef = db

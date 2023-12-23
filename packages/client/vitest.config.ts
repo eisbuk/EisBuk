@@ -21,7 +21,7 @@ export default defineConfig({
     // giving us (kinda) zero overhead assurance that the tests won't be flaky:
     // We pay the performance toll when that's needed to remove flakieness (waiting for emulators to respont),
     // but there's no toll for tests that don't need it.
-    testTimeout: __isCI__ ? 15000 : 10000,
+    testTimeout: 30000,
     setupFiles: ["./vitest.setup.ts"],
     maxConcurrency: 3,
   },

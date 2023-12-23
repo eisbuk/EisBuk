@@ -14,6 +14,8 @@ import {
   sanitizeCustomer,
   defaultEmailTemplates as emailTemplates,
   defaultSMSTemplates as smsTemplates,
+  CustomerBookingEntry,
+  CustomerAttendance,
 } from "@eisbuk/shared";
 
 import { saul, walt } from "@eisbuk/testing/customers";
@@ -36,11 +38,53 @@ import {
 import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { DateTime } from "luxon";
+import _ from "lodash";
 
 const testMonth = testDate.substring(0, 7);
 
 describe("Cloud functions -> Data triggers ->", () => {
   describe("createAttendanceForBooking", () => {
+    /** Test params of each of the booking -> attendance data trigger table tests */
+    interface BookingAttendanceTestCase {
+      /** Test name */
+      name: string;
+
+      /**
+       * Initial booking to be set up at the beginning of the test.
+       *
+       * **This will be stored as a `bookedSlots` document for saul**
+       *
+       * _If testing for create, this will be null._
+       */
+      initialBooking: CustomerBookingEntry | null;
+      /**
+       * Initial attendance to be set up at the beginning of the test.
+       *
+       * **This will be stored in the `attendance` document for the slot, as saul's attendance and doesn't
+       * include the base attendance (which will always be set up).**
+       *
+       * _If testing for create, this will be null._
+       */
+      initialAttendance: CustomerAttendance | null;
+      /**
+       * Update to be applied to the booking document.
+       *
+       * This can either be:
+       * - bookings doc - the updated document (this should be thw whole document as the update is made as-is, `{merge: false}`)
+       * - `null` - in this case, the document will be deleted for test case
+       */
+      update: Partial<CustomerBookingEntry> | null;
+      /**
+       * This is the attendance (for saul) expected at the end of the test.
+       *
+       * **This is saul's portion of the slot attendance only. The rest of the base attenadance will always be there
+       * and will expected to be there in each test case.**
+       */
+      wantAttendance: CustomerAttendance | null;
+    }
+
+    // This structure is used as a base setup of the attendance document for the slot
+    // we're using in tests. It's here to ensure no other data (than the data in focus) should be touched.
     const baseAttendance = {
       date: baseSlot.date,
       attendances: {
@@ -51,62 +95,341 @@ describe("Cloud functions -> Data triggers ->", () => {
       },
     };
 
-    const bookedSlot = {
-      data: baseSlot.date,
-      interval: Object.keys(baseSlot.intervals)[0],
+    const runTableTests = (testCases: BookingAttendanceTestCase[]) => {
+      testCases.forEach(
+        ({
+          name,
+          initialBooking,
+          initialAttendance,
+          update,
+          wantAttendance,
+        }) => {
+          testWithEmulator(name, async () => {
+            const { organization } = await setUpOrganization();
+
+            await Promise.all([
+              // set up Saul's bookings entry
+              adminDb
+                .doc(getBookingsDocPath(organization, saul.secretKey))
+                .set(sanitizeCustomer(saul)),
+              // set up base data in the attendance document
+              adminDb
+                .doc(getAttendanceDocPath(organization, baseSlot.id))
+                .set(baseAttendance),
+            ]);
+
+            if (initialBooking) {
+              await adminDb
+                .doc(
+                  getBookedSlotDocPath(
+                    organization,
+                    saul.secretKey,
+                    baseSlot.id
+                  )
+                )
+                .set(initialBooking);
+
+              await waitFor(async () => {
+                const snap = await adminDb
+                  .doc(getAttendanceDocPath(organization, baseSlot.id))
+                  .get();
+                const wantAttendance = _.cloneDeep(baseAttendance);
+                wantAttendance.attendances[saul.id] = initialAttendance;
+                expect(snap.data()).toEqual(wantAttendance);
+              });
+            }
+
+            // update (or delete) the booked slot
+            const bookedSlotRef = adminDb.doc(
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+            );
+            if (update) {
+              await bookedSlotRef.set(update);
+            } else {
+              await bookedSlotRef.delete();
+            }
+
+            // check proper updates triggerd by write to bookings
+            const wantAttendanceFinal = _.cloneDeep(baseAttendance);
+            if (wantAttendance) {
+              wantAttendanceFinal.attendances[saul.id] = wantAttendance;
+            }
+
+            await waitFor(async () => {
+              const snap = await adminDb
+                .doc(getAttendanceDocPath(organization, baseSlot.id))
+                .get();
+              expect(snap.data()).toEqual(wantAttendanceFinal);
+            });
+          });
+        }
+      );
     };
 
-    const attendanceWithTestBooking = {
-      ...baseAttendance,
-      attendances: {
-        ...baseAttendance.attendances,
-        [saul.id]: {
-          bookedInterval: bookedSlot.interval,
-          attendedInterval: bookedSlot.interval,
+    runTableTests([
+      {
+        name: "create booking: interval only",
+        initialAttendance: null,
+        initialBooking: null,
+        update: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
         },
       },
-    };
 
-    test.skip(
-      // FIXME - this test was flapping too much, so we stop running it
-      "should create attendance entry for booking and not overwrite existing data in slot",
-      async () => {
-        const { organization } = await setUpOrganization();
-        await Promise.all([
-          // set up Saul's bookings entry
-          adminDb
-            .doc(getBookingsDocPath(organization, saul.secretKey))
-            .set(sanitizeCustomer(saul)),
-          // set up dummy data in the base slot, not to be overwritten by Saul's attendance
-          adminDb
-            .doc(getAttendanceDocPath(organization, baseSlot.id))
-            .set(baseAttendance),
-        ]);
-        // add new booking trying to trigger attendance entry
-        await adminDb
-          .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-          .set(bookedSlot);
-        // check proper updates triggerd by write to bookings
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getAttendanceDocPath(organization, baseSlot.id))
-            .get();
-          expect(snap.data()).toEqual(attendanceWithTestBooking);
-        });
-        // deleting the booking should remove it from attendance doc
-        await adminDb
-          .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
-          .delete();
-        await waitFor(async () => {
-          const snap = await adminDb
-            .doc(getAttendanceDocPath(organization, baseSlot.id))
-            .get();
-          // check that only the test customer's attendance's deleted, but not the rest of the data
-          expect(snap.data()).toEqual(baseAttendance);
-        });
+      {
+        name: "create booking: interval with notes",
+        initialAttendance: null,
+        initialBooking: null,
+        update: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
       },
-      { timeout: 20000 }
-    );
+
+      {
+        name: "update booking: interval only",
+        initialBooking: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        initialAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+        },
+        update: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[1],
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[1],
+          attendedInterval: Object.keys(baseSlot.intervals)[1],
+        },
+      },
+
+      {
+        name: "update booking: interval with notes",
+        initialBooking: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        initialAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+        },
+        update: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[1],
+          bookingNotes: "This is a booking note",
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[1],
+          attendedInterval: Object.keys(baseSlot.intervals)[1],
+          bookingNotes: "This is a booking note",
+        },
+      },
+
+      {
+        name: "update booking: notes only",
+        initialBooking: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        initialAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+        },
+        update: {
+          interval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
+      },
+
+      {
+        name: "remove booking notes",
+        initialBooking: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
+        initialAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+          bookingNotes: "This is a booking note",
+        },
+        update: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        wantAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+        },
+      },
+
+      {
+        name: "delete booking",
+        initialBooking: {
+          date: baseSlot.date,
+          interval: Object.keys(baseSlot.intervals)[0],
+        },
+        initialAttendance: {
+          bookedInterval: Object.keys(baseSlot.intervals)[0],
+          attendedInterval: Object.keys(baseSlot.intervals)[0],
+        },
+        update: null, // null = delete the slot!
+        wantAttendance: null,
+      },
+    ]);
+
+    // test.skip("create booking: interval with notes", async () => {
+    //   const { organization } = await setUpOrganization();
+    //   await Promise.all([
+    //     // set up Saul's bookings entry
+    //     adminDb
+    //       .doc(getBookingsDocPath(organization, saul.secretKey))
+    //       .set(sanitizeCustomer(saul)),
+    //     // set up base data in the attendance document
+    //     adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .set(baseAttendance),
+    //   ]);
+
+    //   // add new booking trying to trigger attendance entry
+    //   const bookedSlot: CustomerBookingEntry = {
+    //     date: baseSlot.date,
+    //     interval: Object.keys(baseSlot.intervals)[0],
+    //     bookingNotes: "This is a booking note",
+    //   };
+    //   await adminDb
+    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+    //     .set(bookedSlot);
+
+    //   // check proper updates triggerd by write to bookings
+    //   const wantAttendance = _.cloneDeep(baseAttendance);
+    //   wantAttendance.attendances[saul.id] = {
+    //     bookedInterval: bookedSlot.interval,
+    //     attendedInterval: bookedSlot.interval,
+    //   };
+    //   await waitFor(async () => {
+    //     const snap = await adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .get();
+    //     expect(snap.data()).toEqual(wantAttendance);
+    //   });
+    // });
+
+    // test.skip("update booking: interval only", async () => {
+    //   const { organization } = await setUpOrganization();
+
+    //   const initialBooking: CustomerBookingEntry = {
+    //     date: baseSlot.date,
+    //     interval: Object.keys(baseSlot.intervals)[0],
+    //   };
+
+    //   const initialAttendanceDoc = _.cloneDeep(baseAttendance);
+    //   initialAttendanceDoc.attendances[saul.id] = {
+    //     bookedInterval: initialBooking.interval,
+    //     attendedInterval: initialBooking.interval,
+    //   };
+    //   await Promise.all([
+    //     // set up Saul's bookings entry
+    //     adminDb
+    //       .doc(getBookingsDocPath(organization, saul.secretKey))
+    //       .set(sanitizeCustomer(saul)),
+    //     // set up base data in the attendance document
+    //     adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .set(initialAttendanceDoc),
+    //   ]);
+
+    //   // update the booking interval
+    //   const updatedBooking: CustomerBookingEntry = {
+    //     date: baseSlot.date,
+    //     interval: Object.keys(baseSlot.intervals)[1],
+    //   };
+    //   await adminDb
+    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+    //     .set(updatedBooking);
+
+    //   // check proper updates triggerd by write to bookings
+    //   const wantAttendance = _.cloneDeep(baseAttendance);
+    //   wantAttendance.attendances[saul.id] = {
+    //     bookedInterval: updatedBooking.interval,
+    //     attendedInterval: updatedBooking.interval,
+    //   };
+    //   await waitFor(async () => {
+    //     const snap = await adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .get();
+    //     expect(snap.data()).toEqual(wantAttendance);
+    //   });
+    // });
+
+    // test.skip("should remove customer's attendance when the booking is removed", async () => {
+    //   const { organization } = await setUpOrganization();
+    //   await Promise.all([
+    //     // set up Saul's bookings entry
+    //     adminDb
+    //       .doc(getBookingsDocPath(organization, saul.secretKey))
+    //       .set(sanitizeCustomer(saul)),
+    //     // set up dummy data in the base slot, not to be overwritten by Saul's attendance
+    //     adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .set(attendanceWithTestBooking),
+    //   ]);
+    //   // deleting the booking should remove it from attendance doc
+    //   await adminDb
+    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+    //     .delete();
+    //   await waitFor(async () => {
+    //     const snap = await adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .get();
+    //     // check that only the test customer's attendance's deleted, but not the rest of the data
+    //     expect(snap.data()).toEqual(baseAttendance);
+    //   });
+    // });
+
+    // test.skip("should create bookingNotes in attendance entry for booking", async () => {
+    //   const { organization } = await setUpOrganization();
+    //   await Promise.all([
+    //     // set up Saul's bookings entry
+    //     adminDb
+    //       .doc(getBookingsDocPath(organization, saul.secretKey))
+    //       .set(sanitizeCustomer(saul)),
+    //     // set up dummy data in the base slot, not to be overwritten by Saul's attendance
+    //     adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .set(saulAttendance),
+    //   ]);
+    //   // add new bookingNotes to trigger attendance entry
+    //   await adminDb
+    //     .doc(getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id))
+    //     .set({ bookingNotes: "notes" });
+    //   // check proper updates triggerd by write to bookings
+    //   await waitFor(async () => {
+    //     const snap = await adminDb
+    //       .doc(getAttendanceDocPath(organization, baseSlot.id))
+    //       .get();
+    //     expect(snap.data()).toEqual(saulAttendanceWithBookingNotes);
+    //   });
+    // });
   });
 
   describe("aggreagateSlots", () => {
