@@ -25,7 +25,7 @@ service cloud.firestore {
 
     // #region enums
     function getCategories() {
-      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive"]
+      return ["course-adults", "pre-competitive-adults", "course-minors", "pre-competitive-minors", "competitive", "private-lessons"]
     }
     function getSlotTypes() {
       return ["ice", "off-ice"]
@@ -102,6 +102,15 @@ service cloud.firestore {
 
       // #region slots-by-day-checks
       match /slotsByDay/{document=**} {
+        // Everyone has access to all available slots.
+        // Security-wise this is equivalent to showing a form that lets unauthenticated
+        // users book their slots, as is the current solution.
+        allow read: if true;
+      }
+      // #endregion slots-by-day-checks
+
+      // #region slots-by-day-checks
+      match /slotBookingsCounts/{document=**} {
         // Everyone has access to all available slots.
         // Security-wise this is equivalent to showing a form that lets unauthenticated
         // users book their slots, as is the current solution.

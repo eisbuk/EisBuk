@@ -48,6 +48,7 @@ export const PackedWithContent = (): JSX.Element => (
     notes="This is a long note: A quick brown fox jumped over the lazy dog, while colourless green ideas dream furiously."
     categories={Object.values(Category)}
     additionalActions={additionalActions}
+    capacity={10}
   />
 );
 

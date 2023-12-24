@@ -40,6 +40,7 @@ export const getConstraintForColl = (
     [OrgSubCollection.Attendance]: { range },
     [OrgSubCollection.Bookings]: { documents: [secretKey] },
     [OrgSubCollection.SlotsByDay]: { documents },
+    [OrgSubCollection.SlotBookingsCounts]: { documents },
     [OrgSubCollection.Customers]: null,
     [BookingSubCollection.BookedSlots]: { range },
     [BookingSubCollection.AttendedSlots]: { range },
@@ -74,6 +75,11 @@ export const getCollectionPath = (
     [OrgSubCollection.SlotsByDay]: [
       organizationPath,
       OrgSubCollection.SlotsByDay,
+    ].join("/"),
+
+    [OrgSubCollection.SlotBookingsCounts]: [
+      organizationPath,
+      OrgSubCollection.SlotBookingsCounts,
     ].join("/"),
 
     [OrgSubCollection.Customers]: [

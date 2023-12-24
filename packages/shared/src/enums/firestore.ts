@@ -26,6 +26,8 @@ export enum Collection {
 export enum OrgSubCollection {
   Slots = "slots",
   SlotsByDay = "slotsByDay",
+  SlotBookingsCounts = "slotBookingsCounts",
+
   Customers = "customers",
   Bookings = "bookings",
   Attendance = "attendance",
@@ -62,7 +64,6 @@ export enum Category {
   CourseAdults = "course-adults",
   CourseMinors = "course-minors",
   Competitive = "competitive",
-  /** @TODO Soon to be deprecated */
-  // Adults = "adults",
+  PrivateLessons = "private-lessons",
 }
 // endregion

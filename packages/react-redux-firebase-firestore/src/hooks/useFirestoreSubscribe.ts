@@ -1,4 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
+import { DateTime } from "luxon";
 import { useEffect, useMemo, useRef } from "react";
 import { v4 as uuid } from "uuid";
 
@@ -7,7 +8,6 @@ import { CollectionSubscription } from "../types";
 import { addFirestoreListener, removeFirestoreListener } from "../thunks";
 
 import { getCollectionPath, getConstraintForColl } from "../utils/utils";
-import { DateTime } from "luxon";
 
 /**
  * A hook used to create, update and remove firestore subscriptions and update the

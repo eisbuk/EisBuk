@@ -15,6 +15,7 @@ import {
   Customer,
   CustomerBookings,
   SlotsByDay,
+  SlotBookingsCounts,
 } from "@eisbuk/shared";
 
 import { getCustomerStats } from "./utils";
@@ -231,6 +232,42 @@ export const aggregateSlots = functions
     await monthSlotsRef.set({ [date]: { [id]: newSlot } }, { merge: true });
 
     return change.after;
+  });
+
+export const countSlotsBookings = functions
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
+  )
+  .onWrite(async (change, context) => {
+    const { organization, bookingId } = context.params as Record<
+      string,
+      string
+    >;
+
+    // If the booking was merely updated, we don't need to do increment/decrement the counter
+    if (change.before.exists && change.after.exists) {
+      return;
+    }
+
+    const db = admin.firestore();
+
+    const date = change.before.data()?.date || change.after.data()!.date;
+    const delta = change.after.exists ? 1 : -1;
+
+    const bookingCountsDocRef = db
+      .collection(Collection.Organizations)
+      .doc(organization)
+      .collection(OrgSubCollection.SlotBookingsCounts)
+      .doc(date.substring(0, 7));
+
+    const doc = await bookingCountsDocRef.get();
+    const data = doc.data() || ({} as SlotBookingsCounts);
+
+    const slotsBookings = data[bookingId] || 0;
+    data[bookingId] = slotsBookings + delta;
+
+    await bookingCountsDocRef.set(data, { merge: true });
   });
 
 /**

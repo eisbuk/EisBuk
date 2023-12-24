@@ -12,6 +12,7 @@ import { FormSectionContext } from "./FormSection";
 
 export enum FormFieldVariant {
   Text = "text",
+  Number = "number",
   Date = "date",
   Phone = "phone",
   Checkbox = "checkbox",
@@ -35,6 +36,9 @@ interface BaseProps {
 interface TextInputProps extends BaseProps, Omit<TIP, "width"> {
   variant: FormFieldVariant.Text;
 }
+interface NumberInputProps extends BaseProps, Omit<TIP, "width"> {
+  variant: FormFieldVariant.Number;
+}
 interface DateInputProps extends BaseProps, Omit<TIP, "width"> {
   variant: FormFieldVariant.Date;
 }
@@ -48,7 +52,8 @@ type FormFieldProps =
   | TextInputProps
   | DateInputProps
   | PhoneInputProps
-  | CheckboxProps;
+  | CheckboxProps
+  | NumberInputProps;
 
 const FormField: React.FC<FormFieldProps> = ({
   name = "",
@@ -97,6 +102,7 @@ const FormField: React.FC<FormFieldProps> = ({
 
 const componentLookup = {
   [FormFieldVariant.Text]: TextInput,
+  [FormFieldVariant.Number]: TextInput,
   [FormFieldVariant.Date]: DateInput,
   [FormFieldVariant.Phone]: PhoneInput,
   [FormFieldVariant.Checkbox]: Checkbox,
@@ -104,6 +110,7 @@ const componentLookup = {
 
 const typeLookup = {
   [FormFieldVariant.Text]: "text",
+  [FormFieldVariant.Number]: "number",
   [FormFieldVariant.Date]: "text",
   [FormFieldVariant.Phone]: "tel",
   [FormFieldVariant.Checkbox]: "checkbox",

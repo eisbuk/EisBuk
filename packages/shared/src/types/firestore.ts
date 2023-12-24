@@ -194,6 +194,12 @@ export interface SlotInterface {
    * Notes on the slot
    */
   notes?: string;
+  /**
+   * (Optional) maximum number of athletes that can book this slot:
+   *  - if not provided, there is no limit
+   *  - 1 for private lessons
+   */
+  capacity?: number;
 }
 
 /** Slot interface with optional id */
@@ -212,6 +218,10 @@ export interface SlotsById {
  */
 export interface SlotsByDay {
   [dayStr: string]: SlotsById;
+}
+
+export interface SlotBookingsCounts {
+  [slotId: string]: number;
 }
 // #endregion slots
 
@@ -511,6 +521,13 @@ export interface FirestoreSchema {
       [OrgSubCollection.Slots]: { [slotId: string]: SlotInterface };
       [OrgSubCollection.SlotsByDay]: {
         [monthStr: string]: SlotsByDay;
+      };
+      /**
+       * Records of slot capacitites per month. Holds key-value pairs of { slot => capacity record }.
+       * Each document is identified by a month and holds data for all slots in the given month.
+       */
+      [OrgSubCollection.SlotBookingsCounts]: {
+        [monthStr: string]: SlotBookingsCounts;
       };
       [OrgSubCollection.Customers]: {
         [customerId: string]: CustomerFull;
