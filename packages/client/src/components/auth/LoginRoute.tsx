@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 
 import {
-  getBookingsSecretKey,
+  getAllSecretKeys,
   getIsAdmin,
   getIsAuthEmpty,
   getIsAuthLoaded,
@@ -22,7 +22,7 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
   const isAdmin = useSelector(getIsAdmin);
-  const secretKey = useSelector(getBookingsSecretKey);
+  const [secretKey] = useSelector(getAllSecretKeys) || [];
 
   switch (true) {
     // Loading screen

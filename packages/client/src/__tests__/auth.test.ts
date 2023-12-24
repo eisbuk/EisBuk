@@ -48,30 +48,74 @@ describe("Test authentication", () => {
     );
 
     testWithEmulator(
-      "should successfully query customer status using email",
+      "single secretKey: should successfully query customer status using email",
       async () => {
         // set up test state with saul as customer, but not an admin
         const { organization } = await setUpOrganization();
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         const {
-          data: { isAdmin, bookingsSecretKey },
+          data: { isAdmin, secretKeys },
         } = await queryAuthStatus(organization, saul.email!);
         expect(isAdmin).toEqual(false);
-        expect(bookingsSecretKey).toEqual(saul.secretKey);
+        expect(secretKeys).toEqual([saul.secretKey]);
       }
     );
 
     testWithEmulator(
-      "should successfully query customer status using phone",
+      "multiple secretKeys: should return secretKeys for all customers with matching email",
+      async () => {
+        // set up test state with saul as customer, but not an admin
+        const { organization } = await setUpOrganization();
+        const jimmy = {
+          ...saul,
+          id: "jimmy",
+          secretKey: "jimmy-secret",
+        };
+        await Promise.all([
+          adminDb.doc(getCustomerDocPath(organization, jimmy.id)).set(jimmy),
+          adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
+        ]);
+        const {
+          data: { isAdmin, secretKeys },
+        } = await queryAuthStatus(organization, saul.email!);
+        expect(isAdmin).toEqual(false);
+        expect(secretKeys).toEqual([jimmy.secretKey, saul.secretKey]);
+      }
+    );
+
+    testWithEmulator(
+      "single secretKey: should successfully query customer status using phone",
       async () => {
         // set up test state with saul as customer, but not an admin
         const { organization } = await setUpOrganization();
         await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
         const {
-          data: { isAdmin, bookingsSecretKey },
+          data: { isAdmin, secretKeys },
         } = await queryAuthStatus(organization, saul.phone!);
         expect(isAdmin).toEqual(false);
-        expect(bookingsSecretKey).toEqual(saul.secretKey);
+        expect(secretKeys).toEqual([saul.secretKey]);
+      }
+    );
+
+    testWithEmulator(
+      "multiple secretKeys: should return secretKeys for all customers with matching phone number",
+      async () => {
+        // set up test state with saul as customer, but not an admin
+        const { organization } = await setUpOrganization();
+        const jimmy = {
+          ...saul,
+          id: "jimmy",
+          secretKey: "jimmy-secret",
+        };
+        await Promise.all([
+          adminDb.doc(getCustomerDocPath(organization, jimmy.id)).set(jimmy),
+          adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul),
+        ]);
+        const {
+          data: { isAdmin, secretKeys },
+        } = await queryAuthStatus(organization, saul.phone!);
+        expect(isAdmin).toEqual(false);
+        expect(secretKeys).toEqual([jimmy.secretKey, saul.secretKey]);
       }
     );
 
