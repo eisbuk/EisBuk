@@ -52,3 +52,4 @@ export * from "./SlotCard";
 export * from "./Forms/SlotForm";
 export * from "./AttendanceSheet";
 export * from "./AthletesApproval";
+export * from "./DropdownMenu";
