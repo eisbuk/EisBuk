@@ -184,7 +184,11 @@
     "IcsFile": "Collegamento Al File Del Calendario",
     "BookingsMonth": "Mese Delle Prenotazioni",
     "ExtendedBookingsDate": "Data Di Prenotazione Estesa",
-    "OrganizationName": "Nome Dell'Organizzazione"
+    "OrganizationName": "Nome Dell'Organizzazione",
+    "Deadline": "Scadenza",
+    "SelectAthletes": "Selezionare Gli Atleti",
+    "SelectAll": "Seleziona Tutto",
+    "ClearAll": "Cancella Tutto"
   },
 
   "Validations": {
@@ -211,6 +215,10 @@
     "NonReversible": "Questa azione non è reversibile",
 
     "SendEmailTitle": "Conferma email",
+    "SendBulkEmailTitle": "Conferma email",
+    "NoBulkEmailTitle": "Nessun indirizzo mail registrato",
+    "NoBulkEmailMessage": "Nessuna email è stata memorizzata per uno dei clienti, assicurati che ci siano email nel record di tutti i clienti selezionati.",
+    "SendBulkEmailMessage": "Sei sicuro di voler inviare email a: {{ athletesNumber }} atleti??",
     "ConfirmEmail": "Sei sicuro di voler inviare un'email a: {{ email }}?",
     "NoEmailTitle": "Nessun indirizzo mail registrato",
     "NoEmailMessage": "Non è presente un indirizzo mail per questo atleta; aggiungi un indirizzo e riprova.",
@@ -252,6 +260,7 @@
     "LearnMore": "Scopri di più",
 
     "Save": "Salva",
+    "SaveAndSend": "Salva E Invia",
     "Back": "Indietro",
     "Next": "Seguente",
     "Cancel": "Annulla",
@@ -335,6 +344,7 @@
   "Date": {
     "Weekday": "{{ date, EEE }}",
     "Day": "{{ date, d }}",
+    "Deadline": "{{ date, LLLL dd }}",
     "Month": "{{ date, MMMM }}",
     "Full": "{{ date, EEEE d MMMM }}",
     "DayMonth": "{{ date, d MMMM }}",
@@ -355,7 +365,8 @@
     "BirthdayMenu": "Prossimi compleanni",
 
     "AthletesApprovalIcon": "Vedi le richieste di approvazione degli atleti",
-    "AthletesApprovalButton": "Richieste di approvazione"
+    "AthletesApprovalButton": "Richieste di approvazione",
+    "SendBookingEmailsButton": "Invia e-mail di prenotazione"
   },
 
   "SlotsAria": {

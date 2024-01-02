@@ -73,6 +73,7 @@ export const sendEmail = functions
 
       // Interpolate the email with the payload and the organization name
       const emailTemplate = emailTemplates[payload.type];
+
       const { subject, html } = interpolateEmail(emailTemplate, {
         organizationName: displayName,
         name: validatedPayload.name,
@@ -81,6 +82,7 @@ export const sendEmail = functions
         bookingsMonth: validatedPayload.bookingsMonth,
         extendedBookingsDate: validatedPayload.extendedBookingsDate,
         calendarFile: validatedPayload.attachments?.filename,
+        deadline: validatedPayload.deadline,
       });
 
       // Construct an email for process delivery

@@ -205,6 +205,10 @@ export enum MessageTemplateLabel {
   BookingsMonth = "MessageTemplateLabel.BookingsMonth",
   ExtendedBookingsDate = "MessageTemplateLabel.ExtendedBookingsDate",
   OrganizationName = "MessageTemplateLabel.OrganizationName",
+  Deadline = "MessageTemplateLabel.Deadline",
+  SelectAthletes = "MessageTemplateLabel.SelectAthletes",
+  SelectAll = "MessageTemplateLabel.SelectAll",
+  ClearAll = "MessageTemplateLabel.ClearAll",
 }
 
 export enum BookingNotesForm {
@@ -223,6 +227,10 @@ export enum Prompt {
   NonReversible = "Prompt.NonReversible",
 
   SendEmailTitle = "Prompt.SendEmailTitle",
+  SendBulkEmailTitle = "Prompt.SendBulkEmailTitle",
+  SendBulkEmailMessage = "Prompt.SendBulkEmailMessage",
+  NoBulkEmailMessage = "Prompt.NoBulkEmailMessage",
+  NoBulkEmailTitle = "Prompt.NoBulkEmailTitle",
   ConfirmEmail = "Prompt.ConfirmEmail",
   NoEmailTitle = "Prompt.NoEmailTitle",
   NoEmailMessage = "Prompt.NoEmailMessage",
@@ -265,6 +273,7 @@ export enum ActionButton {
   LearnMore = "ActionButton.LearnMore",
 
   Save = "ActionButton.Save",
+  SaveAndSend = "ActionButton.SaveAndSend",
   Back = "ActionButton.Back",
   Next = "ActionButton.Next",
   Cancel = "ActionButton.Cancel",
@@ -360,6 +369,7 @@ export enum Flags {
 export enum DateFormat {
   Weekday = "Date.Weekday",
   Day = "Date.Day",
+  Deadline = "Date.Deadline",
   Month = "Date.Month",
   Full = "Date.Full",
   DayMonth = "Date.DayMonth",
@@ -382,6 +392,7 @@ export enum AdminAria {
   BirthdayMenu = "AdminAria.BirthdayMenu",
   AthletesApprovalIcon = "AdminAria.AthletesApprovalIcon",
   AthletesApprovalButton = "AdminAria.AthletesApprovalButton",
+  SendBookingEmailsButton = "AdminAria.SendBookingEmailsButton",
 }
 
 export enum SlotsAria {

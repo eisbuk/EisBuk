@@ -115,5 +115,5 @@ const getExtendedDate = (state: LocalStore): DateTime | undefined => {
  * @param lockingPeriod
  * @returns
  */
-const getMonthDeadline = (date = DateTime.now()) =>
+export const getMonthDeadline = (date = DateTime.now()) =>
   date.minus({ months: 1 }).endOf("month").minus({ days: lockingPeriod });

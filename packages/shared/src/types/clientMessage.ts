@@ -17,6 +17,7 @@ interface AdditionalClientDataLookup {
 interface AdditionalMessageDataLookup {
   [ClientMessageType.SendBookingsLink]: {
     bookingsLink: string;
+    deadline?: string;
   };
   [ClientMessageType.SendCalendarFile]: {
     secretKey: string;
@@ -49,6 +50,7 @@ export interface EmailInterpolationValues {
   name: string;
   surname: string;
   bookingsLink?: string;
+  deadline?: string;
   calendarFile?: string;
   bookingsMonth?: string;
   extendedBookingsDate?: string;

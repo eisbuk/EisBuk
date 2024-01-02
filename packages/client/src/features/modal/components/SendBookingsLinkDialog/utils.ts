@@ -55,6 +55,7 @@ export const getDialogPrompt: GetDialogPrompt = (props) => {
           disabled: true,
         };
       }
+
       return {
         title: i18n.t(Prompt.SendSMSTitle),
         body: i18n.t(Prompt.ConfirmSMS, { phone }),
@@ -68,12 +69,22 @@ interface SendBookingsLink {
     payload: {
       method: ClientMessageMethod;
       bookingsLink: string;
+      deadline: string;
     } & Customer
   ): FirestoreThunk;
 }
 
 export const sendBookingsLink: SendBookingsLink =
-  ({ name, method, email, surname, phone, secretKey, bookingsLink }) =>
+  ({
+    name,
+    method,
+    email,
+    surname,
+    phone,
+    secretKey,
+    bookingsLink,
+    deadline,
+  }) =>
   async (dispatch, _, { getFunctions }) => {
     try {
       if (!secretKey || !email) {
@@ -93,6 +104,7 @@ export const sendBookingsLink: SendBookingsLink =
         name,
         surname,
         bookingsLink,
+        deadline,
       };
 
       const config = {

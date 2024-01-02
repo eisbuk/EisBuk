@@ -5,6 +5,7 @@ import { BirthdayDialog } from "@eisbuk/ui";
 import CancelBookingDialog from "./CancelBookingDialog";
 import FinalizeBookingsDialog from "./FinalizeBookingsDialog";
 import SendBookingsLinkDialog from "./SendBookingsLinkDialog";
+import SendBulkBookingsLinkDialog from "./SendBulkBookingsLinkDialog";
 import DeleteCustomerDialog from "./DeleteCustomerDialog";
 import ExtendBookingDateDialog from "./ExtendBookingDateDialog";
 import DeleteSlotDialog from "./DeleteSlotDialog";
@@ -20,6 +21,7 @@ export const componentWhitelist = {
   CancelBookingDialog,
   FinalizeBookingsDialog,
   SendBookingsLinkDialog,
+  SendBulkBookingsLinkDialog,
   DeleteCustomerDialog,
   ExtendBookingDateDialog,
   DeleteSlotDialog,

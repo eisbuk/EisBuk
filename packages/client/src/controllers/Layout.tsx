@@ -8,6 +8,7 @@ import { ClipboardList, Users, DocumentDuplicate, Cog } from "@eisbuk/svg";
 
 import BirthdayMenu from "@/controllers/BirthdayMenu";
 import AthletesApproval from "@/controllers/AthletesApproval";
+import SendBookingEmails from "@/controllers/SendBookingEmails";
 import { NotificationsContainer } from "@/features/notifications/components/index";
 
 import { signOut } from "@/store/actions/authOperations";
@@ -37,6 +38,7 @@ const LayoutController: React.FC<Props> = (params) => {
     <React.Fragment>
       <BirthdayMenu />
       <AthletesApproval />
+      <SendBookingEmails />
     </React.Fragment>
   );
 
