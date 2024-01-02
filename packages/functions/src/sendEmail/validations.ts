@@ -231,6 +231,7 @@ export const SendBookingsLinkEmailSchema: JSONSchemaType<
     },
     deadline: {
       type: "string",
+      nullable: true,
     },
   },
 };
