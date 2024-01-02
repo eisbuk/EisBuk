@@ -69,7 +69,7 @@ interface SendBookingsLink {
     payload: {
       method: ClientMessageMethod;
       bookingsLink: string;
-      deadline: string;
+      deadline?: string;
     } & Customer
   ): FirestoreThunk;
 }

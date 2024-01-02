@@ -30,7 +30,7 @@ const mockSendBookingsLink = (params: any) => ({
   ...params,
   type: "sendBookingsLink",
 });
-const mockUpdateOrganization = () => {};
+const mockUpdateOrganization = (params: any) => ({ ...params });
 vi.spyOn(utils, "sendBookingsLink").mockImplementation(
   mockSendBookingsLink as any
 );
@@ -75,23 +75,11 @@ describe("SendBulkBookingsLinkDialog", () => {
         method={ClientMessageMethod.Email}
         onClose={mockOnClose}
         orgData={orgData}
-        actions={{} as FormikHelpers<OrganizationData>}
-        calendarDay={testDate}
-      />
-    );
-    screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
-    expect(mockOnClose).toHaveBeenCalled();
-  });
-
-  test("should call onClose on cancel", () => {
-    render(
-      <SendBulkBookingsLinkDialog
-        onCloseAll={() => {}}
-        customers={[saul]}
-        method={ClientMessageMethod.Email}
-        onClose={mockOnClose}
-        orgData={orgData}
-        actions={{} as FormikHelpers<OrganizationData>}
+        actions={
+          {
+            setSubmitting: () => {},
+          } as unknown as FormikHelpers<OrganizationData>
+        }
         calendarDay={testDate}
       />
     );
@@ -107,27 +95,29 @@ describe("SendBulkBookingsLinkDialog", () => {
         method={ClientMessageMethod.Email}
         onClose={mockOnClose}
         orgData={orgData}
-        actions={{} as FormikHelpers<OrganizationData>}
+        actions={
+          {
+            setSubmitting: () => {},
+          } as unknown as FormikHelpers<OrganizationData>
+        }
         calendarDay={testDate}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();
     // expect(mockOnClose).toHaveBeenCalled();
     expect(mockDispatch).toHaveBeenCalledTimes(2);
-    expect(mockDispatch).toHaveBeenCalledWith(
+    expect(mockDispatch).toHaveBeenNthCalledWith(
+      2,
       mockSendBookingsLink({
         ...saul,
-        /** @TODO make this work */
-        deadline: "",
+        deadline: "February 23",
         method: ClientMessageMethod.Email,
         bookingsLink: testBookingsLink,
       })
     );
-    expect(mockDispatch).toHaveBeenCalledWith(
-      mockUpdateOrganization({
-        orgData,
-        setSubmitting: () => {},
-      })
+    expect(mockDispatch).toHaveBeenNthCalledWith(
+      1,
+      mockUpdateOrganization({ ...orgData })
     );
   });
 });
