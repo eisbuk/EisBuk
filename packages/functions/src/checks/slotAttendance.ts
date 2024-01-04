@@ -3,6 +3,7 @@ import admin from "firebase-admin";
 
 import {
   AttendanceAutofixReport,
+  BookingsAutofixReport,
   BookingSubCollection,
   Collection,
   CustomerBookingEntry,
@@ -338,6 +339,48 @@ export const attendanceSlotMismatchAutofix = async (
     created,
     deleted,
     updated,
+  };
+};
+
+export const bookingsAutofix = async (
+  db: Firestore,
+  organization: string,
+  mismatches: BookingsSanityCheckReport
+): Promise<BookingsAutofixReport> => {
+  const batch = db.batch();
+
+  const { strayBookings, dateMismatches, invalidIntervalBookings } = mismatches;
+  const allMismatches = {
+    ...strayBookings,
+    ...dateMismatches,
+    ...invalidIntervalBookings,
+  };
+
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  const deleted = {} as Record<string, CustomerBookingEntry>;
+
+  await Promise.all(
+    Object.entries(allMismatches).map(async ([fullId]) => {
+      const [slotId, secretKey] = fullId.split("--");
+
+      const toDelete = orgRef
+        .collection(OrgSubCollection.Bookings)
+        .doc(secretKey)
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slotId);
+
+      deleted[fullId] = await toDelete
+        .get()
+        .then((snap) => snap.data() as CustomerBookingEntry);
+
+      batch.delete(toDelete);
+    })
+  );
+
+  batch.commit();
+  return {
+    timestamp: DateTime.now().toISO(),
+    deleted,
   };
 };
 

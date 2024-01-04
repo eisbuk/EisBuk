@@ -9,7 +9,10 @@ import { checkUser, throwUnauth } from "../utils";
 
 import { newSanityChecker } from "./api";
 
-import { attendanceSlotMismatchAutofix } from "./slotAttendance";
+import {
+  attendanceSlotMismatchAutofix,
+  bookingsAutofix,
+} from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
 
 /**
@@ -94,6 +97,29 @@ export const dbSlotBookingsCheck = functions
     }
   );
 
+export const dbSlotBookingsAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotBookings
+      );
+
+      const report = await checker
+        .getLatestReport()
+        .then((r) => (!r || r.bookingsFixes ? checker.checkAndWrite() : r));
+
+      const bookingsFixes = await bookingsAutofix(db, organization, report);
+      checker.writeReport({ ...report, bookingsFixes });
+
+      return bookingsFixes;
+    }
+  );
 export const dbSlotSlotsByDayAutofix = functions
   .region(__functionsZone__)
   .https.onCall(

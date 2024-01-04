@@ -448,6 +448,10 @@ export interface AttendanceAutofixReport {
   deleted: Record<string, SlotAttendnace>;
   updated: Record<string, SlotAttendanceUpdate>;
 }
+export interface BookingsAutofixReport {
+  timestamp: string;
+  deleted: Record<string, CustomerBookingEntry>;
+}
 
 export interface SlotAttendanceSanityCheckReport {
   /** ISO timestamp of the sanity check run */
@@ -467,6 +471,7 @@ export interface BookingsSanityCheckReport {
   dateMismatches: Record<string, BookingsEntryExistsPayload>;
   /** A record of bookedSlots for which the interval doesn't exist in respective slot (keyed by slot id) */
   invalidIntervalBookings: Record<string, BookingsEntryExistsPayload>;
+  bookingsFixes?: BookingsAutofixReport;
 }
 
 /** `<month>/<date>` string used for `slotsByDay` sanity checks */
