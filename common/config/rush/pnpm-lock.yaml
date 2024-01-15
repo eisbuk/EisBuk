@@ -429,6 +429,7 @@ importers:
       '@sentry/core': ~7.93.0
       '@sentry/node': ~7.93.0
       '@sentry/serverless': ~7.93.0
+      '@sentry/types': ~7.93.0
       '@sentry/utils': ~7.93.0
       '@types/lodash': ^4.14.170
       '@types/luxon': ^2.0.5
@@ -501,6 +502,7 @@ importers:
       uuid: 8.3.2
     devDependencies:
       '@firebase/app-types': 0.9.0
+      '@sentry/types': 7.93.0
       '@types/lodash': 4.14.195
       '@types/luxon': 2.4.0
       '@types/node': 18.16.15
@@ -4277,7 +4279,6 @@ packages:
   /@sentry/types/7.93.0:
     resolution: {integrity: sha512-UnzUccNakhFRA/esWBWP+0v7cjNg+RilFBQC03Mv9OEMaZaS29zSbcOGtRzuFOXXLBdbr44BWADqpz3VW0XaNw==}
     engines: {node: '>=8'}
-    dev: false
 
   /@sentry/utils/6.19.7:
     resolution: {integrity: sha512-z95ECmE3i9pbWoXQrD/7PgkBAzJYR+iXtPuTkpBjDKs86O3mT+PXOT3BAn79w2wkn7/i3vOGD2xVr1uiMl26dA==}

@@ -68,7 +68,8 @@
     "mocha": "^8.2.1",
     "tsconfig-paths": "^3.10.1",
     "typescript": "~5.0.4",
-    "@types/nodemailer": "~6.4.4"
+    "@types/nodemailer": "~6.4.4",
+    "@sentry/types": "~7.93.0"
   },
   "private": true
 }

@@ -136,6 +136,7 @@ function wrap<A, B, C>(
     });
     scope.setSpan(transaction);
 
+    // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
     return (
       Promise.resolve(fn(a, b))
         .catch((err): void => {
