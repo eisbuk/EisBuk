@@ -2,8 +2,8 @@ import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
 import * as Sentry from "@sentry/serverless";
-import { wrapHandler } from "@sentry/serverless";
 
+import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
 import { __sentryDSN__ } from "./constants";
 import {
   Collection,
@@ -22,10 +22,12 @@ import {
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
 
-Sentry.GCPFunction.init({
-  dsn: __sentryDSN__,
-  tracesSampleRate: 1.0,
-});
+if (!process.env.FUNCTIONS_EMULATOR) {
+  Sentry.init({
+    dsn: __sentryDSN__,
+    tracesSampleRate: 1.0,
+  });
+}
 
 /**
  * Used by non-admin customers to finalize their own bookings and thus remove
@@ -33,7 +35,7 @@ Sentry.GCPFunction.init({
  * non-admin users aren't allowed direct access to `customers` collection.
  */
 export const finalizeBookings = functions.region("europe-west6").https.onCall(
-  wrapHandler(async (payload) => {
+  wrapHttpsOnCallHandler("finalizeBookings", async (payload) => {
     checkRequiredFields(payload, ["id", "organization", "secretKey"]);
 
     const { id, organization, secretKey } =
@@ -80,41 +82,44 @@ export const finalizeBookings = functions.region("europe-west6").https.onCall(
  * @param payload.customer
  */
 export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
-  wrapHandler(async (payload: { organization: string; customer: Customer }) => {
-    checkRequiredFields(payload, ["organization", "customer"]);
-    checkRequiredFields(payload.customer, ["id", "secretKey"]);
+  wrapHttpsOnCallHandler(
+    "customerSelfUpdate",
+    async (payload: { organization: string; customer: Customer }) => {
+      checkRequiredFields(payload, ["organization", "customer"]);
+      checkRequiredFields(payload.customer, ["id", "secretKey"]);
 
-    const { organization, customer } = payload || {};
+      const { organization, customer } = payload || {};
 
-    // we check "auth" by matching secretKey with customerId
-    const customerRef = admin
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Customers)
-      .doc(customer.id);
+      // we check "auth" by matching secretKey with customerId
+      const customerRef = admin
+        .firestore()
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .collection(OrgSubCollection.Customers)
+        .doc(customer.id);
 
-    const customerInStore = await customerRef.get();
+      const customerInStore = await customerRef.get();
 
-    if (!customerInStore.exists) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        BookingsErrors.CustomerNotFound
-      );
+      if (!customerInStore.exists) {
+        throw new functions.https.HttpsError(
+          "not-found",
+          BookingsErrors.CustomerNotFound
+        );
+      }
+
+      const { secretKey: existingSecretKey } =
+        customerInStore.data() as CustomerFull;
+
+      if (customer.secretKey !== existingSecretKey) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          BookingsErrors.SecretKeyMismatch
+        );
+      }
+
+      await customerRef.set({ ...customer }, { merge: true });
     }
-
-    const { secretKey: existingSecretKey } =
-      customerInStore.data() as CustomerFull;
-
-    if (customer.secretKey !== existingSecretKey) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        BookingsErrors.SecretKeyMismatch
-      );
-    }
-
-    await customerRef.set({ ...customer }, { merge: true });
-  })
+  )
 );
 
 /**
@@ -128,7 +133,8 @@ export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
 export const customerSelfRegister = functions
   .region("europe-west6")
   .https.onCall(
-    wrapHandler(
+    wrapHttpsOnCallHandler(
+      "customerSelfRegister",
       async (payload: {
         organization: string;
         registrationCode: string;
@@ -217,7 +223,7 @@ To verify the athlete, add them to a category/categories on their respective pro
 export const acceptPrivacyPolicy = functions
   .region("europe-west6")
   .https.onCall(
-    wrapHandler(async (payload) => {
+    wrapHttpsOnCallHandler("acceptPrivacyPolicy", async (payload) => {
       checkRequiredFields(payload, [
         "id",
         "organization",
