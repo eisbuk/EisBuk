@@ -47,9 +47,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-cypress-node18-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Build app
       run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
