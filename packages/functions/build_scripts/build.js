@@ -17,7 +17,7 @@ const res = esbuild.buildSync({
   entryPoints: [path.join(__dirname, "..", "src", "index.ts")],
   bundle: true,
   preserveSymlinks: true,
-  minify: true,
+  minify: false,
   metafile: true,
   external: [
     "firebase-functions",
