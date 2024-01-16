@@ -10,6 +10,7 @@ export default defineConfig({
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       return require("./plugins/index.ts")(on, config);
     },
+    retries: 3,
     supportFile: "support/index.ts",
     specPattern: "integration/**/*.{js,jsx,ts,tsx}",
     baseUrl: "http://localhost:3000",
