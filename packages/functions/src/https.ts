@@ -1,10 +1,8 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-import * as Sentry from "@sentry/serverless";
 
 import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
-import { __sentryDSN__ } from "./constants";
 import {
   Collection,
   OrgSubCollection,
@@ -21,13 +19,6 @@ import {
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
-
-if (!process.env.FUNCTIONS_EMULATOR) {
-  Sentry.init({
-    dsn: __sentryDSN__,
-    tracesSampleRate: 1.0,
-  });
-}
 
 /**
  * Used by non-admin customers to finalize their own bookings and thus remove
