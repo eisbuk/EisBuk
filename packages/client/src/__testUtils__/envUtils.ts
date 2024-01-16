@@ -12,6 +12,15 @@ export const __withEmulators__ = Boolean(process.env.FIRESTORE_EMULATOR_HOST);
  * @param testArgs paramaters of `test` function
  */
 export const testWithEmulator = (...args: Parameters<TestAPI>) => {
+  // We set retry to 3 if not specified by our caller
+  if (args.length > 2 && typeof args[2] === "object" && args[2] !== null) {
+    if (!("retry" in args[2])) {
+      args[2].retry = 3;
+    }
+  } else {
+    args.push({ retry: 3 });
+  }
+
   if (__withEmulators__) {
     test(...args);
   } else {
