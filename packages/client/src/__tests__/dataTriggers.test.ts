@@ -42,7 +42,6 @@ import { waitFor } from "@/__testUtils__/helpers";
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import { DateTime } from "luxon";
 import _ from "lodash";
-import { existsSync, writeFileSync, unlinkSync } from "fs";
 
 const testMonth = testDate.substring(0, 7);
 
@@ -109,19 +108,6 @@ describe("Cloud functions -> Data triggers ->", () => {
           wantAttendance,
         }) => {
           testWithEmulator(name, async () => {
-            // Artificially fail this test once.
-            // Everyone deserves a second chance, even this test case.
-            // The test infrastructure should give that.
-            const FILEPATH = `/tmp/sentinel-${name}.txt`;
-            if (!existsSync(FILEPATH)) {
-              writeFileSync(FILEPATH, "HERE", "utf8");
-              console.log(`File created at ${FILEPATH}`);
-              throw new Error("Artificial failure");
-            } else {
-              console.log("File already exists.");
-              unlinkSync(FILEPATH);
-            }
-
             const { organization } = await setUpOrganization();
 
             await Promise.all([
