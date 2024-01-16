@@ -51,6 +51,26 @@
       "birthday": "2021-01-01",
       "secretKey": "000002",
       "subscriptionNumber": ""
+    },
+
+    "wednesday": {
+      "id": "wednesday",
+      "name": "Wednesday",
+      "surname": "Addams",
+      "certificateExpiration": "2006-10-13",
+      "categories": ["course-minors"],
+      "email": "morticia@addamsfamily.com",
+      "secretKey": "000013"
+    },
+    "morticia": {
+      "id": "morticia",
+      "name": "Morticia",
+      "surname": "Addams",
+      "certificateExpiration": "1983-09-31",
+      "categories": ["competitive"],
+      "email": "morticia@addamsfamily.com",
+      "password": "wednesdayschildisfullofwoe",
+      "secretKey": "101010"
     }
   }
 }
