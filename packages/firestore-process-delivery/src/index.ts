@@ -40,7 +40,7 @@ const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
     transaction.set(
       ref,
       {
-        delivery: initialDeliveryState,
+        delivery: { ...initialDeliveryState, startTime: new Date() },
       },
       { merge: true }
     );
