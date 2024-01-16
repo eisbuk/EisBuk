@@ -109,7 +109,7 @@ const processDelivery = async (
     case DeliveryStatus.Retry:
       logger.info(`Delivery in progress, document id: ${change.after.ref.id} `);
       delivery.status = DeliveryStatus.Processing;
-      delivery.leaseExpireTime = (Date.now() + 60000) as any as Timestamp;
+      delivery.leaseExpireTime = Timestamp.fromMillis(Date.now() + 60000);
       await admin.firestore().runTransaction((transaction) => {
         transaction.set(change.after.ref, { delivery }, { merge: true });
         return Promise.resolve();
