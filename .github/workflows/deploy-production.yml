@@ -63,6 +63,9 @@ jobs:
         sourcemaps: ./packages/client/dist/assets
         version: ${{ env.SENTRY_RELEASE }}
     - name: Deploy to firebase
-      run: rush deploy:production
+      run: |
+        echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
+        rush deploy:production
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+        FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
