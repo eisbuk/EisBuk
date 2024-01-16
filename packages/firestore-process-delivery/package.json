@@ -21,7 +21,7 @@
   "types": "dist/index.d.ts",
   "dependencies": {
     "@firebase/app-compat": "~0.2.10",
-    "@google-cloud/firestore": "~6.5.0",
+    "@google-cloud/firestore": "^4.13.2",
     "firebase": "~9.22.0",
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.13.1"

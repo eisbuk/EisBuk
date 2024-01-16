@@ -11,7 +11,7 @@ importers:
       '@babel/plugin-transform-runtime': ^7.12.10
       '@babel/preset-typescript': ^7.14.5
       '@eisbuk/shared': workspace:*
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ^1.6.2
       '@types/inquirer': ^8.2.1
       '@types/jest': ^27.4.1
@@ -38,7 +38,7 @@ importers:
       '@babel/core': 7.21.8
       '@babel/plugin-transform-runtime': 7.21.4_@babel+core@7.21.8
       '@babel/preset-typescript': 7.21.5_@babel+core@7.21.8
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.8.14
       '@types/inquirer': 8.2.6
       '@types/jest': 27.5.2
@@ -69,7 +69,7 @@ importers:
       '@firebase/firestore': ~3.12.0
       '@firebase/functions': ~0.9.4
       '@firebase/rules-unit-testing': ~2.0.7
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ^1.6.2
       '@istanbuljs/nyc-config-typescript': ^1.0.2
       '@sentry/react': ^6.16.1
@@ -216,7 +216,7 @@ importers:
       '@cypress/code-coverage': 3.10.6_webpack@5.84.1
       '@eisbuk/testing': link:../testing
       '@firebase/rules-unit-testing': 2.0.7_firebase@9.22.1
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       '@grpc/grpc-js': 1.8.14
       '@istanbuljs/nyc-config-typescript': 1.0.2_nyc@15.1.0
       '@storybook/addon-a11y': 7.0.17_react-dom@16.14.0+react@16.14.0
@@ -301,7 +301,7 @@ importers:
       '@firebase/auth': ~0.23.2
       '@firebase/firestore': ~3.12.0
       '@firebase/functions': ~0.9.4
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@types/luxon': ^2.0.5
       '@types/node': ^18.16.0
       '@types/uuid': ^8.3.2
@@ -335,7 +335,7 @@ importers:
       '@eisbuk/testing': link:../testing
       '@eisbuk/translations': link:../translations
       '@firebase/app-types': 0.9.0
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       '@types/luxon': 2.4.0
       '@types/node': 18.16.15
       '@types/uuid': 8.3.4
@@ -368,7 +368,7 @@ importers:
       '@babel/preset-typescript': ^7.14.5
       '@firebase/app-compat': ~0.2.10
       '@firebase/app-types': ~0.9.0
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@grpc/grpc-js': ^1.6.2
       '@types/jest': ^27.4.1
       '@types/node': ^18.16.0
@@ -391,7 +391,7 @@ importers:
       vite-plugin-environment: ^1.1.0
     dependencies:
       '@firebase/app-compat': 0.2.11
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       firebase: 9.22.1
       firebase-admin: 11.8.0
       firebase-functions: 3.24.1_firebase-admin@11.8.0
@@ -424,7 +424,7 @@ importers:
       '@eisbuk/shared': workspace:*
       '@firebase/app-compat': ~0.2.10
       '@firebase/app-types': ~0.9.0
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@sentry-internal/tracing': ~7.93.0
       '@sentry/core': ~7.93.0
       '@sentry/node': ~7.93.0
@@ -474,7 +474,7 @@ importers:
       '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
       '@eisbuk/shared': link:../shared
       '@firebase/app-compat': 0.2.11
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       '@sentry-internal/tracing': 7.93.0
       '@sentry/core': 7.93.0
       '@sentry/node': 7.93.0
@@ -639,7 +639,7 @@ importers:
   ../../packages/shared:
     specifiers:
       '@eisbuk/firestore-process-delivery': workspace:*
-      '@google-cloud/firestore': ~6.5.0
+      '@google-cloud/firestore': ^4.13.2
       '@types/jest': ^27.4.1
       '@types/luxon': ^2.0.5
       '@types/node': ^18.16.0
@@ -657,7 +657,7 @@ importers:
       vite: ~4.3.1
     devDependencies:
       '@eisbuk/firestore-process-delivery': link:../firestore-process-delivery
-      '@google-cloud/firestore': 6.5.0
+      '@google-cloud/firestore': 4.15.1
       '@types/jest': 27.5.2
       '@types/luxon': 2.4.0
       '@types/node': 18.16.15
@@ -3432,6 +3432,18 @@ packages:
     resolution: {integrity: sha512-k2Ty1JcVojjJFwrg/ThKi2ujJ7XNLYaFGNB/bWT9wGR+oSMJHMa5w+CUq6p/pVrKeNNgA7pCqEcjSnHVoqJQFw==}
     optional: true
 
+  /@google-cloud/firestore/4.15.1:
+    resolution: {integrity: sha512-2PWsCkEF1W02QbghSeRsNdYKN1qavrHBP3m72gPDMHQSYrGULOaTi7fSJquQmAtc4iPVB2/x6h80rdLHTATQtA==}
+    engines: {node: '>=10.10.0'}
+    dependencies:
+      fast-deep-equal: 3.1.3
+      functional-red-black-tree: 1.0.1
+      google-gax: 2.30.5
+      protobufjs: 6.11.3
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   /@google-cloud/firestore/6.5.0:
     resolution: {integrity: sha512-U0QwG6pEQxO5c0v0eUylswozmuvlvz7iXSW+I18jzqR2hAFrUq2Weu1wm3NaH8wGD4ZL7W9Be4cMHG5CYU8LuQ==}
     engines: {node: '>=12.0.0'}
@@ -3443,6 +3455,7 @@ packages:
     transitivePeerDependencies:
       - encoding
       - supports-color
+    optional: true
 
   /@google-cloud/paginator/3.0.7:
     resolution: {integrity: sha512-jJNutk0arIQhmpUUQJPJErsojqo834KcyB6X7a1mxuic8i1tKXxde8E69IZxNZawRIlZdIK2QY4WALvlK5MzYQ==}
@@ -3526,6 +3539,13 @@ packages:
       - encoding
       - supports-color
     optional: true
+
+  /@grpc/grpc-js/1.6.12:
+    resolution: {integrity: sha512-JmvQ03OTSpVd9JTlj/K3IWHSz4Gk/JMLUTtW7Zb0KvO1LcOYGATh5cNuRYzCAeDR3O8wq+q8FZe97eO9MBrkUw==}
+    engines: {node: ^8.13.0 || >=10.10.0}
+    dependencies:
+      '@grpc/proto-loader': 0.7.7
+      '@types/node': 18.17.19
 
   /@grpc/grpc-js/1.7.3:
     resolution: {integrity: sha512-H9l79u4kJ2PVSxUNA08HMYAnUBLj9v6KjYQ7SQ71hOZcEXhShE/y5iQCesP8+6/Ik/7i2O0a10bPquIcYfufog==}
@@ -3671,7 +3691,7 @@ packages:
     dependencies:
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       jest-mock: 27.5.1
     dev: true
 
@@ -3681,7 +3701,7 @@ packages:
     dependencies:
       '@jest/types': 27.5.1
       '@sinonjs/fake-timers': 8.1.0
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       jest-message-util: 27.5.1
       jest-mock: 27.5.1
       jest-util: 27.5.1
@@ -5721,12 +5741,12 @@ packages:
     resolution: {integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
 
   /@types/graceful-fs/4.1.6:
     resolution: {integrity: sha512-Sig0SNORX9fdW+bQuTEovKj3uHcUL6LQKbCrrqb1X7J6/ReAbhCXRAhc+SMejhLELFj2QcyuxmUooZ4bt5ReSw==}
     dependencies:
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
     dev: true
 
   /@types/hast/3.0.1:
@@ -5949,7 +5969,7 @@ packages:
     resolution: {integrity: sha512-F3OznnSLAUxFrCEu/L5PY8+ny8DtcFRjx7fZZ9bycvXRi3KPTRS9HOitGZwvPg0juRhXFWIeKX58cnX5YqLohQ==}
     dependencies:
       '@types/glob': 8.1.0
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
 
   /@types/scheduler/0.16.3:
     resolution: {integrity: sha512-5cJ8CB4yAx7BH1oMvdU0Jh9lrEXyPkar6F9G/ERswkCuvP4KQZfZkSjcMbAICCpQTN4OuZn8tz0HiKv9TGZgrQ==}
@@ -7362,7 +7382,7 @@ packages:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
 
   /buffer-equal-constant-time/1.0.1:
-    resolution: {integrity: sha512-zRpUiDwd/xk6ADqPMATG8vc9VPrkck7T07OIx0gnjmJAnHnTVXNQG3vfvWNuiZIkwu9KrKdA1iJKfsfTVxE6NA==}
+    resolution: {integrity: sha1-+OcRMvf/5uAaXJaXpMbz5I1cyBk=}
 
   /buffer-from/1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
@@ -10772,6 +10792,28 @@ packages:
       - encoding
       - supports-color
 
+  /google-gax/2.30.5:
+    resolution: {integrity: sha512-Jey13YrAN2hfpozHzbtrwEfEHdStJh1GwaQ2+Akh1k0Tv/EuNVSuBtHZoKSBm5wBMvNsxTsEIZ/152NrYyZgxQ==}
+    engines: {node: '>=10'}
+    hasBin: true
+    dependencies:
+      '@grpc/grpc-js': 1.6.12
+      '@grpc/proto-loader': 0.6.13
+      '@types/long': 4.0.2
+      abort-controller: 3.0.0
+      duplexify: 4.1.2
+      fast-text-encoding: 1.0.6
+      google-auth-library: 7.14.1
+      is-stream-ended: 0.1.4
+      node-fetch: 2.6.11
+      object-hash: 3.0.0
+      proto3-json-serializer: 0.1.9
+      protobufjs: 6.11.3
+      retry-request: 4.2.2
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
+
   /google-gax/3.6.0:
     resolution: {integrity: sha512-2fyb61vWxUonHiArRNJQmE4tx5oY1ni8VPo08fzII409vDSCWG7apDX4qNOQ2GXXT82gLBn3d3P1Dydh7pWjyw==}
     engines: {node: '>=12'}
@@ -11850,7 +11892,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       chalk: 4.1.2
       co: 4.6.0
       dedent: 0.7.0
@@ -11975,7 +12017,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       jest-mock: 27.5.1
       jest-util: 27.5.1
       jsdom: 16.7.0
@@ -11993,7 +12035,7 @@ packages:
       '@jest/environment': 27.5.1
       '@jest/fake-timers': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       jest-mock: 27.5.1
       jest-util: 27.5.1
     dev: true
@@ -12050,7 +12092,7 @@ packages:
       '@jest/source-map': 27.5.1
       '@jest/test-result': 27.5.1
       '@jest/types': 27.5.1
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       chalk: 4.1.2
       co: 4.6.0
       expect: 27.5.1
@@ -12233,7 +12275,7 @@ packages:
     resolution: {integrity: sha512-jZCyo6iIxO1aqUxpuBlwTDMkzOAJS4a3eYz3YzgxxVQFwLeSA7Jfq5cbqCY+JLvTDrWirgusI/0KwxKMgrdf7w==}
     engines: {node: ^10.13.0 || ^12.13.0 || ^14.15.0 || >=15.0.0}
     dependencies:
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       graceful-fs: 4.2.11
     dev: true
 
@@ -15308,6 +15350,11 @@ packages:
   /proto-list/1.2.4:
     resolution: {integrity: sha512-vtK/94akxsTMhe0/cbfpR+syPuszcuwhqVjJq26CuNDgFGj682oRBXOP5MJpv2r7JtE8MsiepGIqvvOTBwn2vA==}
 
+  /proto3-json-serializer/0.1.9:
+    resolution: {integrity: sha512-A60IisqvnuI45qNRygJjrnNjX2TMdQGMY+57tR3nul3ZgO2zXkR9OGR8AXxJhkqx84g0FTnrfi3D5fWMSdANdQ==}
+    dependencies:
+      protobufjs: 6.11.3
+
   /proto3-json-serializer/1.1.1:
     resolution: {integrity: sha512-AwAuY4g9nxx0u52DnSMkqqgyLHaW/XaPLtaAo3y/ZCfeaQB/g4YDH4kb8Wc/mWzWvu0YjOznVnfn373MVZZrgw==}
     engines: {node: '>=12.0.0'}
@@ -15329,7 +15376,7 @@ packages:
       jsdoc: 4.0.2
       minimist: 1.2.8
       protobufjs: 7.2.3
-      semver: 7.5.1
+      semver: 7.5.4
       tmp: 0.2.1
       uglify-js: 3.17.4
 
@@ -15349,7 +15396,7 @@ packages:
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
       '@types/long': 4.0.2
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       long: 4.0.0
 
   /protobufjs/7.2.3:
@@ -15367,7 +15414,7 @@ packages:
       '@protobufjs/path': 1.1.2
       '@protobufjs/pool': 1.1.0
       '@protobufjs/utf8': 1.1.0
-      '@types/node': 18.16.15
+      '@types/node': 18.17.19
       long: 5.2.3
 
   /proxy-addr/2.0.7:
@@ -16135,6 +16182,15 @@ packages:
       onetime: 5.1.2
       signal-exit: 3.0.7
 
+  /retry-request/4.2.2:
+    resolution: {integrity: sha512-xA93uxUD/rogV7BV59agW/JHPGXeREMWiZc9jhcwY4YdZ7QOtC7qbomYg0n4wyk2lJhggjvKvhNX8wln/Aldhg==}
+    engines: {node: '>=8.10.0'}
+    dependencies:
+      debug: 4.3.4
+      extend: 3.0.2
+    transitivePeerDependencies:
+      - supports-color
+
   /retry-request/5.0.2:
     resolution: {integrity: sha512-wfI3pk7EE80lCIXprqh7ym48IHYdwmAAzESdbU8Q9l7pnRCk9LEhpbOTNKjz6FARLm/Bl5m+4F0ABxOkYUujSQ==}
     engines: {node: '>=12'}
@@ -16359,7 +16415,6 @@ packages:
     hasBin: true
     dependencies:
       lru-cache: 6.0.0
-    dev: true
 
   /send/0.18.0:
     resolution: {integrity: sha512-qqWzuOjSFOuqPjFe4NOsMLafToQQwBSOEpS+FwEt3A2V3vKubTquT3vmLTQpFgMXp8AlFWFuP1qKaJZOtPpVXg==}

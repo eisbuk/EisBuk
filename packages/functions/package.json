@@ -24,7 +24,7 @@
     "firebase": "~9.22.0",
     "firebase-admin": "^11.0.1",
     "firebase-functions": "^3.13.1",
-    "@google-cloud/firestore": "~6.5.0",
+    "@google-cloud/firestore": "^4.13.2",
     "lodash": "^4.17.20",
     "luxon": "^2.0.5",
     "p-retry": "^4.6.1",
