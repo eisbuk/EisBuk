@@ -24,9 +24,10 @@ import {
   getAuthPhoneNumber,
   getIsAuthEmpty,
   getIsAuthLoaded,
+  getLocalAuth,
 } from "@/store/selectors/auth";
 
-import { signOut } from "@/store/actions/authOperations";
+import { signOut, updateAuthUser } from "@/store/actions/authOperations";
 import { customerSelfRegister } from "@/store/actions/bookingOperations";
 import {
   getDefaultCountryCode,
@@ -76,6 +77,11 @@ const SelfRegisterPage: React.FC = () => {
     }
 
     if (secretKey) {
+      await updateAuthUser(getLocalAuth(getState()))(dispatch, getState, {
+        getFirestore: () =>
+          FirestoreVariant.client({ instance: getFirestore() }),
+        getFunctions: () => functions,
+      } as any);
       history.push([Routes.CustomerArea, secretKey].join("/"));
     }
   };

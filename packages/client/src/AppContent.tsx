@@ -26,6 +26,7 @@ import ErrorBoundaryPage from "@/pages/error_boundary";
 import SlotsPage from "@/pages/slots";
 import LoginPage from "@/pages/login";
 import CustomerAreaPage from "@/pages/customer_area";
+import SelectAccount from "@/pages/select_account";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
@@ -111,6 +112,7 @@ const AppContent: React.FC = () => {
         >
           <Redirect to={PrivateRoutes.Athletes} />
         </PrivateRoute>
+        <Route path={Routes.SelectAccount} component={SelectAccount} />
         <Route
           path={`${Routes.CustomerArea}/:secretKey`}
           component={CustomerAreaPage}

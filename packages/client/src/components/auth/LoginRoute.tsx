@@ -2,14 +2,9 @@ import React from "react";
 import { Route, Redirect, RouteProps } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
+import { PrivateRoutes } from "@eisbuk/shared/ui";
 
-import {
-  getAllSecretKeys,
-  getIsAdmin,
-  getIsAuthEmpty,
-  getIsAuthLoaded,
-} from "@/store/selectors/auth";
+import { getIsAuthEmpty, getIsAuthLoaded } from "@/store/selectors/auth";
 import Loading from "./Loading";
 
 /**
@@ -21,8 +16,6 @@ import Loading from "./Loading";
 const LoginRoute: React.FC<RouteProps> = (props) => {
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
-  const isAdmin = useSelector(getIsAdmin);
-  const [secretKey] = useSelector(getAllSecretKeys) || [];
 
   switch (true) {
     // Loading screen
@@ -31,16 +24,10 @@ const LoginRoute: React.FC<RouteProps> = (props) => {
     // If auth empty, show login/register screen
     case isAuthEmpty:
       return <Route {...props} />;
-    // If admin, redirect to root page (attendance view)
-    case isAdmin:
-      return <Redirect to={PrivateRoutes.Root} />;
-    // If not admin, but has 'secretKey' redirect to customer area
-    case Boolean(secretKey):
-      return <Redirect to={`${Routes.CustomerArea}/${secretKey}`} />;
-    // Default: auth user exists, but is not admin nor is registered (doesn't have a 'secretKey'):
-    // Redirect to self registration form
+    // If auth exists, redirect to the default route
+    // Any further redirect will be handled by the PrivateRoute component there
     default:
-      return <Redirect to={Routes.SelfRegister} />;
+      return <Redirect to={PrivateRoutes.Root} />;
   }
 };
 

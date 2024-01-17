@@ -62,6 +62,20 @@ describe("Test authentication", () => {
     );
 
     testWithEmulator(
+      "single secretKey: should successfully query customer status using phone",
+      async () => {
+        // set up test state with saul as customer, but not an admin
+        const { organization } = await setUpOrganization();
+        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
+        const {
+          data: { isAdmin, secretKeys },
+        } = await queryAuthStatus(organization, saul.phone!);
+        expect(isAdmin).toEqual(false);
+        expect(secretKeys).toEqual([saul.secretKey]);
+      }
+    );
+
+    testWithEmulator(
       "multiple secretKeys: should return secretKeys for all customers with matching email",
       async () => {
         // set up test state with saul as customer, but not an admin
@@ -80,20 +94,6 @@ describe("Test authentication", () => {
         } = await queryAuthStatus(organization, saul.email!);
         expect(isAdmin).toEqual(false);
         expect(secretKeys).toEqual([jimmy.secretKey, saul.secretKey]);
-      }
-    );
-
-    testWithEmulator(
-      "single secretKey: should successfully query customer status using phone",
-      async () => {
-        // set up test state with saul as customer, but not an admin
-        const { organization } = await setUpOrganization();
-        await adminDb.doc(getCustomerDocPath(organization, saul.id)).set(saul);
-        const {
-          data: { isAdmin, secretKeys },
-        } = await queryAuthStatus(organization, saul.phone!);
-        expect(isAdmin).toEqual(false);
-        expect(secretKeys).toEqual([saul.secretKey]);
       }
     );
 

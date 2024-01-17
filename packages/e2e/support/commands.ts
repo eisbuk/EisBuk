@@ -370,7 +370,7 @@ export default (): void => {
     "clickButton",
     { prevSubject: "optional" },
     ($el, label: string, eq = 0) => {
-      const container = $el ? cy.wrap($el) : cy;
+      const container = $el ? cy.wrap($el) : cy.document();
       return (
         container
           // include ':contains()' in the selector to retry the assertion until the element is found

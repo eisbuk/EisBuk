@@ -23,6 +23,7 @@ const AthletAvatatController: React.FC<AthleteAvatarMenuProps> = ({
           onAthleteClick={({ secretKey }) =>
             history.push(`${Routes.CustomerArea}/${secretKey}`)
           }
+          onAddAccount={() => history.push(Routes.SelfRegister)}
           onLogout={async () => {
             await signOut(getAuth());
             history.push(Routes.Login);
