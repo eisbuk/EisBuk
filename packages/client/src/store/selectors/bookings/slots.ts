@@ -11,7 +11,7 @@ import {
 
 import { LocalStore } from "@/types/store";
 
-import { getCalendarDay } from "@/store/selectors/app";
+import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
 import { isEmpty } from "@/utils/helpers";
@@ -41,9 +41,10 @@ type SlotsForBooking = {
 }[];
 
 export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
+  const secretKey = getSecretKey(state) || "";
   const slotsMonth = getSlotsForCustomer(state);
   const bookedSlots = getBookedSlots(state);
-  const customerData = getBookingsCustomer(state);
+  const customerData = getBookingsCustomer(secretKey)(state);
 
   // Sort dates so that the final output is sorted
   const daysToRender = Object.keys(slotsMonth).sort((a, b) => (a < b ? -1 : 1));
@@ -74,8 +75,9 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
  * Both the `category` and `date` are read directly from store. Slots booked at full capacity are filtered out.
  */
 export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
+  const secretKey = getSecretKey(state) || "";
   const date = getCalendarDay(state);
-  const categories = getBookingsCustomer(state)?.categories;
+  const categories = getBookingsCustomer(secretKey)(state)?.categories;
 
   // Return early if no category found in store
   if (!categories) {

@@ -12,7 +12,7 @@ export const getConstraintForColl = (
   collection: SubscriptionWhitelist,
   meta: SubscriptionMeta
 ): FirestoreListenerConstraint | null => {
-  const { organization, secretKey = "", currentDate } = meta;
+  const { organization, secretKeys = [], currentDate } = meta;
 
   // create date range constraint
   const startDateISO = currentDate
@@ -38,7 +38,7 @@ export const getConstraintForColl = (
     [Collection.Organizations]: { documents: [organization] },
     [Collection.PublicOrgInfo]: { documents: [organization] },
     [OrgSubCollection.Attendance]: { range },
-    [OrgSubCollection.Bookings]: { documents: [secretKey] },
+    [OrgSubCollection.Bookings]: { documents: secretKeys },
     [OrgSubCollection.SlotsByDay]: { documents },
     [OrgSubCollection.SlotBookingsCounts]: { documents },
     [OrgSubCollection.Customers]: null,

@@ -5,7 +5,7 @@ import { BookingsCountdownVariant, CountdownProps } from "@eisbuk/ui";
 import { LocalStore } from "@/types/store";
 
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCalendarDay } from "@/store/selectors/app";
+import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
 import { getMonthDiff } from "@/utils/date";
@@ -95,7 +95,8 @@ const lockingPeriod = 5;
  * @returns
  */
 const getExtendedDate = (state: LocalStore): DateTime | undefined => {
-  const { extendedDate } = getBookingsCustomer(state) || {};
+  const secretKey = getSecretKey(state) || "";
+  const { extendedDate } = getBookingsCustomer(secretKey)(state) || {};
 
   // check if extended date exists
   if (!extendedDate) return undefined;

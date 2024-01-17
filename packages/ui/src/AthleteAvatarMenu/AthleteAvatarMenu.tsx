@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Customer } from "@eisbuk/shared";
-import { /* Plus, */ PowerCircle } from "@eisbuk/svg";
+import { Plus, PowerCircle } from "@eisbuk/svg";
 
 import { shortName } from "../utils/helpers";
 
@@ -20,7 +20,7 @@ const AthleteAvatarMenu: React.FC<AthleteAvatarMenuProps> = ({
   currentAthlete,
   otherAccounts,
   onAthleteClick = () => {},
-  // onAddAccount = () => {},
+  onAddAccount = () => {},
   onLogout = () => {},
 }) => {
   if (!currentAthlete) return null;
@@ -50,12 +50,12 @@ const AthleteAvatarMenu: React.FC<AthleteAvatarMenuProps> = ({
       <div className="mt-4">
         <p className="text-xs text-gray-600 uppercase">Actions</p>
         <div className="pl-3 pt-2">
-          {/* <button onClick={onAddAccount} className={itemClasses}>
+          <button onClick={onAddAccount} className={itemClasses}>
             <span className="align-middle inline-block h-5 w-5 mr-1">
               <Plus />
             </span>
             <span className="align-middle">Add account</span>
-          </button> */}
+          </button>
           <button onClick={onLogout} className={itemClasses}>
             <span className="align-middle inline-block h-5 w-5 mr-1">
               <PowerCircle />
