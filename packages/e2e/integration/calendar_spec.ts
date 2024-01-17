@@ -8,7 +8,7 @@ import i18n, {
   NotificationMessage,
 } from "@eisbuk/translations";
 
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
 import { bookings } from "../__testData__/bookings.json";

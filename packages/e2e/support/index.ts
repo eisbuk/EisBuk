@@ -16,6 +16,9 @@ addFirebaseCommands();
 // add our custom convenience commands
 initializeCommands();
 
+// Storing i18n.t as a variable as using the import in the stub sometimes causes stack size exceeded errors
+const t = i18n.t;
+
 // Overrides browser global Date Object to start from the first week of March 2021
 // This means "new Date()" will always return Monday 1st March 2021 in all tests
 beforeEach(() => {
@@ -25,7 +28,7 @@ beforeEach(() => {
   // stub i18n to use the i18n initialized in cypress so that both
   // our tests and app runtime are "on the same page" regarding i18n
   cy.stub(i18n, "t").callsFake((...args: Parameters<typeof i18n.t>) =>
-    i18n.t(...args)
+    t(...args)
   );
   cy.stub(translations, "useTranslation").callsFake(() => i18n.t);
 });

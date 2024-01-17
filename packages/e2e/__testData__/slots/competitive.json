@@ -1,0 +1,44 @@
+{
+  "competitive-slot-1": {
+    "date": "2021-03-01",
+    "id": "competitive-slot-1",
+    "type": "ice",
+    "categories": ["competitive"],
+    "intervals": {
+      "08:00-09:00": {
+        "startTime": "08:00",
+        "endTime": "09:00"
+      },
+      "08:30-09:30": {
+        "startTime": "08:30",
+        "endTime": "09:30"
+      },
+      "08:00-10:00": {
+        "startTime": "08:00",
+        "endTime": "10:00"
+      }
+    },
+    "notes": ""
+  },
+  "competitive-slot-2": {
+    "date": "2021-03-01",
+    "id": "competitive-slot-2",
+    "type": "ice",
+    "categories": ["competitive"],
+    "intervals": {
+      "14:00-15:00": {
+        "startTime": "14:00",
+        "endTime": "15:00"
+      },
+      "14:30-15:30": {
+        "startTime": "14:30",
+        "endTime": "15:30"
+      },
+      "14:00-16:00": {
+        "startTime": "14:00",
+        "endTime": "16:00"
+      }
+    },
+    "notes": ""
+  }
+}

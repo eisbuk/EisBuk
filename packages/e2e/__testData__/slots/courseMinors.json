@@ -1,0 +1,44 @@
+{
+  "course-minors-slot-1": {
+    "date": "2021-03-01",
+    "id": "course-minors-slot-1",
+    "type": "ice",
+    "categories": ["course-minors"],
+    "intervals": {
+      "10:00-11:00": {
+        "startTime": "10:00",
+        "endTime": "11:00"
+      },
+      "10:30-11:30": {
+        "startTime": "10:30",
+        "endTime": "11:30"
+      },
+      "10:00-12:00": {
+        "startTime": "10:00",
+        "endTime": "12:00"
+      }
+    },
+    "notes": ""
+  },
+  "course-minors-slot-2": {
+    "date": "2021-03-01",
+    "id": "course-minors-slot-2",
+    "type": "ice",
+    "categories": ["course-minors"],
+    "intervals": {
+      "18:00-19:00": {
+        "startTime": "18:00",
+        "endTime": "19:00"
+      },
+      "18:30-19:30": {
+        "startTime": "18:30",
+        "endTime": "19:30"
+      },
+      "18:00-20:00": {
+        "startTime": "18:00",
+        "endTime": "20:00"
+      }
+    },
+    "notes": ""
+  }
+}

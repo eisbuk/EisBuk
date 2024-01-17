@@ -11,7 +11,7 @@ import i18n, {
 } from "@eisbuk/translations";
 
 import { customers } from "../__testData__/customers.json";
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 
 // extract saul from test data .json
 const saul = customers.saul as Customer;
