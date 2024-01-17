@@ -64,7 +64,7 @@ export const calculateIntervalDuration = (interval: string | null) => {
 /**
  * Calculate milliseconds passed from start of day (for ISO time string, eg. "09:00")
  */
-const getMillisFromMidnight = (time: string) =>
+export const getMillisFromMidnight = (time: string) =>
   time
     .split(":")
     .reduce((acc, curr, i) => acc + parseInt(curr) * 1000 * 60 ** (2 - i), 0);

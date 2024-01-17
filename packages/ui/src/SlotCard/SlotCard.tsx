@@ -1,14 +1,17 @@
 import React from "react";
 
-import { SlotInterface, SlotInterval, SlotType } from "@eisbuk/shared";
+import {
+  SlotInterface,
+  SlotInterval,
+  SlotType,
+  comparePeriodsEarliestFirst,
+} from "@eisbuk/shared";
 import i18n, { CategoryLabel } from "@eisbuk/translations";
 import { UserGroup } from "@eisbuk/svg";
 
 import { testId } from "@eisbuk/testing/testIds";
 
 import SlotTypeIcon from "../SlotTypeIcon";
-
-import { comparePeriods } from "../utils/sort";
 
 export interface SlotCardProps extends SlotInterface {
   className?: string;
@@ -40,7 +43,9 @@ const SlotCard: React.FC<SlotCardProps> = ({
 }) => {
   const canClick = Boolean(onClick);
 
-  const intervalStrings = Object.keys(intervals || {}).sort(comparePeriods);
+  const intervalStrings = Object.keys(intervals || {}).sort(
+    comparePeriodsEarliestFirst
+  );
 
   // calculate start time of first interval and end time of last interval
   // for title string rendering

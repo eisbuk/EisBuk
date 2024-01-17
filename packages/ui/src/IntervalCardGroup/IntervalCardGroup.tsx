@@ -1,13 +1,11 @@
 import React from "react";
 
-import { SlotInterface } from "@eisbuk/shared";
+import { SlotInterface, comparePeriodsLongestFirst } from "@eisbuk/shared";
 
 import IntervalCard, {
   IntervalCardState,
   IntervalCardVariant,
 } from "../IntervalCard";
-
-import { sortIntervals } from "../utils/helpers";
 
 interface BookingCardGroupProps extends SlotInterface {
   /**
@@ -46,7 +44,9 @@ const BookingCardGroup: React.FC<BookingCardGroupProps> = ({
   disabled: isDisabled,
   ...slot
 }) => {
-  const intervalsToRender = Object.keys(intervals || {}).sort(sortIntervals);
+  const intervalsToRender = Object.keys(intervals || {}).sort(
+    comparePeriodsLongestFirst
+  );
 
   return (
     <>

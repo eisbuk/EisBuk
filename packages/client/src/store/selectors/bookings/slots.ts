@@ -6,6 +6,7 @@ import {
   getSlotTimespan,
   valueMapper,
   wrapIter,
+  comparePeriodsEarliestFirst,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
@@ -14,7 +15,6 @@ import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
 import { isEmpty } from "@/utils/helpers";
-import { comparePeriods } from "@/utils/sort";
 
 /**
  * Get subscribed slots from state
@@ -58,7 +58,7 @@ export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
         const ts1 = getSlotTimespan(i1).replace(" ", "");
         const ts2 = getSlotTimespan(i2).replace(" ", "");
 
-        return comparePeriods(ts1, ts2);
+        return comparePeriodsEarliestFirst(ts1, ts2);
       })
       .map((slot) =>
         // If slot booked add interval to the return structure
