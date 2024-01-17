@@ -2,12 +2,10 @@ import React from "react";
 
 import { SVGComponent } from "@eisbuk/svg";
 
-import { UserAvatar, UserAvatarProps } from "../UserAvatar";
 import AdminBar from "./AdminBar";
 
 interface LayoutProps {
   logo?: JSX.Element | null;
-  user?: UserAvatarProps;
   additionalButtons?: JSX.Element;
   additionalAdminContent?: JSX.Element;
   Notifications?: React.FC<{ className?: string }>;
@@ -15,6 +13,7 @@ interface LayoutProps {
   isAdmin?: boolean;
   adminLinks?: LinkItem[];
   onLogout?: () => void;
+  userAvatar?: JSX.Element;
 }
 export interface LinkItem {
   Icon: SVGComponent;
@@ -26,12 +25,12 @@ const Layout: React.FC<LayoutProps> = ({
   logo = null,
   additionalButtons,
   additionalAdminContent,
-  user = {},
   Notifications,
   isAdmin = false,
   children,
   adminLinks,
   onLogout = () => {},
+  userAvatar = null,
 }) => {
   return (
     <div className="absolute top-0 right-0 bottom-0 left-0 flex flex-col">
@@ -48,9 +47,7 @@ const Layout: React.FC<LayoutProps> = ({
 
           <div className={getHeaderRowClasses("top")}>
             <div>{logo}</div>
-            {(user.name || user.surname || user.photoURL) && (
-              <UserAvatar {...user} />
-            )}
+            {userAvatar}
           </div>
 
           <div className="w-full h-[2px] bg-gray-700" />
@@ -64,7 +61,7 @@ const Layout: React.FC<LayoutProps> = ({
             <div className="w-full flex justify-center items-center gap-4 md:gap-3 md:justify-start md:max-w-1/2">
               {additionalButtons}
             </div>
-            <div className="fixed z-50 bottom-[27px] left-4 right-4 md:static">
+            <div className="fixed z-40 bottom-[27px] left-4 right-4 md:static">
               {Notifications && <Notifications className="w-full md:w-auto" />}
             </div>
           </div>

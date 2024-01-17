@@ -11,6 +11,10 @@ import NotificationToast, {
   NotificationToastVariant,
 } from "../NotificationToast";
 import CalendarNav from "../CalendarNav";
+import { UserAvatar } from "../UserAvatar";
+import { DropdownMenu } from "../DropdownMenu";
+
+import { Default as AthleteAvatarMenu } from "../AthleteAvatarMenu/AthleteAvatarMenu.stories";
 
 export default {
   title: "Layout",
@@ -73,14 +77,21 @@ const adminLinks = [
 ];
 
 const user = {
-  displayName: "Salvo Simonetti",
+  name: "Salvo",
+  surname: "Simonetti",
   photoURL:
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 
+const Avatar = () => (
+  <DropdownMenu content={<AthleteAvatarMenu />}>
+    <UserAvatar {...user} />
+  </DropdownMenu>
+);
+
 export const Admin = (): JSX.Element => (
   <Router initialEntries={[{ pathname: "/attendance" }]}>
-    <Layout logo={logo} adminLinks={adminLinks} isAdmin={true} {...{ user }}>
+    <Layout logo={logo} adminLinks={adminLinks} isAdmin={true}>
       <CalendarNav date={DateTime.now()} jump="week" />
       <LayoutContent>{dummyContent}</LayoutContent>
     </Layout>
@@ -89,7 +100,11 @@ export const Admin = (): JSX.Element => (
 
 export const CustomerArea = (): JSX.Element => (
   <Router>
-    <Layout logo={logo} {...{ additionalButtons, Notifications, user }}>
+    <Layout
+      logo={logo}
+      {...{ additionalButtons, Notifications }}
+      userAvatar={<Avatar />}
+    >
       <CalendarNav date={DateTime.now()} jump="week" />
       <LayoutContent>{dummyContent}</LayoutContent>
     </Layout>

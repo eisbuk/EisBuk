@@ -19,7 +19,9 @@ import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
 import { useSecretKey, useDate } from "./hooks";
+
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
+import AthleteAvatar from "@/controllers/AthleteAvatar";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
@@ -96,7 +98,10 @@ const CustomerArea: React.FC = () => {
   }
 
   return (
-    <Layout additionalButtons={additionalButtons} user={userData}>
+    <Layout
+      additionalButtons={additionalButtons}
+      userAvatar={<AthleteAvatar currentAthlete={userData} />}
+    >
       {view !== "ProfileView" && (
         <CalendarNav
           {...calendarNavProps}
