@@ -1,10 +1,12 @@
 import { DateTime } from "luxon";
 
-import { CustomerFull, CustomersByBirthday } from "@eisbuk/shared";
+import {
+  CustomerFull,
+  CustomersByBirthday,
+  compareCustomerNames,
+} from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
-
-import { compareCustomerNames } from "@/utils/sort";
 
 /**
  * Get a record of all the customers for current organization from firebase store

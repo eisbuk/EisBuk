@@ -5,6 +5,7 @@ import {
   CustomerFull,
   SlotInterface,
   CustomerWithAttendance,
+  comparePeriodsEarliestFirst,
 } from "@eisbuk/shared";
 import { AttendanceCardContainer, UserAttendance, Divider } from "@eisbuk/ui";
 
@@ -15,8 +16,6 @@ import {
 } from "@/store/actions/attendanceOperations";
 
 import { createModal } from "@/features/modal/useModal";
-
-import { comparePeriods } from "@/utils/sort";
 
 export interface Props extends SlotInterface {
   /**
@@ -50,7 +49,7 @@ const AttendanceCard: React.FC<Props> = ({ allCustomers, ...slot }) => {
    * memoize the array for lifetime of the component
    */
   const orderedIntervals = useMemo(
-    () => Object.keys(intervals).sort(comparePeriods),
+    () => Object.keys(intervals).sort(comparePeriodsEarliestFirst),
     [intervals]
   );
 
