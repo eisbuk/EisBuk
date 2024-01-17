@@ -1,3 +1,5 @@
+import { describe, test, expect } from "vitest";
+
 import { interpolateText, checkExpected } from "../text";
 
 describe("Text utils", () => {
@@ -36,7 +38,7 @@ describe("Text utils", () => {
       expect(interpolatedHtml).toBe("Ciao");
     });
 
-    test.only("Should ignore whitespace differences in registration code", async () => {
+    test("Should ignore whitespace differences in registration code", async () => {
       const cases = [
         ["A string", "A string!"],
         ["Look, ma, some spaces!", "LOOKMASOMESPACES"],
@@ -57,7 +59,7 @@ describe("Text utils", () => {
       }
     });
 
-    test.only("Should fail when strings are different", async () => {
+    test("Should fail when strings are different", async () => {
       const cases = [
         ["A string", "A string! You see?"],
         ["Look, ma, some spaces!", "LOOKMANOSPACES"],

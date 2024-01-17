@@ -7,17 +7,18 @@ import i18n, {
   AttendanceAria,
   ValidationMessage,
 } from "@eisbuk/translations";
+import { comparePeriodsEarliestFirst } from "@eisbuk/shared";
 
 import UserAttendance from "../UserAttendance";
-
-import { comparePeriods } from "../../utils/sort";
 
 import { saul } from "@eisbuk/testing/customers";
 import { baseSlot } from "@eisbuk/testing/slots";
 import userEvent from "@testing-library/user-event";
 
 // interval values we're using across tests
-const intervals = Object.keys(baseSlot.intervals).sort(comparePeriods);
+const intervals = Object.keys(baseSlot.intervals).sort(
+  comparePeriodsEarliestFirst
+);
 
 // provide a polyfill for element.animate function
 if (typeof Element.prototype.animate !== "function") {

@@ -6,6 +6,7 @@ import {
   OrgSubCollection,
   SlotInterface,
   getSlotTimespan,
+  comparePeriodsEarliestFirst,
 } from "@eisbuk/shared";
 import {
   Button,
@@ -45,8 +46,6 @@ import {
   deleteSlotFromClipboard,
 } from "@/store/actions/copyPaste";
 import { changeCalendarDate } from "@/store/actions/appActions";
-
-import { comparePeriods } from "@/utils/sort";
 
 const SlotsPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -157,7 +156,7 @@ const SlotsPage: React.FC = () => {
               (a, b) => {
                 const aTimeString = getSlotTimespan(a.intervals);
                 const bTimeString = getSlotTimespan(b.intervals);
-                return comparePeriods(aTimeString, bTimeString);
+                return comparePeriodsEarliestFirst(aTimeString, bTimeString);
               }
             );
 
