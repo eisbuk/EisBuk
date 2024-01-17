@@ -23,11 +23,11 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
  * state to the store (for bookings finalisation).
  */
 const BookingsCountdownContainer: React.FC<Props> = (props) => {
+  const secretKey = useSelector(getSecretKey)!;
   const currentDate = useSelector(getCalendarDay);
   const countdownProps = useSelector(getCountdownProps);
   const isMonthEmpty = useSelector(getMonthEmptyForBooking);
-  const { id: customerId } = useSelector(getBookingsCustomer) || {};
-  const secretKey = useSelector(getSecretKey)!;
+  const { id: customerId } = useSelector(getBookingsCustomer(secretKey)) || {};
 
   const { openWithProps: openFinalizeBookingsDialog } =
     useFinalizeBooksingsModal();

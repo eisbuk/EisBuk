@@ -16,7 +16,8 @@ const CalendarView: React.FC = () => {
   const secretKey = useSelector(getSecretKey)!;
   const defaultCountryCode = useSelector(getDefaultCountryCode);
 
-  const customer = useSelector(getBookingsCustomer) || ({} as Customer);
+  const customer =
+    useSelector(getBookingsCustomer(secretKey)) || ({} as Customer);
 
   return (
     <CustomerForm.Profile

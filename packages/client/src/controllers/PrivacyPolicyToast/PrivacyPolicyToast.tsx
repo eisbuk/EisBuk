@@ -17,8 +17,8 @@ const PrivacyPolicyToast: React.FC = () => {
 
   const policyParams = useSelector(getPrivacyPolicy);
 
-  const bookingsCustomer = useSelector(getBookingsCustomer) || {};
   const secretKey = useSelector(getSecretKey) || "";
+  const bookingsCustomer = useSelector(getBookingsCustomer(secretKey)) || {};
 
   const policyAccepted = Boolean(bookingsCustomer.privacyPolicyAccepted);
   const isAdmin = useSelector(getIsAdmin);

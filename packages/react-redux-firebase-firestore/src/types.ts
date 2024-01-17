@@ -34,6 +34,7 @@ type GetState = () => GlobalStateFragment;
 export interface SubscriptionMeta {
   organization: string;
   secretKey?: string;
+  secretKeys?: string[];
   currentDate: DateTime;
 }
 
@@ -138,7 +139,11 @@ export type CollectionSubscription =
       meta?: Record<string, any>;
     }
   | {
-      collection: OrgSubCollection.Bookings | BookingSubCollection;
+      collection: OrgSubCollection.Bookings;
+      meta: { secretKeys: string[] };
+    }
+  | {
+      collection: BookingSubCollection;
       meta: { secretKey: string };
     };
 

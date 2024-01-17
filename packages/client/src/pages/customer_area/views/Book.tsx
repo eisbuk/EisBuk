@@ -22,7 +22,8 @@ import { createModal } from "@/features/modal/useModal";
 const BookView: React.FC = () => {
   const { t } = useTranslation();
 
-  const customer = useSelector(getBookingsCustomer);
+  const secretKey = useSelector(getSecretKey) || "";
+  const customer = useSelector(getBookingsCustomer(secretKey));
   const orgEmail = useSelector(getOrgEmail);
   const daysToRender = useSelector(getSlotsForBooking);
   const date = useSelector(getCalendarDay);

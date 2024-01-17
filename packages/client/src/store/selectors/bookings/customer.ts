@@ -3,21 +3,28 @@ import { Customer } from "@eisbuk/shared";
 import { LocalStore } from "@/types/store";
 
 /**
- * Get customer info for bookings from local store
- * @param state Local Redux Store
- * @returns customer data (Bookings meta)
+ * Get bookings customer (for the provided secretKey) from store.
+ * Since we support multiple accounts for single auth, there might be mutilple bookings
+ * customers in store, hence this HOF (accepting secretKey) and returning a selector.
  */
-export const getBookingsCustomer = (state: LocalStore): Customer => {
-  // get extended date (if any)
-  const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
-  if (bookingsInStore.length > 1) {
-    /** @TODO */
-    // this shouldn't happen in production and we're working on a way to fix it completely
-    // this is just a reporting feature in case it happens
-    console.error(
-      "There seem to be multiple entries in 'firestore.data.bookings' part of the local store"
-    );
-  }
+export const getBookingsCustomer =
+  (secretKey: string) =>
+  (state: LocalStore): Customer =>
+    (state.firestore?.data.bookings || {})[secretKey];
 
-  return bookingsInStore[0];
-};
+/**
+ * Returns all bookings customers currently present in store.
+ */
+export const getAllBookingsAccounts = (state: LocalStore): Customer[] =>
+  Object.values(state.firestore.data.bookings || {});
+
+/**
+ * Returns all bookings customers currently present in store, except for the "current" one (matched by passed secret key).
+ * @param currentSecretKey
+ */
+export const getOtherBookingsAccounts =
+  (currentSecretKey: string) =>
+  (state: LocalStore): Customer[] =>
+    getAllBookingsAccounts(state).filter(
+      ({ secretKey }) => secretKey !== currentSecretKey
+    );
