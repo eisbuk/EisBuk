@@ -4,7 +4,7 @@ import { SlotInterface } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, { AdminAria, SlotsAria } from "@eisbuk/translations";
 
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 
 const testDateLuxon = DateTime.fromISO("2022-01-01");
 

@@ -4,7 +4,7 @@ import { Customer, SlotInterface } from "@eisbuk/shared";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, { SlotsAria } from "@eisbuk/translations";
 
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 import { attendance } from "../__testData__/attendance.json";
 import { customers } from "../__testData__/customers.json";
 

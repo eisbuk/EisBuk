@@ -1,6 +1,7 @@
 import React from "react";
 
 import { SlotType } from "@eisbuk/shared";
+import { testId } from "@eisbuk/testing/testIds";
 
 import {
   BookingContainerProps,
@@ -25,7 +26,11 @@ const BookingCardContainer: React.FC<BookingContainerProps> = ({
     classes,
   ].join(" ");
 
-  return React.createElement(as, { className }, children);
+  return React.createElement(
+    as,
+    { className, "data-testid": testId("booking-interval-card") },
+    children
+  );
 };
 
 const containerSizeLookup = {

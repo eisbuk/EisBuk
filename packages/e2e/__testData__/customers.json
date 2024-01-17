@@ -9,7 +9,7 @@
       "phone": "+393456777",
       "birthday": "2001-03-01",
       "categories": ["competitive"],
-      "secretKey": "123445",
+      "secretKey": "000001",
       "subscriptionNumber": "",
       "password": "sauls_pass_123"
     },
@@ -23,7 +23,7 @@
       "email": "walt@im_the_one_who.knocks",
       "phone": "+123456777",
       "birthday": "2002-03-01",
-      "secretKey": "000001",
+      "secretKey": "000002",
       "subscriptionNumber": ""
     },
 
@@ -36,7 +36,7 @@
       "email": "gus@lospollos.me",
       "phone": "+123456777",
       "birthday": "2001-03-02",
-      "secretKey": "000002",
+      "secretKey": "000003",
       "subscriptionNumber": ""
     },
 
@@ -49,19 +49,10 @@
       "email": "mike@lospollos.me",
       "phone": "+123456777",
       "birthday": "2021-01-01",
-      "secretKey": "000002",
+      "secretKey": "000004",
       "subscriptionNumber": ""
     },
 
-    "wednesday": {
-      "id": "wednesday",
-      "name": "Wednesday",
-      "surname": "Addams",
-      "certificateExpiration": "2006-10-13",
-      "categories": ["course-minors"],
-      "email": "morticia@addamsfamily.com",
-      "secretKey": "000013"
-    },
     "morticia": {
       "id": "morticia",
       "name": "Morticia",
@@ -70,7 +61,25 @@
       "categories": ["competitive"],
       "email": "morticia@addamsfamily.com",
       "password": "wednesdayschildisfullofwoe",
-      "secretKey": "101010"
+      "secretKey": "000005"
+    },
+    "wednesday": {
+      "id": "wednesday",
+      "name": "Wednesday",
+      "surname": "Addams",
+      "certificateExpiration": "2006-10-13",
+      "categories": ["course-minors"],
+      "email": "morticia@addamsfamily.com",
+      "secretKey": "000006"
+    },
+    "pugsley": {
+      "id": "pugsley",
+      "name": "Pugsley",
+      "surname": "Addams",
+      "certificateExpiration": "2006-10-13",
+      "categories": ["course-minors"],
+      "email": "morticia@addamsfamily.com",
+      "secretKey": "000007"
     }
   }
 }

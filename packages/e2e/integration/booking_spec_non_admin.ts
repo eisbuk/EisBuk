@@ -15,7 +15,7 @@ import i18n, {
 
 import { customers } from "../__testData__/customers.json";
 import { customers as saulWithExtendedDate } from "../__testData__/saul_with_extended_date.json";
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 
 // extract saul from test data .json
 const saul = customers.saul as Customer;
