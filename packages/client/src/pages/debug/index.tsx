@@ -193,6 +193,19 @@ const DebugPage: React.FC = () => {
               onClick={() =>
                 createFunctionCaller(
                   functions,
+                  CloudFunction.DBSlotBookingsAutofix
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              DB Slot / Bookings Autofix
+            </DebugPageButton>
+          </div>
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
                   CloudFunction.DBSlotSlotsByDayCheck
                 )().then(console.log)
               }
