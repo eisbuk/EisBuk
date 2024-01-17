@@ -1,3 +1,5 @@
+import "source-map-support/register";
+
 import admin from "firebase-admin";
 
 admin.initializeApp();
