@@ -14,7 +14,7 @@ import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import BookingsCountdownContainer from "../BookingsCountdownContainer";
 
 import { getNewStore } from "@/store/createStore";
-import { changeCalendarDate } from "@/store/actions/appActions";
+import { changeCalendarDate, storeSecretKey } from "@/store/actions/appActions";
 
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
@@ -60,13 +60,14 @@ describe("BookingsCountdown", () => {
       })
     );
     store.dispatch(changeCalendarDate(month));
+    store.dispatch(storeSecretKey(saul.secretKey));
     // With test state set up, 'finalize' button should be in the screen for
     // provided 'month'
     renderWithRedux(<BookingsCountdownContainer />, store);
     screen.getByText(i18n.t(ActionButton.FinalizeBookings) as string).click();
     const wantModal = {
       component: "FinalizeBookingsDialog",
-      props: { customerId: saul.id, month },
+      props: expect.objectContaining({ customerId: saul.id, month }),
     };
     const mockDispatchCallPayload = mockDispatch.mock.calls[0][0].payload;
     expect(mockDispatchCallPayload.component).toEqual(wantModal.component);

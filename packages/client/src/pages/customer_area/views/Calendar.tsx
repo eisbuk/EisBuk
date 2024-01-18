@@ -28,7 +28,7 @@ const CalendarView: React.FC = () => {
   const currentDate = useSelector(getCalendarDay);
   const secretKey = useSelector(getSecretKey)!;
 
-  const disabled = !useSelector(getIsBookingAllowed(currentDate));
+  const disabled = !useSelector(getIsBookingAllowed(secretKey, currentDate));
 
   const bookedAndAttendedSlots = useSelector(
     getBookedAndAttendedSlotsForCalendar

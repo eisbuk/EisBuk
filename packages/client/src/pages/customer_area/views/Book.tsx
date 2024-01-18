@@ -25,9 +25,9 @@ const BookView: React.FC = () => {
   const secretKey = useSelector(getSecretKey) || "";
   const customer = useSelector(getBookingsCustomer(secretKey));
   const orgEmail = useSelector(getOrgEmail);
-  const daysToRender = useSelector(getSlotsForBooking);
+  const daysToRender = useSelector(getSlotsForBooking(secretKey));
   const date = useSelector(getCalendarDay);
-  const disabled = !useSelector(getIsBookingAllowed(date));
+  const disabled = !useSelector(getIsBookingAllowed(secretKey, date));
 
   const { handleBooking, handleCancellation } = useBooking();
 

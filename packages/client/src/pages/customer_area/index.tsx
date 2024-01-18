@@ -59,7 +59,10 @@ const CustomerArea: React.FC = () => {
   // However, user can simply use a booking link (which includes the secret key). For this method, the user doesn't have
   // to authenticate with firebase auth, no secret keys will be found in auth section of the store and 'getAllSecretKeys' selector
   // will return 'undefined'
-  const secretKeys = useSelector(getAllSecretKeys) || [secretKey];
+  const secretKeysInStore = useSelector(getAllSecretKeys);
+  const secretKeys = secretKeysInStore?.length
+    ? secretKeysInStore
+    : [secretKey];
 
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [

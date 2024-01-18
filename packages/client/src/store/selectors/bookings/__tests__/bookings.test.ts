@@ -88,7 +88,7 @@ describe("Selectors ->", () => {
         slotsByDay,
         date,
       });
-      const res = getSlotsForCustomer(store.getState());
+      const res = getSlotsForCustomer(saul.secretKey)(store.getState());
       expect(res).toEqual(expectedMonthCustomer);
     });
 
@@ -129,7 +129,7 @@ describe("Selectors ->", () => {
         slotBookingsCounts,
         date,
       });
-      const res = getSlotsForCustomer(store.getState());
+      const res = getSlotsForCustomer(saul.secretKey)(store.getState());
       // Slot 1 should be returned, slot 2 should be filtered out (fully booked)
       expect(res).toEqual({ "2021-01-01": { "slot-1": slot1 } });
     });
@@ -180,7 +180,7 @@ describe("Selectors ->", () => {
         bookedSlots,
         date,
       });
-      const res = getSlotsForCustomer(store.getState());
+      const res = getSlotsForCustomer(saul.secretKey)(store.getState());
       // Since slot 2 is booked by the customer, it should be returned (even if at full capacity)
       expect(res).toEqual(slotsByDay["2021-01"]);
     });
@@ -192,9 +192,9 @@ describe("Selectors ->", () => {
       // set up test with `isAdmin === true`
       const store = getNewStore();
       store.dispatch({ type: Action.UpdateAdminStatus, payload: true });
-      expect(getIsBookingAllowed(DateTime.now())(store.getState())).toEqual(
-        true
-      );
+      expect(
+        getIsBookingAllowed(saul.secretKey, DateTime.now())(store.getState())
+      ).toEqual(true);
     });
 
     test("should allow booking if the booking deadline hasn't passed", () => {
@@ -209,7 +209,9 @@ describe("Selectors ->", () => {
       // create local mock date to be one day before the deadline
       const localMockDate = currentMonthDeadline.minus({ days: 1 });
       dateNowSpy.mockReturnValueOnce(localMockDate.toMillis());
-      expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(true);
+      expect(
+        getIsBookingAllowed(saul.secretKey, currentDate)(store.getState())
+      ).toEqual(true);
     });
 
     test("should not allow booking if the booking deadline for the month is passed", () => {
@@ -224,7 +226,9 @@ describe("Selectors ->", () => {
       // create local mock date to be one day after the deadline
       const localMockDate = currentMonthDeadline.plus({ days: 1 });
       dateNowSpy.mockReturnValueOnce(localMockDate.toMillis());
-      expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(false);
+      expect(
+        getIsBookingAllowed(saul.secretKey, currentDate)(store.getState())
+      ).toEqual(false);
     });
 
     test("should allow booking if within extended date period", () => {
@@ -239,7 +243,9 @@ describe("Selectors ->", () => {
           [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
-      expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(true);
+      expect(
+        getIsBookingAllowed(saul.secretKey, currentDate)(store.getState())
+      ).toEqual(true);
     });
 
     test("should not allow booking if in extended date period, but extended date has passed", () => {
@@ -254,7 +260,9 @@ describe("Selectors ->", () => {
           [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
-      expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(false);
+      expect(
+        getIsBookingAllowed(saul.secretKey, currentDate)(store.getState())
+      ).toEqual(false);
     });
 
     test("edge case: should not allow booking if extended date exists for future month, but current month deadline has already passed", () => {
@@ -269,7 +277,9 @@ describe("Selectors ->", () => {
           [saul.secretKey]: sanitizeCustomer({ ...saul, extendedDate }),
         })
       );
-      expect(getIsBookingAllowed(currentDate)(store.getState())).toEqual(false);
+      expect(
+        getIsBookingAllowed(saul.secretKey, currentDate)(store.getState())
+      ).toEqual(false);
     });
   });
 
@@ -292,7 +302,9 @@ describe("Selectors ->", () => {
           .minus({ days: 5 })
           .endOf("day"),
       };
-      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
+      expect(getCountdownProps(saul.secretKey)(store.getState())).toEqual(
+        expectedRes
+      );
     });
 
     test("should display countdown for second deadline if extended date belongs to observed month", () => {
@@ -315,7 +327,9 @@ describe("Selectors ->", () => {
         month: currentDate.startOf("month"),
         deadline: extendedDateLuxon,
       };
-      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
+      expect(getCountdownProps(saul.secretKey)(store.getState())).toEqual(
+        expectedRes
+      );
     });
 
     test("should not display any countdown for admin", () => {
@@ -323,7 +337,9 @@ describe("Selectors ->", () => {
       const currentDate = mockDate.plus({ months: 2 });
       store.dispatch(changeCalendarDate(currentDate));
       store.dispatch({ type: Action.UpdateAdminStatus, payload: true });
-      expect(getCountdownProps(store.getState())).toEqual(undefined);
+      expect(getCountdownProps(saul.secretKey)(store.getState())).toEqual(
+        undefined
+      );
     });
 
     test("should display bookings are locked message (instead of countdown) if bookings for this period are locked", () => {
@@ -336,7 +352,9 @@ describe("Selectors ->", () => {
         deadline: null,
         month: currentDate.startOf("month"),
       };
-      expect(getCountdownProps(store.getState())).toEqual(expectedRes);
+      expect(getCountdownProps(saul.secretKey)(store.getState())).toEqual(
+        expectedRes
+      );
     });
   });
 
@@ -358,7 +376,9 @@ describe("Selectors ->", () => {
             date,
             slotsByDay: { [currentMonthString]: slotsByDay },
           });
-          expect(getMonthEmptyForBooking(store.getState())).toEqual(wantRes);
+          expect(
+            getMonthEmptyForBooking(saul.secretKey)(store.getState())
+          ).toEqual(wantRes);
         })
       );
 
