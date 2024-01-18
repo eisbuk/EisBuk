@@ -1,7 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { LinkItem, Layout, UserAvatarProps } from "@eisbuk/ui";
+import { LinkItem, Layout } from "@eisbuk/ui";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
 import i18n, { NavigationLabel } from "@eisbuk/translations";
 import { ClipboardList, Users, DocumentDuplicate, Cog } from "@eisbuk/svg";
@@ -16,11 +16,11 @@ import { signOut } from "@/store/actions/authOperations";
 import { getIsAdmin } from "@/store/selectors/auth";
 import { getOrgDisplayName } from "@/store/selectors/orgInfo";
 
-interface Props {
-  user?: UserAvatarProps;
+type Props = {
   additionalButtons?: JSX.Element;
   children?: React.ReactNode[] | React.ReactNode;
-}
+  userAvatar?: JSX.Element;
+};
 
 const LayoutController: React.FC<Props> = (params) => {
   const dispatch = useDispatch();

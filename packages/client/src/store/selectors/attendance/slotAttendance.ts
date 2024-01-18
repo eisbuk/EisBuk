@@ -2,13 +2,13 @@ import {
   luxon2ISODate,
   getSlotTimespan,
   CustomerAttendance,
+  compareCustomerBookings,
 } from "@eisbuk/shared";
 
 import { LocalStore } from "@/types/store";
 
 import { AttendanceCardProps } from "@/controllers/AttendanceCard";
 
-import { compareCustomerBookings } from "@/utils/sort";
 import { getSlotsByMonth } from "../slots";
 import { getCustomerById } from "../customers";
 

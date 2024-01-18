@@ -46,8 +46,8 @@ export const getIsAdmin = (state: LocalStore): boolean => state.auth.isAdmin;
  * @param state Local Redux Store
  * @returns secretKey if it exists, undefined if it doesn't
  */
-export const getBookingsSecretKey = (state: LocalStore): string | undefined =>
-  state.auth.bookingsSecretKey;
+export const getAllSecretKeys = (state: LocalStore): string[] | undefined =>
+  state.auth.secretKeys;
 
 /**
  * Get boolean representing auth load state (set to true when initial auth is loaded)

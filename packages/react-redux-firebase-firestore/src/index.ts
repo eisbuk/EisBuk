@@ -1,8 +1,8 @@
-import { createFirestoreReducer } from "./reducer";
-import useFirestoreSubscribe from "./hooks/useFirestoreSubscribe";
-import usePaginateFirestore from "./hooks/usePaginateFirestore";
+export { createFirestoreReducer } from "./reducer";
 
-export { createFirestoreReducer, useFirestoreSubscribe, usePaginateFirestore };
+export { default as useFirestoreSubscribe } from "./hooks/useFirestoreSubscribe";
+export { default as usePaginateFirestore } from "./hooks/usePaginateFirestore";
+export { default as useUpdateSubscription } from "./hooks/useUpdateSubscription";
 
 export * from "./types";
 export * from "./actions";

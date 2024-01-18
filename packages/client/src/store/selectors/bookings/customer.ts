@@ -7,9 +7,7 @@ import { LocalStore } from "@/types/store";
  * @param state Local Redux Store
  * @returns customer data (Bookings meta)
  */
-export const getBookingsCustomer = (
-  state: LocalStore
-): Omit<Customer, "secretKey"> => {
+export const getBookingsCustomer = (state: LocalStore): Customer => {
   // get extended date (if any)
   const bookingsInStore = Object.values(state.firestore?.data.bookings || {});
   if (bookingsInStore.length > 1) {

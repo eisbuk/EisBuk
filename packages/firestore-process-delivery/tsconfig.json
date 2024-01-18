@@ -10,7 +10,7 @@
     "sourceMap": true,
     "noUncheckedIndexedAccess": true,
 
-    "types": ["node", "jest"]
+    "types": ["node"]
   },
   "exclude": ["node_modules", "./.eslintrc.js", "jest.config.js"],
   "include": ["./src/**/*.ts"]

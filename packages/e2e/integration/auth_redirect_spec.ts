@@ -55,7 +55,7 @@ describe("auth-related redirects", () => {
   });
 
   describe("authenticated non-admin", () => {
-    it("redirects to customer area page from any of the private routes", () => {
+    it("single secret key: redirects to customer area page from any of the private routes", () => {
       const { email, password, secretKey } = customers.saul;
 
       // Sign up (or sign in on each subsequent test) as saul.
@@ -95,6 +95,48 @@ describe("auth-related redirects", () => {
       // // If landing on customer area page, with wrong secret key, should be redirected to their own page page
       // cy.visit([Routes.CustomerArea, "wrong_secret_key"].join("/"));
       // cy.contains(`${name} ${surname}`);
+    });
+
+    it("multiple secret keys: redirects to the first secretKey returned", () => {
+      // TEMP: The desired functionality is to not break the current behaviour (for now) - redirect to customer's bookings page.
+      // TODO: In on of the following PRs, here we will require the app to redirect to account selection.
+
+      // Here, Morticia manages accounts for both herself and Wednesday.
+      // Meaning: there are more than one secretKey associated with her account.
+      //
+      // TEMP: With temp solution (redirect to first customer returned), we expect to be redirected to Morticia's customer area page.
+      // as 'morticia' (id) comes before 'wednesday' (id) lexicographically.
+      const { email, password, secretKey } = customers.morticia;
+
+      cy.signUp(email, password);
+
+      // Check for /athletes page
+      cy.visit(PrivateRoutes.Athletes);
+      cy.url().should("include", secretKey);
+
+      // Check for /athletes/new page
+      cy.visit(PrivateRoutes.NewAthlete);
+      cy.url().should("include", secretKey);
+
+      // Check for /athletes/:id page
+      cy.visit([PrivateRoutes.Athletes, customers.morticia.id].join("/"));
+      cy.url().should("include", secretKey);
+
+      // Check for attendance ("/") page
+      cy.visit(PrivateRoutes.Root);
+      cy.url().should("include", secretKey);
+
+      // Check for slots page
+      cy.visit(PrivateRoutes.Slots);
+      cy.url().should("include", secretKey);
+
+      // Check for admin preferences page
+      cy.visit(PrivateRoutes.AdminPreferences);
+      cy.url().should("include", secretKey);
+
+      // If landing on 'customer_area' page, should automatically be redirected to their own customer area page (with their secret key)
+      cy.visit(Routes.CustomerArea);
+      cy.url().should("include", secretKey);
     });
   });
 

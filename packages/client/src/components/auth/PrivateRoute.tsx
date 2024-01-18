@@ -7,7 +7,7 @@ import { Routes } from "@eisbuk/shared/ui";
 import Loading from "./Loading";
 
 import {
-  getBookingsSecretKey,
+  getAllSecretKeys,
   getIsAdmin,
   getIsAuthEmpty,
   getIsAuthLoaded,
@@ -22,7 +22,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
   const isAuthEmpty = useSelector(getIsAuthEmpty);
   const isAdmin = useSelector(getIsAdmin);
   const isAuthLoaded = useSelector(getIsAuthLoaded);
-  const secretKey = useSelector(getBookingsSecretKey);
+  const [secretKey] = useSelector(getAllSecretKeys) || [];
 
   switch (true) {
     // Display loading state until initial auth is loaded

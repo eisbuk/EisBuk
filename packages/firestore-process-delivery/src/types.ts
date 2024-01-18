@@ -4,7 +4,6 @@ import * as functions from "firebase-functions";
 export type DocumentReference =
   FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>;
 export type Change = functions.Change<FirebaseFirestore.DocumentSnapshot>;
-export type Timestamp = FirebaseFirestore.Timestamp;
 export type FieldValue = FirebaseFirestore.FieldValue;
 // #endregion typeAliases
 
@@ -47,15 +46,15 @@ export interface ProcessDocument<P = Record<string, any>> {
     /**
      * Start time of the delivery process.
      */
-    startTime: Timestamp;
+    startTime: number;
     /**
      * Time of the latest update (`"SUCCESS"`, `"ERROR"`, or additional updates from provider webhooks).
      */
-    endTime?: Timestamp;
+    endTime?: number | null;
     /**
      * Lease expires 60 seconds after the delivery attempted (assigned on `"PENDING"` or `"RETRY"`).
      */
-    leaseExpireTime: Timestamp | null;
+    leaseExpireTime: number | null;
     /**
      * See `DeliveryStatus` enum.
      */
@@ -80,18 +79,7 @@ export interface ProcessDocument<P = Record<string, any>> {
   payload: P;
 }
 
-type TimestampKeys = "startTime" | "endTime" | "leaseExpireTime";
-
-/**
- * An update for `ProcessDocument`'s `delivery` state. Each field is optional due to update being applied
- * using `merge:true`. Additionally, each timestamped field ("startTime", "endTime", "leaseExpiration") can also
- * be `FieldValue` other than `Timestamp | null` as it's an update - resulting in an appropriate
- * `Timestamp | null` value in the state itself
- */
-export type DeliveryUpdate = Partial<
-  Omit<ProcessDocument["delivery"], TimestampKeys> &
-    Record<TimestampKeys, Timestamp | FieldValue | null>
->;
+export type DeliveryUpdate = Partial<ProcessDocument["delivery"]>;
 // #endregion processDocument
 
 // #region deliverCallback

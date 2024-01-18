@@ -47,6 +47,15 @@ export interface AuthStatus {
    * secret key used to access bookings.
    * `undefined` if user is not a customer of an organization
    */
+  secretKeys?: string[];
+}
+
+/**
+ * @deprecated `AuthStatus` is used everywhere in the up-to-date code.
+ * @TODO Remove this once the deprecated function is removed.
+ */
+export interface DeprecatedAuthStatus {
+  isAdmin: boolean;
   bookingsSecretKey?: string;
 }
 // #endregion queryAuthStatus

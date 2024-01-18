@@ -107,10 +107,6 @@ export const updateSubscription: SubscribeFunction =
       if (rangeInStore && rangeProperty === rangeInStore[0]) {
         const [, storeRangeStart, storeRangeEnd] = rangeInStore;
         switch (true) {
-          // exit early if ranges are the same
-          case rangeStart >= storeRangeStart && rangeEnd <= storeRangeEnd:
-            return;
-
           // extend range in both directions: should happed rarely (or never) in production
           case rangeStart < storeRangeStart && rangeEnd > storeRangeEnd:
             // unsubscribe from old range
