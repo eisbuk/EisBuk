@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import { beforeEach, afterEach, describe, test, expect, vi } from "vitest";
 
 import { adminDb } from "../__testSetup__/adminDb";
 
@@ -6,23 +7,23 @@ import { DeliveryStatus, ProcessDocument } from "../types";
 
 import processDelivery from "../index";
 
-beforeEach(() =>
-  Promise.all([
+beforeEach(async () => {
+  await Promise.all([
     adminDb.doc("queue/doc1").delete(),
     adminDb.doc("delivery/doc1").delete(),
-  ])
-);
+  ]);
+});
 
 afterEach(() => {
-  jest.clearAllMocks();
+  vi.clearAllMocks();
 });
 
 // We want the transactions be ran against our test db (`adminDB`)
-jest.spyOn(admin, "firestore").mockImplementation(() => adminDb);
+vi.spyOn(admin, "firestore").mockImplementation(() => adminDb);
 
 // We might want to get function logs directly printed to the console
 // as well as avoid the tests breaking because no admin app was initialized
-jest.mock("firebase-functions", () => ({
+vi.mock("firebase-functions", () => ({
   logger: console,
 }));
 
@@ -58,7 +59,7 @@ describe("Test process delivery functionality", () => {
     // Expect the delivery to be processed successfully
     // This execution also features 'PROCESSING' state, but with the resolution of the execution
     // the delivery will already be in 'SUCCESS' state
-    const mockDelivery = jest.fn();
+    const mockDelivery = vi.fn();
     await processDelivery(
       { before: pendingDoc, after: pendingDoc },
       async ({ success }) => {
