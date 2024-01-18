@@ -1,4 +1,3 @@
-import { Timestamp, FieldValue } from "@google-cloud/firestore";
 import admin from "firebase-admin";
 
 import {
@@ -19,8 +18,8 @@ export * from "./types";
  * Initial `delivery` state of a delivery process. Written in form od an `DeliveryUpdate`
  * as it's written using `transaction.update` on process create.
  */
-const initialDeliveryState: Required<DeliveryUpdate> = {
-  startTime: FieldValue.serverTimestamp(),
+const createDeliveryState = (): Required<DeliveryUpdate> => ({
+  startTime: Date.now(),
   endTime: null,
   leaseExpireTime: null,
   status: DeliveryStatus.Pending,
@@ -28,7 +27,7 @@ const initialDeliveryState: Required<DeliveryUpdate> = {
   errors: [],
   result: null,
   meta: {},
-};
+});
 
 /**
  * Set up delivery state and write to process document, thus initializing
@@ -37,13 +36,7 @@ const initialDeliveryState: Required<DeliveryUpdate> = {
  */
 const processCreate = (ref: FirebaseFirestore.DocumentReference) =>
   admin.firestore().runTransaction((transaction) => {
-    transaction.set(
-      ref,
-      {
-        delivery: initialDeliveryState,
-      },
-      { merge: true }
-    );
+    transaction.set(ref, { delivery: createDeliveryState() }, { merge: true });
     return Promise.resolve();
   });
 
@@ -89,10 +82,7 @@ const processDelivery = async (
     // Honestly, the scenario of this part bringing any utility whatsoever seems extremely (astronomically) unlikely
     // As it's a copy/edit of an existing Firebase official extension, leaving this here...might update at some point
     case DeliveryStatus.Processing:
-      if (
-        !leaseExpireTime ||
-        (leaseExpireTime as Timestamp).toMillis() < Date.now()
-      ) {
+      if (!leaseExpireTime || leaseExpireTime < Date.now()) {
         delivery.status = DeliveryStatus.Error;
         delivery.errors = ["Delivery processing lease expired."];
         delivery.result = null;
@@ -109,7 +99,7 @@ const processDelivery = async (
     case DeliveryStatus.Retry:
       logger.info(`Delivery in progress, document id: ${change.after.ref.id} `);
       delivery.status = DeliveryStatus.Processing;
-      delivery.leaseExpireTime = Timestamp.fromMillis(Date.now() + 60000);
+      delivery.leaseExpireTime = Date.now() + 60000;
       await admin.firestore().runTransaction((transaction) => {
         transaction.set(change.after.ref, { delivery }, { merge: true });
         return Promise.resolve();
