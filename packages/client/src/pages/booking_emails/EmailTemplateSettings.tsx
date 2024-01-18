@@ -172,7 +172,7 @@ const TemplateFields: TemplateFieldsInterface = ({ name, input }) => {
       <FormField
         label={t(MessageTemplateLabel.Subject)}
         variant={FormFieldVariant.Text}
-        name={`emailTemplates[${name}].subject`}
+        name={`${name}.subject`}
         innerRef={input}
         onFocus={(e) => (input.current = e.target)}
       />
@@ -180,7 +180,7 @@ const TemplateFields: TemplateFieldsInterface = ({ name, input }) => {
         label={t(MessageTemplateLabel.Body)}
         variant={FormFieldVariant.Text}
         multiline={true}
-        name={`emailTemplates[${name}].html`}
+        name={`${name}.html`}
         rows={8}
         innerRef={input}
         onFocus={(e) => (input.current = e.target)}
@@ -191,10 +191,8 @@ const TemplateFields: TemplateFieldsInterface = ({ name, input }) => {
 
 const PreviewFields: PreviewFieldsInterface = ({ name }) => {
   const {
-    values: {
-      emailTemplates: { [name]: template },
-    },
-  } = useFormikContext<OrganizationData>();
+    values: { [name]: template },
+  } = useFormikContext<OrganizationData["emailTemplates"]>();
 
   return (
     <>

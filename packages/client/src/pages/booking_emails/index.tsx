@@ -6,7 +6,6 @@ import {
   defaultEmailTemplates as emailTemplates,
   OrganizationData,
   ClientMessageMethod,
-  ClientMessageType,
 } from "@eisbuk/shared";
 import { ActionButton, useTranslation } from "@eisbuk/translations";
 import { Button, ButtonColor, ButtonSize, LayoutContent } from "@eisbuk/ui";
@@ -46,39 +45,32 @@ const SendBookingEmails: React.FC = () => {
   };
 
   const handleSubmit = (
-    orgData: OrganizationData,
-    actions: FormikHelpers<OrganizationData>
+    updatedEmailTemplates: OrganizationData["emailTemplates"],
+    actions: FormikHelpers<OrganizationData["emailTemplates"]>
   ) => {
     const customers = allCustomers.filter((cus) =>
       selectedCustomers.includes(cus.id)
     );
-    const updatedOrgData = {
-      ...organization,
-      emailTemplates: {
-        ...emailTemplates,
-        [ClientMessageType.SendBookingsLink]:
-          orgData.emailTemplates[ClientMessageType.SendBookingsLink],
-      },
-    } as OrganizationData;
 
     openBookingsLinkDialog({
       customers,
       method: ClientMessageMethod.Email,
-      orgData: updatedOrgData,
+      emailTemplates: updatedEmailTemplates,
       actions,
       calendarDay,
     });
   };
 
-  const initialValues: OrganizationData = {
-    ...emptyValues,
-    ...(organization as OrganizationData),
-  };
+  const initialValues = {
+    ...emailTemplates,
+    ...organization.emailTemplates,
+  } as OrganizationData["emailTemplates"];
 
   return (
     <Layout>
       <Formik
         {...{ initialValues }}
+        enableReinitialize={true}
         onSubmit={(values, actions) => handleSubmit(values, actions)}
       >
         {({ isSubmitting, isValidating, handleReset }) => (
@@ -122,9 +114,6 @@ const SendBookingEmails: React.FC = () => {
   );
 };
 
-const emptyValues = {
-  emailTemplates,
-};
 const useBookingsLinkModal = createModal("SendBulkBookingsLinkDialog");
 
 export default SendBookingEmails;

@@ -18,13 +18,13 @@ import {
   sendBookingsLink,
 } from "../SendBookingsLinkDialog/utils";
 
-import { updateOrganization } from "@/store/actions/organizationOperations";
+import { updateOrganizationEmailTemplates } from "@/store/actions/organizationOperations";
 import { getMonthDeadline } from "@/store/selectors/bookings";
 
 type SendBulkBookingsLinkProps = BaseModalProps & { customers: Customer[] } & {
   method: ClientMessageMethod;
-  orgData: OrganizationData;
-  actions: FormikHelpers<OrganizationData>;
+  emailTemplates: OrganizationData["emailTemplates"];
+  actions: FormikHelpers<OrganizationData["emailTemplates"]>;
   calendarDay: DateTime;
 };
 
@@ -33,7 +33,7 @@ const SendBulkBookingsLinkDialog: React.FC<SendBulkBookingsLinkProps> = ({
   className,
   method,
   customers,
-  orgData,
+  emailTemplates,
   actions,
   calendarDay,
 }) => {
@@ -44,7 +44,9 @@ const SendBulkBookingsLinkDialog: React.FC<SendBulkBookingsLinkProps> = ({
       date: getMonthDeadline(calendarDay),
     });
 
-    dispatch(updateOrganization(orgData, actions.setSubmitting));
+    dispatch(
+      updateOrganizationEmailTemplates(emailTemplates, actions.setSubmitting)
+    );
     customers.forEach((customer) => {
       dispatch(
         sendBookingsLink({
