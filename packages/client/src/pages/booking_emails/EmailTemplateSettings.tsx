@@ -16,8 +16,11 @@ import {
   ClientMessageType,
   CustomerFull,
 } from "@eisbuk/shared";
+import { useClickOutside } from "@eisbuk/shared/ui";
 
 import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
+
+import { getMonthStr, insertValuePlaceholder } from "@/utils/helpers";
 
 import {
   PreviewFieldsInterface,
@@ -25,9 +28,6 @@ import {
 } from "../admin_preferences/TemplateBlock";
 
 import { buttons, previewValues } from "../admin_preferences/data";
-
-import { getMonthStr } from "@/utils/helpers";
-import { useClickOutside } from "@eisbuk/shared/ui";
 
 interface EmailTemplateSettingsProps {
   onCheckboxChange: (customerId: string) => void;
@@ -61,28 +61,11 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
   const input = React.useRef<HTMLInputElement | null>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
-  const insertValuePlaceholder = (buttonValue: string) => () => {
-    if (!input.current) return;
-
-    const [start, end] = getInputSelection(input.current);
-
-    const { name, value } = input.current;
-
-    const inputValue =
-      // Format the placeholder value, add anchor tag to links, where aplicable
-      formatValuePlaceholder(buttonValue, true);
-
-    const updatedValue = stringInsert(value, start, end, inputValue);
-
-    setFieldValue(name, updatedValue);
-
-    input.current.focus();
-    // Set selection to the end of the inserted value, after the field has been focused (hence the timeout)
-    const cursorPosition = start + inputValue.length;
-    const setSelection = () =>
-      input.current?.setSelectionRange(cursorPosition, cursorPosition);
-    setTimeout(setSelection, 5);
-  };
+  const insertValuePlaceholderWithCtx = insertValuePlaceholder(
+    setFieldValue,
+    input,
+    "emailTemplates"
+  );
 
   useClickOutside(containerRef, () => setIsOpen(false));
 
@@ -151,7 +134,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
                         <Button
                           key={value}
                           color={ButtonColor.Primary}
-                          onClick={insertValuePlaceholder(value)}
+                          onClick={insertValuePlaceholderWithCtx(value)}
                           type="button"
                           className="mx-1 mb-1"
                         >
@@ -245,32 +228,4 @@ const PreviewFields: PreviewFieldsInterface = ({ name }) => {
 const formatPreview = (html: string) =>
   html.replaceAll(/<a/g, (s) => `${s} style="color: blue"`);
 
-const stringInsert = (
-  string: string,
-  start: number,
-  end: number,
-  value: string
-) => [string.slice(0, start), value, string.slice(end)].join("");
-
-const getInputSelection = (input: HTMLInputElement) => [
-  input.selectionStart || 0,
-  input.selectionEnd || 0,
-];
-
-const formatValuePlaceholder = (value: string, wrapLinks: boolean) => {
-  switch (value) {
-    case "icsFile":
-      if (wrapLinks) {
-        return '<a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>';
-      }
-    // eslint-disable-next-line no-fallthrough
-    case "bookingsLink":
-      if (wrapLinks) {
-        return '<a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>';
-      }
-    // eslint-disable-next-line no-fallthrough
-    default:
-      return `{{ ${value} }}`;
-  }
-};
 export default EmailTemplateSettings;

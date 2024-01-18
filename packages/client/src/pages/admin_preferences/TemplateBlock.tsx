@@ -4,7 +4,7 @@ import { useFormikContext } from "formik";
 import { useTranslation, MessageTemplateLabel } from "@eisbuk/translations";
 import { Button, ButtonColor } from "@eisbuk/ui";
 import { OrganizationData } from "@eisbuk/shared";
-
+import { insertValuePlaceholder } from "@/utils/helpers";
 interface ButtonAttributes {
   label: MessageTemplateLabel;
   value: string;
@@ -41,28 +41,11 @@ const TemplateBlock: React.FC<Props> = ({
 
   const input = React.useRef<HTMLInputElement | null>(null);
 
-  const insertValuePlaceholder = (buttonValue: string) => () => {
-    if (!input.current) return;
-
-    const [start, end] = getInputSelection(input.current);
-
-    const { name, value } = input.current;
-
-    const inputValue =
-      // Format the placeholder value, add anchor tag to links, where aplicable
-      formatValuePlaceholder(buttonValue, type === "emailTemplates");
-
-    const updatedValue = stringInsert(value, start, end, inputValue);
-
-    setFieldValue(name, updatedValue);
-
-    input.current.focus();
-    // Set selection to the end of the inserted value, after the field has been focused (hence the timeout)
-    const cursorPosition = start + inputValue.length;
-    const setSelection = () =>
-      input.current?.setSelectionRange(cursorPosition, cursorPosition);
-    setTimeout(setSelection, 5);
-  };
+  const insertValuePlaceholderWithCtx = insertValuePlaceholder(
+    setFieldValue,
+    input,
+    type
+  );
 
   return (
     <div className="pb-8 pt-24 border-b-2">
@@ -77,7 +60,7 @@ const TemplateBlock: React.FC<Props> = ({
                 <Button
                   key={value}
                   color={ButtonColor.Primary}
-                  onClick={insertValuePlaceholder(value)}
+                  onClick={insertValuePlaceholderWithCtx(value)}
                   type="button"
                   className="mx-1 mb-1"
                 >
@@ -103,35 +86,6 @@ const TemplateBlock: React.FC<Props> = ({
       </div>
     </div>
   );
-};
-
-const stringInsert = (
-  string: string,
-  start: number,
-  end: number,
-  value: string
-) => [string.slice(0, start), value, string.slice(end)].join("");
-
-const getInputSelection = (input: HTMLInputElement) => [
-  input.selectionStart || 0,
-  input.selectionEnd || 0,
-];
-
-const formatValuePlaceholder = (value: string, wrapLinks: boolean) => {
-  switch (value) {
-    case "icsFile":
-      if (wrapLinks) {
-        return '<a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>';
-      }
-    // eslint-disable-next-line no-fallthrough
-    case "bookingsLink":
-      if (wrapLinks) {
-        return '<a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>';
-      }
-    // eslint-disable-next-line no-fallthrough
-    default:
-      return `{{ ${value} }}`;
-  }
 };
 
 export default TemplateBlock;
