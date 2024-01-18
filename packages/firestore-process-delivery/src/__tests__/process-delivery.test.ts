@@ -1,6 +1,4 @@
-// import functionsTest from "firebase-functions-test";
 import admin from "firebase-admin";
-import { Timestamp } from "@google-cloud/firestore";
 
 import { adminDb } from "../__testSetup__/adminDb";
 
@@ -148,7 +146,7 @@ describe("Test process delivery functionality", () => {
       delivery: {
         status: DeliveryStatus.Processing,
         // Test with expired lease
-        leaseExpireTime: Timestamp.fromMillis(Date.now() - 1000),
+        leaseExpireTime: Date.now() - 1000,
       } as ProcessDocument["delivery"],
     });
     const expiredDoc = await processDocRef.get();
