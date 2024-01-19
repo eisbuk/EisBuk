@@ -30,12 +30,12 @@ const mockSendBookingsLink = (params: any) => ({
   ...params,
   type: "sendBookingsLink",
 });
-const mockUpdateOrganization = (params: any) => ({ ...params });
+const mockUpdateOrganizationEmailTemplates = (params: any) => ({ ...params });
 vi.spyOn(utils, "sendBookingsLink").mockImplementation(
   mockSendBookingsLink as any
 );
-vi.spyOn(orgOperations, "updateOrganization").mockImplementation(
-  mockUpdateOrganization as any
+vi.spyOn(orgOperations, "updateOrganizationEmailTemplates").mockImplementation(
+  mockUpdateOrganizationEmailTemplates as any
 );
 
 const mockDispatch = vi.fn();
@@ -43,16 +43,9 @@ vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
 }));
 
-const orgData = {
-  admins: [],
-
-  emailTemplates: {
-    [ClientMessageType.SendBookingsLink]:
-      emailTemplates[ClientMessageType.SendBookingsLink],
-  },
-
-  smtpConfigured: true,
-  smsTemplates: { "": "" },
+const emailTemplatesProp = {
+  [ClientMessageType.SendBookingsLink]:
+    emailTemplates[ClientMessageType.SendBookingsLink],
 };
 
 const testDate = DateTime.fromISO("2021-03-01");
@@ -74,11 +67,11 @@ describe("SendBulkBookingsLinkDialog", () => {
         customers={[saul]}
         method={ClientMessageMethod.Email}
         onClose={mockOnClose}
-        orgData={orgData}
+        emailTemplates={emailTemplatesProp}
         actions={
           {
             setSubmitting: () => {},
-          } as unknown as FormikHelpers<OrganizationData>
+          } as unknown as FormikHelpers<OrganizationData["emailTemplates"]>
         }
         calendarDay={testDate}
       />
@@ -94,18 +87,21 @@ describe("SendBulkBookingsLinkDialog", () => {
         customers={[saul]}
         method={ClientMessageMethod.Email}
         onClose={mockOnClose}
-        orgData={orgData}
+        emailTemplates={emailTemplatesProp}
         actions={
           {
             setSubmitting: () => {},
-          } as unknown as FormikHelpers<OrganizationData>
+          } as unknown as FormikHelpers<OrganizationData["emailTemplates"]>
         }
         calendarDay={testDate}
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();
-    // expect(mockOnClose).toHaveBeenCalled();
     expect(mockDispatch).toHaveBeenCalledTimes(2);
+    expect(mockDispatch).toHaveBeenNthCalledWith(
+      1,
+      mockUpdateOrganizationEmailTemplates({ ...emailTemplatesProp })
+    );
     expect(mockDispatch).toHaveBeenNthCalledWith(
       2,
       mockSendBookingsLink({
@@ -114,10 +110,6 @@ describe("SendBulkBookingsLinkDialog", () => {
         method: ClientMessageMethod.Email,
         bookingsLink: testBookingsLink,
       })
-    );
-    expect(mockDispatch).toHaveBeenNthCalledWith(
-      1,
-      mockUpdateOrganization({ ...orgData })
     );
   });
 });

@@ -16,6 +16,7 @@ import {
   ClientMessageType,
   CustomerFull,
 } from "@eisbuk/shared";
+import { ChevronDown } from "@eisbuk/svg";
 import { useClickOutside } from "@eisbuk/shared/ui";
 
 import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
@@ -88,27 +89,9 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
                     onClick={toggleDropdown}
                   >
                     {t(MessageTemplateLabel.SelectAthletes)}
-                    <svg
-                      className="-mr-1 ml-2 h-5 w-5"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      {isOpen ? (
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M6.293 7.293a1 1 0 011.414 0L10 9.586l2.293-2.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                        />
-                      ) : (
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M14.293 12.707a1 1 0 01-1.414 0L10 10.414l-2.293 2.293a1 1 0 01-1.414-1.414l3-3a1 1 0 011.414 0l3 3a1 1 0 010 1.414z"
-                        />
-                      )}
-                    </svg>
+                    <span className="inline-block h-6 w-6">
+                      <ChevronDown />
+                    </span>
                   </button>
                 </span>
               </div>

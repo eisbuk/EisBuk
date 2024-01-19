@@ -7,6 +7,7 @@ export { default as AccountCircle } from "./assets/account-circle.svg";
 export { default as Calendar } from "./assets/calendar.svg";
 export { default as ChevronLeft } from "./assets/chevron-left.svg";
 export { default as ChevronRight } from "./assets/chevron-right.svg";
+export { default as ChevronDown } from "./assets/chevron-down.svg";
 export { default as EisbukLogo } from "./assets/logo.svg";
 export { default as Cog } from "./assets/cog.svg";
 export { default as User } from "./assets/user.svg";

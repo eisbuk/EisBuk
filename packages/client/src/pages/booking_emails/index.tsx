@@ -88,7 +88,9 @@ const SendBookingEmails: React.FC = () => {
                     {t(ActionButton.Reset)}
                   </Button>
                   <Button
-                    disabled={isSubmitting || isValidating}
+                    disabled={
+                      !selectedCustomers.length || isSubmitting || isValidating
+                    }
                     color={ButtonColor.Primary}
                     size={ButtonSize.MD}
                     aria-label={"save"}
