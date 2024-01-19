@@ -2,8 +2,8 @@ import { DateTime } from "luxon";
 import admin from "firebase-admin";
 
 import {
-  AttendanceAutofixReport,
-  BookingsAutofixReport,
+  SlotAttendanceAutofixReport,
+  SlotBookingsAutofixReport,
   BookingSubCollection,
   Collection,
   CustomerBookingEntry,
@@ -16,7 +16,7 @@ import {
   DateMismatchDoc,
   UnpairedDoc,
   wrapIter,
-  BookingsSanityCheckReport,
+  SlotBookingsSanityCheckReport,
 } from "@eisbuk/shared";
 
 type Firestore = admin.firestore.Firestore;
@@ -93,7 +93,7 @@ export const attendanceSlotMismatchAutofix = async (
   db: Firestore,
   organization: string,
   mismatches: SlotAttendanceSanityCheckReport
-): Promise<AttendanceAutofixReport> => {
+): Promise<SlotAttendanceAutofixReport> => {
   const batch = db.batch();
 
   const { unpairedEntries, dateMismatches } = mismatches;
@@ -181,8 +181,8 @@ export const attendanceSlotMismatchAutofix = async (
 export const bookingsAutofix = async (
   db: Firestore,
   organization: string,
-  mismatches: BookingsSanityCheckReport
-): Promise<BookingsAutofixReport> => {
+  mismatches: SlotBookingsSanityCheckReport
+): Promise<SlotBookingsAutofixReport> => {
   const batch = db.batch();
 
   const { strayBookings, dateMismatches, invalidIntervalBookings } = mismatches;

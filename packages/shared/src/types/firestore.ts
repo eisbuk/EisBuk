@@ -442,13 +442,14 @@ export type SlotAttendanceUpdate = {
   };
 };
 
-export interface AttendanceAutofixReport {
+export interface SlotAttendanceAutofixReport {
   timestamp: string;
   created: Record<string, SlotAttendnace>;
   deleted: Record<string, SlotAttendnace>;
   updated: Record<string, SlotAttendanceUpdate>;
 }
-export interface BookingsAutofixReport {
+
+export interface SlotBookingsAutofixReport {
   timestamp: string;
   deleted: Record<string, CustomerBookingEntry>;
 }
@@ -460,9 +461,10 @@ export interface SlotAttendanceSanityCheckReport {
   unpairedEntries: Record<string, UnpairedDoc>;
   /** A record of docs for which the date is mismatched across collections (keyed by slot id) */
   dateMismatches: Record<string, DateMismatchDoc>;
-  attendanceFixes?: AttendanceAutofixReport;
+  attendanceFixes?: SlotAttendanceAutofixReport;
 }
-export interface BookingsSanityCheckReport {
+
+export interface SlotBookingsSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
   /** A record of "unpaired" bookedSlots which have no equivalent slot with the same id (keyed by slot id)*/
@@ -471,7 +473,34 @@ export interface BookingsSanityCheckReport {
   dateMismatches: Record<string, BookingsEntryExistsPayload>;
   /** A record of bookedSlots for which the interval doesn't exist in respective slot (keyed by slot id) */
   invalidIntervalBookings: Record<string, BookingsEntryExistsPayload>;
-  bookingsFixes?: BookingsAutofixReport;
+  bookingsFixes?: SlotBookingsAutofixReport;
+}
+
+export type CustomerBookingReport = { interval: string | null };
+export type CustomerAttendanceRepoort = { bookedInterval: string | null };
+
+export interface BookedSlotsAttendanceSanityCheckReport {
+  /** ISO timestamp of the sanity check run */
+  id: string;
+  /** { slotId => [...customer] } Record of customer entries in attendance documents where they shouldn't be */
+  strayAttendances: {
+    [slotId: string]: string[];
+  };
+  /** A record of slots, booked by given customers, that don't have appropriate entries in the corresponding attendance document */
+  missingAttendances: {
+    [slotId: string]: {
+      [customerId: string]: CustomerBookingReport;
+    };
+  };
+  /** A record of slots, booked by given customers, that have mismatched entries in the corresponding attendance document */
+  mismatchedAttendances: {
+    [slotId: string]: {
+      [customerId: string]: {
+        booking: CustomerBookingReport;
+        attendance: CustomerAttendanceRepoort;
+      };
+    };
+  };
 }
 
 /** `<month>/<date>` string used for `slotsByDay` sanity checks */
@@ -561,9 +590,10 @@ export interface FirestoreSchema {
   };
   [Collection.SanityChecks]: {
     [organization: string]: {
-      [SanityCheckKind.SlotBookings]: BookingsSanityCheckReport;
+      [SanityCheckKind.SlotBookings]: SlotBookingsSanityCheckReport;
       [SanityCheckKind.SlotAttendance]: SlotAttendanceSanityCheckReport;
       [SanityCheckKind.SlotSlotsByDay]: SlotSlotsByDaySanityCheckReport;
+      [SanityCheckKind.BookedSlotsAttendance]: BookedSlotsAttendanceSanityCheckReport;
     };
   };
 }

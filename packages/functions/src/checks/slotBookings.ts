@@ -4,7 +4,7 @@ import { DateTime } from "luxon";
 import {
   BookingSubCollection,
   BookingsEntryExistsPayload,
-  BookingsSanityCheckReport,
+  SlotBookingsSanityCheckReport,
   BookingsUnpairedCheckPayload,
   Collection,
   CustomerBookingEntry,
@@ -24,7 +24,7 @@ type Firestore = admin.firestore.Firestore;
 export const findSlotBookingsMismatches = async (
   db: Firestore,
   organization: string
-): Promise<BookingsSanityCheckReport> => {
+): Promise<SlotBookingsSanityCheckReport> => {
   const timestamp = DateTime.now().toISO();
 
   const orgRef = db.collection(Collection.Organizations).doc(organization);
