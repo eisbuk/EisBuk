@@ -33,4 +33,5 @@ export enum CloudFunction {
   DBSlotAttendanceAutofix = "dbSlotAttendanceAutofix",
   DBSlotSlotsByDayAutofix = "dbSlotSlotsByDayAutofix",
   DBSlotBookingsAutofix = "dbSlotBookingsAutofix",
+  DBBookedSlotsAttendanceAutofix = "dbBookedSlotsAttendanceAutofix",
 }

@@ -14,6 +14,7 @@ import {
   bookingsAutofix,
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
+import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -162,5 +163,33 @@ export const dbSlotBookingsAutofix = functions
       checker.writeReport({ ...report, bookingsFixes });
 
       return bookingsFixes;
+    }
+  );
+
+export const dbBookedSlotsAttendanceAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.BookedSlotsAttendance
+      );
+
+      const report = await checker
+        .getLatestReport()
+        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+
+      const attendanceFixes = await bookedSlotsAttendanceAutofix(
+        db,
+        organization,
+        report
+      );
+      checker.writeReport({ ...report, attendanceFixes });
+
+      return attendanceFixes;
     }
   );

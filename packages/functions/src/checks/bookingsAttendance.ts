@@ -3,6 +3,7 @@ import {
   CollectionReference,
   DocumentData,
   DocumentSnapshot,
+  FieldValue,
 } from "@google-cloud/firestore";
 
 import {
@@ -16,24 +17,23 @@ import {
   valueMapper,
   CustomerBookings,
   _reduce,
-  CustomerAttendanceRepoort,
-  CustomerBookingReport,
   keyMapper,
   ID,
+  CustomerAttendance,
+  BookedSlotsAttendanceAutofixReport,
 } from "@eisbuk/shared";
 
 import { Firestore } from "./types";
+import _ from "lodash";
 
 type MismatchReport = {
-  booking: CustomerBookingReport;
-  attendance: CustomerAttendanceRepoort;
+  booking: CustomerBookingEntry;
+  attendance: CustomerAttendance;
 };
 
-type MetaReport = {
+type MetaReport = Partial<MismatchReport> & {
   slotId: string;
   customerId: string;
-  attendance?: CustomerAttendanceRepoort;
-  booking?: CustomerBookingReport;
 };
 
 /**
@@ -80,20 +80,20 @@ export const findBookedSlotsAttendanceMismatches = async (
   }: Omit<CustomerBookings, "bookedSlots"> & {
     bookedSlots: [string, CustomerBookingEntry][];
   }): MetaReport[] =>
-    bookedSlots.map(([slotId, { interval }]) => ({
+    bookedSlots.map(([slotId, booking]) => ({
       slotId,
       customerId,
-      booking: { interval },
+      booking,
     }));
 
   const normaliseAttendances = ([slotId, doc]: readonly [
     string,
     SlotAttendnace
   ]): MetaReport[] =>
-    Object.entries(doc.attendances).map(([customerId, { bookedInterval }]) => ({
+    Object.entries(doc.attendances).map(([customerId, attendance]) => ({
       slotId,
       customerId,
-      attendance: { bookedInterval },
+      attendance,
     }));
 
   const normalisedBookedSlots =
@@ -130,8 +130,9 @@ export const findBookedSlotsAttendanceMismatches = async (
     wrapIter(allEntries)
       // Here we're interested only in entries where there's no booking present
       .filter(([, , { booking }]) => !booking)
-      ._group(([slotId, customerId]) => [slotId, customerId])
-      .map(valueMapper((customers) => [...customers]))
+      .map(([id, ...r]) => [id, r] as [string, [string, MismatchReport]])
+      ._group(ID)
+      .map(valueMapper((bookings) => Object.fromEntries(bookings)))
   );
 
   const mismatchedAttendances = Object.fromEntries(
@@ -149,7 +150,6 @@ export const findBookedSlotsAttendanceMismatches = async (
       // Here we're interested only in entries where there's no attendance present
       .filter(([, , { attendance }]) => !attendance)
       .map(([id, ...r]) => [id, r] as [string, [string, MismatchReport]])
-      .map(valueMapper(([customerId, { booking }]) => [customerId, booking]))
       ._group(ID)
       .map(valueMapper((bookings) => Object.fromEntries(bookings)))
   );
@@ -160,6 +160,111 @@ export const findBookedSlotsAttendanceMismatches = async (
     mismatchedAttendances,
     missingAttendances,
   };
+};
+
+export const bookedSlotsAttendanceAutofix = async (
+  db: Firestore,
+  organization: string,
+  mismatches: BookedSlotsAttendanceSanityCheckReport
+): Promise<BookedSlotsAttendanceAutofixReport> => {
+  const report = {
+    timestamp: DateTime.now().toISO(),
+    created: {},
+    deleted: {},
+    updated: {},
+  };
+
+  const batch = db.batch();
+
+  const { mismatchedAttendances, missingAttendances, strayAttendances } =
+    mismatches;
+
+  const orgRef = db.collection(Collection.Organizations).doc(organization);
+  const attendance = orgRef.collection(OrgSubCollection.Attendance);
+
+  /** Document we're queueing updates for the given slot's attendance into */
+  type AttendanceUpdate = {
+    attendances: {
+      [customerId: string]: CustomerAttendance | FieldValue;
+    };
+  };
+  /** Aggregated updates per each slot attendance document */
+  const updates = new Map<string, AttendanceUpdate>();
+  const queueUpdate = (
+    slotId: string,
+    customerId: string,
+    after: CustomerAttendance | FieldValue
+  ) => {
+    const slot = updates.get(slotId) || { attendances: {} };
+    slot.attendances[customerId] = after;
+    updates.set(slotId, slot);
+  };
+
+  // Delete strays
+  //
+  // Result: Iterable of { slotId => { [customerId: string]: { attendance } }}
+  const toDelete = wrapIter(Object.entries(strayAttendances))
+    // Result: Iterable of { slotId => { customerId => { attendance } } } pairs
+    .map(valueMapper((customers) => Object.entries(customers)))
+    // Result: Iterable of [slotId, customerId, { attendance }] tuples
+    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
+
+  for (const [slotId, customerId, r] of toDelete) {
+    const before = r.attendance;
+
+    queueUpdate(slotId, customerId, FieldValue.delete());
+    // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
+    _.set(report, ["deleted", slotId, customerId], { before });
+  }
+
+  // Create missing
+  //
+  // Result: Iterable of { slotId => { [customerId: string]: { booking } }}
+  const toCreate = wrapIter(Object.entries(missingAttendances))
+    // Result: Iterable of { slotId => { customerId => { booking } } } pairs
+    .map(valueMapper((customers) => Object.entries(customers)))
+    // Result: Iterable of [slotId, customerId, { booking }] tuples
+    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
+
+  for (const [slotId, customerId, r] of toCreate) {
+    const bookedInterval = r.booking?.interval;
+    const attendedInterval = r.booking?.interval;
+
+    const after = { bookedInterval, attendedInterval };
+
+    queueUpdate(slotId, customerId, after);
+    // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
+    _.set(report, ["created", slotId, customerId], { after });
+  }
+
+  // Update mismatched
+  //
+  // Result: Iterable of { slotId => { [customerId: string]: { attendance, booking } }}
+  const toUpdate = wrapIter(Object.entries(mismatchedAttendances))
+    // Result: Iterable of { slotId => { customerId => { attendance, booking } } } pairs
+    .map(valueMapper((customers) => Object.entries(customers)))
+    // Result: Iterable of [slotId, customerId, { attendance, booking }] tuples
+    .flatMap(([slotId, c]) => c.map((kv) => [slotId, ...kv] as const));
+
+  for (const [slotId, customerId, r] of toUpdate) {
+    const bookedInterval = r.booking?.interval;
+    const attendedInterval = r.booking?.interval;
+
+    const before = r.attendance;
+    const after = { bookedInterval, attendedInterval };
+
+    queueUpdate(slotId, customerId, after);
+    // Using _.set as a convenience method to create all of the parent nodes for the property (if they don't exist)
+    _.set(report, ["updated", slotId, customerId], { before, after });
+  }
+
+  // Apply (batch) updates
+  for (const [slotId, update] of updates) {
+    batch.set(attendance.doc(slotId), update, { merge: true });
+  }
+  await batch.commit();
+
+  return report;
 };
 
 // #region helpers

@@ -244,6 +244,20 @@ const DebugPage: React.FC = () => {
               DB Booked slots / Attendance Check
             </DebugPageButton>
           </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBBookedSlotsAttendanceAutofix
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              DB Booked slots / Attendance Autofix
+            </DebugPageButton>
+          </div>
         </div>
       </LayoutContent>
     </Layout>

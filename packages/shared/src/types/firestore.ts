@@ -454,6 +454,32 @@ export interface SlotBookingsAutofixReport {
   deleted: Record<string, CustomerBookingEntry>;
 }
 
+export interface BookedSlotsAttendanceAutofixReport {
+  timestamp: string;
+  created: {
+    [slotId: string]: {
+      [customerId: string]: {
+        after: CustomerAttendance;
+      };
+    };
+  };
+  updated: {
+    [slotId: string]: {
+      [customerId: string]: {
+        before: CustomerAttendance;
+        after: CustomerAttendance;
+      };
+    };
+  };
+  deleted: {
+    [slotId: string]: {
+      [customerId: string]: {
+        before: CustomerAttendance;
+      };
+    };
+  };
+}
+
 export interface SlotAttendanceSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
@@ -476,31 +502,35 @@ export interface SlotBookingsSanityCheckReport {
   bookingsFixes?: SlotBookingsAutofixReport;
 }
 
-export type CustomerBookingReport = { interval: string | null };
-export type CustomerAttendanceRepoort = { bookedInterval: string | null };
-
 export interface BookedSlotsAttendanceSanityCheckReport {
   /** ISO timestamp of the sanity check run */
   id: string;
   /** { slotId => [...customer] } Record of customer entries in attendance documents where they shouldn't be */
   strayAttendances: {
-    [slotId: string]: string[];
+    [slotId: string]: {
+      [customerId: string]: {
+        attendance: CustomerAttendance;
+      };
+    };
   };
   /** A record of slots, booked by given customers, that don't have appropriate entries in the corresponding attendance document */
   missingAttendances: {
     [slotId: string]: {
-      [customerId: string]: CustomerBookingReport;
+      [customerId: string]: {
+        booking: CustomerBookingEntry;
+      };
     };
   };
   /** A record of slots, booked by given customers, that have mismatched entries in the corresponding attendance document */
   mismatchedAttendances: {
     [slotId: string]: {
       [customerId: string]: {
-        booking: CustomerBookingReport;
-        attendance: CustomerAttendanceRepoort;
+        attendance: CustomerAttendance;
+        booking: CustomerBookingEntry;
       };
     };
   };
+  attendanceFixes?: BookedSlotsAttendanceAutofixReport;
 }
 
 /** `<month>/<date>` string used for `slotsByDay` sanity checks */
