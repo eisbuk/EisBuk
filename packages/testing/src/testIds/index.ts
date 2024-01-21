@@ -98,8 +98,16 @@ type TestIDList = [
   "primary-interval",
   "custom-interval-input",
   "cancel-custom-interval",
-  "add-custom-interval"
+  "add-custom-interval",
   // #endregion AttendanceIntervals
+
+  // #region AdminBar
+  "booking-emails",
+  // #endregion AdminBar
+
+  // #region BookingEmail
+  "select-athletes"
+  // #endregion BookingEmail
 ];
 export type TestID = TestIDList[number];
 

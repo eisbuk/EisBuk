@@ -3,5 +3,25 @@
     "emailFrom": "test@organization.com",
     "displayName": "Test organization",
     "registrationCode": "test-registration-code"
+  },
+  "organizationWithEmailTemplates": {
+    "emailFrom": "test@organization.com",
+    "displayName": "Test organization",
+
+    "smtpConfigured": true,
+    "emailTemplates": {
+      "send-bookings-link": {
+        "subject": "",
+        "html": ""
+      },
+      "send-calendar-file": {
+        "subject": "",
+        "html": ""
+      },
+      "send-extended-bookings-date": {
+        "subject": "",
+        "html": ""
+      }
+    }
   }
 }

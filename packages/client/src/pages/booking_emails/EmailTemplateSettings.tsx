@@ -18,6 +18,7 @@ import {
 } from "@eisbuk/shared";
 import { ChevronDown } from "@eisbuk/svg";
 import { useClickOutside } from "@eisbuk/shared/ui";
+import { testId } from "@eisbuk/testing/testIds";
 
 import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
 
@@ -87,6 +88,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
                     type="button"
                     className="inline-flex justify-center w-full rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                     onClick={toggleDropdown}
+                    data-testid={testId("select-athletes")}
                   >
                     {t(MessageTemplateLabel.SelectAthletes)}
                     <span className="inline-block h-6 w-6">
