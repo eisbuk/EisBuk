@@ -115,7 +115,13 @@ rushx start
 ```
 
 In order to start the development and observe in app functionality, you need to create the default admins.
-Head your browser to http://localhost:3000/debug and click the `Create admin test users` button. This will create a default admin user and leave you logged in.
+Run the `initDev` function from a browser console:
+
+```javascript
+initDev();
+```
+
+This will create a default admin user and leave you logged in.
 If you want to sign out and sign back in, the credentials (for a default admin) are:
 
 - **email:** "test@eisbuk.it"
