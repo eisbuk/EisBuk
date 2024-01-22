@@ -5,12 +5,13 @@ import { Customer, ClientMessageMethod } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { getBookingsLink, getDialogPrompt, sendBookingsLink } from "./utils";
 
-type SendBookingsLinkProps = BaseModalProps &
-  Customer & { method: ClientMessageMethod };
+type SendBookingsLinkProps = ModalProps<
+  Customer & { method: ClientMessageMethod }
+>;
 
 const SendBookingsLinkDialog: React.FC<SendBookingsLinkProps> = ({
   onClose,

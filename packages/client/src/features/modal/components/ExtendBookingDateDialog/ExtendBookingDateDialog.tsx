@@ -1,16 +1,16 @@
 import React from "react";
 import { useDispatch } from "react-redux";
+import { DateTime } from "luxon";
 
 import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { extendBookingDate } from "@/store/actions/customerOperations";
-import { DateTime } from "luxon";
 
-type ExtendBookingDateProps = BaseModalProps & Customer;
+type ExtendBookingDateProps = ModalProps<Customer>;
 
 const ExtendBookingDateDialog: React.FC<ExtendBookingDateProps> = ({
   onClose,

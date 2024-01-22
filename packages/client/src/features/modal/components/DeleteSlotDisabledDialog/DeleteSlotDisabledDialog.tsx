@@ -4,9 +4,9 @@ import { SlotInterface } from "@eisbuk/shared";
 import { ActionDialog, SlotCard } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
-type DeleteSlotDisabledDialogProps = BaseModalProps & SlotInterface;
+type DeleteSlotDisabledDialogProps = ModalProps<SlotInterface>;
 
 const DeleteSlotDialog: React.FC<DeleteSlotDisabledDialogProps> = ({
   onClose,

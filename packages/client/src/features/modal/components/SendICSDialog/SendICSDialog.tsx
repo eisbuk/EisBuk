@@ -14,12 +14,11 @@ import { Customer } from "@eisbuk/shared";
 
 import { testId } from "@eisbuk/testing/testIds";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { sendBookingsCalendar } from "@/store/actions/icsCalendarOperations";
 
-type SendICSDialogProps = BaseModalProps &
-  Pick<Customer, "secretKey" | "email">;
+type SendICSDialogProps = ModalProps<Pick<Customer, "secretKey" | "email">>;
 
 const validationSchema = Yup.object().shape({
   email: Yup.string()
