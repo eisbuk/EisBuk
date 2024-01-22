@@ -140,6 +140,20 @@ const DebugPage: React.FC = () => {
               onClick={() =>
                 createFunctionCaller(
                   functions,
+                  CloudFunction.CalculateBookingStatsThisAndNextMonths
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              Calculate Booking Stats for Current and the Following Month
+            </DebugPageButton>
+          </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
                   CloudFunction.DBSlotAttendanceCheck
                 )().then(console.log)
               }
@@ -160,19 +174,6 @@ const DebugPage: React.FC = () => {
               color={ButtonColor.Primary}
             >
               DB Slot / Attendance Autofix
-            </DebugPageButton>
-          </div>
-          <div className="p-2">
-            <DebugPageButton
-              onClick={() =>
-                createFunctionCaller(
-                  functions,
-                  CloudFunction.CalculateBookingStatsThisAndNextMonths
-                )().then(console.log)
-              }
-              color={ButtonColor.Primary}
-            >
-              Calculate Booking Stats for Current and the Following Month
             </DebugPageButton>
           </div>
           <div className="p-2">
@@ -201,6 +202,7 @@ const DebugPage: React.FC = () => {
               DB Slot / Bookings Autofix
             </DebugPageButton>
           </div>
+
           <div className="p-2">
             <DebugPageButton
               onClick={() =>
@@ -226,6 +228,34 @@ const DebugPage: React.FC = () => {
               color={ButtonColor.Primary}
             >
               DB Slot / SlotsByDay Autofix
+            </DebugPageButton>
+          </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBBookedSlotsAttendanceCheck
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              DB Booked slots / Attendance Check
+            </DebugPageButton>
+          </div>
+
+          <div className="p-2">
+            <DebugPageButton
+              onClick={() =>
+                createFunctionCaller(
+                  functions,
+                  CloudFunction.DBBookedSlotsAttendanceAutofix
+                )().then(console.log)
+              }
+              color={ButtonColor.Primary}
+            >
+              DB Booked slots / Attendance Autofix
             </DebugPageButton>
           </div>
         </div>

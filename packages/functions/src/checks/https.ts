@@ -14,6 +14,7 @@ import {
   bookingsAutofix,
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
+import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -53,6 +54,36 @@ export const dbSlotSlotsByDayCheck = functions
     }
   );
 
+export const dbSlotBookingsCheck = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      return newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotBookings
+      ).checkAndWrite();
+    }
+  );
+
+export const dbBookedSlotsAttendanceCheck = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      return newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.BookedSlotsAttendance
+      ).checkAndWrite();
+    }
+  );
+
 export const dbSlotAttendanceAutofix = functions
   .region(__functionsZone__)
   .https.onCall(
@@ -82,44 +113,6 @@ export const dbSlotAttendanceAutofix = functions
     }
   );
 
-export const dbSlotBookingsCheck = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
-
-      const db = admin.firestore();
-      return newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotBookings
-      ).checkAndWrite();
-    }
-  );
-
-export const dbSlotBookingsAutofix = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
-
-      const db = admin.firestore();
-      const checker = newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotBookings
-      );
-
-      const report = await checker
-        .getLatestReport()
-        .then((r) => (!r || r.bookingsFixes ? checker.checkAndWrite() : r));
-
-      const bookingsFixes = await bookingsAutofix(db, organization, report);
-      checker.writeReport({ ...report, bookingsFixes });
-
-      return bookingsFixes;
-    }
-  );
 export const dbSlotSlotsByDayAutofix = functions
   .region(__functionsZone__)
   .https.onCall(
@@ -146,5 +139,57 @@ export const dbSlotSlotsByDayAutofix = functions
       checker.writeReport({ ...report, slotsByDayFixes });
 
       return slotsByDayFixes;
+    }
+  );
+
+export const dbSlotBookingsAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.SlotBookings
+      );
+
+      const report = await checker
+        .getLatestReport()
+        .then((r) => (!r || r.bookingsFixes ? checker.checkAndWrite() : r));
+
+      const bookingsFixes = await bookingsAutofix(db, organization, report);
+      checker.writeReport({ ...report, bookingsFixes });
+
+      return bookingsFixes;
+    }
+  );
+
+export const dbBookedSlotsAttendanceAutofix = functions
+  .region(__functionsZone__)
+  .https.onCall(
+    async ({ organization }: { organization: string }, { auth }) => {
+      if (!(await checkUser(organization, auth))) throwUnauth();
+
+      const db = admin.firestore();
+      const checker = newSanityChecker(
+        db,
+        organization,
+        SanityCheckKind.BookedSlotsAttendance
+      );
+
+      const report = await checker
+        .getLatestReport()
+        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+
+      const attendanceFixes = await bookedSlotsAttendanceAutofix(
+        db,
+        organization,
+        report
+      );
+      checker.writeReport({ ...report, attendanceFixes });
+
+      return attendanceFixes;
     }
   );
