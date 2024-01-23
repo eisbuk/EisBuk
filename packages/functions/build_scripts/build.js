@@ -16,17 +16,7 @@ const res = esbuild.buildSync({
   ...config,
   entryPoints: [path.join(__dirname, "..", "src", "index.ts")],
   bundle: true,
-  preserveSymlinks: true,
-  minify: true,
   metafile: true,
-  external: [
-    "firebase-functions",
-    "firebase-admin",
-    "uuid",
-    "lodash",
-    "luxon",
-    "@google-cloud/firestore",
-  ],
 });
 
 const analysis = esbuild.analyzeMetafileSync(res.metafile);

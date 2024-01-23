@@ -26,9 +26,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v4
@@ -115,9 +115,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Run tests
       run: cd packages/client && rushx test:emulators:ci
@@ -194,9 +194,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Lint all the packages
       run: rush lint:strict
@@ -226,9 +226,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-cypress-node18-v2-${{ hashFiles('**/pnpm-lock.yaml', '**/package.json', 'common/config/rush/repo-state.json') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Build app
       run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
@@ -333,7 +333,7 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
     - name: Check dependency consistency
       run: ./.github/check-rush.sh
@@ -361,9 +361,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Check if secrets are available
       id: has_secret
@@ -424,9 +424,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Check if secrets are available
       id: has_secret

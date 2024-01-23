@@ -9,6 +9,7 @@ import {
   OrganizationSecrets,
   HTTPSErrors,
 } from "@eisbuk/shared";
+import { wrapFirestoreOnWriteHandler } from "../sentry-serverless-firebase";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
@@ -88,58 +89,60 @@ export const deliverEmail = functions
   .firestore.document(
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`
   )
-  .onWrite((change, { params }) =>
-    processDelivery(change, async ({ success, error }) => {
-      const { organization } = params;
+  .onWrite(
+    wrapFirestoreOnWriteHandler("deliverEmail", (change, { params }) =>
+      processDelivery(change, async ({ success, error }) => {
+        const { organization } = params;
 
-      // Get transport layer
-      const partialSMTPPreferences = await getSMTPPreferences(organization);
-      const [SMTPPreferences, configErrs] = validateJSON<SMTPPreferences>(
-        SMTPPreferencesSchema,
-        partialSMTPPreferences,
-        "Invalid SMTP config (check your organization preferences), following validation errors occurred:"
-      );
-      if (configErrs) {
-        functions.logger.info("SMTP setup failed with errors", {
-          errors: configErrs,
+        // Get transport layer
+        const partialSMTPPreferences = await getSMTPPreferences(organization);
+        const [SMTPPreferences, configErrs] = validateJSON<SMTPPreferences>(
+          SMTPPreferencesSchema,
+          partialSMTPPreferences,
+          "Invalid SMTP config (check your organization preferences), following validation errors occurred:"
+        );
+        if (configErrs) {
+          functions.logger.info("SMTP setup failed with errors", {
+            errors: configErrs,
+          });
+          return error(configErrs);
+        }
+        const smtpConfig = processSMTPPreferences(SMTPPreferences);
+        const transport = nodemailer.createTransport({
+          ...smtpConfig,
+          /** @OTODO check this: this is temporarily set for testing purposes, but we might use it in production?? */
+          tls: { rejectUnauthorized: false },
         });
-        return error(configErrs);
-      }
-      const smtpConfig = processSMTPPreferences(SMTPPreferences);
-      const transport = nodemailer.createTransport({
-        ...smtpConfig,
-        /** @OTODO check this: this is temporarily set for testing purposes, but we might use it in production?? */
-        tls: { rejectUnauthorized: false },
-      });
 
-      // Get current email payload
-      const data = change.after.data() as Partial<
-        ProcessDocument<EmailPayload>
-      >;
+        // Get current email payload
+        const data = change.after.data() as Partial<
+          ProcessDocument<EmailPayload>
+        >;
 
-      // Validate email and throw if not a valid schema
-      const [email, emailErrs] = validateJSON(
-        EmailPayloadSchema,
-        data.payload || {},
-        "Constructing gave following errors (check the email payload and organization preferences):"
-      );
-      if (emailErrs) {
-        functions.logger.info("Email delivery failed with errors", {
-          errors: emailErrs,
+        // Validate email and throw if not a valid schema
+        const [email, emailErrs] = validateJSON(
+          EmailPayloadSchema,
+          data.payload || {},
+          "Constructing gave following errors (check the email payload and organization preferences):"
+        );
+        if (emailErrs) {
+          functions.logger.info("Email delivery failed with errors", {
+            errors: emailErrs,
+          });
+          return error(emailErrs);
+        }
+
+        functions.logger.info("Sending mail:", email);
+        const result = await transport.sendMail(email);
+
+        // Store send mail response to process document with success result
+        return success({
+          messageId: result.messageId || null,
+          accepted: result.accepted || [],
+          rejected: result.rejected || [],
+          pending: result.pending || [],
+          response: result.response || null,
         });
-        return error(emailErrs);
-      }
-
-      functions.logger.info("Sending mail:", email);
-      const result = await transport.sendMail(email);
-
-      // Store send mail response to process document with success result
-      return success({
-        messageId: result.messageId || null,
-        accepted: result.accepted || [],
-        rejected: result.rejected || [],
-        pending: result.pending || [],
-        response: result.response || null,
-      });
-    })
+      })
+    )
   );

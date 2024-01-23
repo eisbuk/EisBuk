@@ -4,11 +4,11 @@ run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
 #@ end
 
 #@ def rush_update():
-name: Install and build packages
+name: Install dependencies
 run: rush update
 #@ end
 
 #@ def rush_build():
-name: Build packages
+name: Build eisbuk packages
 run: rush build
 #@ end
