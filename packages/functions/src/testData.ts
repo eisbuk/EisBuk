@@ -59,6 +59,22 @@ export const ping = functions.region(__functionsZone__).https.onCall((data) => {
 });
 
 /**
+ * Function to throw an error on purpose
+ */
+export const testException = functions
+  .region(__functionsZone__)
+  .https.onRequest((req, res) => {
+    // get the `throwError` query param
+    const throwError = Boolean(req.query.throwError);
+    if (throwError) {
+      functions.logger.info("Throwing an error as requested");
+      throw new Error();
+    }
+    res.setHeader("Content-Type", "application/json");
+    res.send(JSON.stringify({ pong: true, data: { ...req.query } }));
+  });
+
+/**
  * Creates dummy organizations with two dummy admins
  */
 export const createOrganization = functions
