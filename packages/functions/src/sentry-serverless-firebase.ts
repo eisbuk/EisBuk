@@ -153,8 +153,8 @@ function wrap<A, B, C>(
           }) as Promise<C | undefined>
       );
     } catch (err) {
-      await captureException(err, { tags: { handled: false }, req: req });
-      await transaction.finish();
+      captureException(err, { tags: { handled: false } });
+      transaction.finish();
       await flush(2000);
       throw err;
     }
