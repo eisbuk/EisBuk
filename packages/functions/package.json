@@ -47,7 +47,9 @@
     "debug": "~4.3.4",
     "agent-base": "~7.1.0",
     "ms": "~2.1.3",
-    "source-map-support": "^0.5.21"
+    "source-map-support": "^0.5.21",
+    "buffer-from": "~1.1.2",
+    "source-map": "~0.7.4"
   },
   "devDependencies": {
     "@firebase/app-types": "~0.9.0",
