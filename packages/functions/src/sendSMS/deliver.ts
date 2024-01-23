@@ -9,6 +9,7 @@ import {
   SMSMessage,
   HTTPSErrors,
 } from "@eisbuk/shared";
+import { wrapFirestoreOnWriteHandler } from "../sentry-serverless-firebase";
 import processDelivery, {
   ProcessDocument,
 } from "@eisbuk/firestore-process-delivery";
@@ -39,65 +40,69 @@ export const deliverSMS = functions
   .firestore.document(
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`
   )
-  .onWrite((change, { params }) =>
-    processDelivery(change, async ({ success, error }) => {
-      const { organization } = params as { organization: string };
+  .onWrite(
+    wrapFirestoreOnWriteHandler("deliverSMS", (change, { params }) =>
+      processDelivery(change, async ({ success, error }) => {
+        const { organization } = params as { organization: string };
 
-      // Get current SMS payload
-      const {
-        payload: { message, to },
-      } = change.after.data() as ProcessDocument<SMSMessage>;
+        // Get current SMS payload
+        const {
+          payload: { message, to },
+        } = change.after.data() as ProcessDocument<SMSMessage>;
 
-      const db = admin.firestore();
+        const db = admin.firestore();
 
-      // Get SMS preferences and secrets
-      const [orgSnap, secretsSnap] = await Promise.all([
-        db.doc(`${Collection.Organizations}/${organization}`).get(),
-        db.doc(`${Collection.Secrets}/${organization}`).get(),
-      ]);
-
-      const orgData = orgSnap.data() as OrganizationData;
-      const smsFrom = orgData.smsFrom || organization.substring(0, 11);
-
-      const secretsData = secretsSnap.data() as OrganizationSecrets;
-      if (!secretsData) {
-        throw new Error(HTTPSErrors.NoSecrets);
-      }
-      const authToken = secretsData.smsAuthToken || "";
-
-      // Construct request options
-      const { proto, ...options } = createSMSReqOptions(
-        "POST",
-        __smsUrl__,
-        authToken
-      );
-
-      // Construct and validate SMS data
-      const [sms, errs] = validateJSON(SMSAPIPayloadSchema, {
-        message,
-        sender: smsFrom,
-        recipients: [{ msisdn: to }],
-        callback_url: getSMSCallbackUrl(),
-      });
-      if (errs) {
-        return error(errs);
-      }
-
-      // Send SMS request to the provider
-      // Success means the request was received, we're checking later for the delivery state
-      const res = await sendRequest<SMSResponse>(proto, options, sms);
-
-      if (res && res.ids) {
-        // A response containing a `res` key is successful
-        functions.logger.log("SMS POST request successful", { response: res });
-        return success(res, { status: "BUFFERED" });
-      } else {
-        functions.logger.log("Error while sending SMS, check the response", {
-          response: res,
-        });
-        return error([
-          "Error occurred while trying to send SMS, check the function logs for more info.",
+        // Get SMS preferences and secrets
+        const [orgSnap, secretsSnap] = await Promise.all([
+          db.doc(`${Collection.Organizations}/${organization}`).get(),
+          db.doc(`${Collection.Secrets}/${organization}`).get(),
         ]);
-      }
-    })
+
+        const orgData = orgSnap.data() as OrganizationData;
+        const smsFrom = orgData.smsFrom || organization.substring(0, 11);
+
+        const secretsData = secretsSnap.data() as OrganizationSecrets;
+        if (!secretsData) {
+          throw new Error(HTTPSErrors.NoSecrets);
+        }
+        const authToken = secretsData.smsAuthToken || "";
+
+        // Construct request options
+        const { proto, ...options } = createSMSReqOptions(
+          "POST",
+          __smsUrl__,
+          authToken
+        );
+
+        // Construct and validate SMS data
+        const [sms, errs] = validateJSON(SMSAPIPayloadSchema, {
+          message,
+          sender: smsFrom,
+          recipients: [{ msisdn: to }],
+          callback_url: getSMSCallbackUrl(),
+        });
+        if (errs) {
+          return error(errs);
+        }
+
+        // Send SMS request to the provider
+        // Success means the request was received, we're checking later for the delivery state
+        const res = await sendRequest<SMSResponse>(proto, options, sms);
+
+        if (res && res.ids) {
+          // A response containing a `res` key is successful
+          functions.logger.log("SMS POST request successful", {
+            response: res,
+          });
+          return success(res, { status: "BUFFERED" });
+        } else {
+          functions.logger.log("Error while sending SMS, check the response", {
+            response: res,
+          });
+          return error([
+            "Error occurred while trying to send SMS, check the function logs for more info.",
+          ]);
+        }
+      })
+    )
   );

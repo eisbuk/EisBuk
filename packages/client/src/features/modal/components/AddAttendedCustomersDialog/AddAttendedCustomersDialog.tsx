@@ -10,15 +10,16 @@ import i18n, {
 import { CustomerList, IconButton, SearchBar } from "@eisbuk/ui";
 import { Close } from "@eisbuk/svg";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { markAttendance } from "@/store/actions/attendanceOperations";
 
-type AddAttendedCustomersProps = BaseModalProps &
+type AddAttendedCustomersProps = ModalProps<
   SlotInterface & {
     defaultInterval: string;
     customers: CustomerFull[];
-  };
+  }
+>;
 
 const AddAttendedCustomersDialog: React.FC<AddAttendedCustomersProps> = ({
   onClose,

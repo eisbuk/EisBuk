@@ -2,13 +2,12 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-import * as Sentry from "@sentry/serverless";
 
 import {
   wrapFirestoreOnCreateHandler,
   wrapFirestoreOnWriteHandler,
 } from "./sentry-serverless-firebase";
-import { __sentryDSN__, __functionsZone__ } from "./constants";
+import { __functionsZone__ } from "./constants";
 import {
   BookingSubCollection,
   Collection,
@@ -26,13 +25,6 @@ import {
 } from "@eisbuk/shared";
 
 import { getCustomerStats } from "./utils";
-
-if (!process.env.FUNCTIONS_EMULATOR) {
-  Sentry.init({
-    dsn: __sentryDSN__,
-    tracesSampleRate: 1.0,
-  });
-}
 
 /**
  * A type alias for Customer with `secretKey` and `id` optional

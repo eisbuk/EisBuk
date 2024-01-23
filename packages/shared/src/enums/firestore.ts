@@ -48,6 +48,7 @@ export enum SanityCheckKind {
   SlotAttendance = "slotAttendance",
   SlotBookings = "slotBookings",
   SlotSlotsByDay = "slotSlotsByDay",
+  BookedSlotsAttendance = "bookedSlotsAttendance",
 }
 
 // endregion

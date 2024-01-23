@@ -30,9 +30,9 @@ jobs:
         key: ${{ runner.os }}-modules-emulators-node18-v2-${{ hashFiles('**/pnpm-lock.yaml') }}
     - name: Add rush directory to PATH
       run: echo PATH=$PWD/common/scripts/:$PATH >> $GITHUB_ENV
-    - name: Install and build packages
+    - name: Install dependencies
       run: rush update
-    - name: Build packages
+    - name: Build eisbuk packages
       run: rush build
     - name: Inject slug/short variables
       uses: rlespinasse/github-slug-action@v4
@@ -63,6 +63,9 @@ jobs:
         sourcemaps: ./packages/client/dist/assets
         version: ${{ env.SENTRY_RELEASE }}
     - name: Deploy to firebase
-      run: rush deploy:production
+      run: |
+        echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
+        rush deploy:production
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
+        FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
