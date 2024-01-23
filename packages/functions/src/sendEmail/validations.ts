@@ -11,7 +11,7 @@ import {
 import { SMTPPreferences } from "./types";
 
 // #region constants
-export const emailPattern = "^[-_.a-z0-9A-Z]*@[-_.a-z0-9A-Z]*[.][a-z][a-z]+$";
+export const emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
 export const __invalidEmailError = "must be a valid email string";
 // #endregion constants
 
@@ -71,6 +71,7 @@ export const EmailPayloadSchema: JSONSchemaType<EmailPayload> = {
       type: "string",
       pattern: emailPattern,
       errorMessage: __invalidEmailError,
+      nullable: true,
     },
     to: {
       type: "string",
