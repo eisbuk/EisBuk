@@ -3,6 +3,10 @@ import admin from "firebase-admin";
 import { DateTime } from "luxon";
 import _ from "lodash";
 import { v4 } from "uuid";
+import {
+  wrapHttpsOnCallHandler,
+  wrapHttpsOnRequestHandler,
+} from "./sentry-serverless-firebase";
 
 import {
   Category,
@@ -35,9 +39,9 @@ interface CreateOrganizationPayload {
 /**
  * Creates users for provided organization
  */
-export const createTestData = functions
-  .region(__functionsZone__)
-  .https.onCall(
+export const createTestData = functions.region(__functionsZone__).https.onCall(
+  wrapHttpsOnCallHandler(
+    "createTestData",
     async ({ numUsers = 1, organization }: CreateTestDataPayload, context) => {
       if (!(await checkUser(organization, context.auth))) throwUnauth();
 
@@ -48,31 +52,36 @@ export const createTestData = functions
 
       return { success: true };
     }
-  );
+  )
+);
 
 /**
  * Ping endpoint function
  */
-export const ping = functions.region(__functionsZone__).https.onCall((data) => {
-  functions.logger.info("ping invoked");
-  return { pong: true, data: { ...data } };
-});
+export const ping = functions.region(__functionsZone__).https.onCall(
+  wrapHttpsOnCallHandler("ping", (data) => {
+    functions.logger.info("ping invoked");
+    return { pong: true, data: { ...data } };
+  })
+);
 
 /**
  * Function to throw an error on purpose
  */
 export const testException = functions
   .region(__functionsZone__)
-  .https.onRequest((req, res) => {
-    // get the `throwError` query param
-    const throwError = Boolean(req.query.throwError);
-    if (throwError) {
-      functions.logger.info("Throwing an error as requested");
-      throw new Error();
-    }
-    res.setHeader("Content-Type", "application/json");
-    res.send(JSON.stringify({ pong: true, data: { ...req.query } }));
-  });
+  .https.onRequest(
+    wrapHttpsOnRequestHandler("testException", (req, res) => {
+      // get the `throwError` query param
+      const throwError = Boolean(req.query.throwError);
+      if (throwError) {
+        functions.logger.info("Throwing an error as requested");
+        throw new Error(req.query.throwError?.toString());
+      }
+      res.setHeader("Content-Type", "application/json");
+      res.send(JSON.stringify({ pong: true, data: { ...req.query } }));
+    })
+  );
 
 /**
  * Creates dummy organizations with two dummy admins
