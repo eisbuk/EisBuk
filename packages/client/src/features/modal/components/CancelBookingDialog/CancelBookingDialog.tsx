@@ -5,16 +5,18 @@ import { SlotInterface, SlotInterval } from "@eisbuk/shared";
 import { ActionDialog, IntervalCard, IntervalCardVariant } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
+import { ModalProps } from "@/features/modal/types";
+
 import { cancelBooking } from "@/store/actions/bookingOperations";
 
-interface CancelBookingContent extends SlotInterface {
-  interval: SlotInterval;
-  onClose: () => void;
-  className?: string;
-  secretKey: string;
-}
+type CancelBookingProps = ModalProps<
+  SlotInterface & {
+    interval: SlotInterval;
+    secretKey: string;
+  }
+>;
 
-const CancelBookingDialog: React.FC<CancelBookingContent> = ({
+const CancelBookingDialog: React.FC<CancelBookingProps> = ({
   interval,
   onClose,
   className,

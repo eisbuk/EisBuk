@@ -1,9 +1,11 @@
 import { useEffect, useRef } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { isEqual } from "lodash";
 
-import { WhitelistedComponents, GetComponentProps } from "./types";
+import { WhitelistedComponents, GetComponentProps, ModalProps } from "./types";
+
+import { getModalById } from "./selectors";
 
 import { closeModal, openModal, updateModal } from "./actions";
 
@@ -39,12 +41,18 @@ import { closeModal, openModal, updateModal } from "./actions";
 export const createModal = <C extends WhitelistedComponents>(component: C) => {
   const id = uuid();
 
-  return (props?: GetComponentProps<C>) => {
+  return (
+    props?: GetComponentProps<C>,
+    { onClose }: Partial<Pick<ModalProps, "onClose">> = {}
+  ) => {
     // Keep track of last prop update in odred to do deep comparison
     // of props and dispatch 'updateModal' only when the props aren't deeply equal
     const lastUpdate = useRef<GetComponentProps<C> | undefined>();
 
     const dispatch = useDispatch();
+
+    // Run 'onClose' if any when the modal closes
+    useOnClose(id, onClose);
 
     // Update props of the modal in store (only if open)
     useEffect(() => {
@@ -77,10 +85,28 @@ export const createModal = <C extends WhitelistedComponents>(component: C) => {
       dispatch(closeModal(id));
     };
 
+    const state = useSelector(getModalById<C>(id));
+
     return {
       open,
       openWithProps,
       close,
+      state,
     };
   };
+};
+
+const useOnClose = (id: string, onClose = () => {}) => {
+  const isOpen = useRef(false);
+
+  const modal = useSelector(getModalById(id));
+  useEffect(() => {
+    if (modal) {
+      isOpen.current = true;
+    }
+    if (!modal && isOpen.current) {
+      isOpen.current = false;
+      onClose();
+    }
+  }, [modal]);
 };

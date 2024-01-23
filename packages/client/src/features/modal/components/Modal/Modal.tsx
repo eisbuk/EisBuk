@@ -4,8 +4,13 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { componentWhitelist } from "@/features/modal/components";
 
-import { closeAllModals, popModal } from "@/features/modal/actions";
+import {
+  closeAllModals,
+  popModal,
+  updateModal,
+} from "@/features/modal/actions";
 import { getModal } from "@/features/modal/selectors";
+import { WhitelistedComponents } from "@/features/modal/types";
 
 /**
  * Main component for the `modal` feature. I uses the state in store to render an appropriate
@@ -58,10 +63,13 @@ const Modal: React.FC = () => {
   const handleCloseAll = () => {
     dispatch(closeAllModals);
   };
+  const handleUpdateSelf =
+    (id: string, component: WhitelistedComponents) => (props: any) =>
+      dispatch(updateModal({ id, component, props }));
 
   const content = (
     <ModalContainer onClose={handleClose}>
-      {modals.map(({ component, props }, i) => {
+      {modals.map(({ id, component, props }, i) => {
         const Component = componentWhitelist[component];
 
         return (
@@ -70,6 +78,7 @@ const Modal: React.FC = () => {
             {...(props as any)}
             onClose={handleClose}
             onCloseAll={handleCloseAll}
+            onUpdateSelf={handleUpdateSelf(id, component)}
           />
         );
       })}

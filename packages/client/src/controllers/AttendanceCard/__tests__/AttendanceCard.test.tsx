@@ -23,6 +23,7 @@ import { baseSlot } from "@eisbuk/testing/slots";
 const mockDispatch = vi.fn();
 vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => ({}),
 }));
 
 /**

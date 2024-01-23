@@ -5,11 +5,11 @@ import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { deleteCustomer } from "@/store/actions/customerOperations";
 
-type DeleteCustomerProps = BaseModalProps & Customer;
+type DeleteCustomerProps = ModalProps<Customer>;
 
 const DeleteCustomerDialog: React.FC<DeleteCustomerProps> = ({
   onClose,

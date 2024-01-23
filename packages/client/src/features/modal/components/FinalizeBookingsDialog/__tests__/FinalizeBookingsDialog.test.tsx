@@ -24,6 +24,7 @@ describe("FinalizeBookingsDialog", () => {
   beforeEach(() => {
     render(
       <FinalizeBookingsDialog
+        onCloseAll={() => {}}
         onClose={mockOnClose}
         customerId={saul.id}
         secretKey={saul.secretKey}

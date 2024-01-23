@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { componentWhitelist } from "./components";
 
 // #region component
-export interface BaseModalProps {
+export type ModalProps<T = {}> = {
   /**
    * Close the current modal (pop it from the stack)
    */
@@ -10,8 +11,16 @@ export interface BaseModalProps {
    * Close all open modals
    */
   onCloseAll: () => void;
+  /**
+   * Updates self (the instance rendered) from inside the component code.
+   * This is convenient if we want to communicate some state back to the caller opening the modal in the first place.
+   *
+   * @Note _This is optional to make it less tedious to test, but the handler will always be
+   * passed from the Modal component._
+   */
+  onUpdateSelf?: (props: T) => void;
   className?: string;
-}
+} & T;
 
 /**
  * A type alias for whitelisted components to avoid typing `keyof typeof ...`
@@ -25,11 +34,11 @@ export type WhitelistedComponents = keyof typeof componentWhitelist;
  * that can be rendered inside the Modal
  */
 export type GetComponentProps<C extends WhitelistedComponents> = Omit<
-  Parameters<typeof componentWhitelist[C]>[0],
+  Parameters<(typeof componentWhitelist)[C]>[0],
   // Omit the 'onClose' handler as it is specified by the Modal component
   // and it shouldn't be stored in `modal` store state.
   // Same goes for "className" and "children" (which should never be passed to a modal component)
-  "onCloseAll" | "onClose" | "className" | "children"
+  "onCloseAll" | "onClose" | "onUpdateSelf" | "className" | "children"
 >;
 // #endregion component
 
