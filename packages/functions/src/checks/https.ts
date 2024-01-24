@@ -22,6 +22,9 @@ import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
@@ -41,6 +44,9 @@ export const dbSlotAttendanceCheck = functions
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotSlotsByDayCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -59,6 +65,9 @@ export const dbSlotSlotsByDayCheck = functions
   );
 
 export const dbSlotBookingsCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
@@ -74,6 +83,9 @@ export const dbSlotBookingsCheck = functions
   );
 
 export const dbBookedSlotsAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -92,6 +104,9 @@ export const dbBookedSlotsAttendanceCheck = functions
   );
 
 export const dbSlotAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -124,6 +139,9 @@ export const dbSlotAttendanceAutofix = functions
   );
 
 export const dbSlotSlotsByDayAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -156,6 +174,9 @@ export const dbSlotSlotsByDayAutofix = functions
   );
 
 export const dbSlotBookingsAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -183,6 +204,9 @@ export const dbSlotBookingsAutofix = functions
   );
 
 export const dbBookedSlotsAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
