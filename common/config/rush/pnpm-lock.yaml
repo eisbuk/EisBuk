@@ -466,7 +466,7 @@ importers:
       p-retry: ^4.6.1
       retry: ^0.13.1
       source-map: ~0.7.4
-      source-map-support: ~0.5.21
+      source-map-support: ^0.5.21
       ts-node: ^10.5.0
       tsconfig-paths: ^3.10.1
       typescript: ~5.0.4
