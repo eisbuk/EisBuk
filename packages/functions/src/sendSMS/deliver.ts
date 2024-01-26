@@ -36,6 +36,9 @@ import { SMSAPIPayloadSchema } from "./validations";
  * sending the SMS delivery status to `updateSMSStatus` cloud function.
  */
 export const deliverSMS = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`

@@ -23,6 +23,9 @@ import { validateSMSPayload } from "./utils";
  * Sends SMS message using template data from organizations firestore entry and provided params
  */
 export const sendSMS = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async (

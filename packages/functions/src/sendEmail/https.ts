@@ -27,6 +27,9 @@ import {
  * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
  */
 export const sendEmail = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async (
