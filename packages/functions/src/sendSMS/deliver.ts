@@ -21,7 +21,6 @@ import { SMSResponse } from "./types";
 import { createSMSReqOptions, getSMSCallbackUrl } from "./utils";
 import { sendRequest, validateJSON } from "../utils";
 import { SMSAPIPayloadSchema } from "./validations";
-import { skippedDataTrigger } from "../fallbacks";
 
 /**
  * An SMS delivery functionality, uses a firestore document with path:
@@ -107,10 +106,3 @@ export const deliverSMS = functions
       })
     )
   );
-
-export const deliverSMSTesting = functions
-  .region(__functionsZone__)
-  .firestore.document(
-    `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`
-  )
-  .onWrite(skippedDataTrigger("deliverEmailTesting", (data) => data?.payload));
