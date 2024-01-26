@@ -13,6 +13,7 @@ import { getNewStore } from "@/store/createStore";
 import { createModal } from "../useModal";
 
 import { testHookWithRedux } from "@/__testUtils__/testHooksWithRedux";
+import { waitFor } from "@testing-library/react";
 
 const interval = {
   startTime: "09:00",
@@ -124,5 +125,26 @@ describe("useModal hook", () => {
     // Update props with the same structure (store shouldn't get updated)
     testRes.updateProps({ ...modal1.props });
     expect(mockDispatch).not.toHaveBeenCalled();
+  });
+
+  test("should call 'onClose' when the modal closes", async () => {
+    const store = getNewStore();
+    mockDispatch.mockImplementation(store.dispatch);
+
+    const mockOnClose = vi.fn();
+
+    // Initialise useModal with 'modal1' props
+    const useModal = createModal(modal1.component);
+    const testRes = testHookWithRedux(store, useModal, modal1.props, {
+      onClose: mockOnClose,
+    });
+    testRes.result.open();
+
+    // The modal has just been opened, so 'onClose' shouldn't have been called yet
+    expect(mockOnClose).not.toHaveBeenCalled();
+
+    // Close the modal
+    testRes.result.close();
+    await waitFor(() => expect(mockOnClose).toHaveBeenCalled());
   });
 });

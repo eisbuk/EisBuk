@@ -4,6 +4,7 @@ import admin from "firebase-admin";
 import { SanityCheckKind } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "../constants";
+import { wrapHttpsOnCallHandler } from "../sentry-serverless-firebase";
 
 import { checkUser, throwUnauth } from "../utils";
 
@@ -21,6 +22,9 @@ import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
@@ -40,21 +44,30 @@ export const dbSlotAttendanceCheck = functions
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotSlotsByDayCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbSlotSlotsByDayCheck",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      return newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotSlotsByDay
-      ).checkAndWrite();
-    }
+        const db = admin.firestore();
+        return newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.SlotSlotsByDay
+        ).checkAndWrite();
+      }
+    )
   );
 
 export const dbSlotBookingsCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
@@ -70,126 +83,156 @@ export const dbSlotBookingsCheck = functions
   );
 
 export const dbBookedSlotsAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbBookedSlotsAttendanceCheck",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      return newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.BookedSlotsAttendance
-      ).checkAndWrite();
-    }
+        const db = admin.firestore();
+        return newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.BookedSlotsAttendance
+        ).checkAndWrite();
+      }
+    )
   );
 
 export const dbSlotAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbSlotAttendanceAutofix",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      const checker = newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotAttendance
-      );
+        const db = admin.firestore();
+        const checker = newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.SlotAttendance
+        );
 
-      const report = await checker
-        .getLatestReport()
-        // If report doesn't exist, or the latest report had already been fixed, get the new report
-        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+        const report = await checker
+          .getLatestReport()
+          // If report doesn't exist, or the latest report had already been fixed, get the new report
+          .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
 
-      const attendanceFixes = await attendanceSlotMismatchAutofix(
-        db,
-        organization,
-        report
-      );
-      checker.writeReport({ ...report, attendanceFixes });
+        const attendanceFixes = await attendanceSlotMismatchAutofix(
+          db,
+          organization,
+          report
+        );
+        checker.writeReport({ ...report, attendanceFixes });
 
-      return attendanceFixes;
-    }
+        return attendanceFixes;
+      }
+    )
   );
 
 export const dbSlotSlotsByDayAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbSlotSlotsByDayAutofix",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      const checker = newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotSlotsByDay
-      );
+        const db = admin.firestore();
+        const checker = newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.SlotSlotsByDay
+        );
 
-      const report = await checker
-        .getLatestReport()
-        // If report doesn't exist, or the latest report had already been fixed, get the new report
-        .then((r) => (!r || r.slotsByDayFixes ? checker.checkAndWrite() : r));
+        const report = await checker
+          .getLatestReport()
+          // If report doesn't exist, or the latest report had already been fixed, get the new report
+          .then((r) => (!r || r.slotsByDayFixes ? checker.checkAndWrite() : r));
 
-      const slotsByDayFixes = await slotsSlotsByDayAutofix(
-        db,
-        organization,
-        report
-      );
-      checker.writeReport({ ...report, slotsByDayFixes });
+        const slotsByDayFixes = await slotsSlotsByDayAutofix(
+          db,
+          organization,
+          report
+        );
+        checker.writeReport({ ...report, slotsByDayFixes });
 
-      return slotsByDayFixes;
-    }
+        return slotsByDayFixes;
+      }
+    )
   );
 
 export const dbSlotBookingsAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbSlotBookingsAutofix",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      const checker = newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.SlotBookings
-      );
+        const db = admin.firestore();
+        const checker = newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.SlotBookings
+        );
 
-      const report = await checker
-        .getLatestReport()
-        .then((r) => (!r || r.bookingsFixes ? checker.checkAndWrite() : r));
+        const report = await checker
+          .getLatestReport()
+          .then((r) => (!r || r.bookingsFixes ? checker.checkAndWrite() : r));
 
-      const bookingsFixes = await bookingsAutofix(db, organization, report);
-      checker.writeReport({ ...report, bookingsFixes });
+        const bookingsFixes = await bookingsAutofix(db, organization, report);
+        checker.writeReport({ ...report, bookingsFixes });
 
-      return bookingsFixes;
-    }
+        return bookingsFixes;
+      }
+    )
   );
 
 export const dbBookedSlotsAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+    wrapHttpsOnCallHandler(
+      "dbBookedSlotsAttendanceAutofix",
+      async ({ organization }: { organization: string }, { auth }) => {
+        if (!(await checkUser(organization, auth))) throwUnauth();
 
-      const db = admin.firestore();
-      const checker = newSanityChecker(
-        db,
-        organization,
-        SanityCheckKind.BookedSlotsAttendance
-      );
+        const db = admin.firestore();
+        const checker = newSanityChecker(
+          db,
+          organization,
+          SanityCheckKind.BookedSlotsAttendance
+        );
 
-      const report = await checker
-        .getLatestReport()
-        .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
+        const report = await checker
+          .getLatestReport()
+          .then((r) => (!r || r.attendanceFixes ? checker.checkAndWrite() : r));
 
-      const attendanceFixes = await bookedSlotsAttendanceAutofix(
-        db,
-        organization,
-        report
-      );
-      checker.writeReport({ ...report, attendanceFixes });
+        const attendanceFixes = await bookedSlotsAttendanceAutofix(
+          db,
+          organization,
+          report
+        );
+        checker.writeReport({ ...report, attendanceFixes });
 
-      return attendanceFixes;
-    }
+        return attendanceFixes;
+      }
+    )
   );

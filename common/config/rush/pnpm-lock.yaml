@@ -441,6 +441,7 @@ importers:
       agent-base: ~7.1.0
       ajv: ~8.11.0
       ajv-errors: ~3.0.0
+      buffer-from: ~1.1.2
       chokidar: ^3.5.3
       debug: ~4.3.4
       esbuild: ^0.13.12
@@ -464,6 +465,8 @@ importers:
       nodemailer: ~6.7.3
       p-retry: ^4.6.1
       retry: ^0.13.1
+      source-map: ~0.7.4
+      source-map-support: ^0.5.21
       ts-node: ^10.5.0
       tsconfig-paths: ^3.10.1
       typescript: ~5.0.4
@@ -483,6 +486,7 @@ importers:
       agent-base: 7.1.0
       ajv: 8.11.2
       ajv-errors: 3.0.0_ajv@8.11.2
+      buffer-from: 1.1.2
       debug: 4.3.4
       fast-deep-equal: 3.1.3
       firebase: 9.22.1
@@ -496,6 +500,8 @@ importers:
       nodemailer: 6.7.8
       p-retry: 4.6.2
       retry: 0.13.1
+      source-map: 0.7.4
+      source-map-support: 0.5.21
       ts-node: 10.9.2_974f63f0e1b1f88473c23d08384cf450
       unix-timestamp: 0.2.0
       uri-js: 4.4.1
@@ -8361,7 +8367,6 @@ packages:
 
   /buffer-from/1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
-    dev: true
 
   /buffer/5.7.1:
     resolution: {integrity: sha512-EHcyIPBQ4BSGlvjB16k5KgAJ27CIsHY/2JBmCRReo48y9rQ3MaUzWX3KVlBa4U7MyX02HdVj0K7C3WaB3ju7FQ==}
@@ -17806,7 +17811,6 @@ packages:
     dependencies:
       buffer-from: 1.1.2
       source-map: 0.6.1
-    dev: true
 
   /source-map/0.5.7:
     resolution: {integrity: sha512-LbrmJOMUSdEVxIKvdcJzQC+nQhe8FUZQTXQy6+I75skNgn3OoQ0DZA8YnFa7gp8tqtL3KPf1kmo0R5DoApeSGQ==}
@@ -17820,7 +17824,6 @@ packages:
   /source-map/0.7.4:
     resolution: {integrity: sha512-l3BikUxvPOcn5E74dZiq5BGsTb5yEwhaTSzccU6t4sDOH8NWJCstKO5QT2CvtFoK6F0saL7p9xHAqHOlCPJygA==}
     engines: {node: '>= 8'}
-    dev: true
 
   /space-separated-tokens/1.1.5:
     resolution: {integrity: sha512-q/JSVd1Lptzhf5bkYm4ob4iWPjx0KiRe3sRFBNrVqbJkFaBm5vbbowy1mymoPNLRa52+oadOhJ+K49wsSeSjTA==}

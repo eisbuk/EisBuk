@@ -4,17 +4,17 @@ import { DateTime } from "luxon";
 import { ActionDialog } from "@eisbuk/ui";
 import i18n, { ActionButton, Prompt } from "@eisbuk/translations";
 
+import { ModalProps } from "@/features/modal/types";
+
 import { functions } from "@/setup";
 
 import { finalizeBookings } from "./utils";
 
-interface FinalizeBookingProps {
+type FinalizeBookingProps = ModalProps<{
   customerId: string;
   month: DateTime;
-  onClose: () => void;
-  className?: string;
   secretKey: string;
-}
+}>;
 
 const FinalizeBookingsDialog: React.FC<FinalizeBookingProps> = ({
   customerId,

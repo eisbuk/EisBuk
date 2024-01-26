@@ -2,8 +2,6 @@ import functions from "firebase-functions";
 import admin from "firebase-admin";
 
 import {
-  Collection,
-  DeliveryQueue,
   ClientMessagePayload,
   ClientMessageType,
   OrganizationData,
@@ -11,7 +9,11 @@ import {
   ClientMessageMethod,
 } from "@eisbuk/shared";
 
-import { interpolateEmail, validateClientEmailPayload } from "./utils";
+import {
+  enqueueEmailDelivery,
+  interpolateEmail,
+  validateClientEmailPayload,
+} from "./utils";
 import { __functionsZone__ } from "../constants";
 
 import {
@@ -25,6 +27,9 @@ import {
  * Stores email data to `emailQueue` collection, triggering email seding logic wrapped with firestore-process-delivery.
  */
 export const sendEmail = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async (
@@ -96,25 +101,6 @@ export const sendEmail = functions
       };
 
       // add email to firestore, firing data trigger
-      const deliveryDoc = admin
-        .firestore()
-        .collection(
-          `${Collection.DeliveryQueues}/${payload.organization}/${DeliveryQueue.EmailQueue}`
-        )
-        .doc();
-
-      await deliveryDoc.set({
-        payload: email,
-      });
-
-      // As part of the response we're returning the delivery document path.
-      // This is mostly used for testing as we might want to wait for the delivery to be marked
-      // successful before making further assertions
-      return {
-        deliveryDocumentPath: deliveryDoc.path,
-        email,
-        organization,
-        success: true,
-      };
+      return enqueueEmailDelivery(organization, email);
     }
   );

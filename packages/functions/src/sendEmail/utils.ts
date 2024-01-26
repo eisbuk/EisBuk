@@ -1,4 +1,5 @@
 import { JSONSchemaType } from "ajv";
+import * as admin from "firebase-admin";
 
 import {
   EmailTemplate,
@@ -9,6 +10,9 @@ import {
   HTTPSErrors,
   EmailInterpolationValues,
   ClientMessageMethod,
+  EmailPayload,
+  Collection,
+  DeliveryQueue,
 } from "@eisbuk/shared";
 
 import { EisbukHttpsError, validateJSON } from "../utils";
@@ -72,3 +76,33 @@ export const interpolateEmail = (
   subject: interpolateText(template.subject, values as Record<string, any>),
   html: interpolateText(template.html, values as Record<string, any>),
 });
+
+/**
+ * A util used by different cloud functions to effectively send an email (by enqueueing it in the email delivery queue).
+ * This is here as a type-safe, single-source-of-truth way of sending emails.
+ */
+export const enqueueEmailDelivery = async (
+  organization: string,
+  email: EmailPayload
+) => {
+  const deliveryDoc = admin
+    .firestore()
+    .collection(
+      `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.EmailQueue}`
+    )
+    .doc();
+
+  await deliveryDoc.set({
+    payload: email,
+  });
+
+  return {
+    // As part of the response we're returning the delivery document path.
+    // This is mostly used for testing as we might want to wait for the delivery to be marked
+    // successful before making further assertions
+    deliveryDocumentPath: deliveryDoc.path,
+    email,
+    organization,
+    success: true,
+  };
+};

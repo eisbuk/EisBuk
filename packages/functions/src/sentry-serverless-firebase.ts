@@ -13,6 +13,7 @@ import type { https } from "firebase-functions";
 import type { onRequest, onCall } from "firebase-functions/lib/providers/https";
 import type { ScheduleBuilder } from "firebase-functions/lib/providers/pubsub";
 import type { DocumentBuilder } from "firebase-functions/lib/providers/firestore";
+import { __enableSentry__ } from "./constants";
 
 type httpsOnRequestHandler = Parameters<typeof onRequest>[0];
 type httpsOnCallHandler = Parameters<typeof onCall>[0];
@@ -65,7 +66,7 @@ function wrap<A, B, C>(
   fn: (a: A, b: B) => C | Promise<C>
 ): typeof fn {
   // Don't wrap functions when running locally
-  if (process.env.FUNCTIONS_EMULATOR) {
+  if (!__enableSentry__) {
     return fn;
   }
 
@@ -136,19 +137,27 @@ function wrap<A, B, C>(
     });
     scope.setSpan(transaction);
 
-    // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
-    return (
-      Promise.resolve(fn(a, b))
-        .catch((err): void => {
-          captureException(err, { tags: { handled: false } });
-          throw err;
-        })
-        // eslint-disable-next-line promise/no-return-in-finally
-        .finally((): Promise<boolean> => {
-          transaction.finish();
-          return flush(2000);
-        }) as Promise<C | undefined>
-    );
+    try {
+      const result = fn(a, b);
+      // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
+      return (
+        Promise.resolve(result)
+          .catch((err): void => {
+            captureException(err, { tags: { handled: false } });
+            throw err;
+          })
+          // eslint-disable-next-line promise/no-return-in-finally
+          .finally((): Promise<boolean> => {
+            transaction.finish();
+            return flush(2000);
+          }) as Promise<C | undefined>
+      );
+    } catch (err) {
+      captureException(err, { tags: { handled: false } });
+      transaction.finish();
+      await flush(2000);
+      throw err;
+    }
   };
 }
 

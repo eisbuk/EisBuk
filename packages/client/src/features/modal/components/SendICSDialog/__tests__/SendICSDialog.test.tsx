@@ -39,6 +39,7 @@ describe("SendICSDialog", () => {
           secretKey={saul.secretKey}
           onClose={mockOnClose}
           onCloseAll={mockOnClose}
+          onUpdateSelf={() => {}}
         />
       );
     });

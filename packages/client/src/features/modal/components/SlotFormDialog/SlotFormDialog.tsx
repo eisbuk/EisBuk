@@ -4,12 +4,13 @@ import { useDispatch } from "react-redux";
 import { SlotForm, SlotFormProps } from "@eisbuk/ui";
 import { SlotInterfaceLoose } from "@eisbuk/shared";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "@/features/modal/types";
 
 import { upsertSlot } from "@/store/actions/slotOperations";
 
-type SlotFormDialogProps = BaseModalProps &
-  Omit<SlotFormProps, "onSubmit" | "onClose">;
+type SlotFormDialogProps = ModalProps<
+  Omit<SlotFormProps, "onSubmit" | "onClose">
+>;
 
 const SlotFormDialog: React.FC<SlotFormDialogProps> = ({
   onClose,

@@ -2,13 +2,12 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-import * as Sentry from "@sentry/serverless";
 
 import {
   wrapFirestoreOnCreateHandler,
   wrapFirestoreOnWriteHandler,
 } from "./sentry-serverless-firebase";
-import { __sentryDSN__, __functionsZone__ } from "./constants";
+import { __functionsZone__ } from "./constants";
 import {
   BookingSubCollection,
   Collection,
@@ -27,13 +26,6 @@ import {
 
 import { getCustomerStats } from "./utils";
 
-if (!process.env.FUNCTIONS_EMULATOR) {
-  Sentry.init({
-    dsn: __sentryDSN__,
-    tracesSampleRate: 1.0,
-  });
-}
-
 /**
  * A type alias for Customer with `secretKey` and `id` optional
  */
@@ -41,6 +33,9 @@ type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
   Partial<{ secretKey: string; id: string }>;
 
 export const addIdToSlot = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
@@ -58,6 +53,12 @@ export const addIdToSlot = functions
  * anonymous users who have access to `secretKey`.
  */
 export const addCustomerIdAndSecretKey = functions
+  .runWith({
+    memory: "512MB",
+  })
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
@@ -123,6 +124,12 @@ export const addCustomerIdAndSecretKey = functions
  * Doesn't run if slot is only updated.
  */
 export const triggerAttendanceEntryForSlot = functions
+  .runWith({
+    memory: "512MB",
+  })
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
@@ -179,6 +186,9 @@ export const triggerAttendanceEntryForSlot = functions
  * The cost is one extra write per each update to the slots.
  */
 export const aggregateSlots = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
@@ -267,6 +277,9 @@ export const aggregateSlots = functions
   );
 
 export const countSlotsBookings = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
@@ -314,6 +327,9 @@ export const countSlotsBookings = functions
  * - writes to `organizations/{organization}/attendnace/{slotId}` - updates entry for `attendances[customerId]` leaving the rest of the doc unchanged
  */
 export const createAttendanceForBooking = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
@@ -389,6 +405,9 @@ export const createAttendanceForBooking = functions
  * ```
  */
 export const registerCreatedOrgSecret = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(`${Collection.Secrets}/{organization}`)
   .onWrite(
@@ -427,6 +446,9 @@ export const registerCreatedOrgSecret = functions
   );
 
 export const createPublicOrgInfo = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(`${Collection.Organizations}/{organization}`)
   .onWrite(
@@ -472,6 +494,9 @@ export const createPublicOrgInfo = functions
  * (as the booking is displayed in their calendar in that case)
  */
 export const createAttendedSlotOnAttendance = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
@@ -573,6 +598,9 @@ export const createAttendedSlotOnAttendance = functions
   );
 
 export const createCustomerStats = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`

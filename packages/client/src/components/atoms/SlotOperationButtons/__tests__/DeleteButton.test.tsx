@@ -27,6 +27,7 @@ const mockDispatch = vi.fn();
 
 vi.mock("react-redux", () => ({
   useDispatch: () => mockDispatch,
+  useSelector: () => ({}),
 }));
 
 // #region mockDeleteActions

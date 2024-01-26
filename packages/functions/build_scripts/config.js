@@ -10,4 +10,6 @@ module.exports = {
   platform: "node",
   write: true,
   format: "cjs",
+  minify: false,
+  sourcemap: true,
 };
