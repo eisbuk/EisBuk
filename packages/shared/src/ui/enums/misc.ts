@@ -3,8 +3,7 @@ export enum CloudFunction {
   SendEmail = "sendEmail",
   SendSMS = "sendSMS",
 
-  // TODO: Rename this to 'queryAuthStatus' once the deprecated function is removed (and the new one renamed).
-  QueryAuthStatus = "queryAuthStatus2",
+  QueryAuthStatus = "queryAuthStatus",
 
   FinalizeBookings = "finalizeBookings",
   AcceptPrivacyPolicy = "acceptPrivacyPolicy",
