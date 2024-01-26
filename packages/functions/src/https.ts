@@ -13,12 +13,12 @@ import {
   Customer,
   CustomerFull,
   sanitizeCustomer,
-  DeliveryQueue,
   checkExpected,
   normalizeEmail,
 } from "@eisbuk/shared";
 
 import { checkRequiredFields, EisbukHttpsError } from "./utils";
+import { enqueueEmailDelivery } from "./sendEmail/utils";
 
 /**
  * Used by non-admin customers to finalize their own bookings and thus remove
@@ -193,13 +193,7 @@ To verify the athlete, add them to a category/categories on their respective pro
           };
 
           // Write the mail to the email queue for delivery
-          await admin
-            .firestore()
-            .collection(Collection.DeliveryQueues)
-            .doc(organization)
-            .collection(DeliveryQueue.EmailQueue)
-            .doc()
-            .set(mailOptions);
+          await enqueueEmailDelivery(organization, mailOptions);
         }
 
         return fullCustomer;

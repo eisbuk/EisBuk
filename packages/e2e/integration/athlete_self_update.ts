@@ -30,6 +30,11 @@ describe("athlete profile", () => {
     cy.signOut();
 
     cy.visit([Routes.CustomerArea, saul.secretKey].join("/"));
+
+    // Wait for Saul's data to be loaded
+    cy.contains(`${saul.name} ${saul.surname}`);
+
+    // Navigate to profile
     cy.clickButton(i18n.t(CustomerNavigationLabel.Profile) as string);
     // Toggle edit mode
     cy.clickButton(i18n.t(ActionButton.Edit) as string);

@@ -596,10 +596,12 @@ describe("Cloud functions", () => {
 
         expect(emailQueue.docs[0].data()).toEqual(
           expect.objectContaining({
-            subject: expect.stringContaining(saul.name),
-            html: expect.stringContaining(saul.email!),
-            to: emailFrom,
-            from: emailFrom,
+            payload: {
+              subject: expect.stringContaining(saul.name),
+              html: expect.stringContaining(saul.email!),
+              to: emailFrom,
+              from: emailFrom,
+            },
           })
         );
       }
