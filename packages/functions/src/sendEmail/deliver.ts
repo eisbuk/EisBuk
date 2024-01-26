@@ -20,7 +20,6 @@ import { __functionsZone__ } from "../constants";
 
 import { EmailPayloadSchema, SMTPPreferencesSchema } from "./validations";
 import { validateJSON } from "../utils";
-import { skippedDataTrigger } from "../fallbacks";
 
 /**
  * Reads smtp config from `organization` config as well as `secrets` and validates the fields.
@@ -147,10 +146,3 @@ export const deliverEmail = functions
       })
     )
   );
-
-export const deliverEmailTesting = functions
-  .region(__functionsZone__)
-  .firestore.document(
-    `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`
-  )
-  .onWrite(skippedDataTrigger("deliverEmail", (data) => data?.payload));
