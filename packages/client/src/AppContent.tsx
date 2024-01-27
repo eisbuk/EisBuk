@@ -16,7 +16,6 @@ import { __isDevStrict__ } from "@/lib/constants";
 import { getOrganization } from "@/lib/getters";
 
 import PrivateRoute from "@/components/auth/PrivateRoute";
-import Deleted from "@/components/auth/Deleted";
 import LoginRoute from "@/components/auth/LoginRoute";
 
 import AttendancePage from "@/pages/attendance";
@@ -32,6 +31,7 @@ import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
 import SelfRegister from "@/pages/self_register";
 import PrivacyPolicy from "@/pages/privacy_policy";
+import Deleted from "@/pages/deleted";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 
@@ -124,7 +124,12 @@ const AppContent: React.FC = () => {
         />
         <Route path={Routes.SelfRegister} component={SelfRegister} exact />
         <PrivateRoute path={Routes.Debug} component={DebugPage} />
-        <Route path={Routes.Deleted} component={Deleted} />
+        <Route
+          exact
+          path={Routes.Deleted}
+          component={() => <Redirect to="/" />}
+        />
+        <Route path={`${Routes.Deleted}/:secretKey`} component={Deleted} />
         <Route path={Routes.PrivacyPolicy} component={PrivacyPolicy} />
       </Switch>
 

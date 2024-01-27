@@ -21,7 +21,9 @@ import { getOrganization } from "@/lib/getters";
 import BookView from "./views/Book";
 import CalendarView from "./views/Calendar";
 import ProfileView from "./views/Profile";
-import { useSecretKey, useDate } from "./hooks";
+
+import { useDate } from "./hooks";
+import useSecretKey from "@/hooks/useSecretKey";
 
 import Layout from "@/controllers/Layout";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
@@ -127,7 +129,7 @@ const CustomerArea: React.FC = () => {
   );
 
   if (secretKey && currentAthlete.deleted) {
-    return <Redirect to={Routes.Deleted} />;
+    return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
 
   return (
