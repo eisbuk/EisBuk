@@ -6,12 +6,12 @@ import {
   ClientMessagePayload,
   ClientMessageType,
   ClientMessageMethod,
+  emailValidationPattern,
 } from "@eisbuk/shared";
 
 import { SMTPPreferences } from "./types";
 
 // #region constants
-export const emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[.][a-zA-Z]{2,}$";
 export const __invalidEmailError = "must be a valid email string";
 // #endregion constants
 
@@ -64,18 +64,18 @@ export const EmailPayloadSchema: JSONSchemaType<EmailPayload> = {
   properties: {
     from: {
       type: "string",
-      pattern: emailPattern,
+      pattern: emailValidationPattern,
       errorMessage: __invalidEmailError,
     },
     bcc: {
       type: "string",
-      pattern: emailPattern,
+      pattern: emailValidationPattern,
       errorMessage: __invalidEmailError,
       nullable: true,
     },
     to: {
       type: "string",
-      pattern: emailPattern,
+      pattern: emailValidationPattern,
       errorMessage: __invalidEmailError,
     },
     subject: { type: "string" },
