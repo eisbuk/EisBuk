@@ -44,7 +44,6 @@ describe("Management of multiple athletes with single account", () => {
 
   it("naviagates between athletes managed by the given auth account", () => {
     // Start by visiting the customer area page for Morticia
-    // TODO: In the future, we'll want to use the account selection page
     cy.visit([Routes.CustomerArea, morticia.secretKey].join("/"));
 
     // Navigate to March 2021
@@ -82,7 +81,6 @@ describe("Management of multiple athletes with single account", () => {
   // that there's no overlap between slots of different categories (and athletes in question are of different categories).
   it("books for selected athlete (athletes with different categories)", () => {
     // Start by visiting the customer area page for Morticia
-    // TODO: In the future, we'll want to use the account selection page
     cy.visit([Routes.CustomerArea, morticia.secretKey].join("/"));
 
     // Navigate to March 2021
@@ -128,7 +126,6 @@ describe("Management of multiple athletes with single account", () => {
   // This tests for overlapping slots (customers are of same category) but ensures that the booking state changes between customer views.
   it("books for selected athlete (athletes with different categories)", () => {
     // Start by visiting the customer area page for Morticia
-    // TODO: In the future, we'll want to use the account selection page
     cy.visit([Routes.CustomerArea, morticia.secretKey].join("/"));
 
     // Navigate to March 2021
