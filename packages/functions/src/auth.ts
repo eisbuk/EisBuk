@@ -8,73 +8,14 @@ import {
   OrgSubCollection,
   QueryAuthStatusPayload,
   wrapIter,
-  DeprecatedAuthStatus,
 } from "@eisbuk/shared";
 
-import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
 import { __functionsZone__ } from "./constants";
-import { checkRequiredFields } from "./utils";
 
-/**
- * @deprecated This is hare for temporary backward compatibility, but is removed from
- * 'CloutFunction' enum and is not used in the updated version of the app.
- *
- * @TODO Remove this function after allowing some time for update.
- */
+import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
+import { checkRequiredFields, checkUser } from "./utils";
+
 export const queryAuthStatus = functions
-  .runWith({
-    timeoutSeconds: 20,
-    memory: "512MB",
-  })
-  .region(__functionsZone__)
-  .https.onCall(
-    wrapHttpsOnCallHandler(
-      "queryAuthStatus",
-      async (
-        payload: QueryAuthStatusPayload
-      ): Promise<DeprecatedAuthStatus> => {
-        // validate payload
-        checkRequiredFields(payload, ["organization", "authString"]);
-
-        const { organization, authString } = payload;
-
-        const authStatus: DeprecatedAuthStatus = {
-          isAdmin: false,
-        };
-
-        const orgRef = admin
-          .firestore()
-          .collection(Collection.Organizations)
-          .doc(organization);
-        const customersRef = orgRef.collection(OrgSubCollection.Customers);
-
-        const [org, customers] = await Promise.all([
-          orgRef.get(),
-          customersRef.get(),
-        ]);
-
-        // query admin status
-        const orgData = org.data() as OrganizationData;
-        if (orgData) {
-          authStatus.isAdmin = orgData.admins.includes(authString);
-        }
-
-        // query customer status
-        const authCustomer = customers.docs.find((customerDoc) => {
-          const data = customerDoc.data();
-          return data.email === authString || data.phone === authString;
-        });
-        if (authCustomer) {
-          authStatus.bookingsSecretKey = authCustomer.data().secretKey;
-        }
-
-        return authStatus;
-      }
-    )
-  );
-
-/** @TODO Rename this to 'queryAuthStatus' once the deprecated function is removed. */
-export const queryAuthStatus2 = functions
   .runWith({
     timeoutSeconds: 20,
     // With these options, your minimum bill will be $4.54 in a 30-day month
@@ -85,12 +26,21 @@ export const queryAuthStatus2 = functions
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
-      "queryAuthStatus2",
-      async (payload: QueryAuthStatusPayload): Promise<AuthStatus> => {
-        // validate payload
-        checkRequiredFields(payload, ["organization", "authString"]);
+      "queryAuthStatus",
+      async (
+        payload: QueryAuthStatusPayload,
+        { auth }
+      ): Promise<AuthStatus> => {
+        // Organization is required to even start the functionality
+        checkRequiredFields(payload, ["organization"]);
+        const { organization } = payload;
 
-        const { organization, authString } = payload;
+        await checkUser(organization, auth);
+
+        // It's safe to cast this to non-null as the auth check has already been done
+        const { email, phone_number: phone } = auth!.token!;
+        // At least one of the two will be defined
+        const authString = (email || phone) as string;
 
         const authStatus: AuthStatus = {
           isAdmin: false,
