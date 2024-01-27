@@ -80,6 +80,27 @@
       "categories": ["course-minors"],
       "email": "morticia@addamsfamily.com",
       "secretKey": "000007"
+    },
+
+    "erlich": {
+      "id": "erlich",
+      "name": "Erlich",
+      "surname": "Bachman",
+      "certificateExpiration": "2006-10-13",
+      "categories": ["course-minors"],
+      "email": "erlich@aviato.com",
+      "phone": "+391111111",
+      "secretKey": "000008"
+    },
+    "yang": {
+      "id": "yang",
+      "name": "Yang",
+      "surname": "Jian",
+      "certificateExpiration": "2006-10-13",
+      "categories": ["course-minors"],
+      "email": "mike.hunt@isyourrefrigeratorrunning.com",
+      "phone": "+391111111",
+      "secretKey": "000009"
     }
   }
 }

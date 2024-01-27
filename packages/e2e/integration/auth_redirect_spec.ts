@@ -3,6 +3,7 @@ import { PrivateRoutes, Routes } from "@eisbuk/shared/ui";
 import i18n, {
   ActionButton,
   AttendanceNavigationLabel,
+  AuthTitle,
 } from "@eisbuk/translations";
 
 import { customers } from "../__testData__/customers.json";
@@ -97,12 +98,67 @@ describe("auth-related redirects", () => {
       // cy.contains(`${name} ${surname}`);
     });
 
-    it("multiple secret keys: redirects to customer area page from any of the private routes", () => {
-      // Here, Morticia manages accounts for both herself and Wednesday.
-      // Meaning: there are more than one secretKey associated with her account.
+    it("multiple secret keys: email: redirects to select account page from any of the private routes", () => {
+      // Here, Morticia manages accounts for both herself and Wednesday (using the email).
+      // Meaning: there are more than one secretKey associated with her email.
       const { email, password } = customers.morticia;
 
       cy.signUp(email, password);
+
+      // Check for /athletes page
+      cy.visit(PrivateRoutes.Athletes);
+      cy.url().should("include", Routes.SelectAccount);
+
+      // Check for /athletes/new page
+      cy.visit(PrivateRoutes.NewAthlete);
+      cy.url().should("include", Routes.SelectAccount);
+
+      // Check for /athletes/:id page
+      cy.visit([PrivateRoutes.Athletes, customers.morticia.id].join("/"));
+      cy.url().should("include", Routes.SelectAccount);
+
+      // Check for attendance ("/") page
+      cy.visit(PrivateRoutes.Root);
+      cy.url().should("include", Routes.SelectAccount);
+
+      // Check for slots page
+      cy.visit(PrivateRoutes.Slots);
+      cy.url().should("include", Routes.SelectAccount);
+
+      // Check for admin preferences page
+      cy.visit(PrivateRoutes.AdminPreferences);
+      cy.url().should("include", Routes.SelectAccount);
+
+      // If landing on 'customer_area' page, should automatically be redirected to their own customer area page (with their secret key)
+      cy.visit(Routes.CustomerArea);
+      cy.url().should("include", Routes.SelectAccount);
+    });
+
+    it("multiple secret keys: phone: redirects to select account page from any of the private routes", () => {
+      const { phone } = customers.erlich;
+      // Here, Erlich manages accounts for both himself and Jian Yang (using the phone).
+      // Meaning: there are more than one secretKey associated with his phone.
+      //
+      // Use the UI to log in using phone number (there's no other way to do this)
+      cy.visit("/");
+      cy.clickButton(i18n.t(AuthTitle.SignInWithPhone));
+      cy.contains(i18n.t(AuthTitle.SignInWithPhone) as string);
+      cy.getAttrWith("id", "dialCode").select("IT (+39)");
+      cy.getAttrWith("id", "phone").type(phone.replace("+39", ""));
+      cy.clickButton(i18n.t(ActionButton.Verify));
+      cy.contains(i18n.t(AuthTitle.EnterCode) as string);
+      cy.getRecaptchaCode(phone).then((code) => {
+        cy.getAttrWith("id", "code").type(code);
+        return cy.clickButton(i18n.t(ActionButton.Submit));
+      });
+
+      // Check that the account selection page contains both accounts
+      //
+      // Names are broken up in to multiple rows, hence the one check per name/surname
+      cy.contains(customers.erlich.name);
+      cy.contains(customers.erlich.surname);
+      cy.contains(customers.yang.name);
+      cy.contains(customers.yang.surname);
 
       // Check for /athletes page
       cy.visit(PrivateRoutes.Athletes);
