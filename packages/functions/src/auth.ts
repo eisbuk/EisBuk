@@ -51,10 +51,16 @@ export const queryAuthStatus = functions
           .collection(Collection.Organizations)
           .doc(organization);
         const customersRef = orgRef.collection(OrgSubCollection.Customers);
+        const customersByEmail = customersRef.where("email", "==", authString);
+        const customersByPhone = customersRef.where("phone", "==", authString);
+        const getCustomers = () =>
+          Promise.all(
+            [customersByEmail, customersByPhone].flatMap((ref) => ref.get())
+          );
 
         const [org, customers] = await Promise.all([
           orgRef.get(),
-          customersRef.get(),
+          getCustomers(),
         ]);
 
         // query admin status
@@ -64,10 +70,9 @@ export const queryAuthStatus = functions
         }
 
         // query customer status
-        const secretKeys = wrapIter(customers.docs)
+        const secretKeys = wrapIter(customers)
+          .flatMap(({ docs }) => docs)
           .map((doc) => doc.data())
-          // We're filtering instead of finding as auth user can be associated with multiple customers
-          .filter(({ email, phone }) => [email, phone].includes(authString))
           .map(({ secretKey }) => secretKey)
           ._array();
 
