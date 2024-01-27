@@ -25,61 +25,18 @@ import { enqueueEmailDelivery } from "./sendEmail/utils";
  * `extendedDate` from it's own `customers` entry. This is a could funtion because
  * non-admin users aren't allowed direct access to `customers` collection.
  */
-export const finalizeBookings = functions.region("europe-west6").https.onCall(
-  wrapHttpsOnCallHandler("finalizeBookings", async (payload) => {
-    checkRequiredFields(payload, ["id", "organization", "secretKey"]);
-
-    const { id, organization, secretKey } =
-      (payload as { id: string; organization: string; secretKey: string }) ||
-      {};
-
-    // we check "auth" by matching secretKey with customerId
-    const customerRef = admin
-      .firestore()
-      .collection(Collection.Organizations)
-      .doc(organization)
-      .collection(OrgSubCollection.Customers)
-      .doc(id);
-
-    const customerInStore = await customerRef.get();
-
-    if (!customerInStore.exists) {
-      throw new functions.https.HttpsError(
-        "not-found",
-        BookingsErrors.CustomerNotFound
-      );
-    }
-
-    const { secretKey: existingSecretKey } =
-      customerInStore.data() as CustomerFull;
-
-    if (secretKey !== existingSecretKey) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        BookingsErrors.SecretKeyMismatch
-      );
-    }
-
-    // remove `extendedDate`
-    await customerRef.set({ extendedDate: null }, { merge: true });
+export const finalizeBookings = functions
+  .runWith({
+    memory: "512MB",
   })
-);
+  .region("europe-west6")
+  .https.onCall(
+    wrapHttpsOnCallHandler("finalizeBookings", async (payload) => {
+      checkRequiredFields(payload, ["id", "organization", "secretKey"]);
 
-/**
- * Used by non-admin customers to edit their own details
- * which then triggers that data to be cloned into bookings collection
- * non-admin users aren't allowed direct access to `customers` collection.
- * @param paylod.organization
- * @param payload.customer
- */
-export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
-  wrapHttpsOnCallHandler(
-    "customerSelfUpdate",
-    async (payload: { organization: string; customer: Customer }) => {
-      checkRequiredFields(payload, ["organization", "customer"]);
-      checkRequiredFields(payload.customer, ["id", "secretKey"]);
-
-      const { organization, customer } = payload || {};
+      const { id, organization, secretKey } =
+        (payload as { id: string; organization: string; secretKey: string }) ||
+        {};
 
       // we check "auth" by matching secretKey with customerId
       const customerRef = admin
@@ -87,7 +44,7 @@ export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
         .collection(Collection.Organizations)
         .doc(organization)
         .collection(OrgSubCollection.Customers)
-        .doc(customer.id);
+        .doc(id);
 
       const customerInStore = await customerRef.get();
 
@@ -101,17 +58,70 @@ export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
       const { secretKey: existingSecretKey } =
         customerInStore.data() as CustomerFull;
 
-      if (customer.secretKey !== existingSecretKey) {
+      if (secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
           "invalid-argument",
           BookingsErrors.SecretKeyMismatch
         );
       }
 
-      await customerRef.set({ ...customer }, { merge: true });
-    }
-  )
-);
+      // remove `extendedDate`
+      await customerRef.set({ extendedDate: null }, { merge: true });
+    })
+  );
+
+/**
+ * Used by non-admin customers to edit their own details
+ * which then triggers that data to be cloned into bookings collection
+ * non-admin users aren't allowed direct access to `customers` collection.
+ * @param paylod.organization
+ * @param payload.customer
+ */
+export const customerSelfUpdate = functions
+  .runWith({
+    memory: "512MB",
+  })
+  .region("europe-west6")
+  .https.onCall(
+    wrapHttpsOnCallHandler(
+      "customerSelfUpdate",
+      async (payload: { organization: string; customer: Customer }) => {
+        checkRequiredFields(payload, ["organization", "customer"]);
+        checkRequiredFields(payload.customer, ["id", "secretKey"]);
+
+        const { organization, customer } = payload || {};
+
+        // we check "auth" by matching secretKey with customerId
+        const customerRef = admin
+          .firestore()
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Customers)
+          .doc(customer.id);
+
+        const customerInStore = await customerRef.get();
+
+        if (!customerInStore.exists) {
+          throw new functions.https.HttpsError(
+            "not-found",
+            BookingsErrors.CustomerNotFound
+          );
+        }
+
+        const { secretKey: existingSecretKey } =
+          customerInStore.data() as CustomerFull;
+
+        if (customer.secretKey !== existingSecretKey) {
+          throw new functions.https.HttpsError(
+            "invalid-argument",
+            BookingsErrors.SecretKeyMismatch
+          );
+        }
+
+        await customerRef.set({ ...customer }, { merge: true });
+      }
+    )
+  );
 
 /**
  * Used by non-admin customers to self register
@@ -122,6 +132,9 @@ export const customerSelfUpdate = functions.region("europe-west6").https.onCall(
  * @param payload.registrationCode
  */
 export const customerSelfRegister = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region("europe-west6")
   .https.onCall(
     wrapHttpsOnCallHandler(
@@ -206,6 +219,9 @@ To verify the athlete, add them to a category/categories on their respective pro
  * the privacy policy prompt.
  */
 export const acceptPrivacyPolicy = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region("europe-west6")
   .https.onCall(
     wrapHttpsOnCallHandler("acceptPrivacyPolicy", async (payload) => {
