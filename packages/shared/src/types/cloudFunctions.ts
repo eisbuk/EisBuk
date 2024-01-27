@@ -27,8 +27,6 @@ export type CreateAuthUserPayload = Partial<{
 export interface QueryAuthStatusPayload {
   /** Current organization */
   organization: string;
-  /** String used to authenticate user, either email or phone */
-  authString: string;
 }
 
 /**

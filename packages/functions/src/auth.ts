@@ -10,9 +10,10 @@ import {
   wrapIter,
 } from "@eisbuk/shared";
 
-import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
 import { __functionsZone__ } from "./constants";
-import { checkRequiredFields } from "./utils";
+
+import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
+import { checkRequiredFields, checkUser } from "./utils";
 
 export const queryAuthStatus = functions
   .runWith({
@@ -26,11 +27,20 @@ export const queryAuthStatus = functions
   .https.onCall(
     wrapHttpsOnCallHandler(
       "queryAuthStatus",
-      async (payload: QueryAuthStatusPayload): Promise<AuthStatus> => {
-        // validate payload
-        checkRequiredFields(payload, ["organization", "authString"]);
+      async (
+        payload: QueryAuthStatusPayload,
+        { auth }
+      ): Promise<AuthStatus> => {
+        // Organization is required to even start the functionality
+        checkRequiredFields(payload, ["organization"]);
+        const { organization } = payload;
 
-        const { organization, authString } = payload;
+        await checkUser(organization, auth);
+
+        // It's safe to cast this to non-null as the auth check has already been done
+        const { email, phone_number: phone } = auth!.token!;
+        // At least one of the two will be defined
+        const authString = (email || phone) as string;
 
         const authStatus: AuthStatus = {
           isAdmin: false,
