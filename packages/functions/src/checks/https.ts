@@ -6,7 +6,7 @@ import { SanityCheckKind } from "@eisbuk/shared";
 import { __functionsZone__ } from "../constants";
 import { wrapHttpsOnCallHandler } from "../sentry-serverless-firebase";
 
-import { checkUser, throwUnauth } from "../utils";
+import { checkIsAdmin, throwUnauth } from "../utils";
 
 import { newSanityChecker } from "./api";
 
@@ -28,7 +28,7 @@ export const dbSlotAttendanceCheck = functions
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
       return newSanityChecker(
@@ -52,7 +52,7 @@ export const dbSlotSlotsByDayCheck = functions
     wrapHttpsOnCallHandler(
       "dbSlotSlotsByDayCheck",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         return newSanityChecker(
@@ -71,7 +71,7 @@ export const dbSlotBookingsCheck = functions
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
       return newSanityChecker(
@@ -91,7 +91,7 @@ export const dbBookedSlotsAttendanceCheck = functions
     wrapHttpsOnCallHandler(
       "dbBookedSlotsAttendanceCheck",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         return newSanityChecker(
@@ -112,7 +112,7 @@ export const dbSlotAttendanceAutofix = functions
     wrapHttpsOnCallHandler(
       "dbSlotAttendanceAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -147,7 +147,7 @@ export const dbSlotSlotsByDayAutofix = functions
     wrapHttpsOnCallHandler(
       "dbSlotSlotsByDayAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -182,7 +182,7 @@ export const dbSlotBookingsAutofix = functions
     wrapHttpsOnCallHandler(
       "dbSlotBookingsAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -212,7 +212,7 @@ export const dbBookedSlotsAttendanceAutofix = functions
     wrapHttpsOnCallHandler(
       "dbBookedSlotsAttendanceAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(

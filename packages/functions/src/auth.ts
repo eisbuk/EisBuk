@@ -4,7 +4,6 @@ import admin from "firebase-admin";
 import {
   AuthStatus,
   Collection,
-  OrganizationData,
   OrgSubCollection,
   QueryAuthStatusPayload,
   wrapIter,
@@ -13,7 +12,12 @@ import {
 import { __functionsZone__ } from "./constants";
 
 import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
-import { checkRequiredFields, checkUser } from "./utils";
+import {
+  checkRequiredFields,
+  getAuthStrings,
+  getOrgAdmins,
+  isOrgAdmin,
+} from "./utils";
 
 export const queryAuthStatus = functions
   .runWith({
@@ -35,50 +39,38 @@ export const queryAuthStatus = functions
         checkRequiredFields(payload, ["organization"]);
         const { organization } = payload;
 
-        await checkUser(organization, auth);
-
-        // It's safe to cast this to non-null as the auth check has already been done
-        const { email, phone_number: phone } = auth!.token!;
-        // At least one of the two will be defined
-        const authString = (email || phone) as string;
-
-        const authStatus: AuthStatus = {
-          isAdmin: false,
-        };
-
-        const orgRef = admin
-          .firestore()
-          .collection(Collection.Organizations)
-          .doc(organization);
-        const customersRef = orgRef.collection(OrgSubCollection.Customers);
-        const customersByEmail = customersRef.where("email", "==", authString);
-        const customersByPhone = customersRef.where("phone", "==", authString);
-        const getCustomers = () =>
-          Promise.all(
-            [customersByEmail, customersByPhone].flatMap((ref) => ref.get())
-          );
-
-        const [org, customers] = await Promise.all([
-          orgRef.get(),
-          getCustomers(),
-        ]);
-
-        // query admin status
-        const orgData = org.data() as OrganizationData;
-        if (orgData) {
-          authStatus.isAdmin = orgData.admins.includes(authString);
+        const authStrings = getAuthStrings(auth);
+        if (!authStrings.length) {
+          return { isAdmin: false, secretKeys: [] };
         }
 
-        // query customer status
+        // Check if user is admin of the organization
+        const isAdmin = isOrgAdmin(
+          authStrings,
+          await getOrgAdmins(organization)
+        );
+
+        // Get secret keys associated with the user's auth strings
+        const customersRef = admin
+          .firestore()
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Customers);
+        const customersByEmail = customersRef.where("email", "in", authStrings);
+        const customersByPhone = customersRef.where("phone", "in", authStrings);
+
+        const customers = await Promise.all([
+          customersByEmail.get(),
+          customersByPhone.get(),
+        ]);
+
         const secretKeys = wrapIter(customers)
           .flatMap(({ docs }) => docs)
           .map((doc) => doc.data())
           .map(({ secretKey }) => secretKey)
           ._array();
 
-        authStatus.secretKeys = secretKeys;
-
-        return authStatus;
+        return { isAdmin, secretKeys };
       }
     )
   );

@@ -93,5 +93,16 @@ describe("Test authentication", () => {
         }
       }
     );
+
+    testWithEmulator(
+      "should not explode if user is not logged in",
+      async () => {
+        const { data } = await httpsCallable(
+          functions,
+          CloudFunction.QueryAuthStatus
+        )({ organization: "idk" });
+        expect(data).toEqual({ isAdmin: false, secretKeys: [] });
+      }
+    );
   });
 });
