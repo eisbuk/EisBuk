@@ -1,40 +1,10 @@
-import { useEffect } from "react";
 import { DateTime } from "luxon";
-import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 
 import { CalendarNavProps } from "@eisbuk/ui";
 
 import { getCalendarDay } from "@/store/selectors/app";
-import {
-  changeCalendarDate,
-  removeSecretKey,
-  storeSecretKey,
-} from "@/store/actions/appActions";
-
-/**
- * Secret key logic abstracted away in a hook for easier readability
- */
-export const useSecretKey = (): string => {
-  // Secret key is provided as a route param to the customer_area page
-  const { secretKey } = useParams<{
-    secretKey: string;
-  }>();
-  const dispatch = useDispatch();
-
-  // Store secretKey to redux store
-  // for easier access
-  useEffect(() => {
-    dispatch(storeSecretKey(secretKey));
-
-    return () => {
-      // remove secretKey from local storage on unmount
-      dispatch(removeSecretKey);
-    };
-  }, [secretKey]);
-
-  return secretKey;
-};
+import { changeCalendarDate } from "@/store/actions/appActions";
 
 /**
  * Date logic abstracted away in a hook for readability.
