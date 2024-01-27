@@ -1,7 +1,8 @@
 import React from "react";
 
 import { Customer } from "@eisbuk/shared";
-import { /* Plus, */ PowerCircle } from "@eisbuk/svg";
+import { Plus, PowerCircle } from "@eisbuk/svg";
+import { ActionButton, useTranslation } from "@eisbuk/translations";
 
 import { shortName } from "../utils/helpers";
 
@@ -20,49 +21,43 @@ const AthleteAvatarMenu: React.FC<AthleteAvatarMenuProps> = ({
   currentAthlete,
   otherAccounts,
   onAthleteClick = () => {},
-  // onAddAccount = () => {},
+  onAddAccount = () => {},
   onLogout = () => {},
 }) => {
+  const { t } = useTranslation();
+
   if (!currentAthlete) return null;
 
   return (
     <div className="inline-block px-3 select-none bg-gray-50 py-2 rounded-sm border-gray-200 border">
-      <div className="w-full border-b pb-2 mb-4">
-        {getDisplayName(currentAthlete)}
-      </div>
+      <div className="w-full pb-2">{getDisplayName(currentAthlete)}</div>
 
       {otherAccounts?.length ? (
-        <div className="mt-4">
-          <p className="text-xs text-gray-600 uppercase">Other accounts</p>
-          <div className="pl-3 pt-2">
-            {otherAccounts.map((profile) => (
-              <button
-                onClick={() => onAthleteClick(profile)}
-                className={itemClasses}
-              >
-                {getDisplayName(profile)}
-              </button>
-            ))}
-          </div>
+        <div className="border-t pt-4 pb-2 pl-3">
+          {otherAccounts.map((profile) => (
+            <button
+              onClick={() => onAthleteClick(profile)}
+              className={itemClasses}
+            >
+              {getDisplayName(profile)}
+            </button>
+          ))}
         </div>
       ) : null}
 
-      <div className="mt-4">
-        <p className="text-xs text-gray-600 uppercase">Actions</p>
-        <div className="pl-3 pt-2">
-          {/* <button onClick={onAddAccount} className={itemClasses}>
-            <span className="align-middle inline-block h-5 w-5 mr-1">
-              <Plus />
-            </span>
-            <span className="align-middle">Add account</span>
-          </button> */}
-          <button onClick={onLogout} className={itemClasses}>
-            <span className="align-middle inline-block h-5 w-5 mr-1">
-              <PowerCircle />
-            </span>
-            <span className="align-middle">Log out</span>
-          </button>
-        </div>
+      <div className="border-t pt-4 pb-2 pl-3">
+        <button onClick={onAddAccount} className={itemClasses}>
+          <span className="align-middle inline-block h-5 w-5 mr-1">
+            <Plus />
+          </span>
+          <span className="align-middle">{t(ActionButton.AddAthlete)}</span>
+        </button>
+        <button onClick={onLogout} className={itemClasses}>
+          <span className="align-middle inline-block h-5 w-5 mr-1">
+            <PowerCircle />
+          </span>
+          <span className="align-middle">{t(ActionButton.LogOut)}</span>
+        </button>
       </div>
     </div>
   );

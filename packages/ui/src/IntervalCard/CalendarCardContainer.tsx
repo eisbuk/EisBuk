@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { SlotType } from "@eisbuk/shared";
 
 import { CalendarContainerProps, CalendarContainerInnerProps } from "./types";
+import { testId } from "@eisbuk/testing/testIds";
 
 // #region innerContainer
 export const CalendarCardExpandableContainer: React.FC<
@@ -84,6 +85,10 @@ export const CalendarCardContainerInner: React.FC<
     classes,
   ].join(" ");
 
-  return React.createElement(as, { className }, children);
+  return React.createElement(
+    as,
+    { className, "data-testid": testId("booking-calendar-card") },
+    children
+  );
 };
 // #endregion innerContainer

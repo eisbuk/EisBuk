@@ -58,9 +58,12 @@ const Deleted: React.FC<Props> = ({ backgroundIndex }: Props) => {
 
   const secretKey = useSecretKey();
   useFirestoreSubscribe(getOrganization(), [
-    { collection: OrgSubCollection.Bookings, meta: { secretKey } },
+    {
+      collection: OrgSubCollection.Bookings,
+      meta: { secretKeys: [secretKey] },
+    },
   ]);
-  const customer = useSelector(getBookingsCustomer);
+  const customer = useSelector(getBookingsCustomer(secretKey));
 
   // If customer's not deleted - you shouldn't be here
   // If there's no customer - the customer is either not yet loaded, or not found - both are valid reasons to stick around

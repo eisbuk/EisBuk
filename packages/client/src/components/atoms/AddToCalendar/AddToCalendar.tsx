@@ -25,7 +25,7 @@ const AddToCalendar: React.FC = () => {
 
   const { t } = useTranslation();
 
-  const { email } = useSelector(getBookingsCustomer) || {};
+  const { email } = useSelector(getBookingsCustomer(secretKey)) || {};
   const hasBookingsForCalendar = useSelector(getHasBookingsForCalendar);
 
   const { open: openModal } = useSendICSModal({ secretKey, email });

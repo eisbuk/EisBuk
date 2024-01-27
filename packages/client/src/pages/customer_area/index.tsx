@@ -11,7 +11,10 @@ import {
   OrgSubCollection,
 } from "@eisbuk/shared";
 import { Routes } from "@eisbuk/shared/ui";
-import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
+import {
+  useFirestoreSubscribe,
+  useUpdateSubscription,
+} from "@eisbuk/react-redux-firebase-firestore";
 
 import { getOrganization } from "@/lib/getters";
 
@@ -22,14 +25,17 @@ import ProfileView from "./views/Profile";
 import { useDate } from "./hooks";
 import useSecretKey from "@/hooks/useSecretKey";
 
+import Layout from "@/controllers/Layout";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 import AthleteAvatar from "@/controllers/AthleteAvatar";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
-import Layout from "@/controllers/Layout";
-
-import { getBookingsCustomer } from "@/store/selectors/bookings";
+import {
+  getBookingsCustomer,
+  getOtherBookingsAccounts,
+} from "@/store/selectors/bookings";
+import { getAllSecretKeys } from "@/store/selectors/auth";
 
 enum Views {
   Book = "BookView",
@@ -50,21 +56,48 @@ const viewsLookup = {
 const CustomerArea: React.FC = () => {
   const secretKey = useSecretKey();
 
+  // We're providing a fallback [secretKey] as we have multiple ways of authenticating. If authenticating
+  // using firebase auth, the user will have all of their secret keys in the store (this is the preferred way).
+  // However, user can simply use a booking link (which includes the secret key). For this method, the user doesn't have
+  // to authenticate with firebase auth, no secret keys will be found in auth section of the store and 'getAllSecretKeys' selector
+  // will return 'undefined'
+  const secretKeysInStore = useSelector(getAllSecretKeys);
+  const secretKeys = secretKeysInStore?.length
+    ? secretKeysInStore
+    : [secretKey];
+
   // Subscribe to necessary collections
   useFirestoreSubscribe(getOrganization(), [
     { collection: OrgSubCollection.SlotsByDay },
     { collection: OrgSubCollection.SlotBookingsCounts },
     { collection: Collection.PublicOrgInfo },
-    { collection: OrgSubCollection.Bookings, meta: { secretKey } },
+    {
+      collection: OrgSubCollection.Bookings,
+      meta: { secretKeys },
+    },
     { collection: BookingSubCollection.BookedSlots, meta: { secretKey } },
     { collection: BookingSubCollection.AttendedSlots, meta: { secretKey } },
     { collection: BookingSubCollection.Calendar, meta: { secretKey } },
   ]);
 
+  useUpdateSubscription(
+    { collection: OrgSubCollection.Bookings, meta: { secretKeys } },
+    [secretKeys]
+  );
+  useUpdateSubscription(
+    { collection: BookingSubCollection.BookedSlots, meta: { secretKey } },
+    [secretKey]
+  );
+  useUpdateSubscription(
+    { collection: BookingSubCollection.AttendedSlots, meta: { secretKey } },
+    [secretKey]
+  );
+
   const calendarNavProps = useDate();
 
   // Get customer data necessary for rendering/functionality
-  const userData = useSelector(getBookingsCustomer) || {};
+  const currentAthlete = useSelector(getBookingsCustomer(secretKey)) || {};
+  const otherAccounts = useSelector(getOtherBookingsAccounts(secretKey));
 
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
   const CustomerView = viewsLookup[view];
@@ -95,14 +128,19 @@ const CustomerArea: React.FC = () => {
     </>
   );
 
-  if (secretKey && userData.deleted) {
+  if (secretKey && currentAthlete.deleted) {
     return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
 
   return (
     <Layout
       additionalButtons={additionalButtons}
-      userAvatar={<AthleteAvatar currentAthlete={userData} />}
+      userAvatar={
+        <AthleteAvatar
+          currentAthlete={currentAthlete}
+          otherAccounts={otherAccounts}
+        />
+      }
     >
       {view !== "ProfileView" && (
         <CalendarNav
