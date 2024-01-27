@@ -53,7 +53,7 @@ describe("Auth operations", () => {
       mockQueryAuthStatus.mockResolvedValueOnce({
         data: {
           isAdmin: false,
-          bookingsSecretKey: "secret-key",
+          secretKeys: ["secret-key"],
         },
       });
       await runThunk(testThunk, dispatch, getState);
@@ -62,7 +62,7 @@ describe("Auth operations", () => {
         isEmpty: false,
         isLoaded: true,
         userData: testUser,
-        bookingsSecretKey: "secret-key",
+        secretKeys: ["secret-key"],
       });
       // try with admin user
       mockQueryAuthStatus.mockResolvedValueOnce({ data: { isAdmin: true } });

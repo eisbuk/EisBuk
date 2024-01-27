@@ -15,7 +15,7 @@ import { __functionsZone__ } from "../constants";
 
 import { SMSStatusPayload } from "./types";
 
-import { checkUser, throwUnauth } from "../utils";
+import { checkIsAdmin, throwUnauth } from "../utils";
 
 import { validateSMSPayload } from "./utils";
 
@@ -37,7 +37,7 @@ export const sendSMS = functions
     ) => {
       const { organization } = payload;
 
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       // check payload
       const validatedPayload = validateSMSPayload(payload);

@@ -17,7 +17,7 @@ import {
 import { __functionsZone__ } from "../constants";
 
 import {
-  checkUser,
+  checkIsAdmin,
   checkSecretKey,
   throwUnauth,
   EisbukHttpsError,
@@ -39,7 +39,7 @@ export const sendEmail = functions
       const { organization } = payload;
 
       if (
-        !(await checkUser(organization, auth)) &&
+        !(await checkIsAdmin(organization, auth)) &&
         !(
           payload.type === ClientMessageType.SendCalendarFile &&
           (await checkSecretKey({

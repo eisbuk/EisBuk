@@ -19,7 +19,7 @@ import {
 import { __functionsZone__ } from "./constants";
 import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
 
-import { checkUser, getCustomerStats, throwUnauth } from "./utils";
+import { checkIsAdmin, getCustomerStats, throwUnauth } from "./utils";
 
 /**
  * Goes through all 'slotsByDay' entries, checks each date to see if there are no slots in the day and deletes the day if empty.
@@ -29,7 +29,7 @@ export const pruneSlotsByDay = functions.region(__functionsZone__).https.onCall(
   wrapHttpsOnCallHandler(
     "pruneSlotsByDay",
     async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       try {
         const db = admin.firestore();
@@ -94,7 +94,7 @@ export const deleteOrphanedBookings = functions
     wrapHttpsOnCallHandler(
       "deleteOrphanedBookings",
       async ({ organization }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const orgRef = admin
           .firestore()
@@ -130,7 +130,7 @@ export const populateDefaultEmailTemplates = functions
     wrapHttpsOnCallHandler(
       "populateDefaultEmailTemplates",
       async ({ organization }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const batch = admin.firestore().batch();
 
@@ -166,7 +166,7 @@ export const removeInvalidCustomerPhones = functions
     wrapHttpsOnCallHandler(
       "removeInvalidCustomerPhones",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
 
@@ -206,7 +206,7 @@ export const clearDeletedCustomersRegistrationAndCategories = functions
     wrapHttpsOnCallHandler(
       "clearDeletedCustomersRegistrationAndCategories",
       async ({ organization }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const allCustomers = await admin
           .firestore()
@@ -243,7 +243,7 @@ export const calculateBookingStatsThisAndNextMonths = functions
     wrapHttpsOnCallHandler(
       "calculateBookingStatsThisAndNextMonths",
       async ({ organization }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
         try {
           const db = admin.firestore();
           const orgRef = db
@@ -336,7 +336,7 @@ export const normalizeExistingEmails = functions
     wrapHttpsOnCallHandler(
       "normalizeExistingEmails",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
 

@@ -13,7 +13,7 @@ import {
 
 import { __functionsZone__ } from "./constants";
 
-import { checkUser, throwUnauth } from "./utils";
+import { checkIsAdmin, throwUnauth } from "./utils";
 
 const CATEGORIES = Object.values(Category);
 const NOTES = ["", "Pista 1", "Pista 2"];
@@ -101,7 +101,7 @@ const fillDay = async (day: DateTime, organization: string): Promise<void> => {
 export const createTestSlots = functions
   .region(__functionsZone__)
   .https.onCall(async ({ organization }: { organization: string }, context) => {
-    if (!(await checkUser(organization, context.auth))) throwUnauth();
+    if (!(await checkIsAdmin(organization, context.auth))) throwUnauth();
 
     functions.logger.info("Creating test slots...");
 
