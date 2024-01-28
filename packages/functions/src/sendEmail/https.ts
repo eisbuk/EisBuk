@@ -65,6 +65,7 @@ export const sendEmail = functions
         displayName = organization,
         smtpConfigured,
         emailFrom,
+        emailNameFrom,
         emailBcc,
       } = orgDoc.data() as OrganizationData;
 
@@ -90,7 +91,7 @@ export const sendEmail = functions
 
       // Construct an email for process delivery
       const email = {
-        from: emailFrom,
+        from: emailNameFrom || emailFrom,
         to: validatedPayload.email,
         bcc: emailBcc || emailFrom,
         subject,

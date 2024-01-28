@@ -48,6 +48,16 @@ type SendEmailTest =
       >;
     };
 
+const orgSetup = {
+  doLogin: true,
+  setSecrets: true,
+};
+
+const emailSetup = {
+  emailFrom: "eisbuk@email.com",
+  emailBcc: "bcc@gmail.com",
+};
+
 /**
  * Runs table tests from the payload passed in (for each email type)
  * Unlike other table tests, the assertions are not in the payload, but rather
@@ -55,18 +65,12 @@ type SendEmailTest =
  * against the default templates.
  */
 const runSendEmailTableTests = (tests: SendEmailTest[]) => {
-  const setup = {
-    doLogin: true,
-    setSecrets: true,
-    additionalSetup: {
-      emailFrom: "eisbuk@email.com",
-      emailBcc: "bcc@gmail.com",
-    },
-  };
-
   tests.forEach(({ type, payload }) => {
     test(`should construct an email of type ${type} and hand it over for delivery`, async () => {
-      const { organization } = await setUpOrganization(setup);
+      const { organization } = await setUpOrganization({
+        ...orgSetup,
+        additionalSetup: emailSetup,
+      });
 
       const {
         data: { success, deliveryDocumentPath },
@@ -114,9 +118,9 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
         expect.objectContaining({
           payload: expect.objectContaining({
             // To, form and bcc should be the same (created in test setup)
-            from: setup.additionalSetup.emailFrom,
+            from: emailSetup.emailFrom,
             to: saul.email,
-            bcc: setup.additionalSetup.emailBcc,
+            bcc: emailSetup.emailBcc,
 
             // We're using default templates for each email type and checking against interpolation values
             // provided in the test payload
@@ -135,7 +139,7 @@ const runSendEmailTableTests = (tests: SendEmailTest[]) => {
   });
 };
 
-describe("SendEmail", () =>
+describe("SendEmail", () => {
   runSendEmailTableTests([
     {
       type: ClientMessageType.SendBookingsLink,
@@ -159,4 +163,51 @@ describe("SendEmail", () =>
         extendedBookingsDate: "2021-01-31",
       },
     },
-  ]));
+  ]);
+
+  test("should use 'emailNameFrom' (if available in org setup) as 'from' attribute", async () => {
+    const additionalSetup = { ...emailSetup, emailNameFrom: "Eisbuk Team" };
+    const { organization } = await setUpOrganization({
+      ...orgSetup,
+      additionalSetup,
+    });
+
+    const emailPayload = {
+      ...saul,
+      organization,
+      type: ClientMessageType.SendBookingsLink,
+      bookingsLink: "https://eisbuk.com/bookings",
+    };
+
+    const {
+      data: { success, deliveryDocumentPath },
+    } = await httpsCallable<
+      unknown,
+      {
+        deliveryDocumentPath: string;
+        success: boolean;
+      }
+    >(
+      functions,
+      CloudFunction.SendEmail
+    )(emailPayload);
+
+    expect(success).toEqual(true);
+
+    // Check the process document
+    const deliveryDocPath = deliveryDocumentPath;
+    const deliveryDoc = await adminDb.doc(deliveryDocPath).get();
+    const deliveryDocData = deliveryDoc.data();
+
+    expect(deliveryDocData).toEqual(
+      expect.objectContaining({
+        payload: expect.objectContaining({
+          // Using email name from instead of email from
+          from: "Eisbuk Team",
+          to: saul.email,
+          bcc: emailSetup.emailBcc,
+        }),
+      })
+    );
+  });
+});
