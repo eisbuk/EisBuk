@@ -89,9 +89,14 @@ export const sendEmail = functions
         calendarFile: validatedPayload.attachments?.filename,
       });
 
+      // If the 'emailNameFrom' is set, we're wrapping the emailFrom to the mailbox format
+      const from = emailNameFrom
+        ? `${emailNameFrom} <${emailFrom}>`
+        : emailFrom;
+
       // Construct an email for process delivery
       const email = {
-        from: emailNameFrom || emailFrom,
+        from,
         to: validatedPayload.email,
         bcc: emailBcc || emailFrom,
         subject,

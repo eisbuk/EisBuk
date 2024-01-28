@@ -202,8 +202,7 @@ describe("SendEmail", () => {
     expect(deliveryDocData).toEqual(
       expect.objectContaining({
         payload: expect.objectContaining({
-          // Using email name from instead of email from
-          from: "Eisbuk Team",
+          from: `Eisbuk Team <${emailSetup.emailFrom}>`,
           to: saul.email,
           bcc: emailSetup.emailBcc,
         }),
