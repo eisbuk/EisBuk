@@ -3,7 +3,6 @@
 @import "tailwindcss/components";
 
 @import "tailwindcss/utilities";
-@import "../../ui/dist/style.css";
 
 @font-face {
   font-family: "Fredoka One";

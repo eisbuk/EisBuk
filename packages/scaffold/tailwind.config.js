@@ -6,7 +6,13 @@
 const rem = (px) => `${px / 16}rem`;
 
 module.exports = {
-  content: ["./src/**/*.{ts,tsx,html}", "./index.html"],
+  content: [
+    "./src/**/*.{ts,tsx,html}",
+    "./index.html",
+    // Go through other @eisbuk/* dependencies when
+    // looking for templates
+    "node_modules/@eisbuk/**/*.{html,js,svelte,ts}",
+  ],
   theme: {
     extend: {
       spacing: {
