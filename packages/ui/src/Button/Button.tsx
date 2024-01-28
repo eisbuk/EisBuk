@@ -34,10 +34,9 @@ const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   const className = [
-    ...baseClasses,
+    applyWhiteTextFallback(baseClasses, classes),
     ...sizeClassesLookup[size],
     getColorClass(disabled, color),
-    classes,
   ].join(" ");
 
   const content = !children ? null : typeof children === "string" ? (
@@ -70,7 +69,6 @@ const Button: React.FC<ButtonProps> = ({
 const baseClasses = [
   "font-semibold",
   "rounded-md",
-  "text-white",
   "flex",
   "items-center",
   "gap-2.5",
@@ -91,6 +89,25 @@ const colorClassLookup = {
   [ButtonColor.Primary]: "bg-cyan-500",
   [ButtonColor.Secondary]: "bg-yellow-600",
   [ButtonColor.Error]: "bg-red-700",
+};
+
+/**
+ * Goes over the input classes (className), check if there's a text color tailwind class.
+ * If not, adds a fallback 'text-white' class.
+ * @param baseClasses - base classes to apply
+ * @param className - input classes from component props
+ * @returns combined classes
+ */
+const applyWhiteTextFallback = (baseClasses: string[], className = "") => {
+  const classes = className.split(" ");
+
+  // Write a conditional (regex) check to see if one of the 'classes' matches a pattern of a text color class.
+  // Exmples: text-red-500, text-blue-600, text-gray-200, etc.
+  const hasTextColorClass = classes.some((c) => /^text-[a-z]+-[0-9]+$/.test(c));
+  if (!hasTextColorClass) {
+    baseClasses.push("text-white");
+  }
+  return [...baseClasses, ...classes].join(" ");
 };
 
 export default Button;
