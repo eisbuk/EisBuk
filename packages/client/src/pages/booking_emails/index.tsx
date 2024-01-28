@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Formik, Form, FormikHelpers } from "formik";
 
 import {
@@ -7,7 +7,11 @@ import {
   OrganizationData,
   ClientMessageMethod,
 } from "@eisbuk/shared";
-import { ActionButton, useTranslation } from "@eisbuk/translations";
+import i18n, {
+  ActionButton,
+  DateFormat,
+  useTranslation,
+} from "@eisbuk/translations";
 import { Button, ButtonColor, ButtonSize, LayoutContent } from "@eisbuk/ui";
 
 import Layout from "@/controllers/Layout";
@@ -17,12 +21,27 @@ import { getCustomersList } from "@/store/selectors/customers";
 
 import EmailTemplateSettings from "./EmailTemplateSettings";
 import { createModal } from "@/features/modal/useModal";
+import { getMonthDeadline } from "@/store/selectors/bookings";
+import {
+  sendBookingsLink,
+  getBookingsLink,
+} from "@/features/modal/components/SendBookingsLinkDialog/utils";
+import { updateOrganizationEmailTemplates } from "@/store/actions/organizationOperations";
 
 const SendBookingEmails: React.FC = () => {
   const allCustomers = useSelector(getCustomersList(true));
   const calendarDay = useSelector(getCalendarDay);
+
   const allCustomerIds = allCustomers.map((cus) => cus.id);
-  const { openWithProps: openBookingsLinkDialog } = useBookingsLinkModal();
+  const [localSetSubmitting, setLocalSetSubmitting] = useState<
+    (isSubmitting: boolean) => void
+  >(() => {});
+
+  const {
+    openWithProps: openBookingsLinkDialog,
+    state,
+    close,
+  } = useBookingsLinkModal();
 
   const organization = useSelector(getOrganizationSettings);
   const { t } = useTranslation();
@@ -44,22 +63,57 @@ const SendBookingEmails: React.FC = () => {
     }
   };
 
+  const dispatch = useDispatch();
+
   const handleSubmit = (
-    updatedEmailTemplates: OrganizationData["emailTemplates"],
     actions: FormikHelpers<OrganizationData["emailTemplates"]>
   ) => {
     const customers = allCustomers.filter((cus) =>
       selectedCustomers.includes(cus.id)
     );
-
+    setLocalSetSubmitting(actions.setSubmitting);
     openBookingsLinkDialog({
       customers,
-      method: ClientMessageMethod.Email,
-      emailTemplates: updatedEmailTemplates,
-      actions,
-      calendarDay,
+      submitting: false,
+      action: "open",
     });
   };
+
+  const onConfirm = () => {
+    const customers = allCustomers.filter((cus) =>
+      selectedCustomers.includes(cus.id)
+    );
+
+    const monthDeadline = i18n.t(DateFormat.Deadline, {
+      date: getMonthDeadline(calendarDay),
+    });
+
+    dispatch(
+      updateOrganizationEmailTemplates(emailTemplates, localSetSubmitting)
+    );
+    customers.forEach((customer) => {
+      dispatch(
+        sendBookingsLink({
+          ...customer,
+          method: ClientMessageMethod.Email,
+          bookingsLink: getBookingsLink(customer.secretKey),
+          deadline: monthDeadline,
+        })
+      );
+    });
+    close();
+  };
+
+  const onCancel = () => {
+    close();
+  };
+
+  useEffect(() => {
+    state &&
+      state.props &&
+      state.props.submitting &&
+      (state.props.action === "confirm" ? onConfirm() : onCancel());
+  }, [state]);
 
   const initialValues = {
     ...emailTemplates,
@@ -71,7 +125,7 @@ const SendBookingEmails: React.FC = () => {
       <Formik
         {...{ initialValues }}
         enableReinitialize={true}
-        onSubmit={(values, actions) => handleSubmit(values, actions)}
+        onSubmit={(_, actions) => handleSubmit(actions)}
       >
         {({ isSubmitting, isValidating, handleReset }) => (
           <>

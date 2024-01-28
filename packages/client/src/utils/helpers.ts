@@ -115,7 +115,7 @@ export const insertValuePlaceholder =
   (
     setFieldValue: (
       field: string,
-      value: any,
+      value: string,
       shouldValidate?: boolean | undefined
     ) => Promise<void | FormikErrors<OrganizationData>>,
     input: React.MutableRefObject<HTMLInputElement | null>,

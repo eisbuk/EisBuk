@@ -9,7 +9,6 @@ import {
   ClientMessageType,
   defaultEmailTemplates as emailTemplates,
   ClientMessageMethod,
-  OrganizationData,
 } from "@eisbuk/shared";
 import i18n, { ActionButton } from "@eisbuk/translations";
 
@@ -19,8 +18,6 @@ import * as orgOperations from "@/store/actions/organizationOperations";
 import * as utils from "../../SendBookingsLinkDialog/utils";
 
 import { saul } from "@eisbuk/testing/customers";
-import { FormikHelpers } from "formik";
-import { DateTime } from "luxon";
 
 const mockOnClose = vi.fn();
 // Mock sendBookingsLink to a, sort of, identity function
@@ -48,8 +45,6 @@ const emailTemplatesProp = {
     emailTemplates[ClientMessageType.SendBookingsLink],
 };
 
-const testDate = DateTime.fromISO("2021-03-01");
-
 // Bookings link we'll receive from 'getBookingsLink()' inside the component
 // host -> 'localhost' (we're in vitest-environment jsdom)
 // secretKey -> saul's secret key (we're using saul as a test customer in all tests below)
@@ -65,15 +60,9 @@ describe("SendBulkBookingsLinkDialog", () => {
       <SendBulkBookingsLinkDialog
         onCloseAll={() => {}}
         customers={[saul]}
-        method={ClientMessageMethod.Email}
         onClose={mockOnClose}
-        emailTemplates={emailTemplatesProp}
-        actions={
-          {
-            setSubmitting: () => {},
-          } as unknown as FormikHelpers<OrganizationData["emailTemplates"]>
-        }
-        calendarDay={testDate}
+        submitting={false}
+        action="open"
       />
     );
     screen.getByText(i18n.t(ActionButton.Cancel) as string).click();
@@ -85,15 +74,9 @@ describe("SendBulkBookingsLinkDialog", () => {
       <SendBulkBookingsLinkDialog
         onCloseAll={() => {}}
         customers={[saul]}
-        method={ClientMessageMethod.Email}
         onClose={mockOnClose}
-        emailTemplates={emailTemplatesProp}
-        actions={
-          {
-            setSubmitting: () => {},
-          } as unknown as FormikHelpers<OrganizationData["emailTemplates"]>
-        }
-        calendarDay={testDate}
+        submitting={false}
+        action="open"
       />
     );
     screen.getByText(i18n.t(ActionButton.Send) as string).click();

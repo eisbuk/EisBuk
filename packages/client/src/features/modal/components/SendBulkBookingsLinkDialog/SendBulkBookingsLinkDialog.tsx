@@ -1,68 +1,30 @@
 import React from "react";
-import { DateTime } from "luxon";
-import { useDispatch } from "react-redux";
-import { FormikHelpers } from "formik";
 
-import {
-  Customer,
-  ClientMessageMethod,
-  OrganizationData,
-} from "@eisbuk/shared";
+import { Customer } from "@eisbuk/shared";
 import { ActionDialog } from "@eisbuk/ui";
-import i18n, { Prompt, ActionButton, DateFormat } from "@eisbuk/translations";
+import i18n, { Prompt, ActionButton } from "@eisbuk/translations";
 
-import { BaseModalProps } from "../../types";
+import { ModalProps } from "../../types";
 
-import {
-  getBookingsLink,
-  sendBookingsLink,
-} from "../SendBookingsLinkDialog/utils";
+type SendBulkBookingsLinkProps = ModalProps<
+  { customers: Customer[] } & {
+    submitting: boolean;
+    action: string;
+  }
+>;
 
-import { updateOrganizationEmailTemplates } from "@/store/actions/organizationOperations";
-import { getMonthDeadline } from "@/store/selectors/bookings";
-
-type SendBulkBookingsLinkProps = BaseModalProps & { customers: Customer[] } & {
-  method: ClientMessageMethod;
-  emailTemplates: OrganizationData["emailTemplates"];
-  actions: FormikHelpers<OrganizationData["emailTemplates"]>;
-  calendarDay: DateTime;
-};
-
-const SendBulkBookingsLinkDialog: React.FC<SendBulkBookingsLinkProps> = ({
-  onClose,
-  className,
-  method,
-  customers,
-  emailTemplates,
-  actions,
-  calendarDay,
-}) => {
-  const dispatch = useDispatch();
+const SendBulkBookingsLinkDialog: React.FC<SendBulkBookingsLinkProps> = (
+  props
+) => {
+  const { className, customers, onUpdateSelf = () => {} } = props;
 
   const onConfirm = () => {
-    const monthDeadline = i18n.t(DateFormat.Deadline, {
-      date: getMonthDeadline(calendarDay),
-    });
-
-    dispatch(
-      updateOrganizationEmailTemplates(emailTemplates, actions.setSubmitting)
-    );
-    customers.forEach((customer) => {
-      dispatch(
-        sendBookingsLink({
-          ...customer,
-          method,
-          bookingsLink: getBookingsLink(customer.secretKey),
-          deadline: monthDeadline,
-        })
-      );
-    });
-    onClose();
+    onUpdateSelf({ ...props, submitting: true, action: "confirm" });
   };
   const onCancel = () => {
-    actions.setSubmitting(false);
-    onClose();
+    onUpdateSelf({ ...props, submitting: true, action: "cancel" });
   };
+
   const checkEmails = (customers: Customer[]) => {
     const customersLength = customers.length.toString();
     return customers.some((cus) => !cus.email)
