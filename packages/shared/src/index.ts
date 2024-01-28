@@ -8,6 +8,7 @@ export * from "./types/clientMessage";
 export * from "./types/utils";
 export * from "./utils";
 export * from "./data/templates";
+export * from "./misc";
 
 import italianNames from "./assets/italian-names.json";
 import italianSurnames from "./assets/italian-surnames.json";
