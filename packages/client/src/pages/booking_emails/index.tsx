@@ -33,6 +33,7 @@ const SendBookingEmails: React.FC = () => {
   const calendarDay = useSelector(getCalendarDay);
 
   const allCustomerIds = allCustomers.map((cus) => cus.id);
+  // eslint-disable-next-line func-call-spacing
   const [localSetSubmitting, setLocalSetSubmitting] = useState<
     (isSubmitting: boolean) => void
   >(() => {});
