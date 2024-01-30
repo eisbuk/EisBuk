@@ -31,23 +31,23 @@ import { updateOrganizationEmailTemplates } from "@/store/actions/organizationOp
 const SendBookingEmails: React.FC = () => {
   const allCustomers = useSelector(getCustomersList(true));
   const calendarDay = useSelector(getCalendarDay);
+  const organization = useSelector(getOrganizationSettings);
+  const { t } = useTranslation();
 
   const allCustomerIds = allCustomers.map((cus) => cus.id);
   // eslint-disable-next-line func-call-spacing
   const [localSetSubmitting, setLocalSetSubmitting] = useState<
     (isSubmitting: boolean) => void
   >(() => {});
+  const [updatedEmailTemplate, setUpdatedEmailTemplate] =
+    useState<OrganizationData["emailTemplates"]>(emailTemplates);
+  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   const {
     openWithProps: openBookingsLinkDialog,
     state,
     close,
   } = useBookingsLinkModal();
-
-  const organization = useSelector(getOrganizationSettings);
-  const { t } = useTranslation();
-
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
 
   const handleCheckboxChange = (customerId: string) => {
     const customerIndex = selectedCustomers.indexOf(customerId);
@@ -67,12 +67,14 @@ const SendBookingEmails: React.FC = () => {
   const dispatch = useDispatch();
 
   const handleSubmit = (
+    values: OrganizationData["emailTemplates"],
     actions: FormikHelpers<OrganizationData["emailTemplates"]>
   ) => {
     const customers = allCustomers.filter((cus) =>
       selectedCustomers.includes(cus.id)
     );
-    setLocalSetSubmitting(actions.setSubmitting);
+    setUpdatedEmailTemplate(values);
+    setLocalSetSubmitting(() => actions.setSubmitting);
     openBookingsLinkDialog({
       customers,
       submitting: false,
@@ -88,10 +90,12 @@ const SendBookingEmails: React.FC = () => {
     const monthDeadline = i18n.t(DateFormat.Deadline, {
       date: getMonthDeadline(calendarDay),
     });
+    localSetSubmitting(true);
 
     dispatch(
-      updateOrganizationEmailTemplates(emailTemplates, localSetSubmitting)
+      updateOrganizationEmailTemplates(updatedEmailTemplate, localSetSubmitting)
     );
+
     customers.forEach((customer) => {
       dispatch(
         sendBookingsLink({
@@ -103,9 +107,11 @@ const SendBookingEmails: React.FC = () => {
       );
     });
     close();
+    localSetSubmitting(false);
   };
 
   const onCancel = () => {
+    localSetSubmitting(false);
     close();
   };
 
@@ -126,7 +132,7 @@ const SendBookingEmails: React.FC = () => {
       <Formik
         {...{ initialValues }}
         enableReinitialize={true}
-        onSubmit={(_, actions) => handleSubmit(actions)}
+        onSubmit={(values, actions) => handleSubmit(values, actions)}
       >
         {({ isSubmitting, isValidating, handleReset }) => (
           <>

@@ -26,7 +26,7 @@ describe("Booking emails", () => {
     cy.getAttrWith("data-testid", "select-athletes").click();
 
     // select 1 athlete with no email or select all
-    cy.getAttrWith("type", "checkbox").eq(5).click();
+    cy.getAttrWith("type", "checkbox").eq(8).click();
 
     // click send
     cy.getAttrWith("type", "submit").click({ force: true });
@@ -40,7 +40,7 @@ describe("Booking emails", () => {
 
     // select 2 other athletes
     cy.getAttrWith("data-testid", "select-athletes").click();
-    cy.getAttrWith("type", "checkbox").eq(5).click();
+    cy.getAttrWith("type", "checkbox").eq(8).click();
     cy.getAttrWith("type", "checkbox").eq(2).click();
     cy.getAttrWith("type", "checkbox").eq(3).click();
 
