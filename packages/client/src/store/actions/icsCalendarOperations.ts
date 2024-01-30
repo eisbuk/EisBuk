@@ -46,7 +46,7 @@ export const sendBookingsCalendar =
 
     const previousCalendar = getCalendarEventsByMonth(monthStr)(getState());
 
-    const { name, surname } = getBookingsCustomer(getState());
+    const { name, surname } = getBookingsCustomer(secretKey)(getState());
 
     const { displayName = __organization__, location = "" } =
       getAboutOrganization(getState())[__organization__] || {};

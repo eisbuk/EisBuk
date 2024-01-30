@@ -6,7 +6,7 @@ import { SanityCheckKind } from "@eisbuk/shared";
 import { __functionsZone__ } from "../constants";
 import { wrapHttpsOnCallHandler } from "../sentry-serverless-firebase";
 
-import { checkUser, throwUnauth } from "../utils";
+import { checkIsAdmin, throwUnauth } from "../utils";
 
 import { newSanityChecker } from "./api";
 
@@ -22,10 +22,13 @@ import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
       return newSanityChecker(
@@ -41,12 +44,15 @@ export const dbSlotAttendanceCheck = functions
  * If all days are empty, deletes the entry (for a month) altogether.
  */
 export const dbSlotSlotsByDayCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbSlotSlotsByDayCheck",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         return newSanityChecker(
@@ -59,10 +65,13 @@ export const dbSlotSlotsByDayCheck = functions
   );
 
 export const dbSlotBookingsCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     async ({ organization }: { organization: string }, { auth }) => {
-      if (!(await checkUser(organization, auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
       const db = admin.firestore();
       return newSanityChecker(
@@ -74,12 +83,15 @@ export const dbSlotBookingsCheck = functions
   );
 
 export const dbBookedSlotsAttendanceCheck = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbBookedSlotsAttendanceCheck",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         return newSanityChecker(
@@ -92,12 +104,15 @@ export const dbBookedSlotsAttendanceCheck = functions
   );
 
 export const dbSlotAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbSlotAttendanceAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -124,12 +139,15 @@ export const dbSlotAttendanceAutofix = functions
   );
 
 export const dbSlotSlotsByDayAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbSlotSlotsByDayAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -156,12 +174,15 @@ export const dbSlotSlotsByDayAutofix = functions
   );
 
 export const dbSlotBookingsAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbSlotBookingsAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(
@@ -183,12 +204,15 @@ export const dbSlotBookingsAutofix = functions
   );
 
 export const dbBookedSlotsAttendanceAutofix = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
     wrapHttpsOnCallHandler(
       "dbBookedSlotsAttendanceAutofix",
       async ({ organization }: { organization: string }, { auth }) => {
-        if (!(await checkUser(organization, auth))) throwUnauth();
+        if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
         const db = admin.firestore();
         const checker = newSanityChecker(

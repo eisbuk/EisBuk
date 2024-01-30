@@ -4,106 +4,73 @@ import admin from "firebase-admin";
 import {
   AuthStatus,
   Collection,
-  OrganizationData,
   OrgSubCollection,
   QueryAuthStatusPayload,
   wrapIter,
-  DeprecatedAuthStatus,
 } from "@eisbuk/shared";
 
 import { __functionsZone__ } from "./constants";
-import { checkRequiredFields } from "./utils";
 
-/**
- * @deprecated This is hare for temporary backward compatibility, but is removed from
- * 'CloutFunction' enum and is not used in the updated version of the app.
- *
- * @TODO Remove this function after allowing some time for update.
- */
+import { wrapHttpsOnCallHandler } from "./sentry-serverless-firebase";
+import {
+  checkRequiredFields,
+  getAuthStrings,
+  getOrgAdmins,
+  isOrgAdmin,
+} from "./utils";
+
 export const queryAuthStatus = functions
+  .runWith({
+    timeoutSeconds: 20,
+    // With these options, your minimum bill will be $4.54 in a 30-day month
+    // It would be nice, but not nice enough to pay $4.54/month
+    // minInstances: 1,
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .https.onCall(
-    async (payload: QueryAuthStatusPayload): Promise<DeprecatedAuthStatus> => {
-      // validate payload
-      checkRequiredFields(payload, ["organization", "authString"]);
+    wrapHttpsOnCallHandler(
+      "queryAuthStatus",
+      async (
+        payload: QueryAuthStatusPayload,
+        { auth }
+      ): Promise<AuthStatus> => {
+        // Organization is required to even start the functionality
+        checkRequiredFields(payload, ["organization"]);
+        const { organization } = payload;
 
-      const { organization, authString } = payload;
+        const authStrings = getAuthStrings(auth);
+        if (!authStrings.length) {
+          return { isAdmin: false, secretKeys: [] };
+        }
 
-      const authStatus: DeprecatedAuthStatus = {
-        isAdmin: false,
-      };
+        // Check if user is admin of the organization
+        const isAdmin = isOrgAdmin(
+          authStrings,
+          await getOrgAdmins(organization)
+        );
 
-      const orgRef = admin
-        .firestore()
-        .collection(Collection.Organizations)
-        .doc(organization);
-      const customersRef = orgRef.collection(OrgSubCollection.Customers);
+        // Get secret keys associated with the user's auth strings
+        const customersRef = admin
+          .firestore()
+          .collection(Collection.Organizations)
+          .doc(organization)
+          .collection(OrgSubCollection.Customers);
+        const customersByEmail = customersRef.where("email", "in", authStrings);
+        const customersByPhone = customersRef.where("phone", "in", authStrings);
 
-      const [org, customers] = await Promise.all([
-        orgRef.get(),
-        customersRef.get(),
-      ]);
+        const customers = await Promise.all([
+          customersByEmail.get(),
+          customersByPhone.get(),
+        ]);
 
-      // query admin status
-      const orgData = org.data() as OrganizationData;
-      if (orgData) {
-        authStatus.isAdmin = orgData.admins.includes(authString);
+        const secretKeys = wrapIter(customers)
+          .flatMap(({ docs }) => docs)
+          .map((doc) => doc.data())
+          .map(({ secretKey }) => secretKey)
+          ._array();
+
+        return { isAdmin, secretKeys };
       }
-
-      // query customer status
-      const authCustomer = customers.docs.find((customerDoc) => {
-        const data = customerDoc.data();
-        return data.email === authString || data.phone === authString;
-      });
-      if (authCustomer) {
-        authStatus.bookingsSecretKey = authCustomer.data().secretKey;
-      }
-
-      return authStatus;
-    }
-  );
-
-/** @TODO Rename this to 'queryAuthStatus' once the deprecated function is removed. */
-export const queryAuthStatus2 = functions
-  .region(__functionsZone__)
-  .https.onCall(
-    async (payload: QueryAuthStatusPayload): Promise<AuthStatus> => {
-      // validate payload
-      checkRequiredFields(payload, ["organization", "authString"]);
-
-      const { organization, authString } = payload;
-
-      const authStatus: AuthStatus = {
-        isAdmin: false,
-      };
-
-      const orgRef = admin
-        .firestore()
-        .collection(Collection.Organizations)
-        .doc(organization);
-      const customersRef = orgRef.collection(OrgSubCollection.Customers);
-
-      const [org, customers] = await Promise.all([
-        orgRef.get(),
-        customersRef.get(),
-      ]);
-
-      // query admin status
-      const orgData = org.data() as OrganizationData;
-      if (orgData) {
-        authStatus.isAdmin = orgData.admins.includes(authString);
-      }
-
-      // query customer status
-      const secretKeys = wrapIter(customers.docs)
-        .map((doc) => doc.data())
-        // We're filtering instead of finding as auth user can be associated with multiple customers
-        .filter(({ email, phone }) => [email, phone].includes(authString))
-        .map(({ secretKey }) => secretKey)
-        ._array();
-
-      authStatus.secretKeys = secretKeys;
-
-      return authStatus;
-    }
+    )
   );

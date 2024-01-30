@@ -35,6 +35,11 @@ type TestIDList = [
   "input-dialog-email-input",
   // #endregion ConfirmDialog
 
+  // #region SlotsDayContainer
+  "slots-day-container",
+  "slots-day-content",
+  // #endregion SlotsDayContainer
+
   // #region SlotOperationButtons
   "new-slot-button",
   "edit-slot-button",
@@ -63,6 +68,7 @@ type TestIDList = [
 
   // #region BookingCard
   "booking-interval-card",
+  "booking-calendar-card",
   "book-button",
   // #endregion BookingCard
 

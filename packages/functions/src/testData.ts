@@ -22,7 +22,7 @@ import {
 
 import { __functionsZone__ } from "./constants";
 
-import { checkUser, throwUnauth } from "./utils";
+import { checkIsAdmin, throwUnauth } from "./utils";
 
 const uuidv4 = v4;
 
@@ -43,7 +43,7 @@ export const createTestData = functions.region(__functionsZone__).https.onCall(
   wrapHttpsOnCallHandler(
     "createTestData",
     async ({ numUsers = 1, organization }: CreateTestDataPayload, context) => {
-      if (!(await checkUser(organization, context.auth))) throwUnauth();
+      if (!(await checkIsAdmin(organization, context.auth))) throwUnauth();
 
       functions.logger.info(`Creating ${numUsers} test users`);
       functions.logger.error(`Creating ${numUsers} test users`);
@@ -187,7 +187,7 @@ export const setupEmailForTesting = functions
       { organization, smtpHost = "localhost", smtpPort = 5000 },
       context
     ) => {
-      await checkUser(organization, context.auth);
+      await checkIsAdmin(organization, context.auth);
 
       const smtpConfig = {
         smtpUser: "Foo",

@@ -2,6 +2,7 @@ import React from "react";
 import { DateTime } from "luxon";
 
 import { useTranslation, DateFormat } from "@eisbuk/translations";
+import { getIntervalString } from "@eisbuk/shared/ui";
 
 import { IntervalDuration, IntervalCardVariant } from "./types";
 
@@ -18,7 +19,7 @@ interface Props {
 }
 
 const CardContent: React.FC<Props> = ({
-  interval: { startTime, endTime },
+  interval,
   date: dateISO,
   variant = IntervalCardVariant.Booking,
   type,
@@ -27,6 +28,7 @@ const CardContent: React.FC<Props> = ({
   const { t } = useTranslation();
   const date = DateTime.fromISO(dateISO);
 
+  const { startTime, endTime } = interval;
   const duration = calculateDuration(startTime, endTime);
 
   const dateString = (
@@ -36,7 +38,7 @@ const CardContent: React.FC<Props> = ({
   );
   const timestring = (
     <span className={getTimestringClasses(variant, duration)}>
-      {[startTime, endTime].join(" - ")}
+      {getIntervalString(interval)}
     </span>
   );
   const notesElement = (

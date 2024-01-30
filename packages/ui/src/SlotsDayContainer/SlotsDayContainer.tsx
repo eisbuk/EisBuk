@@ -1,6 +1,8 @@
 import React from "react";
 import { DateTime } from "luxon";
 
+import { testId } from "@eisbuk/testing/testIds";
+
 import i18n, { DateFormat } from "@eisbuk/translations";
 
 interface SlotsDayContainerProps {
@@ -28,7 +30,11 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
   ];
 
   return (
-    <div className={[...containerClasses, className].join(" ")}>
+    <div
+      data-testid={testId("slots-day-container")}
+      data-date={dateISO}
+      className={[...containerClasses, className].join(" ")}
+    >
       <div className="sticky top-0 z-40 bg-white pt-6 pb-8">
         <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
           {dateString}
@@ -37,7 +43,10 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
           {additionalContent}
         </div>
       </div>
-      <div className="p-1 flex flex-wrap items-end gap-6 min-h-[146px]">
+      <div
+        data-testid={testId("slots-day-content")}
+        className="p-1 flex flex-wrap items-end gap-6 min-h-[146px]"
+      >
         {children}
       </div>
     </div>

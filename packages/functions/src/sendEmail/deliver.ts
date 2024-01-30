@@ -85,6 +85,9 @@ const processSMTPPreferences = ({
  * to attempt delivery, retry and log delivery state accordingly.
  */
 export const deliverEmail = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
   .firestore.document(
     `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.EmailQueue}/{emailDoc}`

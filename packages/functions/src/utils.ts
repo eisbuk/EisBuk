@@ -36,56 +36,47 @@ export const roundTo = (val: number, modbase: number): number =>
   Math.floor(val / modbase) * modbase;
 
 /**
- * Receives an organization name and an auth info object as
- * provided by the Firebase SDK. Returns a boolean promise
- * of whether or not the user is authorized to manage the given organization
- * @param organization
- * @param auth
+ * A helper method to extract all auth strings from the auth object.
+ * If auth not provided, returns and empty array
  */
-export const checkUser = async (
-  organization?: string,
-  auth?: Auth
-): Promise<boolean | never> => {
-  if (!organization || !auth || !auth.token) {
-    return false;
-  }
-
-  const token = auth!.token!;
-  const authString = token.email || token.phone_number;
-  if (!authString) {
-    return false;
-  }
-
-  const org = await admin
-    .firestore()
-    .collection(Collection.Organizations)
-    .doc(organization!)
-    .get();
-
-  if (!isOrgAdmin(org.data()?.admins, auth)) return false;
-  return true;
-};
+export const getAuthStrings = (auth: Auth): string[] =>
+  !auth?.token
+    ? []
+    : [auth.token.email, auth.token.phone_number].filter((x): x is string =>
+        Boolean(x)
+      );
 
 /**
- * Checks if provided organization has admin and
- * if user in fact is admin of said organization
- * @param admins array of admin credentials (email or name)
- * @param auth auth object of user we're checking out
- * @returns
+ * Returns list of admins for an organization.
+ * If organization found or not provided, returns an empty array
  */
-const isOrgAdmin = (admins: string[] | undefined, auth: Auth): boolean => {
-  // fail early
-  // if no admins are registered for the organization
-  // or no auth is present
-  if (!Array.isArray(admins) || !auth?.token) return false;
+export const getOrgAdmins = (organization?: string) =>
+  !organization
+    ? Promise.resolve([])
+    : admin
+        .firestore()
+        .collection(Collection.Organizations)
+        .doc(organization)
+        .get()
+        .then((org) => org.data()?.admins || []);
 
-  const { email, phone_number: phoneNumber } = auth.token;
+/**
+ * A shorthand to method to check if the user is an admin of the organization
+ * by providing the cloud function params.
+ */
+export const checkIsAdmin = async (organization?: string, auth?: Auth) =>
+  isOrgAdmin(getAuthStrings(auth), await getOrgAdmins(organization));
 
-  return (email && admins.includes(email)) ||
-    (phoneNumber && admins.includes(phoneNumber))
-    ? true
-    : false;
-};
+/**
+ * Checks if provided organization has admin(s) and
+ * if user in fact is admin of said organization
+ * @param authStrings all auth strings of the user
+ * @param admins list of organization's admins
+ */
+export const isOrgAdmin = (
+  authStrings: string[],
+  admins: string[] = []
+): boolean => authStrings.some((x) => admins.includes(x));
 
 /**
  * Throws unauthorized https error

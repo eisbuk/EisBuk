@@ -40,98 +40,108 @@ type SlotsForBooking = {
   slots: (SlotInterface & { interval?: string })[];
 }[];
 
-export const getSlotsForBooking = (state: LocalStore): SlotsForBooking => {
-  const slotsMonth = getSlotsForCustomer(state);
-  const bookedSlots = getBookedSlots(state);
-  const customerData = getBookingsCustomer(state);
+export const getSlotsForBooking =
+  (secretKey: string) =>
+  (state: LocalStore): SlotsForBooking => {
+    const slotsMonth = getSlotsForCustomer(secretKey)(state);
+    const bookedSlots = getBookedSlots(state);
+    const customerData = getBookingsCustomer(secretKey)(state);
 
-  // Sort dates so that the final output is sorted
-  const daysToRender = Object.keys(slotsMonth).sort((a, b) => (a < b ? -1 : 1));
-  if (!daysToRender.length || !customerData) {
-    return [];
-  }
+    // Sort dates so that the final output is sorted
+    const daysToRender = Object.keys(slotsMonth).sort((a, b) =>
+      a < b ? -1 : 1
+    );
+    if (!daysToRender.length || !customerData) {
+      return [];
+    }
 
-  return daysToRender.map((date) => ({
-    date,
-    slots: Object.values(slotsMonth[date])
-      .sort(({ intervals: i1 }, { intervals: i2 }) => {
-        const ts1 = getSlotTimespan(i1).replace(" ", "");
-        const ts2 = getSlotTimespan(i2).replace(" ", "");
+    return daysToRender.map((date) => ({
+      date,
+      slots: Object.values(slotsMonth[date])
+        .sort(({ intervals: i1 }, { intervals: i2 }) => {
+          const ts1 = getSlotTimespan(i1).replace(" ", "");
+          const ts2 = getSlotTimespan(i2).replace(" ", "");
 
-        return comparePeriodsEarliestFirst(ts1, ts2);
-      })
-      .map((slot) =>
-        // If slot booked add interval to the return structure
-        bookedSlots[slot.id]
-          ? { ...slot, interval: bookedSlots[slot.id].interval }
-          : slot
-      ),
-  }));
-};
+          return comparePeriodsEarliestFirst(ts1, ts2);
+        })
+        .map((slot) =>
+          // If slot booked add interval to the return structure
+          bookedSlots[slot.id]
+            ? { ...slot, interval: bookedSlots[slot.id].interval }
+            : slot
+        ),
+    }));
+  };
 
 /**
  * Get `slotsByDay` entry, from store, for current month filtered according to customer's category.
  * Both the `category` and `date` are read directly from store. Slots booked at full capacity are filtered out.
  */
-export const getSlotsForCustomer = (state: LocalStore): SlotsByDay => {
-  const date = getCalendarDay(state);
-  const categories = getBookingsCustomer(state)?.categories;
+export const getSlotsForCustomer =
+  (secretKey: string) =>
+  (state: LocalStore): SlotsByDay => {
+    const date = getCalendarDay(state);
+    const categories = getBookingsCustomer(secretKey)(state)?.categories;
 
-  // Return early if no category found in store
-  if (!categories) {
-    return {};
-  }
+    // Return early if no category found in store
+    if (!categories) {
+      return {};
+    }
 
-  const allSlotsInStore = state.firestore.data?.slotsByDay;
-  const bookingsCounts = state.firestore.data?.slotBookingsCounts || {};
+    const allSlotsInStore = state.firestore.data?.slotsByDay;
+    const bookingsCounts = state.firestore.data?.slotBookingsCounts || {};
 
-  // Return early if no slots in store
-  if (!allSlotsInStore) return {};
+    // Return early if no slots in store
+    if (!allSlotsInStore) return {};
 
-  // Get slots for current month
-  const monthString = date.startOf("month").toISO().substring(0, 7);
-  const slotsForAMonth = allSlotsInStore[monthString] || {};
-  const bookingCountsForAMonth = bookingsCounts[monthString] || {};
-  const bookedSlots = getBookedSlots(state);
+    // Get slots for current month
+    const monthString = date.startOf("month").toISO().substring(0, 7);
+    const slotsForAMonth = allSlotsInStore[monthString] || {};
+    const bookingCountsForAMonth = bookingsCounts[monthString] || {};
+    const bookedSlots = getBookedSlots(state);
 
-  // Filter slots from each day with respect to category
-  //
-  // Start: Iterable of [date, SlotsById (record of slots keyed by slotId)] tuples
-  const processedSlots = wrapIter(Object.entries(slotsForAMonth))
-    // Map: [date, SlotsById] -> [date, [slotId, SlotInterface][]]
-    .map(valueMapper((slots) => Object.entries(slots)))
-    // FlatMap: [date, [slotId, SlotInterface][]] -> [date, slotId, SlotInterface]
-    .flatMap(([date, slots]) =>
-      slots.map(([id, slot]) => [date, id, slot] as const)
-    )
-    // Filter out slots not matching customer's category
-    .filter(([, , slot]) => categories.some((c) => slot.categories.includes(c)))
-    // Filter out slots booked at full capacity (or without any capacity set)
-    .filter(
-      ([, slotId, slot]) =>
-        // If booking count is not available, this is a no-op:
-        // - this makes it safe for tests (no need for additional setup)
-        // - with current production requirements, this is right - we filter the slots only if the capacity is set
-        //  and the booking count is availabe (if not, the slot is not yet booked)
-        !bookingCountsForAMonth[slotId] ||
-        !slot.capacity ||
-        slot.capacity > bookingCountsForAMonth[slotId] ||
-        Boolean(bookedSlots[slotId])
-    )
-    // GroupEntries by date: [date, [slotId, SlotInterface][]]
-    ._group(
-      ([date, id, slot]) =>
-        [date, [id, slot]] as [string, [string, SlotInterface]]
-    )
-    // Map the value: [date, [slotId, SlotInterface][]] -> [date, SlotsById]
-    .map(valueMapper((slots) => Object.fromEntries(slots)));
+    // Filter slots from each day with respect to category
+    //
+    // Start: Iterable of [date, SlotsById (record of slots keyed by slotId)] tuples
+    const processedSlots = wrapIter(Object.entries(slotsForAMonth))
+      // Map: [date, SlotsById] -> [date, [slotId, SlotInterface][]]
+      .map(valueMapper((slots) => Object.entries(slots)))
+      // FlatMap: [date, [slotId, SlotInterface][]] -> [date, slotId, SlotInterface]
+      .flatMap(([date, slots]) =>
+        slots.map(([id, slot]) => [date, id, slot] as const)
+      )
+      // Filter out slots not matching customer's category
+      .filter(([, , slot]) =>
+        categories.some((c) => slot.categories.includes(c))
+      )
+      // Filter out slots booked at full capacity (or without any capacity set)
+      .filter(
+        ([, slotId, slot]) =>
+          // If booking count is not available, this is a no-op:
+          // - this makes it safe for tests (no need for additional setup)
+          // - with current production requirements, this is right - we filter the slots only if the capacity is set
+          //  and the booking count is availabe (if not, the slot is not yet booked)
+          !bookingCountsForAMonth[slotId] ||
+          !slot.capacity ||
+          slot.capacity > bookingCountsForAMonth[slotId] ||
+          Boolean(bookedSlots[slotId])
+      )
+      // GroupEntries by date: [date, [slotId, SlotInterface][]]
+      ._group(
+        ([date, id, slot]) =>
+          [date, [id, slot]] as [string, [string, SlotInterface]]
+      )
+      // Map the value: [date, [slotId, SlotInterface][]] -> [date, SlotsById]
+      .map(valueMapper((slots) => Object.fromEntries(slots)));
 
-  return Object.fromEntries(processedSlots);
-};
+    return Object.fromEntries(processedSlots);
+  };
 
-export const getMonthEmptyForBooking = (state: LocalStore): boolean => {
-  return isEmpty(getSlotsForCustomer(state));
-};
+export const getMonthEmptyForBooking =
+  (secretKey: string) =>
+  (state: LocalStore): boolean => {
+    return isEmpty(getSlotsForCustomer(secretKey)(state));
+  };
 
 type BookingsEntry = SlotInterface & {
   interval: SlotInterval;

@@ -16,14 +16,14 @@ import { getMonthDiff } from "@/utils/date";
  * @returns {boolean} `true` if admin or period for booking of the slots hasn't passed
  */
 export const getIsBookingAllowed =
-  (currentDate: DateTime) =>
+  (secretKey: string, currentDate: DateTime) =>
   (state: LocalStore): boolean => {
     // admins should always be able to update bookings slots
     if (getIsAdmin(state)) return true;
 
     const deadline = getMonthDeadline(currentDate);
 
-    const extendedDate = getExtendedDate(state);
+    const extendedDate = getExtendedDate(secretKey)(state);
     const isExtendedDateAplicable = Boolean(
       extendedDate &&
         extendedDate.diffNow().milliseconds > 0 &&
@@ -39,47 +39,47 @@ export const getIsBookingAllowed =
  * @returns `undefined` if admin (or should be hidden), otherwise returns an object
  * containing countdown `message`, booking `month`, and countdown `deadline`
  */
-export const getCountdownProps = (
-  state: LocalStore
-): CountdownProps | undefined => {
-  // return early if admin (no countdown is shown)
-  const isAdmin = getIsAdmin(state);
-  if (isAdmin) {
-    return undefined;
-  }
+export const getCountdownProps =
+  (secretKey: string) =>
+  (state: LocalStore): CountdownProps | undefined => {
+    // return early if admin (no countdown is shown)
+    const isAdmin = getIsAdmin(state);
+    if (isAdmin) {
+      return undefined;
+    }
 
-  const currentDate = getCalendarDay(state);
+    const currentDate = getCalendarDay(state);
 
-  const month = currentDate.startOf("month");
+    const month = currentDate.startOf("month");
 
-  if (!getIsBookingAllowed(currentDate)(state)) {
-    return {
-      month,
-      deadline: null,
-      variant: BookingsCountdownVariant.BookingsLocked,
-    };
-  }
+    if (!getIsBookingAllowed(secretKey, currentDate)(state)) {
+      return {
+        month,
+        deadline: null,
+        variant: BookingsCountdownVariant.BookingsLocked,
+      };
+    }
 
-  const monthsDeadline = getMonthDeadline(currentDate);
-  const extendedDate = getExtendedDate(state);
+    const monthsDeadline = getMonthDeadline(currentDate);
+    const extendedDate = getExtendedDate(secretKey)(state);
 
-  const isExtendedDateApplicable =
-    extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
+    const isExtendedDateApplicable =
+      extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
 
-  if (isExtendedDateApplicable) {
-    return {
-      month,
-      deadline: extendedDate.endOf("day"),
-      variant: BookingsCountdownVariant.SecondDeadline,
-    };
-  } else {
-    return {
-      month,
-      deadline: monthsDeadline,
-      variant: BookingsCountdownVariant.FirstDeadline,
-    };
-  }
-};
+    if (isExtendedDateApplicable) {
+      return {
+        month,
+        deadline: extendedDate.endOf("day"),
+        variant: BookingsCountdownVariant.SecondDeadline,
+      };
+    } else {
+      return {
+        month,
+        deadline: monthsDeadline,
+        variant: BookingsCountdownVariant.FirstDeadline,
+      };
+    }
+  };
 
 // #region temp
 /** @TEMP should be read from admin preferences in the store */
@@ -94,14 +94,16 @@ const lockingPeriod = 5;
  * @param state
  * @returns
  */
-const getExtendedDate = (state: LocalStore): DateTime | undefined => {
-  const { extendedDate } = getBookingsCustomer(state) || {};
+const getExtendedDate =
+  (secretKey: string) =>
+  (state: LocalStore): DateTime | undefined => {
+    const { extendedDate } = getBookingsCustomer(secretKey)(state) || {};
 
-  // check if extended date exists
-  if (!extendedDate) return undefined;
+    // check if extended date exists
+    if (!extendedDate) return undefined;
 
-  return DateTime.fromISO(extendedDate).endOf("day");
-};
+    return DateTime.fromISO(extendedDate).endOf("day");
+  };
 
 /**
  * Returns deadline for a current month calculated by subtracting

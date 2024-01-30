@@ -6,7 +6,7 @@ import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import { customers } from "../__testData__/customers.json";
 import { attendance } from "../__testData__/attendance.json";
-import { slots } from "../__testData__/slots.json";
+import { misc as slots } from "../__testData__/slots";
 
 const gus = customers["gus"];
 

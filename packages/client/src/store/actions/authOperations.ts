@@ -56,7 +56,7 @@ export const checkAuthStatus = async (
 
   // fail early if no auth string
   if (!authString) {
-    return { isAdmin: false };
+    return { isAdmin: false, secretKeys: [] };
   }
 
   const res = await createFunctionCaller(
@@ -64,12 +64,12 @@ export const checkAuthStatus = async (
     CloudFunction.QueryAuthStatus,
     {
       organization,
-      authString,
     }
   )();
 
   return res.data;
 };
+
 /**
  * An update user callback, called by firestore's `onAuthStateChanged`.
  * Gets passed a new user, determines the auth status (`isAdmin`, `bookingsSecretKey`),

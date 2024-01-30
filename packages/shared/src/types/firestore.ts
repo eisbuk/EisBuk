@@ -392,7 +392,7 @@ export interface EmailAttachment {
 export interface EmailPayload {
   to: string;
   from: string;
-  bcc: string;
+  bcc?: string;
   subject: string;
   html: string;
   attachments?: EmailAttachment[];
