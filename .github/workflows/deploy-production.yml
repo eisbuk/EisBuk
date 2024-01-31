@@ -71,7 +71,7 @@ jobs:
         SENTRY_URL: ${{ secrets.SENTRY_URL }}
       with:
         environment: production
-        sourcemaps: ./packages/client/dist/assets
+        sourcemaps: ./packages/functions/dist/
         version: ${{ env.SENTRY_RELEASE }}
     - name: Deploy to firebase
       run: |
