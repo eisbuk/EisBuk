@@ -6,6 +6,7 @@ import {
   defaultEmailTemplates as emailTemplates,
   OrganizationData,
   ClientMessageMethod,
+  CustomerFull,
 } from "@eisbuk/shared";
 import i18n, {
   ActionButton,
@@ -15,6 +16,8 @@ import i18n, {
 import { Button, ButtonColor, ButtonSize, LayoutContent } from "@eisbuk/ui";
 
 import Layout from "@/controllers/Layout";
+
+import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
 import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
 import { getCustomersList } from "@/store/selectors/customers";
@@ -29,19 +32,24 @@ import {
 import { updateOrganizationEmailTemplates } from "@/store/actions/organizationOperations";
 
 const SendBookingEmails: React.FC = () => {
-  const allCustomers = useSelector(getCustomersList(true));
+  const nonDeletedCustomers = useSelector(getCustomersList(true)).filter(
+    (cus) => !cus.deleted
+  );
   const calendarDay = useSelector(getCalendarDay);
   const organization = useSelector(getOrganizationSettings);
   const { t } = useTranslation();
 
-  const allCustomerIds = allCustomers.map((cus) => cus.id);
+  const allCustomerIds = nonDeletedCustomers.map((cus) => cus.id);
   // eslint-disable-next-line func-call-spacing
   const [localSetSubmitting, setLocalSetSubmitting] = useState<
     (isSubmitting: boolean) => void
   >(() => {});
   const [updatedEmailTemplate, setUpdatedEmailTemplate] =
     useState<OrganizationData["emailTemplates"]>(emailTemplates);
-  const [selectedCustomers, setSelectedCustomers] = useState<string[]>([]);
+  const [selectedCustomerIds, setSelectedCustomerIds] = useState<string[]>([]);
+  const [selectedCustomers, setSelectedCustomers] = useState<CustomerFull[]>(
+    []
+  );
 
   const {
     openWithProps: openBookingsLinkDialog,
@@ -49,17 +57,22 @@ const SendBookingEmails: React.FC = () => {
     close,
   } = useBookingsLinkModal();
 
-  const handleCheckboxChange = (customerId: string) => {
-    const customerIndex = selectedCustomers.indexOf(customerId);
+  const handleCheckboxChange = (customer: CustomerFull) => {
+    const customerIndex = selectedCustomerIds.indexOf(customer.id);
 
     if (customerIndex === -1) {
       // Item doesn't exist, add it to the array
-      setSelectedCustomers([...selectedCustomers, customerId]);
+      setSelectedCustomerIds([...selectedCustomerIds, customer.id]);
+      setSelectedCustomers([...selectedCustomers, customer]);
     } else {
       // Item exists, remove it from the array
-      const updatedCustomers = [...selectedCustomers].filter(
-        (id) => id !== customerId
+      const updatedCustomerIds = [...selectedCustomerIds].filter(
+        (id) => id !== customer.id
       );
+      const updatedCustomers = [...selectedCustomers].filter(
+        (cus) => cus.id !== customer.id
+      );
+      setSelectedCustomerIds(updatedCustomerIds);
       setSelectedCustomers(updatedCustomers);
     }
   };
@@ -70,23 +83,16 @@ const SendBookingEmails: React.FC = () => {
     values: OrganizationData["emailTemplates"],
     actions: FormikHelpers<OrganizationData["emailTemplates"]>
   ) => {
-    const customers = allCustomers.filter((cus) =>
-      selectedCustomers.includes(cus.id)
-    );
     setUpdatedEmailTemplate(values);
     setLocalSetSubmitting(() => actions.setSubmitting);
     openBookingsLinkDialog({
-      customers,
+      customers: selectedCustomers,
       submitting: false,
       action: "open",
     });
   };
 
-  const onConfirm = () => {
-    const customers = allCustomers.filter((cus) =>
-      selectedCustomers.includes(cus.id)
-    );
-
+  const handleConfirm = () => {
     const monthDeadline = i18n.t(DateFormat.Deadline, {
       date: getMonthDeadline(calendarDay),
     });
@@ -96,7 +102,7 @@ const SendBookingEmails: React.FC = () => {
       updateOrganizationEmailTemplates(updatedEmailTemplate, localSetSubmitting)
     );
 
-    customers.forEach((customer) => {
+    selectedCustomers.forEach((customer) => {
       dispatch(
         sendBookingsLink({
           ...customer,
@@ -110,16 +116,25 @@ const SendBookingEmails: React.FC = () => {
     localSetSubmitting(false);
   };
 
-  const onCancel = () => {
+  const handleCancel = () => {
     localSetSubmitting(false);
     close();
+  };
+
+  const handleSelectAll = () => {
+    setSelectedCustomerIds(allCustomerIds);
+    setSelectedCustomers(nonDeletedCustomers);
+  };
+  const handleClearAll = () => {
+    setSelectedCustomerIds([]);
+    setSelectedCustomers([]);
   };
 
   useEffect(() => {
     state &&
       state.props &&
       state.props.submitting &&
-      (state.props.action === "confirm" ? onConfirm() : onCancel());
+      (state.props.action === "confirm" ? handleConfirm() : handleCancel());
   }, [state]);
 
   const initialValues = {
@@ -150,25 +165,29 @@ const SendBookingEmails: React.FC = () => {
                   </Button>
                   <Button
                     disabled={
-                      !selectedCustomers.length || isSubmitting || isValidating
+                      !selectedCustomerIds.length ||
+                      isSubmitting ||
+                      isValidating
                     }
                     color={ButtonColor.Primary}
                     size={ButtonSize.MD}
                     aria-label={"save"}
                     type="submit"
                   >
-                    {t(ActionButton.Save)}
+                    {t(ActionButton.Send)}
                   </Button>
                 </div>
               }
             >
-              <EmailTemplateSettings
-                onCheckboxChange={handleCheckboxChange}
-                customers={allCustomers}
-                selectedCustomers={selectedCustomers}
-                onSelectAll={() => setSelectedCustomers(allCustomerIds)}
-                onClearAll={() => setSelectedCustomers([])}
-              />
+              <ErrorBoundary resetKeys={[nonDeletedCustomers]}>
+                <EmailTemplateSettings
+                  onCheckboxChange={handleCheckboxChange}
+                  customers={nonDeletedCustomers}
+                  selectedCustomerIds={selectedCustomerIds}
+                  onSelectAll={handleSelectAll}
+                  onClearAll={handleClearAll}
+                />
+              </ErrorBoundary>
             </LayoutContent>
           </>
         )}

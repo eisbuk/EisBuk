@@ -6,8 +6,8 @@ import { Ice, OffIce } from "@eisbuk/svg";
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   customers?: CustomerFull[];
-  selectedCustomers?: string[];
-  onCustomerClick: (customerId: string) => void;
+  selectedCustomerIds?: string[];
+  onCustomerClick: (customer: CustomerFull) => void;
   onSelectAll: () => void;
   onClearAll: () => void;
   isOpen: boolean;
@@ -16,7 +16,7 @@ interface Props extends React.HTMLAttributes<HTMLDivElement> {
 
 const CustomerList: React.FC<Props> = ({
   customers = [],
-  selectedCustomers = [],
+  selectedCustomerIds = [],
   onCustomerClick = () => {},
   onSelectAll = () => {},
   onClearAll = () => {},
@@ -55,8 +55,8 @@ const CustomerList: React.FC<Props> = ({
                   <input
                     type="checkbox"
                     className="form-checkbox h-5 w-5 text-cyan-600"
-                    checked={selectedCustomers.includes(customer.id)}
-                    onChange={() => onCustomerClick(customer.id)}
+                    checked={selectedCustomerIds.includes(customer.id)}
+                    onChange={() => onCustomerClick(customer)}
                   />
                   <span className="ml-2 text-gray-700">
                     {customer.name} {customer.surname}
@@ -69,7 +69,7 @@ const CustomerList: React.FC<Props> = ({
                       <Ice />
                     </div>
 
-                    {customer.bookingStats
+                    {customer.bookingStats && customer.bookingStats[monthStr]
                       ? `${customer.bookingStats[monthStr].ice} hrs`
                       : ` - `}
                   </div>
@@ -77,7 +77,7 @@ const CustomerList: React.FC<Props> = ({
                     <div className="h-4">
                       <OffIce />
                     </div>
-                    {customer.bookingStats
+                    {customer.bookingStats && customer.bookingStats[monthStr]
                       ? `${customer.bookingStats[monthStr]["off-ice"]} hrs`
                       : ` - `}
                   </div>

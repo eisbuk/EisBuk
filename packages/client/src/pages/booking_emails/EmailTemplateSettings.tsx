@@ -32,16 +32,16 @@ import {
 import { buttons, previewValues } from "../admin_preferences/data";
 
 interface EmailTemplateSettingsProps {
-  onCheckboxChange: (customerId: string) => void;
+  onCheckboxChange: (customer: CustomerFull) => void;
   customers: CustomerFull[];
-  selectedCustomers: string[];
+  selectedCustomerIds: string[];
   onSelectAll: () => void;
   onClearAll: () => void;
 }
 const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
   onCheckboxChange,
   customers,
-  selectedCustomers,
+  selectedCustomerIds,
   onSelectAll,
   onClearAll,
 }) => {
@@ -100,7 +100,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
               <CheckboxCustomerList
                 customers={customers}
                 onCustomerClick={onCheckboxChange}
-                selectedCustomers={selectedCustomers}
+                selectedCustomerIds={selectedCustomerIds}
                 isOpen={isOpen}
                 onSelectAll={onSelectAll}
                 onClearAll={onClearAll}
