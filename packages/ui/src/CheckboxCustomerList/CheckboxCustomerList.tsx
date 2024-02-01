@@ -69,17 +69,13 @@ const CustomerList: React.FC<Props> = ({
                       <Ice />
                     </div>
 
-                    {customer.bookingStats && customer.bookingStats[monthStr]
-                      ? `${customer.bookingStats[monthStr].ice} hrs`
-                      : ` - `}
+                    {customer.bookingStats?.[monthStr]?.ice || " - "}
                   </div>
                   <div className="flex items-center w-16">
                     <div className="h-4">
                       <OffIce />
                     </div>
-                    {customer.bookingStats && customer.bookingStats[monthStr]
-                      ? `${customer.bookingStats[monthStr]["off-ice"]} hrs`
-                      : ` - `}
+                    {customer.bookingStats?.[monthStr]?.["off-ice"] || " - "}
                   </div>
                 </div>
               </label>
