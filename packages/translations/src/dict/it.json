@@ -187,8 +187,8 @@
     "OrganizationName": "Nome Dell'Organizzazione",
     "Deadline": "Scadenza",
     "SelectAthletes": "Selezionare Gli Atleti",
-    "SelectAll": "Seleziona Tutto",
-    "ClearAll": "Cancella Tutto"
+    "SelectAll": "Seleziona Tutti",
+    "SelectNone": "Seleziona Nessuno"
   },
 
   "Validations": {

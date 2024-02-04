@@ -187,7 +187,7 @@
     "Deadline": "Deadline",
     "SelectAthletes": "Select Athletes",
     "SelectAll": "Select All",
-    "ClearAll": "Clear All"
+    "SelectNone": "Select None"
   },
 
   "Validations": {

@@ -208,7 +208,7 @@ export enum MessageTemplateLabel {
   Deadline = "MessageTemplateLabel.Deadline",
   SelectAthletes = "MessageTemplateLabel.SelectAthletes",
   SelectAll = "MessageTemplateLabel.SelectAll",
-  ClearAll = "MessageTemplateLabel.ClearAll",
+  SelectNone = "MessageTemplateLabel.SelectNone",
 }
 
 export enum BookingNotesForm {

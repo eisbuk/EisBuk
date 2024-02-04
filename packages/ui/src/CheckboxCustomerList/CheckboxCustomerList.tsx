@@ -43,7 +43,7 @@ const CustomerList: React.FC<Props> = ({
                 onClick={onClearAll}
                 type="button"
               >
-                {t(MessageTemplateLabel.ClearAll)}
+                {t(MessageTemplateLabel.SelectNone)}
               </button>
             </div>
             {customers.map((customer) => (
