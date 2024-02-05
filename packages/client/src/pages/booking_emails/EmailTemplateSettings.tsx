@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useFormikContext } from "formik";
+import { DateTime } from "luxon";
 
 import {
   Button,
@@ -9,7 +10,11 @@ import {
   FormField,
   FormFieldVariant,
 } from "@eisbuk/ui";
-import { MessageTemplateLabel, useTranslation } from "@eisbuk/translations";
+import {
+  ActionButton,
+  MessageTemplateLabel,
+  useTranslation,
+} from "@eisbuk/translations";
 import {
   interpolateText,
   OrganizationData,
@@ -20,7 +25,7 @@ import { ChevronDown } from "@eisbuk/svg";
 import { useClickOutside } from "@eisbuk/shared/ui";
 import { testId } from "@eisbuk/testing/testIds";
 
-import { getCalendarDay, getOrganizationSettings } from "@/store/selectors/app";
+import { getOrganizationSettings } from "@/store/selectors/app";
 
 import { getMonthStr, insertValuePlaceholder } from "@/utils/helpers";
 
@@ -35,6 +40,7 @@ interface EmailTemplateSettingsProps {
   onCheckboxChange: (customer: CustomerFull) => void;
   customers: CustomerFull[];
   selectedCustomerIds: string[];
+  selectedCustomers: CustomerFull[];
   onSelectAll: () => void;
   onClearAll: () => void;
 }
@@ -42,6 +48,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
   onCheckboxChange,
   customers,
   selectedCustomerIds,
+  selectedCustomers,
   onSelectAll,
   onClearAll,
 }) => {
@@ -49,8 +56,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
 
   const { t } = useTranslation();
 
-  const calendarDay = useSelector(getCalendarDay);
-  const monthStr = getMonthStr(calendarDay, 0);
+  const monthStr = getMonthStr(DateTime.now(), 1);
 
   const { setFieldValue } = useFormikContext<OrganizationData>();
 
@@ -106,6 +112,25 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
                 onClearAll={onClearAll}
                 monthStr={monthStr}
               />
+            </div>
+            <div className="flex flex-wrap mt-4 -mx-2">
+              {selectedCustomers.map((cus) => (
+                <div
+                  key={cus.id}
+                  className="flex items-center p-2 border rounded bg-gray-200 mx-2 mb-2"
+                >
+                  <span>
+                    {cus.name} {cus.surname}
+                  </span>
+                  <button
+                    className="ml-2 text-red-500"
+                    type="button"
+                    onClick={() => onCheckboxChange(cus)}
+                  >
+                    {t(ActionButton.Delete)}
+                  </button>
+                </div>
+              ))}
             </div>
             <div
               key={name}

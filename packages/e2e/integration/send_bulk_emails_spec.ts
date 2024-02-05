@@ -3,7 +3,11 @@ import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 import { customers } from "../__testData__/customers.json";
 import { organization as organizationData } from "../__testData__/organization.json";
-import i18n, { NotificationMessage, Prompt } from "@eisbuk/translations";
+import i18n, {
+  ActionButton,
+  NotificationMessage,
+  Prompt,
+} from "@eisbuk/translations";
 
 describe("Booking emails", () => {
   beforeEach(() => {
@@ -43,6 +47,11 @@ describe("Booking emails", () => {
     cy.getAttrWith("type", "checkbox").eq(8).click();
     cy.getAttrWith("type", "checkbox").eq(2).click();
     cy.getAttrWith("type", "checkbox").eq(3).click();
+    cy.getAttrWith("type", "checkbox").eq(4).click();
+
+    cy.contains(i18n.t(ActionButton.Delete) as string)
+      .first()
+      .click({ force: true });
 
     // click send
     cy.getAttrWith("type", "submit").click({ force: true });
