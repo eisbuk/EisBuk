@@ -184,6 +184,7 @@ const SendBookingEmails: React.FC = () => {
                   onCheckboxChange={handleCheckboxChange}
                   customers={nonDeletedCustomers}
                   selectedCustomerIds={selectedCustomerIds}
+                  selectedCustomers={selectedCustomers}
                   onSelectAll={handleSelectAll}
                   onClearAll={handleClearAll}
                 />
