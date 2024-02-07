@@ -43,7 +43,7 @@ jobs:
           REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_IGORICE_DSN }}
           REACT_APP_SENTRY_ENVIRONMENT: production
           REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
-      - name: Create Sentry release
+      - name: Create Sentry release for client app
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -54,10 +54,23 @@ jobs:
           environment: production
           sourcemaps: "./packages/client/dist/assets"
           version: ${{ env.SENTRY_RELEASE }}
+      - name: Create Sentry release for client app
+        uses: getsentry/action-release@v1
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: eisbuk
+          SENTRY_PROJECT: 'functions'
+          SENTRY_URL: ${{ secrets.SENTRY_URL }}
+        with:
+          environment: production
+          sourcemaps: "./packages/functions/dist/"
+          version: ${{ env.SENTRY_RELEASE }}
       - name: Deploy to firebase
         run: |
           echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
+          echo REACT_APP_SENTRY_RELEASE="$REACT_APP_SENTRY_RELEASE" >> packages/functions/.env
           rush deploy:production
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }}
           FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
+          REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}

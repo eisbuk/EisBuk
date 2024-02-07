@@ -6,7 +6,7 @@ import Layout from "@/controllers/Layout";
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
 const ComponentThatThrows = () => {
-  throw new Error("This is an error");
+  throw new Error("This is an error thrown on purpose");
 };
 
 const ErrorBoundaryPage: React.FC = () => {
