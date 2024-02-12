@@ -48,3 +48,18 @@ ol {
 .privacy-policy-md ol {
   @apply list-decimal;
 }
+
+
+/*
+// FIXME. The following rules for tooltips are already in the main.css
+// file of the ui package. For some reason they're not being picked up.
+*/
+.hover-container .hover-element {
+  display: none;
+}
+.hover-container:hover .hover-element {
+  display: block;
+}
+/*
+// End of rules duplicated from packages/ui/src/main.css.
+*/
