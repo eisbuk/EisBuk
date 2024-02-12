@@ -128,5 +128,9 @@ export const SendBookingsLinkSMSSchema: JSONSchemaType<
       type: "string",
       errorMessage: "Missing bookingsLink",
     },
+    deadline: {
+      type: "string",
+      nullable: true,
+    },
   },
 };

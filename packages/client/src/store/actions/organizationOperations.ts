@@ -41,3 +41,31 @@ export const updateOrganization =
       );
     }
   };
+export const updateOrganizationEmailTemplates =
+  (
+    emailTemplates: OrganizationData["emailTemplates"],
+    setSubmitting: (isSubmitting: boolean) => void
+  ): FirestoreThunk =>
+  async (dispatch, _, { getFirestore }) => {
+    try {
+      const db = getFirestore();
+      const docRef = doc(db, getOrganizationCollPath());
+
+      await setDoc(docRef, { emailTemplates }, { merge: true });
+
+      dispatch(
+        enqueueNotification({
+          message: `${i18n.t(NotificationMessage.Updated)}`,
+          variant: NotifVariant.Success,
+        })
+      );
+      setSubmitting(false);
+    } catch (error) {
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+        })
+      );
+    }
+  };

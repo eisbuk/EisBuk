@@ -26,4 +26,5 @@ export enum PrivateRoutes {
   NewAthlete = "/athletes/new",
   Slots = "/slots",
   AdminPreferences = "/admin_preferences",
+  BookingEmails = "/booking_emails",
 }

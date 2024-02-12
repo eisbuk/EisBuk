@@ -29,6 +29,7 @@ import SelectAccount from "@/pages/select_account";
 import AttendancePrintable from "@/pages/attendance_printable";
 import DebugPage from "@/pages/debug";
 import AdminPreferencesPage from "@/pages/admin_preferences";
+import SendBookingEmails from "@/pages/booking_emails";
 import SelfRegister from "@/pages/self_register";
 import PrivacyPolicy from "@/pages/privacy_policy";
 import Deleted from "@/pages/deleted";
@@ -96,6 +97,7 @@ const AppContent: React.FC = () => {
           path={Routes.AttendancePrintable}
           component={AttendancePrintable}
         />
+
         <PrivateRoute
           path={PrivateRoutes.AdminPreferences}
           component={AdminPreferencesPage}
@@ -116,6 +118,10 @@ const AppContent: React.FC = () => {
         <Route
           path={`${Routes.CustomerArea}/:secretKey`}
           component={CustomerAreaPage}
+        />
+        <PrivateRoute
+          path={PrivateRoutes.BookingEmails}
+          component={SendBookingEmails}
         />
         <Route
           exact

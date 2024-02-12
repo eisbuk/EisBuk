@@ -61,7 +61,15 @@
       "categories": ["competitive"],
       "email": "morticia@addamsfamily.com",
       "password": "wednesdayschildisfullofwoe",
-      "secretKey": "000005"
+      "secretKey": "101010"
+    },
+    "skyler": {
+      "id": "skyler",
+      "name": "Skyler",
+      "surname": "White",
+      "certificateExpiration": "2001-03-01",
+      "categories": ["competitive"],
+      "secretKey": "101014"
     },
     "wednesday": {
       "id": "wednesday",

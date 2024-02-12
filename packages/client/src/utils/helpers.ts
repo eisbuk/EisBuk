@@ -1,4 +1,6 @@
+import { FormikErrors } from "formik";
 import { DateTime } from "luxon";
+import { OrganizationData } from "@eisbuk/shared";
 
 /**
  * Returns initials from provided name and last name
@@ -99,4 +101,75 @@ export const replaceHTMLTags = (template: string) => {
   // eslint-disable-next-line no-irregular-whitespace
   const regex = new RegExp(/( |<([^>]+)>)/gi);
   return template.replaceAll(regex, "");
+};
+
+/**
+ * Inserts a placeholder value into an input field and updates the corresponding Formik field.
+ * @param setFieldValue - The Formik `setFieldValue` function to update the field value.
+ * @param input - Reference to the input element.
+ * @param type - The type of template ie email or sms
+ * @returns A function that takes a button value and inserts it into the input field.
+ */
+
+export const insertValuePlaceholder =
+  (
+    setFieldValue: (
+      field: string,
+      value: string,
+      shouldValidate?: boolean | undefined
+    ) => Promise<void | FormikErrors<OrganizationData>>,
+    input: React.MutableRefObject<HTMLInputElement | null>,
+    type: "emailTemplates" | "smsTemplates"
+  ) =>
+  (buttonValue: string) =>
+  () => {
+    if (!input.current) return;
+
+    const [start, end] = getInputSelection(input.current);
+
+    const { name, value } = input.current;
+
+    const inputValue =
+      // Format the placeholder value, add anchor tag to links, where aplicable
+      formatValuePlaceholder(buttonValue, type === "emailTemplates");
+
+    const updatedValue = stringInsert(value, start, end, inputValue);
+
+    setFieldValue(name, updatedValue);
+
+    input.current.focus();
+    // Set selection to the end of the inserted value, after the field has been focused (hence the timeout)
+    const cursorPosition = start + inputValue.length;
+    const setSelection = () =>
+      input.current?.setSelectionRange(cursorPosition, cursorPosition);
+    setTimeout(setSelection, 5);
+  };
+
+const stringInsert = (
+  string: string,
+  start: number,
+  end: number,
+  value: string
+) => [string.slice(0, start), value, string.slice(end)].join("");
+
+const getInputSelection = (input: HTMLInputElement) => [
+  input.selectionStart || 0,
+  input.selectionEnd || 0,
+];
+
+const formatValuePlaceholder = (value: string, wrapLinks: boolean) => {
+  switch (value) {
+    case "icsFile":
+      if (wrapLinks) {
+        return '<a href="{{ icsFile }}">Clicca qui per aggiungere le tue prenotazioni al tuo calendario</a>';
+      }
+    // eslint-disable-next-line no-fallthrough
+    case "bookingsLink":
+      if (wrapLinks) {
+        return '<a href="{{ bookingsLink }}">Clicca qui per prenotare e gestire le tue lezioni</a>';
+      }
+    // eslint-disable-next-line no-fallthrough
+    default:
+      return `{{ ${value} }}`;
+  }
 };

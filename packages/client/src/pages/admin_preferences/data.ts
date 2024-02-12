@@ -7,6 +7,7 @@ export const buttons = {
     { label: MessageTemplateLabel.Surname, value: "surname" },
     { label: MessageTemplateLabel.BookingsLink, value: "bookingsLink" },
     { label: MessageTemplateLabel.OrganizationName, value: "organizationName" },
+    { label: MessageTemplateLabel.Deadline, value: "deadline" },
   ],
   [ClientMessageType.SendCalendarFile]: [
     { label: MessageTemplateLabel.Name, value: "name" },
@@ -34,4 +35,5 @@ export const previewValues = {
   bookingsMonth: "April",
   extendedBookingsDate: "06/04",
   icsFile: "icsFile.ics",
+  deadline: "April 26",
 };

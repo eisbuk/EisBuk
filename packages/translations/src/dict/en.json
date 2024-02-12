@@ -183,7 +183,11 @@
     "IcsFile": "Calendar File Link",
     "BookingsMonth": "Bookings Month",
     "ExtendedBookingsDate": "Extended Bookings Date",
-    "OrganizationName": "Organization Name"
+    "OrganizationName": "Organization Name",
+    "Deadline": "Deadline",
+    "SelectAthletes": "Select Athletes",
+    "SelectAll": "Select All",
+    "SelectNone": "Select None"
   },
 
   "Validations": {
@@ -214,6 +218,10 @@
     "NoEmailTitle": "No email found",
     "NoEmailMessage": "No email has been stored for this customer, please update the email in customer's record.",
     "SendSMSTitle": "Confirm SMS",
+    "SendBulkEmailTitle": "Confirm email",
+    "SendBulkEmailMessage": "Are you sure you want to send booking link emails to: {{ athletesNumber }} athletes?",
+    "NoBulkEmailTitle": "No email found",
+    "NoBulkEmailMessage": "No email has been stored for one of the customers, please make sure there are emails in all selected customer's record.",
     "ConfirmSMS": "Are you sure you want to send an SMS to: {{ phone }}?",
     "NoPhoneTitle": "No phone number found",
     "NoPhoneMessage": "No phone number has been store for this customer, please update the phone number in customer's record.",
@@ -251,6 +259,7 @@
     "LearnMore": "Learn more",
 
     "Save": "Save",
+    "SaveAndSend": "Save And Send",
     "Back": "Back",
     "Next": "Next",
     "Cancel": "Cancel",
@@ -333,6 +342,7 @@
 
   "Date": {
     "Weekday": "{{ date, EEE }}",
+    "Deadline": "{{ date, LLLL dd }}",
     "Day": "{{ date, d }}",
     "Month": "{{ date, MMMM }}",
     "Full": "{{ date, EEEE d MMMM }}",
@@ -353,7 +363,8 @@
     "CloseModal": "Close the modal",
     "BirthdayMenu": "See upcomming birthdays",
     "AthletesApprovalIcon": "See athletes approval requests",
-    "AthletesApprovalButton": "Approval Requests"
+    "AthletesApprovalButton": "Approval Requests",
+    "SendBookingEmailsButton": "Send Booking Emails"
   },
 
   "SlotsAria": {
