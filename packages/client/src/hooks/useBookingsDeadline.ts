@@ -14,8 +14,6 @@ import {
   getMonthDeadline,
 } from "@/store/selectors/bookings";
 
-import { getMonthDiff } from "@/utils/date";
-
 const useBookingsDeadlines = () => {
   const secretKey = useSelector(getSecretKey)!;
   const currentDate = useSelector(getCalendarDay);
@@ -34,9 +32,19 @@ const useBookingsDeadlines = () => {
 
   // Deadline
   const currentMonthDeadline = getMonthDeadline(month);
-  const deadline = isExtendedDateCurrentMonth(month, extendedDate)
+  // Check extended deadline:
+  //    - if extended date applicable to current month, use it
+  //    - otherwise use current month deadline
+  const extendedDeadline = isExtendedDateApplicable(month, extendedDate)
     ? extendedDate
     : currentMonthDeadline;
+  // Get applicable deadline:
+  //   - if regular deadline hadn't yet passed, use it
+  //   - if regular deadline passed, use extended deadline (if any)
+  const deadline =
+    currentMonthDeadline.diff(systemDate).milliseconds > 0
+      ? currentMonthDeadline
+      : extendedDeadline;
   const deadlinePassed = deadline.diff(systemDate).milliseconds <= 0;
 
   // Get is booking allowed
@@ -44,17 +52,27 @@ const useBookingsDeadlines = () => {
 
   const variant = deadlinePassed
     ? BookingsCountdownVariant.BookingsLocked
-    : isExtendedDateCurrentMonth(month, extendedDate)
-    ? BookingsCountdownVariant.SecondDeadline
-    : BookingsCountdownVariant.FirstDeadline;
+    : deadline.equals(currentMonthDeadline)
+    ? BookingsCountdownVariant.FirstDeadline
+    : BookingsCountdownVariant.SecondDeadline;
 
   return { month, isBookingAllowed, deadline, countdownVariant: variant };
 };
 
-const isExtendedDateCurrentMonth = (
+/** Extended date is applicable if it's after current month's regular deadline and before next month's regular deadline */
+const isExtendedDateApplicable = (
   currentDate: DateTime,
   extendedDate?: DateTime
-): extendedDate is DateTime =>
-  Boolean(extendedDate && getMonthDiff(extendedDate, currentDate) === 0);
+): extendedDate is DateTime => {
+  if (!extendedDate) return false;
+
+  const currentMonthDeadline = getMonthDeadline(currentDate);
+  const nextMonthDeadline = getMonthDeadline(currentDate.plus({ months: 1 }));
+
+  return (
+    extendedDate.diff(currentMonthDeadline).milliseconds >= 0 &&
+    extendedDate.diff(nextMonthDeadline).milliseconds < 0
+  );
+};
 
 export default useBookingsDeadlines;
