@@ -14,7 +14,11 @@ import { updateLocalDocuments } from "@eisbuk/react-redux-firebase-firestore";
 import BookingsCountdownContainer from "../BookingsCountdownContainer";
 
 import { getNewStore } from "@/store/createStore";
-import { changeCalendarDate, storeSecretKey } from "@/store/actions/appActions";
+import {
+  changeCalendarDate,
+  setSystemDate,
+  storeSecretKey,
+} from "@/store/actions/appActions";
 
 import { renderWithRedux } from "@/__testUtils__/wrappers";
 
@@ -35,8 +39,6 @@ describe("BookingsCountdown", () => {
   test("should open a finalize bookings modal on 'Finalize' button click", () => {
     // Set up test state so that the second deadline is shown
     const testDate = DateTime.fromISO("2022-01-01");
-    // In order to keep tests consistent we need to also mock the `Date.now`
-    vi.spyOn(Date, "now").mockReturnValue(testDate.toMillis());
     const month = testDate;
     const extendedDate = testDate.plus({ days: 2 }).toISODate();
     const store = getNewStore();
@@ -61,6 +63,8 @@ describe("BookingsCountdown", () => {
     );
     store.dispatch(changeCalendarDate(month));
     store.dispatch(storeSecretKey(saul.secretKey));
+    // Instead of mocking Date.now, we're passing the test date (as system date) directly
+    store.dispatch(setSystemDate(testDate));
     // With test state set up, 'finalize' button should be in the screen for
     // provided 'month'
     renderWithRedux(<BookingsCountdownContainer />, store);
