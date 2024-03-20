@@ -4,6 +4,7 @@ import { DateTime } from "luxon";
 
 import CalendarNav from "./CalendarNav";
 import EmptySpace from "../EmptySpace";
+import DateDebug from "./DateDebug";
 
 export default {
   title: "Calendar Nav",
@@ -53,5 +54,18 @@ export const WithCountdown = (): JSX.Element => (
     date={DateTime.fromISO("2022-04-01")}
     jump="month"
     additionalContent={countdown}
+  />
+);
+
+const DateDebugWrapper: React.FC = () => {
+  const [date, setDate] = React.useState(DateTime.now());
+
+  return <DateDebug value={date} onChange={setDate} />;
+};
+export const WithDateDebug = (): JSX.Element => (
+  <CalendarNav
+    date={DateTime.fromISO("2022-04-01")}
+    jump="month"
+    additionalContent={<DateDebugWrapper />}
   />
 );

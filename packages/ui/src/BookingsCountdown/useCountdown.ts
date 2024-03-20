@@ -11,11 +11,18 @@ type CountdownStruct = {
 type TickLength = "hour" | "minute" | "second";
 
 interface HookInterface {
-  (countdownDate: DateTime | null, tick?: TickLength): CountdownStruct | null;
+  (
+    countdownDate: DateTime | null,
+    systemDate: DateTime,
+    tick?: TickLength
+  ): CountdownStruct | null;
 }
 
 interface CountdownHelper {
-  (countdownDate: DateTime | null): CountdownStruct | null;
+  (
+    countdownDate: DateTime | null,
+    systemDate: DateTime
+  ): CountdownStruct | null;
 }
 
 /**
@@ -25,9 +32,13 @@ interface CountdownHelper {
  * @returns an object of values (number) until the deadline {days, hours, minutes, seconds}
  * or `null` if no `countdownDate` provided
  */
-const useCountdown: HookInterface = (countdownDate, tick = "second") => {
+const useCountdown: HookInterface = (
+  countdownDate,
+  systemDate,
+  tick = "second"
+) => {
   const [countdown, setCountdown] = useState<CountdownStruct | null>(
-    getCountdownValues(countdownDate)
+    getCountdownValues(countdownDate, systemDate)
   );
 
   // store timeout in a ref to be accessible from multiple functions
@@ -45,7 +56,7 @@ const useCountdown: HookInterface = (countdownDate, tick = "second") => {
   useEffect(() => {
     const tickLength = getTickLength(tick);
     timeout.current = setTimeout(() => {
-      setCountdown(getCountdownValues(countdownDate));
+      setCountdown(getCountdownValues(countdownDate, systemDate));
     }, tickLength);
 
     return resetTimeout;
@@ -55,7 +66,7 @@ const useCountdown: HookInterface = (countdownDate, tick = "second") => {
   // reseting timeout in the process
   useEffect(() => {
     resetTimeout();
-    setCountdown(getCountdownValues(countdownDate));
+    setCountdown(getCountdownValues(countdownDate, systemDate));
   }, [countdownDate]);
 
   return countdown;
@@ -65,16 +76,15 @@ const useCountdown: HookInterface = (countdownDate, tick = "second") => {
  * Calculates the time difference between `DateTime.now()` and
  * provided `countdownDate`, returns result in `CountdownStruct`
  */
-const getCountdownValues: CountdownHelper = (countdownDate) => {
+const getCountdownValues: CountdownHelper = (countdownDate, systemDate) => {
   if (!countdownDate) return null;
 
-  const now = DateTime.fromMillis(Date.now());
   const {
     seconds: secondsFloat,
     days,
     hours,
     minutes,
-  } = countdownDate.diff(now, ["days", "hours", "minutes", "seconds"]);
+  } = countdownDate.diff(systemDate, ["days", "hours", "minutes", "seconds"]);
 
   return {
     days,

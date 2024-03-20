@@ -30,6 +30,7 @@ export interface CountdownProps {
    * first/second deadline, or bookings locked message
    */
   variant: BookingsCountdownVariant;
+  systemDate?: DateTime;
 }
 
 type BookingsCountdownProps = React.HTMLAttributes<HTMLElement> &
@@ -52,9 +53,10 @@ const BookingsCountdown: React.FC<BookingsCountdownProps> = ({
   month,
   onFinalize,
   as = "div",
+  systemDate = DateTime.now(),
   ...props
 }) => {
-  const countdown = useCountdown(deadline, "hour");
+  const countdown = useCountdown(deadline, systemDate, "hour");
   const message = variantMessageLookup[variant];
 
   const countdownMessage = i18n.t(message, {
