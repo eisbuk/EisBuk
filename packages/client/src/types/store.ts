@@ -27,7 +27,9 @@ import { FirestoreVariant } from "@/utils/firestore";
 export type AppAction =
   | Action.ChangeDay
   | Action.StoreSecretKey
-  | Action.RemoveSecretKey;
+  | Action.RemoveSecretKey
+  | Action.SetSystemDate
+  | Action.ResetSystemDate;
 
 /**
  * Record of payloads for each of the app reducer actions
@@ -35,6 +37,7 @@ export type AppAction =
 interface AppActionPayload {
   [Action.ChangeDay]: DateTime;
   [Action.StoreSecretKey]: string;
+  [Action.SetSystemDate]: DateTime;
 }
 /**
  * App reducer action generic
@@ -43,6 +46,7 @@ interface AppActionPayload {
 export type AppReducerAction<A extends AppAction> = A extends
   | Action.StoreSecretKey
   | Action.ChangeDay
+  | Action.SetSystemDate
   ? {
       type: A;
       payload: AppActionPayload[A];
@@ -52,9 +56,17 @@ export type AppReducerAction<A extends AppAction> = A extends
  * `app` portion of the local store
  */
 export interface AppState {
-  notifications: Notification[];
   calendarDay: DateTime;
   secretKey?: string;
+  // This is used for debug purposes:
+  //  - if not explicitly set, it will be the actual system date
+  //  - if set, it is used to debug some date related behaviour (without changing the actual system date)
+  systemDate: {
+    // Value is the value used as date
+    value: DateTime;
+    // Debug flag indicates whether or not the 'value' represents the actual system date, or value set for debugging purposes
+    debug: boolean;
+  };
 }
 // #endregion app
 
