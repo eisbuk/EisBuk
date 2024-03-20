@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
 import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
 
-import { CalendarNav, LayoutContent, TabItem } from "@eisbuk/ui";
+import { CalendarNav, DateDebug, LayoutContent, TabItem } from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -35,7 +35,10 @@ import {
   getBookingsCustomer,
   getOtherBookingsAccounts,
 } from "@/store/selectors/bookings";
-import { getAllSecretKeys } from "@/store/selectors/auth";
+import { getAllSecretKeys, getIsAdmin } from "@/store/selectors/auth";
+import { getSystemDate } from "@/store/selectors/app";
+
+import { resetSystemDate, setSystemDate } from "@/store/actions/appActions";
 
 enum Views {
   Book = "BookView",
@@ -54,7 +57,20 @@ const viewsLookup = {
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
+  const dispatch = useDispatch();
+
   const secretKey = useSecretKey();
+  const isAdmin = useSelector(getIsAdmin);
+
+  const { value: systemDate } = useSelector(getSystemDate);
+
+  // Reset the system date on unmount, as it could have only been used (if it had been used at all) for debugging of
+  // the current page
+  useEffect(() => {
+    return () => {
+      dispatch(resetSystemDate());
+    };
+  }, []);
 
   // We're providing a fallback [secretKey] as we have multiple ways of authenticating. If authenticating
   // using firebase auth, the user will have all of their secret keys in the store (this is the preferred way).
@@ -150,6 +166,14 @@ const CustomerArea: React.FC = () => {
           //
           // additionalContent={<AddToCalendar />}
           jump="month"
+          additionalContent={
+            isAdmin ? (
+              <DateDebug
+                value={systemDate}
+                onChange={(date) => dispatch(setSystemDate(date))}
+              />
+            ) : undefined
+          }
         />
       )}
       <LayoutContent>
