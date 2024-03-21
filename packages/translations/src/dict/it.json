@@ -437,5 +437,11 @@
   "Forms": {
     "ShowPassword": "Mostra password",
     "HidePassword": "Nascondi password"
+  },
+
+  "Debug": {
+    "SystemDate": "System date",
+    "ExtendedBookingDate": "Extended booking date",
+    "DebugOnlyMessage": "This area is for debug only. The changes made here will not be saved."
   }
 }

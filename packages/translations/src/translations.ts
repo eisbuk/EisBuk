@@ -471,3 +471,9 @@ export enum Forms {
   HidePassword = "Forms.HidePassword",
 }
 // #endregion forms
+
+export enum Debug {
+  SystemDate = "Debug.SystemDate",
+  ExtendedBookingDate = "Debug.ExtendedBookingDate",
+  DebugOnlyMessage = "Debug.DebugOnlyMessage",
+}
