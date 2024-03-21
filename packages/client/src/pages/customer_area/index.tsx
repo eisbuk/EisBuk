@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
-import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
+import { CustomerNavigationLabel, useTranslation } from "@eisbuk/translations";
 
-import { CalendarNav, DateDebug, LayoutContent, TabItem } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  CalendarNav,
+  LayoutContent,
+  TabItem,
+} from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -28,6 +34,7 @@ import useSecretKey from "@/hooks/useSecretKey";
 import Layout from "@/controllers/Layout";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 import AthleteAvatar from "@/controllers/AthleteAvatar";
+import BookingDateDebugDialog from "@/controllers/BookingDateDebugController";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
@@ -36,9 +43,6 @@ import {
   getOtherBookingsAccounts,
 } from "@/store/selectors/bookings";
 import { getAllSecretKeys, getIsAdmin } from "@/store/selectors/auth";
-import { getSystemDate } from "@/store/selectors/app";
-
-import { resetSystemDate, setSystemDate } from "@/store/actions/appActions";
 
 enum Views {
   Book = "BookView",
@@ -57,20 +61,10 @@ const viewsLookup = {
  * Customer area page component
  */
 const CustomerArea: React.FC = () => {
-  const dispatch = useDispatch();
-
   const secretKey = useSecretKey();
   const isAdmin = useSelector(getIsAdmin);
 
-  const { value: systemDate } = useSelector(getSystemDate);
-
-  // Reset the system date on unmount, as it could have only been used (if it had been used at all) for debugging of
-  // the current page
-  useEffect(() => {
-    return () => {
-      dispatch(resetSystemDate());
-    };
-  }, []);
+  const { t } = useTranslation();
 
   // We're providing a fallback [secretKey] as we have multiple ways of authenticating. If authenticating
   // using firebase auth, the user will have all of their secret keys in the store (this is the preferred way).
@@ -118,26 +112,29 @@ const CustomerArea: React.FC = () => {
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
   const CustomerView = viewsLookup[view];
 
+  const [debugOn, setDebugOn] = useState(false);
+  const toggleDebug = () => setDebugOn(!debugOn);
+
   const additionalButtons = (
     <>
       <TabItem
         key="book-view-button"
         Icon={Calendar as any}
-        label={i18n.t(CustomerNavigationLabel.Book)}
+        label={t(CustomerNavigationLabel.Book)}
         onClick={() => setView(Views.Book)}
         active={view === Views.Book}
       />
       <TabItem
         key="calendar-view-button"
         Icon={AccountCircle as any}
-        label={i18n.t(CustomerNavigationLabel.Calendar)}
+        label={t(CustomerNavigationLabel.Calendar)}
         onClick={() => setView(Views.Calendar)}
         active={view === Views.Calendar}
       />
       <TabItem
         key="profile-view-button"
         Icon={ClipboardList as any}
-        label={i18n.t(CustomerNavigationLabel.Profile)}
+        label={t(CustomerNavigationLabel.Profile)}
         onClick={() => setView(Views.Profile)}
         active={view === Views.Profile}
       />
@@ -147,6 +144,19 @@ const CustomerArea: React.FC = () => {
   if (secretKey && currentAthlete.deleted) {
     return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
+
+  const debugButton = (
+    <Button
+      onClick={toggleDebug}
+      color={debugOn ? ButtonColor.Primary : undefined}
+      className={
+        !debugOn ? "!text-black outline outline-gray-300 border-box" : ""
+      }
+      // aria-label={t(SlotsAria.EnableEdit)}
+    >
+      Debug
+    </Button>
+  );
 
   return (
     <Layout
@@ -167,17 +177,18 @@ const CustomerArea: React.FC = () => {
           // additionalContent={<AddToCalendar />}
           jump="month"
           additionalContent={
-            isAdmin ? (
-              <DateDebug
-                value={systemDate}
-                onChange={(date) => dispatch(setSystemDate(date))}
-              />
-            ) : undefined
+            isAdmin && view === "BookView" ? debugButton : undefined
           }
         />
       )}
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
+          {debugOn && (
+            <div className="mt-4">
+              <BookingDateDebugDialog />
+            </div>
+          )}
+
           <div className="px-[44px] py-4">
             <CustomerView />
           </div>
