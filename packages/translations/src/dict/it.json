@@ -440,8 +440,9 @@
   },
 
   "Debug": {
-    "SystemDate": "System date",
-    "ExtendedBookingDate": "Extended booking date",
-    "DebugOnlyMessage": "This area is for debug only. The changes made here will not be saved."
+    "DebugButtonLabel": "Simulazione",
+    "SystemDate": "Data di oggi simulata",
+    "ExtendedBookingDate": "Data simulata di scadenza delle prenotazioni",
+    "DebugOnlyMessage": "Questi valori vengono usati per la simulazione, per fare delle prove. Non vengono registrati da nessuna parte."
   }
 }

@@ -1,7 +1,11 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
-import { CustomerNavigationLabel, useTranslation } from "@eisbuk/translations";
+import {
+  CustomerNavigationLabel,
+  Debug,
+  useTranslation,
+} from "@eisbuk/translations";
 
 import {
   Button,
@@ -154,7 +158,7 @@ const CustomerArea: React.FC = () => {
       }
       // aria-label={t(SlotsAria.EnableEdit)}
     >
-      Debug
+      {t(Debug.DebugButtonLabel)}
     </Button>
   );
 

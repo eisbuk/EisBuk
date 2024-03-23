@@ -476,4 +476,5 @@ export enum Debug {
   SystemDate = "Debug.SystemDate",
   ExtendedBookingDate = "Debug.ExtendedBookingDate",
   DebugOnlyMessage = "Debug.DebugOnlyMessage",
+  DebugButtonLabel = "Debug.DebugButtonLabel",
 }
