@@ -36,6 +36,8 @@ import Deleted from "@/pages/deleted";
 
 import { getIsAdmin } from "@/store/selectors/auth";
 
+import useSystemDate from "./hooks/useSystemDate";
+
 /**
  * All of the App content (including routes) wrapper.
  * On change of auth credentials (and initial render)
@@ -57,6 +59,7 @@ const AppContent: React.FC = () => {
 
   useFirestoreSubscribe(getOrganization(), subscribedCollections);
   usePaginateFirestore();
+  useSystemDate();
 
   // Remove the firestore emulator warning as it's in the way.
   // We're adding a warning of our own, incorporated nicely into out layout

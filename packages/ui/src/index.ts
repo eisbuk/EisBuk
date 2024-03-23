@@ -29,6 +29,7 @@ export {
   CountryCodesDropdownFormik,
 } from "./CountryCodesDropdown";
 export { default as PrivacyPolicyToast } from "./PrivacyPolicyToast";
+export { default as BookingDateDebugDialog } from "./BookingDateDebugDialog";
 
 export * from "./UserAvatar";
 export * from "./NotificationToast";

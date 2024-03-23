@@ -437,5 +437,12 @@
   "Forms": {
     "ShowPassword": "Mostra password",
     "HidePassword": "Nascondi password"
+  },
+
+  "Debug": {
+    "DebugButtonLabel": "Simulazione",
+    "SystemDate": "Data di oggi simulata",
+    "ExtendedBookingDate": "Data simulata di scadenza delle prenotazioni",
+    "DebugOnlyMessage": "Questi valori vengono usati per la simulazione, per fare delle prove. Non vengono registrati da nessuna parte."
   }
 }

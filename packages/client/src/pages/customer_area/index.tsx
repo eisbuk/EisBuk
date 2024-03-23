@@ -1,9 +1,19 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
-import i18n, { CustomerNavigationLabel } from "@eisbuk/translations";
+import {
+  CustomerNavigationLabel,
+  Debug,
+  useTranslation,
+} from "@eisbuk/translations";
 
-import { CalendarNav, LayoutContent, TabItem } from "@eisbuk/ui";
+import {
+  Button,
+  ButtonColor,
+  CalendarNav,
+  LayoutContent,
+  TabItem,
+} from "@eisbuk/ui";
 import { Calendar, AccountCircle, ClipboardList } from "@eisbuk/svg";
 import {
   BookingSubCollection,
@@ -28,6 +38,7 @@ import useSecretKey from "@/hooks/useSecretKey";
 import Layout from "@/controllers/Layout";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 import AthleteAvatar from "@/controllers/AthleteAvatar";
+import BookingDateDebugDialog from "@/controllers/BookingDateDebugController";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
@@ -35,7 +46,7 @@ import {
   getBookingsCustomer,
   getOtherBookingsAccounts,
 } from "@/store/selectors/bookings";
-import { getAllSecretKeys } from "@/store/selectors/auth";
+import { getAllSecretKeys, getIsAdmin } from "@/store/selectors/auth";
 
 enum Views {
   Book = "BookView",
@@ -55,6 +66,9 @@ const viewsLookup = {
  */
 const CustomerArea: React.FC = () => {
   const secretKey = useSecretKey();
+  const isAdmin = useSelector(getIsAdmin);
+
+  const { t } = useTranslation();
 
   // We're providing a fallback [secretKey] as we have multiple ways of authenticating. If authenticating
   // using firebase auth, the user will have all of their secret keys in the store (this is the preferred way).
@@ -102,26 +116,29 @@ const CustomerArea: React.FC = () => {
   const [view, setView] = useState<keyof typeof viewsLookup>(Views.Book);
   const CustomerView = viewsLookup[view];
 
+  const [debugOn, setDebugOn] = useState(false);
+  const toggleDebug = () => setDebugOn(!debugOn);
+
   const additionalButtons = (
     <>
       <TabItem
         key="book-view-button"
         Icon={Calendar as any}
-        label={i18n.t(CustomerNavigationLabel.Book)}
+        label={t(CustomerNavigationLabel.Book)}
         onClick={() => setView(Views.Book)}
         active={view === Views.Book}
       />
       <TabItem
         key="calendar-view-button"
         Icon={AccountCircle as any}
-        label={i18n.t(CustomerNavigationLabel.Calendar)}
+        label={t(CustomerNavigationLabel.Calendar)}
         onClick={() => setView(Views.Calendar)}
         active={view === Views.Calendar}
       />
       <TabItem
         key="profile-view-button"
         Icon={ClipboardList as any}
-        label={i18n.t(CustomerNavigationLabel.Profile)}
+        label={t(CustomerNavigationLabel.Profile)}
         onClick={() => setView(Views.Profile)}
         active={view === Views.Profile}
       />
@@ -131,6 +148,19 @@ const CustomerArea: React.FC = () => {
   if (secretKey && currentAthlete.deleted) {
     return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
+
+  const debugButton = (
+    <Button
+      onClick={toggleDebug}
+      color={debugOn ? ButtonColor.Primary : undefined}
+      className={
+        !debugOn ? "!text-black outline outline-gray-300 border-box" : ""
+      }
+      // aria-label={t(SlotsAria.EnableEdit)}
+    >
+      {t(Debug.DebugButtonLabel)}
+    </Button>
+  );
 
   return (
     <Layout
@@ -150,10 +180,19 @@ const CustomerArea: React.FC = () => {
           //
           // additionalContent={<AddToCalendar />}
           jump="month"
+          additionalContent={
+            isAdmin && view === "BookView" ? debugButton : undefined
+          }
         />
       )}
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
+          {debugOn && (
+            <div className="mt-4">
+              <BookingDateDebugDialog />
+            </div>
+          )}
+
           <div className="px-[44px] py-4">
             <CustomerView />
           </div>

@@ -36,3 +36,25 @@ export const storeSecretKey = (
 export const removeSecretKey: AppReducerAction<Action.RemoveSecretKey> = {
   type: Action.RemoveSecretKey,
 };
+
+/**
+ * Creates Redux action for appReducer to set system datre
+ * @param date calendar date to set
+ * @returns Redux action object
+ */
+export const setSystemDate = (
+  date: DateTime
+): AppReducerAction<Action.SetSystemDate> => ({
+  type: Action.SetSystemDate,
+  payload: date,
+});
+
+/**
+ * Creates Redux action for appReducer to reset system datre
+ * @param date calendar date to set
+ * @returns Redux action object
+ */
+export const resetSystemDate =
+  (): AppReducerAction<Action.ResetSystemDate> => ({
+    type: Action.ResetSystemDate,
+  });

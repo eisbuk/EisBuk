@@ -12,12 +12,15 @@ import {
 } from "@/types/store";
 
 const defaultState = {
-  notifications: [],
   calendarDay: __isStorybook__
     ? // If the env is storybook, set the standard date to keep chromatic consistent
       DateTime.fromISO(__storybookDate__)
     : // In dev/production, the date is current date
       DateTime.local(),
+  systemDate: {
+    value: DateTime.now(),
+    debug: false,
+  },
 };
 
 /**
@@ -52,6 +55,24 @@ export const createAppReducer: ReducerFactory<
         return {
           ...state,
           calendarDay: (action as AppReducerAction<Action.ChangeDay>).payload,
+        };
+
+      case Action.SetSystemDate:
+        return {
+          ...state,
+          systemDate: {
+            value: (action as AppReducerAction<Action.SetSystemDate>).payload,
+            debug: true,
+          },
+        };
+
+      case Action.ResetSystemDate:
+        return {
+          ...state,
+          systemDate: {
+            value: DateTime.now(),
+            debug: false,
+          },
         };
 
       default:

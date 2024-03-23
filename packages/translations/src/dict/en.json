@@ -434,5 +434,12 @@
   "Forms": {
     "ShowPassword": "show password",
     "HidePassword": "hide password"
+  },
+
+  "Debug": {
+    "DebugButtonLabel": "Simulation",
+    "SystemDate": "Simulated today's date",
+    "ExtendedBookingDate": "Simulated extended booking date",
+    "DebugOnlyMessage": "These values are simulated, so that you can try things out. The changes made here will not be saved."
   }
 }

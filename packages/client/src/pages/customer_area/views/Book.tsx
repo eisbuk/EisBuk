@@ -9,15 +9,15 @@ import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
 
 import {
   getBookingsCustomer,
-  getIsBookingAllowed,
   getSlotsForBooking,
 } from "@/store/selectors/bookings";
-import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
+import { getSecretKey } from "@/store/selectors/app";
 import { getOrgEmail } from "@/store/selectors/orgInfo";
 
 import { bookInterval } from "@/store/actions/bookingOperations";
 
 import { createModal } from "@/features/modal/useModal";
+import useBookingsDeadlines from "@/hooks/useBookingsDeadline";
 
 const BookView: React.FC = () => {
   const { t } = useTranslation();
@@ -26,10 +26,10 @@ const BookView: React.FC = () => {
   const customer = useSelector(getBookingsCustomer(secretKey));
   const orgEmail = useSelector(getOrgEmail);
   const daysToRender = useSelector(getSlotsForBooking(secretKey));
-  const date = useSelector(getCalendarDay);
-  const disabled = !useSelector(getIsBookingAllowed(secretKey, date));
 
   const { handleBooking, handleCancellation } = useBooking();
+
+  const { isBookingAllowed } = useBookingsDeadlines();
 
   if (!customer?.categories?.length) {
     return (
@@ -63,7 +63,7 @@ const BookView: React.FC = () => {
               onBook={handleBooking(slot)}
               onCancel={handleCancellation(slot, interval)}
               bookedInterval={interval}
-              disabled={Boolean(disabled)}
+              disabled={!isBookingAllowed}
               {...slot}
             />
           ))}

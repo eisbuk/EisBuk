@@ -1,11 +1,11 @@
 import { DateTime } from "luxon";
 
-import { BookingsCountdownVariant, CountdownProps } from "@eisbuk/ui";
+// import { BookingsCountdownVariant, CountdownProps } from "@eisbuk/ui";
 
 import { LocalStore } from "@/types/store";
 
 import { getIsAdmin } from "@/store/selectors/auth";
-import { getCalendarDay } from "@/store/selectors/app";
+// import { getCalendarDay } from "@/store/selectors/app";
 import { getBookingsCustomer } from "./customer";
 
 import { getMonthDiff } from "@/utils/date";
@@ -31,54 +31,6 @@ export const getIsBookingAllowed =
     );
 
     return deadline.diffNow().milliseconds > 0 || isExtendedDateAplicable;
-  };
-
-/**
- * Get props for bookings countdown UI
- * @param state redux state
- * @returns `undefined` if admin (or should be hidden), otherwise returns an object
- * containing countdown `message`, booking `month`, and countdown `deadline`
- */
-export const getCountdownProps =
-  (secretKey: string) =>
-  (state: LocalStore): CountdownProps | undefined => {
-    // return early if admin (no countdown is shown)
-    const isAdmin = getIsAdmin(state);
-    if (isAdmin) {
-      return undefined;
-    }
-
-    const currentDate = getCalendarDay(state);
-
-    const month = currentDate.startOf("month");
-
-    if (!getIsBookingAllowed(secretKey, currentDate)(state)) {
-      return {
-        month,
-        deadline: null,
-        variant: BookingsCountdownVariant.BookingsLocked,
-      };
-    }
-
-    const monthsDeadline = getMonthDeadline(currentDate);
-    const extendedDate = getExtendedDate(secretKey)(state);
-
-    const isExtendedDateApplicable =
-      extendedDate && getMonthDiff(extendedDate, currentDate) === 0;
-
-    if (isExtendedDateApplicable) {
-      return {
-        month,
-        deadline: extendedDate.endOf("day"),
-        variant: BookingsCountdownVariant.SecondDeadline,
-      };
-    } else {
-      return {
-        month,
-        deadline: monthsDeadline,
-        variant: BookingsCountdownVariant.FirstDeadline,
-      };
-    }
   };
 
 // #region temp

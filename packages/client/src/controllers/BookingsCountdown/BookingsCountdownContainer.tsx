@@ -8,10 +8,16 @@ import { createModal } from "@/features/modal/useModal";
 
 import {
   getBookingsCustomer,
-  getCountdownProps,
   getMonthEmptyForBooking,
 } from "@/store/selectors/bookings";
-import { getCalendarDay, getSecretKey } from "@/store/selectors/app";
+
+import useBookingsDeadlines from "@/hooks/useBookingsDeadline";
+
+import {
+  getCalendarDay,
+  getSecretKey,
+  getSystemDate,
+} from "@/store/selectors/app";
 
 interface Props extends React.HTMLAttributes<HTMLElement> {
   as?: keyof JSX.IntrinsicElements;
@@ -22,11 +28,23 @@ interface Props extends React.HTMLAttributes<HTMLElement> {
  * rendering the component with appropriate state whilst providing a way to update the
  * state to the store (for bookings finalisation).
  */
-const BookingsCountdownContainer: React.FC<Props> = (props) => {
+export const BookingsCountdownContainer: React.FC<Props> = (props) => {
   const secretKey = useSelector(getSecretKey)!;
+
   const currentDate = useSelector(getCalendarDay);
-  const countdownProps = useSelector(getCountdownProps(secretKey));
+  const { value: systemDate } = useSelector(getSystemDate);
+
   const isMonthEmpty = useSelector(getMonthEmptyForBooking(secretKey));
+
+  const { month, isBookingAllowed, deadline, countdownVariant } =
+    useBookingsDeadlines();
+
+  const countdownProps = {
+    month,
+    deadline: isBookingAllowed ? deadline : null,
+    variant: countdownVariant,
+  };
+
   const { id: customerId } = useSelector(getBookingsCustomer(secretKey)) || {};
 
   const { openWithProps: openFinalizeBookingsDialog } =
@@ -58,6 +76,7 @@ const BookingsCountdownContainer: React.FC<Props> = (props) => {
     <BookingsCountdown
       {...props}
       {...countdownProps}
+      systemDate={systemDate}
       onFinalize={handleFinalize}
     />
   );

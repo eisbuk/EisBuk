@@ -27,3 +27,5 @@ export const getAboutOrganization = (
   state.firestore.data.publicOrgInfo || {};
 
 export const getSecretKey = (state: LocalStore) => state.app.secretKey;
+
+export const getSystemDate = (state: LocalStore) => state.app.systemDate;

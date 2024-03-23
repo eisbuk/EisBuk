@@ -9,6 +9,8 @@ export enum Action {
   ChangeDay = "@@Eisbuk/CHANGE_DAY",
   StoreSecretKey = "@@Eisbuk/STORE_SECRET_KEY",
   RemoveSecretKey = "@@Eisbuk/REMOVE_SECRET_KEY",
+  SetSystemDate = "@@Eisbuk/SET_SYSTEM_DATE",
+  ResetSystemDate = "@@Eisbuk/RESET_SYSTEM_DATE",
 
   SetSlotTime = "@@Eisbuk/SET_SLOT_TIME",
 
