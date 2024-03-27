@@ -1,3 +1,5 @@
+import * as functions from "firebase-functions";
+
 /* eslint-disable require-jsdoc */
 /** Taken from
  * https://gist.githubusercontent.com/JFGHT/32cb01e9b3e842579dd2cc2741d2033e/raw/7ed0d2cffa3665410caee9b6e0e10be8e3cb0ef5/sentry-serverless-firebase.ts
@@ -13,7 +15,11 @@ import type { https } from "firebase-functions";
 import type { onRequest, onCall } from "firebase-functions/lib/providers/https";
 import type { ScheduleBuilder } from "firebase-functions/lib/providers/pubsub";
 import type { DocumentBuilder } from "firebase-functions/lib/providers/firestore";
-import { __enableSentry__ } from "./constants";
+import {
+  __enableSentry__,
+  __sentryDSN__,
+  __sentryRelease__,
+} from "./constants";
 
 type httpsOnRequestHandler = Parameters<typeof onRequest>[0];
 type httpsOnCallHandler = Parameters<typeof onCall>[0];
@@ -71,6 +77,7 @@ function wrap<A, B, C>(
   }
 
   return async (a: A, b: B): Promise<C> => {
+    functions.logger.info("Sentry wrapping function");
     const {
       startTransaction,
       captureException,
@@ -137,8 +144,12 @@ function wrap<A, B, C>(
     });
     scope.setSpan(transaction);
 
+    functions.logger.info("Sentry set up, starting transaction");
+    functions.logger.log({ __sentryDSN__, __sentryRelease__ });
+
     try {
       const result = fn(a, b);
+      functions.logger.info("Executing function...");
       // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
       return (
         Promise.resolve(result)
@@ -147,15 +158,26 @@ function wrap<A, B, C>(
             throw err;
           })
           // eslint-disable-next-line promise/no-return-in-finally
-          .finally((): Promise<boolean> => {
+          .finally(async (): Promise<boolean> => {
+            functions.logger.log("Fuction executed, finishing transaction");
             transaction.finish();
-            return flush(2000);
+            functions.logger.log("Transaction finished, flushing");
+            // If we threw an error here (it will be caught by sentry's error handling wrapper)
+            const res = await flush(2000);
+            functions.logger.log("Flushed transaction, res");
+            functions.logger.log({ res });
+            return res;
           }) as Promise<C | undefined>
       );
     } catch (err) {
+      functions.logger.error(err);
       captureException(err, { tags: { handled: false } });
+      functions.logger.info("Captured exception, finishing transaction");
       transaction.finish();
-      await flush(2000);
+      functions.logger.log("Transaction finished, flushing");
+      // If we threw an error here, nothing would be sent to Sentry (web-sink at localhost:3001 in this case)
+      const res = await flush(2000);
+      functions.logger.log("Flushed transaction, res", { res });
       throw err;
     }
   };
