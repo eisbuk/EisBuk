@@ -662,3 +662,19 @@ export const createCustomerStats = functions
       }
     )
   );
+
+export const dataTriggerWithFailingSentry = functions
+  .region(__functionsZone__)
+  .firestore.document(`debug_trigger/{id}`)
+  .onWrite(
+    wrapFirestoreOnWriteHandler(
+      "dataTriggerWithFailingSentry",
+      async (change, ctx) => {
+        const data = change.after.data();
+        const { id } = ctx.params;
+        const timestamp = Date.now().toString();
+        const payload = { timestamp, ...data };
+        admin.firestore().doc(`debug_res/${id}`).set(payload);
+      }
+    )
+  );
