@@ -1,5 +1,3 @@
-import * as functions from "firebase-functions";
-
 /* eslint-disable require-jsdoc */
 /** Taken from
  * https://gist.githubusercontent.com/JFGHT/32cb01e9b3e842579dd2cc2741d2033e/raw/7ed0d2cffa3665410caee9b6e0e10be8e3cb0ef5/sentry-serverless-firebase.ts
@@ -11,14 +9,15 @@ import * as functions from "firebase-functions";
  * Taken from https://gist.github.com/zanona/0f3d42093eaa8ac5c33286cc7eca1166
  */
 import type { Event } from "@sentry/types";
-import type { https } from "firebase-functions";
+import { https, Change } from "firebase-functions";
 import type { onRequest, onCall } from "firebase-functions/lib/providers/https";
 import type { ScheduleBuilder } from "firebase-functions/lib/providers/pubsub";
 import type { DocumentBuilder } from "firebase-functions/lib/providers/firestore";
 import {
   __enableSentry__,
-  __sentryDSN__,
-  __sentryRelease__,
+  // __sentryDSN__,
+  // __sentryRelease__,
+  initSentry,
 } from "./constants";
 
 type httpsOnRequestHandler = Parameters<typeof onRequest>[0];
@@ -77,7 +76,24 @@ function wrap<A, B, C>(
   }
 
   return async (a: A, b: B): Promise<C> => {
-    functions.logger.info("Sentry wrapping function");
+    let error: number | undefined = undefined;
+    let sentryConfig: { dsn?: string; release?: string } | undefined =
+      undefined;
+
+    // Check for explicit error + sentry config only if data trigger
+    if (a instanceof Change) {
+      const data = (a as any).after.data() as {
+        error: number;
+        sentry?: { dsn?: string; release?: string };
+      };
+      error = data.error;
+      sentryConfig = data.sentry;
+    }
+
+    // Init sentry with the config from the function (if not provided, will be initialised with default values)
+    initSentry(sentryConfig);
+
+    // functions.logger.info("Sentry wrapping function");
     const {
       startTransaction,
       captureException,
@@ -144,12 +160,12 @@ function wrap<A, B, C>(
     });
     scope.setSpan(transaction);
 
-    functions.logger.info("Sentry set up, starting transaction");
-    functions.logger.log({ __sentryDSN__, __sentryRelease__ });
+    // functions.logger.info("Sentry set up, starting transaction");
+    // functions.logger.log({ __sentryDSN__, __sentryRelease__ });
 
     try {
       const result = fn(a, b);
-      functions.logger.info("Executing function...");
+      // functions.logger.info("Executing function...");
       // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
       return (
         Promise.resolve(result)
@@ -159,25 +175,43 @@ function wrap<A, B, C>(
           })
           // eslint-disable-next-line promise/no-return-in-finally
           .finally(async (): Promise<boolean> => {
-            functions.logger.log("Fuction executed, finishing transaction");
+            // functions.logger.log("Fuction executed, finishing transaction");
             transaction.finish();
-            functions.logger.log("Transaction finished, flushing");
+            // functions.logger.log("Transaction finished, flushing");
             // If we threw an error here (it will be caught by sentry's error handling wrapper)
+            if (error === 0) {
+              throw new Error(
+                `happy path: throwing error before flush: sentry config: dsn: ${sentryConfig?.dsn}, release: ${sentryConfig?.release}`
+              );
+            }
             const res = await flush(2000);
-            functions.logger.log("Flushed transaction, res");
-            functions.logger.log({ res });
+            if (error === 1) {
+              throw new Error(
+                `happy path: throwing error after flush: sentry config: dsn: ${sentryConfig?.dsn}, release: ${sentryConfig?.release}`
+              );
+            }
+            // functions.logger.log("Flushed transaction, res");
+            // functions.logger.log({ res });
             return res;
           }) as Promise<C | undefined>
       );
     } catch (err) {
-      functions.logger.error(err);
+      // functions.logger.error(err);
       captureException(err, { tags: { handled: false } });
-      functions.logger.info("Captured exception, finishing transaction");
+      // functions.logger.info("Captured exception, finishing transaction");
       transaction.finish();
-      functions.logger.log("Transaction finished, flushing");
+      // functions.logger.log("Transaction finished, flushing");
       // If we threw an error here, nothing would be sent to Sentry (web-sink at localhost:3001 in this case)
-      const res = await flush(2000);
-      functions.logger.log("Flushed transaction, res", { res });
+      if (error === 0) {
+        throw new Error(
+          `catch block: throwing error before flush: sentry config: dsn: ${sentryConfig?.dsn}, release: ${sentryConfig?.release}`
+        );
+      }
+      await flush(2000);
+      throw new Error(
+        `catch block: throwing error after flush: sentry config: dsn: ${sentryConfig?.dsn}, release: ${sentryConfig?.release}`
+      );
+      // functions.logger.log("Flushed transaction, res", { res });
       throw err;
     }
   };

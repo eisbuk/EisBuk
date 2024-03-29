@@ -663,18 +663,35 @@ export const createCustomerStats = functions
     )
   );
 
-export const dataTriggerWithFailingSentry = functions
+export const sentryTestDataTrigger = functions
+  .runWith({
+    memory: "512MB",
+  })
   .region(__functionsZone__)
-  .firestore.document(`debug_trigger/{id}`)
+  .firestore.document(`debug/sentry/trigger/{id}`)
   .onWrite(
     wrapFirestoreOnWriteHandler(
       "dataTriggerWithFailingSentry",
       async (change, ctx) => {
         const data = change.after.data();
         const { id } = ctx.params;
+
         const timestamp = Date.now().toString();
         const payload = { timestamp, ...data };
-        admin.firestore().doc(`debug_res/${id}`).set(payload);
+
+        const batch = admin.firestore().batch();
+
+        const doc1 = admin.firestore().doc(`debug/sentry/result/set-${id}`);
+
+        const doc2 = admin.firestore().doc(`debug/sentry/result/batch-${id}-1`);
+        const doc3 = admin.firestore().doc(`debug/sentry/result/batch-${id}-2`);
+
+        await doc1.set(payload);
+
+        batch.set(doc2, payload);
+        batch.set(doc3, payload);
+
+        await batch.commit();
       }
     )
   );
