@@ -8,6 +8,7 @@ type TextareaEditableProps = React.HTMLAttributes<HTMLElement> &
      */
     isEditing?: boolean;
     value?: string;
+    innerClassName?: string;
   };
 
 /**
@@ -17,6 +18,7 @@ type TextareaEditableProps = React.HTMLAttributes<HTMLElement> &
 const TextareaEditable: React.FC<TextareaEditableProps> = ({
   isEditing,
   className: inputClasses = "",
+  innerClassName: inputInnerClasses = "",
   field = {},
   ...initialProps
 }) => {
@@ -42,6 +44,7 @@ const TextareaEditable: React.FC<TextareaEditableProps> = ({
     // If there's no value, we might show a placeholder (even outside edit mode)
     // so it should be colored as such
     value ? "text-gray-900" : "text-gray-400",
+    inputInnerClasses,
   ];
 
   return (

@@ -183,7 +183,7 @@ const UserAttendance: React.FC<Props> = ({
           <p className="w-fit text-gray-600 text-xs mt-2 ml-4 border-b-[1px] border-gray-400">
             {t(AttendanceAria.TrainerNotes)}
           </p>
-          <p className="text-gray-600 text-xs px-2 pt-1 pb-2">{bookingNotes}</p>
+          <p className="text-red-700 text-xs px-2 pt-1 pb-2">{bookingNotes}</p>
         </div>
       )}
     </div>
