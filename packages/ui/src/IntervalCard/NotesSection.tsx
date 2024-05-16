@@ -55,10 +55,10 @@ const NotesSection: React.FC<NotesSectionProps> = ({
       <Form className={className}>
         <FastField
           name="bookingNotes"
-          className="w-full h-full min-h-[105px] border-t border-gray-300"
+          className="w-full h-full min-h-[105px] border-t border-gray-300 "
+          innerClassName="text-red-700"
           component={TextareaEditable}
           isEditing={isEditing}
-          placeholder={t(BookingNotesForm.Placeholder)}
           // Fast field runs some sort of memoization
           // by switching the key (when 'isEditing' is toggled)
           // we're ensuring the component gets rerendered (from 'p' to 'textarea' in this case)
@@ -73,7 +73,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
           </HoverText>
           <div className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1">
             <IconButton
-              className="text-red-500"
+              className="text-red-700"
               {...actionButtonProps}
               type="reset"
             >
