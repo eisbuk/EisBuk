@@ -59,7 +59,7 @@ const CustomerList: React.FC<Props> = ({
                     onChange={() => onCustomerClick(customer)}
                   />
                   <span className="ml-2 text-gray-700">
-                    {customer.name} {customer.surname}
+                    {customer.surname} {customer.name}
                   </span>
                 </div>
 

@@ -120,7 +120,7 @@ const EmailTemplateSettings: React.FC<EmailTemplateSettingsProps> = ({
                   className="flex items-center p-2 border rounded bg-gray-200 mx-2 mb-2"
                 >
                   <span>
-                    {cus.name} {cus.surname}
+                    {cus.surname} {cus.name}
                   </span>
                   <button
                     className="ml-2 text-red-500"
