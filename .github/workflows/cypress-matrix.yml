@@ -27,15 +27,15 @@ jobs:
         - 5
         - 6
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: "18"
     - name: Cache node modules, firebase emulators and cypress
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.rush
@@ -54,7 +54,7 @@ jobs:
     - name: Build app
       run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
     - name: Cypress run
-      uses: cypress-io/github-action@v4
+      uses: cypress-io/github-action@v6
       with:
         start: emulators-start
         install: false
@@ -67,7 +67,7 @@ jobs:
       if: success() || failure()
       run: '[ "${{ secrets.CYPRESS_KEY }}" != "" ] && echo HAS_SECRETS=true >> $GITHUB_OUTPUT || echo HAS_SECRETS= >> $GITHUB_OUTPUT'
     - name: Coveralls
-      uses: coverallsapp/github-action@master
+      uses: coverallsapp/github-action@v2
       if: steps.has_secret.outputs.HAS_SECRETS
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}

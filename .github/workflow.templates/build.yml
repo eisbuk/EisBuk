@@ -20,7 +20,7 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_node()
@@ -91,7 +91,7 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_node()
@@ -113,7 +113,7 @@ jobs:
           path: packages/client/junit.xml
           reporter: java-junit
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -139,7 +139,7 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_node()
@@ -155,7 +155,7 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_cypress()
@@ -165,7 +165,7 @@ jobs:
       - name: Build app
         run: cd packages/client && NODE_OPTIONS="--max-old-space-size=8192" rushx build:test
       - name: Cypress run
-        uses: cypress-io/github-action@v5
+        uses: cypress-io/github-action@v6
         with:
           start: emulators-start
           browser: chrome
@@ -191,7 +191,7 @@ jobs:
 
       -  #@ check_secrets()
       - name: Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -224,7 +224,7 @@ jobs:
     steps:
       -  #@ check_secrets()
       - name: Finalize Coveralls
-        uses: coverallsapp/github-action@master
+        uses: coverallsapp/github-action@v2
         if: steps.has_secret.outputs.HAS_SECRETS
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -236,7 +236,7 @@ jobs:
     timeout-minutes: 10
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_node()
