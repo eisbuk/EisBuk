@@ -26,7 +26,7 @@ jobs:
         dummy2: [1, 2, 3, 4, 5, 6]
     steps:
       -  #@ checkout()
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v4
         with:
           node-version: "18"
       -  #@ cache_node()
