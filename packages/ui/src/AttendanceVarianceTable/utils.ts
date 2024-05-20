@@ -94,6 +94,17 @@ export const createRowGenerator =
       slotType,
       athlete,
       ...dataObject,
-      total: { booked: total.booked, delta: total.delta },
+      total: {
+        booked: total.booked,
+        delta: total.delta,
+      },
+      totalNotBooked: {
+        booked: total.delta > 0 ? total.delta : 0,
+        delta: total.delta,
+      },
+      totalNotAttended: {
+        booked: total.delta < 0 ? total.delta : 0,
+        delta: total.delta,
+      },
     };
   };

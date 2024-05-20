@@ -428,7 +428,9 @@
   },
   "AttendanceVarianceHeaders": {
     "Athlete": "Athlete",
-    "Total": "Total"
+    "Total": "Total",
+    "TotalNotBooked": "Total Not Booked",
+    "TotalNotAttended": "Total Not Attended"
   },
 
   "Forms": {

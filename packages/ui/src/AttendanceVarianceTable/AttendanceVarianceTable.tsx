@@ -40,6 +40,8 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
     athlete: t(AttendanceVarianceHeaders.Athlete),
     ...dateHeaders,
     total: t(AttendanceVarianceHeaders.Total),
+    totalNotBooked: t(AttendanceVarianceHeaders.TotalNotBooked),
+    totalNotAttended: t(AttendanceVarianceHeaders.TotalNotAttended),
   };
 
   const items = generateTableRows(dates, data);
@@ -97,7 +99,9 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                             {cellItem}
                           </p>
                         </TableCell>
-                      ) : itemIx === Object.keys(data).length - 1 &&
+                      ) : (itemIx === Object.keys(data).length - 1 ||
+                          itemIx === Object.keys(data).length - 2 ||
+                          itemIx === Object.keys(data).length - 3) &&
                         cellItem !== null &&
                         typeof cellItem !== "string" &&
                         cellItem.booked !== undefined &&
@@ -114,12 +118,16 @@ const AttendanceReportTable: React.FC<TableProps> = ({ dates, data }) => {
                               : "bg-yellow-100 text-yellow-800"
                           }
                         >
-                          <HoverText text={cellItem.delta.toString() || ""}>
-                            <span>
-                              {" "}
-                              {!cellItem.booked ? "-" : `${cellItem.booked}h`}
-                            </span>
-                          </HoverText>
+                          {/* <HoverText text={cellItem.delta.toString() || ""}> */}
+                          <span>
+                            {" "}
+                            {!cellItem.booked
+                              ? "0"
+                              : `${cellItem.booked
+                                  .toString()
+                                  .replace("-", "")}h`}
+                          </span>
+                          {/*  </HoverText> */}
                         </TableCell>
                       ) : (
                         <TableCell

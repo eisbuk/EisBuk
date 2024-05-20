@@ -20,9 +20,11 @@ export type AttendanceBySlotType = {
 export type AthleteAttendanceMonth = AthleteNamePair<AttendanceByDate>;
 
 interface RowDataFixedProperties {
+  slotType: SlotType;
   athlete: string;
   total: { booked: number; delta: number };
-  slotType: SlotType;
+  totalNotBooked: { booked: number; delta: number };
+  totalNotAttended: { booked: number; delta: number };
 }
 
 interface RowData {

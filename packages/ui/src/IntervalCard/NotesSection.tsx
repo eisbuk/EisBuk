@@ -55,7 +55,7 @@ const NotesSection: React.FC<NotesSectionProps> = ({
       <Form className={className}>
         <FastField
           name="bookingNotes"
-          className="w-full h-full min-h-[105px] border-t border-gray-300 "
+          className="w-full h-full min-h-[105px] border-t border-gray-300"
           innerClassName="text-red-700"
           component={TextareaEditable}
           isEditing={isEditing}
