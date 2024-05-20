@@ -462,6 +462,8 @@ export enum PrintableAttendance {
 export enum AttendanceVarianceHeaders {
   Athlete = "AttendanceVarianceHeaders.Athlete",
   Total = "AttendanceVarianceHeaders.Total",
+  TotalNotBooked = "AttendanceVarianceHeaders.TotalNotBooked",
+  TotalNotAttended = "AttendanceVarianceHeaders.TotalNotAttended",
 }
 // #endregion tables
 
