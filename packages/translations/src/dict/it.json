@@ -432,8 +432,8 @@
   "AttendanceVarianceHeaders": {
     "Athlete": "Atleta",
     "Total": "Totale",
-    "TotalNotBooked": "Totale non prenotate",
-    "TotalNotAttended": "Totale assenze su prenotate"
+    "TotalNotBooked": "NP",
+    "TotalNotAttended": "ASS"
   },
 
   "Forms": {
