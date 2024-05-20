@@ -11,15 +11,15 @@ jobs:
     steps:
     - name: Install expect
       run: sudo apt-get -y install expect
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
         fetch-depth: 1
-    - uses: actions/setup-node@v3
+    - uses: actions/setup-node@v4
       with:
         node-version: "18"
     - name: Cache node modules and firebase emulators
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: |
           ~/.rush
