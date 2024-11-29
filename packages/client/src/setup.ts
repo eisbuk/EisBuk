@@ -21,7 +21,14 @@ import {
   __authDomain__,
   __storageBucket__,
   __measurementId__,
+  __firestoreEmulatorHost__,
+  __firestoreEmulatorPort__,
+  __authEmulatorURL__,
+  __functionsEmulatorHost__,
+  __functionsEmulatorPort__,
 } from "@/lib/constants";
+
+console.log("using db url:", __databaseURL__);
 
 const fbConfig: FirebaseOptions = {
   // common config data
@@ -54,12 +61,25 @@ console.log(`Functions region > ${functions.region}`);
 
 if (__isDev__) {
   console.warn(
-    "Using local emulated Database (127.0.0.1:8080) instead of " +
+    `Using local emulated Database (${__firestoreEmulatorHost__}:${__firestoreEmulatorPort__}) instead of ` +
       fbConfig.databaseURL
   );
-  connectFirestoreEmulator(db, "127.0.0.1", 8080);
-  connectAuthEmulator(auth, "http://127.0.0.1:9099/");
-  connectFunctionsEmulator(functions, "127.0.0.1", 5001);
+  console.log("firestore host:", __firestoreEmulatorHost__);
+  console.log("firestore port:", __firestoreEmulatorPort__);
+  connectFirestoreEmulator(
+    db,
+    __firestoreEmulatorHost__,
+    __firestoreEmulatorPort__
+  );
+  console.log("auth url:", __authEmulatorURL__);
+  connectAuthEmulator(auth, __authEmulatorURL__);
+  console.log("functions host:", __functionsEmulatorHost__);
+  console.log("functions port:", __functionsEmulatorPort__);
+  connectFunctionsEmulator(
+    functions,
+    __functionsEmulatorHost__,
+    __functionsEmulatorPort__
+  );
   console.warn("Using emulator for functions and authentication");
   // window.firebase = firebase as any;
 } else {
