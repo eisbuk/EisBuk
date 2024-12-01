@@ -1,9 +1,8 @@
 import React from "react";
 import { ComponentMeta } from "@storybook/react";
+import { Users, Calendar, Mail, Phone, Printer } from "@eisbuk/svg";
 
-import { Printer } from "@eisbuk/svg";
-
-import Button, { ButtonColor, ButtonSize } from "./Button";
+import Button, { ButtonColor, ButtonSize, ButtonIcon } from "./Button";
 
 import { StorybookGrid, StorybookItem } from "../utils/storybook";
 
@@ -133,5 +132,64 @@ export const Prototype = (): JSX.Element => (
         </Button>
       </StorybookItem>
     </StorybookGrid>
+
+    <h1 className="text-lg font-bold mb-4">Admin links:</h1>
+    <StorybookItem>
+      <div className="bg-gray-700 p-2">
+        <div className="overflow-hidden h-10 text-white hidden items-center border-2 rounded-lg divide-x-2 md:flex">
+          <Button
+            className="h-full rounded-none  items-end  text-opacity-80 hover:bg-white/5 active:bg-white/10"
+            startAdornment={<ButtonIcon I={Users} />}
+          >
+            <span className=" ">Athletes</span>
+          </Button>
+          <Button
+            className="h-full rounded-none   text-opacity-80 hover:bg-white/5 active:bg-white/10"
+            startAdornment={<ButtonIcon I={Users} />}
+          >
+            Athletes
+          </Button>
+          <Button
+            className="h-full rounded-none   text-opacity-80 hover:bg-white/5 active:bg-white/10"
+            startAdornment={<ButtonIcon I={Users} />}
+          >
+            Athletes
+          </Button>
+          <Button
+            className="h-full rounded-none   text-opacity-80 hover:bg-white/5 active:bg-white/10"
+            startAdornment={<ButtonIcon I={Users} />}
+          >
+            Athletes
+          </Button>
+        </div>
+      </div>
+    </StorybookItem>
+
+    <h1 className="text-lg font-bold mb-4">Admin links:</h1>
+    <StorybookItem>
+      <div className="flex flex-wrap my-8 justify-start items-center gap-2">
+        <Button
+          className="min-w-24 !text-gray-700 whitespace-nowrap bg-cyan-200 hover:bg-cyan-100"
+          size={ButtonSize.LG}
+          startAdornment={<ButtonIcon I={Calendar} />}
+        >
+          Bookings
+        </Button>
+        <Button
+          className="min-w-24 !text-gray-700 whitespace-nowrap bg-cyan-200 hover:bg-cyan-100"
+          size={ButtonSize.LG}
+          startAdornment={<ButtonIcon I={Mail} />}
+        >
+          Send bookings link email
+        </Button>
+        <Button
+          className="min-w-24 !text-gray-700 whitespace-nowrap bg-cyan-200 hover:bg-cyan-100"
+          size={ButtonSize.LG}
+          startAdornment={<ButtonIcon I={Phone} />}
+        >
+          Send bookings link SMS
+        </Button>
+      </div>
+    </StorybookItem>
   </>
 );

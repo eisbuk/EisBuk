@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 import { ActionButton, AdminAria, useTranslation } from "@eisbuk/translations";
 import { PowerCircle } from "@eisbuk/svg";
 
-import Button from "../Button";
+import Button, { ButtonIcon } from "../Button";
 import { LinkItem } from "./Layout";
 import MobileHamburgerMenu from "./MobileHamburgerMenu";
 
@@ -28,20 +28,20 @@ const AdminBar: React.FC<AdminBarProps> = ({
   return (
     <div aria-label={t(AdminAria.PageNav)} className={className}>
       <MobileHamburgerMenu adminLinks={adminLinks} onLogout={onLogout} />
-      <div className={baseClasses.join(" ")}>
-        {adminLinks.map(({ Icon, label, slug }, i) => {
+      <div className="overflow-hidden h-10 text-white hidden items-center border-2 rounded-lg divide-x-2 md:flex">
+        {adminLinks.map(({ Icon: I, label, slug }, i) => {
           const isActive = slug === currentPath;
 
           return (
             <Link key={label + i} className="min-w-36 h-full" to={slug}>
               <Button
                 className={[
-                  "h-full rounded-none",
+                  "h-full rounded-none w-full",
                   isActive
                     ? "!bg-cyan-700"
                     : "text-opacity-80 hover:bg-white/5 active:bg-white/10",
                 ].join(" ")}
-                startAdornment={<Icon />}
+                startAdornment={<ButtonIcon I={I} />}
                 disabled={isActive}
               >
                 {label}
@@ -67,18 +67,5 @@ const AdminBar: React.FC<AdminBarProps> = ({
     </div>
   );
 };
-
-const baseClasses = [
-  "overflow-hidden",
-  "flex",
-  "h-10",
-  "text-white",
-  "hidden",
-  "items-center",
-  "border-2",
-  "rounded-lg",
-  "divide-x-2",
-  "md:flex",
-];
 
 export default AdminBar;
