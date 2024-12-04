@@ -2,6 +2,10 @@ const baseConfig = require("../scaffold/tailwind.config.js");
 
 module.exports = {
   ...baseConfig,
+  plugins: [
+    require("@tailwindcss/forms"),
+    ...baseConfig.plugins
+  ],
   theme: {
     ...baseConfig.theme,
     extend: {
