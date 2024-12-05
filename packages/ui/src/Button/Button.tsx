@@ -110,4 +110,10 @@ const applyWhiteTextFallback = (baseClasses: string[], className = "") => {
   return [...baseClasses, ...classes].join(" ");
 };
 
+export const ButtonIcon: React.FC<{ I: React.FC }> = ({ I }) => (
+  <div className="h-5 w-5">
+    <I />
+  </div>
+);
+
 export default Button;

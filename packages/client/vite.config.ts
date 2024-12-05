@@ -14,6 +14,7 @@ export default defineConfig({
     },
   },
   server: {
+    host: "0.0.0.0",
     port: 3000,
   },
   build: {
@@ -36,6 +37,12 @@ export default defineConfig({
       REACT_APP_SENTRY_DSN: "",
       REACT_APP_SENTRY_ENVIRONMENT: "",
       REACT_APP_SENTRY_RELEASE: "",
+      REACT_APP_FIRESTORE_EMULATOR_HOST: "127.0.0.1",
+      REACT_APP_FIRESTORE_EMULATOR_PORT: "8080",
+      REACT_APP_AUTH_EMULATOR_HOST: "127.0.0.1",
+      REACT_APP_AUTH_EMULATOR_PORT: "9099",
+      REACT_APP_FUNCTIONS_EMULATOR_HOST: "127.0.0.1",
+      REACT_APP_FUNCTIONS_EMULATOR_PORT: "5001",
     }),
     svgr(),
   ],

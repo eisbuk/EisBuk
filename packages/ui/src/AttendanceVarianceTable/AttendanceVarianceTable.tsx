@@ -201,7 +201,7 @@ const generateTableRows = (
 const stickyCellClasses = [
   "sticky",
   "left-0",
-  "z-50",
+  "z-40",
   "backdrop-blur-3xl",
   "backdrop-filter",
 ];

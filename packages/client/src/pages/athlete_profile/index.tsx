@@ -6,6 +6,7 @@ import {
   CustomerForm,
   FormButton,
   FormButtonColor,
+  ButtonIcon,
   LayoutContent,
 } from "@eisbuk/ui";
 import {
@@ -117,7 +118,10 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
   return (
     <div className="flex flex-wrap my-8 justify-start items-center gap-2">
       <Link to={`${Routes.CustomerArea}/${customer.secretKey}`}>
-        <FormButton color={FormButtonColor.Cyan} startAdornment={<Calendar />}>
+        <FormButton
+          color={FormButtonColor.Cyan}
+          startAdornment={<ButtonIcon I={Calendar} />}
+        >
           {t(ActionButton.CustomerBookings)}
         </FormButton>
       </Link>
@@ -125,7 +129,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
         onClick={sendBookingsLink(ClientMessageMethod.Email)}
         disabled={!hasEmail}
         color={FormButtonColor.Cyan}
-        startAdornment={<Mail />}
+        startAdornment={<ButtonIcon I={Mail} />}
       >
         {t(ActionButton.SendBookingsEmail)}
       </FormButton>
@@ -133,7 +137,7 @@ const ActionButtons: React.FC<ActionButtonsProps> = ({ customer }) => {
         onClick={sendBookingsLink(ClientMessageMethod.SMS)}
         disabled={!hasPhone}
         color={FormButtonColor.Cyan}
-        startAdornment={<Phone />}
+        startAdornment={<ButtonIcon I={Phone} />}
       >
         {t(ActionButton.SendBookingsSMS)}
       </FormButton>
