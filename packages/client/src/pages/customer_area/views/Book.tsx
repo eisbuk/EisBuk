@@ -1,11 +1,18 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { EmptySpace, IntervalCardGroup, SlotsDayContainer } from "@eisbuk/ui";
+import {
+  Button,
+  EmptySpace,
+  IntervalCardGroup,
+  SlotsDayContainer,
+} from "@eisbuk/ui";
 import { SlotInterface } from "@eisbuk/shared";
-import { Alerts, useTranslation } from "@eisbuk/translations";
+import { Close } from "@eisbuk/svg";
+import { Debug, Alerts, useTranslation } from "@eisbuk/translations";
 
 import BookingsCountdownContainer from "@/controllers/BookingsCountdown";
+import BookingDateDebugDialog from "@/controllers/BookingDateDebugController";
 
 import {
   getBookingsCustomer,
@@ -18,10 +25,15 @@ import { bookInterval } from "@/store/actions/bookingOperations";
 
 import { createModal } from "@/features/modal/useModal";
 import useBookingsDeadlines from "@/hooks/useBookingsDeadline";
+import { getIsAdmin } from "@/store/selectors/auth";
 
-const BookView: React.FC = () => {
+const BookView: React.FC<{
+  debugOn?: boolean;
+  setDebugOn?: (x: boolean) => void;
+}> = ({ debugOn = false, setDebugOn = () => {} }) => {
   const { t } = useTranslation();
 
+  const isAdmin = useSelector(getIsAdmin);
   const secretKey = useSelector(getSecretKey) || "";
   const customer = useSelector(getBookingsCustomer(secretKey));
   const orgEmail = useSelector(getOrgEmail);
@@ -54,7 +66,16 @@ const BookView: React.FC = () => {
 
   return (
     <>
-      <BookingsCountdownContainer />
+      <div className="px-4 -mx-4 py-4 space-y-4 bg-ice-300 md:px-0 md:mx-0 md:bg-white">
+        {debugOn && (
+          <div className="mt-4">
+            <BookingDateDebugDialog />
+          </div>
+        )}
+
+        <BookingsCountdownContainer />
+      </div>
+
       {daysToRender.map(({ date, slots }) => (
         <SlotsDayContainer key={date} date={date}>
           {slots.map(({ interval, ...slot }) => (
@@ -69,6 +90,26 @@ const BookView: React.FC = () => {
           ))}
         </SlotsDayContainer>
       ))}
+
+      {isAdmin && (
+        <div className="fixed bottom-0 w-full flex justify-end -mx-4 p-2 bg-ice-300 z-40 border-t border-gray-300 md:hidden">
+          {debugOn ? (
+            <Button
+              onClick={() => setDebugOn(false)}
+              className="w-12 h-12 text-gray-600"
+            >
+              <Close />
+            </Button>
+          ) : (
+            <Button
+              onClick={() => setDebugOn(true)}
+              className="h-12 text-gray-600"
+            >
+              <span className="text-md">{t(Debug.DebugButtonLabel)}</span>
+            </Button>
+          )}
+        </div>
+      )}
     </>
   );
 };

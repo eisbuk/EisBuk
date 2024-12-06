@@ -38,7 +38,6 @@ import useSecretKey from "@/hooks/useSecretKey";
 import Layout from "@/controllers/Layout";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 import AthleteAvatar from "@/controllers/AthleteAvatar";
-import BookingDateDebugDialog from "@/controllers/BookingDateDebugController";
 
 import ErrorBoundary from "@/components/atoms/ErrorBoundary";
 
@@ -149,19 +148,6 @@ const CustomerArea: React.FC = () => {
     return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
 
-  const debugButton = (
-    <Button
-      onClick={toggleDebug}
-      color={debugOn ? ButtonColor.Primary : undefined}
-      className={
-        !debugOn ? "!text-black outline outline-gray-300 border-box" : ""
-      }
-    // aria-label={t(SlotsAria.EnableEdit)}
-    >
-      {t(Debug.DebugButtonLabel)}
-    </Button>
-  );
-
   return (
     <Layout
       additionalButtons={additionalButtons}
@@ -181,21 +167,27 @@ const CustomerArea: React.FC = () => {
           // additionalContent={<AddToCalendar />}
           jump="month"
           additionalContent={
-            isAdmin && view === "BookView" ? debugButton : undefined
+            isAdmin && view === "BookView" ? (
+              <Button
+                onClick={toggleDebug}
+                color={debugOn ? ButtonColor.Primary : undefined}
+                className={[
+                  "h-12 hidden md:flex md:h-auto",
+                  !debugOn
+                    ? "!text-black outline outline-gray-300 border-box"
+                    : "",
+                ].join(" ")}
+              >
+                {t(Debug.DebugButtonLabel)}
+              </Button>
+            ) : undefined
           }
         />
       )}
+
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
-          {debugOn && view !== "ProfileView" && (
-            <div className="mt-4">
-              <BookingDateDebugDialog />
-            </div>
-          )}
-
-          <div className="px-[44px] py-4">
-            <CustomerView />
-          </div>
+          <CustomerView debugOn={debugOn} setDebugOn={setDebugOn} />
         </ErrorBoundary>
       </LayoutContent>
 
