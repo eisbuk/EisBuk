@@ -44,7 +44,7 @@ const SlotCardController: React.FC<SlotCardControllerProps> = ({
       <EditSlotButton />
       <DeleteButton />
     </SlotOperationButtons>
-  ) : undefined;
+  ) : <div className="h-12 md:h-8" />;
 
   return (
     <SlotCard

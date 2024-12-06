@@ -62,7 +62,7 @@ const SlotOperationButtons: React.FC<Props> = ({
   contextType = ButtonContextType.Week,
   ...context
 }) => {
-  const baseClasses = ["flex", "items-center", "gap-1"];
+  const baseClasses = ["flex", "justify-end", "items-center", "gap-x-2", "md:gap-x-1"];
 
   return (
     <ButtonGroupContext.Provider value={{ contextType, ...context }}>

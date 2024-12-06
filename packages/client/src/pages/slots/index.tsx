@@ -15,6 +15,7 @@ import {
   SlotsDayContainer,
   LayoutContent,
 } from "@eisbuk/ui";
+import { Close, Pencil } from "@eisbuk/svg";
 
 import { SlotsAria, useTranslation } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -95,7 +96,7 @@ const SlotsPage: React.FC = () => {
   );
 
   const extraButtons = (
-    <div className="flex items-center">
+    <div className="hidden items-center md:flex">
       {canEdit && (
         <SlotOperationButtons
           className="mr-4"
@@ -116,13 +117,13 @@ const SlotsPage: React.FC = () => {
     weekToPaste && weekToPaste.weekStart.toMillis() === date.toMillis();
   const handleSlotClick =
     ({ slot, selected }: { slot: SlotInterface; selected: boolean }) =>
-    () => {
-      if (selected) {
-        dispatch(deleteSlotFromClipboard(slot.id));
-      } else {
-        dispatch(addSlotToClipboard(slot));
-      }
-    };
+      () => {
+        if (selected) {
+          dispatch(deleteSlotFromClipboard(slot.id));
+        } else {
+          dispatch(addSlotToClipboard(slot));
+        }
+      };
 
   return (
     <Layout>
@@ -131,6 +132,7 @@ const SlotsPage: React.FC = () => {
         onChange={(date) => dispatch(changeCalendarDate(date))}
         jump="week"
         additionalContent={extraButtons}
+        className="border-b border-gray-400 md:border-none"
       />
       <LayoutContent>
         <ErrorBoundary resetKeys={daysToShow}>
@@ -164,7 +166,7 @@ const SlotsPage: React.FC = () => {
               <SlotsDayContainer
                 key={dateISO}
                 date={dateISO}
-                additionalContent={canEdit ? additionalButtons : undefined}
+                additionalContent={canEdit ? additionalButtons : <div className="h-12 md:h-auto" />}
               >
                 <div className="grid gap-4 grid-cols-2">
                   {slotsForDay.map((slot) => {
@@ -198,6 +200,37 @@ const SlotsPage: React.FC = () => {
             );
           })}
         </ErrorBoundary>
+
+        <div
+          className="fixed bottom-0 w-full flex justify-end -mx-4 p-2 bg-ice-300 z-40 border-t border-gray-300 md:hidden"
+        >
+          {canEdit ? (
+            <SlotOperationButtons
+              slotsToCopy={{ week: Boolean(weekToPaste) }}
+              contextType={ButtonContextType.Week}
+              disabled={slotButtonsDisabled}
+              {...{ date }}
+            >
+              <CopyButton />
+              <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+              <Button
+                onClick={() => setCanEdit(false)}
+                className="w-12 h-12 text-gray-600"
+                aria-label={t(SlotsAria.EnableEdit)}
+              >
+                <Close />
+              </Button>
+            </SlotOperationButtons>
+          ) : (
+            <Button
+              onClick={toggleEdit}
+              className="h-12 text-gray-600"
+              aria-label={t(SlotsAria.EnableEdit)}
+            >
+              <span className="text-md">Edit</span> <span className="w-8 h-8"><Pencil /></span>
+            </Button>
+          )}
+        </div>
       </LayoutContent>
     </Layout>
   );

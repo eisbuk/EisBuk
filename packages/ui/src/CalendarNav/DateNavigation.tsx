@@ -18,14 +18,14 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
   onNext,
   children = null,
 }) => {
-  const buttonClasses = "w-16 h-16 p-1 text-gray-500 md:h-8 md:w-8";
+  const buttonClasses = "w-16 h-16 p-1 text-gray-500 md:h-8 md:w-8 shrink-0";
 
   const { t } = useTranslation();
 
   return (
     <div
       className={[
-        "flex justify-between items-center md:flex-nowrap md:h-8 md:justify-center",
+        "flex justify-between items-center md:flex-nowrap md:h-10 md:justify-center",
         className,
       ].join(" ")}
     >
@@ -37,7 +37,7 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
         <ChevronLeft />
       </button>
 
-      <div className="w-full h-12 mx-6 md:mx-3 relative bg-white rounded-md overflow-hidden md:h-8">
+      <div className="w-full h-12 mx-3 relative bg-white rounded-md overflow-hidden md:h-8">
         {typeof children === "string" ? (
           <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-base font-semibold whitespace-nowrap cursor-normal select-none">
             {children}
