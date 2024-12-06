@@ -156,7 +156,7 @@ const CustomerArea: React.FC = () => {
       className={
         !debugOn ? "!text-black outline outline-gray-300 border-box" : ""
       }
-      // aria-label={t(SlotsAria.EnableEdit)}
+    // aria-label={t(SlotsAria.EnableEdit)}
     >
       {t(Debug.DebugButtonLabel)}
     </Button>
@@ -187,7 +187,7 @@ const CustomerArea: React.FC = () => {
       )}
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
-          {debugOn && (
+          {debugOn && view !== "ProfileView" && (
             <div className="mt-4">
               <BookingDateDebugDialog />
             </div>

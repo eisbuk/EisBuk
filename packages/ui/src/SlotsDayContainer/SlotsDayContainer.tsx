@@ -22,7 +22,6 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
   const dateString = i18n.t(DateFormat.Full, { date });
 
   const containerClasses = [
-    "pt-[44px]",
     "pb-8",
     "border-b-2",
     "border-gray-100",
@@ -35,11 +34,13 @@ const SlotsDayConatiner: React.FC<SlotsDayContainerProps> = ({
       data-date={dateISO}
       className={[...containerClasses, className].join(" ")}
     >
-      <div className="sticky top-0 z-40 bg-white pt-6 pb-8">
-        <h1 className="text-2xl font-normal leading-none text-gray-700 cursor-normal select-none">
+      <div
+        className="flex sticky top-0 z-30 flex-wrap -mx-4 mb-8 pl-4 pr-2 py-6 bg-ice-300 gap-y-6 md:flex-nowrap md:justify-between md:mx-0 md:gap-y-0 md:bg-white md:px-0 md:pt-6 md:pb-8"
+      >
+        <h1 className="text-3xl font-normal leading-none text-gray-700 cursor-normal select-none md:h-8 md:text-2x">
           {dateString}
         </h1>
-        <div className="absolute right-0 top-1/2 -translate-y-1/2">
+        <div className="w-full md:w-auto">
           {additionalContent}
         </div>
       </div>

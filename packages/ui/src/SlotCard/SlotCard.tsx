@@ -64,22 +64,20 @@ const SlotCard: React.FC<SlotCardProps> = ({
 
   return (
     <div
-      className={`relative max-w-[600px] px-4 py-2.5 outline outline-4 rounded-lg overflow-hidden select-none sm:min-w-sm ${
-        selected ? "bg-yellow-200" : "bg-white"
-      } ${type === SlotType.Ice ? "outline-cyan-500" : "outline-yellow-600"} ${
-        canClick ? "cursor-pointer" : "cursor-normal"
-      } ${className}`}
+      className={`relative max-w-[600px] px-4 py-2.5 outline outline-4 rounded-lg overflow-hidden select-none sm:min-w-sm ${selected ? "bg-yellow-200" : "bg-white"
+        } ${type === SlotType.Ice ? "outline-cyan-500" : "outline-yellow-600"} ${canClick ? "cursor-pointer" : "cursor-normal"
+        } ${className}`}
       data-testid={testId("slot-card")}
       onClick={onClick}
     >
-      <div className="mb-4 pt-2 grid grid-cols-5 gap-x-6 gap-y-2">
-        <h2 className="col-span-5 text-3xl font-bold whitespace-nowrap sm:col-span-2 sm:mb-0 sm:order-1">{`${startTime} - ${endTime}`}</h2>
+      <div className="mb-4 pt-2 grid grid-cols-5 gap-x-12 gap-y-3 md:gap-x-8 md:gap-y-2">
+        <h2 className="col-span-5 text-4xl font-bold whitespace-nowrap sm:col-span-2 sm:mb-0 sm:order-1 md:text-3xl">{`${startTime} - ${endTime}`}</h2>
 
         <div className="col-span-5 sm:col-span-3 sm:row-span-2 sm:order-2">
-          <div className="flex flex-wrap items-start gap-x-1">
+          <div className="flex flex-wrap items-start gap-1.5 mb-1.5 md:gap-1 md:mb-1">
             {categories.map((category) => (
               <span
-                className="mb-1 px-2 py-0.5 bg-teal-600 text-xs text-white font-semibold tracking-wide rounded uppercase whitespace-nowrap select-none"
+                className="px-2 py-0.5 bg-teal-600 text-sm text-white font-semibold tracking-wide rounded uppercase whitespace-nowrap select-none md:text-xs "
                 key={category}
               >
                 {i18n.t(CategoryLabel[category])}
@@ -87,13 +85,12 @@ const SlotCard: React.FC<SlotCardProps> = ({
             ))}
           </div>
 
-          <div className="flex flex-wrap items-start gap-1">
+          <div className="flex flex-wrap items-start gap-1.5 mb-1.5 md:gap-1 md:mb-1">
             {intervalStrings.map((interval) => (
               <span
                 key={interval}
-                className={`px-2 py-0.5 text-xs text-white font-semibold tracking-wide rounded whitespace-nowrap select-none ${
-                  type === SlotType.Ice ? "bg-cyan-500" : "bg-yellow-600"
-                }`}
+                className={`px-2 py-0.5 text-sm text-white font-semibold tracking-wide rounded whitespace-nowrap select-none md:text-xs ${type === SlotType.Ice ? "bg-cyan-500" : "bg-yellow-600"
+                  }`}
               >
                 {interval.replace("-", " - ")}
               </span>
@@ -110,19 +107,18 @@ const SlotCard: React.FC<SlotCardProps> = ({
         <div className="flex items-center gap-4">
           <SlotTypeIcon
             key="slot-type-icon"
-            className="h-full bg-inherit py-1"
+            className="scale-150 translate-x-1/4 h-12 bg-inherit py-1 md:scale-100 md:translate-x-0 md:h-8"
             type={type}
           />
           {capacity && (
             <div
-              className={`px-2 py-0.5 rounded inline-flex items-center gap-2 text-white ${
-                type === SlotType.Ice ? "bg-cyan-500" : "bg-yellow-600"
-              }`}
+              className={`ml-8 px-2 py-0.5 rounded inline-flex items-center gap-2 text-white md:ml-0 ${type === SlotType.Ice ? "bg-cyan-500" : "bg-yellow-600"
+                }`}
             >
               <div className="h-4">
                 <UserGroup />
               </div>
-              <p className="text-sm">{capacity}</p>
+              <p className="text-lg md:text-sm">{capacity}</p>
             </div>
           )}
         </div>

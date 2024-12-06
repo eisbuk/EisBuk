@@ -7,7 +7,7 @@ import { Pencil, Trash } from "@eisbuk/svg";
 import { baseSlot, createIntervals } from "@eisbuk/testing/slots";
 
 import SlotCard from "./SlotCard";
-import Button from "../Button";
+import Button, { ButtonColor } from "../Button";
 
 export default {
   title: "Slot Card",
@@ -24,15 +24,16 @@ export const Default = (): JSX.Element => (
 );
 
 const additionalActions = (
-  <div className="h-full ml-auto flex items-center gap-1 bg-inherit">
-    <Button className="h-8 w-8 !p-1 text-gray-600 rounded-full overflow-hidden">
+  <div className="flex justify-end items-center gap-1 ml-auto !text-gray-500 ">
+    <Button className="w-12 h-12 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
       <Pencil />
     </Button>
-    <Button className="h-8 w-8 !p-1 text-gray-600 rounded-full overflow-hidden">
+    <Button className="w-12 h-12 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
       <Trash />
     </Button>
   </div>
 );
+
 export const WithActionButtons = (): JSX.Element => (
   <SlotCard {...baseSlot} additionalActions={additionalActions} />
 );
@@ -51,6 +52,32 @@ export const PackedWithContent = (): JSX.Element => (
     capacity={10}
   />
 );
+
+export const ButtonsToggle = (): JSX.Element => {
+  const [canEdit, setCanEdit] = React.useState(false)
+  const toggleEdit = () => setCanEdit(!canEdit)
+
+  return (
+    <>
+      <SlotCard
+        {...aBunchOfIntervals}
+        notes="Use the 'enable edit' button to check whether the slot card sizing changes with/without the buttons"
+        categories={Object.values(Category)}
+        additionalActions={canEdit ? additionalActions : <></>}
+        capacity={10}
+      />
+      <Button
+        onClick={toggleEdit}
+        color={canEdit ? ButtonColor.Primary : undefined}
+        className={
+          ["my-4", !canEdit ? "!text-black outline outline-gray-300 border-box" : ""].join(" ")
+        }
+      >
+        Enable Edit
+      </Button>
+    </>
+  )
+};
 
 export const Selected = (): JSX.Element => {
   // we're using state here to keep things simple and test onClick functionality

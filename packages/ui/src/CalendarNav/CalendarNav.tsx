@@ -37,7 +37,7 @@ export interface CalendarNavProps
 const CalendarNav: React.FC<CalendarNavProps> = ({
   as = "div",
   date,
-  onChange = () => {},
+  onChange = () => { },
   jump,
   additionalContent,
   className: classes,
@@ -45,14 +45,14 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
   const updateDate = (delta: -1 | 1) => () =>
     onChange(date.plus({ [jump]: delta }));
 
-  const className = ["bg-ice-300", "py-2.5", "w-full", "p-2.5", classes].join(
+  const className = ["w-full py-2.5 bg-ice-300 md:px-2.5", classes].join(
     " "
   );
 
   return React.createElement(
     as,
     { className },
-    <div className="content-container gap-2.5 flex items-center flex-wrap md:justify-between">
+    <div className="content-container gap-x-2.5 flex items-center flex-wrap md:justify-between">
       <DateNavigation
         className="w-full md:w-[320px]"
         onPrev={updateDate(-1)}
@@ -62,7 +62,7 @@ const CalendarNav: React.FC<CalendarNavProps> = ({
       </DateNavigation>
 
       {additionalContent && (
-        <div className="w-full pl-auto md:w-auto">{additionalContent}</div>
+        <div className="flex pl-auto">{additionalContent}</div>
       )}
     </div>
   );

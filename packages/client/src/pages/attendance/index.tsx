@@ -37,23 +37,23 @@ enum Views {
 // Get appropriate view to render
 const viewsLookup = {
   [Views.ByDay]: (resetKeys: Array<any>) => () =>
-    (
-      <LayoutContent>
-        <ErrorBoundary resetKeys={[resetKeys]}>
-          <ByDayView />
-        </ErrorBoundary>
-      </LayoutContent>
-    ),
+  (
+    <LayoutContent>
+      <ErrorBoundary resetKeys={[resetKeys]}>
+        <ByDayView />
+      </ErrorBoundary>
+    </LayoutContent>
+  ),
   [Views.ByMonth]: (resetKeys: Array<any>) => () =>
-    (
-      <LayoutContent wide>
-        <ErrorBoundary resetKeys={[resetKeys]}>
-          <MonthWrapper>
-            <ByMonthView />
-          </MonthWrapper>
-        </ErrorBoundary>
-      </LayoutContent>
-    ),
+  (
+    <LayoutContent wide>
+      <ErrorBoundary resetKeys={[resetKeys]}>
+        <MonthWrapper>
+          <ByMonthView />
+        </MonthWrapper>
+      </ErrorBoundary>
+    </LayoutContent>
+  ),
 };
 
 // TODO: This is duplicated in `customer_area` local hooks file => lift out
@@ -89,7 +89,7 @@ const AttendancePage: React.FC = () => {
   const calendarJump = view === Views.ByDay ? "day" : "month";
   const calendarAdditionalContent =
     view === Views.ByDay ? (
-      <Link to="/attendance_printable">
+      <Link className="hidden md:block" to="/attendance_printable">
         <Button className="h-8 w-8 !p-[2px] rounded-full text-gray-700 hover:bg-black/10">
           <Printer />
         </Button>
@@ -123,6 +123,17 @@ const AttendancePage: React.FC = () => {
         additionalContent={calendarAdditionalContent}
       />
       <AttendanceView />
+      {view === Views.ByDay &&
+        <div
+          className="fixed bottom-0 w-full flex justify-end -mx-4 p-2 bg-ice-300 z-40 border-t border-gray-300 md:hidden"
+        >
+          <Link to="/attendance_printable">
+            <Button className="h-12 text-gray-600">
+              <span className="text-md">Print</span> <span className="w-8 h-8"><Printer /></span>
+            </Button>
+          </Link>
+        </div>
+      }
     </Layout>
   );
 };
