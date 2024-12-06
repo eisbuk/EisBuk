@@ -34,11 +34,41 @@ const BookingCardContainer: React.FC<BookingContainerProps> = ({
 };
 
 const containerSizeLookup = {
-  [IntervalDuration["0.5h"]]: ["w-[200px]", "min-h-[110px]", "px-4", "py-2.5"],
-  [IntervalDuration["1h"]]: ["w-[220px]", "min-h-[110px]", "px-4", "py-2.5"],
-  [IntervalDuration["1.5h"]]: ["w-[320px]", "h-[128px]", "px-4", "py-3"],
-  [IntervalDuration["2h"]]: ["w-[401px]", "h-[146px]", "px-4", "py-3"],
-  [IntervalDuration["2h+"]]: ["w-[401px]", "h-[146px]", "px-4", "py-3"],
+  [IntervalDuration["0.5h"]]: [
+    "max-w-[200px]",
+    "min-h-[110px]",
+    "px-4",
+    "py-2.5",
+    "w-full",
+  ],
+  [IntervalDuration["1h"]]: [
+    "max-w-[220px]",
+    "min-h-[110px]",
+    "px-4",
+    "py-2.5",
+    "w-full",
+  ],
+  [IntervalDuration["1.5h"]]: [
+    "max-w-[320px]",
+    "h-[128px]",
+    "px-4",
+    "py-3",
+    "w-full",
+  ],
+  [IntervalDuration["2h"]]: [
+    "max-w-[401px]",
+    "h-[146px]",
+    "px-4",
+    "py-3",
+    "w-full",
+  ],
+  [IntervalDuration["2h+"]]: [
+    "max-w-[401px]",
+    "h-[146px]",
+    "px-4",
+    "py-3",
+    "w-full",
+  ],
 };
 
 const getOutlineClasses = (type: SlotType, state: IntervalCardState) => {
