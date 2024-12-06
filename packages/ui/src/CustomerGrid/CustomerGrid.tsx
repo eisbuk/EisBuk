@@ -31,7 +31,7 @@ const CustomerGrid: React.FC<CustomerGridProps> = ({
   return (
     <div {...props}>
       <div
-        className="w-full h-full flex gap-4 flex-wrap justify-start"
+        className="w-full h-full flex gap-4 flex-wrap justify-center md:justify-start"
         data-testid={testId("customer-grid")}
       >
         {customers?.map(
