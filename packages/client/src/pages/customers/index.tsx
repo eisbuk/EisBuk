@@ -22,7 +22,8 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 
 import { testId } from "@eisbuk/testing/testIds";
 
-import Layout from "@/controllers/Layout";
+import AdminBar from "@/controllers/AdminBar";
+import { NotificationsContainer } from "@/features/notifications/components";
 
 import { getCustomersList } from "@/store/selectors/customers";
 
@@ -64,7 +65,30 @@ const AthletesPage: React.FC = () => {
 
   /** @TODO update below when we create `isEmpty` and `isLoaded` helpers */
   return (
-    <Layout>
+    <div className="absolute top-0 right-0 left-0 flex flex-col pb-[70px] pt-[72px] md:pt-[272px]">
+      <header className="fixed left-0 top-0 right-0 bg-gray-800 z-50">
+        <div className="content-container">
+          <AdminBar className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden" />
+
+          <div className="hidden w-full h-[70px] py-[15px] justify-between items-center md:flex print:hidden">
+            <div>{null}</div>
+            {null}
+          </div>
+
+          <div className="w-full h-[2px] bg-gray-700" />
+
+          <div className="hidden w-full h-[70px] justify-between items-center md:flex print:hidden">
+            <div className="w-full flex items-center gap-3 justify-start max-w-1/2">
+              {null}
+            </div>
+
+            <div className="hidden md:block md:w-full">
+              <NotificationsContainer className="w-full md:w-auto" />
+            </div>
+          </div>
+        </div>
+      </header>
+
       <LayoutContent>
         <div className="!pt-16">
           {!isEmpty(customers) && (
@@ -79,7 +103,7 @@ const AthletesPage: React.FC = () => {
                   onClick={toggleApprovals}
                   color={approvalsOnly ? ButtonColor.Primary : undefined}
                   className={[
-                    "h-8",
+                    "h-8 hidden md:flex whitespace-nowrap",
                     !approvalsOnly
                       ? "!text-black outline outline-gray-300 border-box"
                       : "",
@@ -97,18 +121,37 @@ const AthletesPage: React.FC = () => {
             </>
           )}
 
-          <Link to={PrivateRoutes.NewAthlete}>
-            <button
-              data-testid={testId("add-athlete")}
-              aria-label={t(ActionButton.AddAthlete)}
-              className="fixed right-10 bottom-10 rounded-full bg-cyan-600 shadow-lg h-14 w-14 p-3 text-white"
+          <div className="fixed bottom-0 w-full flex justify-between items-center -mx-4 px-2 py-1.5 bg-ice-300 z-40 border-t border-gray-300 md:hidden">
+            <Button
+              aria-label={t(AdminAria.AthletesApprovalButton)}
+              onClick={toggleApprovals}
+              color={approvalsOnly ? ButtonColor.Primary : undefined}
+              className={`h-8 ${approvalsOnly ? "" : "!text-gray-600 outline outline-gray-300"
+                }`}
             >
-              <Plus />
-            </button>
-          </Link>
+              {t(AdminAria.AthletesApprovalButton)}
+            </Button>
+
+            <Link to={PrivateRoutes.NewAthlete}>
+              <Button
+                data-testid={testId("add-athlete")}
+                aria-label={t(ActionButton.AddAthlete)}
+                className="h-11 text-gray-600"
+              >
+                <span className="text-md">{t(ActionButton.AddAthlete)}</span>{" "}
+                <span className="w-8 h-8">
+                  <Plus />
+                </span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+
+        <div className={`fixed px-4 bottom-[70px] right-0 z-40 md:hidden`}>
+          <NotificationsContainer />
         </div>
       </LayoutContent>
-    </Layout>
+    </div>
   );
 };
 
