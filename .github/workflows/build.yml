@@ -77,9 +77,6 @@ jobs:
     - name: Set creds env var
       if: steps.has_secret.outputs.HAS_SECRETS
       run: echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/key.json" >> $GITHUB_ENV
-    - name: debug
-      if: steps.has_secret.outputs.HAS_SECRETS
-      run: echo $GOOGLE_APPLICATION_CREDENTIALS; jq .client_id < $GOOGLE_APPLICATION_CREDENTIALS
     - name: Deploy preview channel
       id: deploy
       if: steps.has_secret.outputs.HAS_SECRETS
