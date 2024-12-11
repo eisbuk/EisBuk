@@ -16,7 +16,7 @@ const AdminHeader: React.FC<{ className?: string }> = ({ className = "" }) => {
   const dispatch = useDispatch()
 
   const additionalAdminContent = (
-    <div className="flex gap-x-2">
+    <div className="flex gap-x-2 md:gap-x-0">
       <BirthdayMenu />
       <AthletesApproval />
       <SendBookingEmails />
