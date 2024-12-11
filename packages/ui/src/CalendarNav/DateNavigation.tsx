@@ -18,7 +18,7 @@ const DateNavigation: React.FC<DateNavigationProps> = ({
   onNext,
   children = null,
 }) => {
-  const buttonClasses = "w-16 h-16 p-1 text-gray-500 md:h-8 md:w-8 shrink-0";
+  const buttonClasses = "w-12 h-12 p-1 text-gray-500 md:h-8 md:w-8 shrink-0";
 
   const { t } = useTranslation();
 

@@ -39,7 +39,7 @@ const NotificationsContainer: React.FC<{
     }
 
     // Return an empty function if no timeout has been set so that TS doesn't complain
-    return () => {};
+    return () => { };
   }, [exitToast]);
 
   // When new toast comes in, set it as active and set the previous one (if any) to exit
@@ -49,7 +49,7 @@ const NotificationsContainer: React.FC<{
   }, [activeNotification]);
 
   return (
-    <div className={["relative h-10 w-full", className].join(" ")}>
+    <div className={[`relative h-10 ${currentToast || exitToast ? "w-screen" : "w-full"} overflow-hidden`, className].join(" ")}>
       {currentToast && (
         <NotificationToast
           className="!absolute top-0 right-0 z-10 animate-slide-in"

@@ -25,10 +25,10 @@ export const Default = (): JSX.Element => (
 
 const additionalActions = (
   <div className="flex justify-end items-center gap-1 ml-auto !text-gray-500 ">
-    <Button className="w-12 h-12 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
+    <Button className="w-11 h-11 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
       <Pencil />
     </Button>
-    <Button className="w-12 h-12 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
+    <Button className="w-11 h-11 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8">
       <Trash />
     </Button>
   </div>
