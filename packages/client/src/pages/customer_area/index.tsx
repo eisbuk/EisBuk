@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { Redirect } from "react-router-dom";
-import {
+import i18n, {
   CustomerNavigationLabel,
   Debug,
   useTranslation,
@@ -35,7 +35,8 @@ import ProfileView from "./views/Profile";
 import { useDate } from "./hooks";
 import useSecretKey from "@/hooks/useSecretKey";
 
-import Layout from "@/controllers/Layout";
+import AdminBar from "@/controllers/AdminBar";
+import { NotificationsContainer } from "@/features/notifications/components";
 import PrivacyPolicyToast from "@/controllers/PrivacyPolicyToast";
 import AthleteAvatar from "@/controllers/AthleteAvatar";
 
@@ -144,46 +145,122 @@ const CustomerArea: React.FC = () => {
     </>
   );
 
+  const additionalButtonsSM = (
+    <>
+      <button
+        key="book-view-button"
+        onClick={() => setView(Views.Book)}
+        className={`w-24 rounded-2xl px-2 py-0.5 border overflow-hidden ${
+          view === Views.Book
+            ? "bg-cyan-700 text-white"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(CustomerNavigationLabel.Book)}
+      </button>
+      <button
+        key="calendar-view-button"
+        onClick={() => setView(Views.Calendar)}
+        className={`w-24 rounded-2xl px-2 py-0.5 border overflow-hidden ${
+          view === Views.Calendar
+            ? "bg-cyan-700 text-white"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(CustomerNavigationLabel.Calendar)}
+      </button>
+      <button
+        key="profile-view-button"
+        onClick={() => setView(Views.Profile)}
+        className={`w-24 rounded-2xl px-2 py-0.5 border overflow-hidden ${
+          view === Views.Profile
+            ? "bg-cyan-700 text-white"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(CustomerNavigationLabel.Profile)}
+      </button>
+    </>
+  );
+
   if (secretKey && currentAthlete.deleted) {
     return <Redirect to={`${Routes.Deleted}/${secretKey}`} />;
   }
 
   return (
-    <Layout
-      additionalButtons={additionalButtons}
-      userAvatar={
-        <AthleteAvatar
-          currentAthlete={currentAthlete}
-          otherAccounts={otherAccounts}
-        />
-      }
+    <div
+      className={`absolute top-0 right-0 left-0 flex flex-col ${
+        isAdmin ? "pt-[210px] md:pt-[272px]" : "pt-[140px] md:pt-[202px]"
+      }`}
     >
-      {view !== "ProfileView" && (
-        <CalendarNav
-          {...calendarNavProps}
-          // TODO: Reinstate this when the ability to add multiple events is fixed
-          // See: https://github.com/eisbuk/EisBuk/issues/827
-          //
-          // additionalContent={<AddToCalendar />}
-          jump="month"
-          additionalContent={
-            isAdmin && view === "BookView" ? (
-              <Button
-                onClick={toggleDebug}
-                color={debugOn ? ButtonColor.Primary : undefined}
-                className={[
-                  "h-12 hidden md:flex md:h-auto",
-                  !debugOn
-                    ? "!text-black outline outline-gray-300 border-box"
-                    : "",
-                ].join(" ")}
-              >
-                {t(Debug.DebugButtonLabel)}
-              </Button>
-            ) : undefined
-          }
-        />
-      )}
+      <header className="fixed left-0 top-0 right-0 bg-gray-800 z-50">
+        <div className="content-container">
+          {isAdmin && (
+            <AdminBar className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden" />
+          )}
+
+          <div className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden">
+            <div>{null}</div>
+            <AthleteAvatar
+              currentAthlete={currentAthlete}
+              otherAccounts={otherAccounts}
+            />
+          </div>
+
+          <div className="w-full h-[2px] bg-gray-700" />
+
+          <div className="hidden w-full py-[15px] justify-between items-center h-[70px] md:flex print:hidden">
+            <div className="w-full flex justify-center items-center gap-4 md:gap-3 md:justify-start md:max-w-1/2">
+              {additionalButtons}
+            </div>
+
+            <div className="hidden md:block md:w-full">
+              <NotificationsContainer className="w-full md:w-auto" />
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div
+        className={`fixed left-0 ${
+          isAdmin ? "top-[142px]" : "top-[72px]"
+        } right-0 border-b border-gray-400 z-40 md:border-none ${
+          isAdmin ? "md:top-[212px]" : "md:top-[142px]"
+        }`}
+      >
+        {view === "ProfileView" ? (
+          <div className="h-[68px] bg-ice-300 md:h-[60px]" />
+        ) : (
+          <CalendarNav
+            {...calendarNavProps}
+            // TODO: Reinstate this when the ability to add multiple events is fixed
+            // See: https://github.com/eisbuk/EisBuk/issues/827
+            //
+            // additionalContent={<AddToCalendar />}
+            jump="month"
+            additionalContent={
+              isAdmin && view === "BookView" ? (
+                <Button
+                  onClick={toggleDebug}
+                  color={debugOn ? ButtonColor.Primary : undefined}
+                  className={[
+                    "h-12 hidden md:flex md:h-auto",
+                    !debugOn
+                      ? "!text-black outline outline-gray-300 border-box"
+                      : "",
+                  ].join(" ")}
+                >
+                  {t(Debug.DebugButtonLabel)}
+                </Button>
+              ) : undefined
+            }
+          />
+        )}
+
+        <div className="absolute left-1/2 bottom-0 -translate-x-1/2 translate-y-1/2 flex items-center gap-2 md:hidden">
+          {additionalButtonsSM}
+        </div>
+      </div>
 
       <LayoutContent>
         <ErrorBoundary resetKeys={[calendarNavProps]}>
@@ -191,10 +268,18 @@ const CustomerArea: React.FC = () => {
         </ErrorBoundary>
       </LayoutContent>
 
+      <div
+        className={`fixed px-4 ${
+          view === Views.Book && isAdmin ? "bottom-[70px]" : "bottom-4"
+        } right-0 z-40 md:hidden`}
+      >
+        <NotificationsContainer />
+      </div>
+
       <div className="fixed z-50 bottom-4 left-1/2 -translate-x-1/2 content-container text-center">
         <PrivacyPolicyToast />
       </div>
-    </Layout>
+    </div>
   );
 };
 

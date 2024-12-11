@@ -45,22 +45,24 @@ const BookView: React.FC<{
 
   if (!customer?.categories?.length) {
     return (
-      <EmptySpace className="!py-8 !px-10 !whitespace-normal">
-        <p>
-          <span className="leading-loose mx-8 w-full">
-            {t(Alerts.NoCategories)}
-          </span>
-          <br />
-          {orgEmail && (
-            <span
-              className="leading-loose mx-8"
-              dangerouslySetInnerHTML={{
-                __html: t(Alerts.ContactEmail, { email: orgEmail }),
-              }}
-            />
-          )}
-        </p>
-      </EmptySpace>
+      <div className="px-4 -mx-4 py-8 space-y-4 bg-white md:px-0 md:mx-0">
+        <EmptySpace className="!py-8 !px-10 !whitespace-normal">
+          <p>
+            <span className="leading-loose mx-8 w-full">
+              {t(Alerts.NoCategories)}
+            </span>
+            <br />
+            {orgEmail && (
+              <span
+                className="leading-loose mx-8"
+                dangerouslySetInnerHTML={{
+                  __html: t(Alerts.ContactEmail, { email: orgEmail }),
+                }}
+              />
+            )}
+          </p>
+        </EmptySpace>
+      </div>
     );
   }
 
@@ -76,20 +78,31 @@ const BookView: React.FC<{
         <BookingsCountdownContainer />
       </div>
 
-      {daysToRender.map(({ date, slots }) => (
-        <SlotsDayContainer key={date} date={date}>
-          {slots.map(({ interval, ...slot }) => (
-            <IntervalCardGroup
-              key={slot.id}
-              onBook={handleBooking(slot)}
-              onCancel={handleCancellation(slot, interval)}
-              bookedInterval={interval}
-              disabled={!isBookingAllowed}
-              {...slot}
-            />
-          ))}
-        </SlotsDayContainer>
-      ))}
+      {
+        // absolute top-0 right-0 left-0 flex flex-col ${isAdmin ? "pt-[210px] md:pt-[272px]" : "pt-[140px] md:pt-[202px]"}
+        daysToRender.map(({ date, slots }) => (
+          <SlotsDayContainer
+            stickyOffset={
+              isAdmin
+                ? "top-[210px] md:top-[272px]"
+                : "top-[140px] md:top-[202px]"
+            }
+            key={date}
+            date={date}
+          >
+            {slots.map(({ interval, ...slot }) => (
+              <IntervalCardGroup
+                key={slot.id}
+                onBook={handleBooking(slot)}
+                onCancel={handleCancellation(slot, interval)}
+                bookedInterval={interval}
+                disabled={!isBookingAllowed}
+                {...slot}
+              />
+            ))}
+          </SlotsDayContainer>
+        ))
+      }
 
       {isAdmin && (
         <div className="fixed bottom-0 w-full flex justify-end -mx-4 p-2 bg-ice-300 z-40 border-t border-gray-300 md:hidden">
