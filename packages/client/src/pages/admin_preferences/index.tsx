@@ -27,7 +27,8 @@ import {
 } from "@eisbuk/shared/ui";
 import { Cog, Mail } from "@eisbuk/svg";
 
-import Layout from "@/controllers/Layout";
+import AdminBar from "@/controllers/AdminBar";
+import { NotificationsContainer } from "@/features/notifications/components";
 import AdminsField from "./AdminsField";
 
 import { updateOrganization } from "@/store/actions/organizationOperations";
@@ -128,8 +129,84 @@ const OrganizationSettings: React.FC = () => {
     </>
   );
 
+  const additionalButtonsSM = (
+    <>
+      <button
+        key="general-settings-view-button"
+        onClick={() => setView(View.GeneralSettings)}
+        className={`rounded px-2 py-0.5 border overflow-hidden ${
+          view === View.GeneralSettings
+            ? "bg-cyan-700 text-white border-cyan-700"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(SettingsNavigationLabel.GeneralSettings)}
+      </button>
+      <button
+        key="email-templates-view-button"
+        onClick={() => setView(View.EmailTemplates)}
+        className={`rounded px-2 py-0.5 border overflow-hidden ${
+          view === View.EmailTemplates
+            ? "bg-cyan-700 text-white border-cyan-700"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(SettingsNavigationLabel.EmailTemplates)}
+      </button>
+      <button
+        key="sms-templates-view-button"
+        onClick={() => setView(View.SMSTemplates)}
+        className={`rounded px-2 py-0.5 border overflow-hidden ${
+          view === View.SMSTemplates
+            ? "bg-cyan-700 text-white border-cyan-700"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        {i18n.t(SettingsNavigationLabel.SMSTemplates)}
+      </button>
+      <button
+        key="privacy-policy-view-button"
+        onClick={() => setView(View.PrivacyPolicy)}
+        className={`rounded px-2 py-0.5 border overflow-hidden ${
+          view === View.PrivacyPolicy
+            ? "bg-cyan-700 text-white border-cyan-700"
+            : "bg-white text-gray-700 hover:text-white hover:bg-gray-700"
+        }`}
+      >
+        Privacy policy
+      </button>
+    </>
+  );
+
   return (
-    <Layout additionalButtons={additionalButtons}>
+    <div className="absolute top-0 right-0 left-0 flex flex-col pt-[168px] md:pt-[212px] overflow-hidden">
+      <header className="fixed left-0 top-0 right-0 bg-gray-800 z-50">
+        <div className="content-container">
+          <AdminBar className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden" />
+
+          <div className="hidden w-full h-[70px] py-[15px] justify-between items-center md:flex print:hidden">
+            <div>{null}</div>
+            {null}
+          </div>
+
+          <div className="w-full h-[2px] bg-gray-700" />
+
+          <div className="flex w-full h-[96px] py-[15px] justify-between items-center md:h-[70px] print:hidden">
+            <div className="hidden w-full max-w-1/2 justify-start items-center gap-3 whitespace-nowrap md:flex">
+              {additionalButtons}
+            </div>
+
+            <div className="grid grid-cols-2 grid-rows-2 w-full justify-center items-center gap-x-4 gap-y-2 whitespace-nowrap md:hidden">
+              {additionalButtonsSM}
+            </div>
+
+            <div className="hidden md:block md:w-full">
+              <NotificationsContainer className="w-full md:w-auto" />
+            </div>
+          </div>
+        </div>
+      </header>
+
       <Formik
         {...{ initialValues }}
         onSubmit={(values, actions) => handleSubmit(values, actions)}
@@ -178,10 +255,14 @@ const OrganizationSettings: React.FC = () => {
                 <PrivacyPolicy />
               </div>
             )}
+
+            <div className="fixed px-4 bottom-4 right-0 z-40 md:hidden">
+              <NotificationsContainer />
+            </div>
           </LayoutContent>
         )}
       </Formik>
-    </Layout>
+    </div>
   );
 };
 
