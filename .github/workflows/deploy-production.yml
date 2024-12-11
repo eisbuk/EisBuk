@@ -73,6 +73,13 @@ jobs:
         environment: production
         sourcemaps: ./packages/functions/dist/
         version: ${{ env.SENTRY_RELEASE }}
+    - name: Write service account key
+      run: |
+        cat > $HOME/key.json <<EOF
+        ${{ secrets.GCP_KEY_JSON }}
+        EOF
+    - name: Set creds env var
+      run: echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/key.json" >> $GITHUB_ENV
     - name: Deploy to firebase
       run: |
         echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
