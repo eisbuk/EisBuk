@@ -66,7 +66,7 @@ jobs:
         id: deploy
         if: steps.has_secret.outputs.HAS_SECRETS
         run: |
-          set -e
+          set -e -o pipefail
           #! Deploy the preview to firebase hosting, passing the current git branch to be used for the name
           #! of the preview channel
           firebase --project eisbuk hosting:channel:deploy ${GITHUB_REF_SLUG_URL:-dev} --token ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EISBUK }} | tee deploy.output
