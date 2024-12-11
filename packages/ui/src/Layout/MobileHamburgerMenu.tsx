@@ -83,7 +83,7 @@ const MobileHamburgerMenu: React.FC<MobileHamburgerMenuProps> = ({
 /** Get styles for top / botton row of the header */
 const getMenuNavStyles = (isNavOpen: boolean) => {
   const menuNav = [
-    "absolute",
+    "fixed",
     "w-full",
     "h-screen",
     "bg-white",

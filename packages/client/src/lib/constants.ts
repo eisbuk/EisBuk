@@ -42,9 +42,24 @@ export const __firebaseApiKey__ =
 export const __firebaseAppId__ = process.env.REACT_APP_FIREBASE_APP_ID;
 export const __databaseURL__ = process.env.REACT_APP_DATABASE_URL;
 
+// emulators setup
+export const __firestoreEmulatorHost__ =
+  process.env.REACT_APP_FIRESTORE_EMULATOR_HOST || "127.0.0.1";
+export const __firestoreEmulatorPort__ =
+  Number(process.env.REACT_APP_FIRESTORE_EMULATOR_PORT) || 8080;
+export const __authEmulatorHost__ =
+  process.env.REACT_APP_AUTH_EMULATOR_HOST || "127.0.0.1";
+export const __authEmulatorPort__ =
+  Number(process.env.REACT_APP_AUTH_EMULATOR_PORT) || 9099;
+export const __authEmulatorURL__ = `http://${__authEmulatorHost__}:${__authEmulatorPort__}/`;
+export const __functionsEmulatorHost__ =
+  process.env.REACT_APP_FUNCTIONS_EMULATOR_HOST || "127.0.0.1";
+export const __functionsEmulatorPort__ =
+  Number(process.env.REACT_APP_FUNCTIONS_EMULATOR_PORT) || 5001;
+
 // production only env variables
 export const __authDomain__ = __isDev__
-  ? "localhost"
+  ? __authEmulatorHost__
   : process.env.REACT_APP_FIREBASE_AUTH_DOMAIN;
 export const __storageBucket__ = process.env.REACT_APP_FIREBASE_STORAGE_BUCKET;
 export const __measurementId__ = process.env.REACT_APP_FIREBASE_MEASUREMENT_ID;

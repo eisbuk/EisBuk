@@ -87,6 +87,7 @@ importers:
       '@storybook/react': ^7.0.7
       '@storybook/react-vite': ^7.0.7
       '@svgr/webpack': '5.5'
+      '@tailwindcss/forms': ~0.5.9
       '@testing-library/dom': ^8.13.0
       '@testing-library/jest-dom': ^5.16.2
       '@testing-library/react': ^12.1.3
@@ -232,6 +233,7 @@ importers:
       '@storybook/react': 7.6.10_a09eeef7f0664d0f2265f09bdaae5546
       '@storybook/react-vite': 7.6.10_bd89ff102a2e2b69358623f0c313a2aa
       '@svgr/webpack': 5.5.0
+      '@tailwindcss/forms': 0.5.9_tailwindcss@3.0.24
       '@testing-library/dom': 8.20.1
       '@testing-library/jest-dom': 5.17.0
       '@testing-library/react': 12.1.5_react-dom@16.14.0+react@16.14.0
@@ -801,7 +803,7 @@ importers:
       '@storybook/react': ^7.0.7
       '@storybook/react-vite': ^7.0.7
       '@storybook/testing-library': ^0.1.0
-      '@tailwindcss/forms': ^0.5.2
+      '@tailwindcss/forms': ~0.5.9
       '@testing-library/dom': ^8.13.0
       '@testing-library/jest-dom': ^5.16.2
       '@testing-library/react': ^12.1.3
@@ -840,7 +842,7 @@ importers:
       vitest: ~0.31.3
       yup: 0.32.9
     dependencies:
-      '@tailwindcss/forms': 0.5.7_tailwindcss@3.0.24
+      '@tailwindcss/forms': 0.5.9_tailwindcss@3.0.24
       luxon: 2.5.2
       yup: 0.32.9
     devDependencies:
@@ -6420,14 +6422,13 @@ packages:
       - supports-color
     dev: true
 
-  /@tailwindcss/forms/0.5.7_tailwindcss@3.0.24:
-    resolution: {integrity: sha512-QE7X69iQI+ZXwldE+rzasvbJiyV/ju1FGHH0Qn2W3FKbuYtqp8LKcy6iSw79fVUT5/Vvf+0XgLCeYVG+UV6hOw==}
+  /@tailwindcss/forms/0.5.9_tailwindcss@3.0.24:
+    resolution: {integrity: sha512-tM4XVr2+UVTxXJzey9Twx48c1gcxFStqn1pQz0tRsX8o3DvxhN5oY5pvyAbUx7VTaZxpej4Zzvc6h+1RJBzpIg==}
     peerDependencies:
-      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
+      tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1 || >= 4.0.0-alpha.20'
     dependencies:
       mini-svg-data-uri: 1.4.4
       tailwindcss: 3.0.24
-    dev: false
 
   /@testing-library/dom/8.20.1:
     resolution: {integrity: sha512-/DiOQ5xBxgdYRC8LNk7U+RWat0S3qRLeIw3ZIkMQ9kkVlRmwD/Eg8k8CqIpD6GW7u20JIUOfMKbxtiLutpjQ4g==}
@@ -15176,7 +15177,6 @@ packages:
   /mini-svg-data-uri/1.4.4:
     resolution: {integrity: sha512-r9deDe9p5FJUPZAk3A59wGH7Ii9YrjjWw0jmw/liSbHl2CHiyXj6FcDXDu2K3TjVAXqiJdaw3xxwlZZr9E6nHg==}
     hasBin: true
-    dev: false
 
   /minimatch/3.0.4:
     resolution: {integrity: sha512-yJHVQEhyqPLUTgt9B83PXu6W3rx4MvvHvSUvToogpwoGDOUQ+yDrR0HRot+yOCdCO7u4hX3pWft6kWBBcqh0UA==}
