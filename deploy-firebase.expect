@@ -12,7 +12,7 @@ set timeout 240
 
 
 cd packages/client/
-spawn npx firebase deploy --project eisbuk
+spawn npx firebase deploy --project eisbuk --debug
 
 expect {
     "*Would you like to proceed with deletion?*" {
