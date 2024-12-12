@@ -100,14 +100,15 @@ const colorClassLookup = {
  */
 const applyWhiteTextFallback = (baseClasses: string[], className = "") => {
   const classes = className.split(" ");
+  const _baseClasses = [...baseClasses];
 
   // Write a conditional (regex) check to see if one of the 'classes' matches a pattern of a text color class.
   // Exmples: text-red-500, text-blue-600, text-gray-200, etc.
   const hasTextColorClass = classes.some((c) => /^text-[a-z]+-[0-9]+$/.test(c));
   if (!hasTextColorClass) {
-    baseClasses.push("text-white");
+    _baseClasses.push("text-white");
   }
-  return [...baseClasses, ...classes].join(" ");
+  return [..._baseClasses, ...classes].join(" ");
 };
 
 export const ButtonIcon: React.FC<{ I: React.FC }> = ({ I }) => (

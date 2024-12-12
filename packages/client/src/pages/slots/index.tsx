@@ -15,6 +15,7 @@ import {
   SlotsDayContainer,
   LayoutContent,
 } from "@eisbuk/ui";
+import { Close, Pencil } from "@eisbuk/svg";
 
 import { SlotsAria, useTranslation } from "@eisbuk/translations";
 import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
@@ -25,7 +26,8 @@ import { LocalStore, SlotsWeek } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
-import Layout from "@/controllers/Layout";
+import AdminBar from "@/controllers/AdminBar";
+import { NotificationsContainer } from "@/features/notifications/components/index";
 import SlotOperationButtons, {
   CopyButton,
   PasteButton,
@@ -95,7 +97,7 @@ const SlotsPage: React.FC = () => {
   );
 
   const extraButtons = (
-    <div className="flex items-center">
+    <div className="hidden items-center md:flex">
       {canEdit && (
         <SlotOperationButtons
           className="mr-4"
@@ -125,12 +127,36 @@ const SlotsPage: React.FC = () => {
     };
 
   return (
-    <Layout>
+    <div className="absolute top-0 right-0 left-0 flex flex-col pt-[141px] md:pt-[272px]">
+      <header className="fixed left-0 top-0 right-0 bg-gray-800 z-50">
+        <div className="content-container">
+          <AdminBar className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden" />
+
+          <div className="hidden w-full h-[70px] py-[15px] justify-between items-center md:flex print:hidden">
+            <div>{null}</div>
+            {null}
+          </div>
+
+          <div className="w-full h-[2px] bg-gray-700" />
+
+          <div className="hidden w-full h-[70px] justify-between items-center md:flex print:hidden">
+            <div className="w-full flex items-center gap-3 justify-start max-w-1/2">
+              {null}
+            </div>
+
+            <div className="hidden md:block md:w-full">
+              <NotificationsContainer className="w-full md:w-auto" />
+            </div>
+          </div>
+        </div>
+      </header>
+
       <CalendarNav
         date={currentDate}
         onChange={(date) => dispatch(changeCalendarDate(date))}
         jump="week"
         additionalContent={extraButtons}
+        className="fixed left-0 top-[72px] right-0 border-b border-gray-400 z-40 md:border-none md:top-[212px]"
       />
       <LayoutContent>
         <ErrorBoundary resetKeys={daysToShow}>
@@ -164,7 +190,14 @@ const SlotsPage: React.FC = () => {
               <SlotsDayContainer
                 key={dateISO}
                 date={dateISO}
-                additionalContent={canEdit ? additionalButtons : undefined}
+                additionalContent={
+                  canEdit ? (
+                    additionalButtons
+                  ) : (
+                    <div className="h-11 md:h-auto" />
+                  )
+                }
+                stickyOffset="top-[141px] md:top-[272px]"
               >
                 <div className="grid gap-4 grid-cols-2">
                   {slotsForDay.map((slot) => {
@@ -198,8 +231,44 @@ const SlotsPage: React.FC = () => {
             );
           })}
         </ErrorBoundary>
+
+        <div className="fixed bottom-0 w-full flex justify-end -mx-4 px-2 py-1.5 bg-ice-300 z-40 border-t border-gray-300 md:hidden">
+          {canEdit ? (
+            <SlotOperationButtons
+              slotsToCopy={{ week: Boolean(weekToPaste) }}
+              contextType={ButtonContextType.Week}
+              disabled={slotButtonsDisabled}
+              {...{ date }}
+            >
+              <CopyButton />
+              <PasteButton onPaste={() => setSlotButtonsDisabled(true)} />
+              <Button
+                onClick={() => setCanEdit(false)}
+                className="w-11 h-11 text-gray-600"
+                aria-label={t(SlotsAria.EnableEdit)}
+              >
+                <Close />
+              </Button>
+            </SlotOperationButtons>
+          ) : (
+            <Button
+              onClick={() => setCanEdit(true)}
+              className="h-11 text-gray-600"
+              aria-label={t(SlotsAria.EnableEdit)}
+            >
+              <span className="text-md">Edit</span>{" "}
+              <span className="w-8 h-8">
+                <Pencil />
+              </span>
+            </Button>
+          )}
+        </div>
+
+        <div className="fixed px-4 bottom-[70px] right-0 z-40 md:hidden">
+          <NotificationsContainer />
+        </div>
       </LayoutContent>
-    </Layout>
+    </div>
   );
 };
 

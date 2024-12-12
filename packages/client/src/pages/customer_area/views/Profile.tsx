@@ -20,18 +20,20 @@ const CalendarView: React.FC = () => {
     useSelector(getBookingsCustomer(secretKey)) || ({} as Customer);
 
   return (
-    <CustomerForm.Profile
-      customer={customer}
-      onSave={(customer) => {
-        dispatch(
-          customerSelfUpdate({
-            ...customer,
-            secretKey,
-          })
-        );
-      }}
-      defaultDialCode={defaultCountryCode}
-    />
+    <div className="px-[44px] py-4">
+      <CustomerForm.Profile
+        customer={customer}
+        onSave={(customer) => {
+          dispatch(
+            customerSelfUpdate({
+              ...customer,
+              secretKey,
+            })
+          );
+        }}
+        defaultDialCode={defaultCountryCode}
+      />
+    </div>
   );
 };
 

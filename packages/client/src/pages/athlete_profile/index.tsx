@@ -22,7 +22,8 @@ import { useFirestoreSubscribe } from "@eisbuk/react-redux-firebase-firestore";
 import { Phone, Calendar, Mail } from "@eisbuk/svg";
 import { ActionButton, useTranslation } from "@eisbuk/translations";
 
-import Layout from "@/controllers/Layout";
+import AdminBar from "@/controllers/AdminBar";
+import { NotificationsContainer } from "@/features/notifications/components/index";
 
 import { getCustomerById, getCustomersList } from "@/store/selectors/customers";
 
@@ -67,7 +68,30 @@ const AthleteProfilePage: React.FC = () => {
   };
 
   return (
-    <Layout>
+    <div className="absolute top-0 right-0 left-0 flex flex-col pb-[70px] pt-[72px] md:pt-[272px] md:pb-0">
+      <header className="fixed left-0 top-0 right-0 bg-gray-800 z-50">
+        <div className="content-container">
+          <AdminBar className="flex w-full h-[70px] py-[15px] justify-between items-center print:hidden" />
+
+          <div className="hidden w-full h-[70px] py-[15px] justify-between items-center md:flex print:hidden">
+            <div>{null}</div>
+            {null}
+          </div>
+
+          <div className="w-full h-[2px] bg-gray-700" />
+
+          <div className="hidden w-full h-[70px] justify-between items-center md:flex print:hidden">
+            <div className="w-full flex items-center gap-3 justify-start max-w-1/2">
+              {null}
+            </div>
+
+            <div className="hidden md:block md:w-full">
+              <NotificationsContainer className="w-full md:w-auto" />
+            </div>
+          </div>
+        </div>
+      </header>
+
       <LayoutContent>
         <div className="pt-[44px] px-[71px] pb-8 md:pt-[62px]">
           <CustomerForm.Admin
@@ -91,8 +115,12 @@ const AthleteProfilePage: React.FC = () => {
             subscriptionNumber={subscriptionNumber}
           />
         </div>
+
+        <div className="fixed px-4 bottom-4 right-0 z-40 md:hidden">
+          <NotificationsContainer />
+        </div>
       </LayoutContent>
-    </Layout>
+    </div>
   );
 };
 // #endregion MainComponent

@@ -35,9 +35,11 @@ export const Interactive = (): JSX.Element => {
   };
 
   return (
-    <BookingDateDebugDialog
-      systemDate={systemDate}
-      extendedDate={extendedDate}
-    />
+    <div className="bg-ice-300 md:bg-white">
+      <BookingDateDebugDialog
+        systemDate={systemDate}
+        extendedDate={extendedDate}
+      />
+    </div>
   );
 };

@@ -31,7 +31,7 @@ describe("Edit slots modal", () => {
       // @TODO check if this is still necessary after we make the e2e tests a bit leaner
       .then(() => cy.contains("competitive", { timeout: 20000 }));
 
-    cy.getAttrWith("aria-label", i18n.t(SlotsAria.EnableEdit)).click();
+    cy.getAttrWith("aria-label", i18n.t(SlotsAria.EnableEdit)).eq(0).click();
   });
 
   it("Checks for disabled deleting or updating bookedIntervals", () => {

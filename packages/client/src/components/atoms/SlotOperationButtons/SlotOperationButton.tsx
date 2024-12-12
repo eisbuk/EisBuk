@@ -13,7 +13,7 @@ const SlotOperationButton: React.FC<ButtonProps> = ({
   return (
     <Button
       className={[
-        "h-8 w-8 !p-1 text-gray-600 rounded-full overflow-hidden",
+        "w-11 h-11 !p-1 text-gray-600 rounded-full overflow-hidden md:h-8 md:w-8",
         color,
         cursor,
         className,
