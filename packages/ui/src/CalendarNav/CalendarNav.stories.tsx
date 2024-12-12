@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { ComponentMeta } from "@storybook/react";
 import { DateTime } from "luxon";
 
-import { Printer, PlusCircle, Copy, XCircle, Pencil } from "@eisbuk/svg"
+import { Printer, PlusCircle, Copy } from "@eisbuk/svg";
 
 import CalendarNav from "./CalendarNav";
 import EmptySpace from "../EmptySpace";
-import Button, { ButtonColor } from "../Button"
+import Button, { ButtonColor } from "../Button";
 
 export default {
   title: "Calendar Nav",
@@ -53,8 +53,8 @@ const countdown = (
 );
 
 export const WithAdditionalContent = (): JSX.Element => {
-  const [canEdit, setCanEdit] = useState(false)
-  const toggleEdit = () => setCanEdit(!canEdit)
+  const [canEdit, setCanEdit] = useState(false);
+  const toggleEdit = () => setCanEdit(!canEdit);
 
   return (
     <>
@@ -89,7 +89,11 @@ export const WithAdditionalContent = (): JSX.Element => {
             <Button
               onClick={toggleEdit}
               color={canEdit ? ButtonColor.Primary : undefined}
-              className={!canEdit ? "!text-black outline outline-gray-300 border-box" : ""}
+              className={
+                !canEdit
+                  ? "!text-black outline outline-gray-300 border-box"
+                  : ""
+              }
             >
               Enable edit
             </Button>
@@ -97,7 +101,7 @@ export const WithAdditionalContent = (): JSX.Element => {
         }
       />
     </>
-  )
+  );
 };
 
 export const WithCountdown = (): JSX.Element => (
@@ -107,4 +111,3 @@ export const WithCountdown = (): JSX.Element => (
     additionalContent={countdown}
   />
 );
-

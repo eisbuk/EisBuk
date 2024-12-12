@@ -26,7 +26,7 @@ import { LocalStore, SlotsWeek } from "@/types/store";
 
 import { getOrganization } from "@/lib/getters";
 
-import AdminBar from "@/controllers/AdminBar"
+import AdminBar from "@/controllers/AdminBar";
 import { NotificationsContainer } from "@/features/notifications/components/index";
 import SlotOperationButtons, {
   CopyButton,
@@ -118,13 +118,13 @@ const SlotsPage: React.FC = () => {
     weekToPaste && weekToPaste.weekStart.toMillis() === date.toMillis();
   const handleSlotClick =
     ({ slot, selected }: { slot: SlotInterface; selected: boolean }) =>
-      () => {
-        if (selected) {
-          dispatch(deleteSlotFromClipboard(slot.id));
-        } else {
-          dispatch(addSlotToClipboard(slot));
-        }
-      };
+    () => {
+      if (selected) {
+        dispatch(deleteSlotFromClipboard(slot.id));
+      } else {
+        dispatch(addSlotToClipboard(slot));
+      }
+    };
 
   return (
     <div className="absolute top-0 right-0 left-0 flex flex-col pt-[141px] md:pt-[272px]">
@@ -190,7 +190,13 @@ const SlotsPage: React.FC = () => {
               <SlotsDayContainer
                 key={dateISO}
                 date={dateISO}
-                additionalContent={canEdit ? additionalButtons : <div className="h-11 md:h-auto" />}
+                additionalContent={
+                  canEdit ? (
+                    additionalButtons
+                  ) : (
+                    <div className="h-11 md:h-auto" />
+                  )
+                }
                 stickyOffset="top-[141px] md:top-[272px]"
               >
                 <div className="grid gap-4 grid-cols-2">
@@ -226,9 +232,7 @@ const SlotsPage: React.FC = () => {
           })}
         </ErrorBoundary>
 
-        <div
-          className="fixed bottom-0 w-full flex justify-end -mx-4 px-2 py-1.5 bg-ice-300 z-40 border-t border-gray-300 md:hidden"
-        >
+        <div className="fixed bottom-0 w-full flex justify-end -mx-4 px-2 py-1.5 bg-ice-300 z-40 border-t border-gray-300 md:hidden">
           {canEdit ? (
             <SlotOperationButtons
               slotsToCopy={{ week: Boolean(weekToPaste) }}
@@ -252,7 +256,10 @@ const SlotsPage: React.FC = () => {
               className="h-11 text-gray-600"
               aria-label={t(SlotsAria.EnableEdit)}
             >
-              <span className="text-md">Edit</span> <span className="w-8 h-8"><Pencil /></span>
+              <span className="text-md">Edit</span>{" "}
+              <span className="w-8 h-8">
+                <Pencil />
+              </span>
             </Button>
           )}
         </div>

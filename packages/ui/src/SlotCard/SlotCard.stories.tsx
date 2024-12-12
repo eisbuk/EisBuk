@@ -54,8 +54,8 @@ export const PackedWithContent = (): JSX.Element => (
 );
 
 export const ButtonsToggle = (): JSX.Element => {
-  const [canEdit, setCanEdit] = React.useState(false)
-  const toggleEdit = () => setCanEdit(!canEdit)
+  const [canEdit, setCanEdit] = React.useState(false);
+  const toggleEdit = () => setCanEdit(!canEdit);
 
   return (
     <>
@@ -69,14 +69,15 @@ export const ButtonsToggle = (): JSX.Element => {
       <Button
         onClick={toggleEdit}
         color={canEdit ? ButtonColor.Primary : undefined}
-        className={
-          ["my-4", !canEdit ? "!text-black outline outline-gray-300 border-box" : ""].join(" ")
-        }
+        className={[
+          "my-4",
+          !canEdit ? "!text-black outline outline-gray-300 border-box" : "",
+        ].join(" ")}
       >
         Enable Edit
       </Button>
     </>
-  )
+  );
 };
 
 export const Selected = (): JSX.Element => {

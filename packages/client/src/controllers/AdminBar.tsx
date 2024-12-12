@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 import { useDispatch } from "react-redux";
 
 import { LinkItem, AdminBar } from "@eisbuk/ui";
@@ -13,7 +13,7 @@ import SendBookingEmails from "@/controllers/SendBookingEmails";
 import { signOut } from "@/store/actions/authOperations";
 
 const AdminHeader: React.FC<{ className?: string }> = ({ className = "" }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   const additionalAdminContent = (
     <div className="flex gap-x-2 md:gap-x-0">
@@ -23,13 +23,15 @@ const AdminHeader: React.FC<{ className?: string }> = ({ className = "" }) => {
     </div>
   );
 
-  return <AdminBar
-    className={className}
-    adminLinks={adminLinks}
-    additionalContent={additionalAdminContent}
-    onLogout={() => dispatch(signOut)}
-  />
-}
+  return (
+    <AdminBar
+      className={className}
+      adminLinks={adminLinks}
+      additionalContent={additionalAdminContent}
+      onLogout={() => dispatch(signOut)}
+    />
+  );
+};
 
 const adminLinks: LinkItem[] = [
   {
@@ -54,5 +56,4 @@ const adminLinks: LinkItem[] = [
   },
 ];
 
-export default AdminHeader
-
+export default AdminHeader;

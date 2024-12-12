@@ -89,7 +89,7 @@ export const WithButtons = (): JSX.Element => (
 );
 
 export const PrototypeSlotsPage = (): JSX.Element => {
-  const [canEdit, setCanEdit] = React.useState(false)
+  const [canEdit, setCanEdit] = React.useState(false);
 
   return (
     <div className="relative content-container">
@@ -99,19 +99,17 @@ export const PrototypeSlotsPage = (): JSX.Element => {
           <SlotsDayContainer
             key={i}
             date={DateTime.fromISO(date).plus({ days: i }).toISODate()}
-            additionalContent={canEdit ? additionalContent : <div className="h-12 md:h-auto" />}
+            additionalContent={
+              canEdit ? additionalContent : <div className="h-12 md:h-auto" />
+            }
           >
             <div className="content-container h-80 w-full bg-gray-100 rounded-md border-gray-200" />
           </SlotsDayContainer>
         ))}
 
-      <div
-        className="fixed bottom-0 left-4 right-4 flex justify-end p-2 bg-ice-300 z-40 border-t border-gray-300"
-      >
+      <div className="fixed bottom-0 left-4 right-4 flex justify-end p-2 bg-ice-300 z-40 border-t border-gray-300">
         {canEdit ? (
-          <div
-            className="flex justify-end items-center gap-1"
-          >
+          <div className="flex justify-end items-center gap-1">
             <Button className="w-12 h-12 !p-1 text-gray-600 rounded-full overflow-hidden">
               <Copy />
             </Button>
@@ -134,6 +132,6 @@ export const PrototypeSlotsPage = (): JSX.Element => {
           </Button>
         )}
       </div>
-    </div >
-  )
+    </div>
+  );
 };
