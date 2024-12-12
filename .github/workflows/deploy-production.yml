@@ -63,7 +63,7 @@ jobs:
         environment: production
         sourcemaps: ./packages/client/dist/assets
         version: ${{ env.SENTRY_RELEASE }}
-    - name: Create Sentry release for client app
+    - name: Create Sentry release for firebase functions
       uses: getsentry/action-release@v1
       env:
         SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
