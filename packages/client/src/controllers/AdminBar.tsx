@@ -28,7 +28,7 @@ const AdminHeader: React.FC<{ className?: string }> = ({ className = "" }) => {
       className={className}
       adminLinks={adminLinks}
       additionalContent={additionalAdminContent}
-      onLogout={() => dispatch(signOut)}
+      onLogout={() => dispatch(signOut())}
     />
   );
 };

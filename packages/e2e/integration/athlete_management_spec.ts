@@ -207,18 +207,19 @@ describe("Athletes approval", () => {
       .then(() => cy.signIn())
       .then(() => cy.visit(PrivateRoutes.Athletes));
   });
+
   it("checks if the URL parameters change when the button is clicked", () => {
     cy.contains(saul.name);
-    cy.getAttrWith(
-      "aria-label",
-      i18n.t(AdminAria.AthletesApprovalButton)
-    ).click();
+    cy.getAttrWith("aria-label", i18n.t(AdminAria.AthletesApprovalButton))
+      .first()
+      .click();
 
     cy.url().should("include", "?approvals=true");
 
     cy.contains(saul.name).should("not.exist");
     cy.contains(gus.name);
   });
+
   it("checks if the search param changes when the icon is clicked and checks badge count", () => {
     cy.contains(saul.name);
 

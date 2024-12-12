@@ -25,7 +25,7 @@ describe("Slots copy button - copied slots badge", () => {
       // @TODO check if this is still necessary after we make the e2e tests a bit leaner
       .then(() => cy.contains("competitive", { timeout: 20000 }));
 
-    cy.getAttrWith("aria-label", i18n.t(SlotsAria.EnableEdit)).click();
+    cy.getAttrWith("aria-label", i18n.t(SlotsAria.EnableEdit)).eq(0).click();
   });
 
   it("shows the week copied badge only if in 'week' context and the week in clipboard is the currently observed week", () => {
@@ -36,7 +36,7 @@ describe("Slots copy button - copied slots badge", () => {
     );
 
     // Copy the slots for the current week
-    cy.getByTestId("copy-week-button").click({ force: true });
+    cy.getByTestId("copy-week-button").eq(0).click({ force: true });
 
     // The badge should now be shown as the copied slots belong to the current week.
     cy.getByTestId("copied-slots-week-badge").getAttrWith(

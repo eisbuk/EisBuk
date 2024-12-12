@@ -1,8 +1,4 @@
-import i18n, {
-  ActionButton,
-  CustomerFormTitle,
-  NavigationLabel,
-} from "@eisbuk/translations";
+import i18n, { CustomerFormTitle, NavigationLabel } from "@eisbuk/translations";
 import { PrivateRoutes } from "@eisbuk/shared/ui";
 
 describe("Test subscription between browser history (location) and the modal", () => {
@@ -19,7 +15,7 @@ describe("Test subscription between browser history (location) and the modal", (
     cy.clickButton(i18n.t(NavigationLabel.Athletes) as string);
 
     // Open modal
-    cy.getAttrWith("aria-label", i18n.t(ActionButton.AddAthlete)).click();
+    cy.getByTestId("add-athlete").click();
     cy.contains(i18n.t(CustomerFormTitle.NewCustomer) as string);
 
     // Go back in browser history
