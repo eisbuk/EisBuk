@@ -72,6 +72,8 @@ jobs:
           EOF
       - name: Set creds env var
         run: echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/key.json" >> $GITHUB_ENV
+      - name: debug
+        run: echo $GOOGLE_APPLICATION_CREDENTIALS; jq .client_id < $GOOGLE_APPLICATION_CREDENTIALS
       - name: Deploy to firebase
         run: |
           echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
@@ -80,6 +82,7 @@ jobs:
         env:
           FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
           REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ github.workspace }}/key.json
       - name: debug
         if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
         run: ls -l ; ls firebase-debug.log && cat firebase-debug.log || true
