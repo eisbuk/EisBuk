@@ -12,14 +12,23 @@ set timeout 240
 
 
 cd packages/client/
-spawn npx firebase deploy --project eisbuk
+spawn npx firebase deploy --project eisbuk --debug
+
+
 
 expect {
     "*Would you like to proceed with deletion?*" {
-        # Some unexpected cloud functions are present. Tell firebase CLI not to delete them
         send -- "N\r"
+        exp_continue
     }
-    "*Deploy complete!*"
+    "*Deploy complete!*" {
+        exp_continue
+    }
+    eof {
+        # Deployment finished or failed
+    }
 }
 
-expect eof
+# Capture the exit code of the spawned process and exit with the same code
+set waitval [wait]
+exit [lindex $waitval 3]

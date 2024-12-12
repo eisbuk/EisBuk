@@ -9,6 +9,7 @@ name: Deploy to production
   push:
     branches:
       - master
+      - test/production-deployment
 
 jobs:
   deploy:
@@ -54,7 +55,7 @@ jobs:
           environment: production
           sourcemaps: "./packages/client/dist/assets"
           version: ${{ env.SENTRY_RELEASE }}
-      - name: Create Sentry release for client app
+      - name: Create Sentry release for firebase functions
         uses: getsentry/action-release@v1
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
@@ -67,11 +68,9 @@ jobs:
           version: ${{ env.SENTRY_RELEASE }}
       - name: Write service account key
         run: |
-          cat > $HOME/key.json <<EOF
+          cat > /tmp/key.json <<EOF
           ${{ secrets.GCP_KEY_JSON }}
           EOF
-      - name: Set creds env var
-        run: echo "GOOGLE_APPLICATION_CREDENTIALS=$HOME/key.json" >> $GITHUB_ENV
       - name: Deploy to firebase
         run: |
           echo FUNCTIONS_SENTRY_DSN="$FUNCTIONS_SENTRY_DSN" > packages/functions/.env
@@ -80,6 +79,7 @@ jobs:
         env:
           FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
           REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
       - name: debug
         if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
         run: ls -l ; ls firebase-debug.log && cat firebase-debug.log || true
