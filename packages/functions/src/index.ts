@@ -13,3 +13,4 @@ export * from "./checks/https";
 
 export * from "./sendEmail";
 export * from "./sendSMS";
+export * from "./scheduledTasks"; // Export the new scheduled function
