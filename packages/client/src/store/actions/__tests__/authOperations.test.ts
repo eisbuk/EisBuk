@@ -75,6 +75,31 @@ describe("Auth operations", () => {
       });
     });
 
+    test("should not hang the app if the auth-status callable rejects (regression: #960 / unhandled rejection)", async () => {
+      const { dispatch, getState } = getNewStore();
+      const testThunk = updateAuthUser(testUser);
+
+      // Simulate the callable failing (network blip / cold-start timeout / 5xx)
+      mockQueryAuthStatus.mockRejectedValueOnce(
+        new Error("internal: callable failed"),
+      );
+
+      // The thunk must resolve (not reject) ...
+      await expect(
+        runThunk(testThunk, dispatch, getState),
+      ).resolves.not.toThrow();
+
+      // ... and the auth state must be marked loaded so the UI stops hanging,
+      // with the user authenticated but not (wrongly) granted admin/secret access.
+      expect(getState().auth).toEqual({
+        isAdmin: false,
+        secretKeys: [],
+        isEmpty: false,
+        isLoaded: true,
+        userData: testUser,
+      });
+    });
+
     test("should reset the state (perform local logout) if no user is received", async () => {
       // set up tests with authenticated admin
       const { dispatch, getState } = getNewStore();
