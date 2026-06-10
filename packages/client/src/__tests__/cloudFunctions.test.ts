@@ -8,6 +8,7 @@ import { describe, expect } from "vitest";
 import {
   HTTPSErrors,
   BookingsErrors,
+  Category,
   ClientMessagePayload,
   ClientMessageType,
   sanitizeCustomer,
@@ -39,7 +40,7 @@ describe("Cloud functions", () => {
     testWithEmulator("should respond if pinged", async () => {
       const result = await httpsCallable(
         functions,
-        CloudFunction.Ping
+        CloudFunction.Ping,
       )({
         foo: "bar",
       });
@@ -66,9 +67,9 @@ describe("Cloud functions", () => {
           },
         };
         await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+          httpsCallable(functions, CloudFunction.SendEmail)(payload),
         ).rejects.toThrow(HTTPSErrors.Unauth);
-      }
+      },
     );
 
     testWithEmulator(
@@ -91,9 +92,9 @@ describe("Cloud functions", () => {
           email: saul.email,
         };
         await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+          httpsCallable(functions, CloudFunction.SendEmail)(payload),
         ).rejects.toThrow(HTTPSErrors.NoSMTPConfigured);
-      }
+      },
     );
 
     testWithEmulator(
@@ -108,9 +109,9 @@ describe("Cloud functions", () => {
           customer: saul,
         };
         await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+          httpsCallable(functions, CloudFunction.SendEmail)(payload),
         ).rejects.toThrow(HTTPSErrors.EmailInvalidType);
-      }
+      },
     );
 
     testWithEmulator(
@@ -151,13 +152,13 @@ describe("Cloud functions", () => {
           secretKey: saul.secretKey,
         };
         await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+          httpsCallable(functions, CloudFunction.SendEmail)(payload),
         ).resolves.toEqual(
           expect.objectContaining({
             data: expect.objectContaining({ success: true }),
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -174,9 +175,9 @@ describe("Cloud functions", () => {
           },
         };
         await expect(
-          httpsCallable(functions, CloudFunction.SendEmail)(payload)
+          httpsCallable(functions, CloudFunction.SendEmail)(payload),
         ).rejects.toThrow(HTTPSErrors.Unauth);
-      }
+      },
     );
 
     testWithEmulator("should reject if no recipient provided", async () => {
@@ -195,7 +196,7 @@ describe("Cloud functions", () => {
         await httpsCallable(functions, CloudFunction.SendEmail)(payload);
       } catch (error) {
         expect((error as FunctionsError).message).toEqual(
-          expect.stringContaining("must have required property 'email'")
+          expect.stringContaining("must have required property 'email'"),
         );
       }
     });
@@ -219,7 +220,7 @@ describe("Cloud functions", () => {
         // run the function
         await httpsCallable(
           functions,
-          CloudFunction.FinalizeBookings
+          CloudFunction.FinalizeBookings,
         )({
           id: saul.id,
           organization,
@@ -232,16 +233,16 @@ describe("Cloud functions", () => {
             .get();
           expect(Boolean(bookingsSnap.data()?.extendedDate)).toEqual(false);
         });
-      }
+      },
     );
 
     testWithEmulator(
       "should return an error if no payload provided",
       async () => {
         await expect(
-          httpsCallable(functions, CloudFunction.FinalizeBookings)()
+          httpsCallable(functions, CloudFunction.FinalizeBookings)(),
         ).rejects.toThrow(HTTPSErrors.NoPayload);
-      }
+      },
     );
 
     testWithEmulator(
@@ -251,10 +252,10 @@ describe("Cloud functions", () => {
           await httpsCallable(functions, CloudFunction.FinalizeBookings)({});
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: id, organization, secretKey`
+            `${HTTPSErrors.MissingParameter}: id, organization, secretKey`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator(
@@ -266,14 +267,14 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.FinalizeBookings
+            CloudFunction.FinalizeBookings,
           )({
             organization,
             id: saul.id,
             secretKey: "wrong-key",
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.SecretKeyMismatch);
-      }
+      },
     );
 
     testWithEmulator(
@@ -283,14 +284,14 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.FinalizeBookings
+            CloudFunction.FinalizeBookings,
           )({
             organization,
             id: saul.id,
             secretKey: saul.secretKey,
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
-      }
+      },
     );
   });
 
@@ -304,7 +305,7 @@ describe("Cloud functions", () => {
         await saulRef.set(saul);
         // wait for bookings to get created (through data trigger)
         await waitFor(() =>
-          adminDb.doc(getBookingsDocPath(organization, saul.secretKey)).get()
+          adminDb.doc(getBookingsDocPath(organization, saul.secretKey)).get(),
         );
         // Timestamp used for the test, the actual time doesn't matter,
         // only that it's stord in the db after the function is ran.
@@ -312,7 +313,7 @@ describe("Cloud functions", () => {
         // run the function
         await httpsCallable(
           functions,
-          CloudFunction.AcceptPrivacyPolicy
+          CloudFunction.AcceptPrivacyPolicy,
         )({
           id: saul.id,
           organization,
@@ -333,16 +334,16 @@ describe("Cloud functions", () => {
             timestamp,
           });
         });
-      }
+      },
     );
 
     testWithEmulator(
       "should return an error if no payload provided",
       async () => {
         await expect(
-          httpsCallable(functions, CloudFunction.AcceptPrivacyPolicy)()
+          httpsCallable(functions, CloudFunction.AcceptPrivacyPolicy)(),
         ).rejects.toThrow(HTTPSErrors.NoPayload);
-      }
+      },
     );
 
     testWithEmulator(
@@ -352,10 +353,10 @@ describe("Cloud functions", () => {
           await httpsCallable(functions, CloudFunction.AcceptPrivacyPolicy)({});
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: id, organization, secretKey, timestamp`
+            `${HTTPSErrors.MissingParameter}: id, organization, secretKey, timestamp`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator(
@@ -367,15 +368,15 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.AcceptPrivacyPolicy
+            CloudFunction.AcceptPrivacyPolicy,
           )({
             organization,
             id: saul.id,
             secretKey: "wrong-key",
             timestamp: DateTime.now().toISO(),
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.SecretKeyMismatch);
-      }
+      },
     );
 
     testWithEmulator(
@@ -385,15 +386,15 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.AcceptPrivacyPolicy
+            CloudFunction.AcceptPrivacyPolicy,
           )({
             organization,
             id: saul.id,
             secretKey: saul.secretKey,
             timestamp: DateTime.now().toISO(),
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
-      }
+      },
     );
   });
 
@@ -417,7 +418,7 @@ describe("Cloud functions", () => {
         // run the function to update customer
         await httpsCallable(
           functions,
-          CloudFunction.CustomerSelfUpdate
+          CloudFunction.CustomerSelfUpdate,
         )({
           organization,
           customer: saul,
@@ -430,16 +431,54 @@ describe("Cloud functions", () => {
             .get();
           expect(bookingsSnap.data()).toEqual(sanitizeCustomer(saul));
         });
-      }
+      },
+    );
+
+    testWithEmulator(
+      "should ignore admin-managed fields (categories, extendedDate, deleted, secretKey rotation) sent by the customer (regression: #962)",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const saulRef = adminDb.doc(getCustomerDocPath(organization, saul.id));
+        await saulRef.set(saul);
+
+        // Attempt a self-update smuggling in admin-managed fields
+        await httpsCallable(
+          functions,
+          CloudFunction.CustomerSelfUpdate,
+        )({
+          organization,
+          customer: {
+            ...saul,
+            // Legitimate self-edit
+            name: "Jimmy",
+            // Privilege-escalation attempts: none of these may be persisted
+            // (note: different from the fixture's categories)
+            categories: [Category.PrivateLessons],
+            extendedDate: "2099-12-31",
+            deleted: true,
+            subscriptionNumber: "tampered",
+          },
+        });
+
+        const updatedSaul = (await saulRef.get()).data()!;
+        // The legitimate field is updated
+        expect(updatedSaul.name).toEqual("Jimmy");
+        // Admin-managed fields are unchanged
+        expect(updatedSaul.categories).toEqual(saul.categories);
+        expect(updatedSaul.extendedDate).toEqual(saul.extendedDate);
+        expect(Boolean(updatedSaul.deleted)).toEqual(Boolean(saul.deleted));
+        expect(updatedSaul.subscriptionNumber).toEqual(saul.subscriptionNumber);
+        expect(updatedSaul.secretKey).toEqual(saul.secretKey);
+      },
     );
 
     testWithEmulator(
       "should return an error if no payload provided",
       async () => {
         await expect(
-          httpsCallable(functions, CloudFunction.CustomerSelfUpdate)()
+          httpsCallable(functions, CloudFunction.CustomerSelfUpdate)(),
         ).rejects.toThrow(HTTPSErrors.NoPayload);
-      }
+      },
     );
 
     testWithEmulator(
@@ -449,10 +488,10 @@ describe("Cloud functions", () => {
           await httpsCallable(functions, CloudFunction.CustomerSelfUpdate)({});
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: organization, customer`
+            `${HTTPSErrors.MissingParameter}: organization, customer`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator(
@@ -463,17 +502,17 @@ describe("Cloud functions", () => {
         try {
           await httpsCallable(
             functions,
-            CloudFunction.CustomerSelfUpdate
+            CloudFunction.CustomerSelfUpdate,
           )({
             organization: {},
             customer: saulNoId,
           });
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: id, secretKey`
+            `${HTTPSErrors.MissingParameter}: id, secretKey`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator(
@@ -487,13 +526,13 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.CustomerSelfUpdate
+            CloudFunction.CustomerSelfUpdate,
           )({
             organization,
             customer: { ...saulNoSecretKey, secretKey: "wrong-key" },
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.SecretKeyMismatch);
-      }
+      },
     );
 
     testWithEmulator(
@@ -503,13 +542,13 @@ describe("Cloud functions", () => {
         await expect(
           httpsCallable(
             functions,
-            CloudFunction.CustomerSelfUpdate
+            CloudFunction.CustomerSelfUpdate,
           )({
             organization,
             customer: saul,
-          })
+          }),
         ).rejects.toThrow(BookingsErrors.CustomerNotFound);
-      }
+      },
     );
   });
 
@@ -539,7 +578,7 @@ describe("Cloud functions", () => {
         // run the function to update customer
         await httpsCallable(
           functions,
-          CloudFunction.CustomerSelfRegister
+          CloudFunction.CustomerSelfRegister,
         )({
           organization,
           registrationCode,
@@ -583,7 +622,7 @@ describe("Cloud functions", () => {
 
               secretKey,
               id,
-            } as Customer)
+            } as Customer),
           );
         });
 
@@ -602,18 +641,18 @@ describe("Cloud functions", () => {
               to: emailFrom,
               from: emailFrom,
             },
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
       "should return an error if no payload provided",
       async () => {
         await expect(
-          httpsCallable(functions, CloudFunction.CustomerSelfRegister)()
+          httpsCallable(functions, CloudFunction.CustomerSelfRegister)(),
         ).rejects.toThrow(HTTPSErrors.NoPayload);
-      }
+      },
     );
 
     testWithEmulator(
@@ -622,14 +661,14 @@ describe("Cloud functions", () => {
         try {
           await httpsCallable(
             functions,
-            CloudFunction.CustomerSelfRegister
+            CloudFunction.CustomerSelfRegister,
           )({});
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: organization, customer`
+            `${HTTPSErrors.MissingParameter}: organization, customer`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator(
@@ -640,7 +679,7 @@ describe("Cloud functions", () => {
         try {
           await httpsCallable(
             functions,
-            CloudFunction.CustomerSelfRegister
+            CloudFunction.CustomerSelfRegister,
           )({
             organization: "dummy-organization",
             registrationCode: "not-real-code",
@@ -648,10 +687,10 @@ describe("Cloud functions", () => {
           });
         } catch (error) {
           expect((error as FunctionsError).message).toEqual(
-            `${HTTPSErrors.MissingParameter}: No 'email' nor 'phone' provided, at least one is required to register.`
+            `${HTTPSErrors.MissingParameter}: No 'email' nor 'phone' provided, at least one is required to register.`,
           );
         }
-      }
+      },
     );
 
     testWithEmulator("should validate registration code", async () => {
@@ -665,7 +704,7 @@ describe("Cloud functions", () => {
       try {
         await httpsCallable(
           functions,
-          CloudFunction.CustomerSelfRegister
+          CloudFunction.CustomerSelfRegister,
         )({
           organization,
           registrationCode: "not-real-code",
@@ -673,7 +712,7 @@ describe("Cloud functions", () => {
         });
       } catch (error) {
         expect((error as FunctionsError).message).toEqual(
-          HTTPSErrors.SelfRegInvalidCode
+          HTTPSErrors.SelfRegInvalidCode,
         );
       }
     });
