@@ -1,6 +1,8 @@
-export const shortName = (name: string, surname: string) => {
-  const nameWords = name.trim().split(" ");
-  const surnameWords = surname.trim().split(" ");
+export const shortName = (name = "", surname = "") => {
+  // Guard against customers with a missing name/surname (e.g. dirty/legacy data)
+  // so the avatar menu doesn't crash on `.trim()` of undefined.
+  const nameWords = (name || "").trim().split(" ");
+  const surnameWords = (surname || "").trim().split(" ");
 
   const n = nameWords
     .map((word, i) => (i === 0 ? word : `${word[0]}.`))
@@ -11,8 +13,8 @@ export const shortName = (name: string, surname: string) => {
       i === o.length - 1
         ? word
         : surnameParticles.includes(word.toLowerCase())
-        ? word
-        : `${word[0]}.`
+          ? word
+          : `${word[0]}.`,
     )
     .join(" ");
 

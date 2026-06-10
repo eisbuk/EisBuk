@@ -192,9 +192,9 @@ describe("Selectors ->", () => {
             slotsByDay: { [currentMonthString]: slotsByDay },
           });
           expect(
-            getMonthEmptyForBooking(saul.secretKey)(store.getState())
+            getMonthEmptyForBooking(saul.secretKey)(store.getState()),
           ).toEqual(wantRes);
-        })
+        }),
       );
 
     runTableTests([
@@ -279,7 +279,7 @@ describe("Selectors ->", () => {
             interval: bookedIntervalKey,
             bookingNotes,
           },
-        })
+        }),
       );
       expect(getBookingsForCalendar(store.getState())).toEqual([
         {
@@ -289,6 +289,86 @@ describe("Selectors ->", () => {
           bookingNotes,
         },
       ]);
+    });
+
+    test("should skip bookings whose slot no longer exists on that day, without crashing (regression: #816 / ghost slots #966)", () => {
+      const monthStr = "2022-01";
+      const day = "2022-01-01";
+
+      // A real slot that still exists for the day
+      const liveSlot = {
+        ...baseSlot,
+        id: "live-slot",
+        categories: [Category.Competitive],
+        date: day,
+      };
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        date: DateTime.fromISO(day),
+        slotsByDay: {
+          [monthStr]: {
+            [day]: { [liveSlot.id]: liveSlot },
+          },
+        },
+      });
+
+      const intervalKey = Object.keys(baseSlot.intervals)[0];
+
+      // Two bookings: one for the live slot and one for a slot that has been
+      // deleted (its id is absent from slotsByDay even though the day exists).
+      // The dangling one used to crash on `bookedSlot.intervals[...]`.
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [liveSlot.id]: { date: day, interval: intervalKey },
+          "deleted-slot": { date: day, interval: intervalKey },
+        }),
+      );
+
+      const res = getBookingsForCalendar(store.getState());
+      expect(res).toHaveLength(1);
+      expect(res[0].id).toEqual(liveSlot.id);
+    });
+
+    test("getBookedAndAttendedSlotsForCalendar should skip booked/attended slots whose slot no longer exists, without crashing", () => {
+      const monthStr = "2022-01";
+      const day = "2022-01-01";
+
+      const liveSlot = {
+        ...baseSlot,
+        id: "live-slot",
+        categories: [Category.Competitive],
+        date: day,
+      };
+
+      const store = setupBookingsTest({
+        category: Category.Competitive,
+        date: DateTime.fromISO(day),
+        slotsByDay: {
+          [monthStr]: {
+            [day]: { [liveSlot.id]: liveSlot },
+          },
+        },
+      });
+
+      const intervalKey = Object.keys(baseSlot.intervals)[0];
+
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.BookedSlots, {
+          [liveSlot.id]: { date: day, interval: intervalKey },
+          "deleted-booked": { date: day, interval: intervalKey },
+        }),
+      );
+      store.dispatch(
+        updateLocalDocuments(BookingSubCollection.AttendedSlots, {
+          "deleted-attended": { date: day, interval: intervalKey },
+        }),
+      );
+
+      const ids = getBookedAndAttendedSlotsForCalendar(store.getState()).map(
+        ({ id }) => id,
+      );
+      expect(ids).toEqual([liveSlot.id]);
     });
 
     test("should sort the slots (by date, and by time intraday)", () => {
@@ -374,7 +454,7 @@ describe("Selectors ->", () => {
             // Regerdless of this not being the last interval, this slot should appear last as the date sorting takes precenence
             interval: "09:00-10:00",
           },
-        })
+        }),
       );
       // Second slot should be attended, not booked to verify that the final result sorts all results, regerdless of the booked state
       store.dispatch(
@@ -384,12 +464,12 @@ describe("Selectors ->", () => {
             // Second interval (we want this slot to appear 2nd - be merged with the booked slots, and then sorted)
             interval: "10:00-11:00",
           },
-        })
+        }),
       );
 
       // It's enough to just check that the ids appear in the desired order
       const ids = getBookedAndAttendedSlotsForCalendar(store.getState()).map(
-        ({ id }) => id
+        ({ id }) => id,
       );
       expect(ids).toEqual(["slot-1", "slot-2", "slot-3", "slot-4"]);
     });

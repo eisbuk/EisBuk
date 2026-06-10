@@ -20,7 +20,7 @@ import { getCustomerById } from "../customers";
  * @returns
  */
 export const getSlotsWithAttendance = (
-  state: LocalStore
+  state: LocalStore,
 ): Omit<AttendanceCardProps, "allCustomers">[] => {
   const slotsByDay = getSlotsByMonth(state);
   const {
@@ -56,9 +56,12 @@ export const getSlotsWithAttendance = (
     .map(({ id }) => id);
 
   return slotIds.map((slotId) => {
-    const slotsAttendance = attendance[slotId]?.attendances;
+    // A slot can be missing its `attendance/{slotId}` doc (trigger lag/miss, or
+    // initial load), in which case `attendances` is undefined and `Object.keys`
+    // would throw. Fall back to an empty record.
+    const slotsAttendance = attendance[slotId]?.attendances ?? {};
     const customers: AttendanceCardProps["customers"] = Object.keys(
-      slotsAttendance
+      slotsAttendance,
     )
       .map((customerId) => ({
         ...allCustomers[customerId],
@@ -113,7 +116,7 @@ export const getBookedIntervalsCustomers =
           ],
         };
       },
-      {}
+      {},
     );
     return customersWhoBooked;
   };

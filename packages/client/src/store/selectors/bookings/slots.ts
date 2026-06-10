@@ -22,7 +22,7 @@ import { isEmpty } from "@/utils/helpers";
  * @returns record of subscribed slots
  */
 export const getBookedSlots = (
-  state: LocalStore
+  state: LocalStore,
 ): Record<string, CustomerBookingEntry> =>
   state.firestore.data?.bookedSlots || {};
 /**
@@ -31,7 +31,7 @@ export const getBookedSlots = (
  * @returns record of subscribed slots
  */
 export const getAttendedSlots = (
-  state: LocalStore
+  state: LocalStore,
 ): Record<string, Omit<CustomerBookingEntry, "bookingNotes">> =>
   state.firestore.data?.attendedSlots || {};
 
@@ -49,7 +49,7 @@ export const getSlotsForBooking =
 
     // Sort dates so that the final output is sorted
     const daysToRender = Object.keys(slotsMonth).sort((a, b) =>
-      a < b ? -1 : 1
+      a < b ? -1 : 1,
     );
     if (!daysToRender.length || !customerData) {
       return [];
@@ -68,7 +68,7 @@ export const getSlotsForBooking =
           // If slot booked add interval to the return structure
           bookedSlots[slot.id]
             ? { ...slot, interval: bookedSlots[slot.id].interval }
-            : slot
+            : slot,
         ),
     }));
   };
@@ -108,11 +108,11 @@ export const getSlotsForCustomer =
       .map(valueMapper((slots) => Object.entries(slots)))
       // FlatMap: [date, [slotId, SlotInterface][]] -> [date, slotId, SlotInterface]
       .flatMap(([date, slots]) =>
-        slots.map(([id, slot]) => [date, id, slot] as const)
+        slots.map(([id, slot]) => [date, id, slot] as const),
       )
       // Filter out slots not matching customer's category
       .filter(([, , slot]) =>
-        categories.some((c) => slot.categories.includes(c))
+        categories.some((c) => slot.categories.includes(c)),
       )
       // Filter out slots booked at full capacity (or without any capacity set)
       .filter(
@@ -124,12 +124,12 @@ export const getSlotsForCustomer =
           !bookingCountsForAMonth[slotId] ||
           !slot.capacity ||
           slot.capacity > bookingCountsForAMonth[slotId] ||
-          Boolean(bookedSlots[slotId])
+          Boolean(bookedSlots[slotId]),
       )
       // GroupEntries by date: [date, [slotId, SlotInterface][]]
       ._group(
         ([date, id, slot]) =>
-          [date, [id, slot]] as [string, [string, SlotInterface]]
+          [date, [id, slot]] as [string, [string, SlotInterface]],
       )
       // Map the value: [date, [slotId, SlotInterface][]] -> [date, SlotsById]
       .map(valueMapper((slots) => Object.fromEntries(slots)));
@@ -162,8 +162,11 @@ export const getBookingsForCalendar = (state: LocalStore): BookingsList => {
     .filter(([, { date }]) => Boolean(slotsForAMonth[date]))
     .reduce(
       (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
-        // If this returns undefined, our slot isn't in date range
+        // The slot may no longer exist on that day (slot deleted, or its date/
+        // intervals changed after the athlete booked it). Skip dangling bookings
+        // instead of crashing on `bookedSlot.intervals`.
         const bookedSlot = slotsForAMonth[date][slotId];
+        if (!bookedSlot) return acc;
         const interval = bookedSlot.intervals[bookedInterval];
         return [
           ...acc,
@@ -175,7 +178,7 @@ export const getBookingsForCalendar = (state: LocalStore): BookingsList => {
           } as BookingsEntry,
         ];
       },
-      [] as BookingsList
+      [] as BookingsList,
     )
     .sort((a, b) => (a.date < b.date ? -1 : 1));
 };
@@ -190,7 +193,7 @@ type CalendarSlotEntry = SlotInterface & {
 type CalendarSlotList = CalendarSlotEntry[];
 
 export const getBookedAndAttendedSlotsForCalendar = (
-  state: LocalStore
+  state: LocalStore,
 ): CalendarSlotList => {
   // Current month in view is determined by `currentDate` in Redux store
   const monthString = getCalendarDay(state).toISO().substring(0, 7);
@@ -211,6 +214,8 @@ export const getBookedAndAttendedSlotsForCalendar = (
       }
 
       const attendedSlot = dayOfAttendedSlot[slotId];
+      // Skip if the slot no longer exists on that day (deleted/changed slot)
+      if (!attendedSlot) return acc;
       const interval = attendedSlot.intervals[attendedInterval];
       const completeAttendanceEntry = {
         ...attendedSlot,
@@ -219,7 +224,7 @@ export const getBookedAndAttendedSlotsForCalendar = (
       };
       return [...acc, completeAttendanceEntry];
     },
-    [] as CalendarSlotList
+    [] as CalendarSlotList,
   );
   const bookedSlotsObj = Object.entries(bookedSlots).reduce(
     (acc, [slotId, { date, interval: bookedInterval, bookingNotes }]) => {
@@ -230,6 +235,8 @@ export const getBookedAndAttendedSlotsForCalendar = (
       }
 
       const bookedSlot = dayOfBookedSlot[slotId];
+      // Skip if the slot no longer exists on that day (deleted/changed slot)
+      if (!bookedSlot) return acc;
       const interval = bookedSlot.intervals[bookedInterval];
       const completeBookingEntry = {
         ...bookedSlot,
@@ -239,7 +246,7 @@ export const getBookedAndAttendedSlotsForCalendar = (
       };
       return [...acc, completeBookingEntry];
     },
-    [] as CalendarSlotList
+    [] as CalendarSlotList,
   );
   return [...attendedSlotsObj, ...bookedSlotsObj].sort(compareCalendarSlots);
 };
@@ -248,7 +255,7 @@ const compareCalendarSlots = (a: CalendarSlotEntry, b: CalendarSlotEntry) =>
   a.date < b.date
     ? -1
     : a.date > b.date
-    ? 1
-    : a.interval.startTime < b.interval.startTime
-    ? -1
-    : 1;
+      ? 1
+      : a.interval.startTime < b.interval.startTime
+        ? -1
+        : 1;

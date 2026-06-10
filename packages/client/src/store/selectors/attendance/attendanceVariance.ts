@@ -37,7 +37,7 @@ export const processAttendances = (
   attendance: Attendance,
   slots: Slots,
   customers: Customers,
-  month: string
+  month: string,
 ) =>
   wrapIter(Object.entries(attendance))
     // Get only current month's attendance
@@ -46,8 +46,8 @@ export const processAttendances = (
     .flatMap(([slotId, { date, attendances }]) =>
       // { customerId => attendanceIntervals } pairs
       Object.entries(attendances).map(
-        valueMapper(mergeMapper({ date, slotType: slots[slotId].type }))
-      )
+        valueMapper(mergeMapper({ date, slotType: slots[slotId].type })),
+      ),
     )
     // { customerId => attendanceDurations } pairs
     .map(valueMapper(convertIntervalsToDurations))
@@ -66,7 +66,7 @@ export const processAttendances = (
     .map(keyMapper(joinCustomerName));
 
 export const getMonthAttendanceVariance = (
-  state: LocalStore
+  state: LocalStore,
 ): AthleteAttendanceMonth[] => {
   const { app, firestore } = state;
   const { calendarDay } = app;
@@ -75,9 +75,12 @@ export const getMonthAttendanceVariance = (
   const currentMonth = getMonthStr(calendarDay, 0);
   const slots = Object.fromEntries(
     flatMap(
-      Object.values(slotsByDay ? slotsByDay[currentMonth] : {}),
-      (slots) => Object.entries(slots)
-    )
+      // `slotsByDay` is defaulted to `{}` above, so it is always truthy; the month
+      // entry itself can be missing (month not loaded yet, or no slots that month),
+      // in which case `Object.values(undefined)` would throw.
+      Object.values(slotsByDay[currentMonth] || {}),
+      (slots) => Object.entries(slots),
+    ),
   );
 
   return processAttendances(attendance, slots, customers, currentMonth);
@@ -94,12 +97,14 @@ export const filterAttendanceByMonth =
 
 export const replaceCustomerIdWithName =
   (customerLookup: Customers) =>
-  (id: string): CustomerNameTuple =>
-    [customerLookup[id].surname, customerLookup[id].name];
+  (id: string): CustomerNameTuple => [
+    customerLookup[id].surname,
+    customerLookup[id].name,
+  ];
 
 const compareCustomerNames = (
   [[a]]: [CustomerNameTuple, any],
-  [[b]]: [CustomerNameTuple, any]
+  [[b]]: [CustomerNameTuple, any],
 ) => (a > b ? 1 : -1);
 
 const joinCustomerName = (customer: CustomerNameTuple) => customer.join(" ");
@@ -126,7 +131,7 @@ const datePairFromAttendance = <A extends { date: string }>({
 
 const aggregateAttendance = (
   acc: AttendanceBySlotType,
-  { slotType, booked, attended }: AttendanceDurationsWithType
+  { slotType, booked, attended }: AttendanceDurationsWithType,
 ) => ({
   ...acc,
   [slotType]: {
@@ -136,7 +141,7 @@ const aggregateAttendance = (
 });
 
 const aggregateAttendanceEntries = (
-  attendances: Iterable<AttendanceDurationsWithType>
+  attendances: Iterable<AttendanceDurationsWithType>,
 ): AttendanceBySlotType =>
   _reduce(attendances, aggregateAttendance, {
     [SlotType.Ice]: { booked: 0, attended: 0 },
@@ -144,7 +149,7 @@ const aggregateAttendanceEntries = (
   });
 
 const aggregateAttendanceByDate = (
-  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>
+  attendances: Iterable<DateAttendancePair<AttendanceDurationsWithType>>,
 ): AttendanceByDate =>
   wrapIter(attendances)
     // Group each pair by date:
