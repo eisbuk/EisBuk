@@ -6,3 +6,4 @@ export * from "./slots";
 
 export * from "./generators";
 export * from "./sort";
+export * from "./scrub";
