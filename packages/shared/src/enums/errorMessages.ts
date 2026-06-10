@@ -1,7 +1,7 @@
 // #region cloudFunctions
 export enum HTTPSErrors {
   NoPayload = "No request payload provided",
-  Unauth = "Unathorized",
+  Unauth = "Unauthorized",
   TimedOut = "Function timed out",
   MissingParameter = "One or more required parameters are missing from the payload",
   EmailInvalidType = "Email type missing or invalid",
@@ -10,7 +10,7 @@ export enum HTTPSErrors {
   NoSecrets = "No secrets document found, make sure to create a secrets document for an organziation at: '/secrets/{ organization }'",
   NoSMTPConfigured = "No smtp configuration found, make sure to create a secrets document for an organziation at: '/secrets/{ organization }' with your smtp configuration",
   NoEmailConfigured = "No emailFrom found, make sure to add an emailFrom to your organziation settings",
-  SelfRegInvalidCode = "Unathorized: Invalid registration code code",
+  SelfRegInvalidCode = "Unauthorized: Invalid registration code",
 }
 
 export enum SendSMSErrors {

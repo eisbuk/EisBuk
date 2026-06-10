@@ -51,7 +51,7 @@ export const finalizeBookings = functions
       if (!customerInStore.exists) {
         throw new functions.https.HttpsError(
           "not-found",
-          BookingsErrors.CustomerNotFound
+          BookingsErrors.CustomerNotFound,
         );
       }
 
@@ -61,13 +61,13 @@ export const finalizeBookings = functions
       if (secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
           "invalid-argument",
-          BookingsErrors.SecretKeyMismatch
+          BookingsErrors.SecretKeyMismatch,
         );
       }
 
       // remove `extendedDate`
       await customerRef.set({ extendedDate: null }, { merge: true });
-    })
+    }),
   );
 
 /**
@@ -104,7 +104,7 @@ export const customerSelfUpdate = functions
         if (!customerInStore.exists) {
           throw new functions.https.HttpsError(
             "not-found",
-            BookingsErrors.CustomerNotFound
+            BookingsErrors.CustomerNotFound,
           );
         }
 
@@ -114,13 +114,13 @@ export const customerSelfUpdate = functions
         if (customer.secretKey !== existingSecretKey) {
           throw new functions.https.HttpsError(
             "invalid-argument",
-            BookingsErrors.SecretKeyMismatch
+            BookingsErrors.SecretKeyMismatch,
           );
         }
 
         await customerRef.set({ ...customer }, { merge: true });
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -166,14 +166,19 @@ export const customerSelfRegister = functions
         const orgDoc = await orgRef.get();
         const orgData = orgDoc.data() as OrganizationData;
 
-        functions.logger.log({ orgData });
+        // Log only non-sensitive flags: this is an unauthenticated endpoint and
+        // the full org doc contains the registration code, admin emails, etc.
+        functions.logger.log({
+          smtpConfigured: Boolean(orgData.smtpConfigured),
+          hasRegistrationCode: Boolean(orgData.registrationCode),
+        });
         if (!checkExpected(registrationCode, orgData.registrationCode || "")) {
           throw new EisbukHttpsError(
             "unauthenticated",
             HTTPSErrors.SelfRegInvalidCode,
             {
               registrationCode,
-            }
+            },
           );
         }
 
@@ -210,8 +215,8 @@ To verify the athlete, add them to a category/categories on their respective pro
         }
 
         return fullCustomer;
-      }
-    )
+      },
+    ),
   );
 
 /**
@@ -255,7 +260,7 @@ export const acceptPrivacyPolicy = functions
       if (!customerInStore.exists) {
         throw new functions.https.HttpsError(
           "not-found",
-          BookingsErrors.CustomerNotFound
+          BookingsErrors.CustomerNotFound,
         );
       }
 
@@ -265,14 +270,14 @@ export const acceptPrivacyPolicy = functions
       if (secretKey !== existingSecretKey) {
         throw new functions.https.HttpsError(
           "invalid-argument",
-          BookingsErrors.SecretKeyMismatch
+          BookingsErrors.SecretKeyMismatch,
         );
       }
 
       // Store the accepted privacy policy timestamp to the customer structure
       await customerRef.set(
         { privacyPolicyAccepted: { timestamp } },
-        { merge: true }
+        { merge: true },
       );
-    })
+    }),
   );

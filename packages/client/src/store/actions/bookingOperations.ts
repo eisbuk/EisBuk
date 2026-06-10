@@ -26,7 +26,7 @@ import {
 import { getOrganization } from "@/lib/getters";
 
 interface UpdateBooking<
-  P extends Record<string, any> = Record<string, unknown>
+  P extends Record<string, any> = Record<string, unknown>,
 > {
   (
     payload: {
@@ -34,7 +34,7 @@ interface UpdateBooking<
       secretKey: Customer["secretKey"];
       date: string;
       interval: string;
-    } & P
+    } & P,
   ): FirestoreThunk;
 }
 
@@ -51,7 +51,7 @@ export const bookInterval: UpdateBooking =
       // update booked interval to firestore
       await setDoc(
         doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
-        { interval, date }
+        { interval, date },
       );
 
       // show success message
@@ -62,7 +62,7 @@ export const bookInterval: UpdateBooking =
             interval,
           }),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -73,7 +73,7 @@ export const bookInterval: UpdateBooking =
           }),
           variant: NotifVariant.Error,
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -89,7 +89,7 @@ export const cancelBooking: UpdateBooking =
 
       // remove the booking from firestore
       await deleteDoc(
-        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId))
+        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
       );
 
       // show success message
@@ -100,7 +100,7 @@ export const cancelBooking: UpdateBooking =
             interval,
           }),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -111,7 +111,7 @@ export const cancelBooking: UpdateBooking =
           }),
           variant: NotifVariant.Error,
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -128,7 +128,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
 
       const bookingDocRef = doc(
         db,
-        getBookedSlotDocPath(organization, secretKey, slotId)
+        getBookedSlotDocPath(organization, secretKey, slotId),
       );
 
       await setDoc(bookingDocRef, { ...booking, bookingNotes });
@@ -137,7 +137,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.BookingNotesUpdated),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -145,7 +145,7 @@ export const updateBookingNotes: UpdateBooking<{ bookingNotes: string }> =
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.BookingNotesError),
           error: err as Error,
-        })
+        }),
       );
     }
   };
@@ -175,7 +175,7 @@ export const customerSelfUpdate: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -183,13 +183,15 @@ export const customerSelfUpdate: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.CustomerProfileError),
           error: err as Error,
-        })
+        }),
       );
     }
   };
 
 export const customerSelfRegister: {
-  (paylod: CustomerBase & { registrationCode: string }): (
+  (
+    paylod: CustomerBase & { registrationCode: string },
+  ): (
     ...params: Parameters<FirestoreThunk>
   ) => Promise<{ id: string; secretKey: string; codeOk: boolean }>;
 } =
@@ -212,7 +214,7 @@ export const customerSelfRegister: {
       const res = await createFunctionCaller(
         getFunctions(),
         handler,
-        payload
+        payload,
       )();
       const { id, secretKey } = res.data;
 
@@ -220,7 +222,7 @@ export const customerSelfRegister: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.SelfRegSuccess),
-        })
+        }),
       );
       return {
         id,
@@ -233,9 +235,16 @@ export const customerSelfRegister: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.SelfRegError),
           error: err as Error,
-        })
+        }),
       );
-      return { id: "", secretKey: "", codeOk: false };
+      // Only report the registration code as wrong when the backend explicitly
+      // rejected it ('unauthenticated'). For any other failure (network,
+      // backend error, ...) returning codeOk: false would show a misleading
+      // "invalid registration code" field error and send the athlete chasing
+      // a code that is in fact correct.
+      const isInvalidCode =
+        (err as { code?: string })?.code === "functions/unauthenticated";
+      return { id: "", secretKey: "", codeOk: !isInvalidCode };
     }
   };
 
@@ -268,7 +277,7 @@ export const acceptPrivacyPolicy: {
         enqueueNotification({
           variant: NotifVariant.Success,
           message: i18n.t(NotificationMessage.SelectionSaved),
-        })
+        }),
       );
     } catch (err) {
       dispatch(
@@ -276,7 +285,7 @@ export const acceptPrivacyPolicy: {
           variant: NotifVariant.Error,
           message: i18n.t(NotificationMessage.Error),
           error: err as Error,
-        })
+        }),
       );
     }
   };
