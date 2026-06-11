@@ -13,6 +13,13 @@ name: OnPush
 "on":
   - push
 
+#! caniuse-lite pinned in the lockfile is >6 months old, which makes Browserslist
+#! print a warning to stderr; rush treats any stderr output as a warning and exits
+#! non-zero even when every project builds. Silence the staleness warning in CI
+#! until the lockfile is refreshed. Deliberately NOT set in deploy-production.yml.
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
+
 jobs:
   build_v18:
     name: Build and deploy to preview channel
@@ -164,7 +171,7 @@ jobs:
         run: rush typecheck
   cypress-run:
     name: Cypress browser tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       -  #@ checkout()
       - uses: actions/setup-node@v4

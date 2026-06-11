@@ -20,10 +20,14 @@ name: CypressMatrix
   schedule:
     - cron: "30 5 * * 1,3"
 
+#! See build.yml: silence the Browserslist staleness warning so rush build exits 0.
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
+
 jobs:
   cypress-run:
     name: Cypress browser tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
