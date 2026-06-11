@@ -8,8 +8,17 @@ name: Deploy to production
 "on":
   push:
     branches:
-      - master
+      #! Deploys are decoupled from merges: master no longer deploys. To release,
+      #! fast-forward the `production` branch to the commit you want live:
+      #!   git push origin <commit-or-master>:production
+      - production
       - test/production-deployment
+
+#! Same stopgap as the CI workflows: the stale caniuse-lite snapshot in the
+#! lockfile makes Browserslist warn on stderr and rush turn that into exit 1.
+#! Remove once the lockfile is refreshed.
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
 
 jobs:
   deploy:
