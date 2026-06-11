@@ -1,6 +1,8 @@
 name: OnPush
 "on":
 - push
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
 jobs:
   build_v18:
     name: Build and deploy to preview channel
@@ -216,7 +218,7 @@ jobs:
       run: rush typecheck
   cypress-run:
     name: Cypress browser tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
       with:
