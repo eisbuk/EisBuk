@@ -2,8 +2,10 @@ name: Deploy to production
 "on":
   push:
     branches:
-    - master
+    - production
     - test/production-deployment
+env:
+  BROWSERSLIST_IGNORE_OLD_DATA: "1"
 jobs:
   deploy:
     environment: Production
