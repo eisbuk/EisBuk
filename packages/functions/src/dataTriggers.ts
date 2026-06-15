@@ -38,13 +38,13 @@ export const addIdToSlot = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onCreate(
     wrapFirestoreOnCreateHandler("addIdToSlot", async ({ ref }, context) => {
       const { slotId } = context.params as Record<string, string>;
       ref.update({ id: slotId });
-    }),
+    })
   );
 
 /**
@@ -61,7 +61,7 @@ export const addCustomerIdAndSecretKey = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Customers}/{customerId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -98,7 +98,7 @@ export const addCustomerIdAndSecretKey = functions
               id: customerId,
               secretKey,
             } as Pick<Customer, "id" | "secretKey">,
-            { merge: true },
+            { merge: true }
           );
         }
 
@@ -111,12 +111,12 @@ export const addCustomerIdAndSecretKey = functions
         // create/update booking entry
         batch.set(
           orgRef.collection(OrgSubCollection.Bookings).doc(secretKey),
-          customer,
+          customer
         );
 
         await batch.commit();
-      },
-    ),
+      }
+    )
   );
 
 /**
@@ -132,7 +132,7 @@ export const triggerAttendanceEntryForSlot = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -188,8 +188,8 @@ export const triggerAttendanceEntryForSlot = functions
             // exit if slot was just updated
             return;
         }
-      },
-    ),
+      }
+    )
   );
 
 /**
@@ -204,7 +204,7 @@ export const aggregateSlots = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Slots}/{slotId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler("aggregateSlots", async (change, context) => {
@@ -245,14 +245,14 @@ export const aggregateSlots = functions
           tx.set(
             getMonthRef(eventDate),
             { [eventDate]: { [id]: deleteSentinel } },
-            { merge: true },
+            { merge: true }
           );
           // If the event also saw an older date (date-edit), clear that location too
           if (beforeData && beforeData.date !== eventDate) {
             tx.set(
               getMonthRef(beforeData.date),
               { [beforeData.date]: { [id]: deleteSentinel } },
-              { merge: true },
+              { merge: true }
             );
           }
           return;
@@ -266,20 +266,20 @@ export const aggregateSlots = functions
         // we need to process intervals in order to make sure the old intervals get deleted
         // and only the updated values remain (prevent merging of the old values with the new)
         const deletedIntervals = Object.keys(
-          beforeData?.intervals || {},
+          beforeData?.intervals || {}
         ).reduce(
           (acc, intervalString) => ({
             ...acc,
             [intervalString]: deleteSentinel,
           }),
-          {} as Record<string, typeof deleteSentinel>,
+          {} as Record<string, typeof deleteSentinel>
         );
         const updatedIntervals = Object.keys(newIntervals).reduce(
           (acc, intervalString) => ({
             ...acc,
             [intervalString]: newIntervals[intervalString],
           }),
-          {} as Record<string, SlotInterval>,
+          {} as Record<string, SlotInterval>
         );
 
         // we're merging old intervals as delete sentinels and new intervals as they are
@@ -299,19 +299,19 @@ export const aggregateSlots = functions
           tx.set(
             getMonthRef(beforeData.date),
             { [beforeData.date]: { [id]: deleteSentinel } },
-            { merge: true },
+            { merge: true }
           );
         }
 
         tx.set(
           getMonthRef(date),
           { [date]: { [id]: newSlot } },
-          { merge: true },
+          { merge: true }
         );
       });
 
       return change.after;
-    }),
+    })
   );
 
 export const countSlotsBookings = functions
@@ -320,7 +320,7 @@ export const countSlotsBookings = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -347,15 +347,28 @@ export const countSlotsBookings = functions
           .collection(OrgSubCollection.SlotBookingsCounts)
           .doc(date.substring(0, 7));
 
-        const doc = await bookingCountsDocRef.get();
-        const data = doc.data() || ({} as SlotBookingsCounts);
+        // Use a transaction: the previous non-transactional read-modify-write
+        // lost updates when two bookings for the same month changed
+        // concurrently, permanently corrupting the counters that drive the
+        // "slot is full" filtering in the athlete booking view.
+        await db.runTransaction(async (tx) => {
+          const doc = await tx.get(bookingCountsDocRef);
+          const data = doc.data() || ({} as SlotBookingsCounts);
 
-        const slotsBookings = data[bookingId] || 0;
-        data[bookingId] = slotsBookings + delta;
+          const slotsBookings = data[bookingId] || 0;
+          // Floor at 0: decrements for bookings whose counter was never
+          // created (e.g. bulk deletions of legacy bookings) used to write
+          // negative counts.
+          const updatedCount = Math.max(0, slotsBookings + delta);
 
-        await bookingCountsDocRef.set(data, { merge: true });
-      },
-    ),
+          tx.set(
+            bookingCountsDocRef,
+            { [bookingId]: updatedCount },
+            { merge: true }
+          );
+        });
+      }
+    )
   );
 
 /**
@@ -370,7 +383,7 @@ export const createAttendanceForBooking = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -423,8 +436,8 @@ export const createAttendanceForBooking = functions
         await attendanceRef.set(updatedEntry, {
           mergeFields: [`attendances.${customerId}`],
         });
-      },
-    ),
+      }
+    )
   );
 
 /**
@@ -473,14 +486,14 @@ export const registerCreatedOrgSecret = functions
         const smtpConfig = ["smtpHost", "smtpPort", "smtpUser", "smtpPass"];
 
         const smtpConfigured = smtpConfig.every((element) =>
-          updatedSecrets.includes(element),
+          updatedSecrets.includes(element)
         );
         await organizationRef.set(
           { existingSecrets: updatedSecrets, smtpConfigured },
-          { merge: true },
+          { merge: true }
         );
-      },
-    ),
+      }
+    )
   );
 
 export const createPublicOrgInfo = functions
@@ -517,11 +530,11 @@ export const createPublicOrgInfo = functions
         ].reduce(
           (acc, curr) =>
             orgData[curr] ? { ...acc, [curr]: orgData[curr] } : acc,
-          {},
+          {}
         );
         await publicOrgInfoDocRef.set(updates, { merge: true });
-      },
-    ),
+      }
+    )
   );
 
 /**
@@ -537,7 +550,7 @@ export const createAttendedSlotOnAttendance = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -627,12 +640,12 @@ export const createAttendedSlotOnAttendance = functions
             // Finally, if interval doesn't exist, we're deleting the attended slot
             batch.delete(attendedSlotRef);
             return;
-          }),
+          })
         );
 
         await batch.commit();
-      },
-    ),
+      }
+    )
   );
 
 export const createCustomerStats = functions
@@ -641,7 +654,7 @@ export const createCustomerStats = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`,
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Bookings}/{secretKey}/${BookingSubCollection.BookedSlots}/{bookingId}`
   )
   .onWrite(
     wrapFirestoreOnWriteHandler(
@@ -697,6 +710,6 @@ export const createCustomerStats = functions
           .collection(OrgSubCollection.Customers)
           .doc(customerId)
           .set({ bookingStats: stats }, { merge: true });
-      },
-    ),
+      }
+    )
   );
