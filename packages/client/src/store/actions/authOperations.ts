@@ -31,14 +31,14 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
       enqueueNotification({
         message: i18n.t(NotificationMessage.LogoutSuccess),
         variant: NotifVariant.Success,
-      })
+      }),
     );
   } catch (err) {
     dispatch(
       enqueueNotification({
         message: i18n.t(NotificationMessage.LogoutError),
         variant: NotifVariant.Error,
-      })
+      }),
     );
   }
 };
@@ -50,7 +50,7 @@ export const signOut = (): FirestoreThunk => async (dispatch) => {
  */
 export const checkAuthStatus = async (
   functions: Functions,
-  authString: string
+  authString: string,
 ): Promise<AuthStatus> => {
   const organization = getOrganization();
 
@@ -64,7 +64,7 @@ export const checkAuthStatus = async (
     CloudFunction.QueryAuthStatus,
     {
       organization,
-    }
+    },
   )();
 
   return res.data;
@@ -88,18 +88,46 @@ export const updateAuthUser =
 
     const { email, phoneNumber } = user;
 
-    const authStatus = await checkAuthStatus(
-      getFunctions(),
-      email || phoneNumber || ""
-    );
+    try {
+      const authStatus = await checkAuthStatus(
+        getFunctions(),
+        email || phoneNumber || "",
+      );
 
-    dispatch({
-      type: Action.UpdateAuthInfo,
-      payload: {
-        ...authStatus,
-        userData: user,
-        isEmpty: false,
-        isLoaded: true,
-      },
-    } as AuthReducerAction<Action.UpdateAuthInfo>);
+      dispatch({
+        type: Action.UpdateAuthInfo,
+        payload: {
+          ...authStatus,
+          userData: user,
+          isEmpty: false,
+          isLoaded: true,
+        },
+      } as AuthReducerAction<Action.UpdateAuthInfo>);
+    } catch (err) {
+      // The `queryAuthStatus` callable can fail (flaky mobile network, Gen-1
+      // cold-start `deadline-exceeded`, or a backend error). Previously this
+      // rejected unhandled and, crucially, never dispatched `UpdateAuthInfo`, so
+      // the store stayed `isLoaded: false` and the app hung on the loading/login
+      // screen until a manual refresh. Instead, surface the error and mark auth as
+      // loaded (authenticated, but admin/secretKeys unknown) so the UI renders and
+      // the user can retry; the next auth-state change re-runs this check.
+      dispatch(
+        enqueueNotification({
+          message: i18n.t(NotificationMessage.Error),
+          variant: NotifVariant.Error,
+          error: err as Error,
+        }),
+      );
+
+      dispatch({
+        type: Action.UpdateAuthInfo,
+        payload: {
+          isAdmin: false,
+          secretKeys: [],
+          userData: user,
+          isEmpty: false,
+          isLoaded: true,
+        },
+      } as AuthReducerAction<Action.UpdateAuthInfo>);
+    }
   };

@@ -528,6 +528,59 @@ describe("Booking operations", () => {
         );
       }
     );
+
+    testWithEmulator(
+      "should return codeOk: false when the backend explicitly rejects the registration code",
+      async () => {
+        const invalidCodeError = Object.assign(new Error("invalid code"), {
+          code: "functions/unauthenticated",
+        });
+        const getFunctions = () => {
+          throw invalidCodeError;
+        };
+        const testThunk = customerSelfRegister({
+          ...saul,
+          registrationCode: "wrong-code",
+        });
+        const mockDispatch = vi.fn();
+        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
+        });
+        expect(res.codeOk).toEqual(false);
+      }
+    );
+
+    testWithEmulator(
+      "should not blame the registration code for unrelated failures (regression: #964)",
+      async () => {
+        // e.g. a flaky network / cold start - nothing to do with the code
+        const networkError = Object.assign(new Error("deadline exceeded"), {
+          code: "functions/deadline-exceeded",
+        });
+        const getFunctions = () => {
+          throw networkError;
+        };
+        const testThunk = customerSelfRegister({
+          ...saul,
+          registrationCode: "correct-code",
+        });
+        const mockDispatch = vi.fn();
+        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+          getFunctions,
+        });
+        // No misleading "invalid registration code" field error...
+        expect(res.codeOk).toEqual(true);
+        // ...but the registration did fail (no secretKey to proceed with)
+        expect(res.secretKey).toEqual("");
+        expect(mockDispatch).toHaveBeenCalledWith(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.SelfRegError),
+            variant: NotifVariant.Error,
+            error: networkError,
+          })
+        );
+      }
+    );
   });
 
   describe("'acceptPrivacyPolicy'", () => {

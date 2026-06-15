@@ -47,5 +47,22 @@ describe("Test helpers", () => {
         "de P. J. N. M. de los R. C. de la S. T. R. y Picasso",
       ]);
     });
+
+    test("should not crash on missing name/surname (regression: dirty customer data crashing the avatar menu)", () => {
+      expect(() =>
+        shortName(
+          undefined as unknown as string,
+          undefined as unknown as string,
+        ),
+      ).not.toThrow();
+      expect(shortName(undefined as unknown as string, "Doe")).toEqual([
+        "",
+        "Doe",
+      ]);
+      expect(shortName("John", undefined as unknown as string)).toEqual([
+        "John",
+        "",
+      ]);
+    });
   });
 });

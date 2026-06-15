@@ -389,6 +389,19 @@ describe("Cloud functions -> Data triggers ->", () => {
         const snap = await bookingCountsDocRef.get();
         expect(snap.data()![slot.id]).toEqual(1);
       });
+
+      // Deleting a booking whose counter doesn't exist must not produce a
+      // negative count (regression: #965 - bulk deletions of legacy bookings
+      // used to write counters like -7 into slotBookingsCounts)
+      await bookingCountsDocRef.delete();
+      await gusBookings
+        .collection(BookingSubCollection.BookedSlots)
+        .doc(slot.id)
+        .delete();
+      await waitFor(async () => {
+        const snap = await bookingCountsDocRef.get();
+        expect(snap.data()![slot.id]).toEqual(0);
+      });
     });
   });
 
@@ -467,9 +480,10 @@ describe("Cloud functions -> Data triggers ->", () => {
         await adminDb
           .doc(getSlotDocPath(organization, baseSlot.id))
           .set(baseSlot);
-        const newSlotRef = adminDb.doc(
-          getSlotDocPath(organization, baseSlot.id)
-        );
+        // (this used to - mistakenly - point to baseSlot's doc, which only
+        // passed because the old aggregation left stale entries behind on
+        // date change)
+        const newSlotRef = adminDb.doc(getSlotDocPath(organization, newSlotId));
         await newSlotRef.set(newSlot);
         await waitFor(async () => {
           const snap = await adminDb
@@ -477,7 +491,11 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           // wait until both slots are aggregated
           const data = snap.data()!;
-          expect(Boolean(data[testDate] && data[dayAfter])).toEqual(true);
+          expect(
+            Boolean(
+              data[testDate]?.[baseSlot.id] && data[dayAfter]?.[newSlotId]
+            )
+          ).toEqual(true);
         });
         // test removing of the additional slot
         await newSlotRef.delete();
@@ -486,7 +504,79 @@ describe("Cloud functions -> Data triggers ->", () => {
             .doc(getSlotsByDayDocPath(organization, testMonth))
             .get();
           expect(snap.exists).toEqual(true);
-          expect(Boolean(snap.data()![testDate][newSlotId])).toEqual(false);
+          const data = snap.data()!;
+          // the deleted slot is removed from the aggregate...
+          expect(data[dayAfter]?.[newSlotId]).toBeUndefined();
+          // ...while the other slot is untouched
+          expect(Boolean(data[testDate]?.[baseSlot.id])).toEqual(true);
+        });
+      }
+    );
+
+    testWithEmulator(
+      "should not leave a ghost slot (in slotsByDay or attendance) when a slot is created and deleted in quick succession (regression: #966)",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
+
+        // Create and delete the slot back-to-back, without waiting for the
+        // create-event triggers to process. With unordered/at-least-once
+        // trigger delivery this used to resurrect the slot in 'slotsByDay'
+        // (and its 'attendance' doc) with no way for the admin to remove it.
+        await slotRef.set(baseSlot);
+        await slotRef.delete();
+
+        // Give both events' triggers time to fully process
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+
+        const aggSnap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(aggSnap.data()?.[testDate]?.[baseSlot.id]).toBeUndefined();
+
+        const attendanceSnap = await adminDb
+          .doc(getAttendanceDocPath(organization, baseSlot.id))
+          .get();
+        expect(attendanceSnap.exists).toEqual(false);
+      },
+      { timeout: 15000 }
+    );
+
+    testWithEmulator(
+      "should move (not duplicate) the slotsByDay entry when a slot's date is edited",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
+        await slotRef.set(baseSlot);
+
+        // wait for the initial aggregate entry
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(Boolean(snap.data()?.[testDate]?.[baseSlot.id])).toEqual(true);
+        });
+
+        // move the slot to a date in the next month
+        const movedDateLuxon = testDateLuxon.plus({ months: 1 });
+        const movedDate = luxon2ISODate(movedDateLuxon);
+        const movedMonth = movedDate.substring(0, 7);
+        const movedSlot = { ...baseSlot, date: movedDate };
+        await slotRef.set(movedSlot);
+
+        // the entry should appear under the new month...
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, movedMonth))
+            .get();
+          expect(snap.data()?.[movedDate]?.[baseSlot.id]).toEqual(movedSlot);
+        });
+        // ...and disappear from the old one (previously it was left behind)
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.data()?.[testDate]?.[baseSlot.id]).toBeUndefined();
         });
       }
     );

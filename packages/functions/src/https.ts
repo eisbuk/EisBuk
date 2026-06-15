@@ -118,7 +118,29 @@ export const customerSelfUpdate = functions
           );
         }
 
-        await customerRef.set({ ...customer }, { merge: true });
+        // Only persist the fields a customer is allowed to self-edit
+        // (CustomerBase). Admin SDK writes bypass firestore rules, so without
+        // this whitelist an athlete could write arbitrary fields (categories,
+        // extendedDate, deleted, ...) to their own customer document.
+        const selfEditableFields = [
+          "name",
+          "surname",
+          "email",
+          "phone",
+          "birthday",
+          "certificateExpiration",
+          "photoURL",
+          "privacyPolicyAccepted",
+        ] as const;
+        const updates = selfEditableFields.reduce(
+          (acc, field) =>
+            customer[field] !== undefined
+              ? { ...acc, [field]: customer[field] }
+              : acc,
+          {} as Partial<CustomerBase>
+        );
+
+        await customerRef.set(updates, { merge: true });
       }
     )
   );
@@ -166,7 +188,12 @@ export const customerSelfRegister = functions
         const orgDoc = await orgRef.get();
         const orgData = orgDoc.data() as OrganizationData;
 
-        functions.logger.log({ orgData });
+        // Log only non-sensitive flags: this is an unauthenticated endpoint and
+        // the full org doc contains the registration code, admin emails, etc.
+        functions.logger.log({
+          smtpConfigured: Boolean(orgData.smtpConfigured),
+          hasRegistrationCode: Boolean(orgData.registrationCode),
+        });
         if (!checkExpected(registrationCode, orgData.registrationCode || "")) {
           throw new EisbukHttpsError(
             "unauthenticated",

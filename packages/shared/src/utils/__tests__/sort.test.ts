@@ -17,7 +17,7 @@ interface ComparePeriodsTest {
 
 const comparePeriodsTableTests = (
   compareFn: (x: string, y: string) => number,
-  tests: ComparePeriodsTest[]
+  tests: ComparePeriodsTest[],
 ) => {
   tests.forEach(({ name, input, want }) => {
     test(name, () => {
@@ -47,7 +47,7 @@ interface CompareCustomerBookingsTest {
 }
 
 const compareCustomerBookingsTableTests = (
-  tests: CompareCustomerBookingsTest[]
+  tests: CompareCustomerBookingsTest[],
 ) => {
   tests.forEach(({ name, input, want }) => {
     test(name, () => {
@@ -152,6 +152,20 @@ describe("Sort utils tests", () => {
         ],
       },
     ]);
+
+    test("should not crash on entries with a missing name/surname (regression: deleted/not-yet-loaded customer)", () => {
+      // An attendance doc referencing a deleted customer yields an entry with no
+      // name/surname; this used to throw on `surname.toLowerCase()`.
+      const input = [
+        { name: "Bfoo", surname: "Bbar" },
+        {} as Pick<Customer, "name" | "surname">,
+        { name: "Afoo", surname: "Abar" },
+      ];
+      expect(() => [...input].sort(compareCustomerNames)).not.toThrow();
+      const sorted = [...input].sort(compareCustomerNames);
+      // The undefined-surname entry sorts first (treated as empty string)
+      expect(sorted.map((x) => x.surname)).toEqual([undefined, "Abar", "Bbar"]);
+    });
   });
 
   compareCustomerBookingsTableTests([

@@ -148,24 +148,37 @@ export const triggerAttendanceEntryForSlot = functions
         const isCreate = !change.before.exists;
         const isDelete = !change.after.exists;
 
-        const attendanceEntryRef = db
+        const orgRef = db
           .collection(Collection.Organizations)
-          .doc(organization)
+          .doc(organization);
+        const attendanceEntryRef = orgRef
           .collection(OrgSubCollection.Attendance)
           .doc(slotId);
+        const slotRef = orgRef.collection(OrgSubCollection.Slots).doc(slotId);
 
         switch (true) {
           case isCreate:
-            // check if attendance entry already exists (in case we're dumping/restoring the data)
-            const { exists } = await attendanceEntryRef.get();
-            if (exists) {
-              return;
-            }
-            // add empty entry for slot's attendance
-            await attendanceEntryRef.set({
-              date: change.after.data()!.date,
-              attendances: {},
-            } as SlotAttendnace);
+            // Firestore triggers are at-least-once and unordered: when a slot is
+            // created and deleted in quick succession, this create event can be
+            // processed *after* the delete event, which would resurrect the
+            // attendance entry as an orphan. Re-read the slot inside a
+            // transaction and only create the entry if the slot still exists.
+            await db.runTransaction(async (tx) => {
+              const slotSnap = await tx.get(slotRef);
+              if (!slotSnap.exists) {
+                return;
+              }
+              // check if attendance entry already exists (in case we're dumping/restoring the data)
+              const attendanceSnap = await tx.get(attendanceEntryRef);
+              if (attendanceSnap.exists) {
+                return;
+              }
+              // add empty entry for slot's attendance
+              tx.set(attendanceEntryRef, {
+                date: slotSnap.data()!.date,
+                attendances: {},
+              } as SlotAttendnace);
+            });
             break;
           case isDelete:
             // delete attendance entry for slot
@@ -202,75 +215,100 @@ export const aggregateSlots = functions
 
       const db = admin.firestore();
 
-      let date: string;
-      let newSlot: SlotInterface | FirebaseFirestore.FieldValue;
-
-      const isCreate = !change.before.exists;
-      const isDelete = !change.after.exists;
-
       const deleteSentinel = admin.firestore.FieldValue.delete();
 
-      switch (true) {
-        case isDelete:
-          // if deleting, we're just setting slot value as delete sentinel and getting the date from before
-          const beforeData = change.before.data() as SlotInterface;
-          date = beforeData.date;
-          newSlot = deleteSentinel;
-          break;
-        case isCreate:
-          // if creating, we're only using the new (after data) and adding generated id
-          const afterData = change.after.data()! as Omit<SlotInterface, "id">;
-          newSlot = { ...afterData, id };
-          date = newSlot.date;
-          break;
-        default:
-          // if not change or create: is update
-          const { intervals: newIntervals, ...updatedData } =
-            change.after.data() as Omit<SlotInterface, "id">;
-          const { intervals: oldIntervals } = change.before.data() as Omit<
-            SlotInterface,
-            "id"
-          >;
+      const orgRef = db.collection(Collection.Organizations).doc(organization);
+      const slotRef = orgRef.collection(OrgSubCollection.Slots).doc(id);
+      const getMonthRef = (date: string) =>
+        orgRef
+          .collection(OrgSubCollection.SlotsByDay)
+          .doc(date.substring(0, 7));
 
-          // we're using {merge: true} flag for setting the document so
-          // we need to process intervals in order to make sure the old intervals get deleted
-          // and only the updated values remain (prevent merging of the old values with the new)
-          const deletedIntervals = Object.keys(oldIntervals).reduce(
-            (acc, intervalString) => ({
-              ...acc,
-              [intervalString]: deleteSentinel,
-            }),
-            {} as Record<string, typeof deleteSentinel>
+      const beforeData = change.before.data() as SlotInterface | undefined;
+      const eventDate = (change.after.data() || change.before.data())!
+        .date as string;
+
+      // Firestore triggers are at-least-once and unordered: when a slot is
+      // created (or updated) and deleted within a short period, this handler can
+      // process the create event *after* the delete event, overwriting the
+      // delete sentinel and resurrecting the slot in the (publicly readable)
+      // aggregate - a "ghost" slot athletes see but can never book, and which
+      // the admin can't remove (deleting the already-absent slot doc fires no
+      // trigger). Instead of trusting the event snapshot, re-read the slot
+      // inside a transaction and write the aggregate from current truth.
+      await db.runTransaction(async (tx) => {
+        const currentSlot = await tx.get(slotRef);
+
+        if (!currentSlot.exists) {
+          // Slot is gone (delete event, or a stale create/update event arriving
+          // after deletion): remove the aggregate entry wherever the event saw it
+          tx.set(
+            getMonthRef(eventDate),
+            { [eventDate]: { [id]: deleteSentinel } },
+            { merge: true }
           );
-          const updatedIntervals = Object.keys(newIntervals).reduce(
-            (acc, intervalString) => ({
-              ...acc,
-              [intervalString]: newIntervals[intervalString],
-            }),
-            {} as Record<string, SlotInterval>
+          // If the event also saw an older date (date-edit), clear that location too
+          if (beforeData && beforeData.date !== eventDate) {
+            tx.set(
+              getMonthRef(beforeData.date),
+              { [beforeData.date]: { [id]: deleteSentinel } },
+              { merge: true }
+            );
+          }
+          return;
+        }
+
+        const { intervals: newIntervals, ...updatedData } =
+          currentSlot.data() as Omit<SlotInterface, "id">;
+        const date = updatedData.date;
+
+        // we're using {merge: true} flag for setting the document so
+        // we need to process intervals in order to make sure the old intervals get deleted
+        // and only the updated values remain (prevent merging of the old values with the new)
+        const deletedIntervals = Object.keys(
+          beforeData?.intervals || {}
+        ).reduce(
+          (acc, intervalString) => ({
+            ...acc,
+            [intervalString]: deleteSentinel,
+          }),
+          {} as Record<string, typeof deleteSentinel>
+        );
+        const updatedIntervals = Object.keys(newIntervals).reduce(
+          (acc, intervalString) => ({
+            ...acc,
+            [intervalString]: newIntervals[intervalString],
+          }),
+          {} as Record<string, SlotInterval>
+        );
+
+        // we're merging old intervals as delete sentinels and new intervals as they are
+        // this way old intervals get deleted and in case some interval should stay (wasn't changed/deleted),
+        // the delete sentinel gets overwritten with the new value
+        const intervals = {
+          ...deletedIntervals,
+          ...updatedIntervals,
+        } as Record<string, SlotInterval>;
+
+        const newSlot = { ...updatedData, intervals, id } as SlotInterface;
+
+        // If the slot's date was edited, remove the aggregate entry from the old
+        // date/month (previously the old entry was left behind, duplicating the
+        // slot across months)
+        if (beforeData && beforeData.date !== date) {
+          tx.set(
+            getMonthRef(beforeData.date),
+            { [beforeData.date]: { [id]: deleteSentinel } },
+            { merge: true }
           );
+        }
 
-          // we're merging old intervals as delete sentinels and new intervals as they are
-          // this way old intervals get deleted and in case some interval should stay (wasn't changed/deleted),
-          // the delete sentinel gets overwritten with the new value
-          const intervals = {
-            ...deletedIntervals,
-            ...updatedIntervals,
-          } as Record<string, SlotInterval>;
-
-          newSlot = { ...updatedData, intervals, id };
-          date = newSlot.date;
-      }
-
-      const monthStr = date.substring(0, 7);
-
-      const monthSlotsRef = db
-        .collection(Collection.Organizations)
-        .doc(organization)
-        .collection(OrgSubCollection.SlotsByDay)
-        .doc(monthStr);
-
-      await monthSlotsRef.set({ [date]: { [id]: newSlot } }, { merge: true });
+        tx.set(
+          getMonthRef(date),
+          { [date]: { [id]: newSlot } },
+          { merge: true }
+        );
+      });
 
       return change.after;
     })
@@ -309,13 +347,26 @@ export const countSlotsBookings = functions
           .collection(OrgSubCollection.SlotBookingsCounts)
           .doc(date.substring(0, 7));
 
-        const doc = await bookingCountsDocRef.get();
-        const data = doc.data() || ({} as SlotBookingsCounts);
+        // Use a transaction: the previous non-transactional read-modify-write
+        // lost updates when two bookings for the same month changed
+        // concurrently, permanently corrupting the counters that drive the
+        // "slot is full" filtering in the athlete booking view.
+        await db.runTransaction(async (tx) => {
+          const doc = await tx.get(bookingCountsDocRef);
+          const data = doc.data() || ({} as SlotBookingsCounts);
 
-        const slotsBookings = data[bookingId] || 0;
-        data[bookingId] = slotsBookings + delta;
+          const slotsBookings = data[bookingId] || 0;
+          // Floor at 0: decrements for bookings whose counter was never
+          // created (e.g. bulk deletions of legacy bookings) used to write
+          // negative counts.
+          const updatedCount = Math.max(0, slotsBookings + delta);
 
-        await bookingCountsDocRef.set(data, { merge: true });
+          tx.set(
+            bookingCountsDocRef,
+            { [bookingId]: updatedCount },
+            { merge: true }
+          );
+        });
       }
     )
   );
