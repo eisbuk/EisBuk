@@ -33,7 +33,7 @@ export const sendSMS = functions
         ClientMessageMethod.SMS,
         Exclude<ClientMessageType, ClientMessageType.SendCalendarFile>
       >,
-      { auth }
+      { auth },
     ) => {
       const { organization } = payload;
 
@@ -68,7 +68,7 @@ export const sendSMS = functions
       const deliveryDoc = admin
         .firestore()
         .collection(
-          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}`
+          `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}`,
         )
         .doc();
       await deliveryDoc.set({ payload: smsPayload });
@@ -79,7 +79,7 @@ export const sendSMS = functions
         success: true,
         deliveryDocumentPath: deliveryDoc.path,
       };
-    }
+    },
   );
 
 /**
@@ -92,21 +92,28 @@ export const updateSMSStatus = functions
   .region(__functionsZone__)
   .https.onRequest(async (req, res) => {
     functions.logger.log(
-      "Received a SMS delivery status update from GatewayAPI, processing..."
+      "Received a SMS delivery status update from GatewayAPI, processing...",
     );
 
     // This id is the id of the firestore document for a process delivery
-    // rather than the GatewayAPI assigned SMS id
-    const params = (req.params as { id: string; organization: string }) || {};
-    const { id, organization } = params;
+    // rather than the GatewayAPI assigned SMS id.
+    // The values are sent as query string params (see `getSMSCallbackUrl`),
+    // so they're found on `req.query` (`req.params` only carries route params,
+    // which this endpoint doesn't have).
+    const { id, organization } =
+      (req.query as {
+        id?: string;
+        organization?: string;
+      }) || {};
     if (!id || !organization) {
       functions.logger.log("GatewayAPI request missing query params", {
-        params,
+        query: req.query,
       });
       // This is an error on GatewayAPI side
       // Return 'Bad Request' so that the request is retried
       res.writeHead(400);
       res.end();
+      return;
     }
 
     const { status } = (req.body as SMSStatusPayload) || {};
@@ -115,19 +122,20 @@ export const updateSMSStatus = functions
       functions.logger.log("No status received with GatewayAPI update");
       res.writeHead(400);
       res.end();
+      return;
     }
 
     // Store the status in the appropriate process document
     await admin
       .firestore()
       .doc(
-        `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}/${id}`
+        `${Collection.DeliveryQueues}/${organization}/${DeliveryQueue.SMSQueue}/${id}`,
       )
       .set(
         { delivery: { meta: { status } } },
         {
           merge: true,
-        }
+        },
       );
 
     res.writeHead(200);

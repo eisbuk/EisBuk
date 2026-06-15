@@ -41,12 +41,15 @@ export const deliverSMS = functions
   })
   .region(__functionsZone__)
   .firestore.document(
-    `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`
+    `${Collection.DeliveryQueues}/{organization}/${DeliveryQueue.SMSQueue}/{sms}`,
   )
   .onWrite(
     wrapFirestoreOnWriteHandler("deliverSMS", (change, { params }) =>
       processDelivery(change, async ({ success, error }) => {
-        const { organization } = params as { organization: string };
+        const { organization, sms: smsId } = params as {
+          organization: string;
+          sms: string;
+        };
 
         // Get current SMS payload
         const {
@@ -74,7 +77,7 @@ export const deliverSMS = functions
         const { proto, ...options } = createSMSReqOptions(
           "POST",
           __smsUrl__,
-          authToken
+          authToken,
         );
 
         // Construct and validate SMS data
@@ -82,7 +85,7 @@ export const deliverSMS = functions
           message,
           sender: smsFrom,
           recipients: [{ msisdn: to }],
-          callback_url: getSMSCallbackUrl(),
+          callback_url: getSMSCallbackUrl(organization, smsId),
         });
         if (errs) {
           return error(errs);
@@ -106,6 +109,6 @@ export const deliverSMS = functions
             "Error occurred while trying to send SMS, check the function logs for more info.",
           ]);
         }
-      })
-    )
+      }),
+    ),
   );

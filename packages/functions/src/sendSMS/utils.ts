@@ -23,7 +23,7 @@ import {
  * Validate client email payload accepts an email payload and applies the correct validation for an email type.
  */
 export const validateSMSPayload = <T extends SMSMessageType>(
-  payload: ClientMessagePayload<ClientMessageMethod.SMS, T>
+  payload: ClientMessagePayload<ClientMessageMethod.SMS, T>,
 ) => {
   // Check that the type has been provided and is a supported email type
   if (
@@ -50,7 +50,7 @@ export const validateSMSPayload = <T extends SMSMessageType>(
   const [res, errors] = validateJSON(
     validationSchemaLookup[payload.type] as ValidationSchemaLookup[T],
     payload,
-    "Constructing the email gave following errors (check the email payload and organization preferences):"
+    "Constructing the email gave following errors (check the email payload and organization preferences):",
   );
 
   if (errors !== null) {
@@ -70,7 +70,7 @@ export const validateSMSPayload = <T extends SMSMessageType>(
 export const createSMSReqOptions = (
   method: "GET" | "POST",
   url: string,
-  token: string
+  token: string,
 ): http.RequestOptions & { proto: "http" | "https" } => {
   let proto: "http" | "https" = "https";
   let hostname = "";
@@ -110,7 +110,14 @@ export const createSMSReqOptions = (
 };
 
 /**
- * Creates an URL of and endpoint for `updateSMSSStatus` for GatewayAPI status update.
+ * Creates an URL of and endpoint for `updateSMSStatus` for GatewayAPI status update.
+ * The `id` (SMS process document id) and `organization` are sent as query params,
+ * read back by `updateSMSStatus` to locate the process document to update.
  */
-export const getSMSCallbackUrl = (): string =>
-  `https://${__functionsZone__}-${__projectId__}.cloudfunctions.net/sendSMS`;
+export const getSMSCallbackUrl = (
+  organization: string,
+  smsId: string,
+): string =>
+  `https://${__functionsZone__}-${__projectId__}.cloudfunctions.net/updateSMSStatus?id=${encodeURIComponent(
+    smsId,
+  )}&organization=${encodeURIComponent(organization)}`;
