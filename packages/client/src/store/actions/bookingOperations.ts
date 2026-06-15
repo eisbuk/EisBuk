@@ -235,7 +235,14 @@ export const customerSelfRegister: {
           error: err as Error,
         })
       );
-      return { id: "", secretKey: "", codeOk: false };
+      // Only report the registration code as wrong when the backend explicitly
+      // rejected it ('unauthenticated'). For any other failure (network,
+      // backend error, ...) returning codeOk: false would show a misleading
+      // "invalid registration code" field error and send the athlete chasing
+      // a code that is in fact correct.
+      const isInvalidCode =
+        (err as { code?: string })?.code === "functions/unauthenticated";
+      return { id: "", secretKey: "", codeOk: !isInvalidCode };
     }
   };
 
