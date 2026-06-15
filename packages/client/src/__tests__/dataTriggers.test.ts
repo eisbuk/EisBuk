@@ -127,8 +127,8 @@ describe("Cloud functions -> Data triggers ->", () => {
                   getBookedSlotDocPath(
                     organization,
                     saul.secretKey,
-                    baseSlot.id
-                  )
+                    baseSlot.id,
+                  ),
                 )
                 .set(initialBooking);
 
@@ -144,7 +144,7 @@ describe("Cloud functions -> Data triggers ->", () => {
 
             // update (or delete) the booked slot
             const bookedSlotRef = adminDb.doc(
-              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getBookedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             );
             if (update) {
               await bookedSlotRef.set(update);
@@ -165,7 +165,7 @@ describe("Cloud functions -> Data triggers ->", () => {
               expect(snap.data()).toEqual(wantAttendanceFinal);
             });
           });
-        }
+        },
       );
     };
 
@@ -341,10 +341,10 @@ describe("Cloud functions -> Data triggers ->", () => {
       // Wait for the data triggers to run
       await Promise.all([
         waitFor(async () =>
-          expect((await saulBookings.get()).exists).toEqual(true)
+          expect((await saulBookings.get()).exists).toEqual(true),
         ),
         waitFor(async () =>
-          expect((await gusBookings.get()).exists).toEqual(true)
+          expect((await gusBookings.get()).exists).toEqual(true),
         ),
       ]);
 
@@ -467,9 +467,10 @@ describe("Cloud functions -> Data triggers ->", () => {
         await adminDb
           .doc(getSlotDocPath(organization, baseSlot.id))
           .set(baseSlot);
-        const newSlotRef = adminDb.doc(
-          getSlotDocPath(organization, baseSlot.id)
-        );
+        // (this used to - mistakenly - point to baseSlot's doc, which only
+        // passed because the old aggregation left stale entries behind on
+        // date change)
+        const newSlotRef = adminDb.doc(getSlotDocPath(organization, newSlotId));
         await newSlotRef.set(newSlot);
         await waitFor(async () => {
           const snap = await adminDb
@@ -477,7 +478,11 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           // wait until both slots are aggregated
           const data = snap.data()!;
-          expect(Boolean(data[testDate] && data[dayAfter])).toEqual(true);
+          expect(
+            Boolean(
+              data[testDate]?.[baseSlot.id] && data[dayAfter]?.[newSlotId],
+            ),
+          ).toEqual(true);
         });
         // test removing of the additional slot
         await newSlotRef.delete();
@@ -486,9 +491,81 @@ describe("Cloud functions -> Data triggers ->", () => {
             .doc(getSlotsByDayDocPath(organization, testMonth))
             .get();
           expect(snap.exists).toEqual(true);
-          expect(Boolean(snap.data()![testDate][newSlotId])).toEqual(false);
+          const data = snap.data()!;
+          // the deleted slot is removed from the aggregate...
+          expect(data[dayAfter]?.[newSlotId]).toBeUndefined();
+          // ...while the other slot is untouched
+          expect(Boolean(data[testDate]?.[baseSlot.id])).toEqual(true);
         });
-      }
+      },
+    );
+
+    testWithEmulator(
+      "should not leave a ghost slot (in slotsByDay or attendance) when a slot is created and deleted in quick succession (regression: #966)",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
+
+        // Create and delete the slot back-to-back, without waiting for the
+        // create-event triggers to process. With unordered/at-least-once
+        // trigger delivery this used to resurrect the slot in 'slotsByDay'
+        // (and its 'attendance' doc) with no way for the admin to remove it.
+        await slotRef.set(baseSlot);
+        await slotRef.delete();
+
+        // Give both events' triggers time to fully process
+        await new Promise((resolve) => setTimeout(resolve, 4000));
+
+        const aggSnap = await adminDb
+          .doc(getSlotsByDayDocPath(organization, testMonth))
+          .get();
+        expect(aggSnap.data()?.[testDate]?.[baseSlot.id]).toBeUndefined();
+
+        const attendanceSnap = await adminDb
+          .doc(getAttendanceDocPath(organization, baseSlot.id))
+          .get();
+        expect(attendanceSnap.exists).toEqual(false);
+      },
+      { timeout: 15000 },
+    );
+
+    testWithEmulator(
+      "should move (not duplicate) the slotsByDay entry when a slot's date is edited",
+      async () => {
+        const { organization } = await setUpOrganization();
+        const slotRef = adminDb.doc(getSlotDocPath(organization, baseSlot.id));
+        await slotRef.set(baseSlot);
+
+        // wait for the initial aggregate entry
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(Boolean(snap.data()?.[testDate]?.[baseSlot.id])).toEqual(true);
+        });
+
+        // move the slot to a date in the next month
+        const movedDateLuxon = testDateLuxon.plus({ months: 1 });
+        const movedDate = luxon2ISODate(movedDateLuxon);
+        const movedMonth = movedDate.substring(0, 7);
+        const movedSlot = { ...baseSlot, date: movedDate };
+        await slotRef.set(movedSlot);
+
+        // the entry should appear under the new month...
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, movedMonth))
+            .get();
+          expect(snap.data()?.[movedDate]?.[baseSlot.id]).toEqual(movedSlot);
+        });
+        // ...and disappear from the old one (previously it was left behind)
+        await waitFor(async () => {
+          const snap = await adminDb
+            .doc(getSlotsByDayDocPath(organization, testMonth))
+            .get();
+          expect(snap.data()?.[testDate]?.[baseSlot.id]).toBeUndefined();
+        });
+      },
     );
   });
 
@@ -513,7 +590,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         // we're manually deleting attendance to test that it won't get created on slot update
         // the attendance entry for slot shouldn't be edited manually in production
         const attendanceDocRef = adminDb.doc(
-          getAttendanceDocPath(organization, baseSlot.id)
+          getAttendanceDocPath(organization, baseSlot.id),
         );
         await attendanceDocRef.delete();
         // wait for attendance entry to be deleted
@@ -526,7 +603,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         // check the no new entry for slot attendance was created (on update)
         const slotAttendance = await attendanceDocRef.get();
         expect(slotAttendance.exists).toEqual(false);
-      }
+      },
     );
 
     testWithEmulator(
@@ -551,7 +628,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           expect(snap.exists).toEqual(false);
         });
-      }
+      },
     );
 
     testWithEmulator(
@@ -576,7 +653,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             .get();
           expect(snap.exists).toEqual(false);
         });
-      }
+      },
     );
   });
 
@@ -615,7 +692,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb.doc(organizationPath).get();
           expect(snap.data()!.existingSecrets).toEqual(["anotherSecret"]);
         });
-      }
+      },
     );
 
     testWithEmulator(
@@ -639,7 +716,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb.doc(organizationPath).get();
           const data = snap.data() as OrganizationData;
           expect(data.existingSecrets).toEqual(
-            expect.arrayContaining(["smtpHost"])
+            expect.arrayContaining(["smtpHost"]),
           );
           expect(data.smtpConfigured).toBeFalsy();
         });
@@ -658,8 +735,8 @@ describe("Cloud functions -> Data triggers ->", () => {
           const data = snap.data() as OrganizationData;
           expect(
             Object.keys(secrets).every((key) =>
-              data.existingSecrets!.includes(key)
-            )
+              data.existingSecrets!.includes(key),
+            ),
           ).toEqual(true);
           expect(data.smtpConfigured).toEqual(true);
         });
@@ -675,7 +752,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb.doc(organizationPath).get();
           expect(snap.data()!.smtpConfigured).toEqual(false);
         });
-      }
+      },
     );
   });
 
@@ -736,7 +813,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           const snap = await adminDb.doc(publicOrgPath).get();
           expect(snap.exists).toEqual(false);
         });
-      }
+      },
     );
   });
 
@@ -782,7 +859,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         await waitFor(async () => {
           const snap = await adminDb
             .doc(
-              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             )
             .get();
           expect(snap.data()).toEqual({
@@ -805,7 +882,7 @@ describe("Cloud functions -> Data triggers ->", () => {
         await waitFor(async () => {
           const attendedSlotDoc = await adminDb
             .doc(
-              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             )
             .get();
           expect(attendedSlotDoc.data()).toEqual({
@@ -823,12 +900,12 @@ describe("Cloud functions -> Data triggers ->", () => {
         await waitFor(async () => {
           const snap = await adminDb
             .doc(
-              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id)
+              getAttendedSlotDocPath(organization, saul.secretKey, baseSlot.id),
             )
             .get();
           expect(snap.exists).toEqual(false);
         });
-      }
+      },
     );
 
     testWithEmulator(
@@ -876,7 +953,7 @@ describe("Cloud functions -> Data triggers ->", () => {
           waitFor(async () => {
             const snap = await adminDb
               .doc(
-                getBookingsDocPath(organization, controlledCustomer.secretKey)
+                getBookingsDocPath(organization, controlledCustomer.secretKey),
               )
               .get();
             expect(snap.exists).toEqual(true);
@@ -889,8 +966,8 @@ describe("Cloud functions -> Data triggers ->", () => {
             getBookedSlotDocPath(
               organization,
               testCustomer.secretKey,
-              baseSlot.id
-            )
+              baseSlot.id,
+            ),
           )
           .set({
             date: baseSlot.date,
@@ -935,8 +1012,8 @@ describe("Cloud functions -> Data triggers ->", () => {
               getAttendedSlotDocPath(
                 organization,
                 controlledCustomer.secretKey,
-                baseSlot.id
-              )
+                baseSlot.id,
+              ),
             )
             .get();
           expect(snap.exists).toEqual(true);
@@ -949,13 +1026,13 @@ describe("Cloud functions -> Data triggers ->", () => {
               getAttendedSlotDocPath(
                 organization,
                 testCustomer.secretKey,
-                baseSlot.id
-              )
+                baseSlot.id,
+              ),
             )
             .get();
           expect(snap.exists).toEqual(false);
         });
-      }
+      },
     );
   });
   describe("createCustomerStats", () => {
@@ -1028,8 +1105,8 @@ describe("Cloud functions -> Data triggers ->", () => {
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
-                `${bookedSlotThisMonthIce.date}-9`
-              )
+                `${bookedSlotThisMonthIce.date}-9`,
+              ),
             )
             .set(bookedSlotThisMonthIce),
           await adminDb
@@ -1037,8 +1114,8 @@ describe("Cloud functions -> Data triggers ->", () => {
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
-                `${bookedSlotNextMonthIce.date}-9`
-              )
+                `${bookedSlotNextMonthIce.date}-9`,
+              ),
             )
             .set(bookedSlotNextMonthIce),
           await adminDb
@@ -1046,8 +1123,8 @@ describe("Cloud functions -> Data triggers ->", () => {
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
-                `${bookedSlotThisMonthOffIce.date}-10`
-              )
+                `${bookedSlotThisMonthOffIce.date}-10`,
+              ),
             )
             .set(bookedSlotThisMonthOffIce),
           await adminDb
@@ -1055,8 +1132,8 @@ describe("Cloud functions -> Data triggers ->", () => {
               getBookedSlotDocPath(
                 organization,
                 saul.secretKey,
-                `${bookedSlotNextMonthOffIce.date}-10`
-              )
+                `${bookedSlotNextMonthOffIce.date}-10`,
+              ),
             )
             .set(bookedSlotNextMonthOffIce),
         ]);
@@ -1090,8 +1167,8 @@ describe("Cloud functions -> Data triggers ->", () => {
             getBookedSlotDocPath(
               organization,
               saul.secretKey,
-              `${bookedSlotThisMonthIce.date}-9`
-            )
+              `${bookedSlotThisMonthIce.date}-9`,
+            ),
           )
           .delete();
 
@@ -1115,7 +1192,7 @@ describe("Cloud functions -> Data triggers ->", () => {
             },
           });
         });
-      }
+      },
     );
   });
 });
