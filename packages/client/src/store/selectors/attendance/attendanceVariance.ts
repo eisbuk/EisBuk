@@ -75,7 +75,11 @@ export const getMonthAttendanceVariance = (
   const currentMonth = getMonthStr(calendarDay, 0);
   const slots = Object.fromEntries(
     flatMap(
-      Object.values(slotsByDay ? slotsByDay[currentMonth] : {}),
+      // The `= {}` destructuring default above only covers `undefined`, not `null`
+      // (which the store type allows); the month entry itself can also be missing
+      // (month not loaded yet, or no slots that month), in which case
+      // `Object.values(undefined)` would throw.
+      Object.values(slotsByDay?.[currentMonth] || {}),
       (slots) => Object.entries(slots)
     )
   );

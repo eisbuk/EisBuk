@@ -23,7 +23,7 @@ export function composeCompare<T>(
 
 export function asc<C extends string | number>(): (a: C, b: C) => number;
 export function asc<C extends string | number, T>(
-  transform: (x: T) => C
+  transform: (x: T) => C,
 ): (a: T, b: T) => number;
 /** */
 export function asc<C extends string | number, T>(transform?: (x: T) => C) {
@@ -38,7 +38,7 @@ export function asc<C extends string | number, T>(transform?: (x: T) => C) {
 
 export function desc<C extends string | number>(): (a: C, b: C) => number;
 export function desc<C extends string | number, T>(
-  transform: (x: T) => C
+  transform: (x: T) => C,
 ): (a: T, b: T) => number;
 /** */
 export function desc<C extends string | number, T>(transform?: (x: T) => C) {
@@ -92,7 +92,7 @@ export const comparePeriodsEarliestFirst = composeCompare<
   // Compare (asc) by start time first
   asc(getStartTime),
   // If start times are equal, compare (desc) by end time - longer periods take precedence
-  desc(getIntervalDuration)
+  desc(getIntervalDuration),
 );
 
 /**
@@ -106,7 +106,7 @@ export const comparePeriodsLongestFirst = composeCompare<string | SlotInterval>(
   // If start times are equal, compare (desc) by end time - longer periods take precedence
   desc(getIntervalDuration),
   // Compare (asc) by start time first
-  asc(getStartTime)
+  asc(getStartTime),
 );
 
 /**
@@ -119,8 +119,11 @@ export const comparePeriodsLongestFirst = composeCompare<string | SlotInterval>(
 export const compareCustomerNames = composeCompare<
   Pick<Customer, "name" | "surname">
 >(
-  asc((x) => x.surname.toLowerCase()),
-  asc((x) => x.name.toLowerCase())
+  // Guard against entries with a missing name/surname (e.g. an attendance doc
+  // referencing a customer that was deleted/not yet loaded), which would
+  // otherwise throw on `.toLowerCase()`.
+  asc((x) => (x.surname || "").toLowerCase()),
+  asc((x) => (x.name || "").toLowerCase()),
 );
 
 /**
@@ -137,5 +140,5 @@ export const compareCustomerBookings = composeCompare<
 >(
   (a, b) =>
     comparePeriodsEarliestFirst(a.bookedInterval || "", b.bookedInterval || ""),
-  compareCustomerNames
+  compareCustomerNames,
 );

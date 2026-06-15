@@ -12,7 +12,10 @@ import {
   getBookedIntervalsCustomers,
 } from "../slotAttendance";
 
-import { processAttendances } from "../attendanceVariance";
+import {
+  processAttendances,
+  getMonthAttendanceVariance,
+} from "../attendanceVariance";
 
 import { getNewStore } from "@/store/createStore";
 
@@ -44,6 +47,36 @@ describe("Selectors ->", () => {
     test("should get slots for current day (read from store) with customers attendance (sorted by booked interval) data for each slot", () => {
       const res = getSlotsWithAttendance(testStore.getState());
       expect(res).toEqual(expectedStruct);
+    });
+
+    test("should not crash when a slot has no attendance doc (regression: #832, missing/lagging attendance trigger)", () => {
+      const dateISO = testDateLuxon.toISODate();
+      const monthStr = dateISO.substring(0, 7);
+      const slot = {
+        ...baseSlot,
+        id: "slot-without-attendance",
+        date: dateISO,
+      };
+
+      const store = getNewStore({
+        firestore: {
+          data: {
+            // Slot exists for the current day...
+            slotsByDay: { [monthStr]: { [dateISO]: { [slot.id]: slot } } },
+            // ...but there's no attendance/{slotId} doc for it.
+            attendance: {},
+            customers: {},
+          },
+        },
+        app: {
+          calendarDay: testDateLuxon,
+        },
+      });
+
+      expect(() => getSlotsWithAttendance(store.getState())).not.toThrow();
+      const res = getSlotsWithAttendance(store.getState());
+      expect(res).toHaveLength(1);
+      expect(res[0].customers).toEqual([]);
     });
   });
 
@@ -232,6 +265,25 @@ describe("Selectors ->", () => {
         },
       ],
     ]);
+  });
+
+  test("'getMonthAttendanceVariance' should not crash when the month has no slotsByDay entry (regression: #832 / Object.values(undefined))", () => {
+    const store = getNewStore({
+      firestore: {
+        data: {
+          attendance: {},
+          customers: {},
+          // No entry for the viewed month (not loaded yet, or no slots).
+          slotsByDay: {},
+        },
+      },
+      app: {
+        calendarDay: testDateLuxon,
+      },
+    });
+
+    expect(() => getMonthAttendanceVariance(store.getState())).not.toThrow();
+    expect(getMonthAttendanceVariance(store.getState())).toEqual([]);
   });
 
   describe("Test 'getBookedIntervalsCustomers'", () => {
