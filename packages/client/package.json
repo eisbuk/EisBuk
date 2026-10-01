@@ -59,6 +59,7 @@
     "start:igorice": "rush seed-firestore:igorice && REACT_APP_EISBUK_SITE=igorice.web.app vite",
     "start:staging": "REACT_APP_EISBUK_SITE=eisbuk.web.app BUILD_ENV=production DEPLOY_STAGE=staging vite",
     "test:emulators": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest\")'",
+    "test:emulators:run": "node ../functions/build_scripts/watch.js --once && ./node_modules/.bin/firebase -c ../../firebase-testing.json emulators:exec --project eisbuk \"vitest run\"",
     "test:emulators:ui": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest --ui\")'",
     "test:functions": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest cloudFunctions\")'",
     "test:triggers": "bash -c '(trap \"kill 0\" SIGINT; ../functions/build_scripts/watch.js & firebase -c ../../firebase-testing.json  emulators:exec --project eisbuk -- \" vitest dataTriggers\")'",

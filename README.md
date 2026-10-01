@@ -152,6 +152,50 @@ There's no need to spin up the emulators as unit tests use different emulator se
 Running `test` as in the above example runs all of the unit tests with full emulators support
 Alternatively, you can run `rushx test:quicktest` to run the tests without the emulators. This, however will skip all of the tests requiring emulator support.
 
+For a one-shot local run matching CI, use Node 18 (18.20.8 in the verified CI run),
+initialize the SMTP submodule, install the locked dependencies, and build the packages.
+From the repository root on this developer machine:
+
+```bash
+export PATH=/home/silvio/.local/share/mise/installs/node/18.20.8/bin:$PATH
+export RUSH_PNPM_STORE_PATH=/home/silvio/dev/eisbuk/common/temp/pnpm-store
+df -h /home/silvio/dev | tail -1 # Stop if less than 2 GB is free.
+git submodule update --init packages/jest-smtp
+flock /tmp/eisbuk-rush-install.lock node common/scripts/install-run-rush.js install
+df -h /home/silvio/dev | tail -1
+BROWSERSLIST_IGNORE_OLD_DATA=1 node common/scripts/install-run-rush.js build
+cd packages/client
+flock /tmp/eisbuk-emulators.lock npm run test:emulators:run
+```
+
+On other machines, select Node 18 with your version manager and omit the shared-store
+setting. `rush build` includes `jest-smtp`; it must be built before Vitest loads its
+matchers. The emulator command uses `firebase-testing.json`: Auth on 9098, Functions
+on 5002, Firestore on 8081 (the test SMTP server uses 5000). The project argument is
+the local emulator project ID. This command exits with the test result and starts no
+watchers; `test:emulators:ci` masks failures for its subsequent report-processing step.
+
+The new script compiles functions **without bundling**, using the same compilation
+as CI's watcher, and uses the client's locked Firebase CLI (13.35.1). Running
+emulators against the production bundle from `build_scripts/build.js` loses callable
+auth: the emulator patches the installed `firebase-functions` module, while the
+bundle contains its own copy. A callable log saying `auth: MISSING` is expected even
+in passing CI runs, because the emulator restores auth from its private header after
+SDK verification. CLI 12.2.1 also rejects the current Node 22 functions setting.
+
+For a filtered run, hold the same lock around both compilation and execution:
+
+```bash
+flock /tmp/eisbuk-emulators.lock sh -c 'node ../functions/build_scripts/watch.js --once && ./node_modules/.bin/firebase -c ../../firebase-testing.json emulators:exec --project eisbuk "./node_modules/.bin/vitest run src/__tests__/auth.test.ts"'
+```
+
+`CI=true` increases the test helper's polling timeout from 8 to 13 seconds; it does
+not select test files or fix callable auth. `emulators:exec` supplies
+`GCLOUD_PROJECT`, `FIRESTORE_EMULATOR_HOST`, `FIREBASE_AUTH_EMULATOR_HOST`, and the
+other emulator variables. No Firebase credentials or workflow secrets are needed.
+The full suite at `f41be0dc` contains 350 tests; the earlier `2d442ec7` contains 296.
+The difference comes from added regression tests, rather than discovery settings.
+
 #### E2E Tests - Cypress
 
 To run E2E tests, you need to start up the emulators and the dev server (as in the first working flow) and additionally run cypress.

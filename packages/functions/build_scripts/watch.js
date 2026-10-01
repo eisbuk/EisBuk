@@ -3,7 +3,8 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /**
  * A `watch` script for functions esbuild process.
- * We're using this to create a bundle and watch for changes (for development and tests).
+ * Compile unbundled functions for development and emulator tests.
+ * Pass --once to build without starting a watcher.
  */
 const esbuild = require("esbuild");
 const path = require("path");
@@ -43,8 +44,8 @@ const getAllFilenames = (dirName) =>
 /** BEGIN EXECUTION **/
 
 const src = path.join(__dirname, "..", "src");
-console.log("Running compilation in watch mode");
-console.log(`Watching for file changes in ${src}`);
+const watch = !process.argv.includes("--once");
+console.log(`Running compilation${watch ? " in watch mode" : " once"}`);
 
 // create initial build
 esbuild.buildSync({
@@ -52,10 +53,15 @@ esbuild.buildSync({
   entryPoints: getAllFilenames(src),
 });
 
-// start watcher and rebuild each file on change
-const watcher = chokidar.watch(`${src}/**/*.(js|ts)`, { ignoreInitial: true });
-watcher.on("all", (e, fp) => {
-  if (e !== "unlink") {
-    esbuild.build({ ...baseConfig, entryPoints: [fp] });
-  }
-});
+if (watch) {
+  console.log(`Watching for file changes in ${src}`);
+  // start watcher and rebuild each file on change
+  const watcher = chokidar.watch(`${src}/**/*.(js|ts)`, {
+    ignoreInitial: true,
+  });
+  watcher.on("all", (e, fp) => {
+    if (e !== "unlink") {
+      esbuild.build({ ...baseConfig, entryPoints: [fp] });
+    }
+  });
+}
