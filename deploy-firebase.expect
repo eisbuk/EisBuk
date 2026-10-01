@@ -6,29 +6,121 @@
 # that depend on a cloud function being deployed).
 # When the interactive deployment asks if we want to delete the unexpected functions,
 # we need to type a single uppercase `N` to let the process continue.
+#
+# This script must never report success for a deploy that did not complete:
+# - firebase-tools 12.2.1 can exit with code 0 without deploying anything: if the
+#   first function update of a region and memory size is rejected, the other
+#   updates of that group wait forever for a source token, node runs out of work
+#   and exits 0 (eisbuk/EisBuk#986).
+#   So we require "Deploy complete!" in addition to exit code 0.
+# - On timeout we kill the deploy and fail, instead of waiting for it with nobody
+#   reading its output (which deadlocks once the terminal buffer is full).
+# - The functions predeploy hook strips the workspace dependencies from
+#   packages/functions/package.json, and the postdeploy hook only runs on success.
+#   We put the original file back whatever the outcome.
 
-# Four minutes should be enough
-set timeout 240
+# Seconds without a recognised prompt before we give up. A deploy that rebuilds every
+# function can take several minutes; DEPLOY_TIMEOUT overrides the default.
+if {[info exists env(DEPLOY_TIMEOUT)]} {
+    set timeout $env(DEPLOY_TIMEOUT)
+} else {
+    set timeout 1200
+}
 
+set repo_root [file dirname [file normalize [info script]]]
+set functions_package_json [file join $repo_root packages functions package.json]
 
-cd packages/client/
+proc read_file {path} {
+    set f [open $path r]
+    fconfigure $f -translation binary
+    set content [read $f]
+    close $f
+    return $content
+}
+
+proc restore_functions_package_json {} {
+    global functions_package_json functions_package_json_content
+    if {[read_file $functions_package_json] ne $functions_package_json_content} {
+        set f [open $functions_package_json w]
+        fconfigure $f -translation binary
+        puts -nonewline $f $functions_package_json_content
+        close $f
+        puts "\ndeploy-firebase.expect: restored packages/functions/package.json"
+    }
+}
+
+proc fail {message code} {
+    puts stderr "\ndeploy-firebase.expect: ERROR: $message"
+    restore_functions_package_json
+    exit $code
+}
+
+set functions_package_json_content [read_file $functions_package_json]
+
+cd [file join $repo_root packages client]
 spawn npx firebase deploy --project eisbuk --debug
+set firebase_pid [exp_pid]
 
+# Stops the deploy (the spawned process leads its own process group) without ever
+# blocking: SIGTERM (and SIGCONT, in case it is stopped), a short grace period,
+# then SIGKILL. We never `wait` for it here, so a deploy that ignores signals
+# cannot keep us from restoring package.json and exiting.
+proc kill_deploy {} {
+    global firebase_pid
+    catch {exec kill -s TERM -- -$firebase_pid}
+    catch {exec kill -s CONT -- -$firebase_pid}
+    after 3000
+    catch {exec kill -s KILL -- -$firebase_pid}
+    catch {close}
+    catch {wait -nowait}
+}
 
+trap {
+    restore_functions_package_json
+    kill_deploy
+    fail "interrupted, deploy killed (it may be partial)" 130
+} {SIGINT SIGTERM}
+
+set deletion_answered 0
+set deploy_complete 0
 
 expect {
     "*Would you like to proceed with deletion?*" {
-        send -- "N\r"
+        # inquirer redraws the prompt on every key press: answer only once
+        if {!$deletion_answered} {
+            send -- "N\r"
+            set deletion_answered 1
+        }
         exp_continue
     }
     "*Deploy complete!*" {
+        set deploy_complete 1
         exp_continue
+    }
+    timeout {
+        restore_functions_package_json
+        kill_deploy
+        fail "no progress for $timeout seconds, deploy killed (it may be partial)" 124
     }
     eof {
         # Deployment finished or failed
     }
 }
 
-# Capture the exit code of the spawned process and exit with the same code
+# wait returns: pid spawn_id os_error status [CHILDKILLED signal message]
 set waitval [wait]
-exit [lindex $waitval 3]
+restore_functions_package_json
+if {[lindex $waitval 2] != 0} {
+    fail "could not get the deploy exit status: $waitval" 1
+}
+if {[llength $waitval] > 4} {
+    fail "deploy killed by signal: $waitval" 1
+}
+set status [lindex $waitval 3]
+if {$status != 0} {
+    fail "firebase deploy exited with code $status" $status
+}
+if {!$deploy_complete} {
+    fail "firebase deploy exited with code 0 but never printed 'Deploy complete!': the deploy did not finish (see eisbuk/EisBuk#986)" 1
+}
+exit 0

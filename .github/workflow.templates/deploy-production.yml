@@ -20,21 +20,38 @@ name: Deploy to production
 env:
   BROWSERSLIST_IGNORE_OLD_DATA: "1"
 
+#! Never run two deploys at the same time: the second waits for the first.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
 jobs:
   deploy:
     environment: Production
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    #! A deploy that rebuilds every function (e.g. a runtime change) takes a while.
+    timeout-minutes: 30
     steps:
       - name: Install expect
         run: sudo apt-get -y install expect
       -  #@ checkout()
+      - name: Test the deploy wrapper
+        run: common/scripts/test-deploy-firebase-expect.sh
+        timeout-minutes: 3
       - uses: actions/setup-node@v4
         with:
           node-version: "18"
+      - name: Test the deployment verifier and preflight
+        run: node --test common/scripts/verify-deployment.test.js common/scripts/preflight-deploy.test.js
+        timeout-minutes: 3
       -  #@ cache_node()
       -  #@ rush_add_path()
       -  #@ rush_update()
+      #! Stop here, before anything is built or released, if the deploy would not
+      #! use firebase-tools 13 (>= 13.11) and Node 22 functions (#986).
+      - name: Preflight, deploy toolchain
+        run: node common/scripts/preflight-deploy.js
+        timeout-minutes: 3
       -  #@ rush_build()
       - name: Inject slug/short variables
         uses: rlespinasse/github-slug-action@v4
@@ -88,6 +105,18 @@ jobs:
         env:
           FUNCTIONS_SENTRY_DSN: ${{ secrets.FUNCTIONS_SENTRY_DSN }}
           REACT_APP_SENTRY_RELEASE: ${{ env.SENTRY_RELEASE }}
+          GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
+      #! A green deploy step is not proof that production changed (#986): check the
+      #! release id in the served bundle and in the environment of every function
+      #! exported by packages/functions/dist/index.js (built by the predeploy hook).
+      #! No --since: firebase-tools skips functions whose source and env are
+      #! unchanged (same commit redeployed the same day), the release id still matches.
+      - name: Verify that production runs this release
+        run: >-
+          node common/scripts/verify-deployment.js
+          --release "$SENTRY_RELEASE"
+          --runtime "nodejs$(node -p 'require("./packages/functions/package.json").engines.node')"
+        env:
           GOOGLE_APPLICATION_CREDENTIALS: /tmp/key.json
       - name: debug
         if: steps.has_secret.outputs.HAS_SECRETS && (success() || failure())
