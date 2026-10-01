@@ -25,9 +25,6 @@ describe("CustomerForm", () => {
         i18n.t(CustomerLabel.Birthday),
 
         // We're missing email and phone fields. Those are tested below for slightly different behaviour.
-
-        // Medical fields
-        i18n.t(CustomerLabel.CertificateExpiration),
       ] as string[];
 
       // All (standard) fields should be enabled
@@ -35,9 +32,16 @@ describe("CustomerForm", () => {
         expect(screen.getByLabelText(field)).toHaveProperty("disabled", false);
       });
 
+      // The certificate expiration date is set by club admins (#955)
+      expect(
+        screen.queryByLabelText(
+          i18n.t(CustomerLabel.CertificateExpiration) as string,
+        ),
+      ).toBeNull();
+
       // There should be no edit button
       expect(
-        screen.queryByText(i18n.t(ActionButton.Edit) as string)
+        screen.queryByText(i18n.t(ActionButton.Edit) as string),
       ).toBeFalsy();
 
       // Fields should remain enabled after clicking save
@@ -51,7 +55,7 @@ describe("CustomerForm", () => {
       // Fields should remain enabled after clicking cancel
       await act(async () => {
         userEvent.click(
-          screen.getByText(i18n.t(ActionButton.Cancel) as string)
+          screen.getByText(i18n.t(ActionButton.Cancel) as string),
         );
       });
       requiredFields.forEach((field) => {
@@ -65,12 +69,12 @@ describe("CustomerForm", () => {
         <CustomerForm.SelfReg
           customer={{ email: saul.email }}
           onCancel={mockCancel}
-        />
+        />,
       );
 
       // Edit a field to test it being reset
       const nameField = screen.getByLabelText(
-        i18n.t(CustomerLabel.Name) as string
+        i18n.t(CustomerLabel.Name) as string,
       ) as HTMLInputElement;
       await act(async () => {
         userEvent.clear(nameField);
@@ -80,31 +84,31 @@ describe("CustomerForm", () => {
       // Cancel the form
       await act(async () => {
         userEvent.click(
-          screen.getByText(i18n.t(ActionButton.Cancel) as string)
+          screen.getByText(i18n.t(ActionButton.Cancel) as string),
         );
       });
       expect(
-        screen.getByLabelText(i18n.t(CustomerLabel.Name) as string)
+        screen.getByLabelText(i18n.t(CustomerLabel.Name) as string),
       ).toHaveProperty("value", saul.name);
     });
 
     test("should disable 'email' or 'phone' if respective field provided (during registration)", () => {
       render(<CustomerForm.SelfReg customer={{ email: saul.email }} />);
       expect(
-        screen.getByLabelText(i18n.t(CustomerLabel.Email) as string)
+        screen.getByLabelText(i18n.t(CustomerLabel.Email) as string),
       ).toHaveProperty("disabled", true);
       expect(
-        screen.getByLabelText(i18n.t(CustomerLabel.Phone) as string)
+        screen.getByLabelText(i18n.t(CustomerLabel.Phone) as string),
       ).toHaveProperty("disabled", false);
 
       cleanup();
 
       render(<CustomerForm.SelfReg customer={{ phone: saul.phone }} />);
       expect(
-        screen.getByLabelText(i18n.t(CustomerLabel.Email) as string)
+        screen.getByLabelText(i18n.t(CustomerLabel.Email) as string),
       ).toHaveProperty("disabled", false);
       expect(
-        screen.getByLabelText(i18n.t(CustomerLabel.Phone) as string)
+        screen.getByLabelText(i18n.t(CustomerLabel.Phone) as string),
       ).toHaveProperty("disabled", true);
     });
 
@@ -114,21 +118,21 @@ describe("CustomerForm", () => {
         <CustomerForm.SelfReg
           customer={{ email: saul.email }}
           onSave={mockSave}
-        />
+        />,
       );
 
       // Fill out the minimal fields
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.Name) as string),
-        "Saul"
+        "Saul",
       );
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.Surname) as string),
-        "Goodman"
+        "Goodman",
       );
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.RegistrationCode) as string),
-        "CODE111"
+        "CODE111",
       );
 
       // Save the form
@@ -140,7 +144,7 @@ describe("CustomerForm", () => {
             surname: "Goodman",
             email: saul.email,
           }),
-          expect.objectContaining({})
+          expect.objectContaining({}),
         );
       });
     });
@@ -151,21 +155,21 @@ describe("CustomerForm", () => {
         <CustomerForm.SelfReg
           customer={{ email: saul.email }}
           onSave={mockSave}
-        />
+        />,
       );
 
       // Fill out the minimal fields
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.Name) as string),
-        "Saul "
+        "Saul ",
       );
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.Surname) as string),
-        "Goodman "
+        "Goodman ",
       );
       userEvent.type(
         screen.getByLabelText(i18n.t(CustomerLabel.RegistrationCode) as string),
-        " CODE111"
+        " CODE111",
       );
 
       // Save the form
@@ -177,7 +181,7 @@ describe("CustomerForm", () => {
             surname: "Goodman",
             email: saul.email,
           }),
-          expect.objectContaining({})
+          expect.objectContaining({}),
         );
       });
     });
