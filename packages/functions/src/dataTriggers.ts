@@ -2,7 +2,6 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
-import { isEqual } from "lodash";
 
 import {
   wrapFirestoreOnCreateHandler,
@@ -12,7 +11,6 @@ import { __functionsZone__ } from "./constants";
 import {
   BookingSubCollection,
   Collection,
-  CustomerAttendance,
   CustomerBookingEntry,
   OrgSubCollection,
   SlotAttendnace,
@@ -29,7 +27,6 @@ import { getCustomerStats } from "./utils";
 import {
   getAttendedSlotInterval,
   getSecretKeys,
-  normalizeAttendanceEntry,
   syncAttendanceEntry,
   syncAttendedSlot,
   syncSlotBookingsCount,
@@ -43,9 +40,9 @@ type CustomerWithOptionalIDs = Omit<Customer, "id" | "secretKey"> &
 
 /**
  * Runtime options of the triggers keeping booking-derived data in sync (`countSlotsBookings`,
- * `createAttendanceForBooking`, `syncAttendanceWithBookings`).
+ * `createAttendanceForBooking`, `createAttendedSlotOnAttendance`).
  *
- * Their handlers derive the data from the current bookings, so running them again is safe: a failed run (a
+ * Their handlers derive the data from the current state, so running them again is safe: a failed run (a
  * transaction that ran out of attempts, the recount's index still building after a deploy) is retried instead of
  * leaving the data wrong.
  */
@@ -596,86 +593,6 @@ export const createPublicOrgInfo = functions
           {}
         );
         await publicOrgInfoDocRef.set(updates, { merge: true });
-      }
-    )
-  );
-
-/**
- * Keeps the booked part of attendance in line with the bookings when the attendance document is written
- * by someone else than `createAttendanceForBooking`.
- *
- * The admin attendance screen writes whole entries (`bookedInterval` included), or the whole document, from the
- * admin's local copy. A copy older than the latest booking change puts an old `bookedInterval` back, or drops the
- * entry of a booking made in the meantime, and no booking event follows to correct it (#988).
- *
- * For every athlete whose entry was added, removed, or had its booked part changed by this write (or that the write
- * left partial), correct the entry from the athlete's current booking: restore a missing entry; for lessons from
- * today on, derive it as on a booking change (keeping an attended interval the admin recorded). Existing entries of
- * past lessons are left as they are: they may be the club's record of the lesson (the reconciliation repairs their
- * booked interval only). Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry` writes only when the entry differs, so the write it may cause is
- * followed by a check that finds nothing to do.
- *
- * Entries of athletes without a booking are left as they are (only made complete if partial): attendance written
- * without the bookings (a stale copy after a cancellation, but also a restore or test data written before the
- * bookings) isn't evidence enough to remove anything. The reconciliation reports and repairs those.
- *
- * The booking is looked up under all of the athlete's bookings documents. Athletes without a bookings document are
- * left as they are. Each athlete is synced independently: if some fail, the others are still written and the
- * function then fails, to be retried (`failurePolicy`) if the failure is transient.
- */
-export const syncAttendanceWithBookings = functions
-  .runWith(bookingSyncRuntimeOptions)
-  .region(__functionsZone__)
-  .firestore.document(
-    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
-  )
-  .onWrite(
-    wrapFirestoreOnWriteHandler(
-      "syncAttendanceWithBookings",
-      async (change, context) => {
-        // Attendance document deleted with the slot: nothing to keep in sync
-        if (!change.after.exists) return;
-        if (isTooOldToRetry("syncAttendanceWithBookings", context)) return;
-
-        const { organization, slotId } = context.params as Record<
-          string,
-          string
-        >;
-        const db = admin.firestore();
-
-        const before = (change.before.data() as SlotAttendnace | undefined)
-          ?.attendances;
-        const after = (change.after.data() as SlotAttendnace).attendances;
-
-        const getBookedPart = (entry?: CustomerAttendance) =>
-          entry && { b: entry.bookedInterval, n: entry.bookingNotes };
-        const customerIds = [
-          ...new Set([
-            ...Object.keys(before || {}),
-            ...Object.keys(after || {}),
-          ]),
-        ].filter(
-          (id) =>
-            !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id])) ||
-            // A partial entry (the rules allow it): rewritten in its normalized form
-            (!isEqual(before?.[id], after?.[id]) &&
-              !isEqual(normalizeAttendanceEntry(after?.[id]), after?.[id]))
-        );
-
-        await settleAll(
-          "syncAttendanceWithBookings",
-          customerIds.map(async (customerId) => {
-            const secretKeys = await getSecretKeys(
-              db,
-              organization,
-              customerId
-            );
-            // Unknown athlete (no bookings document): leave the entry as it is
-            await syncAttendanceEntry(db, organization, slotId, secretKeys, {
-              guard: true,
-            });
-          })
-        );
       }
     )
   );

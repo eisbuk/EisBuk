@@ -493,13 +493,13 @@ export const reconcileBookingDerivedData = async (
     report.attendance.map(async (difference) => {
       if (difference.skipped) return difference;
 
-      const { slotId, customerId, date } = difference;
+      const { slotId, customerId } = difference;
       const result = await syncAttendanceEntry(
         db,
         organization,
         slotId,
         secretKeys.get(customerId)!,
-        { bookedPartOnly: date < today }
+        { today }
       );
 
       // Report the values read and written by the repair, not the planned ones

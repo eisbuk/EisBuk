@@ -303,6 +303,11 @@ export const selectBooking = <T extends BookingCandidate>(
  * result doesn't depend on which event triggered the sync, or how many times. A malformed entry is rewritten in its
  * normalized form.
  *
+ * Past lessons (before `today`): an existing entry may be the club's record of the lesson, so only its
+ * `bookedInterval` is updated (`attendedInterval` and notes are kept, the entry is never removed). A booked athlete
+ * without an entry gets one, as on booking (nothing recorded is overwritten). This also keeps restored attendance
+ * when the bookings are restored after it.
+ *
  * @param secretKeys the athlete's bookings document ids (see `getSecretKeys`)
  * @returns `null` if none of the bookings documents (or the slot) can be found, or they belong to different
  * customers (nothing written): without them we can't tell whether the athlete booked
@@ -314,17 +319,9 @@ export const syncAttendanceEntry = (
   secretKeys: string[],
   {
     dryRun = false,
-    bookedPartOnly = false,
-    guard = false,
     today = DateTime.now().toISODate(),
   }: SyncOptions & {
-    bookedPartOnly?: boolean;
-    /**
-     * Correct attendance written by someone else (see `syncAttendanceWithBookings`): create the entry of a booked
-     * athlete if it's missing; for lessons from `today` on, derive it as on a booking change; otherwise (no booking,
-     * or a past lesson's existing entry) leave it as it is, only made complete if partial.
-     */
-    guard?: boolean;
+    /** ISO date: lessons before it are past lessons */
     today?: string;
   } = {}
 ): Promise<
@@ -388,17 +385,14 @@ export const syncAttendanceEntry = (
 
     const stored = (attendanceSnap.data() as SlotAttendnace | undefined)
       ?.attendances?.[id];
-    const lessonDate = (attendanceSnap.data()?.date || slotDate) as
-      | string
-      | undefined;
+    const lessonDate = (attendanceSnap.data()?.date ||
+      slotDate ||
+      booking?.date) as string | undefined;
     const isPastLesson = Boolean(lessonDate && lessonDate < today);
     const current = normalizeAttendanceEntry(stored);
-    const after =
-      guard && (!booking || (current && isPastLesson))
-        ? current
-        : deriveAttendanceEntry(booking, current, {
-            bookedPartOnly: !guard && bookedPartOnly,
-          });
+    const after = deriveAttendanceEntry(booking, current, {
+      bookedPartOnly: isPastLesson && Boolean(current),
+    });
 
     // Compared with the stored entry: a malformed entry is rewritten
     const changed = !_.isEqual(stored, after);
