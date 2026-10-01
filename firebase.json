@@ -6,7 +6,7 @@
   "functions": {
     "predeploy": [
       "cd packages/functions && rushx build",
-      "sed -i '/\"workspace:\\*/d\"' \"$RESOURCE_DIR/package.json\""
+      "node common/scripts/strip-workspace-deps.js \"$RESOURCE_DIR/package.json\""
     ],
     "postdeploy": ["git restore packages/functions/package.json"],
     "source": "packages/functions"
