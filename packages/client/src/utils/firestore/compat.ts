@@ -224,17 +224,19 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
  */
 export const setDocInTransaction = async (
   doc: FirestoreDocVariant,
-  update: (data: DocumentData | undefined) => DocumentData | undefined,
+  update: (
+    data: DocumentData | undefined,
+  ) => DocumentData | undefined | Promise<DocumentData | undefined>,
 ): Promise<void> => {
   await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
       clientRunTransaction(instance.firestore, async (tx) => {
-        const data = update((await tx.get(instance)).data());
+        const data = await update((await tx.get(instance)).data());
         if (data) tx.set(instance, data);
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
       instance.firestore.runTransaction(async (tx) => {
-        const data = update((await tx.get(instance)).data());
+        const data = await update((await tx.get(instance)).data());
         if (data) tx.set(instance, data);
       }),
   });

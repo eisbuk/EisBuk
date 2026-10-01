@@ -30,6 +30,8 @@ import {
   customerSelfUpdate,
   customerSelfRegister,
   acceptPrivacyPolicy,
+  getUpdatedBooking,
+  BookingConflictError,
 } from "../bookingOperations";
 import { enqueueNotification } from "@/features/notifications/actions";
 
@@ -42,7 +44,20 @@ import {
   getDoc,
   getDocs,
   setDoc,
+  setDocInTransaction,
 } from "@/utils/firestore";
+
+// The transaction helper runs the real implementation, but a test can make it fail (e.g. as if offline)
+vi.mock("@/utils/firestore", async () => {
+  const actual =
+    await vi.importActual<typeof import("@/utils/firestore")>(
+      "@/utils/firestore",
+    );
+  return {
+    ...actual,
+    setDocInTransaction: vi.fn(actual.setDocInTransaction),
+  };
+});
 
 import { testWithEmulator } from "@/__testUtils__/envUtils";
 import {
@@ -247,14 +262,40 @@ describe("Booking operations", () => {
           { getFirestore: () => db },
         );
 
-      const getBooking = async () =>
-        (
-          await getDoc(
-            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId)),
-          )
-        ).data();
+      const bookingPath = getBookedSlotDocPath(
+        organization,
+        secretKey,
+        bookingId,
+      );
 
-      return { book, getBooking, mockDispatch };
+      const getBooking = async () =>
+        (await getDoc(doc(db, bookingPath))).data();
+
+      /** Reads the booking from the server, with a different client (not affected by the test client's cache or network) */
+      const getServerBooking = async () => {
+        let booking: CustomerBookingEntry | undefined;
+        await db.testEnv.withSecurityRulesDisabled(async (ctx) => {
+          const snap = await ctx.firestore().doc(bookingPath).get();
+          booking = snap.data() as CustomerBookingEntry | undefined;
+        });
+        return booking;
+      };
+
+      /** Deletes the booking on the server, with a different client (e.g. cancelled from another device) */
+      const deleteServerBooking = () =>
+        db.testEnv.withSecurityRulesDisabled((ctx) =>
+          ctx.firestore().doc(bookingPath).delete(),
+        );
+
+      return {
+        book,
+        getBooking,
+        getServerBooking,
+        deleteServerBooking,
+        mockDispatch,
+        db,
+        bookingPath,
+      };
     };
 
     const successNotification = (interval: string) =>
@@ -382,6 +423,151 @@ describe("Booking operations", () => {
         expect(mockDispatch).not.toHaveBeenCalledWith(
           successNotification(otherInterval),
         );
+      },
+    );
+
+    const changedMeanwhileNotification = () =>
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.BookingChangedMeanwhile, {
+          date: DateTime.fromISO(testSlot.date),
+        }),
+        variant: NotifVariant.Error,
+      });
+
+    testWithEmulator(
+      "should not recreate a booking cancelled (e.g. from another device) before the replacement was confirmed",
+      async () => {
+        // The athlete opened the replace dialog for A -> B, meanwhile A was cancelled
+        const { book, getServerBooking, mockDispatch } = await setup();
+
+        await book(intervalB, intervalA);
+
+        expect(await getServerBooking()).toBeUndefined();
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          changedMeanwhileNotification(),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should not recreate a booking cancelled while the replacement transaction runs (the retry sees it's gone)",
+      async () => {
+        const { db, bookingPath, deleteServerBooking, getServerBooking } =
+          await setup({
+            date: testSlot.date,
+            interval: intervalA,
+            bookingNotes,
+          });
+
+        const seenBookings: (CustomerBookingEntry | undefined)[] = [];
+        const replacement = setDocInTransaction(
+          doc(db, bookingPath),
+          async (booking) => {
+            seenBookings.push(booking as CustomerBookingEntry | undefined);
+            // Cancelled from another device after the transaction read the booking, before it commits
+            if (seenBookings.length === 1) await deleteServerBooking();
+            return getUpdatedBooking(booking as CustomerBookingEntry, {
+              interval: intervalB,
+              date: testSlot.date,
+              replacedInterval: intervalA,
+            });
+          },
+        );
+
+        await expect(replacement).rejects.toEqual(
+          new BookingConflictError(null),
+        );
+        // First attempt saw the booking, the commit failed, the retry saw it deleted (and refused)
+        expect(seenBookings).toEqual([
+          { date: testSlot.date, interval: intervalA, bookingNotes },
+          undefined,
+        ]);
+        expect(await getServerBooking()).toBeUndefined();
+      },
+    );
+
+    const offlineError = () =>
+      Object.assign(new Error("client is offline"), { code: "unavailable" });
+
+    testWithEmulator(
+      "without a connection, a first booking is kept on the device (pending) and sent when the connection returns",
+      async () => {
+        const { book, db, getServerBooking, mockDispatch } = await setup();
+        const client = (db as any).instance;
+
+        // Network down: the transaction can't reach the server, regular writes are queued
+        await client.disableNetwork();
+        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
+
+        let done = false;
+        const booking = book(intervalA).then(() => (done = true));
+
+        await waitFor(() =>
+          expect(mockDispatch).toHaveBeenCalledWith(
+            enqueueNotification({
+              message: i18n.t(NotificationMessage.BookingPendingOffline, {
+                date: DateTime.fromISO(testSlot.date),
+                interval: intervalA,
+              }),
+              variant: NotifVariant.Error,
+            }),
+          ),
+        );
+        // Pending: not on the server, no success message yet
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        expect(done).toEqual(false);
+        expect(await getServerBooking()).toBeUndefined();
+        expect(mockDispatch).not.toHaveBeenCalledWith(
+          successNotification(intervalA),
+        );
+
+        // Connection back: the queued write reaches the server
+        await client.enableNetwork();
+        await booking;
+        expect(await getServerBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalA,
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          successNotification(intervalA),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "without a connection, a booking is never replaced (neither explicitly nor by a first-booking click)",
+      async () => {
+        const { book, getServerBooking, mockDispatch } = await setup({
+          date: testSlot.date,
+          interval: intervalA,
+        });
+
+        // Explicit replacement needs the server: refused with an error
+        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
+        await book(intervalB, intervalA);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          expect.objectContaining({
+            payload: expect.objectContaining({
+              message: i18n.t(NotificationMessage.BookingError, {
+                date: DateTime.fromISO(testSlot.date),
+                interval: intervalB,
+              }),
+            }),
+          }),
+        );
+
+        // A click treated as a first booking is checked against the local bookings (which have A)
+        vi.mocked(setDocInTransaction).mockRejectedValueOnce(offlineError());
+        await book(intervalB);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          alreadyBookedNotification(intervalA),
+        );
+
+        expect(await getServerBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalA,
+        });
       },
     );
   });

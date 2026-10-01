@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 
 import {
   Customer,
+  CustomerBookingEntry,
   SlotInterface,
   CustomerBase,
   normalizeEmail,
@@ -40,49 +41,111 @@ interface UpdateBooking<
 }
 
 /**
- * Thrown (inside the booking transaction) when the lesson is already booked with an interval
- * other than the one the athlete explicitly chose to replace.
+ * Thrown when the booking for the lesson isn't the one the write expects: the lesson is already booked
+ * (with an interval other than the one the athlete chose to replace), or the booking the athlete chose
+ * to replace no longer exists (`bookedInterval = null`, e.g. cancelled from another device).
  */
-class BookingConflictError extends Error {
+export class BookingConflictError extends Error {
   // eslint-disable-next-line require-jsdoc
-  constructor(public bookedInterval: string) {
-    super(`Lesson already booked with interval ${bookedInterval}`);
+  constructor(public bookedInterval: string | null) {
+    super(`Unexpected booking for the lesson: ${bookedInterval}`);
   }
 }
 
 /**
+ * Returns the booking document to write when booking `interval`, given the current `booking` for the lesson
+ * (`undefined` if not booked), or `undefined` if there's nothing to write (interval already booked).
+ *
+ * There is one booking per athlete per lesson: an existing booking is replaced only if `replacedInterval`
+ * (the interval the athlete explicitly confirmed to replace) matches it. A first booking (no `replacedInterval`)
+ * requires the lesson not to be booked yet. Otherwise throws `BookingConflictError`.
+ */
+export const getUpdatedBooking = (
+  booking: CustomerBookingEntry | undefined,
+  {
+    interval,
+    date,
+    replacedInterval,
+  }: { interval: string; date: string; replacedInterval?: string },
+): CustomerBookingEntry | undefined => {
+  // Interval already booked (e.g. a repeated click): nothing to do
+  if (booking?.interval === interval) return undefined;
+
+  if (booking?.interval !== replacedInterval) {
+    throw new BookingConflictError(booking?.interval ?? null);
+  }
+
+  // Keep the booking notes (if any) when replacing the interval
+  return booking?.bookingNotes
+    ? { interval, date, bookingNotes: booking.bookingNotes }
+    : { interval, date };
+};
+
+/** `true` if the browser reports no network connection */
+const isBrowserOffline = () =>
+  typeof navigator !== "undefined" && navigator.onLine === false;
+
+/** `true` if a Firestore operation failed because the server couldn't be reached */
+const isUnavailableError = (err: unknown) =>
+  (err as { code?: string } | null)?.code === "unavailable";
+
+/**
  * Dispatches booked interval to firestore.
  *
- * There is one booking per athlete per lesson (slot), so booking an interval writes over the interval
- * already booked for the same lesson, if any. That only happens if `replacedInterval` is passed and matches
- * the stored booking: it's the interval the athlete explicitly confirmed to replace. Otherwise an existing booking
- * is never changed (an error notification is shown instead).
+ * Booking an interval of a lesson already booked replaces the booked interval only if `replacedInterval`
+ * is passed and matches the stored booking (see `getUpdatedBooking`). Otherwise the booking isn't changed
+ * and an error notification is shown.
  *
  * The check is done in a transaction against the stored booking (not the local store), so that a stale view
- * (page still loading, another device, a second click while the first write is in flight) can't replace a booking.
+ * (page still loading, another device, a second click while the first write is in flight) can't replace,
+ * or recreate, a booking.
+ *
+ * Without a connection the transaction can't run. A first booking (no `replacedInterval`) is then checked
+ * against the local copy of the bookings and written as a regular write, which Firestore keeps on the device
+ * and sends when the connection returns (as it did before the transaction was introduced); the athlete is told
+ * it's pending. Replacing a booking always needs the connection.
  */
 export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
   ({ slotId, secretKey, interval, date, replacedInterval }): FirestoreThunk =>
-  async (dispatch, _, { getFirestore }) => {
+  async (dispatch, getState, { getFirestore }) => {
+    const payload = { interval, date, replacedInterval };
+
     try {
-      const db = getFirestore();
-
-      await setDocInTransaction(
-        doc(db, getBookedSlotDocPath(getOrganization(), secretKey, slotId)),
-        (booking) => {
-          // Interval already booked (e.g. a repeated click): nothing to do
-          if (booking?.interval === interval) return undefined;
-
-          if (booking && booking.interval !== replacedInterval) {
-            throw new BookingConflictError(booking.interval);
-          }
-
-          // Keep the booking notes (if any) when replacing the interval
-          return booking?.bookingNotes
-            ? { interval, date, bookingNotes: booking.bookingNotes }
-            : { interval, date };
-        },
+      const bookingRef = doc(
+        getFirestore(),
+        getBookedSlotDocPath(getOrganization(), secretKey, slotId),
       );
+
+      const writeFirstBookingOffline = async () => {
+        const localBooking = getState().firestore?.data?.bookedSlots?.[slotId];
+        const update = getUpdatedBooking(localBooking, payload);
+        if (!update) return;
+
+        dispatch(
+          enqueueNotification({
+            message: i18n.t(NotificationMessage.BookingPendingOffline, {
+              date: DateTime.fromISO(date),
+              interval,
+            }),
+            variant: NotifVariant.Error,
+          }),
+        );
+        // Resolves only once the server has the booking
+        await setDoc(bookingRef, update);
+      };
+
+      if (!replacedInterval && isBrowserOffline()) {
+        await writeFirstBookingOffline();
+      } else {
+        try {
+          await setDocInTransaction(bookingRef, (booking) =>
+            getUpdatedBooking(booking as CustomerBookingEntry, payload),
+          );
+        } catch (err) {
+          if (replacedInterval || !isUnavailableError(err)) throw err;
+          await writeFirstBookingOffline();
+        }
+      }
 
       // show success message
       dispatch(
@@ -98,10 +161,14 @@ export const bookInterval: UpdateBooking<{ replacedInterval?: string }> =
       if (err instanceof BookingConflictError) {
         dispatch(
           enqueueNotification({
-            message: i18n.t(NotificationMessage.BookingAlreadyExists, {
-              date: DateTime.fromISO(date),
-              interval: err.bookedInterval,
-            }),
+            message: err.bookedInterval
+              ? i18n.t(NotificationMessage.BookingAlreadyExists, {
+                  date: DateTime.fromISO(date),
+                  interval: err.bookedInterval,
+                })
+              : i18n.t(NotificationMessage.BookingChangedMeanwhile, {
+                  date: DateTime.fromISO(date),
+                }),
             variant: NotifVariant.Error,
           }),
         );
