@@ -61,9 +61,24 @@ cd [file join $repo_root packages client]
 spawn npx firebase deploy --project eisbuk --debug
 set firebase_pid [exp_pid]
 
+# Stops the deploy (the spawned process leads its own process group) without ever
+# blocking: SIGTERM (and SIGCONT, in case it is stopped), a short grace period,
+# then SIGKILL. We never `wait` for it here, so a deploy that ignores signals
+# cannot keep us from restoring package.json and exiting.
+proc kill_deploy {} {
+    global firebase_pid
+    catch {exec kill -s TERM -- -$firebase_pid}
+    catch {exec kill -s CONT -- -$firebase_pid}
+    after 3000
+    catch {exec kill -s KILL -- -$firebase_pid}
+    catch {close}
+    catch {wait -nowait}
+}
+
 trap {
-    catch {exec kill -TERM -$firebase_pid}
-    fail "interrupted, deploy killed" 130
+    restore_functions_package_json
+    kill_deploy
+    fail "interrupted, deploy killed (it may be partial)" 130
 } {SIGINT SIGTERM}
 
 set deletion_answered 0
@@ -83,9 +98,8 @@ expect {
         exp_continue
     }
     timeout {
-        catch {exec kill -TERM -$firebase_pid}
-        catch {close}
-        catch {wait}
+        restore_functions_package_json
+        kill_deploy
         fail "no progress for $timeout seconds, deploy killed (it may be partial)" 124
     }
     eof {

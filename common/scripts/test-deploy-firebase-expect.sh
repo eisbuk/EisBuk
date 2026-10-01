@@ -47,6 +47,13 @@ case "$FAKE_MODE" in
     echo "Error: There was an error deploying functions"; exit 2 ;;
   hang)
     while true; do echo "[debug] still working"; sleep 0.01; done ;;
+  hang-ignoring-signals)
+    trap '' TERM HUP INT
+    while true; do echo "[debug] still working"; sleep 0.01; done ;;
+  stopped)
+    trap '' TERM HUP INT
+    kill -STOP $$
+    while true; do sleep 1; done ;;
 esac
 EOF
 chmod +x "$work/bin/npx" "$work/bin/fake-firebase"
@@ -64,9 +71,12 @@ check() { # check <mode> <expected exit code>
     sed 's/^/    /' "$work/output-$mode.txt" | tail -20
   elif ! cmp -s "$work/package.json.orig" "$work/packages/functions/package.json"; then
     echo "FAIL $mode: packages/functions/package.json was not restored"; failures=$((failures + 1))
+  elif pgrep -f "$work/bin/fake-firebase" > /dev/null; then
+    echo "FAIL $mode: the fake deploy is still running"; failures=$((failures + 1))
   else
     echo "ok   $mode: exit code $code, package.json restored"
   fi
+  pkill -KILL -f "$work/bin/fake-firebase"
 }
 
 check complete 0
@@ -75,5 +85,7 @@ check silent 1
 check prompt-silent 1
 check fail 2
 check hang 124
+check hang-ignoring-signals 124
+check stopped 124
 
 [ "$failures" = 0 ] || { echo "$failures failures"; exit 1; }
