@@ -30,6 +30,12 @@ import {
  * (reconciliation) use the same functions.
  */
 
+/** `bookings/{secretKey}/attendedSlots/{slotId}`: a lesson attended without a booking, for the athlete's calendar */
+export interface AttendedSlot {
+  date: string;
+  interval: string;
+}
+
 interface SyncOptions {
   /** Compute the result without writing anything */
   dryRun?: boolean;
@@ -158,59 +164,70 @@ export const syncMonthBookingsCounts = (
 
 // #region attendance
 /**
- * An attendance document, with the bookkeeping kept next to `attendances`.
+ * An athlete's attendance entry as stored, made well-formed. The rules allow the admin to write partial entries:
+ * - `bookedInterval`: a string, otherwise `null`
+ * - `attendedInterval`: a string or `null`; when missing, the automatic value (the booked interval) on a booked entry,
+ *   `null` otherwise
+ * - `bookingNotes`: kept if it's a string
  *
- * `cancelledAbsences.{customerId}`: the admin marked the athlete absent, then the booking was cancelled. The entry
- * is removed from `attendances` (clients show no entry for an athlete who hasn't booked and hasn't attended), and
- * the absence is restored if the athlete books again. Clients only read `date` and `attendances`, so this field
- * is invisible to them.
+ * @returns `undefined` if there's no entry (or it isn't an object)
  */
-export type AttendanceDocument = SlotAttendnace & {
-  cancelledAbsences?: Record<string, boolean>;
+export const normalizeAttendanceEntry = (
+  raw: unknown
+): CustomerAttendance | undefined => {
+  if (!raw || typeof raw !== "object") return undefined;
+  const { bookedInterval, attendedInterval, bookingNotes } = raw as Record<
+    string,
+    unknown
+  >;
+  const booked = typeof bookedInterval === "string" ? bookedInterval : null;
+  const entry: CustomerAttendance = {
+    bookedInterval: booked,
+    attendedInterval:
+      typeof attendedInterval === "string" || attendedInterval === null
+        ? attendedInterval
+        : booked,
+  };
+  if (typeof bookingNotes === "string") entry.bookingNotes = bookingNotes;
+  return entry;
 };
 
-export interface DerivedAttendance {
-  entry: CustomerAttendance | undefined;
-  /** Whether the athlete's absence is kept in `cancelledAbsences` */
-  cancelledAbsence: boolean;
-}
-
 /**
- * Derives an athlete's attendance entry for a slot from their current booking (if any) and the current entry.
+ * Derives an athlete's attendance entry for a slot from their current booking (if any) and the current entry
+ * (normalized, see `normalizeAttendanceEntry`).
  *
  * On booking, `attendedInterval` is initialised to the booked interval: while the entry is booked and the two are
  * equal, `attendedInterval` holds this automatic value and follows the booking. Anything else was recorded by the
  * admin (a different interval, `null` for absence, or attendance of an athlete who hadn't booked) and
- * `attendedInterval` is never changed here:
+ * `attendedInterval` is never changed while there's a booking:
  * - booking changed: `bookedInterval` follows the booking, `attendedInterval` is kept
- * - booking cancelled: an automatic entry is removed; attendance recorded by the admin is kept with
- *   `bookedInterval: null`; a recorded absence is removed and kept in `cancelledAbsences`
- * - booked again after that: the absence comes back (`attendedInterval: null`)
- * so the result doesn't depend on the order the events are processed in.
+ * - booking cancelled: the entry is kept only if the admin recorded that the athlete attended (an interval different
+ *   from the automatic one), as `{ bookedInterval: null, attendedInterval }`, the shape of attendance without a
+ *   booking. Otherwise (automatic value, or absence) the entry is removed: an athlete absent from a lesson they
+ *   haven't booked has no entry.
  *
- * Limitation: an admin confirming attendance with exactly the booked interval can't be told apart from the
- * automatic value (the data model doesn't record who set it), so in that case it follows the booking too.
+ * Known limitations:
+ * - an admin confirming attendance with exactly the booked interval can't be told apart from the automatic value
+ *   (the data model doesn't record who set it), so in that case it follows the booking too
+ * - an absence recorded before the athlete cancels and books the same lesson again within seconds survives or not
+ *   depending on the order the events are processed in (cancellation first: removed, then the new booking gets the
+ *   automatic value)
  *
  * With `bookedPartOnly`, only `bookedInterval` of an existing entry is updated: entries aren't added or removed and
  * the rest of the entry is kept as it is. The reconciliation uses this for past lessons, where `attendedInterval`
  * may be the club's record of the lesson even when equal to the booked interval.
+ *
+ * @returns the entry to store, or `undefined` if there should be no entry
  */
 export const deriveAttendanceEntry = (
   booking: CustomerBookingEntry | undefined,
   current: CustomerAttendance | undefined,
-  {
-    bookedPartOnly = false,
-    cancelledAbsence = false,
-  }: { bookedPartOnly?: boolean; cancelledAbsence?: boolean } = {}
-): DerivedAttendance => {
+  { bookedPartOnly = false }: { bookedPartOnly?: boolean } = {}
+): CustomerAttendance | undefined => {
   if (bookedPartOnly) {
-    return {
-      entry:
-        booking && current
-          ? { ...current, bookedInterval: booking.interval }
-          : current,
-      cancelledAbsence,
-    };
+    return booking && current
+      ? { ...current, bookedInterval: booking.interval }
+      : current;
   }
 
   const isAutomatic =
@@ -219,33 +236,23 @@ export const deriveAttendanceEntry = (
       current.attendedInterval === current.bookedInterval);
 
   if (!booking) {
-    if (!current) return { entry: undefined, cancelledAbsence };
-    if (isAutomatic) return { entry: undefined, cancelledAbsence: false };
-    if (!current.attendedInterval) {
-      return { entry: undefined, cancelledAbsence: true };
-    }
+    if (isAutomatic || !current!.attendedInterval) return undefined;
     return {
-      entry: {
-        bookedInterval: null,
-        attendedInterval: current.attendedInterval,
-      },
-      cancelledAbsence: false,
+      bookedInterval: null,
+      attendedInterval: current!.attendedInterval,
     };
   }
 
   const entry: CustomerAttendance = {
     bookedInterval: booking.interval,
-    attendedInterval:
-      !current && cancelledAbsence
-        ? null
-        : isAutomatic
-        ? booking.interval
-        : current!.attendedInterval,
+    attendedInterval: isAutomatic
+      ? booking.interval
+      : current!.attendedInterval,
   };
   if (booking.bookingNotes) {
     entry.bookingNotes = booking.bookingNotes;
   }
-  return { entry, cancelledAbsence: false };
+  return entry;
 };
 
 /**
@@ -275,7 +282,7 @@ export interface BookingCandidate {
  * (secret key changed): the one under the customer's current secret key; otherwise the most recently updated one
  * (and, for equal update times, the one under the greatest secret key).
  *
- * The data triggers, the check and the repair all use this, so they agree on which interval the athlete booked.
+ * The data triggers, the checks and the repair all use this, so they agree on which interval the athlete booked.
  */
 export const selectBooking = <T extends BookingCandidate>(
   candidates: T[],
@@ -292,7 +299,8 @@ export const selectBooking = <T extends BookingCandidate>(
  *
  * Reads the athlete's bookings documents (for the customer id), their booking for the slot under each of them, the
  * customer (for the current secret key, see `selectBooking`) and the slot's attendance in one transaction, so the
- * result doesn't depend on which event triggered the sync, or how many times.
+ * result doesn't depend on which event triggered the sync, or how many times. A malformed entry is rewritten in its
+ * normalized form.
  *
  * @param secretKeys the athlete's bookings document ids (see `getSecretKeys`)
  * @returns `null` if none of the bookings documents (or the slot) can be found, or they belong to different
@@ -366,36 +374,38 @@ export const syncAttendanceEntry = (
       (customer.data() as Customer | undefined)?.secretKey
     )?.booking;
 
-    const attendance = attendanceSnap.data() as AttendanceDocument | undefined;
-    const before = attendance?.attendances?.[id];
-    const cancelledAbsence = Boolean(attendance?.cancelledAbsences?.[id]);
-    const after = deriveAttendanceEntry(booking, before, {
-      bookedPartOnly,
-      cancelledAbsence,
-    });
+    const stored = (attendanceSnap.data() as SlotAttendnace | undefined)
+      ?.attendances?.[id];
+    const after = deriveAttendanceEntry(
+      booking,
+      normalizeAttendanceEntry(stored),
+      { bookedPartOnly }
+    );
 
-    const changed =
-      !_.isEqual(before, after.entry) ||
-      cancelledAbsence !== after.cancelledAbsence;
+    // Compared with the stored entry: a malformed entry is rewritten
+    const changed = !_.isEqual(stored, after);
     if (changed && !dryRun) {
       if (slotDate) {
-        // A new attendance document: only reached with a booking, so there's an entry and no cancelled absence
+        // A new attendance document: only reached with a booking, so there's an entry
         tx.set(attendanceRef, {
           date: slotDate,
-          attendances: { [id]: after.entry! },
+          attendances: { [id]: after! },
         } as SlotAttendnace);
       } else {
         tx.update(
           attendanceRef,
           new FieldPath("attendances", id),
-          after.entry || FieldValue.delete(),
-          new FieldPath("cancelledAbsences", id),
-          after.cancelledAbsence || FieldValue.delete()
+          after || FieldValue.delete()
         );
       }
     }
 
-    return { customerId: id, before, after: after.entry, changed };
+    return {
+      customerId: id,
+      before: stored as CustomerAttendance | undefined,
+      after,
+      changed,
+    };
   });
 };
 
@@ -404,23 +414,37 @@ export const syncAttendanceEntry = (
  * attended without a booking in their calendar (`bookings/{secretKey}/attendedSlots/{slotId}`); booked lessons are
  * shown from the booking.
  */
-export const getAttendedSlotInterval = (entry?: CustomerAttendance) =>
-  (entry && !entry.bookedInterval && entry.attendedInterval) || null;
+export const getAttendedSlotInterval = (entry?: unknown) => {
+  const normalized = normalizeAttendanceEntry(entry);
+  return (
+    (normalized && !normalized.bookedInterval && normalized.attendedInterval) ||
+    null
+  );
+};
 
 /**
  * Brings an athlete's attended slot in line with their attendance entry for the slot, reading the attendance and
  * writing the attended slot in one transaction (an attended slot from an older read can't be written after a newer
- * one).
+ * one). The attended slot is kept under the customer's current secret key; any under their other bookings documents
+ * is removed.
  *
  * @returns `null` if the customer (or their secret key) can't be found (nothing written)
  */
-export const syncAttendedSlot = (
+export const syncAttendedSlot = async (
   db: Firestore,
   organization: string,
   slotId: string,
-  customerId: string
-): Promise<{ interval: string | null } | null> => {
+  customerId: string,
+  { dryRun = false }: SyncOptions = {}
+): Promise<SyncResult<AttendedSlot | undefined> | null> => {
   const orgRef = getOrgRef(db, organization);
+  const secretKeys = await getSecretKeys(db, organization, customerId);
+  const attendedSlotRef = (secretKey: string) =>
+    orgRef
+      .collection(OrgSubCollection.Bookings)
+      .doc(secretKey)
+      .collection(BookingSubCollection.AttendedSlots)
+      .doc(slotId);
 
   return db.runTransaction(async (tx) => {
     const [attendanceSnap, customerSnap] = await tx.getAll(
@@ -431,22 +455,29 @@ export const syncAttendedSlot = (
     const secretKey = (customerSnap.data() as Customer | undefined)?.secretKey;
     if (!secretKey) return null;
 
+    const others = secretKeys.filter((key) => key !== secretKey);
+    const [current, ...stale] = await tx.getAll(
+      ...[secretKey, ...others].map(attendedSlotRef)
+    );
+
     const attendance = attendanceSnap.data() as SlotAttendnace | undefined;
     const interval = getAttendedSlotInterval(
       attendance?.attendances?.[customerId]
     );
-    const attendedSlotRef = orgRef
-      .collection(OrgSubCollection.Bookings)
-      .doc(secretKey)
-      .collection(BookingSubCollection.AttendedSlots)
-      .doc(slotId);
+    const before = current.data() as AttendedSlot | undefined;
+    const after = interval ? { date: attendance!.date, interval } : undefined;
+    const staleRefs = stale.filter((snap) => snap.exists).map(({ ref }) => ref);
 
-    if (interval) {
-      tx.set(attendedSlotRef, { date: attendance!.date, interval });
-    } else {
-      tx.delete(attendedSlotRef);
+    const changed = !_.isEqual(before, after) || staleRefs.length > 0;
+    if (changed && !dryRun) {
+      if (after) {
+        tx.set(current.ref, after);
+      } else {
+        tx.delete(current.ref);
+      }
+      staleRefs.forEach((ref) => tx.delete(ref));
     }
-    return { interval };
+    return { before, after, changed };
   });
 };
 // #endregion attendance

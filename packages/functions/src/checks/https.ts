@@ -8,14 +8,13 @@ import { wrapHttpsOnCallHandler } from "../sentry-serverless-firebase";
 
 import { checkIsAdmin, throwUnauth } from "../utils";
 
-import { newSanityChecker } from "./api";
+import { newSanityChecker, runBookedSlotsAttendanceAutofix } from "./api";
 
 import {
   attendanceSlotMismatchAutofix,
   bookingsAutofix,
 } from "./slotAttendance";
 import { slotsSlotsByDayAutofix } from "./slotSlotsByDay";
-import { bookedSlotsAttendanceAutofix } from "./bookingsAttendance";
 import {
   reconcileBookingDerivedData,
   summarizeReport,
@@ -218,23 +217,7 @@ export const dbBookedSlotsAttendanceAutofix = functions
       async ({ organization }: { organization: string }, { auth }) => {
         if (!(await checkIsAdmin(organization, auth))) throwUnauth();
 
-        const db = admin.firestore();
-        const checker = newSanityChecker(
-          db,
-          organization,
-          SanityCheckKind.BookedSlotsAttendance
-        );
-
-        // Always start from fresh data: a stored report can be out of date
-        const report = await checker.checkAndWrite();
-
-        const attendanceFixes = await bookedSlotsAttendanceAutofix(
-          db,
-          organization
-        );
-        checker.writeReport({ ...report, attendanceFixes });
-
-        return attendanceFixes;
+        return runBookedSlotsAttendanceAutofix(admin.firestore(), organization);
       }
     )
   );

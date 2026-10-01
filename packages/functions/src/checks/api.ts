@@ -5,7 +5,10 @@ import { Firestore } from "./types";
 import { findSlotAttendanceMismatches } from "./slotAttendance";
 import { findSlotSlotsByDayMismatches } from "./slotSlotsByDay";
 import { findSlotBookingsMismatches } from "./slotBookings";
-import { findBookedSlotsAttendanceMismatches } from "./bookingsAttendance";
+import {
+  bookedSlotsAttendanceAutofix,
+  findBookedSlotsAttendanceMismatches,
+} from "./bookingsAttendance";
 
 const getSanityChecksRef = (
   db: Firestore,
@@ -77,3 +80,24 @@ export const newSanityChecker = <K extends SanityCheckKind>(
 
 type SanityCheckReport<K extends SanityCheckKind> =
   FirestoreSchema["sanityChecks"][string][K];
+
+/**
+ * What `dbBookedSlotsAttendanceAutofix` runs: a fresh check (stored), then the repair, stored with the check.
+ */
+export const runBookedSlotsAttendanceAutofix = async (
+  db: Firestore,
+  organization: string
+) => {
+  const checker = newSanityChecker(
+    db,
+    organization,
+    SanityCheckKind.BookedSlotsAttendance
+  );
+
+  // Always start from fresh data: a stored report can be out of date
+  const report = await checker.checkAndWrite();
+  const attendanceFixes = await bookedSlotsAttendanceAutofix(db, organization);
+  await checker.writeReport({ ...report, attendanceFixes });
+
+  return attendanceFixes;
+};

@@ -154,11 +154,6 @@ const getAttendance = async (
   return snap.data()?.attendances?.[athlete.id];
 };
 
-/** Athletes marked absent whose booking was then cancelled (kept outside of `attendances`) */
-const getCancelledAbsences = async (organization: string, slotId: string) =>
-  (await adminDb.doc(getAttendanceDocPath(organization, slotId)).get()).data()
-    ?.cancelledAbsences || {};
-
 /** The athlete's attended slot (shown in their calendar for attendance without booking) */
 const getAttendedSlot = async (
   organization: string,
@@ -611,14 +606,10 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
             bookedInterval: null,
             attendedInterval: intervals.short,
           });
-          // The recorded absence is removed from the entries (clients show nothing for an athlete who neither
-          // booked nor attended) and kept aside, for a rebooking
+          // Absent and not booked: no entry
           expect(await getAttendance(organization, slotId, absent)).toEqual(
             undefined
           );
-          expect(await getCancelledAbsences(organization, slotId)).toEqual({
-            [absent.id]: true,
-          });
           // No admin edit: the entry goes with the booking
           expect(await getAttendance(organization, slotId, untouched)).toEqual(
             undefined
@@ -646,7 +637,6 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
             bookedInterval: null,
             attendedInterval: intervals.late,
           });
-          expect(await getCancelledAbsences(organization, slotId)).toEqual({});
           expect(await getAttendedSlot(organization, slotId, absent)).toEqual({
             date,
             interval: intervals.late,
@@ -656,78 +646,118 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
     );
 
     testWithEmulator(
-      "keeps an admin absence through cancel and rebook, whichever event is processed last",
+      "keeps an admin absence through a booking change, but not through a cancellation",
       async () => {
         const {
           organization,
-          athletes: [cancelFirst, cancelLast],
-        } = await setUp([slotId], 2);
-        const absent = (interval: string | null) => ({
-          bookedInterval: interval,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await book(organization, athlete, slotId, intervals.long);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: intervals.long,
+          })
+        );
+        await adminWriteAttendance(organization, slotId, athlete, {
+          bookedInterval: intervals.long,
           attendedInterval: null,
         });
 
-        await book(organization, cancelFirst, slotId, intervals.long);
-        await book(organization, cancelLast, slotId, intervals.long);
+        await book(organization, athlete, slotId, intervals.short);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: null,
+          })
+        );
+
+        // Absent without a booking is no entry. Booking again gets the automatic value.
+        // (Known limitation: cancelling and booking again within seconds can keep or drop the absence, depending on
+        // the order the events are processed in.)
+        await cancel(organization, athlete, slotId);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual(
+            undefined
+          )
+        );
+        await book(organization, athlete, slotId, intervals.long);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: intervals.long,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "reads partial entries (missing fields, allowed by the rules) and rewrites them complete",
+      async () => {
+        const {
+          organization,
+          athletes: [missingAttended, missingBooked],
+        } = await setUp([slotId], 2);
+        const attendanceRef = adminDb.doc(
+          getAttendanceDocPath(organization, slotId)
+        );
+
+        await book(organization, missingAttended, slotId, intervals.long);
+        await book(organization, missingBooked, slotId, intervals.long);
         await waitFor(async () => {
           expect(
-            await getAttendance(organization, slotId, cancelFirst)
+            (await getAttendance(organization, slotId, missingAttended))
+              ?.bookedInterval
+          ).toEqual(intervals.long);
+          expect(
+            (await getAttendance(organization, slotId, missingBooked))
+              ?.bookedInterval
+          ).toEqual(intervals.long);
+        });
+
+        // Partial entries written by an admin
+        await attendanceRef.update({
+          [`attendances.${missingAttended.id}`]: {
+            bookedInterval: intervals.long,
+          },
+          [`attendances.${missingBooked.id}`]: {
+            attendedInterval: intervals.late,
+          },
+        });
+
+        await waitFor(async () => {
+          // No attended interval on a booked entry: the automatic value
+          expect(
+            await getAttendance(organization, slotId, missingAttended)
           ).toEqual({
             bookedInterval: intervals.long,
             attendedInterval: intervals.long,
           });
-          expect(await getAttendance(organization, slotId, cancelLast)).toEqual(
-            {
-              bookedInterval: intervals.long,
-              attendedInterval: intervals.long,
-            }
-          );
+          // The booked interval comes from the booking, the admin's attended interval is kept
+          expect(
+            await getAttendance(organization, slotId, missingBooked)
+          ).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: intervals.late,
+          });
         });
-        await adminWriteAttendance(
-          organization,
-          slotId,
-          cancelFirst,
-          absent(intervals.long)
-        );
-        await adminWriteAttendance(
-          organization,
-          slotId,
-          cancelLast,
-          absent(intervals.long)
-        );
 
-        // The cancellation is processed before the new booking
-        await cancel(organization, cancelFirst, slotId);
+        // A booking change on a partial entry (written again, the guard leaves an unchanged booked part alone)
+        await attendanceRef.update({
+          [`attendances.${missingAttended.id}`]: {
+            bookedInterval: intervals.long,
+          },
+        });
+        await book(organization, missingAttended, slotId, intervals.short);
         await waitFor(async () =>
-          expect(await getCancelledAbsences(organization, slotId)).toEqual({
-            [cancelFirst.id]: true,
+          expect(
+            await getAttendance(organization, slotId, missingAttended)
+          ).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.short,
           })
         );
-        await book(organization, cancelFirst, slotId, intervals.short);
-
-        // The cancellation is processed after the new booking
-        await book(organization, cancelLast, slotId, intervals.short);
-        await waitFor(async () =>
-          expect(await getAttendance(organization, slotId, cancelLast)).toEqual(
-            absent(intervals.short)
-          )
-        );
-        await deliverBookingEvent(
-          "createAttendanceForBooking",
-          bookingPath(organization, cancelLast, slotId),
-          { date, interval: intervals.long },
-          null
-        );
-
-        // Same end state
-        await waitFor(async () => {
-          expect(
-            await getAttendance(organization, slotId, cancelFirst)
-          ).toEqual(absent(intervals.short));
-          expect(await getAttendance(organization, slotId, cancelLast)).toEqual(
-            absent(intervals.short)
-          );
-        });
       }
     );
 

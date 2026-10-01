@@ -29,6 +29,7 @@ import { getCustomerStats } from "./utils";
 import {
   getAttendedSlotInterval,
   getSecretKeys,
+  normalizeAttendanceEntry,
   syncAttendanceEntry,
   syncAttendedSlot,
   syncSlotBookingsCount,
@@ -59,23 +60,6 @@ const bookingSyncRuntimeOptions: functions.RuntimeOptions = {
  */
 const maxRetriedEventAge = 24 * 60 * 60 * 1000;
 
-/**
- * Waits for all the (independent) syncs of a trigger, and fails if any of them failed, for the event to be retried.
- * The error carries error codes only: Firestore error messages can contain document paths, with secret keys.
- */
-const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
-  const results = await Promise.allSettled(syncs);
-  const codes = results
-    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
-    .map(({ reason }) => (reason as { code?: unknown })?.code ?? "unknown");
-  if (codes.length) {
-    throw new Error(
-      `${name}: ${codes.length} of ${
-        results.length
-      } syncs failed (codes: ${codes.join(", ")})`
-    );
-  }
-};
 const isTooOldToRetry = (name: string, context: functions.EventContext) => {
   const age = Date.now() - Date.parse(context.timestamp);
   if (age <= maxRetriedEventAge) return false;
@@ -84,6 +68,53 @@ const isTooOldToRetry = (name: string, context: functions.EventContext) => {
     timestamp: context.timestamp,
   });
   return true;
+};
+
+/**
+ * gRPC codes of errors worth retrying: they can go away by themselves (contention, timeouts, unavailability, and
+ * FAILED_PRECONDITION for the recount's index still building after a deploy).
+ */
+const transientErrorCodes = new Set([
+  2, // UNKNOWN
+  4, // DEADLINE_EXCEEDED
+  8, // RESOURCE_EXHAUSTED
+  9, // FAILED_PRECONDITION
+  10, // ABORTED
+  13, // INTERNAL
+  14, // UNAVAILABLE
+]);
+const getErrorCode = (error: unknown) =>
+  (error as { code?: unknown } | undefined)?.code;
+
+/**
+ * Waits for all the (independent) syncs of a trigger.
+ *
+ * If any failed with a transient error, fails for the event to be retried (`failurePolicy`). Other failures (invalid
+ * data, a bug) would fail on every retry: they are logged and the event is not retried; the reconciliation reports
+ * what they left. Logs and errors carry error codes only: Firestore error messages can contain document paths, with
+ * secret keys.
+ */
+const settleAll = async (name: string, syncs: Promise<unknown>[]) => {
+  const results = await Promise.allSettled(syncs);
+  const codes = results
+    .filter((r): r is PromiseRejectedResult => r.status === "rejected")
+    .map(({ reason }) => getErrorCode(reason));
+  const transient = codes.filter((code) =>
+    transientErrorCodes.has(code as number)
+  );
+  if (transient.length) {
+    throw new Error(
+      `${name}: ${transient.length} of ${
+        results.length
+      } syncs failed with transient errors (codes: ${transient.join(", ")})`
+    );
+  }
+  if (codes.length) {
+    functions.logger.error(
+      `${name}: ${codes.length} of ${results.length} syncs failed, not retried`,
+      { codes: codes.map((code) => String(code ?? "none")) }
+    );
+  }
 };
 
 export const addIdToSlot = functions
@@ -403,7 +434,9 @@ export const countSlotsBookings = functions
         //
         // Until the collection group index the recount needs is ready (right after a deploy), this fails and
         // is retried (`failurePolicy`).
-        await syncSlotBookingsCount(db, organization, bookingId, date);
+        await settleAll("countSlotsBookings", [
+          syncSlotBookingsCount(db, organization, bookingId, date),
+        ]);
       }
     )
   );
@@ -435,23 +468,26 @@ export const createAttendanceForBooking = functions
         >;
         const db = admin.firestore();
 
-        // A booking under any of the athlete's bookings documents counts
-        const bookings = await db
-          .collection(Collection.Organizations)
-          .doc(organization)
-          .collection(OrgSubCollection.Bookings)
-          .doc(secretKey)
-          .get();
-        const customerId = (bookings.data() as CustomerBookings | undefined)
-          ?.id;
-        const secretKeys = customerId
-          ? await getSecretKeys(db, organization, customerId)
-          : [];
+        const sync = async () => {
+          // A booking under any of the athlete's bookings documents counts
+          const bookings = await db
+            .collection(Collection.Organizations)
+            .doc(organization)
+            .collection(OrgSubCollection.Bookings)
+            .doc(secretKey)
+            .get();
+          const customerId = (bookings.data() as CustomerBookings | undefined)
+            ?.id;
+          const secretKeys = customerId
+            ? await getSecretKeys(db, organization, customerId)
+            : [];
 
-        await syncAttendanceEntry(db, organization, bookingId, [
-          secretKey,
-          ...secretKeys,
-        ]);
+          await syncAttendanceEntry(db, organization, bookingId, [
+            secretKey,
+            ...secretKeys,
+          ]);
+        };
+        await settleAll("createAttendanceForBooking", [sync()]);
       }
     )
   );
@@ -602,7 +638,10 @@ export const syncAttendanceWithBookings = functions
           ]),
         ].filter(
           (id) =>
-            !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id]))
+            !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id])) ||
+            // A partial entry (the rules allow it): rewritten in its normalized form
+            (!isEqual(before?.[id], after?.[id]) &&
+              !isEqual(normalizeAttendanceEntry(after?.[id]), after?.[id]))
         );
 
         await settleAll(
