@@ -35,9 +35,9 @@ import {
  * - counts: recounted for every month with a difference
  * - attendance, lessons from `today` on: the entry is derived from the booking (see `deriveAttendanceEntry`);
  *   an `attendedInterval` set by the admin (different from the booked interval) is kept
- * - attendance, past lessons: only the booked part of existing entries (`bookedInterval`, `bookingNotes`).
- *   Missing and stray entries of past lessons are reported, not changed: the attendance may be the club's
- *   record of the lesson, and only the club can tell.
+ * - attendance, past lessons: only `bookedInterval` of existing entries. Other differences of past lessons
+ *   (missing entries, entries without a booking, booking notes) are reported, not changed: the attendance may be
+ *   the club's record of the lesson, and only the club can tell.
  */
 
 /** Why a difference is reported but not repaired */

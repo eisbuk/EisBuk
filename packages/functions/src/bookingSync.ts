@@ -167,9 +167,9 @@ export const syncMonthBookingsCounts = (
  * Limitation: an admin confirming attendance with exactly the booked interval can't be told apart from the
  * automatic value (the data model doesn't record who set it), so in that case it follows the booking too.
  *
- * With `bookedPartOnly`, only the booked part (`bookedInterval`, `bookingNotes`) of an existing entry is updated:
- * entries aren't added or removed and `attendedInterval` is kept as it is. The reconciliation uses this for past
- * lessons, where `attendedInterval` may be the club's record of the lesson even when equal to the booked interval.
+ * With `bookedPartOnly`, only `bookedInterval` of an existing entry is updated: entries aren't added or removed and
+ * the rest of the entry is kept as it is. The reconciliation uses this for past lessons, where `attendedInterval`
+ * may be the club's record of the lesson even when equal to the booked interval.
  *
  * @returns the entry to store, or `undefined` if there should be no entry
  */
@@ -180,12 +180,7 @@ export const deriveAttendanceEntry = (
 ): CustomerAttendance | undefined => {
   if (bookedPartOnly) {
     if (!booking || !current) return current;
-    const entry: CustomerAttendance = {
-      bookedInterval: booking.interval,
-      attendedInterval: current.attendedInterval,
-    };
-    if (booking.bookingNotes) entry.bookingNotes = booking.bookingNotes;
-    return entry;
+    return { ...current, bookedInterval: booking.interval };
   }
 
   const isAutomatic =
