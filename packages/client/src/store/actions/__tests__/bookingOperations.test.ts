@@ -139,14 +139,14 @@ describe("Booking operations", () => {
         });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
-          collection(db, getBookedSlotsPath(organization, secretKey))
+          collection(db, getBookedSlotsPath(organization, secretKey)),
         );
         // the updated `bookedSlots` should contain 2 default entries and one new (testBooking)
         expect(bookedSlotsForCustomer.docs.length).toEqual(3);
         // check the updated booking
         const updatedBooking = (
           await getDoc(
-            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId))
+            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId)),
           )
         ).data();
         expect(updatedBooking).toEqual({
@@ -161,9 +161,9 @@ describe("Booking operations", () => {
               interval: intervals[0],
             }),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     // testWithEmulator(
@@ -183,7 +183,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -194,9 +194,195 @@ describe("Booking operations", () => {
             }),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
+    );
+  });
+
+  describe("'bookInterval' with an existing booking for the same lesson (#982)", () => {
+    const [intervalA, intervalB, intervalC] = intervals;
+    const bookingNotes = "Arriving 10 minutes late";
+
+    /**
+     * Sets up the test slot and (optionally) an existing booking for it, returns the thunk runner and a booking getter.
+     */
+    const setup = async (existingBooking?: CustomerBookingEntry) => {
+      const store = getNewStore();
+      const { db, organization } = await getTestEnv({
+        auth: false,
+        setup: (db, { organization }) =>
+          Promise.all([
+            setupTestSlots({
+              db,
+              store,
+              slots: { [bookingId]: testSlot },
+              organization,
+            }),
+            setupTestBookings({
+              db,
+              store,
+              bookedSlots: existingBooking
+                ? { [bookingId]: existingBooking }
+                : {},
+              customer: saul,
+              organization,
+            }),
+          ]),
+      });
+      getOrganizationSpy.mockReturnValue(organization);
+      const mockDispatch = vi.fn();
+
+      const book = (interval: string, replacedInterval?: string) =>
+        runThunk(
+          bookInterval({
+            secretKey,
+            slotId: bookingId,
+            interval,
+            date: testSlot.date,
+            replacedInterval,
+          }),
+          mockDispatch,
+          store.getState,
+          { getFirestore: () => db },
+        );
+
+      const getBooking = async () =>
+        (
+          await getDoc(
+            doc(db, getBookedSlotDocPath(organization, secretKey, bookingId)),
+          )
+        ).data();
+
+      return { book, getBooking, mockDispatch };
+    };
+
+    const successNotification = (interval: string) =>
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.BookingSuccess, {
+          date: DateTime.fromISO(testSlot.date),
+          interval,
+        }),
+        variant: NotifVariant.Success,
+      });
+    const alreadyBookedNotification = (bookedInterval: string) =>
+      enqueueNotification({
+        message: i18n.t(NotificationMessage.BookingAlreadyExists, {
+          date: DateTime.fromISO(testSlot.date),
+          interval: bookedInterval,
+        }),
+        variant: NotifVariant.Error,
+      });
+
+    testWithEmulator(
+      "should not change the booking when another interval is booked without an explicit replacement",
+      async () => {
+        const { book, getBooking, mockDispatch } = await setup({
+          date: testSlot.date,
+          interval: intervalA,
+          bookingNotes,
+        });
+
+        await book(intervalB);
+
+        expect(await getBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalA,
+          bookingNotes,
+        });
+        expect(mockDispatch).toHaveBeenCalledTimes(1);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          alreadyBookedNotification(intervalA),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should replace the booked interval, keeping the booking notes, when the replacement is explicit",
+      async () => {
+        const { book, getBooking, mockDispatch } = await setup({
+          date: testSlot.date,
+          interval: intervalA,
+          bookingNotes,
+        });
+
+        await book(intervalB, intervalA);
+
+        expect(await getBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalB,
+          bookingNotes,
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          successNotification(intervalB),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should not replace the booking if it changed after the athlete confirmed the replacement",
+      async () => {
+        // Athlete confirmed replacing A with B, but meanwhile (e.g. from another device) the booking was changed to C
+        const { book, getBooking, mockDispatch } = await setup({
+          date: testSlot.date,
+          interval: intervalC,
+        });
+
+        await book(intervalB, intervalA);
+
+        expect(await getBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalC,
+        });
+        expect(mockDispatch).toHaveBeenCalledWith(
+          alreadyBookedNotification(intervalC),
+        );
+      },
+    );
+
+    testWithEmulator(
+      "should leave the booking (and its notes) as is when booking the interval already booked",
+      async () => {
+        const { book, getBooking } = await setup({
+          date: testSlot.date,
+          interval: intervalA,
+          bookingNotes,
+        });
+
+        await book(intervalA);
+
+        expect(await getBooking()).toEqual({
+          date: testSlot.date,
+          interval: intervalA,
+          bookingNotes,
+        });
+      },
+    );
+
+    testWithEmulator(
+      "should book exactly one interval when two intervals of a lesson not booked yet are clicked in quick succession",
+      async () => {
+        const { book, getBooking, mockDispatch } = await setup();
+
+        // Second click happens while the first write is still in flight
+        await Promise.all([book(intervalA), book(intervalB)]);
+
+        const booking = await getBooking();
+        expect([intervalA, intervalB]).toContain(booking?.interval);
+        const otherInterval =
+          booking?.interval === intervalA ? intervalB : intervalA;
+        // One click booked, the other one was refused (didn't replace the first one)
+        expect(mockDispatch).toHaveBeenCalledTimes(2);
+        expect(mockDispatch).toHaveBeenCalledWith(
+          successNotification(booking!.interval),
+        );
+        expect(mockDispatch).toHaveBeenCalledWith(
+          alreadyBookedNotification(booking!.interval),
+        );
+        expect(mockDispatch).not.toHaveBeenCalledWith(
+          successNotification(otherInterval),
+        );
+      },
     );
   });
 
@@ -240,7 +426,7 @@ describe("Booking operations", () => {
         });
         // get all `bookedSlots` for customer
         const bookedSlotsForCustomer = await getDocs(
-          collection(db, getBookedSlotsPath(organization, secretKey))
+          collection(db, getBookedSlotsPath(organization, secretKey)),
         );
         // the updated `bookedSlots` should contain 2 default entries (with testBooking removed)
         expect(bookedSlotsForCustomer.docs.length).toEqual(2);
@@ -252,9 +438,9 @@ describe("Booking operations", () => {
               interval: intervals[0],
             }),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -273,7 +459,7 @@ describe("Booking operations", () => {
           date: baseSlot.date,
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -284,9 +470,9 @@ describe("Booking operations", () => {
             }),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -341,8 +527,8 @@ describe("Booking operations", () => {
         const updatedBooking = await getDoc(
           doc(
             db,
-            getBookedSlotDocPath(organization, saul.secretKey, testSlot.id)
-          )
+            getBookedSlotDocPath(organization, saul.secretKey, testSlot.id),
+          ),
         );
         // the updated booking should contain the same data with 'bookingNotes' added
         expect(updatedBooking.data()).toEqual({
@@ -354,9 +540,9 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.BookingNotesUpdated),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -376,7 +562,7 @@ describe("Booking operations", () => {
           bookingNotes: "",
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFirestore,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -384,9 +570,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.BookingNotesError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -416,17 +602,17 @@ describe("Booking operations", () => {
       // Check updates
       await waitFor(async () => {
         const bookingsSnap = await getDoc(
-          doc(db, getBookingsDocPath(organization, saul.secretKey))
+          doc(db, getBookingsDocPath(organization, saul.secretKey)),
         );
         expect(bookingsSnap.data()).toEqual(
-          sanitizeCustomer({ ...saul, name: "Jimmy" })
+          sanitizeCustomer({ ...saul, name: "Jimmy" }),
         );
       });
       expect(mockDispatch).toHaveBeenCalledWith(
         enqueueNotification({
           message: i18n.t(NotificationMessage.CustomerProfileUpdated),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     });
 
@@ -441,7 +627,7 @@ describe("Booking operations", () => {
         // run the thunk
         const testThunk = customerSelfUpdate(saul);
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -449,9 +635,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.CustomerProfileError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -466,7 +652,7 @@ describe("Booking operations", () => {
           // Set up organization 'registrationCode'
           const docRef = doc(
             db,
-            [Collection.Organizations, organization].join("/")
+            [Collection.Organizations, organization].join("/"),
           );
           await setDoc(docRef, { registrationCode }, { merge: true });
         },
@@ -483,14 +669,14 @@ describe("Booking operations", () => {
       const { id, secretKey } = await runThunk(
         testThunk,
         mockDispatch,
-        store.getState
+        store.getState,
       );
       expect(id).toBeTruthy();
       expect(secretKey).toBeTruthy();
       // Check updates
       await waitFor(async () => {
         const bookingsSnap = await getDoc(
-          doc(db, getBookingsDocPath(organization, secretKey))
+          doc(db, getBookingsDocPath(organization, secretKey)),
         );
         expect(bookingsSnap.data()).toEqual({ ...saul, id, secretKey });
       });
@@ -498,7 +684,7 @@ describe("Booking operations", () => {
         enqueueNotification({
           message: i18n.t(NotificationMessage.SelfRegSuccess),
           variant: NotifVariant.Success,
-        })
+        }),
       );
     });
 
@@ -516,7 +702,7 @@ describe("Booking operations", () => {
           registrationCode: "",
         });
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -524,9 +710,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.SelfRegError),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -543,11 +729,11 @@ describe("Booking operations", () => {
           registrationCode: "wrong-code",
         });
         const mockDispatch = vi.fn();
-        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        const res = await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(res.codeOk).toEqual(false);
-      }
+      },
     );
 
     testWithEmulator(
@@ -565,7 +751,7 @@ describe("Booking operations", () => {
           registrationCode: "correct-code",
         });
         const mockDispatch = vi.fn();
-        const res = await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        const res = await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         // No misleading "invalid registration code" field error...
@@ -577,9 +763,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.SelfRegError),
             variant: NotifVariant.Error,
             error: networkError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 
@@ -610,7 +796,7 @@ describe("Booking operations", () => {
         // Check updates
         await waitFor(async () => {
           const bookingsSnap = await getDoc(
-            doc(db, getBookingsDocPath(organization, saul.secretKey))
+            doc(db, getBookingsDocPath(organization, saul.secretKey)),
           );
           expect(bookingsSnap.data()?.privacyPolicyAccepted).toEqual({
             timestamp: expect.stringContaining(timestampDate),
@@ -620,9 +806,9 @@ describe("Booking operations", () => {
           enqueueNotification({
             message: i18n.t(NotificationMessage.SelectionSaved),
             variant: NotifVariant.Success,
-          })
+          }),
         );
-      }
+      },
     );
 
     testWithEmulator(
@@ -636,7 +822,7 @@ describe("Booking operations", () => {
         // run the thunk
         const testThunk = acceptPrivacyPolicy(saul);
         const mockDispatch = vi.fn();
-        await runThunk(testThunk, mockDispatch, () => ({} as any), {
+        await runThunk(testThunk, mockDispatch, () => ({}) as any, {
           getFunctions,
         });
         expect(mockDispatch).toHaveBeenCalledWith(
@@ -644,9 +830,9 @@ describe("Booking operations", () => {
             message: i18n.t(NotificationMessage.Error),
             variant: NotifVariant.Error,
             error: testError,
-          })
+          }),
         );
-      }
+      },
     );
   });
 });

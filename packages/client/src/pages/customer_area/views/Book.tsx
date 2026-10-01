@@ -93,7 +93,7 @@ const BookView: React.FC<{
             {slots.map(({ interval, ...slot }) => (
               <IntervalCardGroup
                 key={slot.id}
-                onBook={handleBooking(slot)}
+                onBook={handleBooking(slot, interval)}
                 onCancel={handleCancellation(slot, interval)}
                 bookedInterval={interval}
                 disabled={!isBookingAllowed}
@@ -135,11 +135,27 @@ const useBooking = () => {
   const secretKey = useSelector(getSecretKey)!;
 
   const { openWithProps: openCancelBookingDialog } = useCancelBookingModal();
+  const { openWithProps: openReplaceBookingDialog } = useReplaceBookingModal();
 
   return {
+    /**
+     * Booking a lesson which isn't booked yet is a single click.
+     * If the lesson is already booked (with another interval), the booking is never changed directly:
+     * the athlete is asked to confirm the replacement first.
+     */
     handleBooking:
-      ({ date, id: slotId }: SlotInterface) =>
-      (interval: string) => {
+      (slot: SlotInterface, bookedInterval?: string) => (interval: string) => {
+        if (bookedInterval && bookedInterval !== interval) {
+          openReplaceBookingDialog({
+            ...slot,
+            secretKey,
+            bookedInterval,
+            newInterval: interval,
+          });
+          return;
+        }
+
+        const { date, id: slotId } = slot;
         dispatch(bookInterval({ slotId, interval, date, secretKey }));
       },
 
@@ -158,5 +174,6 @@ const useBooking = () => {
 };
 
 const useCancelBookingModal = createModal("CancelBookingDialog");
+const useReplaceBookingModal = createModal("ReplaceBookingDialog");
 
 export default BookView;

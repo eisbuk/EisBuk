@@ -3,6 +3,7 @@ export { Modal, ModalContainer } from "./Modal";
 import { BirthdayDialog } from "@eisbuk/ui";
 
 import CancelBookingDialog from "./CancelBookingDialog";
+import ReplaceBookingDialog from "./ReplaceBookingDialog";
 import FinalizeBookingsDialog from "./FinalizeBookingsDialog";
 import SendBookingsLinkDialog from "./SendBookingsLinkDialog";
 import SendBulkBookingsLinkDialog from "./SendBulkBookingsLinkDialog";
@@ -19,6 +20,7 @@ import SendICSDialog from "./SendICSDialog";
  */
 export const componentWhitelist = {
   CancelBookingDialog,
+  ReplaceBookingDialog,
   FinalizeBookingsDialog,
   SendBookingsLinkDialog,
   SendBulkBookingsLinkDialog,

@@ -24,6 +24,7 @@ import {
   getDocs as clientGetDocs,
   deleteDoc as deleteDocClient,
   writeBatch as writeBatchClient,
+  runTransaction as clientRunTransaction,
   DocumentData,
 } from "@firebase/firestore";
 
@@ -44,7 +45,7 @@ export const FirestoreVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerFirestore }>(),
 });
 export type FirestoreVariant<
-  K extends TypeNames<typeof FirestoreVariant> = undefined
+  K extends TypeNames<typeof FirestoreVariant> = undefined,
 > = VariantOf<typeof FirestoreVariant, K>;
 
 /**
@@ -58,7 +59,7 @@ export const FirestoreDocVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerDocumentReference }>(),
 });
 export type FirestoreDocVariant<
-  K extends TypeNames<typeof FirestoreDocVariant> = undefined
+  K extends TypeNames<typeof FirestoreDocVariant> = undefined,
 > = VariantOf<typeof FirestoreDocVariant, K>;
 
 /**
@@ -72,7 +73,7 @@ export const FirestoreCollectionVariant = variantModule({
   [FirestoreEnv.Server]: fields<{ instance: ServerCollectionReference }>(),
 });
 export type FirestoreCollectionVariant<
-  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined
+  K extends TypeNames<typeof FirestoreCollectionVariant> = undefined,
 > = VariantOf<typeof FirestoreCollectionVariant, K>;
 // #endregion client/server variants
 
@@ -128,7 +129,7 @@ export const collection = (
         // it doesn't work well on unions because of slightly different type overloads, hence the typecast.
         instance: clientCollection(
           instance as ClientFirestore,
-          pathSegments.join("/")
+          pathSegments.join("/"),
         ),
       }),
     [FirestoreEnv.Server]: ({ instance }) =>
@@ -139,7 +140,7 @@ export const collection = (
 
 export const addDoc = async (
   collection: FirestoreCollectionVariant,
-  data: DocumentData
+  data: DocumentData,
 ) => {
   const res = await match(collection, {
     [FirestoreEnv.Client]: ({ instance }) => clientAddDoc(instance, data),
@@ -159,7 +160,7 @@ export const addDoc = async (
 export const setDoc = async (
   doc: FirestoreDocVariant,
   data: DocumentData,
-  options: SetOptions = {}
+  options: SetOptions = {},
 ) => {
   const res = await match(doc, {
     [FirestoreEnv.Client]: ({ instance }) =>
@@ -211,12 +212,40 @@ export const getDocs = async (collection: FirestoreCollectionVariant) => {
   return res;
 };
 
+/**
+ * Reads a document and (conditionally) writes it in a single transaction, on all Firestore variants.
+ *
+ * `update` receives the current document data (`undefined` if the document doesn't exist) and returns the data to set,
+ * or `undefined` to leave the document as it is. Throwing from `update` aborts the transaction (the error is rethrown).
+ *
+ * _Note: `update` can run more than once (the transaction is retried if the document changes while it runs), so it should be pure._
+ * @param doc document to read/write in form of a FirestoreDocVariant (used to match with correct behaviour)
+ * @param update function returning the new document data
+ */
+export const setDocInTransaction = async (
+  doc: FirestoreDocVariant,
+  update: (data: DocumentData | undefined) => DocumentData | undefined,
+): Promise<void> => {
+  await match(doc, {
+    [FirestoreEnv.Client]: ({ instance }) =>
+      clientRunTransaction(instance.firestore, async (tx) => {
+        const data = update((await tx.get(instance)).data());
+        if (data) tx.set(instance, data);
+      }),
+    [FirestoreEnv.Server]: ({ instance }) =>
+      instance.firestore.runTransaction(async (tx) => {
+        const data = update((await tx.get(instance)).data());
+        if (data) tx.set(instance, data);
+      }),
+  });
+};
+
 // eslint-disable-next-line require-jsdoc
 class BatchMismatch extends Error {
   // eslint-disable-next-line require-jsdoc
   constructor(batchType: FirestoreEnv, docType: FirestoreEnv) {
     super(
-      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`
+      `Write batch/document variant mismatch: batch type: ${batchType}, doc type: ${docType}`,
     );
     return this;
   }
