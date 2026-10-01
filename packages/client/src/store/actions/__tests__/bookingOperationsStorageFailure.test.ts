@@ -27,6 +27,13 @@ vi.mock("@sentry/react", () => ({
   Severity: { Warning: "warning" },
 }));
 
+/** `FirestoreError`'s constructor is private in the typings, but it's the real class the SDK throws */
+const firestoreError = (code: string, message: string) =>
+  new (FirestoreError as unknown as new (
+    code: string,
+    message: string
+  ) => FirestoreError)(code, message);
+
 const payload = {
   secretKey: saul.secretKey,
   slotId: "slot-id",
@@ -45,7 +52,7 @@ const reload = vi.fn();
  */
 const loadThunks = async () => {
   vi.resetModules();
-  return import("../bookingOperations");
+  return import("../bookingOperations.js");
 };
 
 beforeEach(() => {
@@ -105,7 +112,7 @@ describe("Booking operations: failed writes", () => {
 
   test("an ordinary failure shows the usual error and is reported to Sentry with its code", async () => {
     const { bookInterval } = await loadThunks();
-    const error = new FirestoreError(
+    const error = firestoreError(
       "permission-denied",
       "Missing or insufficient permissions."
     );

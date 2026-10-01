@@ -15,20 +15,27 @@ vi.mock("@sentry/react", () => ({
   Severity: { Warning: "warning" },
 }));
 
+/** `FirestoreError`'s constructor is private in the typings, but it's the real class the SDK throws */
+const firestoreError = (code: string, message: string) =>
+  new (FirestoreError as unknown as new (
+    code: string,
+    message: string
+  ) => FirestoreError)(code, message);
+
 /**
  * A fresh copy of the module (its in-memory state is reset, sessionStorage isn't):
  * the same as a page (re)load
  */
 const loadModule = async () => {
   vi.resetModules();
-  return import("../storageRecovery");
+  return import("../storageRecovery.js");
 };
 
 // #region errors
 /** The errors the Firestore SDK (9.22.1) produces when the browser storage breaks */
 const storageErrors = {
   "write that couldn't be persisted (Safari lost the IndexedDB server)":
-    new FirestoreError(
+    firestoreError(
       "unavailable",
       "Failed to persist write: IndexedDbTransactionError: [code=unavailable]: IndexedDB transaction 'Locally write mutations' failed: UnknownError: Connection to Indexed Database server lost. Refresh the page to try again"
     ),
@@ -39,26 +46,26 @@ const storageErrors = {
   "failed internal queue": new Error(
     "FIRESTORE (9.22.1) INTERNAL ASSERTION FAILED: Unexpected state"
   ),
-  "IndexedDB that can't be opened": new FirestoreError(
+  "IndexedDB that can't be opened": firestoreError(
     "failed-precondition",
     "Unable to open an IndexedDB connection. This could be due to running in a private browsing session on a browser whose private browsing sessions do not support IndexedDB: InvalidStateError"
   ),
-  "lost persistence lease": new FirestoreError(
+  "lost persistence lease": firestoreError(
     "failed-precondition",
     "Failed to obtain exclusive access to the persistence layer. To allow shared access, multi-tab synchronization has to be enabled in all tabs."
   ),
-  "tab in a wrong state": new FirestoreError(
+  "tab in a wrong state": firestoreError(
     "failed-precondition",
     "The current tab is not in the required state to perform this operation. It might be necessary to refresh the browser tab."
   ),
 };
 
 const ordinaryErrors = {
-  "permission denied": new FirestoreError(
+  "permission denied": firestoreError(
     "permission-denied",
     "Missing or insufficient permissions."
   ),
-  "document missing from the cache (healthy cache)": new FirestoreError(
+  "document missing from the cache (healthy cache)": firestoreError(
     "unavailable",
     "Failed to get document from cache. (However, this document may exist on the server. Run again without setting 'source' in the GetOptions to attempt to retrieve the document from the server.)"
   ),
