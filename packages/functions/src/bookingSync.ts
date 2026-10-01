@@ -1,4 +1,9 @@
-import admin from "firebase-admin";
+import {
+  DocumentSnapshot,
+  FieldPath,
+  FieldValue,
+  Firestore,
+} from "@google-cloud/firestore";
 import _ from "lodash";
 
 import {
@@ -23,9 +28,6 @@ import {
  * them again, at any time, for any reason, converges to the same result: the triggers and the repair
  * (reconciliation) use the same functions.
  */
-
-type Firestore = admin.firestore.Firestore;
-type DocumentSnapshot = admin.firestore.DocumentSnapshot;
 
 interface SyncOptions {
   /** Compute the result without writing anything */
@@ -165,12 +167,27 @@ export const syncMonthBookingsCounts = (
  * Limitation: an admin confirming attendance with exactly the booked interval can't be told apart from the
  * automatic value (the data model doesn't record who set it), so in that case it follows the booking too.
  *
+ * With `bookedPartOnly`, only the booked part (`bookedInterval`, `bookingNotes`) of an existing entry is updated:
+ * entries aren't added or removed and `attendedInterval` is kept as it is. The reconciliation uses this for past
+ * lessons, where `attendedInterval` may be the club's record of the lesson even when equal to the booked interval.
+ *
  * @returns the entry to store, or `undefined` if there should be no entry
  */
 export const deriveAttendanceEntry = (
   booking: CustomerBookingEntry | undefined,
-  current: CustomerAttendance | undefined
+  current: CustomerAttendance | undefined,
+  { bookedPartOnly = false }: { bookedPartOnly?: boolean } = {}
 ): CustomerAttendance | undefined => {
+  if (bookedPartOnly) {
+    if (!booking || !current) return current;
+    const entry: CustomerAttendance = {
+      bookedInterval: booking.interval,
+      attendedInterval: current.attendedInterval,
+    };
+    if (booking.bookingNotes) entry.bookingNotes = booking.bookingNotes;
+    return entry;
+  }
+
   const isAutomatic =
     !current || current.attendedInterval === current.bookedInterval;
 
@@ -201,6 +218,9 @@ export const deriveAttendanceEntry = (
  * Reads the booking, the athlete's bookings document (for the customer id) and the slot's attendance in one
  * transaction, so the result doesn't depend on which event triggered the sync, or how many times.
  *
+ * With `onlyIfBooked`, nothing changes unless the athlete has a booking under `secretKey`: used when the bookings
+ * document was found from the customer, not from the booking itself.
+ *
  * @param secretKey the athlete's bookings document id
  * @returns `null` if the athlete's bookings document or the slot can't be found (nothing written):
  * without them we can't tell whether the athlete booked, so the entry is left as it is
@@ -210,7 +230,11 @@ export const syncAttendanceEntry = (
   organization: string,
   slotId: string,
   secretKey: string,
-  { dryRun = false }: SyncOptions = {}
+  {
+    dryRun = false,
+    bookedPartOnly = false,
+    onlyIfBooked = false,
+  }: SyncOptions & { bookedPartOnly?: boolean; onlyIfBooked?: boolean } = {}
 ): Promise<
   (SyncResult<CustomerAttendance | undefined> & { customerId: string }) | null
 > => {
@@ -246,7 +270,10 @@ export const syncAttendanceEntry = (
     const booking = bookingSnap.data() as CustomerBookingEntry | undefined;
     const before = (attendanceSnap.data() as SlotAttendnace | undefined)
       ?.attendances?.[id];
-    const after = deriveAttendanceEntry(booking, before);
+    const after =
+      !booking && onlyIfBooked
+        ? before
+        : deriveAttendanceEntry(booking, before, { bookedPartOnly });
 
     const changed = !_.isEqual(before, after);
     if (changed && !dryRun) {
@@ -258,8 +285,8 @@ export const syncAttendanceEntry = (
       } else {
         tx.update(
           attendanceRef,
-          new admin.firestore.FieldPath("attendances", id),
-          after || admin.firestore.FieldValue.delete()
+          new FieldPath("attendances", id),
+          after || FieldValue.delete()
         );
       }
     }

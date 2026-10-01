@@ -526,6 +526,10 @@ export const createPublicOrgInfo = functions
  * For every athlete whose entry was added, removed, or had its booked part changed by this write, re-derive the
  * entry from the athlete's current booking. Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry`
  * writes only when the entry differs, so the write it may cause is followed by a check that finds nothing to do.
+ *
+ * Only athletes with a booking are corrected (entry restored, booked interval updated): the booking is looked up with
+ * the customer's current secret key, and bookings kept under an older key would look cancelled. Removing entries on
+ * cancellation is left to `createAttendanceForBooking`, which knows where the booking was.
  */
 export const syncAttendanceWithBookings = functions
   .runWith({
@@ -576,7 +580,9 @@ export const syncAttendanceWithBookings = functions
             // Unknown athlete: we can't find the booking, leave the entry as it is
             if (!secretKey) return;
 
-            await syncAttendanceEntry(db, organization, slotId, secretKey);
+            await syncAttendanceEntry(db, organization, slotId, secretKey, {
+              onlyIfBooked: true,
+            });
           })
         );
       }
