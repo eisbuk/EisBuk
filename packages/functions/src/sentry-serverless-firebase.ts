@@ -8,7 +8,8 @@
  * Updated by JFGHT 29/12/2023
  * Taken from https://gist.github.com/zanona/0f3d42093eaa8ac5c33286cc7eca1166
  */
-import type { Event } from "@sentry/types";
+import type { Event, Scope, Transaction } from "@sentry/types";
+import * as functions from "firebase-functions";
 import type { https } from "firebase-functions";
 import type { onRequest, onCall } from "firebase-functions/lib/providers/https";
 import type { ScheduleBuilder } from "firebase-functions/lib/providers/pubsub";
@@ -24,6 +25,9 @@ type firestoreOnCreateHandler = Parameters<DocumentBuilder["onCreate"]>[0];
 type firestoreOnDeleteHandler = Parameters<DocumentBuilder["onDelete"]>[0];
 
 type FunctionType = "http" | "callable" | "document" | "schedule";
+
+/** Maximum time a function waits for its events to be sent to Sentry */
+const FLUSH_TIMEOUT_MS = 1000;
 
 export function getLocationHeaders(req: https.Request): {
   country?: string;
@@ -53,17 +57,17 @@ export function getLocationHeaders(req: https.Request): {
 function wrap<A, C>(
   type: FunctionType,
   name: string,
-  fn: (a: A) => C | Promise<C>
+  fn: (a: A) => C | Promise<C>,
 ): typeof fn;
 function wrap<A, B, C>(
   type: FunctionType,
   name: string,
-  fn: (a: A, b: B) => C | Promise<C>
+  fn: (a: A, b: B) => C | Promise<C>,
 ): typeof fn;
 function wrap<A, B, C>(
   type: FunctionType,
   name: string,
-  fn: (a: A, b: B) => C | Promise<C>
+  fn: (a: A, b: B) => C | Promise<C>,
 ): typeof fn {
   // Don't wrap functions when running locally
   if (!__enableSentry__) {
@@ -71,15 +75,69 @@ function wrap<A, B, C>(
   }
 
   return async (a: A, b: B): Promise<C> => {
-    const {
-      startTransaction,
-      captureException,
-      flush,
-      addRequestDataToEvent,
-      getCurrentScope,
-      extractTraceparentData,
-    } = await import("@sentry/node");
+    let sentry: typeof import("@sentry/node");
+    try {
+      sentry = await import("@sentry/node");
+    } catch (err) {
+      logReportingFailure(name, "loading the Sentry SDK", err);
+      return fn(a, b);
+    }
 
+    // Each invocation runs in an async context of its own (a hub with a clone
+    // of the current scope): the event processor and transaction added below
+    // stay with this invocation, instead of piling up on a scope shared with
+    // later invocations, or mixing with invocations running at the same time.
+    let started = false;
+    try {
+      return await sentry.runWithAsyncContext(() => {
+        started = true;
+        return runWithSentry(
+          sentry,
+          sentry.getCurrentScope(),
+          type,
+          name,
+          fn,
+          a,
+          b,
+        );
+      });
+    } catch (err) {
+      // 'runWithSentry' never throws synchronously and returns the function's
+      // own outcome: only a failure before it started is Sentry's own
+      if (started) throw err;
+      logReportingFailure(name, "setting up error reporting", err);
+      return fn(a, b);
+    }
+  };
+}
+
+/**
+ * Runs the function, reporting its errors (and a performance transaction) to Sentry.
+ *
+ * Reporting must never change the outcome of the function: the function's own
+ * result (or its own error) is returned as is, failures of the reporting itself
+ * are only logged, and the time spent sending events is bounded.
+ */
+async function runWithSentry<A, B, C>(
+  sentry: typeof import("@sentry/node"),
+  scope: Scope,
+  type: FunctionType,
+  name: string,
+  fn: (a: A, b: B) => C | Promise<C>,
+  a: A,
+  b: B,
+): Promise<C> {
+  const {
+    startTransaction,
+    captureException,
+    flush,
+    addRequestDataToEvent,
+    extractTraceparentData,
+  } = sentry;
+
+  let transaction: Transaction | undefined;
+
+  try {
     let req: https.Request | undefined;
     let ctx: Record<string, unknown> | undefined;
     if (type === "http") {
@@ -97,15 +155,14 @@ function wrap<A, B, C>(
     }
 
     const traceparentData = extractTraceparentData(
-      req?.header("sentry-trace") || ""
+      req?.header("sentry-trace") || "",
     );
-    const transaction = startTransaction({
+    const tx = startTransaction({
       name,
       op: "transaction",
       ...traceparentData,
     });
-
-    const scope = getCurrentScope();
+    transaction = tx;
 
     scope.addEventProcessor((event): Event => {
       let ev: Event = event;
@@ -122,11 +179,14 @@ function wrap<A, B, C>(
       }
       if (ctx) {
         ev = addRequestDataToEvent(event, ctx);
-        ev.extra = ctx;
+        // The trigger's 'resource' is the full document path, which can contain
+        // an athlete's secret key: only send the (scrubbed) params instead
+        const { eventId, eventType, params } = ctx;
+        ev.extra = { ...ev.extra, eventId, eventType, params };
         delete ev.request;
       }
 
-      ev.transaction = transaction.name;
+      ev.transaction = tx.name;
 
       // force catpuring uncaughtError as not handled
       const mechanism = ev.exception?.values?.[0].mechanism;
@@ -135,77 +195,111 @@ function wrap<A, B, C>(
       }
       return ev;
     });
-    scope.setSpan(transaction);
+    scope.setSpan(tx);
+  } catch (err) {
+    logReportingFailure(name, "setting up error reporting", err);
+  }
 
+  try {
+    return await fn(a, b);
+  } catch (err) {
     try {
-      const result = fn(a, b);
-      // @ts-expect-error - I'm sorry, I lifted this code and I don't know how to fix this typing error
-      return (
-        Promise.resolve(result)
-          .catch((err): void => {
-            captureException(err, { tags: { handled: false } });
-            throw err;
-          })
-          // eslint-disable-next-line promise/no-return-in-finally
-          .finally((): Promise<boolean> => {
-            transaction.finish();
-            return flush(2000);
-          }) as Promise<C | undefined>
-      );
-    } catch (err) {
       captureException(err, { tags: { handled: false } });
-      transaction.finish();
-      await flush(2000);
-      throw err;
+    } catch (reportingErr) {
+      logReportingFailure(name, "capturing an exception", reportingErr);
     }
-  };
+    // Always rethrow the function's own error (e.g. an 'HttpsError' meant for the client)
+    throw err;
+  } finally {
+    try {
+      transaction?.finish();
+    } catch (err) {
+      logReportingFailure(name, "finishing the transaction", err);
+    }
+    await flushWithTimeout(flush, name);
+  }
+}
+
+/**
+ * Waits (at most `FLUSH_TIMEOUT_MS`) for pending Sentry events to be sent.
+ * Never rejects: the Sentry SDK's 'flush' rejects with the transport error
+ * (e.g. ECONNREFUSED) when the Sentry server can't be reached (#944).
+ */
+async function flushWithTimeout(
+  flush: (timeout?: number) => PromiseLike<boolean>,
+  name: string,
+): Promise<void> {
+  let timer: NodeJS.Timeout | undefined;
+  const timeout = new Promise<boolean>((resolve) => {
+    timer = setTimeout(() => resolve(false), FLUSH_TIMEOUT_MS);
+  });
+  try {
+    const flushed = await Promise.race([flush(FLUSH_TIMEOUT_MS), timeout]);
+    if (!flushed) {
+      functions.logger.warn(
+        `Sentry: events for '${name}' not sent within ${FLUSH_TIMEOUT_MS}ms`,
+      );
+    }
+  } catch (err) {
+    logReportingFailure(name, "sending events", err);
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+/**
+ * Error reporting failures are logged (visible in Cloud Logging) but never
+ * thrown: they mustn't affect the function being reported on.
+ */
+function logReportingFailure(name: string, step: string, err: unknown) {
+  functions.logger.warn(`Sentry: failed ${step} for '${name}'`, err);
 }
 
 export function wrapHttpsOnRequestHandler(
   name: string,
-  fn: httpsOnRequestHandler
+  fn: httpsOnRequestHandler,
 ): typeof fn {
   return wrap("http", name, fn);
 }
 
 export function wrapHttpsOnCallHandler(
   name: string,
-  fn: httpsOnCallHandler
+  fn: httpsOnCallHandler,
 ): typeof fn {
   return wrap("callable", name, fn);
 }
 
 export function wrapPubsubOnRunHandler(
   name: string,
-  fn: pubsubOnRunHandler
+  fn: pubsubOnRunHandler,
 ): typeof fn {
   return wrap("schedule", name, fn);
 }
 
 export function wrapFirestoreOnWriteHandler(
   name: string,
-  fn: firestoreOnWriteHandler
+  fn: firestoreOnWriteHandler,
 ): typeof fn {
   return wrap("document", name, fn);
 }
 
 export function wrapFirestoreOnUpdateHandler(
   name: string,
-  fn: firestoreOnUpdateHandler
+  fn: firestoreOnUpdateHandler,
 ): typeof fn {
   return wrap("document", name, fn);
 }
 
 export function wrapFirestoreOnCreateHandler(
   name: string,
-  fn: firestoreOnCreateHandler
+  fn: firestoreOnCreateHandler,
 ): typeof fn {
   return wrap("document", name, fn);
 }
 
 export function wrapFirestoreOnDeleteHandler(
   name: string,
-  fn: firestoreOnDeleteHandler
+  fn: firestoreOnDeleteHandler,
 ): typeof fn {
   return wrap("document", name, fn);
 }
