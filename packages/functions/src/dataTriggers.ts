@@ -2,6 +2,7 @@
 import * as functions from "firebase-functions";
 import admin from "firebase-admin";
 import { v4 as uuid } from "uuid";
+import { isEqual } from "lodash";
 
 import {
   wrapFirestoreOnCreateHandler,
@@ -11,6 +12,7 @@ import { __functionsZone__ } from "./constants";
 import {
   BookingSubCollection,
   Collection,
+  CustomerAttendance,
   CustomerBookingEntry,
   OrgSubCollection,
   SlotAttendnace,
@@ -406,9 +408,12 @@ export const createAttendanceForBooking = functions
           string
         >;
 
-        await syncAttendanceEntry(admin.firestore(), organization, bookingId, {
-          secretKey,
-        });
+        await syncAttendanceEntry(
+          admin.firestore(),
+          organization,
+          bookingId,
+          secretKey
+        );
       }
     )
   );
@@ -506,6 +511,74 @@ export const createPublicOrgInfo = functions
           {}
         );
         await publicOrgInfoDocRef.set(updates, { merge: true });
+      }
+    )
+  );
+
+/**
+ * Keeps the booked part of attendance in line with the bookings when the attendance document is written
+ * by someone else than `createAttendanceForBooking`.
+ *
+ * The admin attendance screen writes whole entries (`bookedInterval` included), or the whole document, from the
+ * admin's local copy. A copy older than the latest booking change puts an old `bookedInterval` back, or drops the
+ * entry of a booking made in the meantime, and no booking event follows to correct it (#988).
+ *
+ * For every athlete whose entry was added, removed, or had its booked part changed by this write, re-derive the
+ * entry from the athlete's current booking. Changes to `attendedInterval` alone are not checked. `syncAttendanceEntry`
+ * writes only when the entry differs, so the write it may cause is followed by a check that finds nothing to do.
+ */
+export const syncAttendanceWithBookings = functions
+  .runWith({
+    memory: "512MB",
+  })
+  .region(__functionsZone__)
+  .firestore.document(
+    `${Collection.Organizations}/{organization}/${OrgSubCollection.Attendance}/{slotId}`
+  )
+  .onWrite(
+    wrapFirestoreOnWriteHandler(
+      "syncAttendanceWithBookings",
+      async (change, context) => {
+        // Attendance document deleted with the slot: nothing to keep in sync
+        if (!change.after.exists) return;
+
+        const { organization, slotId } = context.params as Record<
+          string,
+          string
+        >;
+        const db = admin.firestore();
+
+        const before = (change.before.data() as SlotAttendnace | undefined)
+          ?.attendances;
+        const after = (change.after.data() as SlotAttendnace).attendances;
+
+        const getBookedPart = (entry?: CustomerAttendance) =>
+          entry && { b: entry.bookedInterval, n: entry.bookingNotes };
+        const customerIds = [
+          ...new Set([
+            ...Object.keys(before || {}),
+            ...Object.keys(after || {}),
+          ]),
+        ].filter(
+          (id) =>
+            !isEqual(getBookedPart(before?.[id]), getBookedPart(after?.[id]))
+        );
+
+        await Promise.all(
+          customerIds.map(async (customerId) => {
+            const customer = await db
+              .collection(Collection.Organizations)
+              .doc(organization)
+              .collection(OrgSubCollection.Customers)
+              .doc(customerId)
+              .get();
+            const { secretKey } = (customer.data() || {}) as Partial<Customer>;
+            // Unknown athlete: we can't find the booking, leave the entry as it is
+            if (!secretKey) return;
+
+            await syncAttendanceEntry(db, organization, slotId, secretKey);
+          })
+        );
       }
     )
   );

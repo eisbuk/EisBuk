@@ -627,4 +627,101 @@ describe("Booking derived data under at-least-once, unordered trigger delivery",
       }
     );
   });
+
+  describe("admin attendance writes", () => {
+    const slotId = "slot-a";
+
+    testWithEmulator(
+      "corrects a booked interval written from the admin's stale copy of the attendance",
+      async () => {
+        const {
+          organization,
+          athletes: [athlete],
+        } = await setUp([slotId], 1);
+
+        await book(organization, athlete, slotId, intervals.long);
+        await waitFor(async () =>
+          expect(
+            (
+              await getAttendance(organization, slotId, athlete)
+            )?.bookedInterval
+          ).toEqual(intervals.long)
+        );
+        // The athlete changes the interval...
+        await book(organization, athlete, slotId, intervals.short);
+        await waitFor(async () =>
+          expect(
+            (
+              await getAttendance(organization, slotId, athlete)
+            )?.bookedInterval
+          ).toEqual(intervals.short)
+        );
+        // ...while the admin, still seeing the old booking, records a late arrival
+        await adminWriteAttendance(organization, slotId, athlete, {
+          bookedInterval: intervals.long,
+          attendedInterval: intervals.late,
+        });
+
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, athlete)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.late,
+          })
+        );
+      }
+    );
+
+    testWithEmulator(
+      "restores a booking's attendance entry dropped by the admin rewriting the attendance from a stale copy",
+      async () => {
+        const {
+          organization,
+          athletes: [early, late, absent],
+        } = await setUp([slotId], 3);
+
+        await book(organization, early, slotId, intervals.long);
+        await book(organization, absent, slotId, intervals.long);
+        await waitFor(async () => {
+          expect(
+            await getAttendance(organization, slotId, early)
+          ).toBeDefined();
+          expect(
+            await getAttendance(organization, slotId, absent)
+          ).toBeDefined();
+        });
+        // The admin's copy of the attendance document, before the next booking
+        const staleCopy = (
+          await adminDb.doc(getAttendanceDocPath(organization, slotId)).get()
+        ).data()!;
+
+        await book(organization, late, slotId, intervals.short);
+        await waitFor(async () =>
+          expect(await getAttendance(organization, slotId, late)).toBeDefined()
+        );
+
+        // Marking absence rewrites the whole document from the admin's copy (`markAbsence`)
+        await adminDb.doc(getAttendanceDocPath(organization, slotId)).set({
+          ...staleCopy,
+          attendances: {
+            ...staleCopy.attendances,
+            [absent.id]: {
+              bookedInterval: intervals.long,
+              attendedInterval: null,
+            },
+          },
+        });
+
+        await waitFor(async () => {
+          expect(await getAttendance(organization, slotId, late)).toEqual({
+            bookedInterval: intervals.short,
+            attendedInterval: intervals.short,
+          });
+          expect(await getAttendance(organization, slotId, absent)).toEqual({
+            bookedInterval: intervals.long,
+            attendedInterval: null,
+          });
+        });
+      }
+    );
+  });
 });

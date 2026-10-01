@@ -202,23 +202,22 @@ export const deriveAttendanceEntry = (
  * transaction, so the result doesn't depend on which event triggered the sync, or how many times.
  *
  * @param secretKey the athlete's bookings document id
- * @param customerId the athlete's customer id: only needed when the athlete's bookings document is missing
- * (e.g. reconciling a stray attendance entry), otherwise it's read from the bookings document
- * @returns `null` if the customer or the slot can't be found (nothing written)
+ * @returns `null` if the athlete's bookings document or the slot can't be found (nothing written):
+ * without them we can't tell whether the athlete booked, so the entry is left as it is
  */
 export const syncAttendanceEntry = (
   db: Firestore,
   organization: string,
   slotId: string,
-  { secretKey, customerId }: { secretKey?: string; customerId?: string },
+  secretKey: string,
   { dryRun = false }: SyncOptions = {}
 ): Promise<
   (SyncResult<CustomerAttendance | undefined> & { customerId: string }) | null
 > => {
   const orgRef = getOrgRef(db, organization);
-  const bookingsRef = secretKey
-    ? orgRef.collection(OrgSubCollection.Bookings).doc(secretKey)
-    : null;
+  const bookingsRef = orgRef
+    .collection(OrgSubCollection.Bookings)
+    .doc(secretKey);
   const attendanceRef = orgRef
     .collection(OrgSubCollection.Attendance)
     .doc(slotId);
@@ -226,18 +225,11 @@ export const syncAttendanceEntry = (
   return db.runTransaction(async (tx) => {
     const [attendanceSnap, bookingsSnap, bookingSnap] = await tx.getAll(
       attendanceRef,
-      ...(bookingsRef
-        ? [
-            bookingsRef,
-            bookingsRef
-              .collection(BookingSubCollection.BookedSlots)
-              .doc(slotId),
-          ]
-        : [])
+      bookingsRef,
+      bookingsRef.collection(BookingSubCollection.BookedSlots).doc(slotId)
     );
 
-    const id =
-      (bookingsSnap?.data() as CustomerBookings | undefined)?.id || customerId;
+    const id = (bookingsSnap.data() as CustomerBookings | undefined)?.id;
     if (!id) return null;
 
     // The attendance document is created (with the slot's date) when the slot is created, and deleted with the slot.
@@ -251,7 +243,7 @@ export const syncAttendanceEntry = (
       slotDate = slotSnap.data()!.date;
     }
 
-    const booking = bookingSnap?.data() as CustomerBookingEntry | undefined;
+    const booking = bookingSnap.data() as CustomerBookingEntry | undefined;
     const before = (attendanceSnap.data() as SlotAttendnace | undefined)
       ?.attendances?.[id];
     const after = deriveAttendanceEntry(booking, before);
